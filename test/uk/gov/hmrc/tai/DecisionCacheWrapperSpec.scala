@@ -100,7 +100,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with Sca
           wrapper.cacheDecision(YesIGetThisBenefit, (a: String, b: Result) => b)
 
         whenReady(result) { r =>
-          r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+          r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
           verify(journeyCacheService, times(0)).cache(any(), eqTo(YesIGetThisBenefit))(any())
         }
       }

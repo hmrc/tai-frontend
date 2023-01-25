@@ -72,31 +72,31 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
   private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.whatYouToldUs"),
     Messages("tai.noLongerGetBenefit"),
-    controllers.benefits.routes.CompanyBenefitController.decision().url
+    controllers.benefits.routes.CompanyBenefitController.decision.url
   )
 
   private lazy val stopDateLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.dateBenefitEnded"),
     "Before 6 April",
-    controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+    controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
   )
 
   private lazy val valueOfBenefitLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.valueOfBenefit"),
     "£1,000,000",
-    controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
+    controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
   )
 
   private lazy val contactByPhoneLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.contactByPhone"),
     "Yes",
-    controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+    controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
   )
 
   private lazy val phoneNumberLine = CheckYourAnswersConfirmationLine(
     Messages("tai.phoneNumber"),
     "0123456789",
-    controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+    controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
   )
 
   def baseModel = RemoveCompanyBenefitsCheckYourAnswersViewModel(

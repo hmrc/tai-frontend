@@ -34,7 +34,7 @@ class TimeoutViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "a",
         "href",
-        controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url)
     }
   }
   private val template = inject[TimeoutView]

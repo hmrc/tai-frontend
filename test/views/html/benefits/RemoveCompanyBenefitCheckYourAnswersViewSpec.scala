@@ -32,13 +32,13 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithButtonForm(
       "/check-income-tax/remove-company-benefit/submit-your-answers",
       messages("tai.confirmAndSend"))
-    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
     behave like pageWithCheckYourAnswersSummaryNew
 
     "display a back button" in {
       doc must haveLinkWithUrlWithID(
         "backLink",
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url)
     }
 
     "display the header for the check your answers section" in {
@@ -55,7 +55,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(2, viewModel.stopDate)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url)
+        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url)
 
       val benefitValue =
         Money.pounds(BigDecimal(viewModel.valueOfBenefit.getOrElse("0"))).toString().trim.replace("&pound;", "\u00A3")
@@ -63,19 +63,19 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(3, benefitValue)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
-        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url)
+        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url)
 
       doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url)
 
       doc must haveCheckYourAnswersSummaryLineNew(5, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(5, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         5,
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url)
 
     }
 

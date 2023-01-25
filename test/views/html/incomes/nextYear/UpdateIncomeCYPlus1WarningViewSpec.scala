@@ -66,7 +66,7 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
     )
 
     behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/next-year/income/$empId/warning")
-    behave like pageWithCancelLink(controllers.routes.IncomeTaxComparisonController.onPageLoad())
+    behave like pageWithCancelLink(controllers.routes.IncomeTaxComparisonController.onPageLoad)
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)

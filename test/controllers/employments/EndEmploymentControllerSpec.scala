@@ -80,7 +80,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
     }
 
   }
@@ -136,7 +136,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           case _               => ""
         }
 
-        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
+        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError.url
       }
 
       "the form has the value No in EmploymentDecision and the employment has a payment 6 weeks of todays date" in {
@@ -160,9 +160,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
-          .endEmploymentError()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError.url
       }
 
       "cache the employment details for error page" in {
@@ -285,7 +283,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage.url
     }
   }
 
@@ -312,7 +310,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = endEmploymentTest.endEmploymentPage(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
     }
   }
 
@@ -424,7 +422,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakeGetRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
       }
 
@@ -449,7 +447,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
+        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage.url
         verify(endEmploymentJourneyCacheService, times(1)).flush()(any())
       }
     }
@@ -512,7 +510,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val result = endEmploymentTest.addTelephoneNumber()(fakeGetRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
       }
     }
@@ -535,9 +533,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
             FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
-          .confirmAndSendEndEmployment()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -556,9 +552,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
               FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
-          .confirmAndSendEndEmployment()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
       }
     }
 
@@ -692,7 +686,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning.url
     }
   }
 
@@ -720,7 +714,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val result = endEmploymentTest.duplicateSubmissionWarning(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
     }
   }
 
@@ -738,9 +732,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
             .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
-          .employmentUpdateRemoveDecision()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
       }
     }
 

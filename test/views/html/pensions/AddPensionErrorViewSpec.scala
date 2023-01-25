@@ -28,7 +28,7 @@ class AddPensionErrorViewSpec extends TaiViewSpec {
       messages("tai.addPensionProvider.errorPage.title"))
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad.url)
     }
 
     "have paragraph" in {

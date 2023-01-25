@@ -43,7 +43,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec {
     behave like pageWithYesNoRadioButton(
       AddPensionNumberConstants.PayrollNumberChoice + "-yes",
       AddPensionNumberConstants.PayrollNumberChoice + "-no")
-    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
 
     "have gone back to firstPayChoice page" in {
       def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)

@@ -380,7 +380,7 @@ class IncomeUpdateCalculatorControllerSpec
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))

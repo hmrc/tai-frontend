@@ -107,9 +107,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             .withFormUrlEncodedBody(("pensionProviderName", "the pension provider")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .receivedFirstPay()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url
       }
     }
 
@@ -223,7 +221,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
       }
 
@@ -245,9 +243,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             .withFormUrlEncodedBody(AddPensionFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .addPensionProviderStartDate()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url
       }
     }
 
@@ -264,9 +260,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             .withFormUrlEncodedBody(AddPensionFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .cantAddPension()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.cantAddPension.url
       }
     }
 
@@ -368,7 +362,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
       }
     }
@@ -406,9 +400,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .addPensionNumber()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url
       }
     }
 
@@ -589,9 +581,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           .buildFakeRequestWithAuth("POST")
           .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.YesValue, PayrollNumberEntry -> payrollNo))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .addTelephoneNumber()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
       }
     }
 
@@ -637,9 +627,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.NoValue, PayrollNumberEntry -> ""))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .addTelephoneNumber()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
       }
     }
 
@@ -774,9 +762,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
               FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .checkYourAnswers()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.checkYourAnswers.url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -796,9 +782,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
               FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController
-          .checkYourAnswers()
-          .url
+        redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.checkYourAnswers.url
       }
     }
 
@@ -874,7 +858,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
       val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
     }
 
@@ -918,7 +902,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
       val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.confirmation().url
+      redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.confirmation.url
     }
   }
 
@@ -940,7 +924,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
       val result = createSUT.cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
     }
   }
 

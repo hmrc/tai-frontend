@@ -125,11 +125,11 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         messages("check.your.tax.codes"))
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
         messages("check.your.income.tax.estimate"))
       doc must haveLinkElement(
         "taxableIncomeLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
         messages("return.to.your.income.tax.summary"))
     }
 

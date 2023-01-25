@@ -27,6 +27,6 @@ class AddPensionConfirmationViewSpec extends TaiViewSpec {
   "Confirmation View" must {
 
     behave like pageWithTitle(messages("tai.pensionConfirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
+    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad)
   }
 }

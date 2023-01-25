@@ -135,7 +135,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
       }
 
       "a downstream error has occurred in the tax account service (which does not reply with TaiResponse type)" in {
@@ -162,7 +162,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
       }
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
@@ -190,7 +190,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage.url)
 
       }
 
@@ -201,7 +201,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage.url)
       }
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to not being authorised" in {
@@ -211,7 +211,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
       }
 
       "there is a TaiNotFoundResponse because there is no tax account information found" in {
@@ -221,7 +221,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage.url)
       }
     }
 

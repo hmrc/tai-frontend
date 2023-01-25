@@ -131,7 +131,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
       }
     }
   }
@@ -317,7 +317,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
           .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
       }
     }
 

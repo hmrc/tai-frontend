@@ -38,7 +38,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           "taxCode.change.whatHappensNext.paragragh2",
           link(
             id = Some("income-tax-estimate-link"),
-            url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
+            url = routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
             copy = messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")
           )
         )).body.replaceAll("\\s+", "")
@@ -50,7 +50,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           "taxCode.change.whatHappensNext.paragragh3",
           link(
             id = Some("update-current-income-or-benefits-link"),
-            url = routes.TaxAccountSummaryController.onPageLoad().url,
+            url = routes.TaxAccountSummaryController.onPageLoad.url,
             copy = messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")
           )
         )).body.replaceAll("\\s+", "")

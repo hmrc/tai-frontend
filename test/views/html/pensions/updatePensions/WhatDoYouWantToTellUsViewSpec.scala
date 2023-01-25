@@ -42,7 +42,7 @@ class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId))
     behave like haveLinkWithUrlWithID(
       "backLink",
-      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url)
+      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url)
 
     "display a text area to collect further information" in {
       doc must haveElementAtPathWithAttribute("textarea", "name", "pensionDetails")

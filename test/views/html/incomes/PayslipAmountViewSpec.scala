@@ -30,7 +30,7 @@ class PayslipAmountViewSpec extends TaiViewSpec {
 
   "Pay slip amount view" should {
     behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url)
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url)
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.payslip.preHeading", employer.name),

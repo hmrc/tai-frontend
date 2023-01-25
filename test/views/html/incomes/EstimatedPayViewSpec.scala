@@ -98,7 +98,7 @@ class EstimatedPayViewSpec extends TaiViewSpec {
     "confirm and send" in {
       doc must haveLinkElement(
         "confirmAndSend",
-        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult.url,
         messages("tai.estimatedPay.checkTaxEstimate")
       )
     }

@@ -143,19 +143,19 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.grossPay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalPay), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url
   )
 
   lazy val hasDeductionAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.hasDeduction"),
     hasDeductions,
-    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url
   )
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(taxablePay), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
@@ -163,7 +163,7 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
       "tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     hasBonusOrOvertime,
-    controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
@@ -171,14 +171,14 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
       "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url
   )
 
   def createPaymentFrequencyConfirmationLine(answer: String = Monthly.capitalize) =
     CheckYourAnswersConfirmationLine(
       messagesApi("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
       answer,
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url
     )
 
   def createViewModel(

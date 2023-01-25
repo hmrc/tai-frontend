@@ -131,9 +131,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
             .withFormUrlEncodedBody(("employmentDetails", "test details")))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController
-          .addTelephoneNumber()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url
       }
     }
 
@@ -245,7 +243,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
       val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
     }
   }
@@ -268,9 +266,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
               FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController
-          .updateEmploymentCheckYourAnswers()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers.url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -291,9 +287,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
               FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController
-          .updateEmploymentCheckYourAnswers()
-          .url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers.url
       }
     }
 
@@ -379,7 +373,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
       val result = sut.updateEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
     }
   }
@@ -411,7 +405,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation.url
         verify(journeyCacheService, times(1)).flush()(any())
       }
 
@@ -440,7 +434,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation.url
         verify(journeyCacheService, times(1)).flush()(any())
       }
     }

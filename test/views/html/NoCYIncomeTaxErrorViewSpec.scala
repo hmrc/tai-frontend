@@ -54,9 +54,7 @@ class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
 
     "have a back link" in {
       doc.select("#backLinkId").text() mustBe messages("tai.returnToChooseTaxYear")
-      doc.select("#backLinkId").attr("href") mustBe routes.WhatDoYouWantToDoController
-        .whatDoYouWantToDoPage()
-        .toString
+      doc.select("#backLinkId").attr("href") mustBe routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.toString
     }
   }
   private val template = inject[NoCYIncomeTaxErrorView]

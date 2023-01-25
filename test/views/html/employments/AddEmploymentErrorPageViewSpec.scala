@@ -28,8 +28,8 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
       messages("tai.addEmployment.employmentErrorPage.title"))
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
-      doc must haveLinkWithUrlWithID("backLink", routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad.url)
+      doc must haveLinkWithUrlWithID("backLink", routes.TaxAccountSummaryController.onPageLoad.url)
     }
 
     "have paragraph" in {
