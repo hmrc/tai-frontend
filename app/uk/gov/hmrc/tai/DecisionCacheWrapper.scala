@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheService: JourneyCacheService)
     extends Results with Logging {
 
-  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
 
   def getDecision()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)

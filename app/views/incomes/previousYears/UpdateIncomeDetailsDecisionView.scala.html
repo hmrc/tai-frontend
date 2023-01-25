@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@
         @govukErrorSummary(ErrorSummary(errorList = decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
     }
 
-    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision()) {
+    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision) {
 
         @govukRadios(Radios(
             fieldset =  Some(

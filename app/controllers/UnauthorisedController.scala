@@ -66,7 +66,7 @@ class UnauthorisedController @Inject()(
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
     val postSignInUpliftUrl =
       s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(applicationConfig.postSignInRedirectUrl
-        .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
+        .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url))}"
 
     lazy val ggSignIn =
       s"${applicationConfig.basGatewayFrontendSignInUrl}?continue_url=$postSignInUpliftUrl&accountType=individual"

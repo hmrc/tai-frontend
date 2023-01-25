@@ -59,8 +59,8 @@ class UpdateIncomeDetailsController @Inject()(
     CanWeContactByPhoneViewModel(
       messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url,
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url,
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber.url,
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
 
@@ -79,7 +79,7 @@ class UpdateIncomeDetailsController @Inject()(
         Future.successful(BadRequest(UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
       }, {
         case Some(FormValuesConstants.NoValue) =>
-          Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
+          Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details))
         case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
       }
     )
@@ -109,7 +109,7 @@ class UpdateIncomeDetailsController @Inject()(
       incomeDetails => {
         journeyCacheService
           .cache(Map(UpdatePreviousYearsIncomeConstants.IncomeDetailsKey -> incomeDetails.replace("\r", "")))
-          .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()))
+          .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber))
       }
     )
   }
@@ -156,7 +156,7 @@ class UpdateIncomeDetailsController @Inject()(
             case _ => mandatoryData ++ Map(UpdatePreviousYearsIncomeConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers())
+            Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers)
           }
         }
       )
@@ -186,7 +186,7 @@ class UpdateIncomeDetailsController @Inject()(
                 mandatoryValues(2),
                 optionalSeq.head)))
 
-        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
       }
   }
 
@@ -210,7 +210,7 @@ class UpdateIncomeDetailsController @Inject()(
       _ <- trackingJourneyCacheService
             .cache(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey, true.toString)
       _ <- journeyCacheService.flush
-    } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
+    } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation)
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

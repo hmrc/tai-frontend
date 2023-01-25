@@ -185,9 +185,9 @@ class IncomeUpdateCalculatorController @Inject()(
 
           val backUrl = bonusPaymentAmount match {
             case None =>
-              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
+              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
             case _ =>
-              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
+              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url
           }
 
           val viewModel = CheckYourAnswersViewModel(
@@ -225,7 +225,7 @@ class IncomeUpdateCalculatorController @Inject()(
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
       if (employmentAmount.newAmount == income.oldAmount) {
-        Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+        Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay)
       } else {
 
         val vm = ConfirmAmountEnteredViewModel(

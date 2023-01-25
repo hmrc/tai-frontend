@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,12 @@
     backLinkId = "backLink",
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName().url),
+    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName.url),
     formForErrorSummary = Some(dateForm)
    )  {
 
 
-    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate()) {
+    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate) {
 
 
         <div class = "govuk-grid-row">
@@ -107,7 +107,7 @@
     }      
 
     <div class="govuk-link govuk-body-m">
-    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
+    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel)
     </div>
 
 

@@ -32,22 +32,22 @@ case class UpdatePensionCheckYourAnswersViewModel(
     val receivePensionLine = CheckYourAnswersConfirmationLine(
       Messages("tai.updatePension.cya.currentlyReceivePension"),
       receivePension,
-      controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
+      controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension.url
     )
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
       whatYouToldUs,
-      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
+      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url
     )
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.contactByPhone"),
       contactByPhone,
-      controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
+      controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
     )
     val phoneNumberLine = CheckYourAnswersConfirmationLine(
       Messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
-      controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
+      controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
     )
 
     if (contactByPhone.equals(Messages("tai.label.yes"))) {

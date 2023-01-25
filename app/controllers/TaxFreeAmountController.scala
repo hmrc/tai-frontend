@@ -69,7 +69,7 @@ class TaxFreeAmountController @Inject()(
     }) recover {
       case e: NotFoundException =>
         logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage)
       case NonFatal(e) => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))
     }
   }

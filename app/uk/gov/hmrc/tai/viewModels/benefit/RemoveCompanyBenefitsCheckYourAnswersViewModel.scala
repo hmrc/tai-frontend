@@ -34,19 +34,19 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
       Messages("tai.noLongerGetBenefit"),
-      controllers.benefits.routes.CompanyBenefitController.decision().url
+      controllers.benefits.routes.CompanyBenefitController.decision.url
     )
 
     val stopDateLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.dateBenefitEnded"),
       stopDate,
-      controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+      controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
     )
 
     val valueOfBenefitLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.valueOfBenefit"),
       Money.pounds(BigDecimal(valueOfBenefit.getOrElse("0"))).toString().trim.replace("&pound;", "\u00A3"),
-      controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
+      controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
     )
 
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
@@ -55,13 +55,13 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
         Messages("tai.checkYourAnswers.contactByPhone.Yes")
       else
         Messages("tai.checkYourAnswers.contactByPhone.No"),
-      controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+      controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
     )
 
     val phoneNumberLine = CheckYourAnswersConfirmationLine(
       Messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
-      controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+      controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
     )
 
     if (contactByPhone == FormValuesConstants.YesValue) {

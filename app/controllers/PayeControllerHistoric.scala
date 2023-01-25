@@ -57,7 +57,7 @@ class PayeControllerHistoric @Inject()(
     val nino = request.taiUser.nino
 
     if (taxYear >= TaxYear()) {
-      Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
+      Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage))
     } else {
       (
         employmentService.employments(nino, taxYear),

@@ -69,14 +69,14 @@ class AddPensionProviderController @Inject()(
     CanWeContactByPhoneViewModel(
       messages("add.missing.pension"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url,
-      controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber().url,
-      controllers.pensions.routes.AddPensionProviderController.cancel().url
+      controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url,
+      controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber.url,
+      controllers.pensions.routes.AddPensionProviderController.cancel.url
     )
 
   def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
-      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
     }
   }
 
@@ -97,7 +97,7 @@ class AddPensionProviderController @Inject()(
         pensionProviderName => {
           journeyCacheService
             .cache(Map(AddPensionProviderConstants.NameKey -> pensionProviderName))
-            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()))
+            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay))
         }
       )
   }
@@ -136,8 +136,8 @@ class AddPensionProviderController @Inject()(
             yesNo match {
               case Some(FormValuesConstants.YesValue) =>
                 journeyCacheService.cache("", "")
-                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
-              case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
+                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate)
+              case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension)
             }
           }
         }
@@ -192,7 +192,7 @@ class AddPensionProviderController @Inject()(
             },
             date => {
               journeyCacheService.cache(AddPensionProviderConstants.StartDateKey, date.toString) map { _ =>
-                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber())
+                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber)
               }
             }
           )
@@ -238,7 +238,7 @@ class AddPensionProviderController @Inject()(
           )
           journeyCacheService
             .cache(payrollNumberToCache)
-            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber()))
+            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber))
         }
       )
   }
@@ -283,7 +283,7 @@ class AddPensionProviderController @Inject()(
             case _ => mandatoryData ++ Map(AddPensionProviderConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.pensions.routes.AddPensionProviderController.checkYourAnswers())
+            Redirect(controllers.pensions.routes.AddPensionProviderController.checkYourAnswers)
           }
         }
       )
@@ -344,7 +344,7 @@ class AddPensionProviderController @Inject()(
       _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddPensionProviderKey, "true")
       _ <- journeyCacheService.flush()
     } yield {
-      Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
+      Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation)
     }
   }
 

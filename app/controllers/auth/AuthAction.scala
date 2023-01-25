@@ -87,19 +87,19 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
           result
         }
       case _ =>
-        Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
+        Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl))
     }) recover failureHandler
 
   private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = handleGGFailure
 
   private def handleGGFailure: PartialFunction[Throwable, Result] =
-    handleFailure(routes.UnauthorisedController.loginGG())
+    handleFailure(routes.UnauthorisedController.loginGG)
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)
     case ex: AuthorisationException =>
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
-      Redirect(routes.UnauthorisedController.onPageLoad())
+      Redirect(routes.UnauthorisedController.onPageLoad)
   }
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = ec

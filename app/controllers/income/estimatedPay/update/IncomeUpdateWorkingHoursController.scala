@@ -52,7 +52,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
               HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
               incomeSource.id,
               incomeSource.name))
-        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
       }
   }
 
@@ -67,7 +67,7 @@ class IncomeUpdateWorkingHoursController @Inject()(
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
               BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
           }
         },
         (formData: HoursWorkedForm) => {
@@ -80,11 +80,11 @@ class IncomeUpdateWorkingHoursController @Inject()(
               case Right(id) =>
                 formData.workingHours match {
                   case Some(EditIncomeIrregularPayConstants.RegularHours) =>
-                    Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
+                    Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage)
                   case Some(EditIncomeIrregularPayConstants.IrregularHours) =>
                     Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
                 }
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
             }
           }
         }

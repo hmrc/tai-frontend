@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@
             @govukErrorSummary(ErrorSummary(errorList = viewModel.decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+        @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision, Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
@@ -78,7 +78,7 @@
 
         }
 
-        @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
+        @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
     </div>
 </div>
 }
