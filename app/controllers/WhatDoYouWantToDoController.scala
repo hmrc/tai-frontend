@@ -19,7 +19,7 @@ package controllers
 import cats.data.OptionT
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -134,7 +134,7 @@ class WhatDoYouWantToDoController @Inject()(
       }
     }
 
-  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser) = {
+  private def allowWhatDoYouWantToDo(implicit request: AuthenticatedRequest[AnyContent], user: AuthedUser) = {
     val nino = user.nino
 
     taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
