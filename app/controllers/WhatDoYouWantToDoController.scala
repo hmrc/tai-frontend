@@ -95,7 +95,7 @@ class WhatDoYouWantToDoController @Inject()(
   private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean =
     (hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch) match {
       case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
-      case (true, Some(TaxCodeMismatch(false, _, _)))                => true
+      case (true, Some(TaxCodeMismatch(true, _, _)))                 => true
       case _                                                         => false
     }
 
