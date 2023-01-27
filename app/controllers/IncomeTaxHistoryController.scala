@@ -94,7 +94,7 @@ class IncomeTaxHistoryController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
-    val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShow) by -1)
+    val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
       .map(TaxYear(_))
       .toList
 

@@ -41,6 +41,8 @@ import scala.concurrent.Future
 class IncomeTaxHistoryControllerSpec
     extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers with ScalaFutures {
 
+  val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 3
+  val totalInvocations: Int = numberOfPreviousYearsToShowIncomeTaxHistory + 1
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val personService: PersonService = mock[PersonService]
@@ -62,13 +64,15 @@ class IncomeTaxHistoryControllerSpec
       )
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-  val taxYears: List[TaxYear] = (TaxYear().year to (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
+
+  val taxYears: List[TaxYear] =
+    (TaxYear().year to (TaxYear().year - numberOfPreviousYearsToShowIncomeTaxHistory) by -1).map(TaxYear(_)).toList
 
   "onPageLoad" must {
     "display the income tax history page" when {
       "employment data is returned" in {
 
-        for (taxYear <- taxYears) {
+        for (_ <- taxYears) {
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome)))
@@ -87,8 +91,8 @@ class IncomeTaxHistoryControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(employmentService, times(6)).employments(any(), any())(any())
-        verify(taxAccountService, times(6)).taxCodeIncomes(any(), any())(any())
+        verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
+        verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
 
       }
 
@@ -110,8 +114,8 @@ class IncomeTaxHistoryControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(6)).taxCodeIncomes(Matchers.any(), any())(Matchers.any())
-        verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(totalInvocations)).employments(Matchers.any(), any())(Matchers.any())
 
       }
 
@@ -194,8 +198,10 @@ class IncomeTaxHistoryControllerSpec
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
         doc must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
 
-        verify(taxAccountService, times(6)).taxCodeIncomes(Matchers.any(), any())(Matchers.any())
-        verify(employmentService, times(6)).employments(Matchers.any(), any())(Matchers.any())
+        verify(taxAccountService, times(totalInvocations))
+          .taxCodeIncomes(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(totalInvocations))
+          .employments(Matchers.any(), any())(Matchers.any())
 
       }
     }
