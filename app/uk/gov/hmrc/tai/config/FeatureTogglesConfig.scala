@@ -31,4 +31,5 @@ trait FeatureTogglesConfig { self: ApplicationConfig =>
   lazy val incomeTaxHistoryEnabled: Boolean = getOptional[Boolean]("tai.incomeTaxHistory.enabled").getOrElse(true)
 
   val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
+  val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 3
 }
