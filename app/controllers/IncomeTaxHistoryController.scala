@@ -52,38 +52,40 @@ class IncomeTaxHistoryController @Inject()(
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(
     implicit hc: HeaderCarrier,
     messages: Messages): Future[IncomeTaxYear] =
-    (
-      taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ => None },
-      employmentService.employments(nino, taxYear)).mapN {
-      case (maybeTaxCodeIncomeDetails, employmentDetails) =>
-        val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
-        val incomeTaxHistory = employmentDetails.map { employment =>
-          val maybeTaxCode = for {
-            taxCodesMap <- maybeTaxCodesMap
-            incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
-            taxCode     <- incomes.headOption
-          } yield taxCode
+    for {
+      maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover {
+                                    case _ => None
+                                  }
+      employmentDetails <- employmentService.employments(nino, taxYear)
+    } yield {
+      val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
+      val incomeTaxHistory = employmentDetails.map { employment =>
+        val maybeTaxCode = for {
+          taxCodesMap <- maybeTaxCodesMap
+          incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
+          taxCode     <- incomes.headOption
+        } yield taxCode
 
-          val maybeLastPayment = fetchLastPayment(employment, taxYear)
-          val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
+        val maybeLastPayment = fetchLastPayment(employment, taxYear)
+        val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
 
-          IncomeTaxHistoryViewModel(
-            employment.name,
-            isPension,
-            s"${employment.taxDistrictNumber}/${employment.payeNumber}",
-            employment.payrollNumber,
-            employment.startDate,
-            employment.endDate,
-            maybeLastPayment.map { payment =>
-              withPoundPrefix(MoneyPounds(payment.amountYearToDate, 2, roundUp = false))
-            },
-            maybeLastPayment.map { payment =>
-              withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate, 2, roundUp = false))
-            },
-            maybeTaxCode.map(_.taxCode)
-          )
-        }.toList
-        IncomeTaxYear(taxYear, incomeTaxHistory)
+        IncomeTaxHistoryViewModel(
+          employment.name,
+          isPension,
+          s"${employment.taxDistrictNumber}/${employment.payeNumber}",
+          employment.payrollNumber,
+          employment.startDate,
+          employment.endDate,
+          maybeLastPayment.map { payment =>
+            withPoundPrefix(MoneyPounds(payment.amountYearToDate, 2, roundUp = false))
+          },
+          maybeLastPayment.map { payment =>
+            withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate, 2, roundUp = false))
+          },
+          maybeTaxCode.map(_.taxCode)
+        )
+      }.toList
+      IncomeTaxYear(taxYear, incomeTaxHistory)
     }
 
   //This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
