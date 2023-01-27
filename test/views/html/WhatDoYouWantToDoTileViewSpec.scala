@@ -58,7 +58,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString mustNot include(Messages("next.year"))
         cards.toString mustNot include(Messages("check.estimated.income"))
         cards.toString must include(Messages("income.tax.history"))
-        cards.toString must include(Messages("income.tax.history.content"))
+        cards.toString must include(
+          Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory))
       }
 
       "CY+1 is enabled" in {
@@ -141,7 +142,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       cards.size mustBe 2
       cards.toString must include(Messages("income.tax.history"))
-      cards.toString must include(Messages("income.tax.history.content"))
+      cards.toString must include(
+        Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory))
     }
 
     "IncomeTaxHistory disabled" in {
@@ -154,7 +156,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       cards.size mustBe 1
       cards.toString mustNot include(Messages("income.tax.history"))
-      cards.toString mustNot include(Messages("income.tax.history.content"))
+      cards.toString mustNot include(
+        Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory))
     }
   }
 
