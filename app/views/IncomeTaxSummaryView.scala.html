@@ -70,7 +70,7 @@
 
         <div class="inner-block">
             @if(viewModel.displayIyaBanner){
-            <p id="inYearAdjustmentBanner" class="panel-indent panel-indent--info flush--top">
+            <p id="inYearAdjustmentBanner" class="govuk-body panel-indent panel-indent--info flush--top">
                 <span class="display-block">@Messages("tai.notifications.iya.banner.text")</span>
                 @link(
                     url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url,
@@ -117,7 +117,7 @@
                 @if(viewModel.rtiAvailable) {
                     @incomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"), taxCodeViewModel)
                 } else {
-                    <p>@messages("tai.rti.down.ceasedEmployments")</p>
+                    <p class="govuk-body panel-indent panel-indent--info flush--top">@messages("tai.rti.down.ceasedEmployments")</p>
                 }
 
             </div>
