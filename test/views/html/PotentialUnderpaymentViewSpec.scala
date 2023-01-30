@@ -67,7 +67,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     "display get help link" in {
       document() must haveLinkElement(
         "getHelpLink",
-        controllers.routes.HelpController.helpPage().url,
+        controllers.routes.HelpController.helpPage.url,
         messages("tai.iya.paidTooLittle.get.help.linkText"))
     }
 

@@ -59,13 +59,13 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(3, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
-        controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
+        controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url)
 
       doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
-        controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
+        controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url)
     }
 
     "display the last confirmation paragraph" in {

@@ -38,7 +38,7 @@ class AuthProviderControllerSpec extends BaseSpec {
         Await.result(result, 5 seconds)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).getOrElse("") mustBe routes.TaxAccountSummaryController.onPageLoad().url
+        redirectLocation(result).getOrElse("") mustBe routes.TaxAccountSummaryController.onPageLoad.url
       }
     }
   }

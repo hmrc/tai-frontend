@@ -27,7 +27,7 @@ class RemoveCompanyBenefitConfirmationViewSpec extends TaiViewSpec {
   "Update Income Details Confirmation View" must {
 
     behave like pageWithTitle(messages("tai.income.previousYears.confirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like haveReturnToSummaryButtonWithUrl(controllers.routes.TaxAccountSummaryController.onPageLoad)
 
   }
 }

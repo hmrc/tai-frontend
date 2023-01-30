@@ -70,7 +70,7 @@ class ValidatePersonSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().toString)
+        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased.toString)
 
       }
     }
@@ -102,7 +102,7 @@ class ValidatePersonSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.ServiceController.mciErrorPage().toString)
+        redirectLocation(result) mustBe Some(routes.ServiceController.mciErrorPage.toString)
       }
     }
   }

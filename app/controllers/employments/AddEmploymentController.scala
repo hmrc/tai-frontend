@@ -67,7 +67,7 @@ class AddEmploymentController @Inject()(
 
   def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
-      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
     }
   }
 
@@ -75,9 +75,9 @@ class AddEmploymentController @Inject()(
     CanWeContactByPhoneViewModel(
       messages("add.missing.employment"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
-      controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
-      controllers.employments.routes.AddEmploymentController.cancel().url
+      controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url,
+      controllers.employments.routes.AddEmploymentController.submitTelephoneNumber.url,
+      controllers.employments.routes.AddEmploymentController.cancel.url
     )
 
   def addEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -98,7 +98,7 @@ class AddEmploymentController @Inject()(
       employmentName => {
         journeyCacheService
           .cache(Map(AddEmploymentConstants.NameKey -> employmentName))
-          .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()))
+          .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate))
       }
     )
   }
@@ -138,11 +138,11 @@ class AddEmploymentController @Inject()(
               if (date.isAfter(startDateBoundary)) {
                 val firstPayChoiceCacheData = data + (AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
-                Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
+                Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay)
               } else {
                 val firstPayChoiceCacheData = data + (AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.NoValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
-                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
+                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber)
               }
             }
           )
@@ -174,8 +174,8 @@ class AddEmploymentController @Inject()(
           journeyCacheService.cache(AddEmploymentConstants.ReceivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
             firstPayYesNo match {
               case Some(FormValuesConstants.YesValue) =>
-                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
-              case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
+                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber)
+              case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError)
             }
           }
         }
@@ -233,7 +233,7 @@ class AddEmploymentController @Inject()(
             )
             journeyCacheService
               .cache(payrollNumberToCache)
-              .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber()))
+              .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber))
           }
         )
   }
@@ -280,7 +280,7 @@ class AddEmploymentController @Inject()(
             case _ => mandatoryData ++ Map(AddEmploymentConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers())
+            Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers)
           }
         }
       )
@@ -308,9 +308,9 @@ class AddEmploymentController @Inject()(
                 mandatoryJourneyValues(2),
                 mandatoryJourneyValues(3),
                 optionalVals.head,
-                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
-                controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
-                controllers.employments.routes.AddEmploymentController.cancel().url
+                controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url,
+                controllers.employments.routes.AddEmploymentController.submitYourAnswers.url,
+                controllers.employments.routes.AddEmploymentController.cancel.url
               )
             implicit val user: AuthedUser = request.taiUser
             Ok(addIncomeCheckYourAnswers(model))
@@ -343,7 +343,7 @@ class AddEmploymentController @Inject()(
       _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddEmploymentKey, "true")
       _ <- journeyCacheService.flush()
     } yield {
-      Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
+      Redirect(controllers.employments.routes.AddEmploymentController.confirmation)
     }
   }
 

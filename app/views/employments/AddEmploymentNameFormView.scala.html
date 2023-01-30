@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     title = Messages("tai.addEmployment.addNameForm.title"),
-    backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url),
+    backLinkUrl = Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url),
     formForErrorSummary = Some(nameForm),
     authedUser = Some(user)) {
         <div class="govuk-grid-row">
@@ -36,7 +36,7 @@
                     @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
                 }
 
-                @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
+                @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName) {
                     <span class="govuk-caption-xl">
                         <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
                         @messages("add.missing.employment")
@@ -56,7 +56,7 @@
                 }
 
                 <div class="govuk-link govuk-body-m">
-                    @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel())
+                    @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel)
                 </div>
             </div>
         </div>

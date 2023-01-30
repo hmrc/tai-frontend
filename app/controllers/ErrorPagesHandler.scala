@@ -132,7 +132,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
     rl: RecoveryLocation): PartialFunction[Throwable, Option[Result]] = {
     case NonFatal(e) if e.getMessage.contains(TaiConstants.NpsTaxAccountDeceasedMsg) =>
       logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
-      Some(Redirect(routes.DeceasedController.deceased()))
+      Some(Redirect(routes.DeceasedController.deceased))
   }
   def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(
     implicit request: Request[AnyContent],
@@ -160,7 +160,7 @@ class ErrorPagesHandler @Inject()(errorTemplateNoauth: ErrorTemplateNoauth, erro
         case Nil =>
           logger.warn(
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}")
-          Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+          Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage))
         case _ =>
           logger.warn(
             s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}")

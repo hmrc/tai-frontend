@@ -91,7 +91,7 @@ class AuthActionSpec extends BaseSpec {
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.toString)
         }
       }
     })
@@ -165,7 +165,7 @@ class AuthActionSpec extends BaseSpec {
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().toString)
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG.toString)
         }
       })
     }

@@ -34,7 +34,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
         result mustBe PayrollNumberViewModel(
           "XJ",
           true,
-          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
+          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url)
 
       }
 
@@ -44,7 +44,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
         result mustBe PayrollNumberViewModel(
           "XJ",
           false,
-          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
+          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url)
       }
 
       "back url changes if AddEmploymentConstants.ReceivedFirstPayKey is present" in {
@@ -53,7 +53,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
         result mustBe PayrollNumberViewModel(
           "XJ",
           false,
-          controllers.employments.routes.AddEmploymentController.receivedFirstPay().url)
+          controllers.employments.routes.AddEmploymentController.receivedFirstPay.url)
       }
     }
   }

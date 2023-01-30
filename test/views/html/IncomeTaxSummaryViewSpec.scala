@@ -452,7 +452,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url)
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url)
 
     }
 
@@ -472,7 +472,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.TaxFreeAmountController.taxFreeAmount().url)
+        controllers.routes.TaxFreeAmountController.taxFreeAmount.url)
     }
 
     "display estimated income tax details" in {
@@ -491,7 +491,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url)
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url)
     }
   }
 
@@ -504,14 +504,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "#addMissingIncomeSourceSection a",
         "href",
-        controllers.employments.routes.AddEmploymentController.addEmploymentName().url)
+        controllers.employments.routes.AddEmploymentController.addEmploymentName.url)
     }
     "display an IForm link to add a missing pension" in {
       doc must haveElementAtPathWithText("#addMissingIncomeSourceSection a", messages("add.missing.pension"))
       doc must haveElementAtPathWithAttribute(
         "#addMissingIncomeSourceSection a",
         "href",
-        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
     }
     "display an IForm link to add a missing income source" in {
       doc must haveElementAtPathWithText(

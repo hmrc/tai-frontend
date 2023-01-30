@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
   authedUser = Some(user),
   backLinkId="backLink",
   backLinkContent=Some(Messages("tai.back-link.upper")),
-  backLinkUrl=Some(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url)
+  backLinkUrl=Some(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url)
 ){
 
 <span class="govuk-caption-xl">
@@ -52,7 +52,7 @@
          <p class="subsection govuk-body">@messages("tai.checkYourAnswers.confirmText")</p>
 
 
-    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitYourAnswers()) {
+    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitYourAnswers) {
       @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 

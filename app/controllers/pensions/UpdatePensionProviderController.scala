@@ -88,8 +88,8 @@ class UpdatePensionProviderController @Inject()(
     CanWeContactByPhoneViewModel(
       messages("tai.updatePension.preHeading"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url,
-      controllers.pensions.routes.UpdatePensionProviderController.submitTelephoneNumber().url,
+      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url,
+      controllers.pensions.routes.UpdatePensionProviderController.submitTelephoneNumber.url,
       controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId).url
     )
 
@@ -124,7 +124,7 @@ class UpdatePensionProviderController @Inject()(
                 journeyCacheService
                   .cache(UpdatePensionProviderConstants.ReceivePensionQuestionKey, Messages("tai.label.yes"))
                   .map { _ =>
-                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs())
+                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs)
                   }
               case _ => Future.successful(Redirect(applicationConfig.incomeFromEmploymentPensionLinkUrl))
             }
@@ -164,7 +164,7 @@ class UpdatePensionProviderController @Inject()(
         pensionDetails => {
           journeyCacheService
             .cache(Map(UpdatePensionProviderConstants.DetailsKey -> pensionDetails))
-            .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()))
+            .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber))
         }
       )
   }
@@ -222,7 +222,7 @@ class UpdatePensionProviderController @Inject()(
             case _ => mandatoryData ++ Map(UpdatePensionProviderConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers())
+            Redirect(controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers)
           }
         }
       )
@@ -253,7 +253,7 @@ class UpdatePensionProviderController @Inject()(
                 mandatoryValues(4),
                 optionalSeq.head)))
 
-        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
       }
   }
 
@@ -275,7 +275,7 @@ class UpdatePensionProviderController @Inject()(
       _ <- successfulJourneyCacheService
             .cache(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-${mandatoryCacheSeq.head}", true.toString)
       _ <- journeyCacheService.flush
-    } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
+    } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation)
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -292,8 +292,8 @@ class UpdatePensionProviderController @Inject()(
       successfulJourneyCache <- successfulJourneyCacheFuture
     } yield {
       successfulJourneyCache match {
-        case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-        case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+        case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning)
+        case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension)
       }
     }
 
@@ -357,7 +357,7 @@ class UpdatePensionProviderController @Inject()(
             success.yesNoChoice match {
               case Some(FormValuesConstants.YesValue) =>
                 Future.successful(
-                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension()))
+                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension))
               case Some(FormValuesConstants.NoValue) =>
                 Future.successful(
                   Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt)))

@@ -56,7 +56,7 @@ class CompanyBenefitController @Inject()(
         EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType.toString)
 
       journeyCacheService.cache(cacheValues) map { _ =>
-        Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
+        Redirect(controllers.benefits.routes.CompanyBenefitController.decision)
       }
 
     }
@@ -75,7 +75,7 @@ class CompanyBenefitController @Inject()(
           val referer = currentCache.get(EndCompanyBenefitConstants.RefererKey) match {
             case Some(value) => value
             case None =>
-              request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+              request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
           }
 
           val form =
@@ -100,7 +100,7 @@ class CompanyBenefitController @Inject()(
 
         case None => throw new RuntimeException("No employment found")
       }
-    }).flatMap(identity) recover {
+    }).flatten recover {
       case NonFatal(e) => errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))
     }
   }
@@ -108,7 +108,7 @@ class CompanyBenefitController @Inject()(
   def submitDecisionRedirect(decision: String, failureRoute: Result): Result =
     decision match {
       case UpdateOrRemoveCompanyBenefitDecisionConstants.NoIDontGetThisBenefit =>
-        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate)
       case UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit =>
         Redirect(
           controllers.routes.ExternalServiceRedirectController

@@ -26,7 +26,7 @@ import play.api.mvc.AnyContent
 class AuthProviderController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def governmentGatewayEntryPoint: mvc.Action[AnyContent] = Action { implicit request =>
-    Redirect(routes.TaxAccountSummaryController.onPageLoad().url).withNewSession.addingToSession(
+    Redirect(routes.TaxAccountSummaryController.onPageLoad.url).withNewSession.addingToSession(
       TaiConstants.AuthProvider -> TaiConstants.AuthProviderGG
     )
   }

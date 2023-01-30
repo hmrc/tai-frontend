@@ -60,7 +60,7 @@ object ConfirmAmountEnteredViewModel {
         yearRange = TaxYearRangeUtil.futureTaxYearRange(1),
         employerName = empName,
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
-        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad().url,
+        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
         estimatedIncome = estIncome,
         backUrl = backUrl
       )
@@ -80,7 +80,7 @@ object ConfirmAmountEnteredViewModel {
       employerName = empName,
       mainText = Some(messages("tai.incomes.confirm.save.message")),
       onConfirm = controllers.routes.IncomeController.updateEstimatedIncome(empId).url,
-      onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+      onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad.url,
       estimatedIncome = estIncome,
       backUrl = backUrl
     )

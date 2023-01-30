@@ -101,7 +101,7 @@ object IncomeCheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.dateEmploymentEnded"),
           Dates.formatDate(LocalDate.parse(incomeSourceEnd)),
-          controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+          controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.contactByPhone"),

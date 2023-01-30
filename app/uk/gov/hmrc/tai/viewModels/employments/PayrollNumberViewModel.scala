@@ -31,8 +31,8 @@ object PayrollNumberViewModel {
       case _                                  => false
     }
     val backUrl = cache.get(AddEmploymentConstants.ReceivedFirstPayKey) match {
-      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
-      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
+      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay.url
     }
     PayrollNumberViewModel(employerName, firstPayChoice, backUrl)
   }

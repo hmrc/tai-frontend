@@ -240,7 +240,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
         whenReady(result) { r =>
           r.header.status mustBe SEE_OTHER
-          r.header.headers.get(LOCATION) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+          r.header.headers.get(LOCATION) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
         }
       }
     }
@@ -352,7 +352,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage.url)
       }
     }
 
@@ -364,7 +364,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             .buildFakePostRequestWithAuth("howToUpdate" -> "income"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.viewIncomeForEdit().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.viewIncomeForEdit.url)
       }
     }
 
@@ -392,7 +392,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val result = controller.handleChooseHowToUpdate(RequestBuilder.buildFakePostRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
       }
     }
   }

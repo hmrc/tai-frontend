@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkId = "backLink",
-    backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url),
+    backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(companyBenefitTotalValueForm)
 ) {
@@ -69,7 +69,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = companyBenefitTotalValueForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
+            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue) {
                 @govukInput(Input(
                     id = "totalValue",
                     name = "totalValue",
@@ -91,7 +91,7 @@
                 @govukButton(Button(content = Text(messages("tai.continue"))))
             }
             
-            @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
+            @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
         </div>
     </div>
 

@@ -94,7 +94,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val result = controller.payPeriodPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
       }
     }
   }
@@ -122,7 +122,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url)
       }
     }
 
@@ -150,7 +150,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val result = controller.handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
       }
     }
   }

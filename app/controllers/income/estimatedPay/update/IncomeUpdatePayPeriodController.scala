@@ -53,7 +53,7 @@ class IncomeUpdatePayPeriodController @Inject()(
       case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
-      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
     }
 
   }
@@ -78,7 +78,7 @@ class IncomeUpdatePayPeriodController @Inject()(
             incomeSourceEither match {
               case Right(incomeSource) =>
                 BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
             }
           }
         },
@@ -92,7 +92,7 @@ class IncomeUpdatePayPeriodController @Inject()(
           }
 
           journeyCache(cacheMap = cacheMap) map { _ =>
-            Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
+            Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage)
           }
         }
       )

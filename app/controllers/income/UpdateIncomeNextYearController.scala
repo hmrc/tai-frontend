@@ -102,7 +102,7 @@ class UpdateIncomeNextYearController @Inject()(
         }
       case Left(error) =>
         logger.warn(s"[UpdateIncomeNextYearController]: $error")
-        Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
+        Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad))
     }
 
   def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -125,7 +125,7 @@ class UpdateIncomeNextYearController @Inject()(
               case Some(FormValuesConstants.YesValue) =>
                 Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
               case Some(FormValuesConstants.NoValue) =>
-                Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
+                Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
             }
           }
         )
@@ -207,7 +207,7 @@ class UpdateIncomeNextYearController @Inject()(
             }
         case Left(error) =>
           logger.warn("Could not obtain new amount in confirm: " + error)
-          Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad))
       }
     }
   }
@@ -265,7 +265,7 @@ class UpdateIncomeNextYearController @Inject()(
                           model.employmentId,
                           newAmount,
                           model.isPension,
-                          controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
+                          controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
 
                         Future.successful(Ok(sameEstimatedPay(samePayViewModel)))
                       case _ =>

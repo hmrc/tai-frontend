@@ -51,7 +51,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "No",
-        controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url)
+        controllers.employments.routes.EndEmploymentController.submitTelephoneNumber.url)
     }
 
     "generate three confirmation lines when telephone contact is approved" in {
@@ -76,7 +76,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "Yes",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url)
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.phoneNumber"),
         "123456789",

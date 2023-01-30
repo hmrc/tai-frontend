@@ -56,7 +56,7 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
       doc(view) must haveLinkElement(
         "detailEstimateView",
-        routes.DetailedIncomeTaxEstimateController.taxExplanationPage().url,
+        routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
         messages("tai.estimatedIncome.detailedEstimate.Link"))
 
     }
@@ -73,11 +73,11 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
         messages("check.your.tax.codes"))
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
-        routes.TaxFreeAmountController.taxFreeAmount().url,
+        routes.TaxFreeAmountController.taxFreeAmount.url,
         messages("check.your.tax.free.amount"))
       doc must haveLinkElement(
         "taxSummarySideLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
         messages("return.to.your.income.tax.summary"))
     }
 

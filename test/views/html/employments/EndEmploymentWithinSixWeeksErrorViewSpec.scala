@@ -56,7 +56,7 @@ class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
     }
 
     "have link" in {
-      doc must haveLinkWithUrlWithID("returnToYourSummary", routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveLinkWithUrlWithID("returnToYourSummary", routes.TaxAccountSummaryController.onPageLoad.url)
     }
   }
 
