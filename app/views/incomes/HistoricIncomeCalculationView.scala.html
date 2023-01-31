@@ -142,9 +142,10 @@
             </div>
         }
         }
-        <div class="print-link-container hide-for-print">
-            <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(historicIncomeCalculationViewModel.taxYear,historicIncomeCalculationViewModel.employmentId).toString" class="govuk-link govuk-body-s gem-c-print-link-button" data-module="print-link">@Messages("tai.label.print")</a>
-        </div>
+            <div class="print-this">
+                <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(historicIncomeCalculationViewModel.taxYear,historicIncomeCalculationViewModel.employmentId).toString"
+                   class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
+            </div>
     </div>
     </div>
     </div>
