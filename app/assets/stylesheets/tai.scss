@@ -378,5 +378,35 @@ header + .hmrc-user-research-banner {
 }
 
 
+#iForms  h2 {
+  font-family: GDS Transport,arial,sans-serif;
+  font-size: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #BFC1C3;
+}
 
+
+#iForms  ul {
+  font-family: GDS Transport,arial,sans-serif;
+  font-size: 19px;
+  padding: 12px;
+}
+
+#iForms  ul li {
+  margin-bottom:10px;
+}
+
+@media screen and (min-width:360px) and (max-width:600px) {
+
+  #iForms h2 {
+    font-size: 18px;
+  }
+
+  #iForms ul {
+    font-size: 16px;
+  }
+
+
+
+}
 

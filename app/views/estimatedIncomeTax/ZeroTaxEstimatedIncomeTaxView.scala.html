@@ -110,9 +110,6 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
         <div id="iForms" class="inner-block">
             @iFormLinks
         </div>
-            <div class="print-this">
-                <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
-            </div>
     </div>
 
         <div class="hide-for-print">
@@ -122,5 +119,8 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
 
     </div>
 
+    <div class="print-this">
+        <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
+    </div>
 
 }
