@@ -41,7 +41,7 @@ import scala.concurrent.Future
 class IncomeTaxHistoryControllerSpec
     extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers with ScalaFutures {
 
-  val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 3
+  val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 5
   val totalInvocations: Int = numberOfPreviousYearsToShowIncomeTaxHistory + 1
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
