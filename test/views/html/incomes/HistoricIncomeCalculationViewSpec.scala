@@ -42,17 +42,12 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       messages("tai.yourIncome.preHeading"),
       messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))
 
-    "have a print link" in {
-      val printLink = doc.getElementById("print-link-btn")
-      printLink must haveLinkURL(
-        controllers.routes.YourIncomeCalculationController
-          .printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)
-          .url)
-      doc.getElementsByTag("a").toString must include(messages("tai.label.print"))
-    }
-
     "have a back link" in {
       doc must haveBackLinkNew
+    }
+
+    "display print button link with javascript print function " in {
+      doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
     }
 
     "have informative text when payment data is not available" when {
