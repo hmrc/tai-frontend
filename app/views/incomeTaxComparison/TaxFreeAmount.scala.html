@@ -26,7 +26,7 @@
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
 
 @model.personalAllowanceIncreaseInfo.map{ paIncreasedMessage =>
-    <p class="notice text">
+    <p>
         <i class="icon icon-information"><span class="govuk-visually-hidden">@messages("tai.information")</span></i>
         <strong class="bold-small">@paIncreasedMessage</strong>
     </p>
@@ -99,7 +99,7 @@
                 @for((addition, itemIndex) <- row.values zip (Stream from 1)) {
                     @{itemIndex match {
                         case 1 =>
-                            <td class="govuk-table__cell--numeric">
+                            <td class="govuk-table__cell govuk-table__cell--numeric">
                             <span class="table-heading" aria-hidden="true">
                             {Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))}
                             {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))}
@@ -108,7 +108,7 @@
                             </td>
 
                         case 2 =>
-                            <td class="govuk-table__cell--numeric">
+                            <td class="govuk-table__cell govuk-table__cell--numeric">
                             <span class="table-heading" aria-hidden="true">
                             {Html(model.htmlNonBroken(messages("tai.NextTaxYear")))}
                             {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))}

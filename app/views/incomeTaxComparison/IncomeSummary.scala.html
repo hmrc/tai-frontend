@@ -93,7 +93,7 @@
                         }">@employmentIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
                     @if(employmentIncomeSourceDetail.isLive) {
-                        <td class="govuk-table__cell govuk-table__cell">
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
                         @link(
                             id = Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
                             url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
