@@ -21,7 +21,7 @@ import play.api.mvc.Call
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 
@@ -97,7 +97,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       taxedIncome.employment.name,
       withPoundPrefixAndSign(MoneyPounds(taxedIncome.taxCodeIncome.amount, 0)),
       taxedIncome.taxCodeIncome.taxCode,
-      taxedIncome.employment.employmentStatus == Live,
+      taxedIncome.employment.employmentStatus == Live || taxedIncome.employment.employmentStatus == Ceased,
       taxedIncome.employment.taxDistrictNumber,
       taxedIncome.employment.payeNumber,
       taxedIncome.employment.payrollNumber.getOrElse(""),
