@@ -346,7 +346,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText(
         "#employment1PayeNumber",
         messages("tai.income.details.ERN") +
-          ":" +
+          ": " +
           activeEmployment.taxDistrictNumber +
           "/" +
           activeEmployment.payeNumber)

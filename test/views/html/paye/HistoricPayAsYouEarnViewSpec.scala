@@ -215,7 +215,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         val sut: Html = createSut(viewModelEmployment)
         val doc: Document = Jsoup.parse(sut.toString)
 
-        doc must haveSpanWithText("Employer PAYE reference:123/A100")
+        doc must haveSpanWithText("Employer PAYE reference: 123/A100")
       }
 
       "the income source of type Pension has a employer paye reference that is not displayed" in {
