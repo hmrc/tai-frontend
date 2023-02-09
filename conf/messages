@@ -130,9 +130,14 @@ tai.addEmployment.cya.q1=Employer name
 tai.addEmployment.cya.q2=Start date
 tai.addEmployment.cya.q3=Payroll number
 tai.addEmployment.cya.q4=Can we contact you by phone
-tai.addEmployment.employmentErrorPage.para1=Once you get your first pay from {0}, it should automatically appear on your records.
-tai.addEmployment.employmentErrorPage.para2=Check back after your first pay and if it does not appear, give us the details.
+
+tai.addEmployment.employmentErrorPage.para1={0} needs to send us your details. You do not need to contact HMRC.
+tai.addEmployment.employmentErrorPage.para2.preLink=You can also
+tai.addEmployment.employmentErrorPage.para2Link=use the starter checklist (opens in new tab)
+tai.addEmployment.employmentErrorPage.para2.postLink= to send your details to your new employer before you get your first pay. This will help to ensure that you pay the right amount of tax.
+tai.addEmployment.employmentErrorPage.para3=Try again after you receive your first pay. If your employer is not showing contact us.
 tai.addEmployment.employmentErrorPage.title=We cannot add this employer yet
+
 tai.addEmployment.employmentFirstPay.customGaTitle=Have you received your first pay from this employer?
 tai.addEmployment.employmentFirstPay.legend=Have you received your first pay from {0}?
 tai.addEmployment.employmentFirstPay.title=Have you received your first pay from {0}?

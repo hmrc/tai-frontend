@@ -130,8 +130,13 @@ tai.addEmployment.cya.q1=Enw’r cyflogwr
 tai.addEmployment.cya.q2=Dyddiad dechrau
 tai.addEmployment.cya.q3=Rhif cyflogres
 tai.addEmployment.cya.q4=A allwn gysylltu â chi dros y ffôn?
-tai.addEmployment.employmentErrorPage.para1=Ar ôl i chi gael eich cyflog cyntaf oddi wrth {0}, dylai ymddangos yn awtomatig ar eich cofnodion.
-tai.addEmployment.employmentErrorPage.para2=Gwiriwch eto ar ôl eich cyflog cyntaf ac os nad yw’n ymddangos, rhowch y manylion i ni.
+
+tai.addEmployment.employmentErrorPage.para1=Mae angen i {0} anfon eich manylion atom. Nid oes angen i chi gysylltu â CThEF.
+tai.addEmployment.employmentErrorPage.para2.preLink=Gallwch hefyd
+tai.addEmployment.employmentErrorPage.para2Link=ddefnyddio’r rhestr wirio ar gyfer cyflogeion sy’n cychwyn (yn agor tab newydd)
+tai.addEmployment.employmentErrorPage.para2.postLink=i anfon eich manylion at eich cyflogwr newydd cyn i chi gael eich tâl cyntaf. Bydd hyn yn helpu i sicrhau eich bod yn talu’r swm cywir o dreth.
+tai.addEmployment.employmentErrorPage.para3=Rhowch gynnig arall arni ar ôl i chi gael eich tâl cyntaf. Os nad yw’ch cyflogwr i’w weld, cysylltwch â ni.
+
 tai.addEmployment.employmentErrorPage.title=Ni allwn ychwanegu’r cyflogwr hwn eto
 tai.addEmployment.employmentFirstPay.customGaTitle=A ydych wedi cael eich cyflog cyntaf gan y cyflogwr hwn?
 tai.addEmployment.employmentFirstPay.legend=A ydych chi wedi cael eich cyflog cyntaf oddi wrth {0}?
