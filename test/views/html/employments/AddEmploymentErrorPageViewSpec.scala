@@ -34,7 +34,10 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
 
     "have paragraph" in {
       doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para1", "fake employer"))
-      doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para2"))
+      doc must haveParagraphWithText(s"${messages("tai.addEmployment.employmentErrorPage.para2.preLink")} ${messages(
+        "tai.addEmployment.employmentErrorPage.para2Link")} ${messages("tai.addEmployment.employmentErrorPage.para2.postLink")}")
+      doc must haveLinkWithText(messages("tai.addEmployment.employmentErrorPage.para2Link"))
+      doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para3"))
     }
 
     behave like pageWithBackLink
