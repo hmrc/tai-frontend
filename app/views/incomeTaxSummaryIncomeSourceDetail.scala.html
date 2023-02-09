@@ -82,7 +82,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
                     }
                 }
             }
-        @if(incomeSource.displayPayrollNumber && typeLabel=="employment"){
+        @if(incomeSource.displayPayrollNumber && (typeLabel=="employment" || typeLabel=="income")){
             <span id="@{typeLabel}@{idx}PayeNumber" class="carry-over govuk-!-display-block display-block  govuk-body">@messages("tai.income.details.ERN"): @incomeSource.taxDistrictNumber/@incomeSource.payeNumber</span>
         }
 
