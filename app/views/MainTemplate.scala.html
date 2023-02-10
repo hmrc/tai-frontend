@@ -274,6 +274,16 @@
 @additionalScriptsBlock = {
     <script src='@controllers.routes.AssetsController.versioned("javascripts/newcard.js")'></script>
     <script src='@controllers.routes.AssetsController.versioned("javascripts/backlink.js")'></script>
+
+    
+    <script type="text/javascript">
+            window.onload = function() {
+                var htmlElem = document.querySelector('html')
+                var techIssueLink =  document.querySelector('a.hmrc-report-technical-issue');
+                var lang = techIssueLink.getAttribute('lang')
+                htmlElem.setAttribute("lang", lang);
+            }
+    </script>
 }
 
 
