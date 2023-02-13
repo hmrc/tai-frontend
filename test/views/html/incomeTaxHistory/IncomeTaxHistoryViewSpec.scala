@@ -39,7 +39,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
         messages("tai.incomeTax.history.details.address") +
           s" ${person.address.line1} ${person.address.line2} ${person.address.line3} ${person.address.postcode} " +
           messages("tai.incomeTax.history.details.nationalInsurance") +
-          s" ${person.nino}"
+          s" ${person.nino.formatted}"
       )
       doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
