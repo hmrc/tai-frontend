@@ -308,8 +308,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Seq(
               OtherNonTaxCodeIncome(Tips, None, 100, "Tips"),
               OtherNonTaxCodeIncome(OccupationalPension, None, 100, "OccupationalPension"),
-              OtherNonTaxCodeIncome(UkDividend, None, 100, "UkDividend"),
-              OtherNonTaxCodeIncome(JobSeekersAllowance, None, 100, "JobSeekersAllowance")
+              OtherNonTaxCodeIncome(UkDividend, None, 100, "UkDividend")
             )
           )
 
@@ -323,8 +322,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           sut.otherIncomeSources mustBe Seq(
             otherIncomeSourceViewModel2,
             otherIncomeSourceViewModel3,
-            otherIncomeSourceViewModel4,
-            otherIncomeSourceViewModel5)
+            otherIncomeSourceViewModel4
+          )
 
         }
       }
