@@ -292,12 +292,6 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url
           )
-          val otherIncomeSourceViewModel5 = otherIncomeSourceViewModel.copy(
-            name = Messages("tai.typeDecodes.JobSeekersAllowance"),
-            amount = "£100",
-            detailsLinkLabel = Messages("tai.updateOrRemove"),
-            detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url
-          )
 
           val bankAccounts = Seq(BankAccount(1, Some("ACCNo"), None, None, 100, None))
 
@@ -308,8 +302,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Seq(
               OtherNonTaxCodeIncome(Tips, None, 100, "Tips"),
               OtherNonTaxCodeIncome(OccupationalPension, None, 100, "OccupationalPension"),
-              OtherNonTaxCodeIncome(UkDividend, None, 100, "UkDividend"),
-              OtherNonTaxCodeIncome(JobSeekersAllowance, None, 100, "JobSeekersAllowance")
+              OtherNonTaxCodeIncome(UkDividend, None, 100, "UkDividend")
             )
           )
 
@@ -323,8 +316,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           sut.otherIncomeSources mustBe Seq(
             otherIncomeSourceViewModel2,
             otherIncomeSourceViewModel3,
-            otherIncomeSourceViewModel4,
-            otherIncomeSourceViewModel5)
+            otherIncomeSourceViewModel4)
 
         }
       }
