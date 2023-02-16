@@ -573,7 +573,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
       val doc: Document = Jsoup.parse(sut.toString)
 
-      doc.select(".grid-1-3").size() mustBe 1
+      doc.select(".govuk-grid-column-one-third").size() mustBe 1
     }
   }
 
