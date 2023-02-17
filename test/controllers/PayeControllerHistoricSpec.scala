@@ -72,7 +72,7 @@ class PayeControllerHistoricSpec
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc must haveParagraphWithText("£0.00")
+      doc must haveParagraphWithText("£0")
     }
 
     "display the last year paye page successfully when RTI is down" in {
@@ -123,7 +123,7 @@ class PayeControllerHistoricSpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc must haveParagraphWithText("£555,555.00")
+      doc must haveParagraphWithText("£555,555")
 
     }
 

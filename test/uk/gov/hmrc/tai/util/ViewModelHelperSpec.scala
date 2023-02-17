@@ -29,34 +29,46 @@ import java.time.format.DateTimeFormatter
 class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
 
   "withPoundPrefixAndSign" must {
-    "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {
+    "return the string representation of the provided MoneyPounds with a pound symbol prefix and no decimal places" when {
       "the value is zero" in {
-        withPoundPrefixAndSign(MoneyPounds(0)) mustBe "£0.00"
+        withPoundPrefixAndSign(MoneyPounds(0)) mustBe "£0"
       }
     }
 
-    "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {
-      "the value is positive" in {
-        withPoundPrefixAndSign(MoneyPounds(1000)) mustBe "£1,000.00"
+    "return the string representation of the provided MoneyPounds with a pound symbol prefix and no decimal places" when {
+      "the value is positive with no pence" in {
+        withPoundPrefixAndSign(MoneyPounds(1000)) mustBe "£1,000"
       }
     }
-    "return the string representation of the provided MoneyPounds with a pound symbol prefix and negative sign" when {
-      "the value is negative" in {
-        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$EncodedMinusSign£1,000.00"
+
+    "return the string representation of the provided MoneyPounds with a pound symbol prefix, negative sign and no decimal places" when {
+      "the value is negative with no pence" in {
+        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$EncodedMinusSign£1,000"
+      }
+    }
+
+    "return the string representation of the provided MoneyPounds with a pound symbol prefix and two decimal places" when {
+      "the value is positive and includes pence" in {
+        withPoundPrefixAndSign(MoneyPounds(1000.24)) mustBe "£1,000.24"
       }
     }
   }
 
   "withPoundPrefix" must {
-    "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {
+    "return the string representation of the provided MoneyPounds with a pound symbol prefix and no decimal places" when {
       "the value is zero" in {
-        withPoundPrefix(MoneyPounds(0)) mustBe "£0.00"
+        withPoundPrefix(MoneyPounds(0)) mustBe "£0"
       }
-      "the value is positive" in {
-        withPoundPrefix(MoneyPounds(1000)) mustBe "£1,000.00"
+      "the value is positive with no pence" in {
+        withPoundPrefix(MoneyPounds(1000)) mustBe "£1,000"
       }
-      "the value is negative" in {
-        withPoundPrefix(MoneyPounds(-1000)) mustBe "£1,000.00"
+      "the value is negative with no pence" in {
+        withPoundPrefix(MoneyPounds(-1000)) mustBe "£1,000"
+      }
+    }
+    "return the string representation of the provided MoneyPounds with a pound symbol prefix and two decimal places" when {
+      "the value is positive with pence" in {
+        withPoundPrefix(MoneyPounds(1000.24)) mustBe "£1,000.24"
       }
     }
   }
