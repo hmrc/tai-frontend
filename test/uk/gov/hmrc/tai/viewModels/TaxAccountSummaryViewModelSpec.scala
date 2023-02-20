@@ -292,6 +292,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url
           )
+
           val otherIncomeSourceViewModel5 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.JobSeekersAllowance"),
             amount = "£100",
