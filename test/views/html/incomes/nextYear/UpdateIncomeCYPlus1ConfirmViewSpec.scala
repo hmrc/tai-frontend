@@ -73,7 +73,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
     }
 
     "display a cancel link" in {
-      doc(view) must haveLinkWithText(messages("tai.cancel.noSave"))
+      doc(view) must haveLinkWithText(messages("tai.cancel"))
 
     }
   }
