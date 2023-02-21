@@ -34,7 +34,7 @@ class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
       val result = PreviousYearUnderpaymentViewModel(codingComponents, "", "")
 
       result.allowanceReducedBy mustEqual 500.00
-      result.poundedAmountDue mustEqual "£123.00"
+      result.poundedAmountDue mustEqual "£123"
 
       result.returnLink mustBe link(
         url = routes.TaxAccountSummaryController.onPageLoad.url,

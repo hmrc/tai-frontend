@@ -109,7 +109,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
         val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url
         val id = "estimatedTaxOwedLink"
         val link =
-          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£456.00"), href, id))
+          Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£456"), href, id))
 
         val actual =
           TaxSummaryLabel(

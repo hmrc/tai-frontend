@@ -182,7 +182,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
         doc must haveElementAtPathWithId("div", "employment1")
         doc must haveHeadingH3WithText("employment")
-        doc must haveParagraphWithText("£0.00")
+        doc must haveParagraphWithText("£0")
 
         doc must haveLinkElement(
           "employment1-checkDetailsLink",
@@ -309,7 +309,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
         doc must haveElementAtPathWithId("div", "pension1")
         doc must haveHeadingH3WithText("pension")
-        doc must haveParagraphWithText("£0.00")
+        doc must haveParagraphWithText("£0")
         doc must haveLinkElement(
           "pension1-checkDetailsLink",
           controllers.routes.YourIncomeCalculationController
