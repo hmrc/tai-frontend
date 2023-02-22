@@ -98,6 +98,12 @@ class IncomeUpdatePayslipAmountController @Inject()(
                 case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
               }
             }, {
+              case PayslipForm(Some(value)) if payPeriod.contains("fourWeekly") =>
+                journeyCache(
+                  UpdateIncomeConstants.TotalSalaryKey,
+                  Map(UpdateIncomeConstants.TotalSalaryKey -> (value.toInt / 4).toString)) map { _ =>
+                  Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage)
+                }
               case PayslipForm(Some(value)) =>
                 journeyCache(UpdateIncomeConstants.TotalSalaryKey, Map(UpdateIncomeConstants.TotalSalaryKey -> value)) map {
                   _ =>

@@ -34,8 +34,8 @@ object PayPeriodForm {
     val payPeriodValidation = Constraint[Option[String]]("Please select a period") {
       case Some(txt) =>
         txt match {
-          case Other | Monthly | Weekly | Fortnightly => Valid
-          case _                                      => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
+          case Other | Monthly | Weekly | Fortnightly | FourWeekly => Valid
+          case _                                                   => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
         }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
     }

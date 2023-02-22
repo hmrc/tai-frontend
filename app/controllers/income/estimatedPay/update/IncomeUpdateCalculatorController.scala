@@ -173,7 +173,7 @@ class IncomeUpdateCalculatorController @Inject()(
           logger.warn(errorMessage)
           Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url)
         case Right((mandatorySeq, optionalSeq)) =>
-          val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq(0))
+          val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq.head)
           val payPeriodFrequency = mandatorySeq(1)
           val totalSalaryAmount = mandatorySeq(2)
           val hasPayslipDeductions = mandatorySeq(3)
