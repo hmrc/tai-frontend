@@ -1196,6 +1196,9 @@ tai.taxFreeAmount.table.taxComponent.VehicleExpenses=Vehicle expenses
 tai.taxFreeAmount.table.taxComponent.VentureCapitalTrust=Venture capital trust
 tai.taxFreeAmount.table.taxComponent.VouchersAndCreditCards=Vouchers and credit cards
 tai.taxFreeAmount.table.taxComponent.from.employment=from {0}
+tai.taxFreeAmount.table.taxComponent.JobSeekersAllowance=Jobseeker’s Allowance
+tai.taxFreeAmount.table.taxComponent.StatePension=State Pension
+
 tai.taxFreeAmount.table.totals.caption=Overall
 tai.taxFreeAmount.table.totals.label=Your total tax-free amount
 tai.taxRate=Tax Rate
