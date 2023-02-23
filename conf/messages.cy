@@ -1198,6 +1198,9 @@ tai.taxFreeAmount.table.taxComponent.VouchersAndCreditCards=Talebau a chardiau c
 tai.taxFreeAmount.table.taxComponent.from.employment=o {0}
 tai.taxFreeAmount.table.totals.caption=Yn gyffredinol
 tai.taxFreeAmount.table.totals.label=Cyfanswm eich swm rhydd o dreth
+tai.taxFreeAmount.table.taxComponent.JobSeekersAllowance=Lwfans Ceisio Gwaith
+tai.taxFreeAmount.table.taxComponent.StatePension=Pensiwn y Wladwriaeth
+
 tai.taxRate=Cyfradd Dreth
 tai.taxYear={0} i {1}
 tai.taxYear.between={0} a {1}
