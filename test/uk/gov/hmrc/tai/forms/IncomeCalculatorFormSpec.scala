@@ -25,7 +25,7 @@ class IncomeCalculatorFormSpec extends BaseSpec {
 
   "PayPeriodForm" must {
     "return no errors" when {
-      Seq("monthly", "weekly", "fortnightly").foreach(period => {
+      Seq("monthly", "weekly", "fortnightly", "fourWeekly").foreach(period => {
         s"provided with valid data payPeriod: $period" in {
           val payPeriodForm = PayPeriodForm.createForm(None).bind(Map("payPeriod" -> period))
           payPeriodForm.errors mustBe empty

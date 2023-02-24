@@ -37,6 +37,7 @@ object TaxablePaySlipAmountViewModel {
       Monthly     -> "tai.taxablePayslip.title.month",
       Weekly      -> "tai.taxablePayslip.title.week",
       Fortnightly -> "tai.taxablePayslip.title.2week",
+      FourWeekly  -> "tai.taxablePayslip.title.4week",
       Other       -> "tai.taxablePayslip.title.days"
     )
 

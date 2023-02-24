@@ -27,6 +27,7 @@ trait DynamicPayPeriodTitle {
       case Some(Monthly)     => message(periodMessages(Monthly))
       case Some(Weekly)      => message(periodMessages(Weekly))
       case Some(Fortnightly) => message(periodMessages(Fortnightly))
+      case Some(FourWeekly)  => message(periodMessages(FourWeekly))
       case Some(Other)       => dayPeriodTitle(payPeriodInDays, periodMessages(Other))
       case _                 => throw new RuntimeException("No pay period found")
     }
@@ -45,7 +46,9 @@ object GrossPayPeriodTitle extends DynamicPayPeriodTitle {
       Monthly     -> "tai.payslip.title.month",
       Weekly      -> "tai.payslip.title.week",
       Fortnightly -> "tai.payslip.title.2week",
-      Other       -> "tai.payslip.title.days")
+      FourWeekly  -> "tai.payslip.title.4week",
+      Other       -> "tai.payslip.title.days"
+    )
 
     dynamicTitle(payPeriod, payPeriodInDays, messages)
   }
@@ -58,6 +61,7 @@ object TaxablePayPeriod extends DynamicPayPeriodTitle {
       Monthly     -> "tai.taxablePayslip.title.month",
       Weekly      -> "tai.taxablePayslip.title.week",
       Fortnightly -> "tai.taxablePayslip.title.2week",
+      FourWeekly  -> "tai.taxablePayslip.title.4week",
       Other       -> "tai.taxablePayslip.title.days"
     )
 
