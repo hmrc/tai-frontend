@@ -21,6 +21,9 @@ import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitsCheckYourAnswersViewModel
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "checkYourAnswers" should {
@@ -52,7 +55,9 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineChangeLink(1, "")
 
       doc must haveCheckYourAnswersSummaryLineNew(2, messages("tai.checkYourAnswers.dateBenefitEnded"))
-      doc must haveCheckYourAnswersSummaryLineAnswerNew(2, viewModel.stopDate)
+      doc must haveCheckYourAnswersSummaryLineAnswerNew(
+        2,
+        viewModel.stopDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
         controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url)
@@ -85,11 +90,11 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
 
   }
 
-  def viewModel =
+  private val viewModel =
     RemoveCompanyBenefitsCheckYourAnswersViewModel(
       "Awesome benefit from TestCompany",
       "Hello",
-      "Before 6 April",
+      LocalDate.now(),
       Some("10000"),
       "Yes",
       Some("123456789"))

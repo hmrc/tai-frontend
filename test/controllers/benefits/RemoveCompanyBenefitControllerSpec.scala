@@ -26,6 +26,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -36,7 +37,8 @@ import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants.TaxDateWordMonthFormat
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
@@ -46,6 +48,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
 class RemoveCompanyBenefitControllerSpec
@@ -73,12 +76,13 @@ class RemoveCompanyBenefitControllerSpec
     }
 
     "show the prepopulated fields when an EndCompanyBenefitConstants.BenefitStopDateKey has been cached" in {
+      val stopDate = LocalDate.now()
       val SUT = createSUT
       val cache = Map(
         EndCompanyBenefitConstants.EmploymentNameKey  -> "EmploymentName",
         EndCompanyBenefitConstants.BenefitNameKey     -> "BenefitName",
         EndCompanyBenefitConstants.RefererKey         -> "Referer",
-        EndCompanyBenefitConstants.BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd
+        EndCompanyBenefitConstants.BenefitStopDateKey -> stopDate.toString
       )
 
       when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
@@ -87,7 +91,8 @@ class RemoveCompanyBenefitControllerSpec
       val result = SUT.stopDate()(request)
 
       val expectedView = {
-        val form = RemoveCompanyBenefitStopDateForm.form.fill(cache.get(EndCompanyBenefitConstants.BenefitStopDateKey))
+        val form = RemoveCompanyBenefitStopDateForm("BenefitName", "EmploymentName").form
+          .fill(LocalDate.parse(cache(EndCompanyBenefitConstants.BenefitStopDateKey)))
         removeCompanyBenefitStopDateView(
           form,
           cache(EndCompanyBenefitConstants.BenefitNameKey),
@@ -100,20 +105,29 @@ class RemoveCompanyBenefitControllerSpec
 
   "submit stop date" must {
     "redirect to the 'Can we call you if we need more information?' page" when {
-      "the form has the value beforeTaxYearEnd" in {
+      "the date is before this tax year" in {
 
         val SUT = createSUT
+        val year = TaxYear().year.toString
+        val formData = Json.obj(
+          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
+          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
+          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
+        )
 
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map("keep" -> "me")))
+          .thenReturn(
+            Future.successful(
+              Map(
+                EndCompanyBenefitConstants.BenefitNameKey    -> "benefit",
+                EndCompanyBenefitConstants.EmploymentNameKey -> "employment")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(
-              RemoveCompanyBenefitStopDateConstants.StopDateChoice -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd))
+            .withJsonBody(formData))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -122,24 +136,37 @@ class RemoveCompanyBenefitControllerSpec
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(Matchers.eq(Map(
-            "keep"                                        -> "me",
-            EndCompanyBenefitConstants.BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd)))(
-            any())
+            EndCompanyBenefitConstants.BenefitNameKey     -> "benefit",
+            EndCompanyBenefitConstants.EmploymentNameKey  -> "employment",
+            EndCompanyBenefitConstants.BenefitStopDateKey -> s"$year-01-01"
+          )))(any())
       }
     }
 
     "redirect to the 'What was the total value of your benefit' page" when {
-      "the form has the value onOrAfterTaxYearEnd" in {
+      "the date is during this tax year" in {
+
+        val year = TaxYear().year.toString
+        val formData = Json.obj(
+          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
+          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "06",
+          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
+        )
 
         val SUT = createSUT
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+          .thenReturn(
+            Future.successful(
+              Map(
+                EndCompanyBenefitConstants.BenefitNameKey    -> "benefit",
+                EndCompanyBenefitConstants.EmploymentNameKey -> "employment")))
         when(removeCompanyBenefitJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(
-              RemoveCompanyBenefitStopDateConstants.StopDateChoice -> RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd))
+            .withJsonBody(formData))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -147,22 +174,31 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(
-            Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey),
-            Matchers.eq(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd))(any())
+          .cache(Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey), Matchers.eq(s"$year-06-01"))(any())
       }
     }
 
     "return Bad Request" when {
       "the form submission is having blank value" in {
-        val SUT = createSUT
+        val formData = Json.obj(
+          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
+          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
+          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
+        )
 
+        val SUT = createSUT
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+          .thenReturn(
+            Future.successful(
+              Map(
+                EndCompanyBenefitConstants.BenefitNameKey    -> "benefit",
+                EndCompanyBenefitConstants.EmploymentNameKey -> "employment")))
         when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
           .thenReturn(Future.successful(Right(Seq("EmployerA", "Expenses", "Url"))))
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(RemoveCompanyBenefitStopDateConstants.StopDateChoice -> ""))
+            .withJsonBody(formData))
 
         status(result) mustBe BAD_REQUEST
 
@@ -487,18 +523,16 @@ class RemoveCompanyBenefitControllerSpec
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
+
+      val stopDate = LocalDate.now()
+
       when(
         removeCompanyBenefitJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
         Future.successful(
           Right(
-            Seq[String](
-              "AwesomeType",
-              "TestCompany",
-              RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd,
-              "Yes",
-              "Url"),
+            Seq[String]("AwesomeType", "TestCompany", stopDate.toString, "Yes", "Url"),
             Seq[Option[String]](Some("10000"), Some("123456789"))
           ))
       )
@@ -507,8 +541,6 @@ class RemoveCompanyBenefitControllerSpec
 
       val result = SUT.checkYourAnswers()(request)
 
-      val stopDate =
-        Messages("tai.remove.company.benefit.beforeTaxYearEnd", Dates.formatDate(TaxYear().start))
       val expectedViewModel = RemoveCompanyBenefitsCheckYourAnswersViewModel(
         "AwesomeType",
         "TestCompany",
@@ -540,17 +572,16 @@ class RemoveCompanyBenefitControllerSpec
 
   "submit your answers" must {
     "invoke the back end 'end employment benefit' service and redirect to the confirmation page" when {
-
       "the request has an authorised session and a telephone number and benefit value have been provided" in {
         val SUT = createSUT
         val employmentId: String = "1234"
         val endedCompanyBenefit =
-          EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
+          EndedCompanyBenefit("Accommodation", stopDateFormatted, Some("1000000"), "Yes", Some("0123456789"))
 
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
+              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
               Seq[Option[String]](Some("1000000"), Some("0123456789"))
             ))
         )
@@ -574,12 +605,12 @@ class RemoveCompanyBenefitControllerSpec
         val SUT = createSUT
         val employmentId: String = "1234"
         val endedCompanyBenefit =
-          EndedCompanyBenefit("Accommodation", "Before 6th April", None, "No", None)
+          EndedCompanyBenefit("Accommodation", stopDateFormatted, None, "No", None)
 
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
+              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
               Seq[Option[String]](None, None)
             ))
         )
@@ -602,12 +633,12 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session and telephone number has not been provided but benefit value has been provided" in {
         val SUT = createSUT
         val employmentId: String = "1234"
-        val endedCompanyBenefit = EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "No", None)
+        val endedCompanyBenefit = EndedCompanyBenefit("Accommodation", stopDateFormatted, Some("1000000"), "No", None)
 
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
+              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
               Seq[Option[String]](Some("1000000"), None)
             ))
         )
@@ -631,12 +662,12 @@ class RemoveCompanyBenefitControllerSpec
         val SUT = createSUT
         val employmentId: String = "1234"
         val endedCompanyBenefit =
-          EndedCompanyBenefit("Accommodation", "Before 6th April", None, "Yes", Some("0123456789"))
+          EndedCompanyBenefit("Accommodation", stopDateFormatted, None, "Yes", Some("0123456789"))
 
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
+              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
               Seq[Option[String]](None, Some("0123456789"))
             ))
         )
@@ -704,6 +735,8 @@ class RemoveCompanyBenefitControllerSpec
   )
 
   val startOfTaxYear: String = Dates.formatDate(TaxYear().start)
+  val stopDate = LocalDate.now().toString
+  val stopDateFormatted = LocalDate.parse(stopDate).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
 
   def createSUT = new SUT
 

@@ -20,12 +20,12 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
+import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm._
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
-import java.time.format.DateTimeFormatter
+import java.time.LocalDate
 
 class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
 
@@ -43,19 +43,17 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
     behave like haveLinkWithUrlWithID("backLink", controllers.benefits.routes.CompanyBenefitController.decision.url)
     behave like pageWithContinueButtonFormNew("/check-income-tax/remove-company-benefit/stop-date")
 
-    "have two radio buttons with relevant text" in {
-      doc must haveInputLabelWithText(
-        idBeforeTaxYearEnd,
-        messages("tai.benefits.ended.stopDate.radio.beforeTaxYearEnd", startOfCurrentTaxYear))
-      doc must haveInputLabelWithText(
-        idOnOrAfterTaxYearEnd,
-        messages("tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd", startOfCurrentTaxYear))
+    "have a hint" in {
+      doc must haveHintWithText(
+        BenefitFormHint,
+        Messages("tai.label.date.example")
+      )
     }
 
-    "display an explanation text paragraph" in {
-      doc.getElementById("stopDate-container").text.replace(" ", "\u00A0") mustBe Html(
-        Messages("tai.benefits.ended.stopDate.panel", startOfCurrentTaxYear, endOfCurrentTaxYear)
-          .replace(" ", "\u00A0")).toString()
+    "have a date input" in {
+      doc must haveInputLabelWithText(BenefitFormDay, messages("tai.label.day"))
+      doc must haveInputLabelWithText(BenefitFormMonth, messages("tai.label.month"))
+      doc must haveInputLabelWithText(BenefitFormYear, messages("tai.label.year"))
     }
 
     "display error message" when {
@@ -65,29 +63,26 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
         doc(errorView) must haveClassWithText(
           messages("tai.income.error.form.summary") + " " +
-            messages("tai.benefits.ended.stopDate.radio.error", taxYearStart),
+            messages("tai.benefits.ended.stopDate.error", benefitType, empName),
           "govuk-error-summary")
       }
 
       "a decision has not been made" in {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)
-        doc(errorView) must haveErrorLinkWithTextNew(messages("tai.benefits.ended.stopDate.radio.error", taxYearStart))
+        doc(errorView) must haveErrorLinkWithTextNew(
+          messages("tai.benefits.ended.stopDate.error", benefitType, empName))
       }
     }
   }
 
-  private val idBeforeTaxYearEnd = "stopDateChoice"
-  private val idOnOrAfterTaxYearEnd = "stopDateChoice-2"
-  private val startOfCurrentTaxYear = TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-  private val endOfCurrentTaxYear = TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
   private lazy val benefitType = "Expenses"
   private lazy val empName = "EmployerA"
 
-  private lazy val formWithErrors: Form[Option[String]] = RemoveCompanyBenefitStopDateForm.form.bind(
+  private lazy val formWithErrors: Form[LocalDate] = RemoveCompanyBenefitStopDateForm(benefitType, empName).form.bind(
     Map(
-      RemoveCompanyBenefitStopDateConstants.StopDateChoice -> ""
+      BenefitFormDay -> ""
     ))
 
   override def view: Html =
-    removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm.form, benefitType, empName)
+    removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm(benefitType, empName).form, benefitType, empName)
 }
