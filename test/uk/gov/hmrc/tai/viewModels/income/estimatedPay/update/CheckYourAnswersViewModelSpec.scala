@@ -121,6 +121,13 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
         viewModel.journeyConfirmationLines must contain(confirmationLine)
       }
 
+      "payment frequency is four weekly" in {
+        val confirmationLine = createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.fourWeekly"))
+
+        val viewModel = createViewModel(paymentFrequency = FourWeekly)
+        viewModel.journeyConfirmationLines must contain(confirmationLine)
+      }
+
       "payment frequency is OTHER" in {
 
         val payPeriodInDays = "3"

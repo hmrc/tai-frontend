@@ -77,6 +77,11 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.Ex
                             checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.Fortnightly)
                         ),
                         RadioItem(
+                            content = Text(messages("tai.payPeriod.fourWeekly")),
+                            value = Some(PayPeriodConstants.FourWeekly),
+                            checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.FourWeekly)
+                        ),
+                        RadioItem(
                             content = Text(messages("tai.payPeriod.other")),
                             value = Some(PayPeriodConstants.Other),
                             checked = payPeriodForm.data.get(PayPeriodConstants.PayPeriodKey).exists(_ == PayPeriodConstants.Other),

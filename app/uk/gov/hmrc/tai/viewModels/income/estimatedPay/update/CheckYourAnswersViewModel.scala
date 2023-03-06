@@ -53,6 +53,7 @@ case class CheckYourAnswersViewModel(
       Monthly     -> "tai.estimatedPay.update.checkYourAnswers.grossPay.month",
       Weekly      -> "tai.estimatedPay.update.checkYourAnswers.grossPay.week",
       Fortnightly -> "tai.estimatedPay.update.checkYourAnswers.grossPay.2week",
+      FourWeekly  -> "tai.estimatedPay.update.checkYourAnswers.grossPay.4week",
       Other       -> "tai.estimatedPay.update.checkYourAnswers.grossPay.days"
     )
 
@@ -73,6 +74,7 @@ case class CheckYourAnswersViewModel(
       Monthly     -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.month",
       Weekly      -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.week",
       Fortnightly -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.2week",
+      FourWeekly  -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.4week",
       Other       -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.days"
     )
 

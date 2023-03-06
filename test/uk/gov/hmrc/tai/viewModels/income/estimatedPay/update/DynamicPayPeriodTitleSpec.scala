@@ -37,6 +37,10 @@ class DynamicPayPeriodTitleSpec extends BaseSpec {
         GrossPayPeriodTitle.title(Some(Fortnightly), None) mustBe messagesApi("tai.payslip.title.2week")
       }
 
+      "gross pay period is four weekly" in {
+        GrossPayPeriodTitle.title(Some(FourWeekly), None) mustBe messagesApi("tai.payslip.title.4week")
+      }
+
       "gross pay period is a number of days" in {
         val numberOfDays = "123"
         GrossPayPeriodTitle
@@ -57,6 +61,10 @@ class DynamicPayPeriodTitleSpec extends BaseSpec {
 
       "taxable pay period is fortnightly" in {
         TaxablePayPeriod.errorMessage(Some(Fortnightly), None) mustBe messagesApi("tai.taxablePayslip.title.2week")
+      }
+
+      "taxable pay period is four weekly" in {
+        TaxablePayPeriod.errorMessage(Some(FourWeekly), None) mustBe messagesApi("tai.taxablePayslip.title.4week")
       }
 
       "taxable pay period is a number of days" in {
