@@ -93,16 +93,20 @@ class WhatDoYouWantToDoController @Inject()(
   }
 
   private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean =
-    (hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch) match {
-      case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
-      case (true, Some(TaxCodeMismatch(true, _, _)))                 => true
-      case _                                                         => false
-    }
+    hasTaxCodeChanged.changed || hasTaxCodeChanged.mismatch.exists(_.mismatch)
 
   private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(
     implicit request: Request[AnyContent]): Future[Option[LocalDate]] =
     if (retrieveTaxCodeChange(hasTaxCodeChanged)) {
-      taxCodeChangeService.taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate.some)
+      taxCodeChangeService
+        .taxCodeChange(nino)
+        .map { taxCodeChange =>
+          if (taxCodeChange.previous.isEmpty) {
+            none
+          } else {
+            taxCodeChange.mostRecentTaxCodeChangeDate.some
+          }
+        }
     } else {
       Future.successful(none)
     }

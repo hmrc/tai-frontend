@@ -517,33 +517,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     val controller = createTestController()
 
     "return false" when {
-
-      "there has been a tax code change and no mismatch" in {
-        controller.retrieveTaxCodeChange(HasTaxCodeChanged(
-          changed = true,
-          Some(TaxCodeMismatch(mismatch = false, Seq("1185L"), Seq("1185L"))))) mustEqual false
-      }
-
-      "there has been a tax code change and mismatch is None" in {
-        controller.retrieveTaxCodeChange(HasTaxCodeChanged(changed = true, None)) mustEqual false
-      }
-
-      "there has not been a tax code change" in {
+      "there are no mismatches nor tax code changes" in {
         controller.retrieveTaxCodeChange(HasTaxCodeChanged(
           changed = false,
-          Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq("taxCode"))))) mustEqual false
-      }
-
-      "there are no confirmed taxCodeRecords in the TaxCodeMismatch" in {
-        controller.retrieveTaxCodeChange(HasTaxCodeChanged(
-          changed = true,
-          Some(TaxCodeMismatch(mismatch = true, Seq("taxCode"), Seq.empty)))) mustEqual false
-      }
-
-      "there are no taxCodeRecords in the TaxCodeMismatch at all" in {
-        controller.retrieveTaxCodeChange(HasTaxCodeChanged(
-          changed = true,
-          Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq.empty)))) mustEqual false
+          Some(TaxCodeMismatch(mismatch = false, Seq("taxCode"), Seq("taxCode"))))) mustEqual false
       }
     }
 
@@ -559,6 +536,16 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         controller.retrieveTaxCodeChange(HasTaxCodeChanged(
           changed = true,
           Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq("taxCode"))))) mustEqual true
+      }
+
+      "there has been a tax code change and no mismatch" in {
+        controller.retrieveTaxCodeChange(HasTaxCodeChanged(
+          changed = true,
+          Some(TaxCodeMismatch(mismatch = false, Seq("1185L"), Seq("1185L"))))) mustEqual true
+      }
+
+      "there has been a tax code change and mismatch is None" in {
+        controller.retrieveTaxCodeChange(HasTaxCodeChanged(changed = true, None)) mustEqual true
       }
     }
   }
