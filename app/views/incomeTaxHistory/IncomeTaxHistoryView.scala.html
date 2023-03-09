@@ -37,7 +37,10 @@
 @(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
-@address = @{s"${person.address.line1} ${person.address.line2} ${person.address.line3} ${person.address.postcode}"}
+@address = @{
+    import person.address._
+    List(line1, line2, line3, postcode).map(_.getOrElse("")).mkString(" ")
+}
 
 @detailsContent = {
 
