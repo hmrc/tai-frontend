@@ -59,6 +59,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
     pagePrintable = true,
     pagePrintName = Some("historic-pay-as-you-earn")
 ){
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @header
@@ -115,9 +116,13 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
                 </p>
             }
+
+                <div class="govuk-!-margin-top-8 govuk-!-margin-bottom-9">
                 <div class="print-this">
                     <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
                 </div>
+                </div>
+
             </div>
         </div>
     </div>
