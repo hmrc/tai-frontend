@@ -17,8 +17,12 @@
 package uk.gov.hmrc.tai.viewModels.benefit
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.util.constants.TaiConstants.TaxDateWordMonthFormat
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
 
@@ -77,7 +81,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
 
   private lazy val stopDateLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.dateBenefitEnded"),
-    "Before 6 April",
+    stopDateFormatted,
     controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
   )
 
@@ -99,10 +103,13 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
     controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
   )
 
+  private val stopDate = LocalDate.now()
+  private val stopDateFormatted = stopDate.format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
+
   def baseModel = RemoveCompanyBenefitsCheckYourAnswersViewModel(
     "Awesome Benefit",
     "TestCompany",
-    "Before 6 April",
+    stopDate,
     Some("1000000"),
     "Yes",
     Some("0123456789")

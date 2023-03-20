@@ -18,16 +18,22 @@ package uk.gov.hmrc.tai.viewModels.benefit
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.formatting.Money
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
   tableHeader: String,
-  stopDate: String,
+  stopDate: LocalDate,
   valueOfBenefit: Option[String],
   contactByPhone: String,
   phoneNumber: Option[String]) {
+
+  val beforeTaxYearStart = stopDate isBefore TaxYear().start
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -39,7 +45,7 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
 
     val stopDateLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.dateBenefitEnded"),
-      stopDate,
+      stopDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")), //TODO add welsh?
       controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
     )
 
@@ -87,7 +93,7 @@ object RemoveCompanyBenefitsCheckYourAnswersViewModel extends ViewModelHelper {
   def apply(
     benefitType: String,
     employerName: String,
-    stopDate: String,
+    stopDate: LocalDate,
     valueOfBenefit: Option[String],
     contactByPhone: String,
     phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitsCheckYourAnswersViewModel = {

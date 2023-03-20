@@ -33,13 +33,16 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.FutureOps._
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants.TaxDateWordMonthFormat
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
 import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
@@ -64,8 +67,15 @@ class RemoveCompanyBenefitController @Inject()(
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.currentCache map { currentCache =>
-      val form =
-        RemoveCompanyBenefitStopDateForm.form.fill(currentCache.get(EndCompanyBenefitConstants.BenefitStopDateKey))
+      val currentBenefitName = currentCache(EndCompanyBenefitConstants.BenefitNameKey)
+      val currentEmploymentName = currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
+
+      val removeCompanyBenefitForm = RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName)
+
+      val form = currentCache
+        .get(EndCompanyBenefitConstants.BenefitStopDateKey)
+        .map(dateString => removeCompanyBenefitForm.form.fill(LocalDate.parse(dateString)))
+        .getOrElse(removeCompanyBenefitForm.form)
 
       Ok(
         removeCompanyBenefitStopDate(
@@ -77,36 +87,44 @@ class RemoveCompanyBenefitController @Inject()(
 
   def submitStopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
+    val taxYear = TaxYear()
 
-    RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
-      formWithErrors => {
-        journeyCacheService
-          .mandatoryJourneyValues(
-            EndCompanyBenefitConstants.BenefitNameKey,
-            EndCompanyBenefitConstants.EmploymentNameKey)
-          .getOrFail
-          .map { mandatoryJourneyValues =>
-            BadRequest(
-              removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
+    journeyCacheService.currentCache.flatMap { currentCache =>
+      val currentBenefitName = currentCache(EndCompanyBenefitConstants.BenefitNameKey)
+      val currentEmploymentName = currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
+      RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form.bindFromRequest.fold(
+        formWithErrors => {
+          journeyCacheService
+            .mandatoryJourneyValues(
+              EndCompanyBenefitConstants.BenefitNameKey,
+              EndCompanyBenefitConstants.EmploymentNameKey)
+            .getOrFail
+            .map { mandatoryJourneyValues =>
+              BadRequest(
+                removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
+            }
+        }, { date =>
+          val dateString = date.toString
+          if (date isBefore taxYear.start) {
+            //BeforeTaxYearEnd
+            for {
+              current <- journeyCacheService.currentCache
+              _       <- journeyCacheService.flush()
+              filtered = current.filterKeys(_ != EndCompanyBenefitConstants.BenefitValueKey)
+              _ <- journeyCacheService.cache(
+                    filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))
+            } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber)
+          } else {
+            //OnOrAfterTaxYearEnd
+            journeyCacheService
+              .cache(EndCompanyBenefitConstants.BenefitStopDateKey, dateString)
+              .map { _ =>
+                Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit)
+              }
           }
-      }, {
-        case Some(RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd) =>
-          for {
-            current <- journeyCacheService.currentCache
-            _       <- journeyCacheService.flush()
-            filtered = current.filterKeys(_ != EndCompanyBenefitConstants.BenefitValueKey)
-            _ <- journeyCacheService.cache(filtered ++ Map(
-                  EndCompanyBenefitConstants.BenefitStopDateKey -> RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd))
-          } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber)
-
-        case Some(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd) =>
-          journeyCacheService.cache(
-            EndCompanyBenefitConstants.BenefitStopDateKey,
-            RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd) map { _ =>
-            Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit)
-          }
-      }
-    )
+        }
+      )
+    }
   }
 
   def totalValueOfBenefit(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -218,16 +236,7 @@ class RemoveCompanyBenefitController @Inject()(
         case Left(_) =>
           Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
         case Right((mandatoryJourneyValues, optionalSeq)) =>
-          val stopDate = {
-            val startOfTaxYear = langUtils.Dates.formatDate(TaxYear().start)
-
-            mandatoryJourneyValues(2) match {
-              case RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd =>
-                Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear)
-              case RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd =>
-                Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear)
-            }
-          }
+          val stopDate = LocalDate.parse(mandatoryJourneyValues(2))
 
           Ok(
             removeCompanyBenefitCheckYourAnswers(
@@ -259,12 +268,14 @@ class RemoveCompanyBenefitController @Inject()(
                                                     EndCompanyBenefitConstants.TelephoneNumberKey)
                                                 )
                                                 .getOrFail
+      stopDate = LocalDate.parse(mandatoryCacheSeq(3)).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
       model = EndedCompanyBenefit(
-        mandatoryCacheSeq(2),
-        mandatoryCacheSeq(3),
-        optionalCacheSeq.head,
-        mandatoryCacheSeq(4),
-        optionalCacheSeq(1))
+        benefitType = mandatoryCacheSeq(2),
+        stopDate = stopDate,
+        valueOfBenefit = optionalCacheSeq.head,
+        contactByPhone = mandatoryCacheSeq(4),
+        phoneNumber = optionalCacheSeq(1)
+      )
       _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toInt, model)
       _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey, true.toString)
       _ <- journeyCacheService.flush

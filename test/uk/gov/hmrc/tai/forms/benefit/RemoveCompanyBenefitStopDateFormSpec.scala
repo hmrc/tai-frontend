@@ -19,40 +19,37 @@ package uk.gov.hmrc.tai.forms.benefit
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, RemoveCompanyBenefitStopDateConstants}
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import utils.BaseSpec
+
+import java.time.LocalDate
 
 class RemoveCompanyBenefitStopDateFormSpec extends BaseSpec {
 
-  val choice = RemoveCompanyBenefitStopDateConstants.StopDateChoice
-  private val form = RemoveCompanyBenefitStopDateForm.form
+  private val form = RemoveCompanyBenefitStopDateForm("benefit", "employment").form
 
   "RemoveCompanyBenefitStopDateFormSpec" must {
-    "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
-      val validatedForm = form.bind(validYesChoice)
+    "return no errors with valid date" in {
+      val validDate = Json.obj(
+        RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "15",
+        RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
+        RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> "2023"
+      )
+      val validatedForm = form.bind(validDate)
 
       validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe Some(FormValuesConstants.YesValue)
+      validatedForm.value.get mustBe LocalDate.parse("2023-01-15")
     }
 
-    "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
-      val validatedForm = form.bind(validNoChoice)
-
-      validatedForm.errors mustBe empty
-      validatedForm.value.get mustBe Some(FormValuesConstants.NoValue)
-    }
-
-    "return an error for invalid choice" in {
-      val invalidChoice = Json.obj(choice -> "")
-      val invalidatedForm = form.bind(invalidChoice)
-      val taxYearStart = Dates.formatDate(TaxYear().start)
+    "return an error for invalid date" in {
+      val invalidDate = Json.obj(
+        RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
+        RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
+        RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
+      )
+      val invalidatedForm = form.bind(invalidDate)
 
       invalidatedForm.errors.head.messages mustBe List(
-        Messages("tai.benefits.ended.stopDate.radio.error", taxYearStart))
+        Messages("tai.benefits.ended.stopDate.error", "benefit", "employment"))
       invalidatedForm.value mustBe None
     }
 

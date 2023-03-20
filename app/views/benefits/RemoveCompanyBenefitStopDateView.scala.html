@@ -15,8 +15,8 @@
  *@
 
 @import includes.cancelLink
+@import java.time.LocalDate
 @import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
-@import uk.gov.hmrc.tai.util.constants.RemoveCompanyBenefitStopDateConstants
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -27,18 +27,9 @@
 
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
-@this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(main: MainTemplate, form: FormWithCSRF, govukDateInput: GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
-
-@startOfCurrentTaxYear = @{Dates.formatDate(TaxYear().start)}
-@endOfCurrentTaxYear = @{Dates.formatDate(TaxYear().end)}
-
-@conditionalRadio = {
-    <div id="stopDate-container" class="govuk-body">
-        @Messages("tai.benefits.ended.stopDate.panel", startOfCurrentTaxYear, endOfCurrentTaxYear)
-    </div>
-}
+@(stopDateForm: Form[LocalDate],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -58,34 +49,38 @@
                 @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @govukRadios(Radios(
-                fieldset =  Some(
-                    Fieldset(
-                        legend = Some(
-                        HmrcPageHeadingLegend(
-                            content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
-                            caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader"))))
-                        )
+            @govukDateInput(DateInput(
+                id = "benefitEndDateForm",
+                namePrefix = Some("benefitEndDateForm"),
+                hint = Some(Hint(content = Text(Messages("tai.label.date.example")))),
+                items = Seq(
+                    InputItem(
+                        name= "day",
+                        label = Some(messages("tai.label.day")),
+                        classes = s"govuk-input--width-2 ${if(stopDateForm.hasErrors)  " govuk-input--error" else "" }",
+                        value =  stopDateForm("benefitEndDateForm-day").value
+                    ),
+                    InputItem(
+                        name = "month",
+                        label = Some(messages("tai.label.month")),
+                        classes = s"govuk-input--width-2 ${if(stopDateForm.hasErrors ) " govuk-input--error" else "" }",
+                        value =  stopDateForm("benefitEndDateForm-month").value
+                    ),
+                    InputItem(
+                        name = "year",
+                        label = Some(messages("tai.label.year")),
+                        classes = s"govuk-input--width-4 ${if(stopDateForm.hasErrors) " govuk-input--error" else "" }",
+                        value =  stopDateForm("benefitEndDateForm-year").value
                     )
                 ),
-                hint = None,
-                errorMessage = stopDateForm.errors.filter(_.key == RemoveCompanyBenefitStopDateConstants.StopDateChoice).asTextErrorMessages.headOption,
-                idPrefix = Some(RemoveCompanyBenefitStopDateConstants.StopDateChoice),
-                name = RemoveCompanyBenefitStopDateConstants.StopDateChoice,
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("tai.benefits.ended.stopDate.radio.beforeTaxYearEnd",startOfCurrentTaxYear)),
-                        value = Some(RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd),
-                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateConstants.StopDateChoice).contains(RemoveCompanyBenefitStopDateConstants.BeforeTaxYearEnd),
-                        conditionalHtml = Some(conditionalRadio)
-                    ),
-                    RadioItem(
-                        content = Text(messages("tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd",startOfCurrentTaxYear)),
-                        value = Some(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd),
-                        checked = stopDateForm.data.get(RemoveCompanyBenefitStopDateConstants.StopDateChoice).contains(RemoveCompanyBenefitStopDateConstants.OnOrAfterTaxYearEnd)
-                    )
-                )
-            ).withFormField(stopDateForm(RemoveCompanyBenefitStopDateConstants.StopDateChoice)))
+                errorMessage = stopDateForm.errors.asTextErrorMessages.headOption,
+                fieldset =  Some(Fieldset(
+                    legend = Some(HmrcPageHeadingLegend(
+                        content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
+                        caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader"))),
+                        classes = "govuk-fieldset__legend--xl carry-over")
+                    )))),
+            )
 
             @govukButton(Button(content = Text(messages("tai.continue"))))
 
