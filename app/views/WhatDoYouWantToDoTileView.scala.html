@@ -80,6 +80,14 @@
 
             <div class="flex-container govuk-grid-row">
 
+                @card(
+                    url = Some("/check-income-tax/income-summary"),
+                    id = "currentTaxYear",
+                    heading = messages("current.tax.year"),
+                    bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
+                    headingTag = "h2"
+                )
+
                 @if(appConfig.incomeTaxHistoryEnabled) {
                     @card(
                         url = Some(s"/check-income-tax/income-tax-history"),
@@ -89,14 +97,6 @@
                         headingTag = "h2"
                     )
                 }
-
-                @card(
-                    url = Some("/check-income-tax/income-summary"),
-                    id = "currentTaxYear",
-                    heading = messages("current.tax.year"),
-                    bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange)),
-                    headingTag = "h2"
-                )
 
                 @if(model.isCyPlusOneEnabled) {
                     @card(
