@@ -37,7 +37,19 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       doc must haveSummaryWithText(messages("tai.incomeTax.history.details.summary", person.name))
       doc must haveDetailsWithText(
         messages("tai.incomeTax.history.details.address") +
-          s" ${person.address.line1} ${person.address.line2} ${person.address.line3} ${person.address.postcode} " +
+          s" ${person.address.line1.get} ${person.address.line2.get} ${person.address.line3.get} ${person.address.postcode.get} " +
+          messages("tai.incomeTax.history.details.nationalInsurance") +
+          s" ${person.nino.formatted}"
+      )
+      doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
+    }
+
+    "display a details card when some of the fields are empty" in {
+      val doc = Jsoup.parse(viewWithPartialAddress.toString())
+      doc must haveSummaryWithText(messages("tai.incomeTax.history.details.summary", person.name))
+      doc must haveDetailsWithText(
+        messages("tai.incomeTax.history.details.address") +
+          s" ${person.address.line1.get} ${person.address.postcode.get} " +
           messages("tai.incomeTax.history.details.nationalInsurance") +
           s" ${person.nino.formatted}"
       )
@@ -178,10 +190,12 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val person = fakePerson(nino)
   val personWithNoAddress = fakePersonWithNoAddress(nino)
+  val personWithPartialAddress = fakePersonWithPartialAddress(nino)
 
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
 
   val viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
+  val viewWithPartialAddress: Html = incomeTaxHistoryView(appConfig, personWithPartialAddress, incomeTaxYears)
 
 }
