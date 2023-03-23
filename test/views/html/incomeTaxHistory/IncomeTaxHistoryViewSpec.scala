@@ -82,14 +82,14 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       }
     }
 
-    "display employment start date as 'Not Available' when not found or pre 1900" in {
-      errorStartDateIncomeTaxYears.map {
-        case IncomeTaxYear(`taxYear`, List(viewModel)) =>
-          viewModel.startDate
-      } match {
-        case _ =>
-          doc must haveListItemWithText(s"Start date ${Messages("tai.incomeTaxSummary.view.startDate.error")}")
-      }
+    "display employment start date as 'Not Available' when not found" in {
+      doc(incomeTaxHistoryView(appConfig, person, emptyStartDateIncomeTaxYears)) must haveListItemWithText(
+        s"Start date ${Messages("tai.incomeTaxSummary.view.startDate.error")}")
+    }
+
+    "display employment start date as 'Not Available' when 1900 or earlier" in {
+      doc(incomeTaxHistoryView(appConfig, person, oldStartDateIncomeTaxYears)) must haveListItemWithText(
+        s"Start date ${Messages("tai.incomeTaxSummary.view.startDate.error")}")
     }
 
     val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
@@ -211,7 +211,6 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
   )
-
   val oldStartDateHistoryViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
     isPension = true,
@@ -223,9 +222,10 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some("incomeTaxPaid"),
     Some(s"taxCode-${taxYear.start}")
   )
-
-  val errorStartDateIncomeTaxYears: List[IncomeTaxYear] = List(
-    IncomeTaxYear(taxYear, List(emptyStartDateHistoryViewModel)),
+  val emptyStartDateIncomeTaxYears: List[IncomeTaxYear] = List(
+    IncomeTaxYear(taxYear, List(emptyStartDateHistoryViewModel))
+  )
+  val oldStartDateIncomeTaxYears: List[IncomeTaxYear] = List(
     IncomeTaxYear(taxYear, List(oldStartDateHistoryViewModel))
   )
 
