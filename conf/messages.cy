@@ -555,6 +555,7 @@ tai.income.previousYears.details.preHeading=Diweddaru manylion incwm
 tai.income.previousYears.details.textarea.error.blank=Nodwch yr hyn yr ydych am roi gwybod i ni amdano ynghylch manylion eich incwm
 tai.income.previousYears.details.textarea.error.maximumExceeded=Mae’n rhaid i’r manylion incwm fod yn {0} o gymeriadau neu lai
 tai.income.previousYears.details.textarea.text=Rhowch fanylion eich diweddariad (Uchafswm o 500 o gymeriadau)
+tai.income.previousYears.checkYourAnswers.subTitle =Eich manylion
 tai.income.previousYears.journey.preHeader=Diweddaru manylion incwm
 tai.income.statePension.title=Pensiwn y Wladwriaeth neu fudd-daliadau eraill y Wladwriaeth
 tai.income.statePensionLumpSum.total=Cyfandaliad Pensiwn y Wladwriaeth
