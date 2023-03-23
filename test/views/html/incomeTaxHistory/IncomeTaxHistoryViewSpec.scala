@@ -17,6 +17,7 @@
 package views.html.incomeTaxHistory
 
 import org.jsoup.Jsoup
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
@@ -81,6 +82,16 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       }
     }
 
+    "display employment start date as 'Not Available' when not found or pre 1900" in {
+      errorStartDateIncomeTaxYears.map {
+        case IncomeTaxYear(`taxYear`, List(viewModel)) =>
+          viewModel.startDate
+      } match {
+        case _ =>
+          doc must haveListItemWithText(s"Start date ${Messages("tai.incomeTaxSummary.view.startDate.error")}")
+      }
+    }
+
     val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
     for (taxYear <- taxYears) {
@@ -108,6 +119,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   val incomeTaxHistoryView = inject[IncomeTaxHistoryView]
   val taxYear: TaxYear = TaxYear()
+  val taxYear1899: TaxYear = TaxYear(1899)
   val historyViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
     isPension = true,
@@ -186,6 +198,35 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     IncomeTaxYear(TaxYear(taxYear.year - 2), List(historyViewModel2)),
     IncomeTaxYear(TaxYear(taxYear.year - 3), List(historyViewModel4)),
     IncomeTaxYear(TaxYear(taxYear.year - 4), List(historyViewModel5))
+  )
+
+  val emptyStartDateHistoryViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = true,
+    "ern",
+    Some("pension-number"),
+    null,
+    None,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val oldStartDateHistoryViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = true,
+    "ern",
+    Some("pension-number"),
+    taxYear1899.start,
+    None,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val errorStartDateIncomeTaxYears: List[IncomeTaxYear] = List(
+    IncomeTaxYear(taxYear, List(emptyStartDateHistoryViewModel)),
+    IncomeTaxYear(taxYear, List(oldStartDateHistoryViewModel))
   )
 
   val person = fakePerson(nino)

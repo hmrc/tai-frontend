@@ -43,13 +43,12 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
 }
 
 @detailsContent = {
-
-@if(address.filterNot(_.isWhitespace).nonEmpty){
-    <p>
-        <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.address")</span>
-        @address
-    </p>
-}
+    @if(address.filterNot(_.isWhitespace).nonEmpty){
+        <p>
+            <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.address")</span>
+            @address
+        </p>
+    }
 
     <p>
         <span class="govuk-!-font-weight-bold">@Messages("tai.incomeTax.history.details.nationalInsurance")</span>
@@ -122,7 +121,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec:
                     } else {
                         <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span>@summary.ern</li>
                     }
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
+                    <li class ="li-incomeTaxHistory">
+                        <span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span>
+                        @{if(summary.startDate != null || summary.startDate.getYear < 1901) Messages("tai.incomeTaxSummary.view.startDate.error")
+                            else TaxYearRangeUtil.formatDate(summary.startDate)}
+                    </li>
                     <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span>
                         @{if(summary.maybeEndDate.isDefined)
                             TaxYearRangeUtil.formatDate(summary.maybeEndDate.get)

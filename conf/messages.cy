@@ -683,6 +683,7 @@ tai.incomeTaxSummary.pension.link=Gweld neu ddiweddaru manylion pensiwn
 tai.incomeTaxSummary.pension.section.heading=Eich pensiynau preifat presennol
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxSummary.view.income.source.details=Gweld manylion {0}
+tai.incomeTaxSummary.view.startDate.error=Ddim ar gael
 tai.incomes.monetaryAmount.format.valid=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
 
 tai.incomes.warning.preHeading=Diweddariad wedi dod i law
