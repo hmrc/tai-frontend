@@ -227,15 +227,7 @@ class IncomeUpdateCalculatorController @Inject()(
       if (employmentAmount.newAmount == income.oldAmount) {
         Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay)
       } else {
-
-        val vm = ConfirmAmountEnteredViewModel(
-          employmentName,
-          employmentAmount.oldAmount,
-          employmentAmount.newAmount,
-          controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(id).url,
-          id
-        )
-        Ok(confirmAmountEntered(vm))
+        Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
       }
     }).getOrElse(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url))
       .recover {
