@@ -16,7 +16,6 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "domain"                           % s"8.1.0-$playVersion",
     "uk.gov.hmrc"       %% "url-builder"                      % s"3.7.0-$playVersion",
     "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.17.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-ui"                          % s"9.11.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.25.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"3.34.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.3.0"
@@ -38,7 +37,8 @@ private object AppDependencies {
           "org.mockito"            % "mockito-all"         % "1.10.19" % scope,
           "com.github.tomakehurst" % "wiremock-jre8"       % "2.26.1" % scope,
           "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
-          "org.scalacheck"         %% "scalacheck"         % "1.14.3" % scope
+          "org.scalacheck"         %% "scalacheck"         % "1.14.3" % scope,
+          "uk.gov.hmrc"            %% "bootstrap-test-play-28"   % "5.7.0"         % Test
         )
       }.test
   }
