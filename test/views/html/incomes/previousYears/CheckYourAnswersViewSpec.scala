@@ -44,7 +44,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
     }
 
     "display the header for the check your answers section" in {
-      doc must haveHeadingH2WithText(viewModel.tableHeader)
+      doc must haveHeadingH2WithText(messages("tai.income.previousYears.checkYourAnswers.subTitle"))
     }
 
     "display journey confirmation lines" in {
