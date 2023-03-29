@@ -21,6 +21,7 @@ object UpdateEmploymentConstants {
   val JourneyKey = "update-employment"
   val EmploymentIdKey = "employmentId"
   val NameKey = "employmentName"
+  val StartDateKey = "employmentStartDate"
   val EmploymentDetailsKey = "employmentDetails"
   val TelephoneQuestionKey = "employmentTelephoneContactAllowed"
   val TelephoneNumberKey = "employmentTelephoneNumber"

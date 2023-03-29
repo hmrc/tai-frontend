@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
-import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
+import uk.gov.hmrc.tai.forms.employments.{EmploymentStartDateForm, UpdateEmploymentDetailsForm}
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -37,9 +37,10 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
-import views.html.employments.ConfirmationView
+import views.html.employments.{ConfirmationView, StartEmploymentView}
 import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
 
+import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -50,6 +51,7 @@ class UpdateEmploymentController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  startEmploymentView: StartEmploymentView,
   whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
   canWeContactByPhone: CanWeContactByPhoneView,
   updateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
@@ -74,6 +76,58 @@ class UpdateEmploymentController @Inject()(
       controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber.url,
       controllers.employments.routes.UpdateEmploymentController.cancel(id).url
     )
+
+  def updateStartDate(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+
+      journeyCacheService
+        .collectedJourneyValues(
+          Seq(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey),
+          Seq(UpdateEmploymentConstants.StartDateKey))
+        .map {
+          case Right((mandatorySequence, optionalSeq)) =>
+            optionalSeq match {
+              case Seq(Some(date)) =>
+                Ok(
+                  startEmploymentView(
+                    EmploymentStartDateForm(mandatorySequence.head).form.fill(LocalDate.parse(date)),
+                    EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)
+                  ))
+              case _ =>
+                Ok(
+                  startEmploymentView(
+                    EmploymentStartDateForm(mandatorySequence.head).form,
+                    EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)))
+            }
+          case Left(_) =>
+            Redirect(taxAccountSummaryRedirect)
+        }
+
+  }
+
+  def handleStartEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
+      employmentService.employment(nino, employmentId).flatMap {
+        case Some(employment) =>
+          EmploymentStartDateForm(employment.name).form.bindFromRequest.fold(
+            formWithErrors => {
+              Future.successful(
+                BadRequest(startEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId))))
+            },
+            date => {
+              val employmentJourneyCacheData = Map(UpdateEmploymentConstants.StartDateKey -> date.toString)
+              journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
+                Redirect(controllers.employments.routes.UpdateEmploymentController
+                  .updateEmploymentDetails(empId = employmentId))
+              }
+            }
+          )
+        case _ => Future.successful(NotFound(errorPagesHandler.error4xxPageWithLink("No employment found")))
+      }
+  }
 
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -101,7 +155,6 @@ class UpdateEmploymentController @Inject()(
       } yield futureResult).recover {
         case NonFatal(exception) => errorPagesHandler.internalServerError(exception.getMessage)
       }
-
   }
 
   def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

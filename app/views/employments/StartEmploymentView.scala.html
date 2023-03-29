@@ -39,7 +39,7 @@
 }
 
 @mainTemplate(
-    title = Messages("tai.endEmployment.endDateForm.pagetitle"),
+    title = Messages("tai.startEmployment.startDateForm.pagetitle"),
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkId = "backLink",
@@ -48,7 +48,7 @@
     formForErrorSummary = Some(dateForm),
 ) {
 
-    @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
+    @form(action = controllers.employments.routes.UpdateEmploymentController.handleStartEmploymentPage(viewmodel.empId)) {
 
 
         <div class = "govuk-grid-row">

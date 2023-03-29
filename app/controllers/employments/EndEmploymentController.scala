@@ -155,7 +155,7 @@ class EndEmploymentController @Inject()(
               }, {
                 case Some(FormValuesConstants.YesValue) =>
                   Future(Redirect(controllers.employments.routes.UpdateEmploymentController
-                    .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)))
+                    .updateStartDate(mandatoryJourneyValues(1).toInt)))
                 case _ =>
                   val nino = user.nino
                   employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap {

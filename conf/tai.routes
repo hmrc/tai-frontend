@@ -90,6 +90,8 @@ GET         /end-employment/date                                                
 POST        /end-employment/date/:empId                                                controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
 GET         /update-employment/cancel/:empId                                           controllers.employments.UpdateEmploymentController.cancel(empId: Int)
+GET         /update-employment/date/:empId                                             controllers.employments.UpdateEmploymentController.updateStartDate(empId: Int)
+POST        /update-employment/date/:empId                                             controllers.employments.UpdateEmploymentController.handleStartEmploymentPage(empId: Int)
 GET         /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
 POST        /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
 GET         /update-employment/telephone-number                                        controllers.employments.UpdateEmploymentController.addTelephoneNumber
