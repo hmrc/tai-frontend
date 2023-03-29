@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@()(implicit messages: Messages)
+@(subheading: String = "tai.confirmation.subheading")(implicit messages: Messages)
 
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">@Messages("tai.confirmation.heading")</h1>
-    <h2 class="govuk-panel__body">@Messages("tai.confirmation.subheading")</h2>
+    <h2 class="govuk-panel__body">@Messages(subheading)</h2>
 </div>

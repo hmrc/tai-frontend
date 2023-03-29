@@ -305,6 +305,7 @@ tai.employment.income.details.updateLinkText=Diweddaru neu ddileu {0}
 tai.employmentConfirmation.heading=Daeth eich diweddariad am gyflogaeth i law
 tai.confirmation.heading=Mae’ch diweddariad wedi dod i law
 tai.confirmation.subheading=Bydd eich cofnodion yn cael eu diweddaru cyn pen 15 diwrnod
+tai.confirmation.threeWeeks=Bydd eich cofnodion yn cael eu diweddaru cyn pen 3 wythnos
 tai.employmentName.error.blank=Nodwch enw’ch cyflogwr
 tai.endEmployment.endDateForm.customGaTitle=Pryd wnaethoch orffen gweithio i’r cyflogwr hwn?
 tai.endEmployment.endDateForm.label=Nodwch y dyddiad y gadawsoch {0}

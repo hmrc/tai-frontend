@@ -305,6 +305,7 @@ tai.employment.income.details.updateLinkText=Update or remove {0}
 tai.employmentConfirmation.heading=Your update about an employment has been received
 tai.confirmation.heading=Your update has been received
 tai.confirmation.subheading=Your records will be updated within 15 days
+tai.confirmation.threeWeeks=Your records will be updated within 3 weeks
 tai.employmentName.error.blank=Enter the name of your employer
 tai.endEmployment.endDateForm.customGaTitle=When did you finish working for this employer?
 tai.endEmployment.endDateForm.label=Enter the date you left {0}
