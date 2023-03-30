@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.forms.benefit
 
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 import utils.BaseSpec
@@ -48,8 +47,7 @@ class RemoveCompanyBenefitStopDateFormSpec extends BaseSpec {
       )
       val invalidatedForm = form.bind(invalidDate)
 
-      invalidatedForm.errors.head.messages mustBe List(
-        Messages("tai.benefits.ended.stopDate.error", "benefit", "employment"))
+      invalidatedForm.errors.head.messages mustBe List(RemoveCompanyBenefitStopDateForm.errorMsgs.enterDate)
       invalidatedForm.value mustBe None
     }
 

@@ -16,12 +16,13 @@
 
 package views.html.employments
 
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+
+import java.time.LocalDate
 
 class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
   private val employmentName = "Employer name"
@@ -30,9 +31,9 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
   private val formWithErrors: Form[LocalDate] = addDateForm.form.withError("", globalErrorMessage)
   private lazy val employmentStartDateForm: Form[LocalDate] = addDateForm.form.bind(
     Map(
-      addDateForm.EmploymentFormDay -> "1",
-      "month"                       -> "1",
-      "year"                        -> "2017"
+      EmploymentAddDateForm.EmploymentFormDay -> "1",
+      "month"                                 -> "1",
+      "year"                                  -> "2017"
     ))
   private val template = inject[AddEmploymentStartDateFormView]
 

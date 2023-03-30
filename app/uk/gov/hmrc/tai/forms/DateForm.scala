@@ -16,73 +16,49 @@
 
 package uk.gov.hmrc.tai.forms
 
-import uk.gov.hmrc.tai.forms.formValidator.FormValidator
-import java.time.LocalDate
-import cats.implicits._
 import play.api.data.Forms.of
-import play.api.data.format.Formatter
-import play.api.data.{FieldMapping, Form, FormError}
+import play.api.data.{FieldMapping, Form}
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.DateForm._
+import uk.gov.hmrc.tai.forms.formValidator.FormValidator
 
-import scala.util.Try
+import java.time.LocalDate
 
 case class DateForm(validations: Seq[(LocalDate => Boolean, String)], blankDateMessage: String) extends FormValidator {
 
   def form(implicit messages: Messages): Form[LocalDate] = {
-    implicit val dateFormatter = new Formatter[LocalDate] {
-
-      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-
-        val dayErrors: Boolean = data.getOrElse(DateFormDay, "").isEmpty
-        val monthErrors: Boolean = data.getOrElse(DateFormMonth, "").isEmpty
-        val yearErrors: Boolean = data.getOrElse(DateFormYear, "").isEmpty
-
-        val errors = if (dayErrors || monthErrors || yearErrors) {
-          Seq(FormError(key = DateFormDay, message = blankDateMessage))
-        } else {
-          Nil
-        }
-
-        if (errors.isEmpty) {
-          val inputDate: Option[LocalDate] = Try(
-            (
-              data.get(DateFormDay).map(Integer.parseInt),
-              data.get(DateFormMonth).map(Integer.parseInt),
-              data.get(DateFormYear).map(Integer.parseInt)).mapN {
-              case (day, month, year) =>
-                LocalDate.of(year, month, day)
-            }
-          ).getOrElse(None)
-
-          inputDate match {
-            case Some(date) =>
-              val validationResult = validate[LocalDate](date, validations, DateFormDay)
-
-              if (validationResult.isEmpty) {
-                Right(date)
-              } else {
-                Left(validationResult.seq)
-              }
-            case _ => Left(Seq(FormError(key = DateFormDay, message = Messages("tai.date.error.invalid"))))
-          }
-        } else {
-          Left(errors)
-        }
-      }
-
-      override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        DateFormDay   -> value.getDayOfMonth.toString,
-        DateFormMonth -> value.getMonthValue.toString,
-        DateFormYear  -> value.getYear.toString
-      )
-    }
+    implicit val dateFormatter = new LocalDateFormatter(
+      formDay = DateFormDay,
+      formMonth = DateFormMonth,
+      formYear = DateFormYear,
+      errorMsgs = errorMsgs
+    )
 
     val localDateMapping: FieldMapping[LocalDate] = of[LocalDate]
 
     Form(localDateMapping)
   }
 
+}
+
+object DateForm {
   val DateFormDay = "DateForm_day"
   val DateFormMonth = "DateForm_month"
   val DateFormYear = "DateForm_year"
+
+  def errorMsgs(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
+    enterDate = Messages("tai.date.error.enterDate"),
+    enterDay = Messages("tai.date.error.enterDay"),
+    enterMonth = Messages("tai.date.error.enterMonth"),
+    enterYear = Messages("tai.date.error.enterYear"),
+    enterDayAndMonth = Messages("tai.date.error.enterDayAndMonth"),
+    enterDayAndYear = Messages("tai.date.error.enterDayAndYear"),
+    enterMonthAndYear = Messages("tai.date.error.enterMonthAndYear"),
+    mustBeValidDay = Messages("tai.date.error.mustBeValidDay"),
+    mustBeValidMonth = Messages("tai.date.error.mustBeValidMonth"),
+    mustBeValidYear = Messages("tai.date.error.mustBeValidYear"),
+    mustBeReal = Messages("tai.date.error.mustBeReal"),
+    mustBeFuture = Messages("tai.date.error.mustBeFuture"),
+    mustBeAfter1900 = Messages("tai.date.error.mustBeAfter1900")
+  )
 }

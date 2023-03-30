@@ -34,10 +34,9 @@ import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
-import uk.gov.hmrc.tai.util.constants.AddPensionFirstPayChoiceConstants._
 import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.pensions._
@@ -387,9 +386,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "form is valid" in {
         val sut = createSUT
         val formData = Json.obj(
-          sut.pensionStartDateForm.PensionFormDay   -> "09",
-          sut.pensionStartDateForm.PensionFormMonth -> "06",
-          sut.pensionStartDateForm.PensionFormYear  -> "2017"
+          PensionAddDateForm.PensionFormDay   -> "09",
+          PensionAddDateForm.PensionFormMonth -> "06",
+          PensionAddDateForm.PensionFormYear  -> "2017"
         )
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
@@ -408,9 +407,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "form is invalid" in {
         val sut = createSUT
         val formData = Json.obj(
-          sut.pensionStartDateForm.PensionFormDay   -> "01",
-          sut.pensionStartDateForm.PensionFormMonth -> "02",
-          sut.pensionStartDateForm.PensionFormYear  -> (LocalDate.now().getYear + 1).toString
+          PensionAddDateForm.PensionFormDay   -> "01",
+          PensionAddDateForm.PensionFormMonth -> "02",
+          PensionAddDateForm.PensionFormYear  -> (LocalDate.now().getYear + 1).toString
         )
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
@@ -426,9 +425,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "form is valid" in {
         val sut = createSUT
         val formData = Json.obj(
-          sut.pensionStartDateForm.PensionFormDay   -> "01",
-          sut.pensionStartDateForm.PensionFormMonth -> "02",
-          sut.pensionStartDateForm.PensionFormYear  -> "2017"
+          PensionAddDateForm.PensionFormDay   -> "01",
+          PensionAddDateForm.PensionFormMonth -> "02",
+          PensionAddDateForm.PensionFormYear  -> "2017"
         )
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))

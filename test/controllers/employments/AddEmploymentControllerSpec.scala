@@ -30,7 +30,6 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -163,9 +162,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "form is valid and start date is over 6 weeks ago" in {
         val sut = createSUT
         val formData = Json.obj(
-          sut.employmentStartDateForm.EmploymentFormDay   -> "01",
-          sut.employmentStartDateForm.EmploymentFormMonth -> "02",
-          sut.employmentStartDateForm.EmploymentFormYear  -> "2017"
+          EmploymentAddDateForm.EmploymentFormDay   -> "01",
+          EmploymentAddDateForm.EmploymentFormMonth -> "02",
+          EmploymentAddDateForm.EmploymentFormYear  -> "2017"
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
@@ -182,9 +181,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val date = LocalDate.now.minusDays(4)
 
         val formData = Json.obj(
-          sut.employmentStartDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
-          sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
-          sut.employmentStartDateForm.EmploymentFormYear  -> date.getYear.toString
+          EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
+          EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
+          EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
@@ -201,9 +200,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "form is invalid" in {
         val sut = createSUT
         val formData = Json.obj(
-          sut.employmentStartDateForm.EmploymentFormDay   -> "01",
-          sut.employmentStartDateForm.EmploymentFormMonth -> "02",
-          sut.employmentStartDateForm.EmploymentFormYear  -> (LocalDate.now().getYear + 1).toString
+          EmploymentAddDateForm.EmploymentFormDay   -> "01",
+          EmploymentAddDateForm.EmploymentFormMonth -> "02",
+          EmploymentAddDateForm.EmploymentFormYear  -> (LocalDate.now().getYear + 1).toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
@@ -219,9 +218,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "form is valid and start date is over 6 weeks ago" in {
         val sut = createSUT
         val formData = Json.obj(
-          sut.employmentStartDateForm.EmploymentFormDay   -> "01",
-          sut.employmentStartDateForm.EmploymentFormMonth -> "02",
-          sut.employmentStartDateForm.EmploymentFormYear  -> "2017"
+          EmploymentAddDateForm.EmploymentFormDay   -> "01",
+          EmploymentAddDateForm.EmploymentFormMonth -> "02",
+          EmploymentAddDateForm.EmploymentFormYear  -> "2017"
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
@@ -241,9 +240,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val date = LocalDate.now.minusDays(4)
 
         val formData = Json.obj(
-          sut.employmentStartDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
-          sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
-          sut.employmentStartDateForm.EmploymentFormYear  -> date.getYear.toString
+          EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
+          EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
+          EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
         )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
