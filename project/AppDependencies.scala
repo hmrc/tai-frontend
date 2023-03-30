@@ -11,7 +11,7 @@ private object AppDependencies {
     filters,
     jodaForms,
     "org.typelevel"     %% "cats-core"                                       % "2.9.0",
-    "com.typesafe.play" %% "play-json-joda"                                  % "2.9.3",
+    "com.typesafe.play" %% "play-json-joda"                                  % "2.9.4",
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"                   % s"1.12.0-$playVersion",
     "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion"                % "7.9.0",
     "uk.gov.hmrc"       %% "domain"                                          % s"8.1.0-$playVersion",
@@ -31,15 +31,15 @@ private object AppDependencies {
     def apply() =
       new TestDependencies {
         override lazy val test = Seq(
-          "org.scalatest"          %% "scalatest"              % "3.0.9"             % scope,
-          "org.scalatestplus.play" %% "scalatestplus-play"     % "4.0.3"             % scope,
+          "org.scalatest"          %% "scalatest"              % "3.2.15"            % scope,
+          "org.scalatestplus.play" %% "scalatestplus-play"     % "5.1.0"             % scope,
           "org.pegdown"            % "pegdown"                 % "1.6.0"             % scope,
-          "org.jsoup"              % "jsoup"                   % "1.8.3"             % scope,
+          "org.jsoup"              % "jsoup"                   % "1.15.4"            % scope,
           "org.mockito"            % "mockito-all"             % "1.10.19"           % scope,
-          "com.github.tomakehurst" % "wiremock-jre8"           % "2.26.1"            % scope,
+          "com.github.tomakehurst" % "wiremock-jre8"           % "2.35.0"            % scope,
           "com.typesafe.play"      %% "play-test"              % PlayVersion.current % scope,
-          "org.scalacheck"         %% "scalacheck"             % "1.14.3"            % scope,
-          "uk.gov.hmrc"            %% "bootstrap-test-play-28" % "7.13.0"             % scope
+          "org.scalacheck"         %% "scalacheck"             % "1.17.0"            % scope,
+          "uk.gov.hmrc"            %% "bootstrap-test-play-28" % "7.13.0"            % scope
         )
       }.test
   }

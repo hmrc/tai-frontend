@@ -59,7 +59,7 @@ val wartRemovedExcludedClasses = Seq(
   "uk.gov.hmrc.BuildInfo"
 )
 
-val silencerVersion = "1.7.3"
+val silencerVersion = "1.7.12"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
@@ -114,7 +114,8 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )
 
-scalacOptions += "-Ypartial-unification"
+//scalacOptions += "-Ypartial-unification"
+
 // Scalafix configuration - Only un comment if you want to correct the styling of the service, then comment again as this causes compile and test issues in the service
 //ThisBuild / semanticdbEnabled := true
 //ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
