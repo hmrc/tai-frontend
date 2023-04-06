@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import play.api.mvc.Call
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.ViewModelHelper
