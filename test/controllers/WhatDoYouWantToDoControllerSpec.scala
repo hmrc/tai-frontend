@@ -84,7 +84,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
   val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
   val mostRecentTaxCodeChangeDate =
-    TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate).replace(" ", "&nbsp;")
+    TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate) //.replace(" ", "&nbsp;")
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 

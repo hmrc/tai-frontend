@@ -29,7 +29,7 @@ import play.api.libs.json.Json
 
 import play.api.mvc.Request
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.util.{DateHelper, FormHelper}
 import play.api.libs.json.OFormat

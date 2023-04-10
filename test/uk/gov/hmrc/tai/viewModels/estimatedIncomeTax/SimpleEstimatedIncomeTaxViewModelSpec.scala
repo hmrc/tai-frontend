@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.formatting.Money.pounds
+import uk.gov.hmrc.tai.util.Money.pounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}

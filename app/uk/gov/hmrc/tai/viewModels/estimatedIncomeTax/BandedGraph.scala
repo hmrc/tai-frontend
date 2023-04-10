@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaiConstants}

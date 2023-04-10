@@ -187,5 +187,5 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveCheckYourAnswersSummaryNew
     }
 
-  def nonBreakable(string: String): String = string.replace(" ", "\u00A0")
+  def nonBreakable(string: String): String = string.replace(" ", "&nbsp;")
 }

@@ -38,7 +38,8 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.payPeriod.preHeading", employerName),
-      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRange))
+      messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRange.replace("&nbsp;", " "))
+    )
 
     "display the users current estimated income" in {
       val mainText = messages("tai.incomes.confirm.save.message")
