@@ -51,9 +51,6 @@
         confirmationLines = viewModel.journeyConfirmationLines
     )
 
-
-    <p class="govuk-body">@messages("tai.checkYourAnswers.confirmText")</p>
-
     @includes.link(
         id=Some("estimatedPayLink"),
         url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,

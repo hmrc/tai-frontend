@@ -349,16 +349,15 @@ class IncomeUpdateCalculatorControllerSpec
       def setup(currentValue: Option[String], cacheEmpty: Boolean = false): HandleCalculationResultHarness =
         new HandleCalculationResultHarness(currentValue, cacheEmpty)
     }
-    "display ConfirmAmountEnteredView" when {
+    "redirect to EditSuccessView" when {
       "journey cache returns employment name, net amount and id" in {
 
         val result = HandleCalculationResultHarness
           .setup(Some("100"))
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
-        status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/check-income-tax/update-income/success-page/123456")
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -367,13 +366,13 @@ class IncomeUpdateCalculatorControllerSpec
           .setup(Some("4632.460273972602739726027397260273"))
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/check-income-tax/update-income/success-page/123456")
       }
+    }
 
-      "redirects to the same amount entered page" ignore {
+    "redirect to the same amount entered page" when {
+      "new estimated income is equal to old income" in {
 
         val result = HandleCalculationResultHarness
           .setup(Some("1"))
@@ -381,11 +380,9 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
+
     "redirect to /income-details" when {
       "cache is empty" in {
 

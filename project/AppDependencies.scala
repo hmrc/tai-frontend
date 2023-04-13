@@ -37,7 +37,8 @@ private object AppDependencies {
           "org.mockito"            % "mockito-all"         % "1.10.19"           % scope,
           "com.github.tomakehurst" % "wiremock-jre8"       % "2.27.2"            % scope,
           "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
-          "org.scalacheck"         %% "scalacheck"         % "1.14.3"            % scope
+          "org.scalacheck"         %% "scalacheck"         % "1.14.3"            % scope,
+          "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"             % "5.3.0"
         )
       }.test
   }

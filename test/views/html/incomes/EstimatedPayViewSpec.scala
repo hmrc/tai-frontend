@@ -67,6 +67,10 @@ class EstimatedPayViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(messages("tai.estimatedPay.yourTaxablePay.text"))
     }
 
+    "display confirmation static text" in {
+      doc must haveParagraphWithText(messages("tai.checkYourAnswers.confirmText"))
+    }
+
     "contain summary with text and a hidden text" when {
       "the gross pay is apportioned" in {
         val employmentStartDate = TaxYear().start.plusMonths(2)

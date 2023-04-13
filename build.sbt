@@ -24,7 +24,7 @@ lazy val scoverageSettings = {
 
   Seq(
     ScoverageKeys.coverageExcludedPackages := scoverageExcludePatterns.mkString("", ";", ""),
-    ScoverageKeys.coverageMinimum := 92.31,
+    ScoverageKeys.coverageMinimumStmtTotal := 92.31,
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true,
     Test / parallelExecution := false
@@ -62,7 +62,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(defaultSettings(): _*)
-  .settings(scalaVersion := "2.12.17")
+  .settings(scalaVersion := "2.12.13")
   .settings(
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,

@@ -59,10 +59,6 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employer.id))
     behave like pageWithBackLinkWithUrl("backUrl")
 
-    "display confirmation static text" in {
-      doc must haveParagraphWithText(messages("tai.checkYourAnswers.confirmText"))
-    }
-
     "display journey confirmation lines" in {
 
       val monthlyPaymentFrequency = "Monthly"
