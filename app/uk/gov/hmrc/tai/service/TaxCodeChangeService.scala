@@ -39,8 +39,8 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
 
-    val hasTaxCodeChangedFuture: EitherT[Future, TaxCodeError, Boolean] = EitherT(taxCodeChanged(nino))
-    val taxCodeMismatchFuture: EitherT[Future, TaxCodeError, TaxCodeMismatch] =
+    lazy val hasTaxCodeChangedFuture: EitherT[Future, TaxCodeError, Boolean] = EitherT(taxCodeChanged(nino))
+    lazy val taxCodeMismatchFuture: EitherT[Future, TaxCodeError, TaxCodeMismatch] =
       EitherT.right[TaxCodeError](taxCodeMismatch(nino))
 
     (for {
