@@ -146,10 +146,11 @@ class RemoveCompanyBenefitControllerSpec
     "redirect to the 'What was the total value of your benefit' page" when {
       "the date is during this tax year" in {
 
-        val year = TaxYear().year.toString
+        val taxYear = TaxYear()
+        val year = taxYear.year.toString
         val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "06",
+          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "06",
+          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "04",
           RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
         )
 
@@ -174,7 +175,7 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey), Matchers.eq(s"$year-06-01"))(any())
+          .cache(Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey), Matchers.eq(s"$year-04-06"))(any())
       }
     }
 
