@@ -56,7 +56,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(
-        Messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
+        Messages(
+          "tai.income.previousYears.decision.title",
+          TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year).replaceAll("\u00A0", " ")))
     }
   }
 

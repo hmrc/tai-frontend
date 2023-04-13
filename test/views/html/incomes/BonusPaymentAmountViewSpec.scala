@@ -37,13 +37,14 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPaymentsAmount.preHeading", employer.name),
-      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited) + " " + "This section is " + messages(
-        "tai.bonusPaymentsAmount.preHeading",
-        employer.name)
+      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited).replaceAll(
+        "\u00A0",
+        " ") + " " + "This section is " + messages("tai.bonusPaymentsAmount.preHeading", employer.name)
     )
 
     behave like pageWithTitle(
-      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+      messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+        .replaceAll("\u00A0", " "))
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount/" + employer.id)
 
     "contain a paragraph with static text" in {
@@ -68,7 +69,9 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
     "display an error" when {
       "the user continues without entering an amount" in {
         val emptySelectionErrorMessage =
-          messages("tai.bonusPaymentsAmount.error.form.mandatory", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+          messages(
+            "tai.bonusPaymentsAmount.error.form.mandatory",
+            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " "))
         val invalidRequest = Json.obj("amount" -> "")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 

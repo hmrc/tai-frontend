@@ -86,7 +86,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
       mainHeaderText = Messages(
         "taxCode.change.yourTaxCodeChanged.h1",
-        HtmlFormatter.htmlNonBroken(Dates.formatDate(viewModel.changeDate)))
+        HtmlFormatter.htmlNonBroken(Dates.formatDate(viewModel.changeDate)).replaceAll("\u00A0", " "))
     )
 
     "displays the previous tax code section title" in {

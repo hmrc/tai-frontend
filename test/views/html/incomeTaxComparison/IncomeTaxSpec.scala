@@ -83,8 +83,12 @@ class IncomeTaxSpec extends TaiViewSpec {
   }
 
   private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"
-  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end)) + " "
-  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start)) + " "
+  val taxYearEnds = "Current tax year ends " + HtmlFormatter
+    .htmlNonBroken(Dates.formatDate(TaxYear().end))
+    .replaceAll("\u00A0", " ") + " "
+  val taxYearStarts = "Next tax year from " + HtmlFormatter
+    .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+    .replaceAll("\u00A0", " ") + " "
   private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100.83)
   private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100.83)
 

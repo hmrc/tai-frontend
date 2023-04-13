@@ -57,6 +57,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
 
       val expectedTitle =
         s"${messagesApi("tai.taxFreeAmount.heading.pt1")} ${TaxYearRangeUtil.currentTaxYearRangeBreak}"
+          .replaceAll("\u00A0", " ")
 
       doc.title() must include(expectedTitle)
     }

@@ -28,7 +28,7 @@ class DeceasedHelplineViewSpec extends TaiViewSpec {
   "Deceased helpline page" should {
     behave like pageWithTitle(messages("tai.deceased.title"))
     behave like pageWithHeader(
-      s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}")
+      s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2")).replaceAll("\u00A0", " ")}")
   }
 
   "contain an h2 heading concerning a bereavement question" in {
