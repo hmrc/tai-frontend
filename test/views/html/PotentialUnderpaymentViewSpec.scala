@@ -61,7 +61,8 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     }
 
     "display a section on what happens next" in {
-      document() must haveParagraphWithText(messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange))
+      document() must haveParagraphWithText(
+        messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRangeBreak))
     }
 
     "display get help link" in {

@@ -19,6 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
+import org.jsoup.nodes.{Document, Element}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
@@ -84,7 +85,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
   val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
   val mostRecentTaxCodeChangeDate =
-    TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate) //.replace(" ", "&nbsp;")
+    TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate).replace("\u00A0", " ")
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
@@ -123,6 +124,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     Mockito.reset(auditService, employmentService)
 
   "Calling the What do you want to do page method" must {
+    def toStringBreak(doc: Document) =
+      doc.body()
+
     "call whatDoYouWantToDoPage() successfully with an authorised session" when {
 
       "cy plus one data is available and cy plus one is enabled" in {
@@ -160,7 +164,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString mustNot include(Messages("check.tax.hasChanged.header"))
+        val element: Element = doc.body()
+        element.toString mustNot include(Messages("check.tax.hasChanged.header"))
       }
 
       "there has been a tax code change and cyPlusOne is enabled and jrs claim data does not exist" in {
@@ -179,7 +184,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
+        doc.body().toStringBreak must include(
+          Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
 
         doc.select(".card").size mustBe 3
       }
@@ -201,7 +207,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
+        doc.body().toStringBreak must include(
+          Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
         doc.select(".card").size mustBe 2
       }
 
@@ -224,8 +231,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
-        doc.body().toString must include(Messages("check.jrs.claims"))
+        val body = doc.body().toStringBreak
+        body must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
+        body must include(Messages("check.jrs.claims"))
 
         doc.select(".card").size mustBe 3
       }
@@ -247,8 +255,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         status(result) mustBe OK
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
-        doc.body().toString must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
-        doc.body().toString must include(Messages("check.jrs.claims"))
+        val body = doc.body().toStringBreak
+        body must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
+        body must include(Messages("check.jrs.claims"))
 
         doc.select(".card").size mustBe 2
       }

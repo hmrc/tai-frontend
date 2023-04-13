@@ -358,7 +358,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -370,7 +370,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
 
       "redirects to the same amount entered page" ignore {
@@ -383,7 +383,7 @@ class IncomeUpdateCalculatorControllerSpec
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
     "redirect to /income-details" when {

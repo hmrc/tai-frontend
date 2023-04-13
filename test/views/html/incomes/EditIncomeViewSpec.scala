@@ -30,7 +30,7 @@ class EditIncomeViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.incomes.edit.preHeading", employerName),
-      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange.replace("&nbsp;", " "))
+      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )
   }
 

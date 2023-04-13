@@ -56,7 +56,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       val doc = Jsoup.parse(contentAsString(result))
 
       val expectedTitle =
-        s"${messagesApi("tai.taxFreeAmount.heading.pt1")} ${TaxYearRangeUtil.currentTaxYearRange}"
+        s"${messagesApi("tai.taxFreeAmount.heading.pt1")} ${TaxYearRangeUtil.currentTaxYearRangeBreak}"
 
       doc.title() must include(expectedTitle)
     }

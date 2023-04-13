@@ -37,7 +37,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)))
+      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)).replaceU00A0)
 
     behave like pageWithButtonForm(
       controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url,

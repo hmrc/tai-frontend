@@ -43,8 +43,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     behave like pageWithCombinedHeaderNewFormat(
       Messages(
         "tai.taxYear",
-        nonBreakable(Dates.formatDate(TaxYear().start)),
-        nonBreakable(Dates.formatDate(TaxYear().end))
+        Dates.formatDate(TaxYear().start),
+        Dates.formatDate(TaxYear().end)
       ),
       Messages("tai.estimatedIncome.detailedEstimate.heading"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))

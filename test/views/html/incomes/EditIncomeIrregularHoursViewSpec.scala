@@ -44,7 +44,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
       val document = doc(view)
       document must haveHeadingH2WithText(messages("tai.irregular.introduction", employerName))
       document must haveParagraphWithText(
-        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange))
+        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRangeBreak))
       document must haveHeadingH2WithText(messages("tai.incomes.edit.what.should.you.include"))
       document must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }

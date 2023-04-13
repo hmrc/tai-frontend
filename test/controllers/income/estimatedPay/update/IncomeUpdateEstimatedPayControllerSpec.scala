@@ -166,7 +166,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange.replace("\u00A0", " ")))
+          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak.replace("\u00A0", " ")))
       }
 
       "payYearToDate is None" in {
@@ -178,8 +178,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(
-          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange.replace("\u00A0", " ")))
+        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
 

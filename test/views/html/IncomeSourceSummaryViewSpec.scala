@@ -32,11 +32,11 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       messages(
         "tai.employment.income.details.mainHeading",
         model.empOrPensionName,
-        TaxYearRangeUtil.currentTaxYearRange)
+        TaxYearRangeUtil.currentTaxYearRangeBreak)
     )
 
     behave like pageWithTitle(
-      messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
+      messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )
 
     "display headings" when {
@@ -47,9 +47,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           messages(
             "tai.pension.income.details.mainHeading",
             pensionModel.empOrPensionName,
-            TaxYearRangeUtil.currentTaxYearRange))
+            TaxYearRangeUtil.currentTaxYearRangeBreak))
         pensionDoc.title must include(
-          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
+          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
 
