@@ -104,7 +104,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange))
+        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
 
@@ -581,7 +581,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange))
+        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
 

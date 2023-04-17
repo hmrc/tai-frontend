@@ -17,7 +17,7 @@
 package views.html.incomes
 
 import play.twirl.api.Html
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
@@ -44,7 +44,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
       val document = doc(view)
       document must haveHeadingH2WithText(messages("tai.irregular.introduction", employerName))
       document must haveParagraphWithText(
-        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange))
+        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRangeBreak))
       document must haveHeadingH2WithText(messages("tai.incomes.edit.what.should.you.include"))
       document must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }

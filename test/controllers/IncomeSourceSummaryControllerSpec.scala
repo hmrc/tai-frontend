@@ -71,7 +71,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
+          Messages(
+            "tai.employment.income.details.mainHeading.gaTitle",
+            TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")))
       }
 
       "asked for pension details" in {
@@ -90,7 +92,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
+          Messages(
+            "tai.pension.income.details.mainHeading.gaTitle",
+            TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")))
       }
     }
 
@@ -134,7 +138,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
+          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak))
         verify(journeyCacheService, times(1)).flushWithEmpId(Matchers.eq(employmentId))(any())
       }
     }

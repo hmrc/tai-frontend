@@ -43,9 +43,9 @@ class previousYearsSideNavSpec extends TaiViewSpec {
     "display cy-2 side menu as link" in {
       val doc = Jsoup.parse(view.toString)
 
-      val menu = s"#${currentYear - 2}NavItem"
+      val menu = s"#${currentYear - 2}NavItem".replaceAll("\u00A0", " ")
       doc.select(menu).size() mustBe 1
-      doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 2)
+      doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 2).replaceAll("\u00A0", " ")
       doc.select(s"$menu a").hasAttr("href") mustBe true
       doc.select(s"$menu a").attr("href") mustBe routes.PayeControllerHistoric
         .payePage(TaxYear(currentYear - 2))
@@ -55,9 +55,9 @@ class previousYearsSideNavSpec extends TaiViewSpec {
     "display cy-3 side menu as link" in {
       val doc = Jsoup.parse(view.toString)
 
-      val menu = s"#${currentYear - 3}NavItem"
+      val menu = s"#${currentYear - 3}NavItem".replaceAll("\u00A0", " ")
       doc.select(menu).size() mustBe 1
-      doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 3)
+      doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 3).replaceAll("\u00A0", " ")
       doc.select(s"$menu a").hasAttr("href") mustBe true
       doc.select(s"$menu a").attr("href") mustBe routes.PayeControllerHistoric
         .payePage(TaxYear(currentYear - 3))

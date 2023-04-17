@@ -144,9 +144,12 @@ class IncomeSummarySpec extends TaiViewSpec {
 
   private lazy val employerNameHeading = "Employer name "
   private lazy val pensionNameHeading = "Pension name "
-  private lazy val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end)) + " "
-  private lazy val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(
-    Dates.formatDate(TaxYear().next.start)) + " "
+  private lazy val taxYearEnds = "Current tax year ends " + HtmlFormatter
+    .htmlNonBroken(Dates.formatDate(TaxYear().end))
+    .replaceAll("\u00A0", " ") + " "
+  private lazy val taxYearStarts = "Next tax year from " + HtmlFormatter
+    .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+    .replaceAll("\u00A0", " ") + " "
 
   private lazy val employmentOneIncomeSourceDetail =
     IncomeSourceComparisonDetail(1, "Company1", "£15,000", "£15,500", true)

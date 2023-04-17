@@ -19,6 +19,7 @@ import builders.UserBuilder
 import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
+import org.jsoup.nodes.Element
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
@@ -51,5 +52,14 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
+
+  implicit class ElemUtil(elem: Element) {
+    def toStringBreak = elem.toString.replaceAll("&nbsp;", " ")
+  }
+
+  implicit class StringUtils(str: String) {
+    def replaceU00A0 = str.replace("\u00A0", " ")
+    def replaceNbsp = str.replaceAll("&nbsp;", " ")
+  }
 
 }

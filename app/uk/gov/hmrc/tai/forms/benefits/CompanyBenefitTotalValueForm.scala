@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import uk.gov.hmrc.tai.util.StopOnFirstFail
 import uk.gov.hmrc.tai.util.FormHelper.isValidCurrency
 
 object CompanyBenefitTotalValueForm {

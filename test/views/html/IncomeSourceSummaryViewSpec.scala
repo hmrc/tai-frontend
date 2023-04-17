@@ -32,11 +32,11 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       messages(
         "tai.employment.income.details.mainHeading",
         model.empOrPensionName,
-        TaxYearRangeUtil.currentTaxYearRange)
+        TaxYearRangeUtil.currentTaxYearRangeBreak)
     )
 
     behave like pageWithTitle(
-      messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
+      messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )
 
     "display headings" when {
@@ -47,22 +47,24 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           messages(
             "tai.pension.income.details.mainHeading",
             pensionModel.empOrPensionName,
-            TaxYearRangeUtil.currentTaxYearRange))
+            TaxYearRangeUtil.currentTaxYearRangeBreak))
         pensionDoc.title must include(
-          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange))
+          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
     }
 
     "display link to update or remove employer" when {
       "income source is employment" in {
-        doc must haveParagraphWithText(messages("tai.employment.income.details.updateLinkText", "Employer"))
+        doc must haveParagraphWithText(
+          messages("tai.employment.income.details.updateLinkText", "Employer").replaceAll("\u00A0", " "))
         doc must haveLinkWithUrlWithID(
           "updateEmployer",
           controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url)
       }
 
       "income source is pension" in {
-        pensionDoc must haveParagraphWithText(messages("tai.pension.income.details.updateLinkText", "Pension"))
+        pensionDoc must haveParagraphWithText(
+          messages("tai.pension.income.details.updateLinkText", "Pension").replaceAll("\u00A0", " "))
         pensionDoc must haveLinkWithUrlWithID(
           "updatePension",
           controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url)
@@ -120,7 +122,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is employment" in {
         doc must haveHeadingH2WithText(messages("tai.income.details.incomeReceivedToDate"))
         doc must haveParagraphWithText(
-          messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
+          messages(
+            "tai.income.details.incomeReceivedToDate.desc",
+            model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")))
         doc must haveSpanWithText("£" + model.incomeReceivedToDate)
         doc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",
@@ -130,7 +134,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is pension" in {
         pensionDoc must haveHeadingH2WithText(messages("tai.income.details.incomeReceivedToDate"))
         pensionDoc must haveParagraphWithText(
-          messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
+          messages(
+            "tai.income.details.incomeReceivedToDate.desc",
+            model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")))
         pensionDoc must haveSpanWithText("£" + pensionModel.incomeReceivedToDate)
         pensionDoc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",

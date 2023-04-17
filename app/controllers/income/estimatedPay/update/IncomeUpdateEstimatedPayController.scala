@@ -25,7 +25,7 @@ import play.api.Logger
 
 import java.time.LocalDate
 import play.api.mvc._
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.config.ApplicationConfig

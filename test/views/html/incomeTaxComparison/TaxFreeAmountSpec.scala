@@ -18,7 +18,7 @@ package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper}
@@ -27,15 +27,20 @@ import uk.gov.hmrc.tai.viewModels._
 class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   "Tax free amount comparision view" must {
 
-    val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end))
-    val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+    val taxYearEnds = "Current tax year ends " + HtmlFormatter
+      .htmlNonBroken(Dates.formatDate(TaxYear().end))
+      .replaceAll("\u00A0", " ")
+    val taxYearStarts = "Next tax year from " + HtmlFormatter
+      .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+      .replaceAll("\u00A0", " ")
 
     "display heading" in {
       doc must haveHeadingH2WithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
     }
 
     "display personal allowance increase message when CY+1 PA is greater than CY PA" in {
-      val startOfNextTaxYear = HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+      val startOfNextTaxYear =
+        HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start)).replaceAll("\u00A0", " ")
       val PA_CY_PLUS_ONE_INDEX = 1
       val personalAllowanceCYPlusOneAmount =
         MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(model.personalAllowance.values(PA_CY_PLUS_ONE_INDEX), 0))
@@ -82,8 +87,8 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
 
     "display total table" in {
       doc must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
-      doc must haveTdWithText("Current tax year £3,000")
-      doc must haveTdWithText("Next tax year £3,300")
+      doc must haveTdWithText("Current tax year £3,000")
+      doc must haveTdWithText("Next tax year £3,300")
     }
 
     "display no additions details" when {

@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetai
 class UpdateIncomeDetailsViewSpec extends TaiViewSpec {
 
   private val taxYear: Int = 2016
-  private val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
+  private val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear).replaceAll("\u00A0", " ")
   private val givenTaxYear: TaxYear = TaxYear(taxYear)
   private val UpdateIncomeDetails = inject[UpdateIncomeDetailsView]
   override def view: Html =

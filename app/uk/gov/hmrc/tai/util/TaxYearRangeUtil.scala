@@ -38,6 +38,9 @@ object TaxYearRangeUtil {
   def currentTaxYearRange(implicit messages: Messages): String =
     dateRange(messageRangeKeyFromAndTo, TaxYear().start, TaxYear().end)
 
+  def currentTaxYearRangeBreak(implicit messages: Messages): String =
+    currentTaxYearRange.replace("\u00A0", " ")
+
   def currentTaxYearRangeBetweenDelimited(implicit messages: Messages): String =
     dateRange(messageRangeKeyBetween, TaxYear().start, TaxYear().end)
 

@@ -95,9 +95,9 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startOfTaxYear: String =
-        TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+        TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
       val endOfTaxYear: String =
-        TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+        TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
       val result = sut.taxCodes(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -150,8 +150,8 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      val startOfYearNonBreak = startOfTaxYear.replaceAll(" ", "\u00A0")
-      val endOfYearNonBreak = endOfTaxYear.replaceAll(" ", "\u00A0")
+      val startOfYearNonBreak = startOfTaxYear
+      val endOfYearNonBreak = endOfTaxYear
 
       doc.title must include(Messages("tai.taxCode.prev.single.code.title", startOfYearNonBreak, endOfYearNonBreak))
     }

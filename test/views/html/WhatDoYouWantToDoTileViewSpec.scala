@@ -54,7 +54,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         cards.size mustBe 2
         cards.toString must include(Messages("current.tax.year"))
-        doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+        doc(view) must haveParagraphWithText(
+          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak))
         cards.toString mustNot include(Messages("next.year"))
         cards.toString mustNot include(Messages("check.estimated.income"))
         cards.toString must include(Messages("income.tax.history"))
@@ -72,10 +73,10 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.size mustBe 3
         cards.toString must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(
-          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak))
         cards.toString must include(Messages("next.year"))
         doc(nextYearView) must haveParagraphWithText(
-          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)))
+          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)).replaceU00A0)
       }
 
       "Tax Code Change is disabled" in {
@@ -121,7 +122,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.size mustBe 2
 
       cards.toString must include(Messages("current.tax.year"))
-      doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
+      doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak))
       cards.toString mustNot include(Messages("next.year"))
       cards.toString mustNot include(Messages("check.estimated.income"))
 
