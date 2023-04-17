@@ -16,7 +16,7 @@
 
 @import includes.ptaHeader
 @import includes.link
-@import uk.gov.hmrc.play.views.html.helpers._
+
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.domain.{Available, TemporarilyUnavailable}
 @import uk.gov.hmrc.tai.model.TaxYear
@@ -144,7 +144,7 @@
         }
             <div class="print-this">
                 <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(historicIncomeCalculationViewModel.taxYear,historicIncomeCalculationViewModel.employmentId).toString"
-                   class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
+                   class="print-this__link" >@Messages("tai.label.print")</a>
             </div>
     </div>
     </div>

@@ -27,13 +27,13 @@
 
 @header = @{
     ptaHeader(
-        mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
+        mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading"),
         preHeadingText = Messages("tai.endEmployment.preHeadingText"),
         showGdsVersion = true)
 }
 
 @mainTemplate(
-    title = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
+    title = Messages("tai.endEmploymentWithinSixWeeksError.heading"),
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkContent = None
@@ -43,13 +43,12 @@
         <div class="govuk-grid-column-two-thirds">
             @header
     <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml)</p>
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName)</p>
+    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.employerName, model.latestPayDate, model.earliestUpdateDateInHtml)</p>
     <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC")</li>
-        <li>@messages("tai.endEmploymentWithinSixWeeksError.askForP45")</li>
+        <li>@messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC", model.employerName)</li>
+        <li>@messages("tai.endEmploymentWithinSixWeeksError.askForP45", model.employerName)</li>
+        <li>@messages("tai.endEmploymentWithinSixWeeksError.useP45")</li>
     </ul>
-    <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml)
 
     <div class="subsection">
         @includes.link(

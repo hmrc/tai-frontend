@@ -55,7 +55,7 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h2"))
 
       doc must haveParagraphWithText(
-        Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRange))
+        Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeBreak))
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p5"))
     }
   }

@@ -32,7 +32,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
 
   val emptySelectionErrorMessage = messages(
     "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " "))
   val bonusPaymentsForm = BonusPaymentsForm.createForm
   val choice = FormValuesConstants.YesNoChoice
 
@@ -45,10 +45,15 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPayments.preHeading", employer.name),
-      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+      messages(
+        "tai.bonusPayments.title",
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithTitle(
+      messages(
+        "tai.bonusPayments.title",
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")))
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments/" + employer.id)
 
     "return no errors with valid 'yes' choice" in {

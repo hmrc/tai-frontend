@@ -20,7 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
@@ -61,7 +61,8 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     }
 
     "display a section on what happens next" in {
-      document() must haveParagraphWithText(messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange))
+      document() must haveParagraphWithText(
+        messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")))
     }
 
     "display get help link" in {

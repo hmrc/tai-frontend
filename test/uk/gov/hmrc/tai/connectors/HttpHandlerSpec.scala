@@ -46,8 +46,7 @@ class HttpHandlerSpec
   case class DateRequest(date: LocalDate)
 
   object DateRequest {
-    import play.api.libs.json.JodaWrites._
-    import play.api.libs.json.JodaReads._
+
     implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
   }
 

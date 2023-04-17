@@ -57,7 +57,11 @@ class TaxCodesSpec extends TaiViewSpec {
   private lazy val employmentTaxCode = Seq(TaxCodeDetail("EMPLOYER", Seq("1115L", "S975L")))
   private lazy val pensionTaxCode = Seq(TaxCodeDetail("PENSION", Seq("1150L", "1250L")))
   private lazy val model = TaxCodeComparisonViewModel(employmentTaxCode, pensionTaxCode)
-  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear() end))
-  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+  val taxYearEnds = "Current tax year ends " + HtmlFormatter
+    .htmlNonBroken(Dates.formatDate(TaxYear() end))
+    .replaceAll("\u00A0", " ")
+  val taxYearStarts = "Next tax year from " + HtmlFormatter
+    .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
+    .replaceAll("\u00A0", " ")
   override def view: Html = views.html.incomeTaxComparison.TaxCodes(model, appConfig)
 }

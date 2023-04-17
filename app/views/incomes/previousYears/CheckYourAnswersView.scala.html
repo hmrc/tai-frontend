@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateIncomeDetailsCheckYourAnswersViewModel
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import includes.ptaHeader
 @import includes._
 @import includes.forms._
@@ -44,7 +44,7 @@
     <div class="govuk-grid-column-two-thirds">
         <div class="section">
             @checkYourAnswers(
-              title = Some(viewModel.tableHeader),
+              title = Some(messages("tai.income.previousYears.checkYourAnswers.subTitle")),
               confirmationLines = viewModel.journeyConfirmationLines
             )
         </div>

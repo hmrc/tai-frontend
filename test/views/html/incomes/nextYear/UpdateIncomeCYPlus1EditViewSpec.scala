@@ -18,7 +18,7 @@ package views.html.incomes.nextYear
 
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -37,7 +37,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)))
+      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)).replaceU00A0)
 
     behave like pageWithButtonForm(
       controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url,

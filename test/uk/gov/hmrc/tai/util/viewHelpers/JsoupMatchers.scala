@@ -78,7 +78,7 @@ trait JsoupMatchers {
   }
 
   class TagWithIdAndTextMatcher(expectedContent: String, tag: String, id: String)
-      extends CssSelectorWithTextMatcher(expectedContent, s"$tag[id=$id")
+      extends CssSelectorWithTextMatcher(expectedContent, s"$tag[id=$id]")
 
   class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String)
       extends Matcher[Document] {

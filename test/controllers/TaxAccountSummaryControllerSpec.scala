@@ -75,7 +75,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
       val doc = Jsoup.parse(contentAsString(result))
 
       val expectedTitle =
-        s"${messagesApi("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)}"
+        s"${messagesApi("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeBreak)}"
       doc.title() must include(expectedTitle)
     }
 

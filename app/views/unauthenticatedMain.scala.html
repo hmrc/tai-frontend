@@ -16,12 +16,13 @@
 
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 @import uk.gov.hmrc.play.language.LanguageUtils
-@import uk.gov.hmrc.play.views.html.layouts._
+@import util._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 
 @this(
         appConfig: ApplicationConfig,
         langUtils: LanguageUtils,
-        trackingConsentSnippet: TrackingConsentSnippet,
+        trackingConsentSnippet: HmrcTrackingConsentSnippet,
         article: Article,
         sidebar: Sidebar,
         attorneyBanner: AttorneyBanner

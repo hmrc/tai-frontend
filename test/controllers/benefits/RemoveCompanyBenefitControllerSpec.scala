@@ -35,6 +35,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.model.domain.income.Live
+import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
@@ -146,10 +147,11 @@ class RemoveCompanyBenefitControllerSpec
     "redirect to the 'What was the total value of your benefit' page" when {
       "the date is during this tax year" in {
 
-        val year = TaxYear().year.toString
+        val taxYear = TaxYear()
+        val year = taxYear.year.toString
         val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "06",
+          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "06",
+          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "04",
           RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
         )
 
@@ -174,7 +176,7 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey), Matchers.eq(s"$year-06-01"))(any())
+          .cache(Matchers.eq(EndCompanyBenefitConstants.BenefitStopDateKey), Matchers.eq(s"$year-04-06"))(any())
       }
     }
 
@@ -711,6 +713,9 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session" in {
         val sut = createSUT
 
+        when(trackingService.isAnyIFormInProgress(any())(any()))
+          .thenReturn(Future.successful(ThreeWeeks))
+
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
@@ -750,11 +755,14 @@ class RemoveCompanyBenefitControllerSpec
 
   private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
 
+  private val trackingService = mock[TrackingService]
+
   class SUT
       extends RemoveCompanyBenefitController(
         removeCompanyBenefitJourneyCacheService,
         trackSuccessJourneyCacheService,
         benefitsService,
+        trackingService,
         FakeAuthAction,
         FakeValidatePerson,
         mcc,

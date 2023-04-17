@@ -285,7 +285,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
+      doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
     }
 
     "respond with INTERNAL_SERVER_ERROR for a future failed when we call the cache" in {

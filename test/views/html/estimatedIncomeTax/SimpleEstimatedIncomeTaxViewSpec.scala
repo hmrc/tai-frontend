@@ -33,10 +33,7 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
   "Estimated Income Tax Page" must {
     behave like pageWithCombinedHeaderNewFormat(
-      messages(
-        "tai.taxYear",
-        Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
-        Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")),
+      messages("tai.taxYear", Dates.formatDate(TaxYear().start), Dates.formatDate(TaxYear().end)),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )

@@ -18,8 +18,7 @@ package uk.gov.hmrc.tai.model.domain.formatters
 
 import java.time.LocalDate
 import play.api.libs.json.{JsResult, JsSuccess, JsValue, Reads}
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
