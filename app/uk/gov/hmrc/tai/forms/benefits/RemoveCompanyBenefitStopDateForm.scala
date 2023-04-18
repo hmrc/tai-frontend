@@ -18,60 +18,25 @@ package uk.gov.hmrc.tai.forms.benefits
 
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.{FieldMapping, Form, FormError}
+import play.api.data.{FieldMapping, Form}
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.LocalDateFormatter
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm._
 
 import java.time.LocalDate
-import scala.util.Try
 
 case class RemoveCompanyBenefitStopDateForm(benefitName: String, employerName: String) {
   def form(implicit messages: Messages): Form[LocalDate] = {
-    implicit val dateFormatter: Formatter[LocalDate] = new Formatter[LocalDate] {
-      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+    implicit val dateFormatter: Formatter[LocalDate] = new LocalDateFormatter(
+      formDay = BenefitFormDay,
+      formMonth = BenefitFormMonth,
+      formYear = BenefitFormYear,
+      errorMsgs = errorMsgs
+    )
 
-        val dayErrors: Boolean = data.getOrElse(BenefitFormDay, "").isEmpty
-
-        val monthErrors: Boolean = data.getOrElse(BenefitFormMonth, "").isEmpty
-
-        val yearErrors: Boolean = data.getOrElse(BenefitFormYear, "").isEmpty
-
-        val errors =
-          if (dayErrors || monthErrors || yearErrors) {
-            Seq(
-              FormError(key = BenefitFormDay, Messages("tai.benefits.ended.stopDate.error", benefitName, employerName)))
-          } else {
-            Nil
-          }
-
-        if (errors.isEmpty) {
-          val inputDate: Option[LocalDate] = Try(
-            for {
-              day   <- data.get(BenefitFormDay).map(Integer.parseInt)
-              month <- data.get(BenefitFormMonth).map(Integer.parseInt)
-              year  <- data.get(BenefitFormYear).map(Integer.parseInt)
-            } yield LocalDate.of(year, month, day)
-          ).getOrElse(None)
-
-          inputDate match {
-            case Some(date) if date.isAfter(LocalDate.now()) =>
-              Left(Seq(FormError(key = BenefitFormDay, message = Messages("tai.date.error.future"))))
-            case Some(d) => Right(d)
-            case _       => Left(Seq(FormError(key = BenefitFormDay, message = Messages("tai.date.error.invalid"))))
-          }
-        } else { Left(errors) }
-      }
-
-      override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        BenefitFormDay   -> value.getDayOfMonth.toString,
-        BenefitFormMonth -> value.getMonthValue.toString,
-        BenefitFormYear  -> value.getYear.toString
-      )
-    }
     val localDateMapping: FieldMapping[LocalDate] = of[LocalDate]
     Form(localDateMapping)
   }
-
 }
 
 object RemoveCompanyBenefitStopDateForm {
@@ -79,4 +44,20 @@ object RemoveCompanyBenefitStopDateForm {
   val BenefitFormDay = "benefitEndDateForm-day"
   val BenefitFormMonth = "benefitEndDateForm-month"
   val BenefitFormYear = "benefitEndDateForm-year"
+
+  def errorMsgs(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
+    enterDate = Messages("tai.benefits.ended.stopDate.error.enterDate"),
+    enterDay = Messages("tai.benefits.ended.stopDate.error.enterDay"),
+    enterMonth = Messages("tai.benefits.ended.stopDate.error.enterMonth"),
+    enterYear = Messages("tai.benefits.ended.stopDate.error.enterYear"),
+    enterDayAndMonth = Messages("tai.benefits.ended.stopDate.error.enterDayAndMonth"),
+    enterDayAndYear = Messages("tai.benefits.ended.stopDate.error.enterDayAndYear"),
+    enterMonthAndYear = Messages("tai.benefits.ended.stopDate.error.enterMonthAndYear"),
+    mustBeValidDay = Messages("tai.benefits.ended.stopDate.error.mustBeValidDay"),
+    mustBeValidMonth = Messages("tai.benefits.ended.stopDate.error.mustBeValidMonth"),
+    mustBeValidYear = Messages("tai.benefits.ended.stopDate.error.mustBeValidYear"),
+    mustBeReal = Messages("tai.benefits.ended.stopDate.error.mustBeReal"),
+    mustBeFuture = Messages("tai.benefits.ended.stopDate.error.mustBeFuture"),
+    mustBeAfter1900 = Messages("tai.benefits.ended.stopDate.error.mustBeAfter1900")
+  )
 }

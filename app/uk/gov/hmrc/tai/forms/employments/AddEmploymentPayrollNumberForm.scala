@@ -29,8 +29,10 @@ case class AddEmploymentPayrollNumberForm(payrollNumberChoice: Option[String], p
 object AddEmploymentPayrollNumberForm {
 
   private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
-    case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue => Valid
-    case _                                                                                      => Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+    case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue =>
+      Valid
+    case _ =>
+      Invalid(Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
   }
 
   def form(implicit messages: Messages): Form[AddEmploymentPayrollNumberForm] = Form[AddEmploymentPayrollNumberForm](

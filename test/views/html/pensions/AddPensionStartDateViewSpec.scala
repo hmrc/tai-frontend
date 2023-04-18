@@ -16,12 +16,13 @@
 
 package views.html.pensions
 
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+
+import java.time.LocalDate
 
 class AddPensionStartDateViewSpec extends TaiViewSpec {
   private val pensionName = "Pension name"
@@ -30,9 +31,9 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
   private val formWithErrors: Form[LocalDate] = addDateForm.form.withError("", globalErrorMessage)
   private lazy val pensionStartDateForm: Form[LocalDate] = addDateForm.form.bind(
     Map(
-      addDateForm.PensionFormDay -> "9",
-      "month"                    -> "6",
-      "year"                     -> "2017"
+      PensionAddDateForm.PensionFormDay -> "9",
+      "month"                           -> "6",
+      "year"                            -> "2017"
     ))
   private val addPensionStartDate = inject[AddPensionStartDateView]
   override def view: Html = addPensionStartDate(pensionStartDateForm, pensionName)

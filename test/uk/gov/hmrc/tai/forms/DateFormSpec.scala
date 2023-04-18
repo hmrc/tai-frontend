@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.tai.forms
 
-import java.time.LocalDate
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import utils.BaseSpec
 
+import java.time.LocalDate
+
 class DateFormSpec extends BaseSpec {
+
+  val errorMsgs = DateForm.errorMsgs
 
   "DateForm" must {
 
@@ -55,65 +57,53 @@ class DateFormSpec extends BaseSpec {
 
       val prePopForm = form.fill(LocalDate.of(2014, 8, 15))
 
-      prePopForm.data must contain(dateForm.DateFormDay   -> "15")
-      prePopForm.data must contain(dateForm.DateFormMonth -> "8")
-      prePopForm.data must contain(dateForm.DateFormYear  -> "2014")
+      prePopForm.data must contain(DateForm.DateFormDay   -> "15")
+      prePopForm.data must contain(DateForm.DateFormMonth -> "8")
+      prePopForm.data must contain(DateForm.DateFormYear  -> "2014")
     }
 
     "return an error" when {
 
       "day is blank" in {
-
         val validatedFormNoDayError = form.bind(invalidNoDayValue)
 
-        validatedFormNoDayError.errors must contain(FormError(DayTag, List(blankDateErrorMessage)))
+        validatedFormNoDayError.errors must contain(FormError(DayTag, List(errorMsgs.enterDay)))
       }
 
       "month is blank" in {
-
         val validatedFormNoMonthError = form.bind(invalidNoMonthValue)
 
-        validatedFormNoMonthError.errors must contain(FormError(DayTag, List(blankDateErrorMessage)))
+        validatedFormNoMonthError.errors must contain(FormError(MonthTag, List(errorMsgs.enterMonth)))
       }
 
       "year is blank" in {
-
         val validatedFormNoYearError = form.bind(invalidNoYearValue)
 
-        validatedFormNoYearError.errors must contain(FormError(DayTag, List(blankDateErrorMessage)))
+        validatedFormNoYearError.errors must contain(FormError(YearTag, List(errorMsgs.enterYear)))
       }
 
-      "multiple fields are blank" in {
-
+      "multiple fields -day and year- are blank" in {
         val validatedFormNoDayNoYearError = form.bind(invalidNoDayNoYearValue)
 
-        validatedFormNoDayNoYearError.errors must be(List(FormError(DayTag, blankDateErrorMessage)))
+        validatedFormNoDayNoYearError.errors must contain(FormError(DayTag, List(errorMsgs.enterDayAndYear)))
       }
 
       "date format is not a valid date" in {
-
         val validatedFormForInvalidDay = form.bind(invalidDay)
         val validatedFormForInvalidMonth = form.bind(invalidMonth)
         val validatedFormForInvalidYear = form.bind(invalidYear)
         val validatedFormForInvalidDate = form.bind(invalidLeapYearDate)
 
-        validatedFormForInvalidDay.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
-        validatedFormForInvalidMonth.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
-        validatedFormForInvalidYear.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
-        validatedFormForInvalidDate.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
+        validatedFormForInvalidDay.errors must contain(FormError(DayTag, List(errorMsgs.mustBeValidDay)))
+        validatedFormForInvalidMonth.errors must contain(FormError(MonthTag, List(errorMsgs.mustBeValidMonth)))
+        validatedFormForInvalidYear.errors must contain(FormError(YearTag, List(errorMsgs.mustBeValidYear)))
+        validatedFormForInvalidDate.errors must contain(FormError(DayTag, List(errorMsgs.mustBeReal)))
       }
 
       "date is in future" in {
+        val validatedFormForValidDate = form.bind(validFutureDate)
 
-        val validatorErrorMessage = Messages("tai.date.error.future")
-
-        val customValidator = ((x: LocalDate) => !x.isAfter(LocalDate.now()), validatorErrorMessage)
-
-        val dateFormWithCustomValidator = DateForm(Seq(customValidator), blankDateErrorMessage)
-
-        val validatedFormForValidDate = dateFormWithCustomValidator.form.bind(validFutureDate)
-
-        validatedFormForValidDate.errors must be(List(FormError(DayTag, validatorErrorMessage)))
+        validatedFormForValidDate.errors must contain(FormError(DayTag, List(errorMsgs.mustBeFuture)))
 
       }
     }
@@ -124,9 +114,9 @@ class DateFormSpec extends BaseSpec {
   private val dateForm = DateForm(Nil, blankDateErrorMessage)
   private val form = dateForm.form
 
-  private val DayTag: String = dateForm.DateFormDay
-  private val MonthTag: String = dateForm.DateFormMonth
-  private val YearTag: String = dateForm.DateFormYear
+  private val DayTag: String = DateForm.DateFormDay
+  private val MonthTag: String = DateForm.DateFormMonth
+  private val YearTag: String = DateForm.DateFormYear
 
   private val validDate = Json.obj(DayTag         -> 10, MonthTag -> 4, YearTag -> 2015)
   private val validFutureDate = Json.obj(DayTag   -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))

@@ -16,62 +16,50 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import java.time.LocalDate
 import play.api.data.Forms.of
-import play.api.data.format.Formatter
-import play.api.data.{FieldMapping, Form, FormError}
+import play.api.data.{FieldMapping, Form}
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.LocalDateFormatter
+import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm._
 
-import scala.util.Try
+import java.time.LocalDate
 
 case class EmploymentEndDateForm(employerName: String) {
 
   def form(implicit messages: Messages): Form[LocalDate] = {
 
-    implicit val dateFormatter = new Formatter[LocalDate] {
-      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-
-        val dayErrors: Boolean = data.getOrElse(EmploymentFormDay, "").isEmpty
-
-        val monthErrors: Boolean = data.getOrElse(EmploymentFormMonth, "").isEmpty
-
-        val yearErrors: Boolean = data.getOrElse(EmploymentFormYear, "").isEmpty
-
-        val errors = if (dayErrors || monthErrors || yearErrors) {
-          Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.blank", employerName)))
-        } else { Nil }
-
-        if (errors.isEmpty) {
-          val inputDate: Option[LocalDate] = Try(
-            for {
-              day   <- data.get(EmploymentFormDay).map(Integer.parseInt)
-              month <- data.get(EmploymentFormMonth).map(Integer.parseInt)
-              year  <- data.get(EmploymentFormYear).map(Integer.parseInt)
-            } yield LocalDate.of(year, month, day)
-          ).getOrElse(None)
-
-          inputDate match {
-            case Some(date) if date.isAfter(LocalDate.now()) =>
-              Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.future"))))
-            case Some(d) => Right(d)
-            case _       => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.invalid"))))
-          }
-        } else { Left(errors) }
-      }
-
-      override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
-        EmploymentFormDay   -> value.getDayOfMonth.toString,
-        EmploymentFormMonth -> value.getMonthValue.toString,
-        EmploymentFormYear  -> value.getYear.toString
-      )
-    }
+    implicit val dateFormatter = new LocalDateFormatter(
+      formDay = EmploymentFormDay,
+      formMonth = EmploymentFormMonth,
+      formYear = EmploymentFormYear,
+      errorMsgs = errorMsgs(employerName)
+    )
 
     val localDateMapping: FieldMapping[LocalDate] = of[LocalDate]
 
     Form(localDateMapping)
   }
+}
 
+object EmploymentEndDateForm {
   val EmploymentFormDay = "tellUsAboutEmploymentForm-day"
   val EmploymentFormMonth = "tellUsAboutEmploymentForm-month"
   val EmploymentFormYear = "tellUsAboutEmploymentForm-year"
+
+  def errorMsgs(employerName: String)(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
+    enterDate = Messages("tai.endEmployment.endDateForm.error.enterDate", employerName),
+    enterDay = Messages("tai.endEmployment.endDateForm.error.enterDay", employerName),
+    enterMonth = Messages("tai.endEmployment.endDateForm.error.enterMonth", employerName),
+    enterYear = Messages("tai.endEmployment.endDateForm.error.enterYear", employerName),
+    enterDayAndMonth = Messages("tai.endEmployment.endDateForm.error.enterDayAndMonth", employerName),
+    enterDayAndYear = Messages("tai.endEmployment.endDateForm.error.enterDayAndYear", employerName),
+    enterMonthAndYear = Messages("tai.endEmployment.endDateForm.error.enterMonthAndYear", employerName),
+    mustBeValidDay = Messages("tai.endEmployment.endDateForm.error.mustBeValidDay", employerName),
+    mustBeValidMonth = Messages("tai.endEmployment.endDateForm.error.mustBeValidMonth", employerName),
+    mustBeValidYear = Messages("tai.endEmployment.endDateForm.error.mustBeValidYear", employerName),
+    mustBeReal = Messages("tai.endEmployment.endDateForm.error.mustBeReal", employerName),
+    mustBeFuture = Messages("tai.endEmployment.endDateForm.error.mustBeFuture", employerName),
+    mustBeAfter1900 = Messages("tai.endEmployment.endDateForm.error.mustBeAfter1900", employerName)
+  )
+
 }

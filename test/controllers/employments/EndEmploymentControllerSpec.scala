@@ -319,9 +319,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val endEmploymentTest = createEndEmploymentTest
 
       val formData = Json.obj(
-        endEmploymentTest.employmentEndDateForm.EmploymentFormDay   -> "01",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormMonth -> "02",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormYear  -> "2017"
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
       )
 
       val request = FakeRequest("POST", "")
@@ -335,9 +335,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "reload the page when there are form errors" in {
       val endEmploymentTest = createEndEmploymentTest
       val formWithErrors = Json.obj(
-        endEmploymentTest.employmentEndDateForm.EmploymentFormDay   -> "01",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormMonth -> "02",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormYear  -> "abc"
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "abc"
       )
 
       val request = FakeRequest("POST", "/")
@@ -360,9 +360,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(dataToCache))
 
       val formData = Json.obj(
-        endEmploymentTest.employmentEndDateForm.EmploymentFormDay   -> "01",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormMonth -> "02",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormYear  -> "2017"
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
       )
 
       val request = FakeRequest("POST", "")
@@ -380,9 +380,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
       val formData = Json.obj(
-        endEmploymentTest.employmentEndDateForm.EmploymentFormDay   -> "01",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormMonth -> "02",
-        endEmploymentTest.employmentEndDateForm.EmploymentFormYear  -> "2017"
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
       )
 
       val request = FakeRequest("POST", "")

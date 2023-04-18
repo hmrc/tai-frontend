@@ -16,13 +16,14 @@
 
 package views.html.employments
 
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
+
+import java.time.LocalDate
 
 class EndEmploymentViewSpec extends TaiViewSpec {
 
@@ -34,9 +35,9 @@ class EndEmploymentViewSpec extends TaiViewSpec {
   private val formWithErrors: Form[LocalDate] = eedf.form.withError("", globalErrorMessage)
   private lazy val employmentEndDateForm: Form[LocalDate] = eedf.form.bind(
     Map(
-      eedf.EmploymentFormDay -> "1",
-      "month"                -> "1",
-      "year"                 -> "2017"
+      EmploymentEndDateForm.EmploymentFormDay -> "1",
+      "month"                                 -> "1",
+      "year"                                  -> "2017"
     ))
 
   private val viewmodel = EmploymentViewModel(employmentName, employmentId)
