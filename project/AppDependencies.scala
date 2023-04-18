@@ -14,7 +14,6 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.12.0-$playVersion",
     "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % "5.3.0",
     "uk.gov.hmrc"       %% "domain"                           % s"8.1.0-$playVersion",
-    "uk.gov.hmrc"       %% "url-builder"                      % s"3.8.0-$playVersion",
     "uk.gov.hmrc"       %% "local-template-renderer"          % s"2.17.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.25.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"3.34.0-$playVersion",
