@@ -119,9 +119,9 @@ class IncomeController @Inject()(
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.NameKey).getOrFail
+    lazy val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.NameKey).getOrFail
 
-    val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey).getOrFail
+    lazy val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey).getOrFail
     val nino = request.taiUser.nino
 
     for {

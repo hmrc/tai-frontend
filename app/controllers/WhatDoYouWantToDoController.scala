@@ -63,8 +63,8 @@ class WhatDoYouWantToDoController @Inject()(
       val nino = request.taiUser.nino
       val ninoString = request.taiUser.nino.toString()
 
-      val employmentsFuture = employmentService.employments(nino, TaxYear())
-      val redirectFuture =
+      lazy val employmentsFuture = employmentService.employments(nino, TaxYear())
+      lazy val redirectFuture =
         OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith {
           case ex =>
             previousYearEmployments(nino).map {
@@ -138,7 +138,7 @@ class WhatDoYouWantToDoController @Inject()(
     val nino = user.nino
 
     taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
-      case Right(taxCodeChanged) =>
+      case Right(taxCodeChanged: HasTaxCodeChanged) =>
         for {
           showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino)
           (model, _) <- (

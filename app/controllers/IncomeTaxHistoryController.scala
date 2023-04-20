@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.ViewModelHelper._
@@ -59,8 +60,8 @@ class IncomeTaxHistoryController @Inject()(
       employmentDetails <- employmentService.employments(nino, taxYear)
     } yield {
       val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
-      val incomeTaxHistory = employmentDetails.map { employment =>
-        val maybeTaxCode = for {
+      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { employment: Employment =>
+        val maybeTaxCode: Option[TaxCodeIncome] = for {
           taxCodesMap <- maybeTaxCodesMap
           incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
           taxCode     <- incomes.headOption
