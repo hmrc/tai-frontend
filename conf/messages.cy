@@ -658,8 +658,8 @@ tai.incomeTax.history.endDate = Dyddiad dod i ben
 tai.incomeTax.history.taxableIncome = Incwm trethadwy
 tai.incomeTax.history.incomeTaxPaid = Treth Incwm a dalwyd
 tai.incomeTax.history.taxCode = Cod treth
-tai.incomeTax.history.unavailable = Ddim ar gael ar hyn o bryd
-tai.incomeTax.history.endDate.notApplicable = ddim yn gymwys
+tai.incomeTax.history.unavailable =Ddim ar gael ar hyn o bryd
+tai.incomeTax.history.endDate.notApplicable =Ddim yn gymwys
 
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
@@ -695,7 +695,7 @@ tai.incomeTaxComparison.taxCodes.table.employer.or.pension=Cyflogwr neu bensiwn
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw’r pensiwn
 tai.incomeTaxComparison.taxCodes.table.actions = Camau gweithredu
 
-tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
+tai.incomeTaxComparison.taxFreeAmount.NA=Ddim yn gymwys
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae’r Lwfans Personol safonol yn cynyddu i {0} o {1} ymlaen.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
 tai.incomeTaxComparison.taxFreeAmount.how.we.calculate=Sut rydym yn ei chyfrifo
@@ -759,6 +759,7 @@ tai.incomeTaxSummary.pension.link=Gweld neu ddiweddaru manylion pensiwn
 tai.incomeTaxSummary.pension.section.heading=Eich pensiynau preifat presennol
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxSummary.view.income.source.details=Gweld manylion {0}
+tai.incomeTaxSummary.view.startDate.error=Ddim ar gael
 tai.incomes.monetaryAmount.format.valid=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
 
 tai.incomes.warning.preHeading=Diweddariad wedi dod i law

@@ -70,7 +70,7 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
       doc must haveTdWithText(taxYearStarts + " £1,100")
 
       doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.PartTimeEarnings"))
-      doc must haveTdWithText(taxYearStarts + " not applicable")
+      doc must haveTdWithText(taxYearStarts + " Not applicable")
     }
 
     "display deductions table" in {
@@ -80,7 +80,7 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
       doc must haveTdWithText(taxYearStarts + " £1,100")
 
       doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.CasualEarnings"))
-      doc must haveTdWithText(taxYearEnds + " not applicable")
+      doc must haveTdWithText(taxYearEnds + " Not applicable")
       doc must haveTdWithText(taxYearStarts + " £1,100")
 
     }

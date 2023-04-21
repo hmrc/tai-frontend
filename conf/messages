@@ -660,8 +660,8 @@ tai.incomeTax.history.endDate = End date
 tai.incomeTax.history.taxableIncome = Taxable income
 tai.incomeTax.history.incomeTaxPaid = Income Tax paid
 tai.incomeTax.history.taxCode = Tax code
-tai.incomeTax.history.unavailable = Currently unavailable
-tai.incomeTax.history.endDate.notApplicable = not applicable
+tai.incomeTax.history.unavailable =Currently unavailable
+tai.incomeTax.history.endDate.notApplicable =Not applicable
 
 tai.incomeTax.incomeTaxEstimate.subheading=Income Tax estimate
 tai.incomeTax.taxCodes.link=Check your tax codes
@@ -702,7 +702,7 @@ tai.incomeTaxComparison.taxCodes.table.employer.or.pension=Employer or pension
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Pension name
 tai.incomeTaxComparison.taxCodes.table.actions = Actions
 
-tai.incomeTaxComparison.taxFreeAmount.NA=not applicable
+tai.incomeTaxComparison.taxFreeAmount.NA=Not applicable
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to {0} from {1}.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Your Personal Allowance may be different depending on your circumstances.
 tai.incomeTaxComparison.taxFreeAmount.how.we.calculate=How we calculate it
@@ -766,6 +766,7 @@ tai.incomeTaxSummary.pension.link=View or update pension details
 tai.incomeTaxSummary.pension.section.heading=Your current private pensions
 tai.incomeTaxSummary.taxCode.prefix=Tax code: {0}
 tai.incomeTaxSummary.view.income.source.details=View {0} details
+tai.incomeTaxSummary.view.startDate.error=Not Available
 tai.incomes.monetaryAmount.format.valid= Enter the amount in whole pounds – ignore the pence.
 
 tai.incomes.warning.preHeading=Update received
