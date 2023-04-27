@@ -23,10 +23,11 @@ import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.v2.{Retrievals, TrustedHelper}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.tai.service.MessageFrontendService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +38,7 @@ trait AuthAction
     with ActionFunction[Request, InternalAuthenticatedRequest]
 
 @Singleton
-class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: MessagesControllerComponents)(
+class AuthActionImpl @Inject()(override val authConnector: AuthConnector, messageFrontendService: MessageFrontendService, mcc: MessagesControllerComponents)(
   implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions with Logging {
 
@@ -51,17 +52,21 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
       Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
       case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(helper, saUtr, providerType, confidenceLevel)
+        messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
+          val user = AuthedUser(helper, saUtr, providerType, confidenceLevel, messageCount)
+          authWithCredentials(request, block, credentials, user)
+        }
 
-        authWithCredentials(request, block, credentials, user)
       case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ =>
         val providerType = credentials.map(_.providerType)
-        val user = AuthedUser(nino, saUtr, providerType, confidenceLevel)
-
-        authWithCredentials(request, block, credentials, user)
+        messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
+          val user = AuthedUser(nino, saUtr, providerType, confidenceLevel, messageCount)
+          authWithCredentials(request, block, credentials, user)
+        }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
   }
+
 
   private def authWithCredentials[A](
     request: Request[A],
