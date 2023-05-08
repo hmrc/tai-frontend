@@ -44,9 +44,9 @@ object FormHelper {
 
   def isCurrency(stringValue: String, isWholeNumRequired: Boolean): Boolean = {
     val currencyRegex: String = "^\\£?(([1-9]\\d{0,2}(,\\d{3})*)|(([1-9]\\d*)?\\d))?"
-    val regex: String = if (isWholeNumRequired) currencyRegex else currencyRegex + "(\\.\\d\\d)?"
+    val regex: String = if (isWholeNumRequired) currencyRegex else currencyRegex + "(\\.\\d{1,2})?"
 
-    stringValue matches regex.r.toString()
+    stringValue.replaceAll("\\s", "") matches regex.r.toString()
   }
 
   def convertCurrencyToInt(value: Option[String]): Int =

@@ -61,7 +61,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
 
           val payPeriod = optionalSeq.head
           val payPeriodInDays = optionalSeq(1)
-          val totalSalary = optionalSeq(2)
+          val totalSalary = FormHelper.stripNumber(optionalSeq(2))
 
           val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
 
@@ -123,7 +123,7 @@ class IncomeUpdatePayslipAmountController @Inject()(
           val incomeSource = IncomeSource(id = mandatorySeq.head.toInt, name = mandatorySeq(1))
           val payPeriod = optionalSeq.head
           val payPeriodInDays = optionalSeq(1)
-          val taxablePayKey = optionalSeq(2)
+          val taxablePayKey = optionalSeq(2).map(FormHelper.stripNumber)
 
           val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePayKey))
           TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)

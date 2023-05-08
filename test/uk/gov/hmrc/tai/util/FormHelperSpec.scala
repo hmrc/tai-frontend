@@ -37,6 +37,10 @@ class FormHelperSpec extends PlaySpec {
       FormHelper.stripNumber(Some("£90")) mustBe Some("90")
     }
 
+    "return striped number without spaces" in {
+      FormHelper.stripNumber(Some("£90 000")) mustBe Some("90000")
+    }
+
     "return striped number without commas" in {
       FormHelper.stripNumber(Some("999,999")) mustBe Some("999999")
     }
@@ -66,33 +70,40 @@ class FormHelperSpec extends PlaySpec {
     }
 
     " allow if pound symbol is at the start of the form" in {
+      FormHelper.isCurrency("£99 999", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("£99,999", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("£99,999.00", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("£99,999,999.00", isWholeNumRequired = false) mustBe true
     }
 
     " allowed plain positive number with only 2 decimal places when whole Number required is false " in {
+      FormHelper.isCurrency("110 000", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("110000", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("110000.00", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("110000.99", isWholeNumRequired = false) mustBe true
 
-      FormHelper.isCurrency("110000.9", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("110000.9", isWholeNumRequired = false) mustBe true
+      FormHelper.isCurrency("1 1 0 0 0 0 . 9", isWholeNumRequired = false) mustBe true
       FormHelper.isCurrency("110000.999", isWholeNumRequired = false) mustBe false
       FormHelper.isCurrency("-110000", isWholeNumRequired = false) mustBe false
       FormHelper.isCurrency("-110000.00", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("-110 000.00", isWholeNumRequired = false) mustBe false
     }
 
     " allow only positive whole Number when wholeNumberRequired is true " in {
+      FormHelper.isCurrency("110 000", isWholeNumRequired = true) mustBe true
       FormHelper.isCurrency("110000", isWholeNumRequired = true) mustBe true
       FormHelper.isCurrency("110000.9", isWholeNumRequired = true) mustBe false
       FormHelper.isCurrency("110000.99", isWholeNumRequired = true) mustBe false
       FormHelper.isCurrency("110000.999", isWholeNumRequired = true) mustBe false
       FormHelper.isCurrency("-110000", isWholeNumRequired = false) mustBe false
       FormHelper.isCurrency("-110000.00", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("-110 000.00", isWholeNumRequired = false) mustBe false
     }
 
     "fail if value entered is not a number" in {
       FormHelper.isCurrency("99.paul", isWholeNumRequired = true) mustBe false
+      FormHelper.isCurrency("9 9.paul", isWholeNumRequired = true) mustBe false
       FormHelper.isCurrency("9.!!", isWholeNumRequired = false) mustBe false
     }
   }
@@ -117,9 +128,10 @@ class FormHelperSpec extends PlaySpec {
   }
 
   "areEqual" must {
-    "be the same, ignoring commmas and dots" in {
+    "be the same, ignoring spaces, commmas and dots" in {
       FormHelper.areEqual(Some("123"), Some("123")) mustBe true
       FormHelper.areEqual(Some("1,23"), Some("1,23")) mustBe true
+      FormHelper.areEqual(Some("1 234"), Some("1234")) mustBe true
     }
 
     "not be the same" in {
