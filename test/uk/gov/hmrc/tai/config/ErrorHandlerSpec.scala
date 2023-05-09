@@ -41,8 +41,10 @@ class ErrorHandlerSpec extends BaseSpec {
           .standardErrorTemplate(
             "Sorry, there is a problem with the service",
             "Sorry, there is a problem with the service",
-            "Try again later.")(request)
-          .toString())
+            "Try again later."
+          )(request)
+          .toString()
+      )
     doc.getElementsByTag("h1").toString must include(messages("tai.technical.error.heading"))
     doc.getElementsByTag("p").toString must include(messages("tai.technical.error.message"))
   }
@@ -54,8 +56,11 @@ class ErrorHandlerSpec extends BaseSpec {
     doc.getElementsByTag("p").get(1).toString must include(
       messages(
         "tai.errorMessage.frontend400.message2",
-        "<a href=\"#report-name\" class=\"report-error__toggle\"> " + messages("tai.errorMessage.reportAProblem") + " </a> "
-      ))
+        "<a href=\"#report-name\" class=\"report-error__toggle\"> " + messages(
+          "tai.errorMessage.reportAProblem"
+        ) + " </a> "
+      )
+    )
   }
 
   "notFoundTemplate" in {
@@ -67,8 +72,10 @@ class ErrorHandlerSpec extends BaseSpec {
       messages(
         "tai.errorMessage.pageNotFound.contactHelpline.text",
         "<a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\"> " + messages(
-          "tai.errorMessage.pageNotFound.contactHelpline.link") + " </a>"
-      ))
+          "tai.errorMessage.pageNotFound.contactHelpline.link"
+        ) + " </a>"
+      )
+    )
   }
 
   "internalServerErrorTemplate" in {
@@ -76,9 +83,12 @@ class ErrorHandlerSpec extends BaseSpec {
 
     doc.getElementsByTag("h1").toString must include(messages("global.error.InternalServerError500.tai.title"))
     doc.getElementsByTag("p").toString must include(
-      messages("global.error.InternalServerError500.tai.message.you.can") + " <a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\">" + messages(
-        "global.error.InternalServerError500.tai.message.contact.hmrc") + "</a> " + messages(
-        "global.error.InternalServerError500.tai.message.by.phone.post"))
+      messages(
+        "global.error.InternalServerError500.tai.message.you.can"
+      ) + " <a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\">" + messages(
+        "global.error.InternalServerError500.tai.message.contact.hmrc"
+      ) + "</a> " + messages("global.error.InternalServerError500.tai.message.by.phone.post")
+    )
 
   }
 }

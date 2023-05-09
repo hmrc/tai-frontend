@@ -38,7 +38,8 @@ class EmploymentSpec extends PlaySpec {
           1,
           None,
           false,
-          false)
+          false
+        )
 
         employment.latestAnnualAccount mustBe Some(annualAccount2)
 

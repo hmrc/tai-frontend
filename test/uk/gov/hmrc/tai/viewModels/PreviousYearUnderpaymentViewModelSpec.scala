@@ -38,7 +38,8 @@ class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
 
       result.returnLink mustBe link(
         url = routes.TaxAccountSummaryController.onPageLoad.url,
-        copy = messagesApi("return.to.your.income.tax.summary"))
+        copy = messagesApi("return.to.your.income.tax.summary")
+      )
     }
   }
 }

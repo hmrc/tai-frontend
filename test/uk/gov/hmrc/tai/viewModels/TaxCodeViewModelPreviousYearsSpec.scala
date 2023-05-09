@@ -36,12 +36,14 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.mainHeading mustBe Messages(
           "tai.taxCode.prev.single.code.title",
           prevTaxYearStartDateNonBreak,
-          prevTaxYearEndDateNonBreak)
+          prevTaxYearEndDateNonBreak
+        )
         result.ledeMessage mustBe Messages("tai.taxCode.prev.single.info")
         result.title mustBe Messages(
           "tai.taxCode.prev.single.code.title",
           prevTaxYearStartDateNonBreak,
-          prevTaxYearEndDateNonBreak)
+          prevTaxYearEndDateNonBreak
+        )
       }
     }
 
@@ -51,12 +53,14 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.mainHeading mustBe Messages(
           "tai.taxCode.prev.multiple.code.title",
           prevTaxYearStartDateNonBreak,
-          prevTaxYearEndDateNonBreak)
+          prevTaxYearEndDateNonBreak
+        )
         result.ledeMessage mustBe Messages("tai.taxCode.prev.multiple.info")
         result.title mustBe Messages(
           "tai.taxCode.prev.multiple.code.title",
           prevTaxYearStartDateNonBreak,
-          prevTaxYearEndDateNonBreak)
+          prevTaxYearEndDateNonBreak
+        )
       }
     }
     "be able to create a tax code description table heading" when {
@@ -67,7 +71,8 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
           "employer",
           nowDateNonBreak,
           nowDateNonBreak,
-          "1150L")
+          "1150L"
+        )
       }
       "BasisOperations is Week1Month1BasisOperation for a previous tax year" in {
         val result = previousYearTestViewModel(List(taxCodeRecord2))
@@ -76,7 +81,8 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
           "employer2",
           nowDateNonBreak,
           nowDateNonBreak,
-          "BRX")
+          "BRX"
+        )
       }
     }
 
@@ -87,13 +93,15 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         "employer",
         nowDateNonBreak,
         nowDateNonBreak,
-        "1150L")
+        "1150L"
+      )
       result.taxCodeDetails(1).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "employer2",
         nowDateNonBreak,
         nowDateNonBreak,
-        "BRX")
+        "BRX"
+      )
     }
 
     "be able to sort tax code records so that the pension records are last" in {
@@ -105,19 +113,22 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         "employer",
         nowDateNonBreak,
         nowDateNonBreak,
-        "1150L")
+        "1150L"
+      )
       result.taxCodeDetails(1).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "employer2",
         nowDateNonBreak,
         nowDateNonBreak,
-        "BRX")
+        "BRX"
+      )
       result.taxCodeDetails(2).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "Pension",
         nowDateNonBreak,
         nowDateNonBreak,
-        "BR")
+        "BR"
+      )
     }
 
     "be able to sort tax code records when multiple primary, secondary and pensions exist" in {
@@ -126,38 +137,44 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
       val taxCodePrimaryPension = makeTestTaxCodeRecord("SR", OtherBasisOfOperation, true, "Primary Pension", true)
 
       val result = previousYearTestViewModel(
-        List(taxCodePension, taxCodePrimaryPension, taxCodeSecondary2, taxCodeRecord2, taxCodeRecord1))
+        List(taxCodePension, taxCodePrimaryPension, taxCodeSecondary2, taxCodeRecord2, taxCodeRecord1)
+      )
 
       result.taxCodeDetails.head.heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "employer",
         nowDateNonBreak,
         nowDateNonBreak,
-        "1150L")
+        "1150L"
+      )
       result.taxCodeDetails(1).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "Primary Pension",
         nowDateNonBreak,
         nowDateNonBreak,
-        "SR")
+        "SR"
+      )
       result.taxCodeDetails(2).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "Secondary",
         nowDateNonBreak,
         nowDateNonBreak,
-        "BR")
+        "BR"
+      )
       result.taxCodeDetails(3).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "employer2",
         nowDateNonBreak,
         nowDateNonBreak,
-        "BRX")
+        "BRX"
+      )
       result.taxCodeDetails(4).heading mustBe Messages(
         "tai.taxCode.prev.subheading",
         "Pension",
         nowDateNonBreak,
         nowDateNonBreak,
-        "BR")
+        "BR"
+      )
     }
 
     val taxCodeRecordS1150L = makeTestTaxCodeRecord("S1150L", OtherBasisOfOperation)
@@ -177,7 +194,8 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         val result = previousYearTestViewModel(List(taxCodeRecordK100))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "K"   -> Messages("tai.taxCode.prev.K"),
-          "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000))
+          "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000)
+        )
       }
     }
     val taxCodeRecord0T = makeTestTaxCodeRecord("0T", OtherBasisOfOperation)
@@ -199,19 +217,22 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         val result = previousYearTestViewModel(List(taxCodeRecord1150L))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
-          "L"    -> Messages("tai.taxCode.prev.L"))
+          "L"    -> Messages("tai.taxCode.prev.L")
+        )
       }
       "provide taxCodeExplanation when only single digit proceeds letter T for a previous tax year" in {
         val result = previousYearTestViewModel(List(taxCodeRecord2T))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "2" -> Messages(s"tai.taxCode.prev.amount", 20),
-          "T" -> Messages("tai.taxCode.prev.T"))
+          "T" -> Messages("tai.taxCode.prev.T")
+        )
       }
       "provide taxCodeExplanation when only single digit proceeds letter N for a previous tax year" in {
         val result = previousYearTestViewModel(List(taxCodeRecord2N))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "2" -> Messages(s"tai.taxCode.prev.amount", 20),
-          "N" -> Messages("tai.taxCode.prev.N"))
+          "N" -> Messages("tai.taxCode.prev.N")
+        )
       }
     }
     "be able to create table contents for emergency tax codes" when {
@@ -221,7 +242,8 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
           "L"    -> Messages("tai.taxCode.prev.L"),
-          "X"    -> Messages("tai.taxCode.prev.X"))
+          "X"    -> Messages("tai.taxCode.prev.X")
+        )
       }
     }
 
@@ -293,7 +315,8 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
     basisOfOperation: BasisOfOperation,
     isPrimary: Boolean = true,
     employerName: String = "employer",
-    pensionIndicator: Boolean = false) =
+    pensionIndicator: Boolean = false
+  ) =
     TaxCodeRecord(
       taxCode,
       LocalDate.now,
@@ -302,7 +325,8 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
       employerName,
       pensionIndicator,
       Some("payrollnumber"),
-      isPrimary)
+      isPrimary
+    )
 
   private val taxCodeRecord1 = makeTestTaxCodeRecord("1150L", OtherBasisOfOperation)
   private val taxCodeRecord2 = makeTestTaxCodeRecord("BRX", OtherBasisOfOperation, false, "employer2")

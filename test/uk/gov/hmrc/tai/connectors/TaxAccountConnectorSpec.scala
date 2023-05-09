@@ -60,7 +60,10 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   "tax account url" must {
     "fetch the url to connect to TAI to retrieve tax codes" in {
       taxAccountConnector
-        .taxAccountUrl(ninoAsString, currentTaxYear) mustBe s"${taxAccountConnector.serviceUrl}/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
+        .taxAccountUrl(
+          ninoAsString,
+          currentTaxYear
+        ) mustBe s"${taxAccountConnector.serviceUrl}/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
     }
   }
 
@@ -71,7 +74,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(taxAccountUrl)
             .willReturn(
               aResponse.withBody(taxCodeIncomeJson.toString())
-            ))
+            )
+        )
 
         taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe Right(Seq(taxCodeIncome))
       }
@@ -83,7 +87,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(taxAccountUrl)
             .willReturn(
               aResponse.withBody(corruptJsonResponse.toString())
-            ))
+            )
+        )
 
         taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
       }
@@ -110,7 +115,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(incomeSourceUrl)
             .willReturn(
               aResponse.withBody(incomeSourceJson.toString())
-            ))
+            )
+        )
 
         val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
         result mustBe Seq(incomeSource)
@@ -124,7 +130,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(incomeSourceUrl)
             .willReturn(
               aResponse.withBody(incomeSourceEmpty.toString())
-            ))
+            )
+        )
 
         val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
         result mustBe Seq.empty[TaxedIncome]
@@ -138,7 +145,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(incomeSourceUrl)
             .willReturn(
               aResponse.withBody(corruptJsonResponse.toString())
-            ))
+            )
+        )
 
         assertThrows[JsResultException] {
           Await.result(taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5.seconds)
@@ -153,7 +161,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(incomeSourceUrl)
             .willReturn(
               unauthorized()
-            ))
+            )
+        )
 
         assertThrows[UnauthorizedException] {
           Await.result(taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5.seconds)
@@ -170,7 +179,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(codingComponentsUrl)
             .willReturn(
               aResponse.withBody(codingComponentSampleJson.toString())
-            ))
+            )
+        )
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
         result mustBe codingComponentSeq
@@ -183,7 +193,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(codingComponentsUrl)
             .willReturn(
               aResponse.withBody(corruptJsonResponse.toString())
-            ))
+            )
+        )
 
         assertThrows[JsResultException] {
           Await.result(taxAccountConnector.codingComponents(nino, currentTaxYear), Duration.Inf)
@@ -195,7 +206,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(codingComponentsUrl)
             .willReturn(
               unauthorized()
-            ))
+            )
+        )
 
         assertThrows[UnauthorizedException] {
           Await.result(taxAccountConnector.codingComponents(nino, currentTaxYear), Duration.Inf)
@@ -209,7 +221,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(codingComponentsUrl)
             .willReturn(
               notFound()
-            ))
+            )
+        )
 
         val result = taxAccountConnector.codingComponents(nino, currentTaxYear).futureValue
         result mustBe Seq.empty[CodingComponent]
@@ -237,7 +250,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(taxAccountSummaryUrl)
             .willReturn(
               aResponse.withBody(taxAccountSummaryJson.toString())
-            ))
+            )
+        )
 
         val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).futureValue
         result mustBe TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200)
@@ -251,13 +265,15 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             "totalEstimatedTax222" -> 111,
             "taxFreeAmount11"      -> 222
           ),
-          "links" -> Json.arr())
+          "links" -> Json.arr()
+        )
 
         server.stubFor(
           get(taxAccountSummaryUrl)
             .willReturn(
               aResponse.withBody(corruptTaxAccountSummaryJson.toString())
-            ))
+            )
+        )
 
         val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear)
         assertThrows[JsResultException] {
@@ -273,7 +289,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(taxAccountSummaryUrl)
             .willReturn(
               unauthorized()
-            ))
+            )
+        )
 
         val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear)
         assertThrows[UnauthorizedException] {
@@ -289,7 +306,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(taxAccountSummaryUrl)
             .willReturn(
               notFound()
-            ))
+            )
+        )
 
         val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear)
         assertThrows[NotFoundException] {
@@ -307,7 +325,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(nonTaxCodeIncomeUrl)
             .willReturn(
               aResponse.withBody(incomeJson.toString())
-            ))
+            )
+        )
 
         val result = taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear).futureValue
         result mustBe income.nonTaxCodeIncomes
@@ -321,7 +340,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(nonTaxCodeIncomeUrl)
             .willReturn(
               aResponse.withBody(corruptJsonResponse.toString())
-            ))
+            )
+        )
 
         assertThrows[JsResultException] {
           Await.result(taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear), 5.seconds)
@@ -336,7 +356,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(nonTaxCodeIncomeUrl)
             .willReturn(
               unauthorized()
-            ))
+            )
+        )
 
         assertThrows[UnauthorizedException] {
           Await.result(taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear), 5.seconds)
@@ -358,7 +379,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             .withHeader(CONTENT_TYPE, matching(ContentTypes.JSON))
             .willReturn(
               ok
-            ))
+            )
+        )
 
         val result = taxAccountConnector.updateEstimatedIncome(nino, TaxYear(), 100, id).futureValue
         result mustBe Done
@@ -374,7 +396,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(totalTaxUrl)
             .willReturn(
               aResponse.withBody(totalTaxJson.toString())
-            ))
+            )
+        )
 
         val expectedTotalTax = TotalTax(
           1000,
@@ -384,7 +407,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
               10,
               20,
               30,
-              List(TaxBand("", "", 0, 0, None, None, 0), TaxBand("B", "BR", 10000, 500, Some(5000), Some(20000), 10)))),
+              List(TaxBand("", "", 0, 0, None, None, 0), TaxBand("B", "BR", 10000, 500, Some(5000), Some(20000), 10))
+            )
+          ),
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 100)))),
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(ExcessGiftAidTax, 100)))),
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(TaxOnBankBSInterest, 100))))
@@ -401,7 +426,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(totalTaxUrl)
             .willReturn(
               notFound()
-            ))
+            )
+        )
 
         assertThrows[NotFoundException] {
           Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
@@ -416,7 +442,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(totalTaxUrl)
             .willReturn(
               aResponse.withBody(corruptJsonResponse.toString())
-            ))
+            )
+        )
 
         assertThrows[RuntimeException] {
           Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
@@ -431,7 +458,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           get(totalTaxUrl)
             .willReturn(
               unauthorized()
-            ))
+            )
+        )
 
         assertThrows[UnauthorizedException] {
           Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
@@ -446,16 +474,19 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
 
   val taxCodeIncomeJson: JsValue = Json.obj(
     "data" -> JsArray(
-      Seq(Json.obj(
-        "componentType"  -> "EmploymentIncome",
-        "employmentId"   -> 1,
-        "amount"         -> 1111,
-        "description"    -> "employment",
-        "taxCode"        -> "1150L",
-        "name"           -> "Employer1",
-        "basisOperation" -> "OtherBasisOperation",
-        "status"         -> "Live"
-      ))),
+      Seq(
+        Json.obj(
+          "componentType"  -> "EmploymentIncome",
+          "employmentId"   -> 1,
+          "amount"         -> 1111,
+          "description"    -> "employment",
+          "taxCode"        -> "1150L",
+          "name"           -> "Employer1",
+          "basisOperation" -> "OtherBasisOperation",
+          "status"         -> "Live"
+        )
+      )
+    ),
     "links" -> JsArray(Seq())
   )
 
@@ -503,7 +534,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         "employmentId"  -> 12,
         "amount"        -> 12321,
         "description"   -> "Some Description",
-        "iabdCategory"  -> "Benefit"),
+        "iabdCategory"  -> "Benefit"
+      ),
       Json.obj(
         "componentType" -> "GiftsSharesCharity",
         "employmentId"  -> 31,
@@ -525,7 +557,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           "taxCode"        -> "1150L",
           "name"           -> "Employer1",
           "basisOperation" -> "OtherBasisOperation"
-        ))),
+        )
+      )
+    ),
     "links" -> JsArray(Seq())
   )
 
@@ -611,7 +645,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
       None,
       Seq(
         OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
-      )))
+      )
+    )
+  )
 
   val taxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)

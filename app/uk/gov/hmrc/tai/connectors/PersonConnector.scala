@@ -25,8 +25,9 @@ import uk.gov.hmrc.tai.model.domain.Person
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext)
-    extends Logging {
+class PersonConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -38,9 +39,8 @@ class PersonConnector @Inject()(httpHandler: HttpHandler, servicesConfig: Servic
       .map { json =>
         (json \ "data").as[Person]
       }
-      .recoverWith {
-        case e: Exception =>
-          logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
-          Future.failed(e)
+      .recoverWith { case e: Exception =>
+        logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
+        Future.failed(e)
       }
 }

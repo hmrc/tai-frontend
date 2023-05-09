@@ -31,7 +31,7 @@ import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIn
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class EstimatedIncomeTaxController @Inject()(
+class EstimatedIncomeTaxController @Inject() (
   codingComponentService: CodingComponentService,
   partialService: HasFormPartialService,
   taxAccountService: TaxAccountService,
@@ -43,7 +43,8 @@ class EstimatedIncomeTaxController @Inject()(
   zeroTaxEstimatedIncomeTax: ZeroTaxEstimatedIncomeTaxView,
   implicit val templateRenderer: TemplateRenderer,
   mcc: MessagesControllerComponents,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -55,15 +56,16 @@ class EstimatedIncomeTaxController @Inject()(
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
-      partialService.getIncomeTaxPartial)
+      partialService.getIncomeTaxPartial
+    )
       .mapN {
         case (
-            taxAccountSummary,
-            totalTaxDetails,
-            nonTaxCodeIncome,
-            Right(taxCodeIncomes),
-            codingComponents,
-            iFormLinks
+              taxAccountSummary,
+              totalTaxDetails,
+              nonTaxCodeIncome,
+              Right(taxCodeIncomes),
+              codingComponents,
+              iFormLinks
             ) =>
           implicit val user: AuthedUser = request.taiUser
 
@@ -95,8 +97,8 @@ class EstimatedIncomeTaxController @Inject()(
         case _ =>
           errorPagesHandler.internalServerError("Failed to get estimated income tax")
       }
-      .recover {
-        case _ => errorPagesHandler.internalServerError("Failed to get estimated income tax")
+      .recover { case _ =>
+        errorPagesHandler.internalServerError("Failed to get estimated income tax")
       }
   }
 }

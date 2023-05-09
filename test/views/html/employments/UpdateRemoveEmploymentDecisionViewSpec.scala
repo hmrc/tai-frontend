@@ -43,13 +43,15 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec {
     "display preheading" in {
       doc must haveElementAtPathWithText(
         ".govuk-caption-xl",
-        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("tai.employment.decision.preHeading"))
+        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("tai.employment.decision.preHeading")
+      )
     }
 
     "display label with heading" in {
       doc must haveElementAtPathWithText(
         ".govuk-fieldset__legend--xl",
-        messages("tai.employment.decision.heading", employmentName))
+        messages("tai.employment.decision.heading", employmentName)
+      )
     }
 
     behave like pageWithYesNoRadioButton(

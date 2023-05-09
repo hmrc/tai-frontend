@@ -32,10 +32,12 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, AuthenticatedRequest]
 
 @Singleton
-class ValidatePersonImpl @Inject()(personService: PersonService)(implicit ec: ExecutionContext) extends ValidatePerson {
+class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: ExecutionContext)
+    extends ValidatePerson {
 
   override protected def refine[A](
-    request: InternalAuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
+    request: InternalAuthenticatedRequest[A]
+  ): Future[Either[Result, AuthenticatedRequest[A]]] = {
 
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))

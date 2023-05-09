@@ -29,7 +29,8 @@ class HowToUpdateViewSpec extends TaiViewSpec {
     behave like pageWithBackLinkWithUrl(
       controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
         .estimatedPayLandingPage(empId)
-        .url)
+        .url
+    )
     behave like pageWithTitle(messages("tai.howToUpdate.title"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.howToUpdate.preHeading", employerName),

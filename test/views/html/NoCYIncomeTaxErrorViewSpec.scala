@@ -28,7 +28,8 @@ class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.noCYIncomeError.heading"))
     behave like pageWithCombinedHeaderNewTemplate(
       preHeaderText = "Current tax year",
-      mainHeaderText = "Your PAYE Income Tax")
+      mainHeaderText = "Your PAYE Income Tax"
+    )
 
     "display no income message" when {
       "name and end date of employer is not present" in {
@@ -45,7 +46,8 @@ class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
 
     "have missing info link" in {
       doc must haveParagraphWithText(
-        messages("tai.noCYIncomeError.missingInfo", messages("tai.missingInfo.link.message")))
+        messages("tai.noCYIncomeError.missingInfo", messages("tai.missingInfo.link.message"))
+      )
 
       val linkElement = doc.getElementById("missing-info-Iform").getElementsByTag("a").get(0)
 

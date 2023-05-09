@@ -40,7 +40,8 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
           employmentId = Some(12),
           amount = 12345,
           description = "Some Description",
-          inputAmount = Some(BigDecimal("125000.02")))
+          inputAmount = Some(BigDecimal("125000.02"))
+        )
       }
 
       "only mandatory fields are provided and iabd type is an benefit" in {
@@ -48,12 +49,14 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
           "componentType" -> "EmployerProvidedServices",
           "amount"        -> 12345,
           "description"   -> "",
-          "iabdCategory"  -> "Benefit")
+          "iabdCategory"  -> "Benefit"
+        )
         json.as[CodingComponent](codingComponentReads) mustBe CodingComponent(
           componentType = EmployerProvidedServices,
           employmentId = None,
           amount = 12345,
-          description = "")
+          description = ""
+        )
       }
     }
   }
@@ -215,7 +218,8 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
           "1150L",
           "employment1",
           OtherBasisOfOperation,
-          Live)
+          Live
+        )
       }
       "all the fields are provided" in {
         val json = Json.obj(
@@ -236,7 +240,8 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
           "S1150L",
           "employment2",
           Week1Month1BasisOfOperation,
-          Ceased)
+          Ceased
+        )
       }
     }
   }

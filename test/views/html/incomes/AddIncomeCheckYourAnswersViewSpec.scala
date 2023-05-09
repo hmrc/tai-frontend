@@ -58,7 +58,8 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
           lines,
           None,
           "/fake/submission/url",
-          "/fake/cancel/url")
+          "/fake/cancel/url"
+        )
         def view: Html = addIncomeCheckYourAnswers(viewModel)
         doc(view) must not(haveParagraphWithText(messages("tai.checkYourAnswers.confirmText")))
       }
@@ -97,7 +98,8 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
     lines,
     Some(messages("tai.checkYourAnswers.confirmText")),
     "/fake/submission/url",
-    "/fake/cancel/url")
+    "/fake/cancel/url"
+  )
 
   override def view: Html = addIncomeCheckYourAnswers(viewModel)
 }

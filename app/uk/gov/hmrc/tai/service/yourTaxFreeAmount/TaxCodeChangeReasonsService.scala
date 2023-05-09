@@ -22,12 +22,13 @@ import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, IabdTaxCodeChangeReasons, TaxCodeChangeReasons}
 
-class TaxCodeChangeReasonsService @Inject()(employmentTaxCodeChangeReasons: TaxCodeChangeReasons) {
+class TaxCodeChangeReasonsService @Inject() (employmentTaxCodeChangeReasons: TaxCodeChangeReasons) {
 
   def combineTaxCodeChangeReasons(
     iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons,
     iabdPairs: AllowancesAndDeductionPairs,
-    taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
+    taxCodeChange: TaxCodeChange
+  )(implicit messages: Messages): Seq[String] = {
 
     val employmentReasons = employmentTaxCodeChangeReasons.reasons(taxCodeChange)
 

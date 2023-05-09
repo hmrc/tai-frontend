@@ -39,7 +39,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
   def view: Html =
     historicPayAsYouEarn(
       HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, showTaxCodeDescriptionLink = true),
-      appConfig)
+      appConfig
+    )
 
   def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
     historicPayAsYouEarn(vm, appConfig)
@@ -50,12 +51,16 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       authRequest.fullName,
       messages(
         "tai.paye.heading",
-        TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year).replaceAll("\u00A0", " ")))
+        TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year).replaceAll("\u00A0", " ")
+      )
+    )
 
     behave like pageWithTitle(
       messages(
         "tai.paye.heading",
-        TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year).replaceAll("\u00A0", " ")))
+        TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year).replaceAll("\u00A0", " ")
+      )
+    )
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
@@ -63,7 +68,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
       newDoc.body.text must include(authRequest.fullName)
       newDoc.body.text must include(
-        messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(taxYear.year).replaceAll("\u00A0", " ")))
+        messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(taxYear.year).replaceAll("\u00A0", " "))
+      )
     }
 
     "display a link to view the tax code at the end of the year" when {
@@ -76,12 +82,15 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             Nil,
             Seq(employment),
             hasEmploymentsOrPensions = true,
-            showTaxCodeDescriptionLink = true),
-          appConfig)
+            showTaxCodeDescriptionLink = true
+          ),
+          appConfig
+        )
 
         doc(view) must haveLinkWithUrlWithClass(
           "taxCodeDescription",
-          controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
+          controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url
+        )
       }
     }
 
@@ -94,8 +103,10 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Nil,
           Seq(employment),
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = false),
-        appConfig)
+          showTaxCodeDescriptionLink = false
+        ),
+        appConfig
+      )
 
       doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
     }
@@ -104,7 +115,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
   "display a link to return to choose tax year page" in {
     doc must haveLinkWithUrlWithID(
       "backLinkId",
-      controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+      controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+    )
   }
 
   "display print link with javascript print function " in {
@@ -123,8 +135,10 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             Nil,
             Seq(employment),
             hasEmploymentsOrPensions = true,
-            showTaxCodeDescriptionLink = true),
-          appConfig)
+            showTaxCodeDescriptionLink = true
+          ),
+          appConfig
+        )
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -138,8 +152,10 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             Seq(pension),
             Nil,
             hasEmploymentsOrPensions = true,
-            showTaxCodeDescriptionLink = true),
-          appConfig)
+            showTaxCodeDescriptionLink = true
+          ),
+          appConfig
+        )
         doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -155,8 +171,10 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             Seq(pension),
             Seq(employment),
             hasEmploymentsOrPensions = true,
-            showTaxCodeDescriptionLink = true),
-          appConfig)
+            showTaxCodeDescriptionLink = true
+          ),
+          appConfig
+        )
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
         doc(view) must haveH2HeadingWithText(messages("tai.paye.incomePension.heading"))
       }
@@ -180,7 +198,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Nil,
           Seq(employment),
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -215,7 +234,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Nil,
           Seq(employment),
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(viewModelEmployment)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -231,7 +251,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Seq(pension),
           Nil,
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(viewModelPension)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -250,7 +271,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Seq(pension),
           Nil,
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -269,7 +291,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Nil,
           Seq(employment),
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -287,7 +310,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Seq(pension),
           Nil,
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -307,7 +331,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Seq(pension),
           Nil,
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -342,7 +367,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Nil,
           Nil,
           hasEmploymentsOrPensions = false,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -350,7 +376,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         doc must haveLinkWithText(messages("tai.paye.lastTaxYear.incorrectInformation.link"))
         doc must haveLinkWithUrlWithID(
           "updateEmployment",
-          controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(vm.taxYear).url)
+          controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(vm.taxYear).url
+        )
       }
     }
 
@@ -362,7 +389,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           Nil,
           Seq(employment),
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -396,7 +424,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             isPension = false,
             "754",
             "NZ00014",
-            Some("payrollNumber"))
+            Some("payrollNumber")
+          )
         val employment2: EmploymentViewModel =
           EmploymentViewModel(
             "test employment 2",
@@ -405,13 +434,15 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             isPension = false,
             "754",
             "NZ00014",
-            Some("payrollNumber"))
+            Some("payrollNumber")
+          )
         val vm = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
           Seq(employment1, employment2),
           hasEmploymentsOrPensions = true,
-          showTaxCodeDescriptionLink = true)
+          showTaxCodeDescriptionLink = true
+        )
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -456,7 +487,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Seq(employment),
         hasEmploymentsOrPensions = true,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
@@ -481,7 +513,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Nil,
         hasEmploymentsOrPensions = false,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
@@ -506,7 +539,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Nil,
         hasEmploymentsOrPensions = false,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
@@ -521,7 +555,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Nil,
         hasEmploymentsOrPensions = false,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
@@ -536,7 +571,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Nil,
         hasEmploymentsOrPensions = false,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
@@ -553,7 +589,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Nil,
         hasEmploymentsOrPensions = false,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
@@ -572,7 +609,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Seq(employment),
         hasEmploymentsOrPensions = true,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm)
 
@@ -591,7 +629,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Seq(employment),
         hasEmploymentsOrPensions = true,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm, 1)
 
@@ -608,7 +647,8 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         Nil,
         Seq(employment),
         hasEmploymentsOrPensions = true,
-        showTaxCodeDescriptionLink = true)
+        showTaxCodeDescriptionLink = true
+      )
 
       val sut: Html = createSut(vm, 0)
 

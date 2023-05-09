@@ -26,15 +26,17 @@ case class HistoricPayAsYouEarnViewModel(
   pensions: Seq[EmploymentViewModel],
   employments: Seq[EmploymentViewModel],
   hasEmploymentsOrPensions: Boolean,
-  showTaxCodeDescriptionLink: Boolean) {
+  showTaxCodeDescriptionLink: Boolean
+) {
 
   val p800ServiceIsAvailable: Boolean = taxYear == TaxYear().prev
 }
 
 object HistoricPayAsYouEarnViewModel {
 
-  def apply(taxYear: TaxYear, employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)(
-    implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
+  def apply(taxYear: TaxYear, employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)(implicit
+    messages: Messages
+  ): HistoricPayAsYouEarnViewModel = {
     val incomeSources: Seq[EmploymentViewModel] = filterIncomeSources(taxYear, employments) sortBy (_.id)
     val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) =
       incomeSources.partition(_.isPension)
@@ -44,23 +46,23 @@ object HistoricPayAsYouEarnViewModel {
       pensionsVMs,
       employmentsVMs,
       pensionsVMs.nonEmpty || employmentsVMs.nonEmpty,
-      showTaxCodeDescriptionLink)
+      showTaxCodeDescriptionLink
+    )
   }
 
   private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] =
     for {
       employment <- employments
       account    <- employment.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield
-      EmploymentViewModel(
-        employment.name,
-        if (account.payments.isEmpty) 0 else account.payments.last.amountYearToDate,
-        employment.sequenceNumber,
-        employment.receivingOccupationalPension,
-        employment.taxDistrictNumber,
-        employment.payeNumber,
-        employment.payrollNumber
-      )
+    } yield EmploymentViewModel(
+      employment.name,
+      if (account.payments.isEmpty) 0 else account.payments.last.amountYearToDate,
+      employment.sequenceNumber,
+      employment.receivingOccupationalPension,
+      employment.taxDistrictNumber,
+      employment.payeNumber,
+      employment.payrollNumber
+    )
 
   case class EmploymentViewModel(
     name: String,
@@ -69,5 +71,6 @@ object HistoricPayAsYouEarnViewModel {
     isPension: Boolean,
     taxDistrictNumber: String,
     payeNumber: String,
-    payrollNumber: Option[String])
+    payrollNumber: Option[String]
+  )
 }

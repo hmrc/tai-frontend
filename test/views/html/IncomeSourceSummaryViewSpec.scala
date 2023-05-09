@@ -32,7 +32,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       messages(
         "tai.employment.income.details.mainHeading",
         model.empOrPensionName,
-        TaxYearRangeUtil.currentTaxYearRangeBreak)
+        TaxYearRangeUtil.currentTaxYearRangeBreak
+      )
     )
 
     behave like pageWithTitle(
@@ -47,49 +48,60 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           messages(
             "tai.pension.income.details.mainHeading",
             pensionModel.empOrPensionName,
-            TaxYearRangeUtil.currentTaxYearRangeBreak))
+            TaxYearRangeUtil.currentTaxYearRangeBreak
+          )
+        )
         pensionDoc.title must include(
-          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak))
+          messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
+        )
       }
     }
 
     "display link to update or remove employer" when {
       "income source is employment" in {
         doc must haveParagraphWithText(
-          messages("tai.employment.income.details.updateLinkText", "Employer").replaceAll("\u00A0", " "))
+          messages("tai.employment.income.details.updateLinkText", "Employer").replaceAll("\u00A0", " ")
+        )
         doc must haveLinkWithUrlWithID(
           "updateEmployer",
-          controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url)
+          controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url
+        )
       }
 
       "income source is pension" in {
         pensionDoc must haveParagraphWithText(
-          messages("tai.pension.income.details.updateLinkText", "Pension").replaceAll("\u00A0", " "))
+          messages("tai.pension.income.details.updateLinkText", "Pension").replaceAll("\u00A0", " ")
+        )
         pensionDoc must haveLinkWithUrlWithID(
           "updatePension",
-          controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url)
+          controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url
+        )
       }
     }
 
     "display update message" when {
       "update is in progress and income source is employment" in {
         docWithUpdateInProgressEmployment must haveParagraphWithText(
-          messages("tai.employment.income.details.updateLinkText", "Employer"))
+          messages("tai.employment.income.details.updateLinkText", "Employer")
+        )
         docWithUpdateInProgressEmployment must haveLinkWithUrlWithID(
           "updateEmployer",
           controllers.employments.routes.EndEmploymentController
             .onPageLoad(modelWithUpdateInProgressEmployment.empId)
-            .url)
+            .url
+        )
       }
 
       "update is in progress and income source is pension" in {
         docWithUpdateInProgressPension must haveParagraphWithText(
-          messages("tai.pension.income.details.updateLinkText", "Pension"))
+          messages("tai.pension.income.details.updateLinkText", "Pension")
+        )
         docWithUpdateInProgressPension must haveLinkWithUrlWithID(
           "updatePension",
           controllers.pensions.routes.UpdatePensionProviderController
             .UpdatePension(modelWithUpdateInProgressPension.empId)
-            .url)
+            .url
+        )
       }
     }
 
@@ -101,7 +113,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         doc must haveLinkWithUrlWithID(
           "updateIncome",
-          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url
+        )
         doc mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
       }
 
@@ -112,7 +125,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         pensionDoc must haveLinkWithUrlWithID(
           "updateIncome",
-          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url
+        )
         doc mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
 
       }
@@ -124,11 +138,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.details.incomeReceivedToDate.desc",
-            model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")))
+            model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")
+          )
+        )
         doc must haveSpanWithText("£" + model.incomeReceivedToDate)
         doc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url)
+          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url
+        )
       }
 
       "income source is pension" in {
@@ -136,11 +153,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveParagraphWithText(
           messages(
             "tai.income.details.incomeReceivedToDate.desc",
-            model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")))
+            model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")
+          )
+        )
         pensionDoc must haveSpanWithText("£" + pensionModel.incomeReceivedToDate)
         pensionDoc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(pensionModel.empId).url)
+          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(pensionModel.empId).url
+        )
       }
 
       "rti is unavailable display rti down messages for employments" in {
@@ -222,7 +242,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       doc must haveDivWithId("companyBenefitsSection")
       doc must haveH2HeadingWithIdAndText(
         "companyBenefitsHeading",
-        messages("tai.income.details.companyuBenefitsHeading", "Employer"))
+        messages("tai.income.details.companyuBenefitsHeading", "Employer")
+      )
     }
 
     "use conditional logic to display the company benefits section" which {
@@ -262,14 +283,17 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
       testDoc must haveElementAtPathWithText(
         "#companyBenefitTerm1",
-        s"${messages("tai.income.details.benefit.name.announce")} ben1")
+        s"${messages("tai.income.details.benefit.name.announce")} ben1"
+      )
       testDoc must haveElementAtPathWithText(
         "#companyBenefitDescription1 span",
-        s"${messages("tai.income.details.benefit.amount.announce", "£100")}")
+        s"${messages("tai.income.details.benefit.amount.announce", "£100")}"
+      )
       testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", "£100")
       testDoc must haveElementAtPathWithText(
         "#companyBenefitChangeLinkDescription1 a span",
-        s"${messages("tai.updateOrRemove")} ben1")
+        s"${messages("tai.updateOrRemove")} ben1"
+      )
       testDoc must haveLinkWithUrlWithID("changeCompanyBenefitLink1", "url1")
     }
 
@@ -305,7 +329,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display an estimated pay update confirmation banner when the journey has been successfully completed" in {
       docWithUpdateInProgressEmployment must haveParagraphWithText(
-        messages("tai.estimatedIncome.confirmation.banner.heading"))
+        messages("tai.estimatedIncome.confirmation.banner.heading")
+      )
     }
 
   }

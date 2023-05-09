@@ -29,7 +29,8 @@ object AllowancesAndDeductionPairs {
 
   def fromCodingComponents(
     previousCodingComponents: Seq[CodingComponent],
-    currentCodingComponents: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
+    currentCodingComponents: Seq[CodingComponent]
+  ): AllowancesAndDeductionPairs = {
     val pairs = pairCodingComponents(previousCodingComponents, currentCodingComponents)
     val allowances = getAllowances(pairs)
     val deductions = getDeductions(pairs)
@@ -39,7 +40,8 @@ object AllowancesAndDeductionPairs {
 
   private def pairCodingComponents(
     previous: Seq[CodingComponent],
-    current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
+    current: Seq[CodingComponent]
+  ): Seq[CodingComponentPair] = {
     val pairs = findPairs(previous, current)
     val nonPairs = findNonPairs(pairs, previous)
 
@@ -47,7 +49,7 @@ object AllowancesAndDeductionPairs {
   }
 
   private def findPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] =
-    current.map(addition => {
+    current.map { addition =>
       previous.find(matchingCodingComponents(_, addition)) match {
         case Some(previousMatched) =>
           CodingComponentPair(
@@ -55,19 +57,21 @@ object AllowancesAndDeductionPairs {
             addition.employmentId,
             Some(previousMatched.amount),
             Some(addition.amount),
-            addition.inputAmount)
+            addition.inputAmount
+          )
         case None =>
           CodingComponentPair(
             addition.componentType,
             addition.employmentId,
             None,
             Some(addition.amount),
-            addition.inputAmount)
+            addition.inputAmount
+          )
       }
-    })
+    }
 
   private def findNonPairs(pairs: Seq[CodingComponentPair], rest: Seq[CodingComponent]): Seq[CodingComponentPair] =
-    rest.flatMap(addition => {
+    rest.flatMap { addition =>
       pairs.find(matchingCodingComponents(_, addition)) match {
         case Some(_) => None
         case None =>
@@ -77,9 +81,11 @@ object AllowancesAndDeductionPairs {
               addition.employmentId,
               Some(addition.amount),
               None,
-              addition.inputAmount))
+              addition.inputAmount
+            )
+          )
       }
-    })
+    }
 
   private def matchingCodingComponents(lhs: CodingComponent, rhs: CodingComponent): Boolean =
     lhs.employmentId == rhs.employmentId &&
@@ -90,20 +96,20 @@ object AllowancesAndDeductionPairs {
       lhs.componentType == rhs.componentType
 
   private def getDeductions(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] =
-    codingComponents.filter({
+    codingComponents.filter {
       _.componentType match {
         case _: AllowanceComponentType => false
         case _                         => true
       }
-    })
+    }
 
   private def getAllowances(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] =
     codingComponents
       .filterNot(component => PersonalAllowance.isA(component.componentType))
-      .filter({
+      .filter {
         _.componentType match {
           case _: AllowanceComponentType => true
           case _                         => false
         }
-      })
+      }
 }

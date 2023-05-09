@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}
 
-class TaxCodeChangeReasons @Inject()() {
+class TaxCodeChangeReasons @Inject() () {
 
   def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): List[String] = {
 
@@ -34,7 +34,8 @@ class TaxCodeChangeReasons @Inject()() {
 
   private def secondaryEmploymentsChanged(
     unMatchedPreviousCodes: List[TaxCodePair],
-    unMatchedCurrentCodes: List[TaxCodePair])(implicit messages: Messages): List[String] = {
+    unMatchedCurrentCodes: List[TaxCodePair]
+  )(implicit messages: Messages): List[String] = {
 
     val previous = unMatchedPreviousCodes.flatMap(_.previous).map(record => record.employerName)
 
@@ -44,8 +45,8 @@ class TaxCodeChangeReasons @Inject()() {
     val uniquePrevious = previous.distinct.sorted
     val uniqueCurrent = current.distinct.sorted
 
-    val currentAndPreviousEmployerNamesAreSame
-      : Boolean = (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
+    val currentAndPreviousEmployerNamesAreSame: Boolean =
+      (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
 
     if (currentAndPreviousEmployerNamesAreSame) {
       genericMessage
@@ -90,8 +91,9 @@ class TaxCodeChangeReasons @Inject()() {
   private def removeEmployerMessage(employerNames: List[String])(implicit messages: Messages): List[String] =
     employerNames map (name => messages("tai.taxCodeComparison.removeEmployer", name))
 
-  private def addSingleEmployerMessage(taxCodeRecord: Option[TaxCodeRecord])(
-    implicit messages: Messages): List[String] =
+  private def addSingleEmployerMessage(
+    taxCodeRecord: Option[TaxCodeRecord]
+  )(implicit messages: Messages): List[String] =
     taxCodeRecord.fold(List.empty[String]) { record =>
       if (record.pensionIndicator) {
         List(messages("tai.taxCodeComparison.add.pension", record.employerName))
@@ -109,8 +111,9 @@ class TaxCodeChangeReasons @Inject()() {
   private def filterOutGenericMessage(reasons: List[String])(implicit messages: Messages): List[String] =
     reasons.filterNot(_ == genericMessage.head)
 
-  private def incomeSourceCountReason(reasons: List[String], taxCodeChange: TaxCodeChange)(
-    implicit messages: Messages): List[String] =
+  private def incomeSourceCountReason(reasons: List[String], taxCodeChange: TaxCodeChange)(implicit
+    messages: Messages
+  ): List[String] =
     if (filterOutGenericMessage(reasons).nonEmpty) {
       List(incomeSourceCountMessage(taxCodeChange))
     } else {
@@ -119,27 +122,26 @@ class TaxCodeChangeReasons @Inject()() {
 
   private def incomeSourceCountMessage(taxCodeChange: TaxCodeChange)(implicit messages: Messages): String = {
 
-    val employmentMessage = {
+    val employmentMessage =
       if (taxCodeChange.currentEmploymentCount > 1) {
         messages("tai.taxCodeComparison.employments.count", taxCodeChange.currentEmploymentCount)
       } else {
         messages("tai.taxCodeComparison.employment.count", taxCodeChange.currentEmploymentCount)
       }
-    }
 
-    val pensionMessage = {
+    val pensionMessage =
       if (taxCodeChange.currentPensionCount > 1) {
         messages("tai.taxCodeComparison.pensions.count", taxCodeChange.currentPensionCount)
       } else {
         messages("tai.taxCodeComparison.pension.count", taxCodeChange.currentPensionCount)
       }
-    }
 
     (taxCodeChange.currentEmploymentCount > 0, taxCodeChange.currentPensionCount > 0) match {
       case (true, true) =>
         messages(
           "tai.taxCodeComparison.incomeSources.count",
-          taxCodeChange.currentEmploymentCount + taxCodeChange.currentPensionCount)
+          taxCodeChange.currentEmploymentCount + taxCodeChange.currentPensionCount
+        )
       case (true, false) => employmentMessage
       case (false, true) => pensionMessage
     }

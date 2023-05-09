@@ -114,7 +114,8 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
         Seq(
           CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
           CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
-        ))
+        )
+      )
     )
   }
 

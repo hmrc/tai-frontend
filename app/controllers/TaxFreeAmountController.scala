@@ -36,7 +36,7 @@ import views.html.TaxFreeAmountView
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
-class TaxFreeAmountController @Inject()(
+class TaxFreeAmountController @Inject() (
   codingComponentService: CodingComponentService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
@@ -47,7 +47,8 @@ class TaxFreeAmountController @Inject()(
   mcc: MessagesControllerComponents,
   taxFreeAmount: TaxFreeAmountView,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

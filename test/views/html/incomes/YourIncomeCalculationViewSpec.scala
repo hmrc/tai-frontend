@@ -40,7 +40,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
       "payments are empty" in {
         val model = incomeCalculationViewModel(
           payments = Seq.empty[PaymentDetailsViewModel],
-          employmentStatus = PotentiallyCeased)
+          employmentStatus = PotentiallyCeased
+        )
 
         def potentiallyCeasedView = template(model)
 
@@ -67,7 +68,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         doc(potentiallyCeasedView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading.withRti",
-            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
         )
         doc(potentiallyCeasedView) must haveParagraphWithText(
           messages(
@@ -76,7 +78,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
           )
         )
         doc(potentiallyCeasedView) must haveParagraphWithText(
-          messages("tai.income.calculation.potentially.ceased.lede"))
+          messages("tai.income.calculation.potentially.ceased.lede")
+        )
       }
     }
 
@@ -109,7 +112,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         doc(ceasedView) must haveParagraphWithText(
           messages(
             "tai.income.calculation.ceased.heading",
-            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
         )
         doc(ceasedView) must haveParagraphWithText(
           messages(
@@ -118,7 +122,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
           )
         )
         doc(ceasedView) must haveParagraphWithText(
-          messages("tai.income.calculation.rti.ceased.emp", s"${DateHelper.toDisplayFormat(model.endDate)}"))
+          messages("tai.income.calculation.rti.ceased.emp", s"${DateHelper.toDisplayFormat(model.endDate)}")
+        )
       }
     }
 
@@ -147,7 +152,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         doc(view) must haveParagraphWithText(
           messages(
             "tai.income.calculation.heading.withRti",
-            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
         )
         doc(view) must haveParagraphWithText(
           messages(
@@ -171,7 +177,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
                 .url,
               copy = messages("tai.income.calculation.updateLink.regular")
             )
-          )).body.replaceAll("\\s+", "")
+          )
+        ).body.replaceAll("\\s+", "")
       }
 
       "employment type is Employment Income" in {
@@ -184,7 +191,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
                 .url,
               copy = messages("tai.income.calculation.updateLink.regular")
             )
-          )).body.replaceAll("\\s+", "")
+          )
+        ).body.replaceAll("\\s+", "")
       }
     }
 
@@ -222,7 +230,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
       "employment is live" in {
         val model = incomeCalculationViewModel(
           incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
+          incomeCalculationEstimateMessage = Some("ESTIMATE")
+        )
 
         def incomeMessagesView = template(model)
 
@@ -233,7 +242,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         val model = incomeCalculationViewModel(
           employmentStatus = Ceased,
           incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
+          incomeCalculationEstimateMessage = Some("ESTIMATE")
+        )
 
         def incomeMessagesView = template(model)
 
@@ -244,7 +254,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
         val model = incomeCalculationViewModel(
           employmentStatus = PotentiallyCeased,
           incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
+          incomeCalculationEstimateMessage = Some("ESTIMATE")
+        )
 
         def incomeMessagesView = template(model)
 
@@ -285,7 +296,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
     totalNotEqualMessage: Option[String] = Some(""),
     incomeCalculationMessage: String = "",
     incomeCalculationEstimateMessage: Option[String] = None,
-    hasPayrolledBenefit: Boolean = false) = {
+    hasPayrolledBenefit: Boolean = false
+  ) = {
 
     val latestPayment =
       if (payments.isEmpty) None else Some(LatestPayment(LocalDate.now.minusWeeks(4), 400, 50, 25, Weekly))

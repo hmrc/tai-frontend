@@ -59,7 +59,8 @@ class ReturnLinkSpec extends BaseSpec {
 
         result mustBe link(
           url = routes.TaxAccountSummaryController.onPageLoad.url,
-          copy = messagesApi("return.to.your.income.tax.summary"))
+          copy = messagesApi("return.to.your.income.tax.summary")
+        )
       }
     }
   }

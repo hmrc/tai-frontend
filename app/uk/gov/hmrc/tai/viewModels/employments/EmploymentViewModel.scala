@@ -26,7 +26,8 @@ case class WithinSixWeeksViewModel(
   earliestUpdateDate: LocalDate,
   employerName: String,
   latestPayDate: LocalDate,
-  empId: Int) {
+  empId: Int
+) {
   def earliestUpdateDateInHtml(implicit messages: Messages): String = Dates.formatDate(earliestUpdateDate)
   def latestPayDateInHtml(implicit messages: Messages): String = Dates.formatDate(latestPayDate)
 }

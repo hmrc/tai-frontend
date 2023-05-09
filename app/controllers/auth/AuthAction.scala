@@ -37,18 +37,20 @@ trait AuthAction
     with ActionFunction[Request, InternalAuthenticatedRequest]
 
 @Singleton
-class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: MessagesControllerComponents)(
-  implicit ec: ExecutionContext)
-    extends AuthAction with AuthorisedFunctions with Logging {
+class AuthActionImpl @Inject() (override val authConnector: AuthConnector, mcc: MessagesControllerComponents)(implicit
+  ec: ExecutionContext
+) extends AuthAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](
     request: Request[A],
-    block: InternalAuthenticatedRequest[A] => Future[Result]): Future[Result] = {
+    block: InternalAuthenticatedRequest[A] => Future[Result]
+  ): Future[Result] = {
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(
-      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper) {
+      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper
+    ) {
       case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
         val providerType = credentials.map(_.providerType)
         val user = AuthedUser(helper, saUtr, providerType, confidenceLevel)
@@ -67,7 +69,8 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result],
     credentials: Option[Credentials],
-    user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] =
+    user: AuthedUser
+  )(implicit hc: HeaderCarrier): Future[Result] =
     credentials match {
       case Some(Credentials(_, TaiConstants.AuthProviderGG)) =>
         processRequest(user, request, block, handleGGFailure)
@@ -78,14 +81,13 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, mcc: M
     user: AuthedUser,
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result],
-    failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] =
+    failureHandler: PartialFunction[Throwable, Result]
+  )(implicit hc: HeaderCarrier): Future[Result] =
     (user.confidenceLevel.level match {
       case level if level >= 200 =>
         for {
           result <- block(InternalAuthenticatedRequest(request, user))
-        } yield {
-          result
-        }
+        } yield result
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl))
     }) recover failureHandler

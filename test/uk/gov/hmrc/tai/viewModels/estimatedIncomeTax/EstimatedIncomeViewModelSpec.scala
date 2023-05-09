@@ -61,7 +61,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
 
       val bands = List(
         Band("TaxFree", 16.66, 3200, 0, BandTypesConstants.ZeroBand),
-        Band("Band", 83.33, 16000, 5000, BandTypesConstants.NonZeroBand))
+        Band("Band", 83.33, 16000, 5000, BandTypesConstants.NonZeroBand)
+      )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 12800))
 
@@ -77,7 +78,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.99,
         5000,
         nextBandMessage,
-        Some(Swatch(26.04, 5000)))
+        Some(Swatch(26.04, 5000))
+      )
     }
 
     "have two bands(0 & Taxed Income) to display in graph" in {
@@ -106,7 +108,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         100.00,
         15000,
         nextBandMessage,
-        Some(Swatch(31.25, 15000)))
+        Some(Swatch(31.25, 15000))
+      )
     }
 
     "have two bands(0 & Taxed Income) for multiple other band to display in graph" in {
@@ -136,7 +139,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         100,
         65250,
         None,
-        Some(Swatch(32.62, 65250)))
+        Some(Swatch(32.62, 65250))
+      )
     }
 
     "have three bands as 20% 40% 45% for three other rate bands to display in graph" in {
@@ -166,7 +170,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         100.00,
         65250,
         None,
-        Some(Swatch(32.62, 65250)))
+        Some(Swatch(32.62, 65250))
+      )
     }
 
     "have four bands as 20% 40% 45% 45% for four other rate bands to display in graph" in {
@@ -198,7 +203,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.98,
         67500,
         None,
-        Some(Swatch(29.34, 67500)))
+        Some(Swatch(29.34, 67500))
+      )
     }
 
     "have two bands as 20% 40% for two other rate bands to display in graph" in {
@@ -228,7 +234,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         100.00,
         43300,
         nextBandMessage,
-        Some(Swatch(34.64, 43300)))
+        Some(Swatch(34.64, 43300))
+      )
     }
 
     "have two 0 % band and one 20% band in graph" in {
@@ -250,7 +257,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 4000,
         totalEstimatedTax = 3000,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -262,7 +270,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.99,
         3000,
         nextBandMessage,
-        Some(Swatch(13.04, 3000)))
+        Some(Swatch(13.04, 3000))
+      )
     }
 
     "have two 0 % band and one Taxed Income band in graph" in {
@@ -283,7 +292,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 10000,
         totalEstimatedTax = 6000,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -295,7 +305,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         100,
         6000,
         None,
-        Some(Swatch(15.00, 6000)))
+        Some(Swatch(15.00, 6000))
+      )
     }
 
     "have two 0 % band and one 7.5% band in graph" in {
@@ -315,7 +326,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 11000,
         totalEstimatedTax = 2000,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -327,7 +339,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.99,
         2000,
         None,
-        Some(Swatch(6.89, 2000)))
+        Some(Swatch(6.89, 2000))
+      )
     }
 
     "have three 0 % band and zero other band in graph" in {
@@ -350,7 +363,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 11000,
         totalEstimatedTax = 0,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -362,7 +376,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.99,
         0,
         nextBandMessage,
-        Some(Swatch(0, 0)))
+        Some(Swatch(0, 0))
+      )
     }
 
     "have two 0 % band and one Taxed Income band(7.5 & 20 ) in graph" in {
@@ -384,7 +399,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 10000,
         totalEstimatedTax = 3750,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -396,7 +412,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         100.00,
         3750,
         None,
-        Some(Swatch(9.37, 3750)))
+        Some(Swatch(9.37, 3750))
+      )
     }
 
     "have two 0 % band and one Taxed Income band(7.5 & 20 & 45) in graph" in {
@@ -421,7 +438,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 10000,
         totalEstimatedTax = 6750,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -433,7 +451,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.98,
         6750,
         nextBandMessage,
-        Some(Swatch(11.25, 6750)))
+        Some(Swatch(11.25, 6750))
+      )
     }
 
     "have two 0 % band and one Taxed Income band(7.5 & 20 & 45 & 60) in graph" in {
@@ -459,7 +478,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 10000,
         totalEstimatedTax = 9750,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -471,7 +491,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         99.99,
         9750,
         nextBandMessage,
-        Some(Swatch(8.12, 9750)))
+        Some(Swatch(8.12, 9750))
+      )
     }
 
   }
@@ -677,7 +698,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBands,
         taxFreeAllowanceBandSum = 3200,
         totalTaxBandIncome = 19200,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
 
       percentage mustBe 16.66
     }
@@ -693,7 +715,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBands,
         taxFreeAllowanceBandSum = 3200,
         totalTaxBandIncome = 19200,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
 
       percentage mustBe 83.33
     }
@@ -710,7 +733,8 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         taxBand,
         taxFreeAllowanceBandSum = 4000,
         totalTaxBandIncome = 23000,
-        taxViewType = ComplexTaxView)
+        taxViewType = ComplexTaxView
+      )
 
       percentage mustBe 65.21
 

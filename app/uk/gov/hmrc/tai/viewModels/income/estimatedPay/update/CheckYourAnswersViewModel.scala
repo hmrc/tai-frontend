@@ -32,8 +32,8 @@ case class CheckYourAnswersViewModel(
   hasBonusOrOvertime: String,
   totalBonusOrOvertime: Option[String],
   employer: IncomeSource,
-  backUrl: String)
-    extends ViewModelHelper with DynamicPayPeriodTitle {
+  backUrl: String
+) extends ViewModelHelper with DynamicPayPeriodTitle {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true
@@ -88,7 +88,8 @@ case class CheckYourAnswersViewModel(
     val hasBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages(
         "tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",
-        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
+      ),
       Some(messages(s"tai.label.${hasBonusOrOvertime.toLowerCase}")),
       controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
     )
@@ -96,7 +97,8 @@ case class CheckYourAnswersViewModel(
     val totalBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages(
         "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
-        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
+      ),
       totalBonusOrOvertime,
       controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url,
       isMonetaryValue
@@ -116,7 +118,8 @@ case class CheckYourAnswersViewModel(
     message: String,
     answer: Option[String],
     changeUrl: String,
-    isMonetaryValue: Boolean = false)(implicit messages: Messages): Option[CheckYourAnswersConfirmationLine] = {
+    isMonetaryValue: Boolean = false
+  )(implicit messages: Messages): Option[CheckYourAnswersConfirmationLine] = {
 
     def wholePoundsOnlyFormatting(amount: String) = amount.replaceAll("£|,|\\.\\d+", "")
 
@@ -128,7 +131,9 @@ case class CheckYourAnswersViewModel(
           CheckYourAnswersConfirmationLine(
             message,
             withPoundPrefixAndSign(MoneyPounds(BigDecimal(wholePoundsOnlyFormatting(answer)), zeroDecimalPlaces)),
-            changeUrl))
+            changeUrl
+          )
+        )
       case (Some(answer), false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
       case _                     => None
     }

@@ -31,12 +31,14 @@ case class HistoricIncomeCalculationViewModel(
   payments: Seq[Payment],
   endOfTaxYearUpdateMessages: Seq[String],
   realTimeStatus: RealTimeStatus,
-  taxYear: TaxYear)
+  taxYear: TaxYear
+)
 
 object HistoricIncomeCalculationViewModel {
 
-  def apply(employments: Seq[Employment], employmentId: Int, taxYear: TaxYear)(
-    implicit messages: Messages): HistoricIncomeCalculationViewModel = {
+  def apply(employments: Seq[Employment], employmentId: Int, taxYear: TaxYear)(implicit
+    messages: Messages
+  ): HistoricIncomeCalculationViewModel = {
     val (employment, annualAccount) = fetchEmploymentAndAnnualAccount(employments, taxYear, employmentId)
     val realTimeStatus = fetchRealTimeStatus(annualAccount)
     val (payments, endOfTaxYearUpdateMessages) = annualAccount match {
@@ -50,7 +52,8 @@ object HistoricIncomeCalculationViewModel {
       payments,
       endOfTaxYearUpdateMessages,
       realTimeStatus,
-      taxYear)
+      taxYear
+    )
   }
 
   def fetchRealTimeStatus(annualAccount: Option[AnnualAccount]): RealTimeStatus =
@@ -62,7 +65,8 @@ object HistoricIncomeCalculationViewModel {
   def fetchEmploymentAndAnnualAccount(
     employments: Seq[Employment],
     taxYear: TaxYear,
-    employmentId: Int): (Option[Employment], Option[AnnualAccount]) = {
+    employmentId: Int
+  ): (Option[Employment], Option[AnnualAccount]) = {
     val employment = employments.find(_.sequenceNumber == employmentId)
     val annualAccount: Option[AnnualAccount] =
       employment.flatMap(emp => emp.annualAccounts.find(_.taxYear.year == taxYear.year))

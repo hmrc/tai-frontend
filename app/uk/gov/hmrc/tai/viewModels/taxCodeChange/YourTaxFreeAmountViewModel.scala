@@ -25,16 +25,16 @@ case class YourTaxFreeAmountViewModel(
   previousTaxFreeInfo: Option[TaxFreeInfo],
   currentTaxFreeInfo: TaxFreeInfo,
   allowances: Seq[CodingComponentPairModel],
-  deductions: Seq[CodingComponentPairModel]) {
+  deductions: Seq[CodingComponentPairModel]
+) {
 
   val showPreviousColumn: Boolean = previousTaxFreeInfo.isDefined
-  val columns: Int = {
+  val columns: Int =
     if (previousTaxFreeInfo.isDefined) {
       3
     } else {
       2
     }
-  }
 }
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper {
@@ -51,19 +51,17 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper {
     prettyPrint(total)
   }
 
-  val additionsTranslationMap: Map[String, String] = {
+  val additionsTranslationMap: Map[String, String] =
     Map(
       "title"      -> "tai.taxFreeAmount.table.additions.caption",
       "totalTitle" -> "tai.taxFreeAmount.table.additions.total",
       "noItems"    -> "tai.taxFreeAmount.table.additions.noAddition"
     )
-  }
 
-  val deductionsTranslationMap: Map[String, String] = {
+  val deductionsTranslationMap: Map[String, String] =
     Map(
       "title"      -> "tai.taxFreeAmount.table.deductions.caption",
       "totalTitle" -> "tai.taxFreeAmount.table.deductions.total",
       "noItems"    -> "tai.taxFreeAmount.table.deductions.noDeduction"
     )
-  }
 }

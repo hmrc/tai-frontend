@@ -37,11 +37,13 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)).replaceU00A0)
+      messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)).replaceU00A0
+    )
 
     behave like pageWithButtonForm(
       controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url,
-      messages("tai.continue"))
+      messages("tai.continue")
+    )
 
     "display the users current estimated income" in {
       doc(view) must haveClassWithText(messages("tai.irregular.currentAmount"), "form-label")
@@ -62,5 +64,6 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
       employmentID,
       isPension,
       currentEstPay,
-      AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
+      AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay))
+    )
 }

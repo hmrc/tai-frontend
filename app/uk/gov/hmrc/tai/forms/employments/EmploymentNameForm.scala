@@ -25,6 +25,7 @@ object EmploymentNameForm {
   def form(implicit messages: Messages): Form[String] = Form(
     single(
       "employmentName" ->
-        text.verifying(Messages("tai.employmentName.error.blank"), { _.trim.nonEmpty }))
+        text.verifying(Messages("tai.employmentName.error.blank"), _.trim.nonEmpty)
+    )
   )
 }

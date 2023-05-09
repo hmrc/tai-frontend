@@ -33,6 +33,8 @@ object PayslipForm {
         "totalSalary" -> TaiValidator.validateNewAmounts(
           messages(errorText),
           messages("tai.payslip.error.form.totalPay.input.invalid"),
-          messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
+          messages("error.tai.updateDataEmployment.maxLength")
+        )
+      )(PayslipForm.apply)(PayslipForm.unapply)
     )
 }

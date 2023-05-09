@@ -75,7 +75,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         def bonusPaymentsPage(
           request: FakeRequest[AnyContentAsFormUrlEncoded],
-          maybeTaxablePayKey: Option[String] = Some("taxablePay")): Future[Result] =
+          maybeTaxablePayKey: Option[String] = Some("taxablePay")
+        ): Future[Result] =
           new TestIncomeUpdateBonusController(maybeTaxablePayKey)
             .bonusPaymentsPage()(request)
       }
@@ -98,12 +99,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         bonusPaymentsView(
           expectedForm,
           employer,
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url)(
-          fakeRequest,
-          messages,
-          authedUser,
-          templateRenderer,
-          ec)
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url
+        )(fakeRequest, messages, authedUser, templateRenderer, ec)
 
       result rendersTheSameViewAs expectedView
     }
@@ -123,12 +120,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         bonusPaymentsView(
           expectedForm,
           employer,
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url)(
-          fakeRequest,
-          messages,
-          authedUser,
-          templateRenderer,
-          ec)
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url
+        )(fakeRequest, messages, authedUser, templateRenderer, ec)
 
       result rendersTheSameViewAs expectedView
     }
@@ -177,12 +170,14 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         val result = HandleBonusPaymentsHarness
           .setup()
-          .handleBonusPayments(RequestBuilder.buildFakePostRequestWithAuth(
-            FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
+          .handleBonusPayments(
+            RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url
+        )
       }
     }
 
@@ -191,13 +186,15 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         val result = HandleBonusPaymentsHarness
           .setup()
           .handleBonusPayments(
-            RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
+            RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
             .checkYourAnswersPage(employer.id)
-            .url)
+            .url
+        )
       }
     }
 
@@ -328,7 +325,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
       redirectLocation(result) mustBe Some(
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
           .checkYourAnswersPage(employer.id)
-          .url)
+          .url
+      )
     }
 
     "redirect the user to bonusPaymentAmount page" when {
@@ -345,7 +343,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         result rendersTheSameViewAs bonusPaymentAmountView(
           BonusOvertimeAmountForm.createForm().bindFromRequest(),
-          employer)(fakeRequest, messages, authedUser, templateRenderer, ec)
+          employer
+        )(fakeRequest, messages, authedUser, templateRenderer, ec)
       }
     }
 

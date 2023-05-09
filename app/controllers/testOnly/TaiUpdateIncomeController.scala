@@ -28,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class TaiUpdateIncomeController @Inject()(
+class TaiUpdateIncomeController @Inject() (
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,

@@ -28,7 +28,8 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCombinedHeaderNewTemplate(
       messages("taxCode.change.journey.preHeading"),
-      messages("taxCode.change.whatHappensNext.title"))
+      messages("taxCode.change.whatHappensNext.title")
+    )
 
     "display static messages" in {
       doc must haveH2HeadingWithText(messages("taxCode.change.whatHappensNext.paragragh1"))
@@ -41,7 +42,8 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
             url = routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
             copy = messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")
           )
-        )).body.replaceAll("\\s+", "")
+        )
+      ).body.replaceAll("\\s+", "")
 
       doc must haveHeadingH3WithText(messages("taxCode.change.whatHappensNext.wrongInformation.text"))
 
@@ -53,7 +55,8 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
             url = routes.TaxAccountSummaryController.onPageLoad.url,
             copy = messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")
           )
-        )).body.replaceAll("\\s+", "")
+        )
+      ).body.replaceAll("\\s+", "")
     }
 
   }

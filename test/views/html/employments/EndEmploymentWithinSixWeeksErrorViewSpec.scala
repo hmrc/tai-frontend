@@ -37,7 +37,9 @@ class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
         messages(
           "tai.endEmploymentWithinSixWeeksError.employerAndPayDate",
           model.employerName,
-          model.latestPayDateInHtml))
+          model.latestPayDateInHtml
+        )
+      )
     }
     "have a paragraph that tells the user what the employer should do" in {
       doc must haveParagraphWithText(
@@ -45,12 +47,15 @@ class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
           "tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo",
           model.employerName,
           model.latestPayDate,
-          model.earliestUpdateDateInHtml))
+          model.earliestUpdateDateInHtml
+        )
+      )
     }
     "have a bullet points that tell the user what to ask their employer to check" in {
 
       doc must haveBulletPointWithText(
-        messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC", model.employerName))
+        messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC", model.employerName)
+      )
       doc must haveBulletPointWithText(messages("tai.endEmploymentWithinSixWeeksError.askForP45", model.employerName))
       doc must haveBulletPointWithText(messages("tai.endEmploymentWithinSixWeeksError.useP45"))
     }

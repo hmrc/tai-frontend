@@ -28,7 +28,8 @@ case class EndIncomeCheckYourAnswersViewModel(
   employmentEndDate: String,
   contactableByPhone: String,
   phoneNumber: Option[String],
-  backLinkUrl: String) {
+  backLinkUrl: String
+) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -41,7 +42,8 @@ case class EndIncomeCheckYourAnswersViewModel(
       CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         contactableByPhone,
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+      )
     )
 
     val optionalPhoneNoLine = phoneNumber map { phoneNo =>
@@ -49,7 +51,9 @@ case class EndIncomeCheckYourAnswersViewModel(
         CheckYourAnswersConfirmationLine(
           Messages("tai.phoneNumber"),
           phoneNo,
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url))
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        )
+      )
     }
 
     if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines

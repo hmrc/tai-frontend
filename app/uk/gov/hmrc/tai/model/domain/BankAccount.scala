@@ -25,7 +25,8 @@ case class BankAccount(
   sortCode: Option[String],
   bankName: Option[String],
   grossInterest: BigDecimal,
-  source: Option[String]) {
+  source: Option[String]
+) {
 
   val formattedSortCode: Option[String] = sortCode.map(_.sliding(2, 2).mkString(" "))
 }

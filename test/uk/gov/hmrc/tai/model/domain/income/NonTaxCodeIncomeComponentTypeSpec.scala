@@ -77,9 +77,11 @@ class NonTaxCodeIncomeComponentTypeSpec extends PlaySpec {
           Json.toJson[NonTaxCodeIncomeComponentType](ForeignDividendIncome) mustBe JsString("ForeignDividendIncome")
           Json.toJson[NonTaxCodeIncomeComponentType](ForeignPropertyIncome) mustBe JsString("ForeignPropertyIncome")
           Json.toJson[NonTaxCodeIncomeComponentType](ForeignInterestAndOtherSavings) mustBe JsString(
-            "ForeignInterestAndOtherSavings")
+            "ForeignInterestAndOtherSavings"
+          )
           Json.toJson[NonTaxCodeIncomeComponentType](ForeignPensionsAndOtherIncome) mustBe JsString(
-            "ForeignPensionsAndOtherIncome")
+            "ForeignPensionsAndOtherIncome"
+          )
           Json.toJson[NonTaxCodeIncomeComponentType](StatePension) mustBe JsString("StatePension")
           Json.toJson[NonTaxCodeIncomeComponentType](OccupationalPension) mustBe JsString("OccupationalPension")
           Json.toJson[NonTaxCodeIncomeComponentType](PublicServicesPension) mustBe JsString("PublicServicesPension")
@@ -87,7 +89,8 @@ class NonTaxCodeIncomeComponentTypeSpec extends PlaySpec {
           Json.toJson[NonTaxCodeIncomeComponentType](PersonalPensionAnnuity) mustBe JsString("PersonalPensionAnnuity")
           Json.toJson[NonTaxCodeIncomeComponentType](Profit) mustBe JsString("Profit")
           Json.toJson[NonTaxCodeIncomeComponentType](BankOrBuildingSocietyInterest) mustBe JsString(
-            "BankOrBuildingSocietyInterest")
+            "BankOrBuildingSocietyInterest"
+          )
           Json.toJson[NonTaxCodeIncomeComponentType](UkDividend) mustBe JsString("UkDividend")
           Json.toJson[NonTaxCodeIncomeComponentType](UnitTrust) mustBe JsString("UnitTrust")
           Json.toJson[NonTaxCodeIncomeComponentType](StockDividend) mustBe JsString("StockDividend")
@@ -98,7 +101,8 @@ class NonTaxCodeIncomeComponentTypeSpec extends PlaySpec {
           Json.toJson[NonTaxCodeIncomeComponentType](IncapacityBenefit) mustBe JsString("IncapacityBenefit")
           Json.toJson[NonTaxCodeIncomeComponentType](JobSeekersAllowance) mustBe JsString("JobSeekersAllowance")
           Json.toJson[NonTaxCodeIncomeComponentType](EmploymentAndSupportAllowance) mustBe JsString(
-            "EmploymentAndSupportAllowance")
+            "EmploymentAndSupportAllowance"
+          )
         }
       }
     }

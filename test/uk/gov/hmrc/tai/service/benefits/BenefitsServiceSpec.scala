@@ -46,7 +46,9 @@ class BenefitsServiceSpec extends BaseSpec {
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       when(
         benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(
-          any())).thenReturn(Future.successful(Some("123-456-789")))
+          any()
+        )
+      ).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
 
@@ -60,7 +62,9 @@ class BenefitsServiceSpec extends BaseSpec {
           EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
         when(
           benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(
-            any())).thenReturn(Future.successful(None))
+            any()
+          )
+        ).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await
           .result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)

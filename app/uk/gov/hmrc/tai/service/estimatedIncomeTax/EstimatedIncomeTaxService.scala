@@ -34,7 +34,8 @@ object EstimatedIncomeTaxService {
     totalEstimatedIncome: BigDecimal,
     taxFreeAllowance: BigDecimal,
     totalEstimatedTax: BigDecimal,
-    hasCurrentIncome: Boolean): TaxViewType =
+    hasCurrentIncome: Boolean
+  ): TaxViewType =
     hasCurrentIncome match {
       case false => NoIncomeTaxView
       case true =>
@@ -51,7 +52,8 @@ object EstimatedIncomeTaxService {
   def isComplexViewType(
     codingComponents: Seq[CodingComponent],
     totalTax: TotalTax,
-    nonTaxCodeIncome: NonTaxCodeIncome): Boolean = {
+    nonTaxCodeIncome: NonTaxCodeIncome
+  ): Boolean = {
 
     val reductionsExist = hasReductions(totalTax)
     val additionalTaxDue = hasAdditionalTax(codingComponents, totalTax)

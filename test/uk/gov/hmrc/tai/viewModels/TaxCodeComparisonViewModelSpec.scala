@@ -124,7 +124,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(2),
@@ -133,7 +134,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live)
+            Live
+          )
         )
         val nyTaxCodeIncomes = Seq(
           TaxCodeIncome(
@@ -144,7 +146,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "S1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(2),
@@ -153,7 +156,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "11150L",
             "employer1",
             OtherBasisOfOperation,
-            Live)
+            Live
+          )
         )
 
         val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
@@ -195,7 +199,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "S1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(2),
@@ -204,7 +209,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live)
+            Live
+          )
         )
         val nyTaxCodeIncomes = Seq(
           TaxCodeIncome(
@@ -215,7 +221,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "S1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(2),
@@ -224,7 +231,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "11150L",
             "employer1",
             OtherBasisOfOperation,
-            Live)
+            Live
+          )
         )
 
         val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
@@ -264,7 +272,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(2),
@@ -273,7 +282,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live)
+            Live
+          )
         )
         val nyTaxCodeIncomes = Seq(
           TaxCodeIncome(
@@ -284,7 +294,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(2),
@@ -293,7 +304,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "11150L",
             "employer1",
             OtherBasisOfOperation,
-            Live)
+            Live
+          )
         )
 
         val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
@@ -333,7 +345,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "S1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
         )
         val nyTaxCodeIncomes = Seq(
@@ -345,7 +358,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "S11150L", "employer1", OtherBasisOfOperation, Live)
         )
 
@@ -367,7 +381,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "S1150L", "employer1", OtherBasisOfOperation, Live)
         )
         val nyTaxCodeIncomes = Seq(
@@ -379,7 +394,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
             "S1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOfOperation, Live)
         )
 
@@ -404,7 +420,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "1150L",
       "pension3",
       OtherBasisOfOperation,
-      PotentiallyCeased),
+      PotentiallyCeased
+    ),
     TaxCodeIncome(PensionIncome, Some(13), 1111, "employment", "1150L", "pension3", OtherBasisOfOperation, Ceased),
     TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(
@@ -415,7 +432,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "BR",
       "employer6",
       Week1Month1BasisOfOperation,
-      Live),
+      Live
+    ),
     TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, None, 2222, "employment", "BR", "pension2", Week1Month1BasisOfOperation, Live)
   )
@@ -430,7 +448,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "1150L",
       "pension3",
       OtherBasisOfOperation,
-      PotentiallyCeased),
+      PotentiallyCeased
+    ),
     TaxCodeIncome(PensionIncome, Some(13), 1111, "employment", "1150L", "pension3", OtherBasisOfOperation, Ceased),
     TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(
@@ -441,7 +460,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "BR",
       "employer6",
       Week1Month1BasisOfOperation,
-      Live),
+      Live
+    ),
     TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, None, 2222, "employment", "BR", "pension2", Week1Month1BasisOfOperation, Live)
   )
@@ -457,7 +477,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "1250L",
       "pension1",
       OtherBasisOfOperation,
-      PotentiallyCeased),
+      PotentiallyCeased
+    ),
     TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "NBR", "employer2", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(
       JobSeekerAllowanceIncome,
@@ -467,7 +488,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "ABR",
       "employer6",
       Week1Month1BasisOfOperation,
-      Live),
+      Live
+    ),
     TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "2150L", "employer7", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, None, 2222, "employment", "PBR", "pension2", Week1Month1BasisOfOperation, Live)
   )
@@ -482,7 +504,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "1250L",
       "pension1",
       OtherBasisOfOperation,
-      PotentiallyCeased),
+      PotentiallyCeased
+    ),
     TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "NBR", "employer2", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(
       JobSeekerAllowanceIncome,
@@ -492,7 +515,8 @@ class TaxCodeComparisonViewModelSpec extends BaseSpec {
       "ABR",
       "employer6",
       Week1Month1BasisOfOperation,
-      Live),
+      Live
+    ),
     TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "2150L", "employer7", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, None, 2222, "employment", "PBR", "pension2", Week1Month1BasisOfOperation, Live)
   )

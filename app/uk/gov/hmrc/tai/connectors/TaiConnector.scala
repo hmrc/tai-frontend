@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaiConnector @Inject()(http: DefaultHttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) {
+class TaiConnector @Inject() (http: DefaultHttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 

@@ -28,7 +28,8 @@ class CompanyCarChoiceViewModelSpec extends BaseSpec {
       "company car model and provider are present in the provided cache map" in {
         val cacheMap = Map[String, String](
           CompanyCarConstants.CarModelKey    -> "XJ",
-          CompanyCarConstants.CarProviderKey -> "company name")
+          CompanyCarConstants.CarProviderKey -> "company name"
+        )
         val result = CompanyCarChoiceViewModel(cacheMap)
         result mustBe CompanyCarChoiceViewModel("XJ", "company name")
       }

@@ -55,7 +55,8 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
 
   def validateInputAmountComparisonWithTaxablePay(
     taxablePayYTD: BigDecimal,
-    validateTaxablePayYTDError: String): Constraint[Option[String]] =
+    validateTaxablePayYTDError: String
+  ): Constraint[Option[String]] =
     Constraint[Option[String]]("invalidAmount") {
       case Some(textValue) =>
         Try(BigDecimal(FormHelper.stripNumber(textValue))) match {
@@ -73,7 +74,8 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
     nonEmptyError: String,
     validateCurrencyError: String,
     validateCurrencyLengthError: String,
-    netSalary: Option[String] = None)(implicit messages: Messages): Mapping[Option[String]] = {
+    netSalary: Option[String] = None
+  )(implicit messages: Messages): Mapping[Option[String]] = {
     val IncomeMaxLength = 9
 
     optional(text).verifying(
@@ -82,11 +84,13 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
         validateCurrency(validateCurrencyError),
         validateCurrencyLength(IncomeMaxLength, validateCurrencyLengthError),
         validateNetGrossSalary(netSalary)
-      ))
+      )
+    )
   }
 
-  def validateNetGrossSalary(netSalary: Option[String] = None)(
-    implicit messages: Messages): Constraint[Option[String]] = {
+  def validateNetGrossSalary(
+    netSalary: Option[String] = None
+  )(implicit messages: Messages): Constraint[Option[String]] = {
     val netSalaryValue = BigDecimal(netSalary.getOrElse("0"))
 
     val displayNetSalary = MoneyPounds(netSalaryValue, 0, roundUp = true)
@@ -104,7 +108,8 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
     validateCurrencyError: String,
     validateCurrencyLengthError: String,
     validateTaxablePayYTDError: String,
-    taxablePayYTD: BigDecimal): Mapping[Option[String]] = {
+    taxablePayYTD: BigDecimal
+  ): Mapping[Option[String]] = {
     val IncomeMaxLength = 9
     optional(text).verifying(
       StopOnFirstFail(
@@ -112,7 +117,8 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
         validateCurrencyWhole(validateCurrencyError),
         validateCurrencyLength(IncomeMaxLength, validateCurrencyLengthError),
         validateInputAmountComparisonWithTaxablePay(taxablePayYTD, validateTaxablePayYTDError)
-      ))
+      )
+    )
   }
 }
 

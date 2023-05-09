@@ -41,7 +41,8 @@ object ZeroTaxEstimatedIncomeTaxViewModel {
     codingComponents: Seq[CodingComponent],
     taxAccountSummary: TaxAccountSummary,
     taxCodeIncomes: Seq[TaxCodeIncome],
-    taxBands: List[TaxBand])(implicit messages: Messages): ZeroTaxEstimatedIncomeTaxViewModel = {
+    taxBands: List[TaxBand]
+  )(implicit messages: Messages): ZeroTaxEstimatedIncomeTaxViewModel = {
 
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)

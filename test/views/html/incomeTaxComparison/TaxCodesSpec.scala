@@ -38,8 +38,10 @@ class TaxCodesSpec extends TaiViewSpec {
           link(
             url = appConfig.scottishRateIncomeTaxUrl,
             copy = messages("tai.taxCode.scottishIncomeText.link"),
-            externalLink = true)
-        )).body.replaceAll("\\s+", "")
+            externalLink = true
+          )
+        )
+      ).body.replaceAll("\\s+", "")
     }
 
     "display tax code comparision table" in {

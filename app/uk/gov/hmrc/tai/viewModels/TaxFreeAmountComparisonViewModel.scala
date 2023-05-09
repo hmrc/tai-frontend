@@ -28,7 +28,8 @@ case class TaxFreeAmountComparisonViewModel(
   personalAllowance: PersonalAllowance,
   additions: Additions,
   deductions: Deductions,
-  footer: Footer)(implicit messages: Messages)
+  footer: Footer
+)(implicit messages: Messages)
     extends ViewModelHelper {
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
@@ -48,7 +49,8 @@ case class TaxFreeAmountComparisonViewModel(
           "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
           personallAllowanceCYPlusOneAmount,
           HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
-        ))
+        )
+      )
     } else {
       None
     }
@@ -63,8 +65,8 @@ object TaxFreeAmountComparisonViewModel {
 
   def apply(
     codingComponentForYears: Seq[CodingComponentForYear],
-    taxAccountSummaryForYears: Seq[TaxAccountSummaryForYear])(
-    implicit messages: Messages): TaxFreeAmountComparisonViewModel = {
+    taxAccountSummaryForYears: Seq[TaxAccountSummaryForYear]
+  )(implicit messages: Messages): TaxFreeAmountComparisonViewModel = {
     val sortedcodingComponentsByYear = codingComponentForYears.sortBy(_.year)
     val sortedTaxAccountSummaryByYear = taxAccountSummaryForYears.sortBy(_.year)
     val personalAllowance = createPersonalAllowanceRow(sortedcodingComponentsByYear)
@@ -76,7 +78,8 @@ object TaxFreeAmountComparisonViewModel {
 
   private def createPersonalAllowanceRow(codingComponentForYears: Seq[CodingComponentForYear]): PersonalAllowance = {
     val amounts = codingComponentForYears.map(
-      _.codingComponents.find(_.componentType == PersonalAllowancePA).map(_.amount) getOrElse BigDecimal(0))
+      _.codingComponents.find(_.componentType == PersonalAllowancePA).map(_.amount) getOrElse BigDecimal(0)
+    )
 
     if (amounts.nonEmpty) PersonalAllowance(amounts) else PersonalAllowance(Seq(0, 0))
   }
@@ -139,7 +142,8 @@ object TaxFreeAmountComparisonViewModel {
 
   private def componentTypeToRow(
     componentType: TaxComponentType,
-    codingComponentForYears: Seq[CodingComponentForYear]) = {
+    codingComponentForYears: Seq[CodingComponentForYear]
+  ) = {
     val amounts = codingComponentForYears.map(_.codingComponents.find(_.componentType == componentType).map(_.amount))
 
     Row(componentType.toString, amounts)

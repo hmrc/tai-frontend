@@ -35,7 +35,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
-    Nil)
+    Nil
+  )
   val estimatedPayJourneyCompleted = false
 
   val expectedPenisonViewModel = IncomeSourceSummaryViewModel(
@@ -104,7 +105,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     taxCodeIncomeSources: Seq[TaxCodeIncome],
     employment: Employment,
     benefits: Benefits,
-    empId: Int = 1): IncomeSourceSummaryViewModel =
+    empId: Int = 1
+  ): IncomeSourceSummaryViewModel =
     IncomeSourceSummaryViewModel(
       empId,
       "User Name",
@@ -114,7 +116,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       false,
       true,
       appConfig,
-      None)
+      None
+    )
 
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {
@@ -136,7 +139,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -164,7 +168,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -191,7 +196,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val exception = the[RuntimeException] thrownBy createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -203,7 +209,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       "no company benefits are present" in {
 
         val taxCodeIncomeSources = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live)
+        )
 
         val employment = Employment(
           "test employment",
@@ -217,7 +224,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -227,7 +235,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       "company benefits are present, but not for the supplied employment id" in {
 
         val taxCodeIncomeSources = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(7), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
+          TaxCodeIncome(EmploymentIncome, Some(7), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live)
+        )
 
         val employment = Employment(
           "test employment",
@@ -241,13 +250,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           7,
           None,
           false,
-          false)
+          false
+        )
 
         val companyCars = Seq(
           CompanyCarBenefit(
             2,
             BigDecimal(200.22),
-            Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
+            Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))
+          )
+        )
         val otherBenefits = Seq(
           GenericBenefit(MedicalInsurance, Some(2), BigDecimal(321.12)),
           GenericBenefit(Entertaining, None, BigDecimal(120653.99))
@@ -273,7 +285,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             "1100L",
             "Employer",
             Week1Month1BasisOfOperation,
-            Live))
+            Live
+          )
+        )
 
         val employment = Employment(
           "test employment",
@@ -287,13 +301,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           employmentId,
           None,
           false,
-          false)
+          false
+        )
 
         val companyCars = Seq(
           CompanyCarBenefit(
             employmentId,
             BigDecimal(200.22),
-            Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
+            Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))
+          )
+        )
         val otherBenefits = Seq(
           GenericBenefit(MedicalInsurance, Some(employmentId), BigDecimal(321.12)),
           GenericBenefit(Entertaining, Some(employmentId), BigDecimal(120653.99))
@@ -327,7 +344,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       "company benefits are present with car fuel benefit, and associated with the supplied employment id" in {
 
         val taxCodeIncomeSources = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live)
+        )
 
         val employment = Employment(
           "test employment",
@@ -341,13 +359,12 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false)
+          false
+        )
 
         val companyCars = Seq(
-          CompanyCarBenefit(
-            1,
-            BigDecimal(200.22),
-            Seq(CompanyCar(1, "transit", true, Some(LocalDate.now), None, None))))
+          CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", true, Some(LocalDate.now), None, None)))
+        )
         val otherBenefits = Seq(
           GenericBenefit(CarFuelBenefit, Some(1), BigDecimal(200.22)),
           GenericBenefit(MedicalInsurance, Some(1), BigDecimal(321.12)),
@@ -366,7 +383,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
             BigDecimal(200.22),
-            appConfig.cocarFrontendUrl),
+            appConfig.cocarFrontendUrl
+          ),
           CompanyBenefitViewModel(
             Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
             BigDecimal(321.12),
@@ -386,7 +404,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     "generate a view model with the displayAddCompanyCar flag set to true" when {
       "no existing company car benefit is present" in {
         val taxCodeIncomeSources = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live)
+        )
 
         val employment = Employment(
           "test employment",
@@ -400,7 +419,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -411,7 +431,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     "generate a view model with the displayAddCompanyCar flag set to false" when {
       "an existing company car benefit is present" in {
         val taxCodeIncomeSources = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live)
+        )
 
         val employment = Employment(
           "test employment",
@@ -425,13 +446,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false)
+          false
+        )
 
         val companyCars = Seq(
           CompanyCarBenefit(
             1,
             BigDecimal(200.22),
-            Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
+            Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))
+          )
+        )
         val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])
         val model = createViewModel(taxCodeIncomeSources, employment, benefits)
         model.displayAddCompanyCarLink mustBe false
@@ -444,7 +468,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
           benefits: Benefits,
-          empId: Int = 1): IncomeSourceSummaryViewModel =
+          empId: Int = 1
+        ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId,
             "User Name",
@@ -454,7 +479,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             false,
             true,
             appConfig,
-            Some(300))
+            Some(300)
+          )
 
         val taxCodeIncomeSources = Seq(
           TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", OtherBasisOfOperation, Live),
@@ -473,7 +499,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -486,7 +513,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
           benefits: Benefits,
-          empId: Int = 1): IncomeSourceSummaryViewModel =
+          empId: Int = 1
+        ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId,
             "User Name",
@@ -496,7 +524,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             false,
             true,
             appConfig,
-            Some(300))
+            Some(300)
+          )
 
         val taxCodeIncomeSources = Seq(
           TaxCodeIncome(PensionIncome, Some(1), 100, "Test", "1100L", "Pension", Week1Month1BasisOfOperation, Live),
@@ -515,7 +544,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -530,7 +560,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
           benefits: Benefits,
-          empId: Int = 1): IncomeSourceSummaryViewModel =
+          empId: Int = 1
+        ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId,
             "User Name",
@@ -540,7 +571,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             false,
             true,
             appConfig,
-            Some(100))
+            Some(100)
+          )
 
         val taxCodeIncomeSources = Seq(
           TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", OtherBasisOfOperation, Live),
@@ -559,7 +591,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -570,7 +603,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
           benefits: Benefits,
-          empId: Int = 1): IncomeSourceSummaryViewModel =
+          empId: Int = 1
+        ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId,
             "User Name",
@@ -580,7 +614,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             false,
             true,
             appConfig,
-            Some(100))
+            Some(100)
+          )
 
         val taxCodeIncomeSources = Seq(
           TaxCodeIncome(PensionIncome, Some(1), 100, "Test", "1100L", "Pension", Week1Month1BasisOfOperation, Live),
@@ -599,7 +634,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -624,7 +660,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 

@@ -28,14 +28,15 @@ case class PayPeriodForm(payPeriod: Option[String], otherInDays: Option[String] 
 object PayPeriodForm {
   implicit val formats: OFormat[PayPeriodForm] = Json.format[PayPeriodForm]
 
-  def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(
-    implicit messages: Messages): Form[PayPeriodForm] = {
+  def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(implicit
+    messages: Messages
+  ): Form[PayPeriodForm] = {
 
     val payPeriodValidation = Constraint[Option[String]]("Please select a period") {
       case Some(txt) =>
         txt match {
           case Other | Monthly | Weekly | Fortnightly | FourWeekly => Valid
-          case _                                                   => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
+          case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
         }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
     }
@@ -44,13 +45,11 @@ object PayPeriodForm {
       val digitsOnly = """^\d*$""".r
 
       Constraint[Option[String]]("days") { days: Option[String] =>
-        {
-          (payPeriod, days) match {
-            case (Some(Other), Some(digitsOnly())) => Valid
-            case (Some(Other), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-            case (Some(Other), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
-            case _                                 => Valid
-          }
+        (payPeriod, days) match {
+          case (Some(Other), Some(digitsOnly())) => Valid
+          case (Some(Other), None) => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+          case (Some(Other), _)    => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+          case _                   => Valid
         }
       }
     }

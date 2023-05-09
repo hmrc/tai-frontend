@@ -25,7 +25,8 @@ case class AuthedUser(
   utr: Option[String],
   providerType: Option[String],
   confidenceLevel: ConfidenceLevel,
-  trustedHelper: Option[TrustedHelper]) {
+  trustedHelper: Option[TrustedHelper]
+) {
   def nino: Nino = Nino(validNino)
 }
 
@@ -34,7 +35,8 @@ object AuthedUser {
     nino: Option[String],
     saUtr: Option[String],
     providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser = {
+    confidenceLevel: ConfidenceLevel
+  ): AuthedUser = {
     val validNino = nino.getOrElse("")
     AuthedUser(validNino, saUtr, providerType, confidenceLevel, None)
   }
@@ -43,7 +45,8 @@ object AuthedUser {
     trustedHelper: TrustedHelper,
     saUtr: Option[String],
     providerType: Option[String],
-    confidenceLevel: ConfidenceLevel): AuthedUser =
+    confidenceLevel: ConfidenceLevel
+  ): AuthedUser =
     AuthedUser(
       trustedHelper.principalNino,
       saUtr,

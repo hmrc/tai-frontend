@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 @Singleton
-class DetailedIncomeTaxEstimateController @Inject()(
+class DetailedIncomeTaxEstimateController @Inject() (
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   authenticate: AuthAction,
@@ -39,7 +39,8 @@ class DetailedIncomeTaxEstimateController @Inject()(
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -50,13 +51,14 @@ class DetailedIncomeTaxEstimateController @Inject()(
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxAccountSummary(nino, TaxYear()),
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
-      taxAccountService.nonTaxCodeIncomes(nino, TaxYear())).mapN {
+      taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+    ).mapN {
       case (
-          totalTax,
-          Right(taxCodeIncomes),
-          taxAccountSummary,
-          codingComponents,
-          nonTaxCodeIncome
+            totalTax,
+            Right(taxCodeIncomes),
+            taxAccountSummary,
+            codingComponents,
+            nonTaxCodeIncome
           ) =>
         implicit val user: AuthedUser = request.taiUser
         val model = DetailedIncomeTaxEstimateViewModel(
@@ -64,10 +66,11 @@ class DetailedIncomeTaxEstimateController @Inject()(
           taxCodeIncomes,
           taxAccountSummary,
           codingComponents,
-          nonTaxCodeIncome)
+          nonTaxCodeIncome
+        )
         Ok(detailedIncomeTaxEstimate(model))
-    } recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))
+    } recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))
     }
   }
 }

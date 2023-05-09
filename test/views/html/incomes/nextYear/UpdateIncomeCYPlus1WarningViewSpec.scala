@@ -95,7 +95,8 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
       doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "govuk-error-message")
+        "govuk-error-message"
+      )
     }
 
     "display the correct content when the income source is a pension" in {
@@ -107,14 +108,18 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
         messages(
           "tai.incomes.warning.cyPlus1.text1",
           MonetaryUtil.withPoundPrefix(newAmount),
-          TaxYearRangeUtil.futureTaxYearRange(1)).replaceU00A0)
+          TaxYearRangeUtil.futureTaxYearRange(1)
+        ).replaceU00A0
+      )
 
       doc(pensionView) must haveInputLabelWithText(
         FormValuesConstants.YesNoChoice,
-        messages("tai.incomes.warning.pension.radio1", employmentName))
+        messages("tai.incomes.warning.pension.radio1", employmentName)
+      )
       doc(pensionView) must haveInputLabelWithText(
         s"${FormValuesConstants.YesNoChoice}-2",
-        messages("tai.incomes.warning.cyPlus1.radio2"))
+        messages("tai.incomes.warning.cyPlus1.radio2")
+      )
       doc(pensionView).getElementById(FormValuesConstants.YesNoChoice) must not be null
       doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}-2") must not be null
     }

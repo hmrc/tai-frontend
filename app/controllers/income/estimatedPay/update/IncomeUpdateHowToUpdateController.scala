@@ -37,7 +37,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class IncomeUpdateHowToUpdateController @Inject()(
+class IncomeUpdateHowToUpdateController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   employmentService: EmploymentService,
@@ -47,7 +47,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
   howToUpdateView: HowToUpdateView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   private def incomeTypeIdentifier(isPension: Boolean): String =
@@ -57,8 +58,9 @@ class IncomeUpdateHowToUpdateController @Inject()(
       TaiConstants.IncomeTypeEmployment
     }
 
-  private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(
-    implicit hc: HeaderCarrier): Future[Map[String, String]] =
+  private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]])(implicit
+    hc: HeaderCarrier
+  ): Future[Map[String, String]] =
     employmentFuture flatMap {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
@@ -66,7 +68,9 @@ class IncomeUpdateHowToUpdateController @Inject()(
           cacheMap = Map(
             UpdateIncomeConstants.NameKey       -> employment.name,
             UpdateIncomeConstants.IdKey         -> id.toString,
-            UpdateIncomeConstants.IncomeTypeKey -> incomeType))
+            UpdateIncomeConstants.IncomeTypeKey -> incomeType
+          )
+        )
       case _ => throw new RuntimeException("Not able to find employment")
     }
 
@@ -84,12 +88,12 @@ class IncomeUpdateHowToUpdateController @Inject()(
           incomeToEdit: EmploymentAmount <- incomeToEditFuture
           taxCodeIncomeDetails           <- taxCodeIncomeDetailsFuture
           _                              <- cacheEmploymentDetailsFuture
-          result                         <- processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
+          result <- processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
         } yield result
       case None =>
         Future.failed(new RuntimeException("Not able to find employment"))
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+    }).recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
@@ -97,9 +101,8 @@ class IncomeUpdateHowToUpdateController @Inject()(
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]])(
-    implicit request: Request[AnyContent],
-    user: AuthedUser): Future[Result] =
+    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]]
+  )(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {
       case (true, false, Right(taxCodeIncomes)) =>
         for {
@@ -130,18 +133,15 @@ class IncomeUpdateHowToUpdateController @Inject()(
       .createForm()
       .bindFromRequest()
       .fold(
-        formWithErrors => {
+        formWithErrors =>
           for {
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
-          } yield {
-            incomeSourceEither match {
-              case Right(incomeSource) =>
-                BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-            }
-          }
-        },
-        formData => {
+          } yield incomeSourceEither match {
+            case Right(incomeSource) =>
+              BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+          },
+        formData =>
           journeyCacheService.cache(UpdateIncomeConstants.HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
@@ -149,7 +149,6 @@ class IncomeUpdateHowToUpdateController @Inject()(
               case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit)
             }
           }
-        }
       )
   }
 }

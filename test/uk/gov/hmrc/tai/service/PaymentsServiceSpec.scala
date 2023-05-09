@@ -46,7 +46,8 @@ class PaymentsServiceSpec extends PlaySpec {
       2,
       None,
       false,
-      false)
+      false
+    )
   }
 
   "filterDuplicates" should {
@@ -69,7 +70,8 @@ class PaymentsServiceSpec extends PlaySpec {
         2,
         None,
         false,
-        false)
+        false
+      )
 
       paymentsService.filterDuplicates(employment) mustBe Seq.empty[PaymentDetailsViewModel]
     }

@@ -25,7 +25,8 @@ case class UpdatePensionCheckYourAnswersViewModel(
   receivePension: String,
   whatYouToldUs: String,
   contactByPhone: String,
-  phoneNumber: Option[String]) {
+  phoneNumber: Option[String]
+) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 

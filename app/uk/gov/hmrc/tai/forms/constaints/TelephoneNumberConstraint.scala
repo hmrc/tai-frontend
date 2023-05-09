@@ -33,5 +33,6 @@ object TelephoneNumberConstraint {
               .exists(_ => true)) =>
           Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
         case _ => Valid
-    })
+      }
+    )
 }

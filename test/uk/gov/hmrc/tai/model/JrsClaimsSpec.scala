@@ -29,7 +29,8 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
     List(
       Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
-    ))
+    )
+  )
 
   "JrsClaims" must {
 
@@ -57,7 +58,8 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
       val result = json.as[JrsClaims]
 
       result shouldBe JrsClaims(
-        List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2020-12")))))
+        List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2020-12"))))
+      )
 
     }
 
@@ -148,7 +150,8 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
             Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
             Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02")))
           )
-        ))
+        )
+      )
     }
 
     "JrsClaims apply method should return none for empty employer list" in {

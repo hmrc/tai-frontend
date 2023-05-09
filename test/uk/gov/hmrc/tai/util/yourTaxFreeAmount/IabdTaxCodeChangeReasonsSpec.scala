@@ -86,14 +86,16 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
           "Vehicle expenses",
           messagesApi("tai.taxCodeComparison.iabd.increased"),
           "£100",
-          "£123"),
+          "£123"
+        ),
         messagesApi("tai.taxCodeComparison.iabd.added", "Car benefit", "£123"),
         messagesApi(
           "tai.taxCodeComparison.iabd.ammended",
           "Medical insurance",
           messagesApi("tai.taxCodeComparison.iabd.reduced"),
           "£200",
-          "£123"),
+          "£123"
+        ),
         messagesApi("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", "£12,345")
       )
     }

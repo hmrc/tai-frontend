@@ -60,9 +60,11 @@ class PensionProviderServiceSpec extends BaseSpec {
       val model = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789"))
+        telephoneNumber = Some("123456789")
+      )
       when(
-        pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any()))
+        pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())
+      )
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectPensionProvider(nino, 1, model), 5 seconds)
@@ -76,10 +78,13 @@ class PensionProviderServiceSpec extends BaseSpec {
         val model = IncorrectPensionProvider(
           whatYouToldUs = "TEST",
           telephoneContactAllowed = "Yes",
-          telephoneNumber = Some("123456789"))
+          telephoneNumber = Some("123456789")
+        )
         when(
           pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(
-            any())).thenReturn(Future.successful(None))
+            any()
+          )
+        ).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when submitting incorrect pension for ${nino.nino}"

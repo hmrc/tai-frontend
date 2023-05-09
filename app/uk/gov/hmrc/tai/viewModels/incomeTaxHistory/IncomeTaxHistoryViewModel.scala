@@ -27,4 +27,5 @@ case class IncomeTaxHistoryViewModel(
   maybeEndDate: Option[LocalDate],
   maybeTaxableIncome: Option[String],
   maybeIncomeTaxPaid: Option[String],
-  maybeTaxCode: Option[String])
+  maybeTaxCode: Option[String]
+)

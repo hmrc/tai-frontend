@@ -23,7 +23,8 @@ case class EndedCompanyBenefit(
   stopDate: String,
   valueOfBenefit: Option[String],
   contactByPhone: String,
-  phoneNumber: Option[String])
+  phoneNumber: Option[String]
+)
 
 object EndedCompanyBenefit {
   implicit val formats: Format[EndedCompanyBenefit] = Json.format[EndedCompanyBenefit]

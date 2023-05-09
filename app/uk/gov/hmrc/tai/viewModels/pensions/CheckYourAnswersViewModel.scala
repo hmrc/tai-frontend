@@ -28,7 +28,8 @@ case class CheckYourAnswersViewModel(
   journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
   postConfirmationText: String,
   submissionUrl: String,
-  cancelUrl: String)
+  cancelUrl: String
+)
 
 object CheckYourAnswersViewModel {
 
@@ -37,7 +38,8 @@ object CheckYourAnswersViewModel {
     pensionStartDate: String,
     pensionRefNo: String,
     contactableByPhone: String,
-    phoneNumber: Option[String])(implicit messages: Messages): CheckYourAnswersViewModel = {
+    phoneNumber: Option[String]
+  )(implicit messages: Messages): CheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -45,7 +47,8 @@ object CheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q1"),
           pensionProviderName,
-          controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url),
+          controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+        ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q2"),
           Dates.formatDate(LocalDate.parse(pensionStartDate)),
@@ -54,17 +57,20 @@ object CheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q3"),
           pensionRefNo,
-          controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url),
+          controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url
+        ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q4"),
           contactableByPhone,
-          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url)
+          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+        )
       )
       val optionalPhoneNoLine = phoneNumber map {
         CheckYourAnswersConfirmationLine(
           Messages("tai.phoneNumber"),
           _,
-          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url)
+          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+        )
       }
       if (optionalPhoneNoLine.isDefined) mandatoryLines :+ optionalPhoneNoLine.get else mandatoryLines
 

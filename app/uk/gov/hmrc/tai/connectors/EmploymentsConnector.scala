@@ -25,8 +25,9 @@ import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, I
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+class EmploymentsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
+) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -49,9 +50,7 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: S
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler
       .getFromApiV2(employmentUrl(nino, id))
-      .map(
-        json => (json \ "data").asOpt[Employment]
-      )
+      .map(json => (json \ "data").asOpt[Employment])
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>
@@ -67,8 +66,9 @@ class EmploymentsConnector @Inject()(httpHandler: HttpHandler, servicesConfig: S
       (response.json \ "data").asOpt[String]
     }
 
-  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(
-    implicit hc: HeaderCarrier): Future[Option[String]] =
+  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
+    hc: HeaderCarrier
+  ): Future[Option[String]] =
     httpHandler.postToApi[IncorrectIncome](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment).map {
       response =>
         (response.json \ "data").asOpt[String]

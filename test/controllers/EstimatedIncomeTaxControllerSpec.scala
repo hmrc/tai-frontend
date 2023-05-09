@@ -92,7 +92,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           None,
           None,
           None,
-          None)
+          None
+        )
 
         val viewModelBands = List(
           Band("TaxFree", 24.04, 11500, 0, BandTypesConstants.ZeroBand),
@@ -140,18 +141,22 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
-          ))
+          )
+        )
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             nonTaxCodeIncome
-          ))
+          )
+        )
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq(taxCodeIncome)
-            )))
+            )
+          )
+        )
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -176,7 +181,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           Live,
           None,
           None,
-          None)
+          None
+        )
 
         val taxAccountSummary = TaxAccountSummary(700, 11500, 0, 0, 0, 16500, 11500)
 
@@ -232,18 +238,22 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
-          ))
+          )
+        )
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             nonTaxCodeIncome
-          ))
+          )
+        )
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq(taxCodeIncome)
-            )))
+            )
+          )
+        )
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -269,7 +279,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           Live,
           None,
           None,
-          None)
+          None
+        )
 
         val taxAccountSummary = TaxAccountSummary(0, 10500, 0, 0, 0, 9000, 11500)
 
@@ -282,7 +293,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             None,
             1000,
             "interest without tax taken off (gross interest)",
-            Some(1000))
+            Some(1000)
+          )
         )
 
         val startingSaversRateBand = TaxBand("SR", "", 0, 0, Some(0), Some(5000), 0)
@@ -294,7 +306,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           0,
           List(
             IncomeCategory(NonSavingsIncomeCategory, 0, 0, 8000, List.empty[TaxBand]),
-            IncomeCategory(UntaxedInterestIncomeCategory, 0, 0, 1000, untaxedInterestTaxBands)),
+            IncomeCategory(UntaxedInterestIncomeCategory, 0, 0, 1000, untaxedInterestTaxBands)
+          ),
           None,
           None,
           None,
@@ -315,18 +328,22 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
-          ))
+          )
+        )
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             nonTaxCodeIncome
-          ))
+          )
+        )
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq(taxCodeIncome)
-            )))
+            )
+          )
+        )
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -347,18 +364,22 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
-          ))
+          )
+        )
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          ))
+          )
+        )
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq.empty[TaxCodeIncome]
-            )))
+            )
+          )
+        )
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -379,18 +400,22 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-          ))
+          )
+        )
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          ))
+          )
+        )
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq.empty[TaxCodeIncome]
-            )))
+            )
+          )
+        )
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

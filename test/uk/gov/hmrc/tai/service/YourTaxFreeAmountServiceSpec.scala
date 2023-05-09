@@ -68,7 +68,8 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
     override def buildTaxFreeAmount(
       unused1: LocalDate,
       previous: Option[Seq[CodingComponent]],
-      unused3: Seq[CodingComponent])(implicit messages: Messages): YourTaxFreeAmountComparison = {
+      unused3: Seq[CodingComponent]
+    )(implicit messages: Messages): YourTaxFreeAmountComparison = {
 
       val previousTaxFreeInfo = previous.map(_ => TaxFreeInfo("previousTaxDate", 0, 0))
 
@@ -94,7 +95,8 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
     "Employer 1",
     false,
     Some("1234"),
-    true)
+    true
+  )
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
   val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
@@ -104,5 +106,6 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
   private class TestService
       extends YourTaxFreeAmountService(
         taxCodeChangeService: TaxCodeChangeService,
-        codingComponentService: CodingComponentService) with YourTaxFreeAmountMock
+        codingComponentService: CodingComponentService
+      ) with YourTaxFreeAmountMock
 }

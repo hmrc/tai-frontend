@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnector) extends Logging {
+class TaxCodeChangeService @Inject() (taxCodeChangeConnector: TaxCodeChangeConnector) extends Logging {
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
     taxCodeChangeConnector.taxCodeChange(nino)
@@ -52,14 +52,14 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
 
     }).value
 
-  }.recover {
-    case NonFatal(e) =>
-      logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
-      Right(HasTaxCodeChanged(changed = false, None))
+  }.recover { case NonFatal(e) =>
+    logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
+    Right(HasTaxCodeChanged(changed = false, None))
   }
 
-  def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(
-    implicit hc: HeaderCarrier): Future[List[TaxCodeRecord]] =
+  def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): Future[List[TaxCodeRecord]] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year)
 
   def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Boolean] =
@@ -75,9 +75,8 @@ class TaxCodeChangeService @Inject()(taxCodeChangeConnector: TaxCodeChangeConnec
     taxCodeChangeConnector
       .hasTaxCodeChanged(nino)
       .map(_.asRight)
-      .recover {
-        case _ =>
-          logger.error("Could not fetch the changed tax code")
-          TaxCodeError(nino, Some("Could not fetch tax code change")).asLeft
+      .recover { case _ =>
+        logger.error("Could not fetch the changed tax code")
+        TaxCodeError(nino, Some("Could not fetch tax code change")).asLeft
       }
 }

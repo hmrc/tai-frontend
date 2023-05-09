@@ -27,7 +27,8 @@ case class LogActivityEntry(
   eventType: String,
   eventDescription: String,
   principal: PersonDetails,
-  attorney: PersonDetails)
+  attorney: PersonDetails
+)
 
 object LogActivityEntry {
   implicit val formats: OFormat[LogActivityEntry] = Json.format[LogActivityEntry]

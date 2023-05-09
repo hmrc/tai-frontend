@@ -29,13 +29,15 @@ object MockTemplateRenderer extends TemplateRenderer {
   override val refreshAfter: FiniteDuration = 10 minutes
   override def fetchTemplate(path: String): Future[String] = ???
 
-  override def renderDefaultTemplate(path: String, content: Html, extraArgs: Map[String, Any])(
-    implicit messages: Messages) = {
+  override def renderDefaultTemplate(path: String, content: Html, extraArgs: Map[String, Any])(implicit
+    messages: Messages
+  ) = {
     val pageHeader = extraArgs.getOrElse("mainContentHeader", Html(""))
 
     Html(
       "<title>" + extraArgs("pageTitle") + "</title>"
-        + pageHeader + content)
+        + pageHeader + content
+    )
   }
 }
 
@@ -45,14 +47,19 @@ object MockTemplateRendererWithUrBanner extends TemplateRenderer {
   override val refreshAfter: FiniteDuration = 10 minutes
   override def fetchTemplate(path: String): Future[String] = ???
 
-  override def renderDefaultTemplate(path: String, content: Html, extraArgs: Map[String, Any])(
-    implicit messages: Messages) = {
+  override def renderDefaultTemplate(path: String, content: Html, extraArgs: Map[String, Any])(implicit
+    messages: Messages
+  ) = {
     val pageHeader = extraArgs.getOrElse("mainContentHeader", Html(""))
 
-    Html("<title>" + extraArgs("pageTitle") + "</title>" + "<div id=full-width-banner>" + extraArgs(
-      "fullWidthBannerTitle") + extraArgs("fullWidthBannerText") + "</div>"
-      + "<div id=fullWidthBannerDismissText>" + extraArgs("fullWidthBannerDismissText") + "<div>" + "<div id=fullWidthBannerLink>" + extraArgs(
-      "fullWidthBannerLink") + "<div>"
-      + pageHeader + content)
+    Html(
+      "<title>" + extraArgs("pageTitle") + "</title>" + "<div id=full-width-banner>" + extraArgs(
+        "fullWidthBannerTitle"
+      ) + extraArgs("fullWidthBannerText") + "</div>"
+        + "<div id=fullWidthBannerDismissText>" + extraArgs(
+          "fullWidthBannerDismissText"
+        ) + "<div>" + "<div id=fullWidthBannerLink>" + extraArgs("fullWidthBannerLink") + "<div>"
+        + pageHeader + content
+    )
   }
 }

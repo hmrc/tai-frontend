@@ -245,7 +245,7 @@ class PayeControllerHistoricSpec
   }
 
   val sampleEmptyEmployment = Seq(
-    )
+  )
 
   val sampleEmploymentForEmptyAnnualAccounts = Seq(
     Employment(

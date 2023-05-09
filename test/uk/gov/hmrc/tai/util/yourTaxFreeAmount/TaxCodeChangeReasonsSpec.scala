@@ -38,7 +38,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
       employerName,
       false,
       Some("12345"),
-      false)
+      false
+    )
 
   def createPrimaryTaxRecord(employerName: String): TaxCodeRecord =
     TaxCodeRecord(
@@ -49,7 +50,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
       employerName,
       false,
       Some("12345"),
-      true)
+      true
+    )
 
   def createPensionTaxRecord(employerName: String): TaxCodeRecord =
     TaxCodeRecord(
@@ -60,7 +62,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
       employerName,
       true,
       Some("12345"),
-      false)
+      false
+    )
 
   def createPrimaryPensionTaxRecord(employerName: String): TaxCodeRecord =
     TaxCodeRecord(
@@ -71,7 +74,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
       employerName,
       true,
       Some("12345"),
-      true)
+      true
+    )
 
   def removedEmployer(employerName: String): String =
     messages("tai.taxCodeComparison.removeEmployer", employerName)
@@ -104,7 +108,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
           removedEmployer(previousEmployer),
-          addSingleEmploymentCount)
+          addSingleEmploymentCount
+        )
       }
 
       "return a reason when an employment been added" in {
@@ -115,7 +120,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
           addedEmployer(currentEmployer),
-          addMultipleEmploymentCount(2))
+          addMultipleEmploymentCount(2)
+        )
       }
 
       "return multiple reasons when employments have changed" in {
@@ -169,7 +175,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
           val taxCodeChange = TaxCodeChange(List(previous), List(current))
 
           employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
-            Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+            Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+          )
         }
 
         "go to the generic message for secondary tax records" in {
@@ -179,7 +186,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
           val taxCodeChange = TaxCodeChange(List(previous), List(current))
 
           employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
-            Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+            Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+          )
         }
       }
     }
@@ -194,7 +202,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
           removedEmployer(previousEmployer),
           addedPension(currentEmployer),
-          messages("tai.taxCodeComparison.pension.count", 1))
+          messages("tai.taxCodeComparison.pension.count", 1)
+        )
       }
 
       "return a reason when a secondary pension been added" in {
@@ -205,7 +214,8 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
           addedPension(currentEmployer),
-          messages("tai.taxCodeComparison.pensions.count", 2))
+          messages("tai.taxCodeComparison.pensions.count", 2)
+        )
       }
     }
 

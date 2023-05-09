@@ -108,7 +108,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         Some("A-1234"),
-        false)
+        false
+      )
       val secondaryEmployer2Before = TaxCodeRecord(
         "code",
         startDate,
@@ -117,7 +118,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 2",
         false,
         Some("A-1234"),
-        false)
+        false
+      )
       val secondaryEmployer1After =
         secondaryEmployer1Before.copy(startDate = startDate.plusMonths(1), endDate = TaxYear().end)
       val secondaryEmployer2After =
@@ -147,7 +149,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
       val secondaryEmployer2Before = TaxCodeRecord(
         "code",
         startDate,
@@ -156,7 +159,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 2",
         false,
         None,
-        false)
+        false
+      )
       val secondaryEmployer1After =
         secondaryEmployer1Before.copy(startDate = startDate.plusMonths(1), endDate = TaxYear().end)
       val secondaryEmployer2After =
@@ -189,7 +193,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         noPayrollNumber,
-        false)
+        false
+      )
       val secondaryEmployer2Before = TaxCodeRecord(
         "code",
         startDate,
@@ -198,7 +203,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 2",
         false,
         noPayrollNumber,
-        false)
+        false
+      )
       val secondaryEmployer3After = TaxCodeRecord(
         "code",
         startDate.plusMonths(1),
@@ -207,7 +213,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 3",
         false,
         noPayrollNumber,
-        false)
+        false
+      )
       val secondaryEmployer4After = TaxCodeRecord(
         "code",
         startDate.plusMonths(1),
@@ -216,7 +223,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 4",
         false,
         noPayrollNumber,
-        false)
+        false
+      )
 
       val model = TaxCodePairs(
         TaxCodeChange(
@@ -244,7 +252,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        true)
+        true
+      )
       val secondaryEmployer2Before = TaxCodeRecord(
         "code",
         startDate,
@@ -253,7 +262,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
 
       val primaryEmployer1After = TaxCodeRecord(
         "code",
@@ -263,7 +273,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        true)
+        true
+      )
       val secondaryEmployer2After = TaxCodeRecord(
         "code",
         startDate.plusMonths(1),
@@ -272,7 +283,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
 
       val model = TaxCodePairs(
         TaxCodeChange(
@@ -297,7 +309,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
       val secondaryEmployer1BBefore = TaxCodeRecord(
         "code 1b",
         startDate,
@@ -306,7 +319,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
 
       val secondaryEmployer1AAfter = TaxCodeRecord(
         "code 1a - after",
@@ -316,7 +330,8 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
       val secondaryEmployer1BAfter = TaxCodeRecord(
         "code 1b - after",
         dateOfTaxCodeChange,
@@ -325,22 +340,27 @@ class TaxCodePairsSpec extends PlaySpec {
         "Employer 1",
         false,
         None,
-        false)
+        false
+      )
 
       val orderings = Table(
         ("previous", "current"),
         (
           List(secondaryEmployer1ABefore, secondaryEmployer1BBefore),
-          List(secondaryEmployer1AAfter, secondaryEmployer1BAfter)),
+          List(secondaryEmployer1AAfter, secondaryEmployer1BAfter)
+        ),
         (
           List(secondaryEmployer1BBefore, secondaryEmployer1ABefore),
-          List(secondaryEmployer1AAfter, secondaryEmployer1BAfter)),
+          List(secondaryEmployer1AAfter, secondaryEmployer1BAfter)
+        ),
         (
           List(secondaryEmployer1ABefore, secondaryEmployer1BBefore),
-          List(secondaryEmployer1BAfter, secondaryEmployer1AAfter)),
+          List(secondaryEmployer1BAfter, secondaryEmployer1AAfter)
+        ),
         (
           List(secondaryEmployer1BBefore, secondaryEmployer1ABefore),
-          List(secondaryEmployer1BAfter, secondaryEmployer1AAfter))
+          List(secondaryEmployer1BAfter, secondaryEmployer1AAfter)
+        )
       )
 
       val possibleOrder1 = List(
@@ -381,7 +401,8 @@ class TaxCodePairsSpec extends PlaySpec {
     "A Employer 1",
     false,
     Some("A-1234"),
-    false)
+    false
+  )
   val currentTaxCodeRecord1 =
     previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().end)
   val fullYearTaxCode =
@@ -395,7 +416,8 @@ class TaxCodePairsSpec extends PlaySpec {
     "D",
     false,
     Some("D Payroll Id"),
-    false)
+    false
+  )
   val unmatchedCurrentTaxCode = TaxCodeRecord(
     "Unmatched Current",
     startDate.plusMonths(1),
@@ -404,7 +426,8 @@ class TaxCodePairsSpec extends PlaySpec {
     "E",
     false,
     Some("E Payroll id"),
-    false)
+    false
+  )
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 }

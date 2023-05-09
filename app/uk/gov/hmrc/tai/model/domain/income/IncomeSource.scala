@@ -28,12 +28,13 @@ final case class IncomeSource(id: Int, name: String)
 
 object IncomeSource {
 
-  def create(journeyCacheService: JourneyCacheService)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Either[String, IncomeSource]] =
-    EitherT(journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)).map {
-      seq =>
-        val id :: name :: _ = seq.toList
-        IncomeSource(id.toInt, name)
+  def create(
+    journeyCacheService: JourneyCacheService
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[String, IncomeSource]] =
+    EitherT(
+      journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
+    ).map { seq =>
+      val id :: name :: _ = seq.toList
+      IncomeSource(id.toInt, name)
     }.value
 }

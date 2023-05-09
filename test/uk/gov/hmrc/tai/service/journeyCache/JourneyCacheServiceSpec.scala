@@ -41,15 +41,21 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       val sut = createSut
       when(
         journeyCacheConnector.currentValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(
-          any())).thenReturn(Future.successful(Some("found")))
+          any()
+        )
+      ).thenReturn(Future.successful(Some("found")))
       when(journeyCacheConnector.currentValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(any()))
         .thenReturn(Future.successful(Some(1)))
       when(
         journeyCacheConnector.currentValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(
-          any())).thenReturn(Future.successful(Some(true)))
+          any()
+        )
+      ).thenReturn(Future.successful(Some(true)))
       when(
         journeyCacheConnector.currentValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(
-          any())).thenReturn(Future.successful(Some(LocalDate.parse("2017-10-10"))))
+          any()
+        )
+      ).thenReturn(Future.successful(Some(LocalDate.parse("2017-10-10"))))
       Await.result(sut.currentValue("stringKey"), 5 seconds) mustBe Some("found")
       Await.result(sut.currentValueAsInt("intKey"), 5 seconds) mustBe Some(1)
       Await.result(sut.currentValueAsBoolean("boolKey"), 5 seconds) mustBe Some(true)
@@ -64,19 +70,24 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       val sut = createSut
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any()))
+          .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any())
+      )
         .thenReturn(Future.successful(Right("found")))
       when(
         journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(
-          any()))
+          any()
+        )
+      )
         .thenReturn(Future.successful(Right(1)))
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any()))
+          .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any())
+      )
         .thenReturn(Future.successful(Right(true)))
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any()))
+          .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any())
+      )
         .thenReturn(Future.successful(Right(LocalDate.parse("2017-10-10"))))
       Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds) mustBe "found".asRight
       Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds) mustBe 1.asRight
@@ -90,19 +101,24 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       val failed = Future.failed(new RuntimeException("not found"))
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any()))
+          .mandatoryJourneyValueAs[String](Matchers.eq(sut.journeyName), Matchers.eq("stringKey"), any())(any())
+      )
         .thenReturn(failed)
       when(
         journeyCacheConnector.mandatoryJourneyValueAs[Int](Matchers.eq(sut.journeyName), Matchers.eq("intKey"), any())(
-          any()))
+          any()
+        )
+      )
         .thenReturn(failed)
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any()))
+          .mandatoryJourneyValueAs[Boolean](Matchers.eq(sut.journeyName), Matchers.eq("boolKey"), any())(any())
+      )
         .thenReturn(failed)
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any()))
+          .mandatoryJourneyValueAs[LocalDate](Matchers.eq(sut.journeyName), Matchers.eq("dateKey"), any())(any())
+      )
         .thenReturn(failed)
       val thrown1 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds)
       val thrown2 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds)
@@ -133,7 +149,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(Map.empty[String, String]))
       Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Left(
-        "Mandatory values missing from cache")
+        "Mandatory values missing from cache"
+      )
     }
 
   }
@@ -175,7 +192,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         journeyCacheConnector.mandatoryJourneyValueAs[String](
           Matchers.eq(sut.journeyName),
           Matchers.eq("key1"),
-          Matchers.any[Function1[String, String]]())(any()))
+          Matchers.any[Function1[String, String]]()
+        )(any())
+      )
         .thenReturn(Future.successful(Right(cacheValue)): Future[Either[String, String]])
 
       Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Right(cacheValue)
@@ -189,7 +208,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         journeyCacheConnector.mandatoryJourneyValueAs[String](
           Matchers.eq(sut.journeyName),
           Matchers.eq("key1"),
-          Matchers.any[Function1[String, String]]())(any()))
+          Matchers.any[Function1[String, String]]()
+        )(any())
+      )
         .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, String]])
       Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Left(errorMessage)
     }
@@ -206,7 +227,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         journeyCacheConnector.mandatoryJourneyValueAs[Int](
           Matchers.eq(sut.journeyName),
           Matchers.eq("key1"),
-          Matchers.any[Function1[String, Int]]())(any()))
+          Matchers.any[Function1[String, Int]]()
+        )(any())
+      )
         .thenReturn(Future.successful(Right(id)): Future[Either[String, Int]])
       Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Right(id)
     }
@@ -219,7 +242,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         journeyCacheConnector.mandatoryJourneyValueAs[Int](
           Matchers.eq(sut.journeyName),
           Matchers.eq("key1"),
-          Matchers.any[Function1[String, Int]]())(any()))
+          Matchers.any[Function1[String, Int]]()
+        )(any())
+      )
         .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, Int]])
       Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Left(errorMessage)
     }
@@ -233,7 +258,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe Right(
         Seq("val1", "val2"),
-        Seq(Some("val3"), None))
+        Seq(Some("val3"), None)
+      )
     }
 
     "return left if one or more of the mandatory values is not found" in {
@@ -263,7 +289,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe Right(
         Seq("val1", "val2"),
-        Seq(Some("val3"), None))
+        Seq(Some("val3"), None)
+      )
     }
   }
 

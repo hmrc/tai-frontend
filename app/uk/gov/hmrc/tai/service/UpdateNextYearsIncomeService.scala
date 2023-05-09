@@ -31,11 +31,12 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstant
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateNextYearsIncomeService @Inject()(
+class UpdateNextYearsIncomeService @Inject() (
   @Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   employmentService: EmploymentService,
-  taxAccountService: TaxAccountService)(implicit ec: ExecutionContext) {
+  taxAccountService: TaxAccountService
+)(implicit ec: ExecutionContext) {
 
   def isEstimatedPayJourneyCompleteForEmployer(id: Int)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val key = s"${UpdateNextYearsIncomeConstants.Successful}-$id"
@@ -45,17 +46,20 @@ class UpdateNextYearsIncomeService @Inject()(
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
     successfulJourneyCacheService.currentCache.map(_ contains UpdateNextYearsIncomeConstants.Successful)
 
-  private def setup(employmentId: Int, nino: Nino)(
-    implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
+  private def setup(employmentId: Int, nino: Nino)(implicit
+    hc: HeaderCarrier
+  ): Future[UpdateNextYearsIncomeCacheModel] =
     (
       taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId),
-      employmentService.employment(nino, employmentId)).mapN {
+      employmentService.employment(nino, employmentId)
+    ).mapN {
       case (Right(Some(taxCodeIncome)), Some(employment)) =>
         val isPension = taxCodeIncome.componentType == PensionIncome
         UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
       case _ =>
         throw new RuntimeException(
-          "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey")
+          "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
+        )
     }
 
   def get(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
@@ -66,8 +70,9 @@ class UpdateNextYearsIncomeService @Inject()(
   def amountKey(employmentId: Int): String =
     s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
-  def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(
-    implicit hc: HeaderCarrier): Future[Map[String, String]] =
+  def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(implicit
+    hc: HeaderCarrier
+  ): Future[Map[String, String]] =
     journeyCacheService.cache(amountKey(employmentId), convertCurrencyToInt(Some(newValue)).toString)
 
   def getNewAmount(employmentId: Int)(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
@@ -78,9 +83,9 @@ class UpdateNextYearsIncomeService @Inject()(
       _         <- get(employmentId, nino)
       newAmount <- getNewAmount(employmentId).getOrFail
       _ <- successfulJourneyCacheService
-            .cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
+             .cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
       _ <- successfulJourneyCacheService
-            .cache(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true"))
+             .cache(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true"))
       _ <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
     } yield Done
 }

@@ -33,7 +33,8 @@ case class Employment(
   sequenceNumber: Int,
   cessationPay: Option[BigDecimal],
   hasPayrolledBenefit: Boolean,
-  receivingOccupationalPension: Boolean) {
+  receivingOccupationalPension: Boolean
+) {
 
   lazy val latestAnnualAccount: Option[AnnualAccount] = if (annualAccounts.isEmpty) None else Some(annualAccounts.max)
 }
@@ -47,7 +48,8 @@ case class AddEmployment(
   startDate: LocalDate,
   payrollNumber: String,
   telephoneContactAllowed: String,
-  telephoneNumber: Option[String])
+  telephoneNumber: Option[String]
+)
 
 object AddEmployment {
 

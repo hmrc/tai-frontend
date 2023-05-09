@@ -30,7 +30,8 @@ case class TaxCodeViewModel(
   taxCodeDetails: Seq[DescriptionListViewModel],
   preHeader: String,
   incomeDetailsMessage: String,
-  employmentId: Option[Int])
+  employmentId: Option[Int]
+)
 
 object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
 
@@ -38,7 +39,8 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
     taxCodeIncomes: Seq[TaxCodeIncome],
     scottishTaxRateBands: Map[String, BigDecimal],
     employmentId: Option[Int],
-    appConfig: ApplicationConfig)(implicit messages: Messages): TaxCodeViewModel = {
+    appConfig: ApplicationConfig
+  )(implicit messages: Messages): TaxCodeViewModel = {
 
     val descriptionListViewModels: Seq[DescriptionListViewModel] = taxCodeIncomes.map { income =>
       createDescriptionListViewModel(
@@ -46,7 +48,8 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
         income.basisOperation,
         scottishTaxRateBands,
         income.name,
-        appConfig)
+        appConfig
+      )
     }
 
     val size = descriptionListViewModels.size
@@ -60,11 +63,13 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
       descriptionListViewModels,
       preHeading,
       incomeDetailsMessage(taxCodeIncomes, employmentId),
-      employmentId)
+      employmentId
+    )
   }
 
-  private def incomeDetailsMessage(taxCodeIncomes: Seq[TaxCodeIncome], employmentId: Option[Int])(
-    implicit messages: Messages): String = {
+  private def incomeDetailsMessage(taxCodeIncomes: Seq[TaxCodeIncome], employmentId: Option[Int])(implicit
+    messages: Messages
+  ): String = {
     val isPension =
       taxCodeIncomes
         .filter(_.employmentId == employmentId)
@@ -79,7 +84,8 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
     operation: BasisOfOperation,
     scottishTaxRateBands: Map[String, BigDecimal],
     employerName: String,
-    appConfig: ApplicationConfig)(implicit messages: Messages): DescriptionListViewModel = {
+    appConfig: ApplicationConfig
+  )(implicit messages: Messages): DescriptionListViewModel = {
 
     val explanation = describeTaxCode(taxCode, operation, scottishTaxRateBands, isCurrentYear = true, appConfig)
 

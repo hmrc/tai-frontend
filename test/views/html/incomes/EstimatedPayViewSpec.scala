@@ -43,12 +43,15 @@ class EstimatedPayViewSpec extends TaiViewSpec {
     behave like pageWithBackLinkWithUrl(
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
         .checkYourAnswersPage(employer.id)
-        .url)
+        .url
+    )
     behave like pageWithCancelLink(
-      Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url))
+      Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
+    )
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.estimatedPay.preHeading", employer.name),
-      messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeBreak))
+      messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
+    )
     behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
 
     "display summary sub-title paragraph" in {

@@ -22,8 +22,9 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext) {
+class SessionConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
+) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 

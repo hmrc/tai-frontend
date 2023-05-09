@@ -88,7 +88,8 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
         currentAmount,
         estimatedAmount,
         NextYearPay,
-        "backUrl")
+        "backUrl"
+      )
       val cyPlus1PayView: Html = confirmAmountEntered(vm)
 
       doc(cyPlus1PayView) must haveLinkElement(

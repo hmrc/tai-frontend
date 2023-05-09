@@ -21,7 +21,8 @@ import uk.gov.hmrc.tai.model.domain.{TaxedIncome, TemporarilyUnavailable}
 final case class IncomeSources(
   livePensionIncomeSources: Seq[TaxedIncome],
   liveEmploymentIncomeSources: Seq[TaxedIncome],
-  ceasedEmploymentIncomeSources: Seq[TaxedIncome]) {
+  ceasedEmploymentIncomeSources: Seq[TaxedIncome]
+) {
 
   def isRtiAvailable: Boolean = {
     def isAvailable(taxedIncome: Seq[TaxedIncome]): Boolean =
@@ -30,6 +31,7 @@ final case class IncomeSources(
         .isEmpty
 
     isAvailable(liveEmploymentIncomeSources) && isAvailable(livePensionIncomeSources) && isAvailable(
-      ceasedEmploymentIncomeSources)
+      ceasedEmploymentIncomeSources
+    )
   }
 }

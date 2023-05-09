@@ -26,7 +26,8 @@ case class IncomeCheckYourAnswersViewModel(
   journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
   postConfirmationText: Option[String],
   submissionUrl: String,
-  cancelUrl: String)
+  cancelUrl: String
+)
 
 object IncomeCheckYourAnswersViewModel {
 
@@ -39,7 +40,8 @@ object IncomeCheckYourAnswersViewModel {
     phoneNumber: Option[String],
     backLinkUrl: String,
     submissionUrl: String,
-    cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
+    cancelUrl: String
+  )(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -47,7 +49,8 @@ object IncomeCheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q1"),
           incomeSourceName,
-          controllers.employments.routes.AddEmploymentController.addEmploymentName.url),
+          controllers.employments.routes.AddEmploymentController.addEmploymentName.url
+        ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q2"),
           Dates.formatDate(LocalDate.parse(incomeSourceStart)),
@@ -56,11 +59,13 @@ object IncomeCheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q3"),
           incomeSourceRefNo,
-          controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url),
+          controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
+        ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q4"),
           contactableByPhone,
-          controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url)
+          controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+        )
       )
 
       val optionalPhoneNoLine = phoneNumber map { phoneNo =>
@@ -68,7 +73,9 @@ object IncomeCheckYourAnswersViewModel {
           CheckYourAnswersConfirmationLine(
             Messages("tai.phoneNumber"),
             phoneNo,
-            controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url))
+            controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+          )
+        )
       }
 
       if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
@@ -82,7 +89,8 @@ object IncomeCheckYourAnswersViewModel {
       journeyConfirmationLines,
       Some(postConfirmationText),
       submissionUrl,
-      cancelUrl)
+      cancelUrl
+    )
   }
 
   def apply(
@@ -93,7 +101,8 @@ object IncomeCheckYourAnswersViewModel {
     phoneNumber: Option[String],
     backLinkUrl: String,
     submissionUrl: String,
-    cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
+    cancelUrl: String
+  )(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -106,7 +115,8 @@ object IncomeCheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.contactByPhone"),
           contactableByPhone,
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        )
       )
 
       val optionalPhoneNoLine = phoneNumber map { phoneNo =>
@@ -114,7 +124,9 @@ object IncomeCheckYourAnswersViewModel {
           CheckYourAnswersConfirmationLine(
             Messages("tai.phoneNumber"),
             phoneNo,
-            controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url))
+            controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+          )
+        )
       }
 
       if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
@@ -128,6 +140,7 @@ object IncomeCheckYourAnswersViewModel {
       journeyConfirmationLines,
       Some(postConfirmationText),
       submissionUrl,
-      cancelUrl)
+      cancelUrl
+    )
   }
 }

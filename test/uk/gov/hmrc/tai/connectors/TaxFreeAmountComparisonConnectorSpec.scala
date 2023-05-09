@@ -33,7 +33,9 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
   "tax free amount url" must {
     "fetch the url to connect to TAI to retrieve tax free amount comparison" in {
-      sut.taxFreeAmountComparisonUrl(nino.nino) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
+      sut.taxFreeAmountComparisonUrl(
+        nino.nino
+      ) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
     }
   }
 

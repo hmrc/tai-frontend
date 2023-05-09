@@ -23,10 +23,11 @@ import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 
 import uk.gov.hmrc.renderer.TemplateRenderer
 
-class TaiLanguageController @Inject()(
+class TaiLanguageController @Inject() (
   languageUtils: LanguageUtils,
   cc: ControllerComponents,
-  val templateRenderer: TemplateRenderer)(implicit messagesApi: MessagesApi)
+  val templateRenderer: TemplateRenderer
+)(implicit messagesApi: MessagesApi)
     extends LanguageController(languageUtils, cc) {
 
   override protected def languageMap: Map[String, Lang] = Map(

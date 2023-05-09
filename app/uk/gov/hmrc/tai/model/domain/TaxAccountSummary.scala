@@ -26,7 +26,8 @@ case class TaxAccountSummary(
   totalInYearAdjustment: BigDecimal,
   totalInYearAdjustmentIntoCYPlusOne: BigDecimal,
   totalEstimatedIncome: BigDecimal = 0,
-  taxFreeAllowance: BigDecimal = 0)
+  taxFreeAllowance: BigDecimal = 0
+)
 
 object TaxAccountSummary {
   implicit val formats: OFormat[TaxAccountSummary] = Json.format[TaxAccountSummary]

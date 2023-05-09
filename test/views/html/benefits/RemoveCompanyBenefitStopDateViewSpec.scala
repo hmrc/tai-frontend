@@ -64,7 +64,8 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
         doc(errorView) must haveClassWithText(
           messages("tai.income.error.form.summary") + " " +
             messages("tai.benefits.ended.stopDate.error.enterDate"),
-          "govuk-error-summary")
+          "govuk-error-summary"
+        )
       }
 
       "a decision has not been made" in {
@@ -80,7 +81,8 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
   private lazy val formWithErrors: Form[LocalDate] = RemoveCompanyBenefitStopDateForm(benefitType, empName).form.bind(
     Map(
       BenefitFormDay -> ""
-    ))
+    )
+  )
 
   override def view: Html =
     removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm(benefitType, empName).form, benefitType, empName)

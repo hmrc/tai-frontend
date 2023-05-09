@@ -29,7 +29,7 @@ import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ServiceController @Inject()(
+class ServiceController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
@@ -37,7 +37,8 @@ class ServiceController @Inject()(
   timeout: TimeoutView,
   sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView,
-  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>

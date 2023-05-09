@@ -36,7 +36,7 @@ case object FifteenDays extends TimeToProcess
 
 case object NoTimeToProcess extends TimeToProcess
 
-class TrackingService @Inject()(
+class TrackingService @Inject() (
   trackingConnector: TrackingConnector,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
 ) {
@@ -45,23 +45,27 @@ class TrackingService @Inject()(
     (
       trackingConnector.getUserTracking(nino),
       successfulJourneyCacheService.currentCache
-    ) mapN {
-      case (trackedForms, successfulJournies) =>
-        val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
-        val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
+    ) mapN { case (trackedForms, successfulJournies) =>
+      val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
+      val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
 
-        val filteredJournies = successfulJournies.keySet.filterNot(
-          key =>
-            key.contains(TrackSuccessfulJourneyConstants.EstimatedPayKey) || key.contains(
-              UpdateNextYearsIncomeConstants.Successful)
-              || key.contains(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey)
+      val filteredJournies = successfulJournies.keySet.filterNot(key =>
+        key.contains(TrackSuccessfulJourneyConstants.EstimatedPayKey) || key.contains(
+          UpdateNextYearsIncomeConstants.Successful
         )
+          || key.contains(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey)
+      )
 
-        (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
-          case (true, false, _, _) | (_, _, false, false) => FifteenDays
-          case (_, true, _, _) | (_, _, false, true)      => ThreeWeeks
-          case _                                          => NoTimeToProcess
-        }
+      (
+        haveAnyShortProcesses,
+        haveAnyLongProcesses,
+        filteredJournies.isEmpty,
+        isA3WeeksJourney(successfulJournies)
+      ) match {
+        case (true, false, _, _) | (_, _, false, false) => FifteenDays
+        case (_, true, _, _) | (_, _, false, true)      => ThreeWeeks
+        case _                                          => NoTimeToProcess
+      }
     }
 
   private def isA3WeeksJourney(journies: Map[String, String]): Boolean =
@@ -69,8 +73,8 @@ class TrackingService @Inject()(
       _ == TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true"
     }
 
-  private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String)(
-    implicit hc: HeaderCarrier
+  private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String)(implicit
+    hc: HeaderCarrier
   ): Boolean =
     trackedForms
       .filter(_.id.matches(regex))

@@ -71,7 +71,8 @@ class DynamicPayPeriodTitleSpec extends BaseSpec {
         val numberOfDays = "123"
         TaxablePayPeriod.errorMessage(Some(Other), Some(numberOfDays)) mustBe messagesApi(
           "tai.taxablePayslip.title.days",
-          numberOfDays)
+          numberOfDays
+        )
       }
     }
   }

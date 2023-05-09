@@ -29,18 +29,17 @@ import scala.util.control.NonFatal
 abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCacheService) extends Logging {
 
   protected def cache(key: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    successfulJourneyCacheService.cache(key, "true") recover {
-      case NonFatal(exception) =>
-        logger.warn(s"Failed to update Journey Completion service for key:$key caused by ${exception.getStackTrace}")
-        Map.empty[String, String]
+    successfulJourneyCacheService.cache(key, "true") recover { case NonFatal(exception) =>
+      logger.warn(s"Failed to update Journey Completion service for key:$key caused by ${exception.getStackTrace}")
+      Map.empty[String, String]
     }
 
   protected def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-    successfulJourneyCacheService.currentValue(key) map (_.isDefined) recover {
-      case NonFatal(exception) =>
-        logger.warn(
-          s"Failed to retrieve Journey Completion service value for key:$key caused by ${exception.getStackTrace}")
-        false
+    successfulJourneyCacheService.currentValue(key) map (_.isDefined) recover { case NonFatal(exception) =>
+      logger.warn(
+        s"Failed to retrieve Journey Completion service value for key:$key caused by ${exception.getStackTrace}"
+      )
+      false
     }
 
   def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String, String]]
@@ -49,9 +48,9 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
 
 }
 
-class EstimatedPayJourneyCompletionService @Inject()(
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService)
-    extends JourneyCompletionService(successfulJourneyCacheService) {
+class EstimatedPayJourneyCompletionService @Inject() (
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+) extends JourneyCompletionService(successfulJourneyCacheService) {
 
   override def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     cache(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId")

@@ -86,7 +86,8 @@ class TaxAdjustmentSpec extends PlaySpec {
       "given a valid json with TaxCreditOnForeignIncomeDividends" in {
         taxAdjustmentTypeJson("TaxCreditOnForeignIncomeDividends").as[TaxAdjustment] mustBe TaxAdjustment(
           10,
-          Seq(TaxAdjustmentComponent(TaxCreditOnForeignIncomeDividends, 10)))
+          Seq(TaxAdjustmentComponent(TaxCreditOnForeignIncomeDividends, 10))
+        )
       }
     }
 

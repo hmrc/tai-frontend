@@ -36,7 +36,8 @@ class CanWeContactByPhoneSpec extends TaiViewSpec {
     behave like pageWithCombinedHeaderNewTemplate(
       "pre heading",
       "main heading",
-      Some(messages("tai.ptaHeader.accessible.preHeading")))
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
 
     behave like pageWithBackLinkNew
     behave like pageWithContinueButtonFormNew("continueUrl")
@@ -76,7 +77,8 @@ class CanWeContactByPhoneSpec extends TaiViewSpec {
     .bind(
       Map(
         FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue
-      ))
+      )
+    )
 
   private val viewModel =
     CanWeContactByPhoneViewModel("pre heading", "main heading", "backUrl", "continueUrl", "cancelUrl")

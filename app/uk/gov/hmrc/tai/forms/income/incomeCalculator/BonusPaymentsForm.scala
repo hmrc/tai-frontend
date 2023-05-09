@@ -26,5 +26,7 @@ object BonusPaymentsForm {
     YesNoForm.form(
       messages(
         "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
+      )
+    )
 }

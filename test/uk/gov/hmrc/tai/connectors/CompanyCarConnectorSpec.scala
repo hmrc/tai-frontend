@@ -33,7 +33,10 @@ class CompanyCarConnectorSpec extends BaseSpec {
   "Company car url" should {
     "fetch the correct Url" in {
       sut
-        .companyCarEmploymentUrl(nino, employmentId) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
+        .companyCarEmploymentUrl(
+          nino,
+          employmentId
+        ) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
     }
   }
 
@@ -98,7 +101,8 @@ class CompanyCarConnectorSpec extends BaseSpec {
         dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
         dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
-      )),
+      )
+    ),
     Some(1)
   )
 
@@ -114,7 +118,8 @@ class CompanyCarConnectorSpec extends BaseSpec {
             "hasActiveFuelBenefit"               -> true,
             "dateMadeAvailable"                  -> "2016-10-10",
             "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-          )),
+          )
+        ),
         "version" -> 1
       ),
       "links" -> Json.arr()
@@ -127,25 +132,31 @@ class CompanyCarConnectorSpec extends BaseSpec {
           Json.obj(
             "carSeqNo"  -> 10,
             "makeModel" -> "Make Model"
-          ))
+          )
+        )
       )
     )
 
   val companyCars: JsObject =
     Json.obj(
       "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr(Json.obj(
-          "employmentSeqNo" -> 10,
-          "grossAmount"     -> 1000,
-          "companyCars" -> Json.arr(Json.obj(
-            "carSeqNo"                           -> 10,
-            "makeModel"                          -> "Make Model",
-            "hasActiveFuelBenefit"               -> true,
-            "dateMadeAvailable"                  -> "2016-10-10",
-            "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-          )),
-          "version" -> 1
-        ))),
+        "companyCarBenefits" -> Json.arr(
+          Json.obj(
+            "employmentSeqNo" -> 10,
+            "grossAmount"     -> 1000,
+            "companyCars" -> Json.arr(
+              Json.obj(
+                "carSeqNo"                           -> 10,
+                "makeModel"                          -> "Make Model",
+                "hasActiveFuelBenefit"               -> true,
+                "dateMadeAvailable"                  -> "2016-10-10",
+                "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
+              )
+            ),
+            "version" -> 1
+          )
+        )
+      ),
       "links" -> Json.arr()
     )
 

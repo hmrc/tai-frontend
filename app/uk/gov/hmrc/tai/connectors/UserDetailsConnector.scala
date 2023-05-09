@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.UserDetails
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserDetailsConnector @Inject()(val http: DefaultHttpClient)(implicit ec: ExecutionContext) extends Logging {
+class UserDetailsConnector @Inject() (val http: DefaultHttpClient)(implicit ec: ExecutionContext) extends Logging {
 
   def userDetails(userDetailsUri: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     logger.debug(s"Calling User Details with uri: $userDetailsUri")

@@ -31,11 +31,12 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
-class TrackingConnector @Inject()(
+class TrackingConnector @Inject() (
   httpHandler: HttpHandler,
   servicesConfig: ServicesConfig,
   applicationConfig: ApplicationConfig,
-  override val system: ActorSystem)(implicit ec: ExecutionContext)
+  override val system: ActorSystem
+)(implicit ec: ExecutionContext)
     extends TrackedFormFormatters with Timeout with Logging {
 
   lazy val serviceUrl: String = servicesConfig.baseUrl("tracking")
@@ -50,12 +51,12 @@ class TrackingConnector @Inject()(
         (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
           case NonFatal(x) =>
             logger.warn(
-              s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}")
+              s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}"
+            )
             Seq.empty[TrackedForm]
         }
-      }.recover {
-        case FutureEarlyTimeout =>
-          Seq.empty[TrackedForm]
+      }.recover { case FutureEarlyTimeout =>
+        Seq.empty[TrackedForm]
       }
     } else {
       Future.successful(Seq.empty[TrackedForm])

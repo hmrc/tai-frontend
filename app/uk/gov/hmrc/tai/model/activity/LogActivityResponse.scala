@@ -22,7 +22,8 @@ case class LogActivityResponse(
   pageNumber: Int,
   pageSize: Int,
   totalNumberOfRecords: Int,
-  activityList: Seq[LogActivityEntry])
+  activityList: Seq[LogActivityEntry]
+)
 
 object LogActivityResponse {
   implicit val formats: OFormat[LogActivityResponse] = Json.format[LogActivityResponse]

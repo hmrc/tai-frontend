@@ -55,7 +55,8 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.incomes.edit.preHeading", employer.name),
-      messages("tai.checkYourAnswers.heading"))
+      messages("tai.checkYourAnswers.heading")
+    )
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employer.id))
     behave like pageWithBackLinkWithUrl("backUrl")
 
@@ -66,19 +67,23 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLineNew(
         1,
-        messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
+        messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency")
+      )
       doc must haveCheckYourAnswersSummaryLineAnswerNew(1, monthlyPaymentFrequency)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         1,
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url)
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url
+      )
 
       doc must haveCheckYourAnswersSummaryLineNew(
         2,
-        messages("tai.estimatedPay.update.checkYourAnswers.grossPay.month"))
+        messages("tai.estimatedPay.update.checkYourAnswers.grossPay.month")
+      )
       doc must haveCheckYourAnswersSummaryLineAnswerNew(2, totalPay)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url)
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url
+      )
 
     }
 

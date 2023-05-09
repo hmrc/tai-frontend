@@ -31,7 +31,8 @@ object TaxablePayslipForm {
   def createForm(
     netSalary: Option[String] = None,
     payPeriod: Option[String] = None,
-    payPeriodInDays: Option[String] = None)(implicit messages: Messages): Form[TaxablePayslipForm] = {
+    payPeriodInDays: Option[String] = None
+  )(implicit messages: Messages): Form[TaxablePayslipForm] = {
 
     val validateErrorMessage = netSalary match {
       case Some(salary) => TaxablePayPeriod.errorMessage(payPeriod, payPeriodInDays)
@@ -45,7 +46,8 @@ object TaxablePayslipForm {
           messages("tai.taxablePayslip.error.form.incomes.input.invalid"),
           messages("error.tai.updateDataEmployment.maxLength"),
           netSalary
-        ))(TaxablePayslipForm.apply)(TaxablePayslipForm.unapply)
+        )
+      )(TaxablePayslipForm.apply)(TaxablePayslipForm.unapply)
     )
   }
 }

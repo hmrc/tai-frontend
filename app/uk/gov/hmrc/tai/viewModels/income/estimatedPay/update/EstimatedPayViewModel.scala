@@ -25,7 +25,8 @@ case class EstimatedPayViewModel(
   bonusOrOvertime: Boolean,
   annualAmount: Option[BigDecimal],
   incomeStartDate: Option[LocalDate],
-  employer: IncomeSource) {
+  employer: IncomeSource
+) {
 
   def isGrossPayEqualsNetPay: Boolean = grossAnnualPay == netAnnualPay
 

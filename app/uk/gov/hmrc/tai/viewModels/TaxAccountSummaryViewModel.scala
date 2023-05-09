@@ -38,7 +38,8 @@ case class TaxAccountSummaryViewModel(
   isAnyFormInProgress: TimeToProcess,
   otherIncomeSources: Seq[IncomeSourceViewModel],
   rtiAvailable: Boolean,
-  totalEstimatedIncome: String)
+  totalEstimatedIncome: String
+)
 
 object TaxAccountSummaryViewModel extends ViewModelHelper {
 
@@ -47,7 +48,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: NonTaxCodeIncome,
     incomesSources: IncomeSources,
-    nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
+    nonMatchingCeasedEmployments: Seq[Employment]
+  )(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
     val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
@@ -62,7 +64,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
       val currentYear = TaxYear()
-      //Default to true as if there is no endDate it's potentially ceased
+      // Default to true as if there is no endDate it's potentially ceased
       employment.endDate.fold(true) { endDate =>
         !(endDate isBefore currentYear.start)
       }

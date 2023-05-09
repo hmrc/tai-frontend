@@ -29,7 +29,8 @@ class CompanyCarMakeModelSpec extends PlaySpec {
     1,
     1000,
     List(CompanyCar(10, "Make Model1", true, None, None, None), CompanyCar(12, "Make Model1", true, None, None, None)),
-    Some(1))
+    Some(1)
+  )
   val companyBenefitNoCars = CompanyCarBenefit(2, 1000, List(), Some(1))
   val companyCarBenefits = Seq(companyCarBenefit10, companyCarBenefit12, companyCarBenefitTwoCars, companyBenefitNoCars)
 

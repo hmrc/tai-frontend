@@ -159,7 +159,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
         result mustBe oneCeasedEmploymentDetails
 
         verify(httpHandler).getFromApiV2(
-          Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+          Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased")
+        )(any())
       }
 
       "api provides multiple employments" in {
@@ -173,7 +174,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
         result mustBe twoCeasedEmploymentsDetails
 
         verify(httpHandler).getFromApiV2(
-          Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+          Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased")
+        )(any())
       }
     }
 
@@ -188,7 +190,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       result mustBe Nil
 
       verify(httpHandler).getFromApiV2(
-        Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
+        Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased")
+      )(any())
     }
 
     "throw an exception" when {
@@ -265,11 +268,13 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
         payrollNumber = "12345",
         startDate = LocalDate.of(2017, 6, 6),
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789"))
+        telephoneNumber = Some("123456789")
+      )
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(Matchers.eq(sut().addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any()))
+          .postToApi(Matchers.eq(sut().addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any())
+      )
         .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
       val result = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
@@ -284,7 +289,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))(any(), any(), any()))
+        httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))(any(), any(), any())
+      )
         .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
       val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
@@ -305,7 +311,8 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
     2,
     None,
     false,
-    false)
+    false
+  )
 
   private val oneEmploymentDetails = List(anEmploymentObject)
 
@@ -322,19 +329,23 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       2,
       None,
       false,
-      false))
+      false
+    )
+  )
 
   private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(
     taxDistrictNumber = "1234",
     payeNumber = "4321",
     sequenceNumber = 3,
-    receivingOccupationalPension = true) :: Nil
+    receivingOccupationalPension = true
+  ) :: Nil
 
   private val twoCeasedEmploymentsDetails = oneCeasedEmploymentDetails.head :: oneCeasedEmploymentDetails.head.copy(
     taxDistrictNumber = "1234",
     payeNumber = "4321",
     sequenceNumber = 3,
-    receivingOccupationalPension = true) :: Nil
+    receivingOccupationalPension = true
+  ) :: Nil
 
   private val zeroEmployments =
     """|{

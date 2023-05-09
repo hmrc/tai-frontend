@@ -86,7 +86,8 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
     lines,
     "confirmation text",
     "/fake/submission/url",
-    "/fake/cancel/url")
+    "/fake/cancel/url"
+  )
 
   private val addPensionCheckYourAnswers = inject[AddPensionCheckYourAnswersView]
   override def view: Html = addPensionCheckYourAnswers(viewModel)

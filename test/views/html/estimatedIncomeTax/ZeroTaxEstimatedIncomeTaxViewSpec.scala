@@ -49,10 +49,12 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
       doc(view) must haveParagraphWithText(
-        Html(messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body)
+        Html(messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body
+      )
 
       doc(view) must haveParagraphWithText(
-        Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
+        Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body
+      )
 
       doc(view).select("#howYouPayDesc").html().replaceAll("\\s+", "") mustBe Html(
         messages(
@@ -60,14 +62,17 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           link(
             id = Some("taxCodesLink"),
             url = routes.YourTaxCodeController.taxCodes.url.toString,
-            copy = Messages("tai.estimatedIncome.taxCodes.link"))
-        )).body.replaceAll("\\s+", "")
+            copy = Messages("tai.estimatedIncome.taxCodes.link")
+          )
+        )
+      ).body.replaceAll("\\s+", "")
     }
 
     "have low estimated total income messages" when {
       "the earnings for a NINO were lower than the tax free allowance" in {
         doc(view) must haveParagraphWithText(
-          Html(messages("tai.estimatedIncomeLow.desc", messages("tai.estimatedIncome.taxFree.link"), "£11,500")).body)
+          Html(messages("tai.estimatedIncomeLow.desc", messages("tai.estimatedIncome.taxFree.link"), "£11,500")).body
+        )
 
         doc(view).select("#estimatedIncomeLowDesc").html().replaceAll("\\s+", "") mustBe Html(
           Messages(
@@ -78,10 +83,12 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),
             "£11,500"
-          )).body.replaceAll("\\s+", "")
+          )
+        ).body.replaceAll("\\s+", "")
 
         doc(view).select("#balanceEarningsDesc").html() mustBe Html(
-          Messages("tai.estimatedIncomeEarning.desc", "£2,500")).body
+          Messages("tai.estimatedIncomeEarning.desc", "£2,500")
+        ).body
       }
     }
 
@@ -90,15 +97,18 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "taxCodesSideLink",
         routes.YourTaxCodeController.taxCodes.url,
-        messages("check.your.tax.codes"))
+        messages("check.your.tax.codes")
+      )
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
         routes.TaxFreeAmountController.taxFreeAmount.url,
-        messages("check.your.tax.free.amount"))
+        messages("check.your.tax.free.amount")
+      )
       doc must haveLinkElement(
         "taxSummarySideLink",
         controllers.routes.TaxAccountSummaryController.onPageLoad.url,
-        messages("return.to.your.income.tax.summary"))
+        messages("return.to.your.income.tax.summary")
+      )
     }
   }
 

@@ -31,25 +31,25 @@ class TaxCodeDescriptorSpec extends BaseSpec {
 
   "standAloneTaxCodeExplanation" must {
     "return the correct explanation" when {
-      Seq("0T", "BR", "NT").foreach(taxCode => {
+      Seq("0T", "BR", "NT").foreach { taxCode =>
         s"tax code is $taxCode" in {
           TaxCodeDescriptorConcrete
             .describeTaxCode(taxCode, OtherBasisOfOperation, Map.empty[String, BigDecimal], true, appConfig) mustBe
             ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode"))
         }
-      })
+      }
     }
   }
 
   "scottish standAloneTaxCodeExplanation without defined scottish bands" must {
     "return the correct explanation" when {
-      Seq("D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8").foreach(taxCode => {
+      Seq("D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8").foreach { taxCode =>
         s"tax code is $taxCode" in {
           TaxCodeDescriptorConcrete
             .describeTaxCode(taxCode, OtherBasisOfOperation, Map.empty[String, BigDecimal], true, appConfig) mustBe
             ListMap(taxCode -> Messages(s"tai.taxCode.DX", 0))
         }
-      })
+      }
     }
   }
 
@@ -65,13 +65,13 @@ class TaxCodeDescriptorSpec extends BaseSpec {
         "D7" -> BigDecimal(70),
         "D8" -> BigDecimal(80)
       )
-      Seq("D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8").foreach(taxCode => {
+      Seq("D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8").foreach { taxCode =>
         s"tax code is $taxCode" in {
           TaxCodeDescriptorConcrete
             .describeTaxCode(taxCode, OtherBasisOfOperation, scottishTaxBands, true, appConfig) mustBe
             ListMap(taxCode -> Messages(s"tai.taxCode.DX", scottishTaxBands(taxCode)))
         }
-      })
+      }
     }
   }
 
@@ -84,7 +84,8 @@ class TaxCodeDescriptorSpec extends BaseSpec {
             "S" -> Messages(
               s"tai.taxCode.S",
               link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
-            ))
+            )
+          )
       }
     }
   }
@@ -98,7 +99,8 @@ class TaxCodeDescriptorSpec extends BaseSpec {
             "C" -> Messages(
               s"tai.taxCode.C",
               link(url = appConfig.welshRateIncomeTaxUrl, copy = Messages("tai.taxCode.welshIncomeText.link"))
-            ))
+            )
+          )
       }
 
       "tax code is prefixed with a C with a link to the welsh tax explanation page  when user is viewing page in Welsh" in {
@@ -131,15 +133,16 @@ class TaxCodeDescriptorSpec extends BaseSpec {
 
   "suffixTaxCodeExplanation" must {
     "return the correct explanation" when {
-      Seq("L", "M", "0N").foreach(taxCode => {
+      Seq("L", "M", "0N").foreach { taxCode =>
         s"tax code $taxCode has suffix ${taxCode.last}" in {
           TaxCodeDescriptorConcrete
             .describeTaxCode(taxCode, OtherBasisOfOperation, Map.empty[String, BigDecimal], true, appConfig) mustBe
             ListMap(
               "0"                   -> Messages(s"tai.taxCode.amount", 0),
-              taxCode.last.toString -> Messages(s"tai.taxCode.${taxCode.last.toString}"))
+              taxCode.last.toString -> Messages(s"tai.taxCode.${taxCode.last.toString}")
+            )
         }
-      })
+      }
 
       s"tax code 10N has suffix N" in {
         TaxCodeDescriptorConcrete

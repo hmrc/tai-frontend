@@ -28,7 +28,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     "return no errors with valid 'yes' choice and text field content" in {
       val validYesChoice = Json.obj(
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-        FormValuesConstants.YesNoTextEntry -> "123456")
+        FormValuesConstants.YesNoTextEntry -> "123456"
+      )
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -56,7 +57,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     "return no errors with valid 'no' choice and text field content" in {
       val validNoChoice = Json.obj(
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
-        FormValuesConstants.YesNoTextEntry -> "123456")
+        FormValuesConstants.YesNoTextEntry -> "123456"
+      )
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -82,7 +84,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     "return errors with valid 'yes' choice and no text field content" in {
       val invalidYesChoice = Json.obj(
         FormValuesConstants.YesNoChoice    -> Some(FormValuesConstants.YesValue),
-        FormValuesConstants.YesNoTextEntry -> "")
+        FormValuesConstants.YesNoTextEntry -> ""
+      )
       val invalidatedForm = form.bind(invalidYesChoice)
 
       invalidatedForm.errors.head.messages mustBe List("enter some text")
@@ -96,7 +99,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
 
       val validChoiceUntilExtraConstraint = Json.obj(
         FormValuesConstants.YesNoChoice    -> Some(FormValuesConstants.YesValue),
-        FormValuesConstants.YesNoTextEntry -> "123")
+        FormValuesConstants.YesNoTextEntry -> "123"
+      )
       val invalidatedForm = formWithExtraConstraint.bind(validChoiceUntilExtraConstraint)
 
       invalidatedForm.errors.head.messages mustBe List("bang")

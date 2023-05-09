@@ -86,13 +86,13 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     for (taxYear <- taxYears) {
       s"display correct tax year link: $taxYear" in {
         doc must haveParagraphWithText(
-          messages("tai.incomeTax.history.table.link", TaxPeriodLabelService.taxPeriodLabelYears(taxYear.year)))
+          messages("tai.incomeTax.history.table.link", TaxPeriodLabelService.taxPeriodLabelYears(taxYear.year))
+        )
       }
 
       s"display unavailable if the tax code isn't present or the tax code $taxYear" in {
-        val maybeTaxCode = incomeTaxYears.collectFirst {
-          case IncomeTaxYear(`taxYear`, List(viewModel)) =>
-            viewModel.maybeTaxCode
+        val maybeTaxCode = incomeTaxYears.collectFirst { case IncomeTaxYear(`taxYear`, List(viewModel)) =>
+          viewModel.maybeTaxCode
         }.flatten
 
         maybeTaxCode match {

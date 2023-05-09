@@ -33,11 +33,13 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
       val personalAllowance = TaxFreeAmountSummaryRowViewModel(
         CodingComponent(PersonalAllowancePA, Some(123), 111, "PersonalAllowancePA"),
         taxFreeAmountDetails,
-        appConfig)
+        appConfig
+      )
       val foreignDividendIncome = TaxFreeAmountSummaryRowViewModel(
         CodingComponent(ForeignDividendIncome, Some(123), 111, "ForeignDividendIncome"),
         taxFreeAmountDetails,
-        appConfig)
+        appConfig
+      )
 
       personalAllowance.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA")
       foreignDividendIncome.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
@@ -48,7 +50,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(ForeignDividendIncome, Some(123), -11500, "ForeignDividendIncome"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.value mustBe "£11,500"
       }
 
@@ -56,7 +59,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(ForeignDividendIncome, Some(123), 2500, "ForeignDividendIncome"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.value mustBe "£2,500"
       }
     }
@@ -66,7 +70,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(DividendTax, Some(1), 1, "HotelAndMealExpenses"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.link mustBe ChangeLinkViewModel(false)
       }
     }
@@ -76,14 +81,16 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(MedicalInsurance, Some(234), 11500, "MedicalInsurance"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         val url = routes.ExternalServiceRedirectController
           .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
           .url
         row.link mustBe ChangeLinkViewModel(
           true,
           Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
-          url)
+          url
+        )
       }
     }
     "build a displayable Marriage Allowance LinkViewModel" when {
@@ -91,27 +98,31 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(MarriageAllowanceReceived, Some(234), 11500, "MarriageAllowanceReceived"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         val url = routes.ExternalServiceRedirectController
           .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
           .url
         row.link mustBe ChangeLinkViewModel(
           true,
           Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"),
-          url)
+          url
+        )
       }
       "coding component is Marriage Allowance Transferred" in {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(MarriageAllowanceTransferred, Some(234), 11500, "MarriageAllowanceTransferred"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         val url = routes.ExternalServiceRedirectController
           .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
           .url
         row.link mustBe ChangeLinkViewModel(
           true,
           Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceTransferred"),
-          url)
+          url
+        )
       }
     }
     "build a displayable Car Benefit LinkViewModel" which {
@@ -120,7 +131,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarBenefit, Some(234), 11500, "CarBenefit"),
             taxFreeAmountDetails,
-            appConfig)
+            appConfig
+          )
           val url = appConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
         }
@@ -130,7 +142,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarBenefit, None, 11500, "CarBenefit"),
             taxFreeAmountDetails,
-            appConfig)
+            appConfig
+          )
           val url = appConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
         }
@@ -143,14 +156,16 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(TaxableExpensesBenefit, Some(234), 11500, "TaxableExpensesBenefit"),
             taxFreeAmountDetails,
-            appConfig)
+            appConfig
+          )
           val url = controllers.benefits.routes.CompanyBenefitController
             .redirectCompanyBenefitSelection(234, TaxableExpensesBenefit)
             .url
           row.link mustBe ChangeLinkViewModel(
             true,
             Messages("tai.taxFreeAmount.table.taxComponent.TaxableExpensesBenefit"),
-            url)
+            url
+          )
         }
       }
     }
@@ -161,12 +176,14 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarFuelBenefit, Some(234), 11500, "CarFuelBenefit"),
             taxFreeAmountDetails,
-            appConfig)
+            appConfig
+          )
           val url = appConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(
             true,
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
-            url)
+            url
+          )
         }
       }
       "has zero as employment id" when {
@@ -174,12 +191,14 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarFuelBenefit, None, 11500, "CarFuelBenefit"),
             taxFreeAmountDetails,
-            appConfig)
+            appConfig
+          )
           val url = appConfig.cocarFrontendUrl
           row.link mustBe ChangeLinkViewModel(
             true,
             Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
-            url)
+            url
+          )
         }
       }
     }
@@ -189,12 +208,14 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(PersonalPensionPayments, Some(1), 1, "PersonalPensionPayments"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         val url = appConfig.taxFreeAllowanceLinkUrl
         row.link mustBe ChangeLinkViewModel(
           true,
           Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
-          url)
+          url
+        )
       }
     }
 
@@ -203,7 +224,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(ForeignDividendIncome, Some(1), 111, "ForeignDividendIncome"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.label.value mustBe
           s"${Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
       }
@@ -212,7 +234,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(ForeignDividendIncome, Some(123), 111, "ForeignDividendIncome"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
       }
 
@@ -220,7 +243,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(ForeignDividendIncome, None, 111, "ForeignDividendIncome"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
       }
     }
@@ -230,7 +254,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(CarBenefit, Some(10), 11500, "CarBenefit"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Make Model1")
       }
 
@@ -239,7 +264,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           TaxFreeAmountSummaryRowViewModel(
             CodingComponent(CarBenefit, None, 11500, "CarBenefit"),
             taxFreeAmountDetails,
-            appConfig)
+            appConfig
+          )
         row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")
       }
 
@@ -247,7 +273,8 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         val row = TaxFreeAmountSummaryRowViewModel(
           CodingComponent(CarBenefit, Some(1), 11500, "CarBenefit"),
           taxFreeAmountDetails,
-          appConfig)
+          appConfig
+        )
         row.label.value mustBe s"${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
       }
     }

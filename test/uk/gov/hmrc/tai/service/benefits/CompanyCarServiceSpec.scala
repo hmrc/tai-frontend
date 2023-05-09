@@ -60,7 +60,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSut
         val codingComponents = Seq(
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"))
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
+        )
 
         val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -112,7 +113,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
         dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
-      )),
+      )
+    ),
     Some(1)
   )
 
@@ -127,7 +129,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
         dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = Some(LocalDate.parse("2017-05-12"))
-      )),
+      )
+    ),
     Some(1)
   )
 
@@ -166,7 +169,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         dateMadeAvailable = None,
         dateActiveFuelBenefitMadeAvailable = None,
         dateWithdrawn = None
-      )),
+      )
+    ),
     Some(1)
   )
 

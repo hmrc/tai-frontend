@@ -24,7 +24,8 @@ case class UpdateEmploymentCheckYourAnswersViewModel(
   employerName: String,
   whatYouToldUs: String,
   contactByPhone: String,
-  phoneNumber: Option[String]) {
+  phoneNumber: Option[String]
+) {
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val currentlyWorkHereLine = CheckYourAnswersConfirmationLine(
       messages("tai.updateEmployment.cya.currentlyWorkHere"),

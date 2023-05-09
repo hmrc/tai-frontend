@@ -66,7 +66,8 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(JsString("2017-03-04")))
       Await.result(
         sut.currentValueAs[LocalDate](journeyName, "dateValKey", string => LocalDate.parse(string)),
-        5 seconds) mustBe Some(LocalDate.parse("2017-03-04"))
+        5 seconds
+      ) mustBe Some(LocalDate.parse("2017-03-04"))
     }
 
     "trap a NO CONTENT exception (a valid business scenario), and return None in its place" in {
@@ -114,7 +115,8 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(JsString("true")))
       Await.result(
         sut.mandatoryJourneyValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean),
-        5 seconds) mustBe Right(true)
+        5 seconds
+      ) mustBe Right(true)
     }
 
     "return an error message when the requested value is not found" in {
@@ -124,7 +126,8 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       val expectedMsg = "The mandatory value under key 'key1' was not found in the journey cache for 'journey1'"
       Await
         .result(sut.mandatoryJourneyValueAs[Int](journeyName, "key1", string => string.toInt), 5 seconds) mustBe Left(
-        expectedMsg)
+        expectedMsg
+      )
     }
   }
 

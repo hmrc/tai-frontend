@@ -32,13 +32,14 @@ import views.html.incomes.WorkingHoursView
 import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
-class IncomeUpdateWorkingHoursController @Inject()(
+class IncomeUpdateWorkingHoursController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -51,7 +52,9 @@ class IncomeUpdateWorkingHoursController @Inject()(
             workingHoursView(
               HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
               incomeSource.id,
-              incomeSource.name))
+              incomeSource.name
+            )
+          )
         case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
       }
   }
@@ -63,31 +66,26 @@ class IncomeUpdateWorkingHoursController @Inject()(
       .createForm()
       .bindFromRequest()
       .fold(
-        formWithErrors => {
+        formWithErrors =>
           IncomeSource.create(journeyCacheService).map {
             case Right(incomeSource) =>
               BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-          }
-        },
-        (formData: HoursWorkedForm) => {
+          },
+        (formData: HoursWorkedForm) =>
           for {
             id <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey)
             _  <- journeyCacheService.cache(UpdateIncomeConstants.WorkingHoursKey, formData.workingHours.getOrElse(""))
-          } yield {
-
-            id match {
-              case Right(id) =>
-                formData.workingHours match {
-                  case Some(EditIncomeIrregularPayConstants.RegularHours) =>
-                    Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage)
-                  case Some(EditIncomeIrregularPayConstants.IrregularHours) =>
-                    Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
-                }
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-            }
+          } yield id match {
+            case Right(id) =>
+              formData.workingHours match {
+                case Some(EditIncomeIrregularPayConstants.RegularHours) =>
+                  Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage)
+                case Some(EditIncomeIrregularPayConstants.IrregularHours) =>
+                  Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
+              }
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
           }
-        }
       )
   }
 

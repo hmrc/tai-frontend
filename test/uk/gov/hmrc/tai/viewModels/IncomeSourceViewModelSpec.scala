@@ -174,7 +174,8 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
         "the latest payment is None" in {
           val sut =
             IncomeSourceViewModel.createFromEmployment(
-              ceasedEmployment.copy(annualAccounts = Seq(annualAccount.copy(payments = Nil))))
+              ceasedEmployment.copy(annualAccounts = Seq(annualAccount.copy(payments = Nil)))
+            )
           sut.amount mustBe ""
         }
       }

@@ -103,7 +103,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             expectedTitle,
             "£0",
             TaxFreeAmountSummaryViewModel(
-              Seq(emptyPersonalAllowanceItem, emptyAdditionsItem, emptyDeductionsItem, emptyTotalsItem))
+              Seq(emptyPersonalAllowanceItem, emptyAdditionsItem, emptyDeductionsItem, emptyTotalsItem)
+            )
           )
         }
       }
@@ -121,7 +122,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
               Messages("tai.taxFreeAmount.table.additions.noAddition"),
               "£0",
               ChangeLinkViewModel(isDisplayed = false)
-            ))
+            )
+          )
 
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
           val additionRows = sut.taxFreeAmountSummary.summaryItems(1).rows
@@ -138,24 +140,27 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             expectedHeader,
             expectedTitle,
             "£11,500",
-            TaxFreeAmountSummaryViewModel(Seq(
-              TaxFreeAmountSummaryCategoryViewModel(
-                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                hideHeaders = false,
-                hideCaption = true,
-                Messages("tai.taxFreeAmount.table.allowances.caption"),
-                Seq(
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
-                    "£11,500",
-                    ChangeLinkViewModel(isDisplayed = false)
-                  ))
-              ),
-              emptyAdditionsItem,
-              emptyDeductionsItem,
-              totalsItem("£11,500")
-            ))
+            TaxFreeAmountSummaryViewModel(
+              Seq(
+                TaxFreeAmountSummaryCategoryViewModel(
+                  Messages("tai.taxFreeAmount.table.columnOneHeader"),
+                  Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+                  hideHeaders = false,
+                  hideCaption = true,
+                  Messages("tai.taxFreeAmount.table.allowances.caption"),
+                  Seq(
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
+                      "£11,500",
+                      ChangeLinkViewModel(isDisplayed = false)
+                    )
+                  )
+                ),
+                emptyAdditionsItem,
+                emptyDeductionsItem,
+                totalsItem("£11,500")
+              )
+            )
           )
         }
       }
@@ -176,49 +181,54 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             expectedHeader,
             expectedTitle,
             "£1,300",
-            TaxFreeAmountSummaryViewModel(Seq(
-              emptyPersonalAllowanceItem,
-              TaxFreeAmountSummaryCategoryViewModel(
-                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                hideHeaders = true,
-                hideCaption = false,
-                Messages("tai.taxFreeAmount.table.additions.caption"),
-                Seq(
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
-                    "£100",
-                    ChangeLinkViewModel(
-                      isDisplayed = true,
-                      value = Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
-                      href = taxFreeAllowanceLinkUrl)
-                  ),
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
-                    "£200",
-                    ChangeLinkViewModel(
-                      isDisplayed = true,
-                      value = Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
-                      href = taxFreeAllowanceLinkUrl)
-                  ),
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
-                    "£1,000",
-                    ChangeLinkViewModel(
-                      isDisplayed = true,
-                      value = Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
-                      href = taxFreeAllowanceLinkUrl)
-                  ),
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.additions.total"),
-                    "£1,300",
-                    ChangeLinkViewModel(isDisplayed = false)
+            TaxFreeAmountSummaryViewModel(
+              Seq(
+                emptyPersonalAllowanceItem,
+                TaxFreeAmountSummaryCategoryViewModel(
+                  Messages("tai.taxFreeAmount.table.columnOneHeader"),
+                  Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+                  hideHeaders = true,
+                  hideCaption = false,
+                  Messages("tai.taxFreeAmount.table.additions.caption"),
+                  Seq(
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
+                      "£100",
+                      ChangeLinkViewModel(
+                        isDisplayed = true,
+                        value = Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
+                        href = taxFreeAllowanceLinkUrl
+                      )
+                    ),
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
+                      "£200",
+                      ChangeLinkViewModel(
+                        isDisplayed = true,
+                        value = Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
+                        href = taxFreeAllowanceLinkUrl
+                      )
+                    ),
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
+                      "£1,000",
+                      ChangeLinkViewModel(
+                        isDisplayed = true,
+                        value = Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
+                        href = taxFreeAllowanceLinkUrl
+                      )
+                    ),
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.additions.total"),
+                      "£1,300",
+                      ChangeLinkViewModel(isDisplayed = false)
+                    )
                   )
-                )
-              ),
-              emptyDeductionsItem,
-              totalsItem("£1,300")
-            ))
+                ),
+                emptyDeductionsItem,
+                totalsItem("£1,300")
+              )
+            )
           )
         }
       }
@@ -236,46 +246,48 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             expectedHeader,
             expectedTitle,
             s"$EncodedMinusSign£6,200",
-            TaxFreeAmountSummaryViewModel(Seq(
-              emptyPersonalAllowanceItem,
-              emptyAdditionsItem,
-              TaxFreeAmountSummaryCategoryViewModel(
-                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                hideHeaders = true,
-                hideCaption = false,
-                Messages("tai.taxFreeAmount.table.deductions.caption"),
-                Seq(
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
-                    "£200",
-                    ChangeLinkViewModel(
-                      isDisplayed = true,
-                      value = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
-                      href = controllers.routes.ExternalServiceRedirectController
-                        .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
-                        .url
+            TaxFreeAmountSummaryViewModel(
+              Seq(
+                emptyPersonalAllowanceItem,
+                emptyAdditionsItem,
+                TaxFreeAmountSummaryCategoryViewModel(
+                  Messages("tai.taxFreeAmount.table.columnOneHeader"),
+                  Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+                  hideHeaders = true,
+                  hideCaption = false,
+                  Messages("tai.taxFreeAmount.table.deductions.caption"),
+                  Seq(
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
+                      "£200",
+                      ChangeLinkViewModel(
+                        isDisplayed = true,
+                        value = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
+                        href = controllers.routes.ExternalServiceRedirectController
+                          .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
+                          .url
+                      )
+                    ),
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.ChildBenefit"),
+                      "£1,000",
+                      ChangeLinkViewModel(isDisplayed = false)
+                    ),
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"),
+                      "£5,000",
+                      ChangeLinkViewModel(isDisplayed = false)
+                    ),
+                    TaxFreeAmountSummaryRowViewModel(
+                      Messages("tai.taxFreeAmount.table.deductions.total"),
+                      "£6,200",
+                      ChangeLinkViewModel(isDisplayed = false)
                     )
-                  ),
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.ChildBenefit"),
-                    "£1,000",
-                    ChangeLinkViewModel(isDisplayed = false)
-                  ),
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"),
-                    "£5,000",
-                    ChangeLinkViewModel(isDisplayed = false)
-                  ),
-                  TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.deductions.total"),
-                    "£6,200",
-                    ChangeLinkViewModel(isDisplayed = false)
                   )
-                )
-              ),
-              totalsItem(s"$EncodedMinusSign£6,200")
-            ))
+                ),
+                totalsItem(s"$EncodedMinusSign£6,200")
+              )
+            )
           )
         }
       }
@@ -304,7 +316,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                   Messages("tai.taxFreeAmount.table.totals.label"),
                   "£4,012",
                   ChangeLinkViewModel(isDisplayed = false)
-                ))
+                )
+              )
             )
         }
       }
@@ -333,7 +346,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                   Messages("tai.taxFreeAmount.table.totals.label"),
                   s"$EncodedMinusSign£1,988",
                   ChangeLinkViewModel(isDisplayed = false)
-                ))
+                )
+              )
             )
         }
       }
@@ -362,7 +376,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                   Messages("tai.taxFreeAmount.table.totals.label"),
                   "£0",
                   ChangeLinkViewModel(isDisplayed = false)
-                ))
+                )
+              )
             )
         }
       }
@@ -394,7 +409,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                 Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
                 "£7,500",
                 ChangeLinkViewModel(isDisplayed = false)
-              ))
+              )
+            )
           )
 
           val expectedAdditionsItem = TaxFreeAmountSummaryCategoryViewModel(
@@ -410,7 +426,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                 ChangeLinkViewModel(
                   isDisplayed = true,
                   value = Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
-                  href = taxFreeAllowanceLinkUrl)
+                  href = taxFreeAllowanceLinkUrl
+                )
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
@@ -418,7 +435,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                 ChangeLinkViewModel(
                   isDisplayed = true,
                   value = Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
-                  href = taxFreeAllowanceLinkUrl)
+                  href = taxFreeAllowanceLinkUrl
+                )
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.additions.total"),
@@ -494,7 +512,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
         Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      ))
+      )
+    )
   )
 
   val emptyAdditionsItem = TaxFreeAmountSummaryCategoryViewModel(
@@ -508,7 +527,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
         Messages("tai.taxFreeAmount.table.additions.noAddition"),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      ))
+      )
+    )
   )
 
   val emptyDeductionsItem = TaxFreeAmountSummaryCategoryViewModel(
@@ -522,7 +542,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
         Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      ))
+      )
+    )
   )
 
   val emptyTotalsItem = TaxFreeAmountSummaryCategoryViewModel(
@@ -536,7 +557,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
         Messages("tai.taxFreeAmount.table.totals.label"),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
-      ))
+      )
+    )
   )
 
   def totalsItem(formattedTotal: String) =
@@ -551,7 +573,8 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
           Messages("tai.taxFreeAmount.table.totals.label"),
           formattedTotal,
           ChangeLinkViewModel(isDisplayed = false)
-        ))
+        )
+      )
     )
 
   val emptyCodingComponents = Seq.empty[CodingComponent]

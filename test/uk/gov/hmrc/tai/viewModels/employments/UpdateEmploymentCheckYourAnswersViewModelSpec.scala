@@ -31,7 +31,8 @@ class UpdateEmploymentCheckYourAnswersViewModelSpec extends BaseSpec {
         model.journeyConfirmationLines mustBe Seq(
           currentlyWorkHereLine,
           whatYouToldUsLine,
-          contactByPhoneLine.copy(answer = "No"))
+          contactByPhoneLine.copy(answer = "No")
+        )
       }
     }
 
@@ -44,7 +45,8 @@ class UpdateEmploymentCheckYourAnswersViewModelSpec extends BaseSpec {
           currentlyWorkHereLine,
           whatYouToldUsLine,
           contactByPhoneLine,
-          phoneNumberLine)
+          phoneNumberLine
+        )
       }
     }
   }

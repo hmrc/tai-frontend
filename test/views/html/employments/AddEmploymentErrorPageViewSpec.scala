@@ -25,7 +25,8 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.addEmployment.employmentErrorPage.title"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.employment"),
-      messages("tai.addEmployment.employmentErrorPage.title"))
+      messages("tai.addEmployment.employmentErrorPage.title")
+    )
 
     "have link" in {
       doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad.url)
@@ -34,8 +35,9 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
 
     "have paragraph" in {
       doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para1", "fake employer"))
-      doc must haveParagraphWithText(s"${messages("tai.addEmployment.employmentErrorPage.para2.preLink")} ${messages(
-        "tai.addEmployment.employmentErrorPage.para2Link")} ${messages("tai.addEmployment.employmentErrorPage.para2.postLink")}")
+      doc must haveParagraphWithText(
+        s"${messages("tai.addEmployment.employmentErrorPage.para2.preLink")} ${messages("tai.addEmployment.employmentErrorPage.para2Link")} ${messages("tai.addEmployment.employmentErrorPage.para2.postLink")}"
+      )
       doc must haveLinkWithText(messages("tai.addEmployment.employmentErrorPage.para2Link"))
       doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para3"))
     }

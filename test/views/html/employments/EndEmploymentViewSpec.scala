@@ -38,7 +38,8 @@ class EndEmploymentViewSpec extends TaiViewSpec {
       EmploymentEndDateForm.EmploymentFormDay -> "1",
       "month"                                 -> "1",
       "year"                                  -> "2017"
-    ))
+    )
+  )
 
   private val viewmodel = EmploymentViewModel(employmentName, employmentId)
 

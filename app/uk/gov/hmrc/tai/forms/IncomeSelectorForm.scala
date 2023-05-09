@@ -19,8 +19,7 @@ package uk.gov.hmrc.tai.forms
 import play.api.data.Form
 import play.api.data.Forms._
 
-/**
-  * Created by dev01 on 17/03/15.
+/** Created by dev01 on 17/03/15.
   */
 case class IncomeSelectorForm(incomeId: Int)
 

@@ -75,10 +75,12 @@ class IncomeTaxHistoryControllerSpec
         for (_ <- taxYears) {
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Right(Seq(taxCodeIncome)))
+            Right(Seq(taxCodeIncome))
+          )
 
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(empEmployment1, empEmployment2))
+            Seq(empEmployment1, empEmployment2)
+          )
 
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
@@ -100,9 +102,11 @@ class IncomeTaxHistoryControllerSpec
         for (taxYear <- taxYears) {
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Right(Seq(taxCodeIncome)))
+            Right(Seq(taxCodeIncome))
+          )
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(pensionEmployment3, pensionEmployment4))
+            Seq(pensionEmployment3, pensionEmployment4)
+          )
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
         }
@@ -123,7 +127,8 @@ class IncomeTaxHistoryControllerSpec
         for (_ <- taxYears) {
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left("not found"))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(pensionEmployment3, pensionEmployment4))
+            Seq(pensionEmployment3, pensionEmployment4)
+          )
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
         }
 
@@ -138,9 +143,11 @@ class IncomeTaxHistoryControllerSpec
       "tax code is empty if the tax account throws an exception" in {
         for (_ <- taxYears) {
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(
-            new Exception("exception"))
+            new Exception("exception")
+          )
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(pensionEmployment3, pensionEmployment4))
+            Seq(pensionEmployment3, pensionEmployment4)
+          )
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
         }
 
@@ -185,7 +192,8 @@ class IncomeTaxHistoryControllerSpec
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
-            Upstream5xxResponse("", 500, 500, Map.empty))
+            Upstream5xxResponse("", 500, 500, Map.empty)
+          )
           when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
         }
@@ -208,7 +216,8 @@ class IncomeTaxHistoryControllerSpec
 
     "return a tax code if it's returned by the taxAccountService" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-        Right(Seq(taxCodeIncome)))
+        Right(Seq(taxCodeIncome))
+      )
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
       when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 

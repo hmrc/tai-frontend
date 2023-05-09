@@ -31,7 +31,7 @@ import views.html._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JrsClaimsController @Inject()(
+class JrsClaimsController @Inject() (
   val auditConnector: AuditConnector,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
@@ -41,7 +41,8 @@ class JrsClaimsController @Inject()(
   jrsClaimSummary: JrsClaimSummaryView,
   internalServerError: InternalServerErrorView,
   noJrsClaim: NoJrsClaimView,
-  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  implicit val templateRenderer: TemplateRenderer
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -53,9 +54,7 @@ class JrsClaimsController @Inject()(
         .getJrsClaims(nino)
         .fold(
           NotFound(noJrsClaim(appConfig))
-        )(
-          jrsClaims => Ok(jrsClaimSummary(jrsClaims, appConfig))
-        )
+        )(jrsClaims => Ok(jrsClaimSummary(jrsClaims, appConfig)))
     } else {
       Future.successful(InternalServerError(internalServerError(appConfig)))
     }

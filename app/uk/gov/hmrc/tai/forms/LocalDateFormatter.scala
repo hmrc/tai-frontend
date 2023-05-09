@@ -60,9 +60,7 @@ case class LocalDateFormatter(
         if (str.filterNot(_.isWhitespace).length != 4) throw new NumberFormatException("Must be 4 digits long")
         year
       }.get)
-      .leftMap(_ => {
-        List(FormError(key = formYear, message = mustBeValidYear))
-      })
+      .leftMap(_ => List(FormError(key = formYear, message = mustBeValidYear)))
 
   private def extractMonth(maybeMonth: Option[String]) =
     Either
@@ -71,9 +69,7 @@ case class LocalDateFormatter(
         if (month < 1 || month > 12) throw new NumberFormatException("1 <= Month <= 12")
         month
       }.get)
-      .leftMap(_ => {
-        List(FormError(key = formMonth, message = mustBeValidMonth))
-      })
+      .leftMap(_ => List(FormError(key = formMonth, message = mustBeValidMonth)))
 
   private def extractDay(maybeDay: Option[String]) =
     Either
@@ -82,26 +78,24 @@ case class LocalDateFormatter(
         if (day < 1 || day > 31) throw new NumberFormatException("1 <= day <= 31")
         day
       }.get)
-      .leftMap(_ => {
-        List(FormError(key = formDay, message = mustBeValidDay))
-      })
+      .leftMap(_ => List(FormError(key = formDay, message = mustBeValidDay)))
 
-  private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String])(
-    implicit messages: Messages) = {
+  private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String])(implicit
+    messages: Messages
+  ) = {
     val dayOrError = extractDay(maybeDay)
     val monthOrError = extractMonth(maybeMonth)
     val yearOrError = extractYear(maybeYear)
 
     val inputDate = (dayOrError, monthOrError, yearOrError)
-      .parMapN {
-        case (day, month, year) =>
-          if (year < 1900) {
-            Left(List(FormError(key = formYear, message = (mustBeAfter1900))))
-          } else {
-            Either
-              .catchNonFatal(LocalDate.of(year, month, day))
-              .leftMap(_ => List(FormError(key = formDay, message = mustBeReal)))
-          }
+      .parMapN { case (day, month, year) =>
+        if (year < 1900) {
+          Left(List(FormError(key = formYear, message = mustBeAfter1900)))
+        } else {
+          Either
+            .catchNonFatal(LocalDate.of(year, month, day))
+            .leftMap(_ => List(FormError(key = formDay, message = mustBeReal)))
+        }
       }
       .flatten
       .leftMap {

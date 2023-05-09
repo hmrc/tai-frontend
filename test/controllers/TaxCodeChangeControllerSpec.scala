@@ -111,7 +111,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
           scottishRates,
           reasons,
           isAGenericReason = false,
-          maybeUserName = Some("Firstname Surname"))
+          maybeUserName = Some("Firstname Surname")
+        )
 
       status(result) mustBe OK
       result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
@@ -130,7 +131,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
     "Employer 1",
     pensionIndicator = false,
     Some("1234"),
-    primary = true)
+    primary = true
+  )
   val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
   val personService: PersonService = mock[PersonService]
