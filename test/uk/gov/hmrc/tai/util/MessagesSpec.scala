@@ -44,7 +44,7 @@ class MessagesSpec extends BaseSpec {
 
     "have messages for default and cy only" in {
       messagesApi.messages("en").size mustBe 0
-      val englishMessageCount = messagesApi.messages("default").size - frameworkProvidedKeys.size
+      val englishMessageCount = messagesApi.messages("default").size
 
       messagesApi.messages("cy").size mustBe englishMessageCount
     }
@@ -145,7 +145,7 @@ class MessagesSpec extends BaseSpec {
 
   private lazy val displayLine = "\n" + ("@" * 42) + "\n"
 
-  private lazy val defaultMessages: Map[String, String] = getExpectedMessages("default") -- providedKeys
+  private lazy val defaultMessages: Map[String, String] = getExpectedMessages("default")
 
   private lazy val welshMessages: Map[String, String] = getExpectedMessages("cy") -- commonProvidedKeys
 

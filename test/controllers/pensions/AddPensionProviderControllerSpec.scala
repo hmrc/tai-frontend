@@ -28,6 +28,7 @@ import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
@@ -177,7 +178,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any()))
           .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some(FormValuesConstants.NoValue)))))
 
-        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.receivedFirstPay()(FakeRequest("GET", ""))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -385,18 +386,21 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "return redirect" when {
       "form is valid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          PensionAddDateForm.PensionFormDay   -> "09",
-          PensionAddDateForm.PensionFormMonth -> "06",
-          PensionAddDateForm.PensionFormYear  -> "2017"
-        )
+
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
         when(addPensionProviderJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result =
-          sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitPensionProviderStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                PensionAddDateForm.PensionFormDay   -> "09",
+                PensionAddDateForm.PensionFormMonth -> "06",
+                PensionAddDateForm.PensionFormYear  -> "2017"
+              ))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url
@@ -406,16 +410,19 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "return bad request" when {
       "form is invalid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          PensionAddDateForm.PensionFormDay   -> "01",
-          PensionAddDateForm.PensionFormMonth -> "02",
-          PensionAddDateForm.PensionFormYear  -> (LocalDate.now().getYear + 1).toString
-        )
+
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
 
         val result =
-          sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitPensionProviderStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                PensionAddDateForm.PensionFormDay   -> "01",
+                PensionAddDateForm.PensionFormMonth -> "02",
+                PensionAddDateForm.PensionFormYear  -> (LocalDate.now().getYear + 1).toString
+              ))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -424,18 +431,21 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "save details in cache" when {
       "form is valid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          PensionAddDateForm.PensionFormDay   -> "01",
-          PensionAddDateForm.PensionFormMonth -> "02",
-          PensionAddDateForm.PensionFormYear  -> "2017"
-        )
+
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
         when(addPensionProviderJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
         Await.result(
-          sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)),
-          5 seconds)
+          sut.submitPensionProviderStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                PensionAddDateForm.PensionFormDay   -> "01",
+                PensionAddDateForm.PensionFormMonth -> "02",
+                PensionAddDateForm.PensionFormYear  -> "2017")),
+          5 seconds
+        )
 
         verify(addPensionProviderJourneyCacheService, times(1))
           .cache(Matchers.eq(AddPensionProviderConstants.StartDateKey), Matchers.eq("2017-02-01"))(any())

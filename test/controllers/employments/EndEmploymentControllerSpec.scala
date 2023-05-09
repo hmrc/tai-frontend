@@ -30,6 +30,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
@@ -124,8 +125,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
+        val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> "No")
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -154,7 +154,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(
+        val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
@@ -183,7 +183,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(
+        val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         Await.result(endEmploymentTest.handleEmploymentUpdateRemove(request), 5 seconds)
@@ -195,7 +195,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val endEmploymentTest = createEndEmploymentTest
 
-        val request = fakeGetRequest.withFormUrlEncodedBody(
+        val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
@@ -318,14 +318,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "call processTellUsAboutEmploymentPage successfully with an authorised session" in {
       val endEmploymentTest = createEndEmploymentTest
 
-      val formData = Json.obj(
-        EmploymentEndDateForm.EmploymentFormDay   -> "01",
-        EmploymentEndDateForm.EmploymentFormMonth -> "02",
-        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-      )
-
       val request = FakeRequest("POST", "")
-        .withJsonBody(formData)
+        .withFormUrlEncodedBody(
+          EmploymentEndDateForm.EmploymentFormDay   -> "01",
+          EmploymentEndDateForm.EmploymentFormMonth -> "02",
+          EmploymentEndDateForm.EmploymentFormYear  -> "2017")
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -334,14 +331,12 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "reload the page when there are form errors" in {
       val endEmploymentTest = createEndEmploymentTest
-      val formWithErrors = Json.obj(
-        EmploymentEndDateForm.EmploymentFormDay   -> "01",
-        EmploymentEndDateForm.EmploymentFormMonth -> "02",
-        EmploymentEndDateForm.EmploymentFormYear  -> "abc"
-      )
 
       val request = FakeRequest("POST", "/")
-        .withJsonBody(formWithErrors)
+        .withFormUrlEncodedBody(
+          EmploymentEndDateForm.EmploymentFormDay   -> "01",
+          EmploymentEndDateForm.EmploymentFormMonth -> "02",
+          EmploymentEndDateForm.EmploymentFormYear  -> "abc")
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -359,14 +354,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(dataToCache))(any()))
         .thenReturn(Future.successful(dataToCache))
 
-      val formData = Json.obj(
-        EmploymentEndDateForm.EmploymentFormDay   -> "01",
-        EmploymentEndDateForm.EmploymentFormMonth -> "02",
-        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-      )
-
       val request = FakeRequest("POST", "")
-        .withJsonBody(formData)
+        .withFormUrlEncodedBody(
+          EmploymentEndDateForm.EmploymentFormDay   -> "01",
+          EmploymentEndDateForm.EmploymentFormMonth -> "02",
+          EmploymentEndDateForm.EmploymentFormYear  -> "2017")
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -379,14 +371,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
-      val formData = Json.obj(
-        EmploymentEndDateForm.EmploymentFormDay   -> "01",
-        EmploymentEndDateForm.EmploymentFormMonth -> "02",
-        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-      )
-
       val request = FakeRequest("POST", "")
-        .withJsonBody(formData)
+        .withFormUrlEncodedBody(
+          EmploymentEndDateForm.EmploymentFormDay   -> "01",
+          EmploymentEndDateForm.EmploymentFormMonth -> "02",
+          EmploymentEndDateForm.EmploymentFormYear  -> "2017")
 
       Await.result(endEmploymentTest.handleEndEmploymentPage(0)(request), 5 seconds)
       verify(endEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(dataToCache))(any())

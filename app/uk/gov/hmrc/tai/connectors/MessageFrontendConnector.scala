@@ -30,8 +30,8 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
 class MessageFrontendConnector @Inject()(
-                                          httpClient: HttpClientV2,
-                                          headerCarrierForPartialsConverter: HeaderCarrierForPartialsConverter,
+  httpClient: HttpClientV2,
+  headerCarrierForPartialsConverter: HeaderCarrierForPartialsConverter,
   httpHandler: HttpHandler,
   appConfig: ApplicationConfig
 ) extends Logging {

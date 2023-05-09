@@ -30,8 +30,8 @@ import scala.concurrent.Future
 class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
 
   def read(
-            response: Future[Either[UpstreamErrorResponse, HttpResponse]]
-          ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    response: Future[Either[UpstreamErrorResponse, HttpResponse]]
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     EitherT(response.map {
       case Right(response) =>
         Right(response)
@@ -44,9 +44,10 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
       case Left(error) =>
         logger.error(error.message, error)
         Left(error)
-    } recover { case exception: HttpException =>
-      logger.error(exception.message)
-      Left(UpstreamErrorResponse(exception.message, 502, 502))
+    } recover {
+      case exception: HttpException =>
+        logger.error(exception.message)
+        Left(UpstreamErrorResponse(exception.message, 502, 502))
     })
 
   def getFromApiV2(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {

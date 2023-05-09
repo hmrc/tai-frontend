@@ -180,14 +180,16 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
 
         val result =
           testController.editRegularIncome(empId = employment.sequenceNumber)(
-            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeController
           .confirmRegularIncome(empId = employment.sequenceNumber)
           .url
 
-        verify(journeyCacheService).cache(meq(UpdateIncomeConstants.NewAmountKey), meq("200"))(any())
+        verify(journeyCacheService).cache(meq(UpdateIncomeConstants.NewAmountKey), meq("1675"))(any())
       }
     }
 

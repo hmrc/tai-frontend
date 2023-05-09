@@ -28,7 +28,8 @@ import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
   val nino = new Generator(new Random).nextNino
-  val user = AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderGG), ConfidenceLevel.L200, None)
+  val user =
+    AuthedUser(nino.toString(), Some("saUtr"), Some(TaiConstants.AuthProviderGG), ConfidenceLevel.L200, None, None)
   val cc: ControllerComponents = stubControllerComponents()
 
   override def invokeBlock[A](

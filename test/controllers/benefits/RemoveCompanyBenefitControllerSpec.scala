@@ -128,7 +128,11 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withJsonBody(formData))
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
+              RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
+              RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
+            ))
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -149,11 +153,6 @@ class RemoveCompanyBenefitControllerSpec
 
         val taxYear = TaxYear()
         val year = taxYear.year.toString
-        val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "06",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "04",
-          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
-        )
 
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
@@ -168,7 +167,12 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withJsonBody(formData))
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "06",
+              RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "04",
+              RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
+            )
+        )
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -182,11 +186,6 @@ class RemoveCompanyBenefitControllerSpec
 
     "return Bad Request" when {
       "the form submission is having blank value" in {
-        val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
-          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
-        )
 
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
@@ -200,7 +199,11 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withJsonBody(formData))
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
+              RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
+              RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
+            ))
 
         status(result) mustBe BAD_REQUEST
 

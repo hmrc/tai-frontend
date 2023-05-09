@@ -21,6 +21,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.renderer.TemplateRenderer
 import utils.{FileHelper, IntegrationSpec, MockTemplateRenderer}
 
@@ -74,7 +75,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
           .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
       )
 
-      val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER)
+      val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
 
       val result = route(app, request)
 
@@ -115,7 +116,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
             .willReturn(aResponse().withStatus(httpStatus))
         )
 
-        val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER)
+        val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
 
         val result = route(app, request)
 

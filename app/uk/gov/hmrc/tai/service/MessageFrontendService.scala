@@ -35,8 +35,9 @@ class MessageFrontendService @Inject()(
       .fold(
         _ => None,
         response => response.json.asOpt[MessageCount].map(_.count)
-      ) recover { case ex: Exception =>
-      logger.error(ex.getMessage, ex)
-      None
+      ) recover {
+      case ex: Exception =>
+        logger.error(ex.getMessage, ex)
+        None
     }
 }

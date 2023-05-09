@@ -38,8 +38,10 @@ trait AuthAction
     with ActionFunction[Request, InternalAuthenticatedRequest]
 
 @Singleton
-class AuthActionImpl @Inject()(override val authConnector: AuthConnector, messageFrontendService: MessageFrontendService, mcc: MessagesControllerComponents)(
-  implicit ec: ExecutionContext)
+class AuthActionImpl @Inject()(
+  override val authConnector: AuthConnector,
+  messageFrontendService: MessageFrontendService,
+  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](
@@ -66,7 +68,6 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, messag
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
   }
-
 
   private def authWithCredentials[A](
     request: Request[A],

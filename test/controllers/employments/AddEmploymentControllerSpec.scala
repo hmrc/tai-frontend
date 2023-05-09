@@ -161,16 +161,18 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "return redirect" when {
       "form is valid and start date is over 6 weeks ago" in {
         val sut = createSUT
-        val formData = Json.obj(
-          EmploymentAddDateForm.EmploymentFormDay   -> "01",
-          EmploymentAddDateForm.EmploymentFormMonth -> "02",
-          EmploymentAddDateForm.EmploymentFormYear  -> "2017"
-        )
+
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
-          sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitEmploymentStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                EmploymentAddDateForm.EmploymentFormDay   -> "01",
+                EmploymentAddDateForm.EmploymentFormMonth -> "02",
+                EmploymentAddDateForm.EmploymentFormYear  -> "2017"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
@@ -180,16 +182,18 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
         val date = LocalDate.now.minusDays(4)
 
-        val formData = Json.obj(
-          EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
-          EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
-          EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
-        )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
-          sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitEmploymentStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
+                EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
+                EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
+              ))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.receivedFirstPay.url
@@ -199,16 +203,19 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "return bad request" when {
       "form is invalid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          EmploymentAddDateForm.EmploymentFormDay   -> "01",
-          EmploymentAddDateForm.EmploymentFormMonth -> "02",
-          EmploymentAddDateForm.EmploymentFormYear  -> (LocalDate.now().getYear + 1).toString
-        )
+
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
-          sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitEmploymentStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                EmploymentAddDateForm.EmploymentFormDay   -> "01",
+                EmploymentAddDateForm.EmploymentFormMonth -> "02",
+                EmploymentAddDateForm.EmploymentFormYear  -> (LocalDate.now().getYear + 1).toString
+              ))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -217,15 +224,17 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "save details in cache" when {
       "form is valid and start date is over 6 weeks ago" in {
         val sut = createSUT
-        val formData = Json.obj(
-          EmploymentAddDateForm.EmploymentFormDay   -> "01",
-          EmploymentAddDateForm.EmploymentFormMonth -> "02",
-          EmploymentAddDateForm.EmploymentFormYear  -> "2017"
-        )
+
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         val result =
-          sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitEmploymentStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                EmploymentAddDateForm.EmploymentFormDay   -> "01",
+                EmploymentAddDateForm.EmploymentFormMonth -> "02",
+                EmploymentAddDateForm.EmploymentFormYear  -> "2017"))
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(
@@ -239,15 +248,17 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
         val date = LocalDate.now.minusDays(4)
 
-        val formData = Json.obj(
-          EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
-          EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
-          EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
-        )
         when(addEmploymentJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         val result =
-          sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitEmploymentStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
+                EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
+                EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
+              ))
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(
