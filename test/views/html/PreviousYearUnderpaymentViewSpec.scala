@@ -30,7 +30,8 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeaderNewFormat(
       Messages("tai.iya.tax.you.owe.preHeading"),
-      Messages("tai.previous.year.underpayment.title"))
+      Messages("tai.previous.year.underpayment.title")
+    )
 
     behave like pageWithTitle(Messages("tai.previous.year.underpayment.title"))
 
@@ -39,7 +40,8 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
     "display paragraphs" in {
 
       doc must haveParagraphWithText(
-        Messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRange(-1)))
+        Messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRange(-1))
+      )
       doc must haveSpanWithText(poundedAmountDue)
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h1"))
 
@@ -48,14 +50,17 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
           "tai.previous.year.underpayment.p2",
           allowanceReducedBy,
           Dates.formatDate(TaxYear().end),
-          poundedAmountDue))
+          poundedAmountDue
+        )
+      )
 
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p3"))
 
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h2"))
 
       doc must haveParagraphWithText(
-        Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeBreak))
+        Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeBreak)
+      )
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p5"))
     }
   }

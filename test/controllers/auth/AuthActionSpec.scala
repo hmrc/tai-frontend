@@ -63,9 +63,10 @@ class AuthActionSpec extends BaseSpec {
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
 
-    override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(
-      implicit hc: HeaderCarrier,
-      ec: ExecutionContext): Future[A] =
+    override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext
+    ): Future[A] =
       Future.failed(exceptionToReturn)
   }
 
@@ -84,7 +85,7 @@ class AuthActionSpec extends BaseSpec {
       new InternalError
     )
 
-    authErrors.foreach(error => {
+    authErrors.foreach { error =>
       s"the user has ${error.toString}" must {
         "redirect the user to an unauthorised page " in {
           val controller = Harness.failure(error)
@@ -94,7 +95,7 @@ class AuthActionSpec extends BaseSpec {
           redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.toString)
         }
       }
-    })
+    }
   }
 
   "Given the user is authorised" should {
@@ -158,7 +159,7 @@ class AuthActionSpec extends BaseSpec {
         new SessionRecordNotFound
       )
 
-      authErrors.foreach(error => {
+      authErrors.foreach { error =>
         s"there is an ${error.toString}" in {
           val controller = Harness.failure(error)
 
@@ -167,7 +168,7 @@ class AuthActionSpec extends BaseSpec {
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG.toString)
         }
-      })
+      }
     }
   }
 

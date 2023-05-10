@@ -69,7 +69,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
               tax = 0,
               lowerBand = None,
               upperBand = Some(5000),
-              rate = 20),
+              rate = 20
+            ),
             TaxBand(
               bandType = BandTypesConstants.PersonalSavingsRate,
               code = "",
@@ -77,7 +78,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
               tax = 0,
               lowerBand = None,
               upperBand = Some(5000),
-              rate = 20),
+              rate = 20
+            ),
             TaxBand(
               bandType = BandTypesConstants.StarterSavingsRate,
               code = "",
@@ -85,7 +87,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
               tax = 0,
               lowerBand = None,
               upperBand = Some(5000),
-              rate = 20)
+              rate = 20
+            )
           )
 
           val incomeCategories = Seq(
@@ -111,7 +114,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
               tax = 0,
               lowerBand = None,
               upperBand = Some(5000),
-              rate = 20),
+              rate = 20
+            ),
             TaxBand(
               bandType = BandTypesConstants.StarterSavingsRate,
               code = "",
@@ -119,7 +123,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
               tax = 0,
               lowerBand = None,
               upperBand = Some(5000),
-              rate = 20)
+              rate = 20
+            )
           )
 
           val incomeCategories = Seq(
@@ -141,7 +146,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             tax = 0,
             lowerBand = None,
             upperBand = Some(5000),
-            rate = 0),
+            rate = 0
+          ),
           TaxBand(
             bandType = BandTypesConstants.DividendBasicRate,
             code = "",
@@ -149,7 +155,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             tax = 0,
             lowerBand = None,
             upperBand = Some(5000),
-            rate = 10),
+            rate = 10
+          ),
           TaxBand(
             bandType = BandTypesConstants.DividendHigherRate,
             code = "",
@@ -157,7 +164,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             tax = 0,
             lowerBand = None,
             upperBand = Some(5000),
-            rate = 20),
+            rate = 20
+          ),
           TaxBand(
             bandType = BandTypesConstants.DividendAdditionalRate,
             code = "",
@@ -165,7 +173,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             tax = 0,
             lowerBand = None,
             upperBand = Some(5000),
-            rate = 30)
+            rate = 30
+          )
         )
         val incomeCategories = Seq(
           IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
@@ -185,10 +194,10 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
 
         val nonHigherTaxBandGen: Gen[TaxBand] = for {
           bandType <- Gen.oneOf(
-                       BandTypesConstants.StarterSavingsRate,
-                       BandTypesConstants.PersonalSavingsRate,
-                       BandTypesConstants.SavingsBasicRate
-                     )
+                        BandTypesConstants.StarterSavingsRate,
+                        BandTypesConstants.PersonalSavingsRate,
+                        BandTypesConstants.SavingsBasicRate
+                      )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
           tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -199,9 +208,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
 
         val higherTaxBandGen: Gen[TaxBand] = for {
           bandType <- Gen.oneOf(
-                       BandTypesConstants.SavingsHigherRate,
-                       BandTypesConstants.SavingsAdditionalRate
-                     )
+                        BandTypesConstants.SavingsHigherRate,
+                        BandTypesConstants.SavingsAdditionalRate
+                      )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
           tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -260,11 +269,13 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             AdditionalTaxDetailRow(
               TaxSummaryLabel(
                 Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
-                Some(HelpLink(
-                  Messages("what.is.underpayment"),
-                  controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
-                  "underPaymentFromPreviousYear"
-                ))
+                Some(
+                  HelpLink(
+                    Messages("what.is.underpayment"),
+                    controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+                    "underPaymentFromPreviousYear"
+                  )
+                )
               ),
               10
             ),
@@ -275,7 +286,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
                   HelpLink(
                     Messages("what.is.tax.estimation"),
                     controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
-                    "estimatedTaxOwedLink"))
+                    "estimatedTaxOwedLink"
+                  )
+                )
               ),
               50
             ),
@@ -355,15 +368,18 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             ReductionTaxRow(
               Messages("tai.taxCollected.atSource.otherIncome.description"),
               100,
-              Messages("tai.taxCollected.atSource.otherIncome.title")),
+              Messages("tai.taxCollected.atSource.otherIncome.title")
+            ),
             ReductionTaxRow(
               Messages("tai.taxCollected.atSource.dividends.description", 10),
               200,
-              Messages("tai.taxCollected.atSource.dividends.title")),
+              Messages("tai.taxCollected.atSource.dividends.title")
+            ),
             ReductionTaxRow(
               Messages("tai.taxCollected.atSource.bank.description", 20),
               100,
-              Messages("tai.taxCollected.atSource.bank.title")),
+              Messages("tai.taxCollected.atSource.bank.title")
+            ),
             ReductionTaxRow(
               Messages(
                 "tai.taxCollected.atSource.marriageAllowance.description",
@@ -377,7 +393,8 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
               Messages(
                 "tai.taxCollected.atSource.maintenancePayments.description",
                 MoneyPounds(1200).quantity,
-                routes.YourTaxCodeController.taxCodes().url),
+                routes.YourTaxCodeController.taxCodes().url
+              ),
               700,
               Messages("tai.taxCollected.atSource.maintenancePayments.title")
             ),
@@ -389,16 +406,19 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             ReductionTaxRow(
               Messages("tai.taxCollected.atSource.concessionalRelief.description"),
               600,
-              Messages("tai.taxCollected.atSource.concessionalRelief.title")),
+              Messages("tai.taxCollected.atSource.concessionalRelief.title")
+            ),
             ReductionTaxRow(
               Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
               900,
-              Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
+              Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")
+            ),
             ReductionTaxRow(Messages("gift.aid.tax.relief", 0, 1000), 1000, Messages("gift.aid.savings")),
             ReductionTaxRow(
               Messages("personal.pension.payment.relief", 0, 1100),
               1100,
-              Messages("personal.pension.payments"))
+              Messages("personal.pension.payments")
+            )
           )
         }
       }
@@ -431,7 +451,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
       val model =
         DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
-      model.nonSavings mustEqual Seq(TaxBand(BandTypesConstants.TaxFreeAllowanceBand, "", 0, 0, Some(0), None, 0)) ++ taxBand
+      model.nonSavings mustEqual Seq(
+        TaxBand(BandTypesConstants.TaxFreeAllowanceBand, "", 0, 0, Some(0), None, 0)
+      ) ++ taxBand
       model.savings mustEqual taxBand ++ taxBand ++ taxBand
       model.dividends mustEqual taxBand ++ taxBand
     }

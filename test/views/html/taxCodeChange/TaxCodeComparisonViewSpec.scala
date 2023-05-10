@@ -39,7 +39,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     "Employer 1",
     pensionIndicator = true,
     Some("1234"),
-    primary = true)
+    primary = true
+  )
   val taxCodeRecord2: TaxCodeRecord =
     taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().end, payrollNumber = None)
   val taxCodeRecord3: TaxCodeRecord = taxCodeRecord1.copy(
@@ -47,7 +48,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     startDate = startDate.plusDays(3),
     endDate = TaxYear().end,
     pensionIndicator = false,
-    payrollNumber = Some("Payroll Number"))
+    payrollNumber = Some("Payroll Number")
+  )
   val taxCodeChange: TaxCodeChange =
     TaxCodeChange(List(taxCodeRecord1, taxCodeRecord3), List(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel =
@@ -60,14 +62,17 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     doc must haveHeadingH3WithText(record.employerName)
     doc must haveClassWithText(
       Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)),
-      "tax-code-change__date")
+      "tax-code-change__date"
+    )
     doc(view).toString must include(record.taxCode)
 
     doc must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
-    for (explanation <- TaxCodeChangeViewModel
-                         .getTaxCodeExplanations(record, Map[String, BigDecimal](), "current", appConfig)
-                         .descriptionItems) {
+    for (
+      explanation <- TaxCodeChangeViewModel
+                       .getTaxCodeExplanations(record, Map[String, BigDecimal](), "current", appConfig)
+                       .descriptionItems
+    ) {
       doc must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
       doc must haveClassWithText(explanation._1, "tax-code-change__part")
 
@@ -86,7 +91,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
       mainHeaderText = Messages(
         "taxCode.change.yourTaxCodeChanged.h1",
-        HtmlFormatter.htmlNonBroken(Dates.formatDate(viewModel.changeDate)).replaceAll("\u00A0", " "))
+        HtmlFormatter.htmlNonBroken(Dates.formatDate(viewModel.changeDate)).replaceAll("\u00A0", " ")
+      )
     )
 
     "displays the previous tax code section title" in {
@@ -118,7 +124,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       "a pension" in {
         val expectedText = Messages("tai.pensionNumber") + ": 1234 " + Messages(
           "tai.pension.income.details.pensionNumber.screenReader",
-          "1234")
+          "1234"
+        )
         doc must haveClassWithText(expectedText, "tax-code-change__payroll")
       }
     }
@@ -127,7 +134,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       "a employment" in {
         val expectedText = Messages("tai.payRollNumber") + ": Payroll Number " + Messages(
           "tai.employment.income.details.payrollNumber.screenReader",
-          "Payroll Number")
+          "Payroll Number"
+        )
         doc must haveClassWithText(expectedText, "tax-code-change__payroll")
       }
     }
@@ -145,7 +153,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
             Map.empty,
             Seq("a reason", "another reason"),
             isAGenericReason = false,
-            maybeUserName = None)
+            maybeUserName = None
+          )
 
         val view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
         doc(view) must haveClassCount("tax-code-reason", 2)

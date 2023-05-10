@@ -53,7 +53,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(cyMinusTwoTaxYear, Seq(employment))
 
@@ -76,7 +77,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment))
 
@@ -107,7 +109,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment))
 
@@ -138,7 +141,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment))
 
@@ -168,7 +172,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          true)
+          true
+        )
 
         val sut = createSut(Seq(employment))
 
@@ -201,7 +206,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         val employment2 = Employment(
           "test employment2",
           Live,
@@ -214,7 +220,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           3,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment2, employment1))
 
@@ -276,7 +283,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
 
   private val multipleAnnualAccountsPayments = Seq(
     Payment(cyMinusOneTaxYear.start, 10, 10, 0, 0, 0, 0, Weekly),
-    Payment(cyMinusOneTaxYear.start.plusMonths(1), 20, 20, 0, 0, 0, 0, FourWeekly))
+    Payment(cyMinusOneTaxYear.start.plusMonths(1), 20, 20, 0, 0, 0, 0, FourWeekly)
+  )
 
   private val annualAccountWithNoPayments = AnnualAccount(cyMinusOneTaxYear, Available, Nil, Nil)
   private val annualAccountWithSinglePayment =

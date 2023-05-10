@@ -57,7 +57,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
@@ -71,7 +73,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
@@ -85,7 +89,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
@@ -99,7 +105,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new BadRequestException("Failed to fetch income details"))
       )
 
@@ -113,7 +121,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
@@ -127,7 +137,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
@@ -141,7 +153,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
@@ -167,7 +181,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
       when(
         taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-          any[HeaderCarrier])).thenReturn(
+          any[HeaderCarrier]
+        )
+      ).thenReturn(
         Future.failed(new RuntimeException("Failed to fetch income details"))
       )
 
@@ -213,19 +229,25 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
     when(
       taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-        any[HeaderCarrier])).thenReturn(
+        any[HeaderCarrier]
+      )
+    ).thenReturn(
       Future.successful(Seq.empty[TaxedIncome])
     )
 
     when(
       taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
-        any[HeaderCarrier])).thenReturn(
+        any[HeaderCarrier]
+      )
+    ).thenReturn(
       Future.successful(Seq.empty[TaxedIncome])
     )
 
     when(
       taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-        any[HeaderCarrier])).thenReturn(
+        any[HeaderCarrier]
+      )
+    ).thenReturn(
       Future.successful(Seq.empty[TaxedIncome])
     )
 

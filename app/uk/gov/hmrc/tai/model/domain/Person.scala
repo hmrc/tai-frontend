@@ -25,7 +25,8 @@ case class Person(
   surname: String,
   isDeceased: Boolean,
   manualCorrespondenceInd: Boolean,
-  address: Address) {
+  address: Address
+) {
   lazy val name: String = s"$firstName $surname"
 }
 

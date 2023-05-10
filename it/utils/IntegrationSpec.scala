@@ -25,7 +25,9 @@ import play.api.test.Injecting
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.TaxYear
 
-class IntegrationSpec extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures with IntegrationPatience with Injecting {
+class IntegrationSpec
+    extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
+    with IntegrationPatience with Injecting {
 
   val generatedNino = new Generator().nextNino
 
@@ -64,7 +66,9 @@ class IntegrationSpec extends WordSpec with GuiceOneAppPerSuite with MustMatcher
          |}
          |""".stripMargin
 
-    server.stubFor(post(urlEqualTo("/auth/authorise"))
-      .willReturn(aResponse().withBody(authResponse)))
+    server.stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .willReturn(aResponse().withBody(authResponse))
+    )
   }
 }

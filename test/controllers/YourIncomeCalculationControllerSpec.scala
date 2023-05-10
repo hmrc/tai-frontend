@@ -174,7 +174,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
-    Nil)
+    Nil
+  )
   val employment: Employment = Employment(
     "test employment",
     Live,

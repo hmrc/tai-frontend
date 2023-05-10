@@ -45,7 +45,7 @@ import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, Incorr
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class IncomeUpdateEstimatedPayController @Inject()(
+class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   incomeService: IncomeService,
@@ -57,7 +57,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   private val logger = Logger(this.getClass)
@@ -87,10 +88,11 @@ class IncomeUpdateEstimatedPayController @Inject()(
                     totalEstimatedIncome,
                     incomeType == TaiConstants.IncomeTypePension,
                     appConfig
-                  ))
+                  )
+                )
               }
-              .recover {
-                case e: Exception => errorPagesHandler.internalServerError(e.getMessage)
+              .recover { case e: Exception =>
+                errorPagesHandler.internalServerError(e.getMessage)
               }
         }
   }
@@ -98,7 +100,8 @@ class IncomeUpdateEstimatedPayController @Inject()(
   private def isCachedAmountSameAsEnteredAmount(
     cache: Map[String, String],
     newAmount: Option[BigDecimal],
-    empId: Int): Boolean =
+    empId: Int
+  ): Boolean =
     FormHelper
       .areEqual(cache.get(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"), newAmount map (_.toString()))
 
@@ -138,13 +141,15 @@ class IncomeUpdateEstimatedPayController @Inject()(
                 isBonusPayment,
                 calculatedPay.annualAmount,
                 calculatedPay.startDate,
-                incomeSource)
+                incomeSource
+              )
 
               Ok(estimatedPay(viewModel))
             }
           case _ =>
             Future.successful(
-              Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id, empId)))
+              Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id, empId))
+            )
         }
       }
 

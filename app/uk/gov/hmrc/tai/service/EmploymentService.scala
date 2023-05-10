@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EmploymentService @Inject()(employmentsConnector: EmploymentsConnector) {
+class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentsConnector.employments(nino, year)
@@ -47,20 +47,20 @@ class EmploymentService @Inject()(employmentsConnector: EmploymentsConnector) {
         throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
     }
 
-  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(
-    implicit hc: HeaderCarrier): Future[String] =
+  def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
+    hc: HeaderCarrier
+  ): Future[String] =
     employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
       case Some(envId) => envId
       case _ =>
         throw new RuntimeException(
-          s"No envelope id was generated when sending incorrect employment details for ${nino.nino}")
+          s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
+        )
     }
 
   def employmentNames(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[Int, String]] =
     for {
       employments <- employments(nino, year)
-    } yield {
-      employments.map(employment => employment.sequenceNumber -> employment.name).toMap
-    }
+    } yield employments.map(employment => employment.sequenceNumber -> employment.name).toMap
 
 }

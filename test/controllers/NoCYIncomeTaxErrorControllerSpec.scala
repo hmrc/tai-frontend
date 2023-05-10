@@ -112,7 +112,9 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         1,
         None,
         hasPayrolledBenefit = false,
-        receivingOccupationalPension = false))
+        receivingOccupationalPension = false
+      )
+    )
 
     employmentDataFailure match {
       case None =>

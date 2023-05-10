@@ -22,7 +22,8 @@ import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
 trait DynamicPayPeriodTitle {
 
   def dynamicTitle(payPeriod: Option[String], payPeriodInDays: Option[String], periodMessages: Map[String, String])(
-    implicit message: Messages): String =
+    implicit message: Messages
+  ): String =
     payPeriod match {
       case Some(Monthly)     => message(periodMessages(Monthly))
       case Some(Weekly)      => message(periodMessages(Weekly))

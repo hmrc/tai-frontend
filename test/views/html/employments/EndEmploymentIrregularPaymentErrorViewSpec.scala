@@ -32,7 +32,8 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.irregular.preHeadingText"),
       messages("tai.irregular.heading", model.employerName),
-      Some(messages("tai.ptaHeader.accessible.preHeading")))
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
+    )
     behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment")
 
     "display paragraphs" in {
@@ -54,7 +55,8 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
         val errorView = template(formWithErrors, model)
         doc(errorView) must haveClassWithText(
           messages("tai.errorMessage.heading") + " " + messages("tai.error.chooseOneOption"),
-          "govuk-error-summary")
+          "govuk-error-summary"
+        )
       }
     }
   }
@@ -62,12 +64,14 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
   private lazy val formWithErrors: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
     Map(
       IrregularPayConstants.IrregularPayDecision -> ""
-    ))
+    )
+  )
 
   private lazy val validForm: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
     Map(
       IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer
-    ))
+    )
+  )
 
   private lazy val model = EmploymentViewModel("TEST", 1)
 

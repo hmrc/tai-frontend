@@ -47,7 +47,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.personalAllowance mustBe PersonalAllowance(Seq(11500, 11850))
       }
@@ -60,7 +61,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.personalAllowance mustBe PersonalAllowance(Seq(0, 0))
       }
@@ -71,11 +73,13 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component, deduction))
         val nextYearComponents = CodingComponentForYear(
           nextTaxYear,
-          Seq(component.copy(componentType = PersonalAllowancePA, amount = 11850), deduction))
+          Seq(component.copy(componentType = PersonalAllowancePA, amount = 11850), deduction)
+        )
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.personalAllowance mustBe PersonalAllowance(Seq(0, 11850))
       }
@@ -86,11 +90,13 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
         val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component, deduction))
         val nextYearComponents = CodingComponentForYear(
           nextTaxYear,
-          Seq(component.copy(componentType = GiftAidAdjustment, amount = 11850), deduction))
+          Seq(component.copy(componentType = GiftAidAdjustment, amount = 11850), deduction)
+        )
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.personalAllowance mustBe PersonalAllowance(Seq(11500, 0))
       }
@@ -105,7 +111,9 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
             messages(
               "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
               personalAllowanceCyPlusOne,
-              startOfNextTaxYear))
+              startOfNextTaxYear
+            )
+          )
 
           val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
           val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component))
@@ -113,7 +121,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
           val model = TaxFreeAmountComparisonViewModel(
             Seq(nextYearComponents, currentYearComponents),
-            Seq.empty[TaxAccountSummaryForYear])
+            Seq.empty[TaxAccountSummaryForYear]
+          )
 
           model.personalAllowanceIncreaseInfo mustBe expectedMessage
         }
@@ -130,7 +139,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
           val model = TaxFreeAmountComparisonViewModel(
             Seq(currentYearComponents, nextYearComponents),
-            Seq.empty[TaxAccountSummaryForYear])
+            Seq.empty[TaxAccountSummaryForYear]
+          )
 
           model.personalAllowanceIncreaseInfo mustBe expectedMessage
         }
@@ -151,7 +161,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.additions.additions mustBe Seq(
           Row("ProfessionalSubscriptions", Seq(Some(100), Some(150))),
@@ -170,7 +181,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.additions.additions mustBe Seq(
           Row("ProfessionalSubscriptions", Seq(Some(100), Some(150))),
@@ -189,7 +201,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.additions.totalRow.totals mustBe Seq(1100, 150)
         model.hasAdditions mustBe true
@@ -201,7 +214,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.additions.totalRow.totals mustBe Seq(0, 0)
         model.hasAdditions mustBe false
@@ -217,7 +231,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
       val model = TaxFreeAmountComparisonViewModel(
         Seq(nextYearComponents, currentYearComponents),
-        Seq.empty[TaxAccountSummaryForYear])
+        Seq.empty[TaxAccountSummaryForYear]
+      )
 
       model.deductions.deductions mustBe Seq(
         Row("GiftAidAdjustment", Seq(Some(100), Some(150))),
@@ -235,7 +250,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.deductions.totalRow mustBe Total(Seq(1100, 150))
         model.hasDeductions mustBe true
@@ -247,7 +263,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
         val model = TaxFreeAmountComparisonViewModel(
           Seq(nextYearComponents, currentYearComponents),
-          Seq.empty[TaxAccountSummaryForYear])
+          Seq.empty[TaxAccountSummaryForYear]
+        )
 
         model.deductions.totalRow mustBe Total(Seq(0, 0))
         model.hasDeductions mustBe false
@@ -260,7 +277,8 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
       val model = TaxFreeAmountComparisonViewModel(
         Seq.empty[CodingComponentForYear],
-        Seq(currentYearComponents, nextYearComponents))
+        Seq(currentYearComponents, nextYearComponents)
+      )
 
       model.footer mustBe Footer(Seq(100, 200))
     }

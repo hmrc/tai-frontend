@@ -117,7 +117,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "K"   -> Messages("tai.taxCode.K"),
-          "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000))
+          "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000)
+        )
       }
     }
 
@@ -151,7 +152,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
-          "L"    -> Messages("tai.taxCode.L"))
+          "L"    -> Messages("tai.taxCode.L")
+        )
       }
 
       "provide taxCodeExplanation when only single digit proceeds letter T" in {
@@ -160,7 +162,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "2" -> Messages(s"tai.taxCode.amount", 20),
-          "T" -> Messages("tai.taxCode.T"))
+          "T" -> Messages("tai.taxCode.T")
+        )
       }
 
       "provide taxCodeExplanation when only single digit proceeds letter N" in {
@@ -169,7 +172,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "2" -> Messages(s"tai.taxCode.amount", 20),
-          "N" -> Messages("tai.taxCode.N"))
+          "N" -> Messages("tai.taxCode.N")
+        )
       }
     }
 
@@ -183,7 +187,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
           "1150L",
           "employer",
           Week1Month1BasisOfOperation,
-          Live)
+          Live
+        )
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "1150L")
       }
@@ -197,12 +202,14 @@ class TaxCodeViewModelSpec extends BaseSpec {
           "1150L",
           "employer",
           Week1Month1BasisOfOperation,
-          Live)
+          Live
+        )
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "L"    -> Messages("tai.taxCode.L"),
-          "X"    -> Messages("tai.taxCode.X"))
+          "X"    -> Messages("tai.taxCode.X")
+        )
       }
     }
 
@@ -271,7 +278,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
           "S1150T",
           "employer",
           Week1Month1BasisOfOperation,
-          Live)
+          Live
+        )
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "S" -> Messages(

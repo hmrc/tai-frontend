@@ -86,7 +86,9 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
         "1150L",
         "employment",
         OtherBasisOfOperation,
-        Live))
+        Live
+      )
+    )
 
     "display tax code page containing all tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -118,7 +120,8 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val doc = Jsoup.parse(contentAsString(result))
       doc.body().toString must include(Messages("tai.taxCode.wrong"))
       doc.body().toString must include(
-        Messages("tai.taxCode.subheading", taxCodeIncomes.head.name, taxCodeIncomes.head.taxCode))
+        Messages("tai.taxCode.subheading", taxCodeIncomes.head.name, taxCodeIncomes.head.taxCode)
+      )
     }
   }
 
@@ -139,7 +142,8 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
         "A Employer 1",
         pensionIndicator = false,
         Some("1234"),
-        primary = false)
+        primary = false
+      )
 
       val taxCodeRecords = List(previousTaxCodeRecord1)
 

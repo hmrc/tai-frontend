@@ -38,9 +38,9 @@ class EmploymentEndDateFormSpec extends BaseSpec {
     "deconstruct a local date correctly" in {
       val prePopForm = form.fill(LocalDate.of(2014, 8, 15))
 
-      prePopForm.data must contain(EmploymentEndDateForm.EmploymentFormDay   -> "15")
+      prePopForm.data must contain(EmploymentEndDateForm.EmploymentFormDay -> "15")
       prePopForm.data must contain(EmploymentEndDateForm.EmploymentFormMonth -> "8")
-      prePopForm.data must contain(EmploymentEndDateForm.EmploymentFormYear  -> "2014")
+      prePopForm.data must contain(EmploymentEndDateForm.EmploymentFormYear -> "2014")
     }
 
     "return an error" when {
@@ -96,17 +96,17 @@ class EmploymentEndDateFormSpec extends BaseSpec {
   private val MonthTag: String = EmploymentEndDateForm.EmploymentFormMonth
   private val YearTag: String = EmploymentEndDateForm.EmploymentFormYear
 
-  private val validDate = Json.obj(DayTag         -> 10, MonthTag -> 4, YearTag -> 2015)
-  private val validFutureDate = Json.obj(DayTag   -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
+  private val validDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> 2015)
+  private val validFutureDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
   private val validLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2016)
 
-  private val invalidDay = Json.obj(DayTag          -> "Bar", MonthTag -> 4, YearTag     -> 2015)
-  private val invalidMonth = Json.obj(DayTag        -> 1, MonthTag     -> "Foo", YearTag -> 2015)
-  private val invalidYear = Json.obj(DayTag         -> 1, MonthTag     -> 4, YearTag     -> "Baz")
-  private val invalidLeapYearDate = Json.obj(DayTag -> 29, MonthTag    -> 2, YearTag     -> 2015)
+  private val invalidDay = Json.obj(DayTag -> "Bar", MonthTag -> 4, YearTag -> 2015)
+  private val invalidMonth = Json.obj(DayTag -> 1, MonthTag -> "Foo", YearTag -> 2015)
+  private val invalidYear = Json.obj(DayTag -> 1, MonthTag -> 4, YearTag -> "Baz")
+  private val invalidLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2015)
 
-  private val invalidNoDayValue = Json.obj(DayTag       -> "", MonthTag -> 4, YearTag  -> 2015)
-  private val invalidNoMonthValue = Json.obj(DayTag     -> 4, MonthTag  -> "", YearTag -> 2015)
-  private val invalidNoYearValue = Json.obj(DayTag      -> 4, MonthTag  -> 12, YearTag -> "")
+  private val invalidNoDayValue = Json.obj(DayTag -> "", MonthTag -> 4, YearTag -> 2015)
+  private val invalidNoMonthValue = Json.obj(DayTag -> 4, MonthTag -> "", YearTag -> 2015)
+  private val invalidNoYearValue = Json.obj(DayTag -> 4, MonthTag -> 12, YearTag -> "")
   private val invalidNoDayNoYearValue = Json.obj(DayTag -> "", MonthTag -> 12, YearTag -> "")
 }

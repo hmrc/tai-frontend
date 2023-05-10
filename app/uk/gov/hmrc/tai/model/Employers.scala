@@ -33,7 +33,8 @@ object Employers {
   def sortEmployerslist(appConfig: ApplicationConfig, employers: List[Employers]): List[Employers] = {
 
     val employersList = employers.map(employer =>
-      Employers(employer.name, employer.employerReference, YearAndMonth.sortYearAndMonth(employer.claims, appConfig)))
+      Employers(employer.name, employer.employerReference, YearAndMonth.sortYearAndMonth(employer.claims, appConfig))
+    )
 
     employersList.sortBy(_.name)
   }

@@ -35,7 +35,8 @@ class AddEmploymentNameFormViewSpec extends TaiViewSpec {
     "display label with preheading" in {
       doc must haveElementAtPathWithText(
         ".govuk-caption-xl",
-        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.employment"))
+        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.employment")
+      )
     }
 
     behave like pageWithBackLinkNew
@@ -54,12 +55,14 @@ class AddEmploymentNameFormViewSpec extends TaiViewSpec {
   private lazy val formWithErrors: Form[String] = EmploymentNameForm.form.bind(
     Map(
       "employmentName" -> ""
-    ))
+    )
+  )
 
   private lazy val employmentNameForm: Form[String] = EmploymentNameForm.form.bind(
     Map(
       "employmentName" -> "the company"
-    ))
+    )
+  )
 
   override def view: Html = add_employment_name_form(employmentNameForm)
 }

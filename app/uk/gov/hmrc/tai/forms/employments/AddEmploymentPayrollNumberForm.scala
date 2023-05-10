@@ -41,7 +41,8 @@ object AddEmploymentPayrollNumberForm {
       PayrollNumberEntry -> mandatoryIfEqual(
         PayrollNumberChoice,
         FormValuesConstants.YesValue,
-        text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), _.nonEmpty))
+        text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), _.nonEmpty)
+      )
     )(AddEmploymentPayrollNumberForm.apply)(AddEmploymentPayrollNumberForm.unapply)
   )
 

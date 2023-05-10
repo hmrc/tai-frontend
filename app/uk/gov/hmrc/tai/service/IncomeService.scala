@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class IncomeService @Inject()(
+class IncomeService @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   taiConnector: TaiConnector
@@ -64,8 +64,8 @@ class IncomeService @Inject()(
       case _ => None
     }
 
-  def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(
-    implicit hc: HeaderCarrier
+  def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit
+    hc: HeaderCarrier
   ): Future[CalculatedPay] = {
 
     def isCacheAvailable(key: String): Option[BigDecimal] =
@@ -109,7 +109,8 @@ class IncomeService @Inject()(
       case Some(payment) =>
         Map(
           UpdateIncomeConstants.PayToDateKey -> payment.amountYearToDate.toString,
-          UpdateIncomeConstants.DateKey      -> payment.date.toString)
+          UpdateIncomeConstants.DateKey      -> payment.date.toString
+        )
       case None => Map(UpdateIncomeConstants.PayToDateKey -> "0")
     }
 

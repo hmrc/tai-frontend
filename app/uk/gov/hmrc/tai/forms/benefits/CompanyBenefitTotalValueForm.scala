@@ -33,8 +33,10 @@ object CompanyBenefitTotalValueForm {
             StopOnFirstFail(
               nonEmptyText(Messages("tai.interest.blank")),
               isNumber(Messages("tai.interest.isCurrency"))
-            ))
-      ))
+            )
+          )
+      )
+    )
 
   def nonEmptyText(requiredErrMsg: String): Constraint[String] =
     Constraint[String]("required") {

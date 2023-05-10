@@ -43,7 +43,8 @@ object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
     codingComponents: Seq[CodingComponent],
     taxAccountSummary: TaxAccountSummary,
     taxCodeIncomes: Seq[TaxCodeIncome],
-    taxBands: List[TaxBand])(implicit messages: Messages): SimpleEstimatedIncomeTaxViewModel = {
+    taxBands: List[TaxBand]
+  )(implicit messages: Messages): SimpleEstimatedIncomeTaxViewModel = {
 
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
@@ -52,7 +53,8 @@ object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
       mergedTaxBands,
       taxAccountSummary.taxFreeAllowance,
       taxAccountSummary.totalEstimatedTax,
-      taxViewType = SimpleTaxView)
+      taxViewType = SimpleTaxView
+    )
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
     val taxOnIncomeTypeHeading = getTaxOnIncomeTypeHeading(taxCodeIncomes)
     val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes, taxAccountSummary)

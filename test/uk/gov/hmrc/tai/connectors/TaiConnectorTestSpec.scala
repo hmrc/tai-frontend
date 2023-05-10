@@ -46,7 +46,8 @@ class TaiConnectorTestSpec
       implicit val hc = HeaderCarrier()
       server.stubFor(
         post(anyUrl())
-          .willReturn(aResponse().withStatus(OK).withBody(Json.toJson(expectedResponse).toString())))
+          .willReturn(aResponse().withStatus(OK).withBody(Json.toJson(expectedResponse).toString()))
+      )
 
       val response = Await.result(taiConnector.calculateEstimatedPay(payDetails), 5.seconds)
 

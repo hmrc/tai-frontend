@@ -54,7 +54,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCombinedHeaderNewTemplate(
       preHeaderText = messages("tai.incomes.warning.preHeading"),
-      mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName))
+      mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName)
+    )
 
     behave like pageWithYesNoRadioButton(
       s"${FormValuesConstants.YesNoChoice}",
@@ -91,7 +92,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
       doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "govuk-error-message")
+        "govuk-error-message"
+      )
     }
 
     "display the correct content when the income source is a pension" in {
@@ -100,14 +102,17 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
 
       doc(pensionView) must haveHeadingWithText(messages("tai.incomes.warning.pension.heading", employmentName))
       doc(pensionView) must haveParagraphWithText(
-        messages("tai.incomes.warning.pension.text1", MonetaryUtil.withPoundPrefix(newAmount), employmentName))
+        messages("tai.incomes.warning.pension.text1", MonetaryUtil.withPoundPrefix(newAmount), employmentName)
+      )
 
       doc(pensionView) must haveInputLabelWithText(
         s"${FormValuesConstants.YesNoChoice}",
-        messages("tai.incomes.warning.pension.radio1", employmentName))
+        messages("tai.incomes.warning.pension.radio1", employmentName)
+      )
       doc(pensionView) must haveInputLabelWithText(
         s"${FormValuesConstants.YesNoChoice}-2",
-        messages("tai.incomes.warning.pension.radio2"))
+        messages("tai.incomes.warning.pension.radio2")
+      )
       doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}") must not be null
       doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}-2") must not be null
     }

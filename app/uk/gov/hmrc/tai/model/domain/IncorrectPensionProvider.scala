@@ -21,7 +21,8 @@ import play.api.libs.json.{Format, Json}
 case class IncorrectPensionProvider(
   whatYouToldUs: String,
   telephoneContactAllowed: String,
-  telephoneNumber: Option[String])
+  telephoneNumber: Option[String]
+)
 
 object IncorrectPensionProvider {
   implicit val formats: Format[IncorrectPensionProvider] = Json.format[IncorrectPensionProvider]

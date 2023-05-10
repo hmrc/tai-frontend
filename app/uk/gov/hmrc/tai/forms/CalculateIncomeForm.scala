@@ -31,7 +31,8 @@ case class CalculateIncomeForm(
   name: String,
   employmentId: Int,
   ytdAmount: Option[String] = None,
-  paymentDate: Option[LocalDate] = None)
+  paymentDate: Option[LocalDate] = None
+)
 
 object CalculateIncomeForm {
   implicit val formats: OFormat[CalculateIncomeForm] = Json.format[CalculateIncomeForm]

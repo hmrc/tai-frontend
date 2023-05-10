@@ -36,7 +36,8 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       when(
-        previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any()))
+        previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())
+      )
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
@@ -50,7 +51,8 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
         val model =
           IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
         when(
-          previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any()))
+          previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())
+        )
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)

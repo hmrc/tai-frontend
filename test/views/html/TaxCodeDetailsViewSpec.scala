@@ -38,15 +38,18 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "taxFreeAmountLink",
         controllers.routes.TaxFreeAmountController.taxFreeAmount.url,
-        messages("check.your.tax.free.amount"))
+        messages("check.your.tax.free.amount")
+      )
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
         controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-        messages("check.your.income.tax.estimate"))
+        messages("check.your.income.tax.estimate")
+      )
       doc must haveLinkElement(
         "taxableIncomeLink",
         controllers.routes.TaxAccountSummaryController.onPageLoad.url,
-        messages("return.to.your.income.tax.summary"))
+        messages("return.to.your.income.tax.summary")
+      )
     }
 
     "contain a link to the income details for this employer" in {
@@ -56,7 +59,8 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "employmentDetails",
         controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url,
-        messages("tai.taxCode.check_employment"))
+        messages("tai.taxCode.check_employment")
+      )
     }
 
     "contain details element with tax code information" in {
@@ -73,7 +77,8 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
   val taxCodeDescription2 = DescriptionListViewModel(
     "Your tax code for employer2: D0",
-    ListMap("D0" -> messages("tai.taxCode.DX", 40), "K" -> messages("tai.taxCode.BR")))
+    ListMap("D0" -> messages("tai.taxCode.DX", 40), "K" -> messages("tai.taxCode.BR"))
+  )
 
   val viewModel: TaxCodeViewModel = TaxCodeViewModel(
     "main heading",

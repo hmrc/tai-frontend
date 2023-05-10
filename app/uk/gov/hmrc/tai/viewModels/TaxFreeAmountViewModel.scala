@@ -27,14 +27,16 @@ case class TaxFreeAmountViewModel(
   header: String,
   title: String,
   annualTaxFreeAmount: String,
-  taxFreeAmountSummary: TaxFreeAmountSummaryViewModel)
+  taxFreeAmountSummary: TaxFreeAmountSummaryViewModel
+)
 
 object TaxFreeAmountViewModel extends ViewModelHelper {
 
   def apply(
     codingComponents: Seq[CodingComponent],
     taxFreeAmountDetails: TaxFreeAmountDetails,
-    appConfig: ApplicationConfig)(implicit messages: Messages): TaxFreeAmountViewModel = {
+    appConfig: ApplicationConfig
+  )(implicit messages: Messages): TaxFreeAmountViewModel = {
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 
@@ -52,7 +54,8 @@ object TaxFreeAmountViewModel extends ViewModelHelper {
       headerWithAdditionalMarkup,
       title,
       withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)),
-      taxFreeAmountSummary)
+      taxFreeAmountSummary
+    )
   }
 
 }

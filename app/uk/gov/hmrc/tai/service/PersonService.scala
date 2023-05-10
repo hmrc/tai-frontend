@@ -25,14 +25,14 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PersonService @Inject()(personConnector: PersonConnector) {
+class PersonService @Inject() (personConnector: PersonConnector) {
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
     personConnector
       .person(nino)
-      .recoverWith {
-        case _ =>
-          Future.failed(
-            throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed."))
+      .recoverWith { case _ =>
+        Future.failed(
+          throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
+        )
       }
 }

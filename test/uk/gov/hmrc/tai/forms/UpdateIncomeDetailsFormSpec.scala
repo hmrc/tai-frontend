@@ -43,7 +43,8 @@ class UpdateIncomeDetailsFormSpec extends BaseSpec {
       "income details are blank" in {
         val validatedFormForHistoricEmploymentDetails = form.bind(emptyDetails)
         validatedFormForHistoricEmploymentDetails.errors must contain(
-          FormError("employmentDetails", List(Messages("tai.income.previousYears.details.textarea.error.blank"))))
+          FormError("employmentDetails", List(Messages("tai.income.previousYears.details.textarea.error.blank")))
+        )
       }
 
       "income details have exceeded the maximum characters" in {
@@ -55,8 +56,11 @@ class UpdateIncomeDetailsFormSpec extends BaseSpec {
             List(
               Messages(
                 "tai.income.previousYears.details.textarea.error.maximumExceeded",
-                UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit))
-          ))
+                UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit
+              )
+            )
+          )
+        )
       }
 
       "new line should be counted as one character so the form bound to 499 chars and a newline should be valid" in {
@@ -71,9 +75,9 @@ class UpdateIncomeDetailsFormSpec extends BaseSpec {
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Json.obj("employmentDetails"            -> "test")
+  private val validDetails = Json.obj("employmentDetails" -> "test")
   private val validDetailsWithNewline = Json.obj("employmentDetails" -> ("m\r\nm" + "m" * 497))
-  private val exceededCharDetails = Json.obj("employmentDetails"     -> exceedingCharacters)
-  private val emptyDetails = Json.obj("employmentDetails"            -> "")
+  private val exceededCharDetails = Json.obj("employmentDetails" -> exceedingCharacters)
+  private val emptyDetails = Json.obj("employmentDetails" -> "")
 
 }

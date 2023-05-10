@@ -63,7 +63,8 @@ class IncomeUpdateCalculatorControllerSpec
       employerId,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false)
+      receivingOccupationalPension = false
+    )
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
@@ -122,7 +123,9 @@ class IncomeUpdateCalculatorControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
           .duplicateSubmissionWarningPage(employerId)
           .url
       }
@@ -136,7 +139,9 @@ class IncomeUpdateCalculatorControllerSpec
 
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
           .estimatedPayLandingPage(employerId)
           .url
       }
@@ -158,8 +163,11 @@ class IncomeUpdateCalculatorControllerSpec
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
         when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(
-            Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))))
+          .thenReturn(
+            Future.successful(
+              Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))
+            )
+          )
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
@@ -209,12 +217,16 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect to the estimatedPayLandingPage url when yes is selected" in {
       val result = SubmitDuplicateSubmissionWarningHarness
         .setup(TaiConstants.IncomeTypeEmployment)
-        .submitDuplicateSubmissionWarning(RequestBuilder
-          .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
+        .submitDuplicateSubmissionWarning(
+          RequestBuilder
+            .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
+        )
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
+      redirectLocation(
+        result
+      ).get mustBe controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
         .estimatedPayLandingPage(employerId)
         .url
     }
@@ -222,8 +234,10 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect to the IncomeSourceSummaryPage url when no is selected" in {
       val result = SubmitDuplicateSubmissionWarningHarness
         .setup(TaiConstants.IncomeTypeEmployment)
-        .submitDuplicateSubmissionWarning(RequestBuilder
-          .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
+        .submitDuplicateSubmissionWarning(
+          RequestBuilder
+            .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
+        )
 
       status(result) mustBe SEE_OTHER
 
@@ -234,8 +248,10 @@ class IncomeUpdateCalculatorControllerSpec
 
         val result = SubmitDuplicateSubmissionWarningHarness
           .setup(TaiConstants.IncomeTypePension)
-          .submitDuplicateSubmissionWarning(RequestBuilder
-            .buildFakePostRequestWithAuth())
+          .submitDuplicateSubmissionWarning(
+            RequestBuilder
+              .buildFakePostRequestWithAuth()
+          )
 
         status(result) mustBe BAD_REQUEST
 
@@ -250,8 +266,10 @@ class IncomeUpdateCalculatorControllerSpec
 
         val result = SubmitDuplicateSubmissionWarningHarness
           .setup(TaiConstants.IncomeTypeEmployment)
-          .submitDuplicateSubmissionWarning(RequestBuilder
-            .buildFakePostRequestWithAuth())
+          .submitDuplicateSubmissionWarning(
+            RequestBuilder
+              .buildFakePostRequestWithAuth()
+          )
 
         status(result) mustBe BAD_REQUEST
 
@@ -281,10 +299,14 @@ class IncomeUpdateCalculatorControllerSpec
             .thenReturn(Future.successful(Left("cacheEmpty")))
         } else {
           when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
-            .thenReturn(Future.successful(Right(
-              Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-              Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
-            )))
+            .thenReturn(
+              Future.successful(
+                Right(
+                  Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
+                  Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+                )
+              )
+            )
           when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
             .thenReturn(Future.successful(Right(employer.id)))
           when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
@@ -318,7 +340,8 @@ class IncomeUpdateCalculatorControllerSpec
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(
-            controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+            controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+          )
 
         }
       }
@@ -392,7 +415,8 @@ class IncomeUpdateCalculatorControllerSpec
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+        )
 
       }
     }

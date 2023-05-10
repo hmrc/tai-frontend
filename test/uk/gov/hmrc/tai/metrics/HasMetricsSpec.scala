@@ -92,9 +92,8 @@ class HasMetricsSpec
       }
 
       "increment failure counter for a failed future" in withTestMetrics { metrics =>
-        metrics.withMetricsTimerAsync(TestMetric)(_ => Future.failed(new Exception)).recover {
-          case _ =>
-            verifyCompletedWithFailure(TestMetric, metrics)
+        metrics.withMetricsTimerAsync(TestMetric)(_ => Future.failed(new Exception)).recover { case _ =>
+          verifyCompletedWithFailure(TestMetric, metrics)
         }
       }
 
@@ -192,8 +191,8 @@ class HasMetricsSpec
             Future.failed(new Exception)
           }
           .map(_ => fail("should not get here, this should be transformWith in Scala 2.12"))
-          .recover {
-            case _ => verifyCompletedWithFailure(TestMetric, metrics)
+          .recover { case _ =>
+            verifyCompletedWithFailure(TestMetric, metrics)
           }
       }
 

@@ -40,9 +40,9 @@ case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pe
   private val pensionHasScottishTaxCodeNextYear =
     pensionTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
 
-  val hasScottishTaxCodeNextYear
-    : Boolean = (employmentHasNotScottishTaxCodeCurrentYear && pensionHasNotScottishTaxCodeCurrentYear) &&
-    (employmentHasScottishTaxCodeNextYear || pensionHasScottishTaxCodeNextYear)
+  val hasScottishTaxCodeNextYear: Boolean =
+    (employmentHasNotScottishTaxCodeCurrentYear && pensionHasNotScottishTaxCodeCurrentYear) &&
+      (employmentHasScottishTaxCodeNextYear || pensionHasScottishTaxCodeNextYear)
 }
 
 object TaxCodeComparisonViewModel {
@@ -54,8 +54,9 @@ object TaxCodeComparisonViewModel {
     TaxCodeComparisonViewModel(employmentTaxCodes, pensionTaxCodes)
   }
 
-  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType)(
-    implicit messages: Messages): Seq[TaxCodeDetail] = {
+  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType)(implicit
+    messages: Messages
+  ): Seq[TaxCodeDetail] = {
 
     val filteredTaxCodeIncomes = filterTaxCodeIncomesForYear(taxCodeForYears, taxComponentType)
     val sortedTaxCodeIncomes = filteredTaxCodeIncomes.sortWith(_.year < _.year)
@@ -63,13 +64,12 @@ object TaxCodeComparisonViewModel {
 
     for {
       incomeSourceName <- uniqueIncomeSourceNames
-    } yield {
-      TaxCodeDetail(incomeSourceName, taxCodesForIncomeSource(sortedTaxCodeIncomes, incomeSourceName))
-    }
+    } yield TaxCodeDetail(incomeSourceName, taxCodesForIncomeSource(sortedTaxCodeIncomes, incomeSourceName))
   }
 
-  private def taxCodesForIncomeSource(taxCodeForYears: Seq[TaxCodeIncomesForYear], incomeSourceName: String)(
-    implicit messages: Messages) =
+  private def taxCodesForIncomeSource(taxCodeForYears: Seq[TaxCodeIncomesForYear], incomeSourceName: String)(implicit
+    messages: Messages
+  ) =
     for {
       taxYear: TaxCodeIncomesForYear <- taxCodeForYears
     } yield {
@@ -79,11 +79,13 @@ object TaxCodeComparisonViewModel {
 
   private def filterTaxCodeIncomesForYear(
     taxCodeForYears: Seq[TaxCodeIncomesForYear],
-    taxComponentType: TaxComponentType): Seq[TaxCodeIncomesForYear] =
+    taxComponentType: TaxComponentType
+  ): Seq[TaxCodeIncomesForYear] =
     taxCodeForYears map { taxCodeForYear =>
       TaxCodeIncomesForYear(
         taxCodeForYear.year,
-        taxCodeForYear.taxCodeIncomeSources.filter(incomeSource => filterIncomeSources(incomeSource, taxComponentType)))
+        taxCodeForYear.taxCodeIncomeSources.filter(incomeSource => filterIncomeSources(incomeSource, taxComponentType))
+      )
     }
 
   private def filterIncomeSources(incomeSource: TaxCodeIncome, taxComponentType: TaxComponentType): Boolean =

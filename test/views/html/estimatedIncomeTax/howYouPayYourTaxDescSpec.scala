@@ -29,7 +29,8 @@ class howYouPayYourTaxDescSpec extends TaiViewSpec {
     doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
     doc(view) must haveParagraphWithText(
-      Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body)
+      Html(messages("tai.estimatedIncome.howYouPay.desc", messages("tai.estimatedIncome.taxCodes.link"))).body
+    )
 
     doc(view).select("#howYouPayDesc").html().replaceAll("\\s+", "") mustBe Html(
       messages(
@@ -37,8 +38,10 @@ class howYouPayYourTaxDescSpec extends TaiViewSpec {
         link(
           id = Some("taxCodesLink"),
           url = routes.YourTaxCodeController.taxCodes.url.toString,
-          copy = Messages("tai.estimatedIncome.taxCodes.link"))
-      )).body.replaceAll("\\s+", "")
+          copy = Messages("tai.estimatedIncome.taxCodes.link")
+        )
+      )
+    ).body.replaceAll("\\s+", "")
   }
 
   override def view: Html = views.html.estimatedIncomeTax.howYouPayYourTaxDesc()

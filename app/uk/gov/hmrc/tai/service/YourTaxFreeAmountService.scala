@@ -29,22 +29,23 @@ import scala.concurrent.Future
 case class YourTaxFreeAmountComparison(
   previousTaxFreeInfo: Option[TaxFreeInfo],
   currentTaxFreeInfo: TaxFreeInfo,
-  iabdPairs: AllowancesAndDeductionPairs)
+  iabdPairs: AllowancesAndDeductionPairs
+)
 
-class YourTaxFreeAmountService @Inject()(
+class YourTaxFreeAmountService @Inject() (
   taxCodeChangeService: TaxCodeChangeService,
-  codingComponentService: CodingComponentService)
-    extends YourTaxFreeAmount {
+  codingComponentService: CodingComponentService
+) extends YourTaxFreeAmount {
 
   def taxFreeAmountComparison(
-    nino: Nino)(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountComparison] =
+    nino: Nino
+  )(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountComparison] =
     (taxCodeChangeService.taxCodeChange(nino), codingComponentService.taxFreeAmountComparison(nino))
-      .mapN {
-        case (taxCodeChange, taxFreeAmountComparison) =>
-          buildTaxFreeAmount(
-            taxCodeChange.mostRecentTaxCodeChangeDate,
-            Some(taxFreeAmountComparison.previous),
-            taxFreeAmountComparison.current
-          )
+      .mapN { case (taxCodeChange, taxFreeAmountComparison) =>
+        buildTaxFreeAmount(
+          taxCodeChange.mostRecentTaxCodeChangeDate,
+          Some(taxFreeAmountComparison.previous),
+          taxFreeAmountComparison.current
+        )
       }
 }

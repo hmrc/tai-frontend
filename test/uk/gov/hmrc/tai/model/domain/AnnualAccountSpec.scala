@@ -219,7 +219,8 @@ class AnnualAccountSpec extends PlaySpec {
         taxAmount = 100,
         nationalInsuranceAmount = 150,
         payFrequency = Monthly
-      )),
+      )
+    ),
     endOfTaxYearUpdates = Nil
   )
 
@@ -244,5 +245,6 @@ class AnnualAccountSpec extends PlaySpec {
         taxAmount = 100,
         nationalInsuranceAmount = 150,
         payFrequency = FourWeekly
-      ))
+      )
+  )
 }

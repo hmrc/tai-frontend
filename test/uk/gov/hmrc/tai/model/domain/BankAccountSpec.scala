@@ -126,5 +126,6 @@ class BankAccountSpec extends PlaySpec {
     "sortCode"      -> sortCode,
     "bankName"      -> bankName,
     "grossInterest" -> 123.45,
-    "source"        -> source)
+    "source"        -> source
+  )
 }

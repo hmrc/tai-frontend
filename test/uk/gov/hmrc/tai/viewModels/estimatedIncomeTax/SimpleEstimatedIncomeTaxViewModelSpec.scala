@@ -61,7 +61,8 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         BandTypesConstants.TaxGraph,
         List(
           Band(BandTypesConstants.TaxFree, 24.04, 11500, 0, BandTypesConstants.ZeroBand),
-          Band("Band", 75.95, 36335, 7834, BandTypesConstants.NonZeroBand)),
+          Band("Band", 75.95, 36335, 7834, BandTypesConstants.NonZeroBand)
+        ),
         0,
         150000,
         47835,

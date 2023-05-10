@@ -33,7 +33,7 @@ object HoursWorkedForm {
     val hoursWorkedValidation = Constraint[Option[String]]("Your working hours") {
       case Some(EditIncomeIrregularPayConstants.RegularHours)   => Valid
       case Some(EditIncomeIrregularPayConstants.IrregularHours) => Valid
-      case _                                                    => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
+      case _ => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[HoursWorkedForm](

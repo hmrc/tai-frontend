@@ -29,5 +29,6 @@ class TaxAccountCalculatorImpl extends TaxAccountCalculator {
       component.componentType match {
         case _: AllowanceComponentType => total + component.amount
         case _                         => total - component.amount
-    })
+      }
+    )
 }

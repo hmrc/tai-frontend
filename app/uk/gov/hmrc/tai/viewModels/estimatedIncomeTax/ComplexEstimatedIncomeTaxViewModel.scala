@@ -40,7 +40,8 @@ object ComplexEstimatedIncomeTaxViewModel {
     codingComponents: Seq[CodingComponent],
     taxAccountSummary: TaxAccountSummary,
     taxCodeIncomes: Seq[TaxCodeIncome],
-    taxBands: List[TaxBand])(implicit messages: Messages): ComplexEstimatedIncomeTaxViewModel = {
+    taxBands: List[TaxBand]
+  )(implicit messages: Messages): ComplexEstimatedIncomeTaxViewModel = {
 
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
@@ -49,7 +50,8 @@ object ComplexEstimatedIncomeTaxViewModel {
       mergedTaxBands,
       taxAccountSummary.taxFreeAllowance,
       taxAccountSummary.totalEstimatedTax,
-      taxViewType = ComplexTaxView)
+      taxViewType = ComplexTaxView
+    )
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
 
     ComplexEstimatedIncomeTaxViewModel(

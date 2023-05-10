@@ -28,7 +28,8 @@ class PensionNumberViewModelSpec extends BaseSpec {
       "employment name and firstPayChoice is yes" in {
         val cacheMap = Map(
           AddPensionProviderConstants.NameKey                 -> "Aaa",
-          AddPensionProviderConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
+          AddPensionProviderConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
+        )
         val result = PensionNumberViewModel(cacheMap)
         result mustBe PensionNumberViewModel("Aaa", true)
 

@@ -34,7 +34,8 @@ class CodingComponentPairModelSpec extends BaseSpec {
         CodingComponentPair(GiftAidPayments, None, Some(previousAmount), Some(currentAmount), None)
       val actual = CodingComponentPairModel(
         codingComponentPair,
-        TaxFreeAmountDetails(employmentIdNameMap = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax))
+        TaxFreeAmountDetails(employmentIdNameMap = Map.empty, companyCarBenefits = Seq.empty, totalTax = totalTax)
+      )
 
       actual mustBe CodingComponentPairModel("Gift Aid Payments", previousAmount, currentAmount)
     }

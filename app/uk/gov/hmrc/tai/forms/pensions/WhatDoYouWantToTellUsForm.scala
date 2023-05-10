@@ -35,8 +35,11 @@ object WhatDoYouWantToTellUsForm {
             textExceedsCharacterLimit(
               Messages(
                 "tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
-                pensionDetailsCharacterLimit))
-          ))
+                pensionDetailsCharacterLimit
+              )
+            )
+          )
+    )
   )
 
   def nonEmptyText(requiredErrMsg: String)(implicit messages: Messages): Constraint[String] =

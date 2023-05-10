@@ -226,7 +226,7 @@ trait JsoupMatchers {
     }
   }
 
-  //document matchers
+  // document matchers
   def haveHeadingH2WithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h2")
   def haveHeadingH3WithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h3")
   def haveHeadingH4WithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h4")
@@ -238,7 +238,8 @@ trait JsoupMatchers {
 
   def havePreHeadingWithTextNewTemplate(
     expectedText: String,
-    expectedPreHeadingAnnouncement: String = "This section is") =
+    expectedPreHeadingAnnouncement: String = "This section is"
+  ) =
     new CssSelectorWithTextMatcher(s"$expectedPreHeadingAnnouncement $expectedText", "span")
 
   def havePreHeadingWithTextGds(expectedText: String, expectedPreHeadingAnnouncement: String = "This section is") =
@@ -334,7 +335,7 @@ trait JsoupMatchers {
   def haveReturnToSummaryButtonWithUrl(expectedURL: String) =
     new IdSelectorWithUrlMatcher(expectedURL, "returnToSummary")
 
-  //element matchers
+  // element matchers
   def haveText(expectedText: String) = new ElementWithTextMatcher(expectedText)
   def haveLinkURL(expectedUrl: String) = new ElementWithAttributeValueMatcher(expectedUrl, "href")
   def haveClass(expectedClass: String) = new ElementWithClassMatcher(expectedClass)

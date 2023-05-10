@@ -28,10 +28,11 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CompanyCarService @Inject()(carConnector: CompanyCarConnector) {
+class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {
 
-  def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(
-    implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
+  def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit
+    hc: HeaderCarrier
+  ): Future[Seq[CompanyCarBenefit]] =
     if (codingComponents.exists(_.componentType == CarBenefit))
       companyCars(nino)
     else

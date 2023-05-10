@@ -29,7 +29,8 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
     allowance: TaxComponentType,
     employmentId: Option[Int],
     allowanceAmount: BigDecimal,
-    inputAmount: Option[BigDecimal]): CodingComponent =
+    inputAmount: Option[BigDecimal]
+  ): CodingComponent =
     CodingComponent(allowance, employmentId, allowanceAmount, allowance.toString, inputAmount)
 
   "#fromCodingComponents" should {

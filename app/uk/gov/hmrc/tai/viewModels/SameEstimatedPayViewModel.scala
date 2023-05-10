@@ -24,20 +24,21 @@ case class SameEstimatedPayViewModel(
   employerId: Int,
   amount: Int,
   returnLinkLabel: String,
-  returnLinkUrl: String) {
+  returnLinkUrl: String
+) {
   def amountWithPounds: String = MonetaryUtil.withPoundPrefix(amount, 0)
 }
 
 object SameEstimatedPayViewModel {
-  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean, returnLinkUrl: String)(
-    implicit messages: Messages): SameEstimatedPayViewModel = {
+  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean, returnLinkUrl: String)(implicit
+    messages: Messages
+  ): SameEstimatedPayViewModel = {
 
-    val returnLinkLabel = {
+    val returnLinkLabel =
       if (isPension)
         messages("tai.updateEmployment.incomeSame.pension.return.link")
       else
         messages("tai.updateEmployment.incomeSame.employment.return.link")
-    }
 
     SameEstimatedPayViewModel(employerName, employerId, amount, returnLinkLabel, returnLinkUrl)
   }

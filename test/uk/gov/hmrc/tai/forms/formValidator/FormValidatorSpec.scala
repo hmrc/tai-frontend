@@ -34,7 +34,7 @@ class FormValidatorSpec extends PlaySpec {
 
       "a supplied validator returns true" in {
 
-        val validator = ((x: String) => { true }, "invalid")
+        val validator = ((x: String) => true, "invalid")
 
         val result = FormValidator.validate[String]("", Seq(validator), formErrorKey)
 
@@ -46,8 +46,8 @@ class FormValidatorSpec extends PlaySpec {
 
       "one validator returns true and another validator returns false" in {
 
-        val validator1 = ((x: String) => { true }, "invalid1")
-        val validator2 = ((x: String) => { false }, "invalid2")
+        val validator1 = ((x: String) => true, "invalid1")
+        val validator2 = ((x: String) => false, "invalid2")
 
         val result = FormValidator.validate[String]("", Seq(validator1, validator2), formErrorKey)
 

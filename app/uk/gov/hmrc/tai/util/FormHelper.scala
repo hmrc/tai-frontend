@@ -50,9 +50,9 @@ object FormHelper {
   }
 
   def convertCurrencyToInt(value: Option[String]): Int =
-    try {
+    try
       stripNumber(value).getOrElse("0").toInt
-    } catch {
+    catch {
       case e: Exception => 0
     }
 }

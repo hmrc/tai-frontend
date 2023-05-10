@@ -20,7 +20,7 @@ import javax.inject.Inject
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment}
 import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
 
-class PaymentsService @Inject()() {
+class PaymentsService @Inject() () {
   def filterDuplicates(employment: Employment): Seq[PaymentDetailsViewModel] = {
     val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
     val paymentsWithoutDuplicates = payments.filterNot(_.duplicate.getOrElse(false))

@@ -30,13 +30,16 @@ class taxBandTableSpec extends TaiViewSpec {
       doc(view) must haveTableThWithClassAndText("govuk-table__header taxBand", messages("tai.incomeTaxBand"))
       doc(view) must haveTableThWithClassAndText(
         "govuk-table__header govuk-table__header--numeric numeric taxAmount",
-        messages("tai.amount"))
+        messages("tai.amount")
+      )
       doc(view) must haveTableThWithClassAndText(
         "govuk-table__header govuk-table__header--numeric numeric taxRate",
-        messages("tai.taxRate"))
+        messages("tai.taxRate")
+      )
       doc(view) must haveTableThWithClassAndText(
         "govuk-table__header govuk-table__header--numeric numeric tax",
-        messages("tai.tax"))
+        messages("tai.tax")
+      )
     }
     "display the correct number of rows" in {
       doc(view).getElementsByTag("tr").size mustBe 5

@@ -96,7 +96,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException(""))
+        new NotFoundException("")
+      )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -105,7 +106,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException(""))
+        new NotFoundException("")
+      )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -115,7 +117,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new RuntimeException(""))
+        new RuntimeException("")
+      )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -152,7 +155,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       def setup(
         payment: Option[Payment] = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly)),
-        currentCache: Map[String, String] = Map.empty[String, String]): EstimatedPayPageHarness =
+        currentCache: Map[String, String] = Map.empty[String, String]
+      ): EstimatedPayPageHarness =
         new EstimatedPayPageHarness(payment, currentCache)
     }
     "display estimatedPay page" when {
@@ -166,7 +170,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak.replace("\u00A0", " ")))
+          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak.replace("\u00A0", " "))
+        )
       }
 
       "payYearToDate is None" in {
@@ -206,7 +211,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url)
+          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url
+        )
       }
     }
     "Redirect to /income-summary page" when {

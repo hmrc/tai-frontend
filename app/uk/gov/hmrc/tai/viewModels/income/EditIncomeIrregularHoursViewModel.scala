@@ -25,12 +25,14 @@ case class EditIncomeIrregularHoursViewModel(
   preHeading: String,
   employmentId: Int,
   employerName: String,
-  currentAmount: String)
+  currentAmount: String
+)
 
 object EditIncomeIrregularHoursViewModel extends ViewModelHelper {
 
-  def apply(employmentId: Int, employerName: String, currentAmount: String)(
-    implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
+  def apply(employmentId: Int, employerName: String, currentAmount: String)(implicit
+    messages: Messages
+  ): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 
@@ -40,8 +42,9 @@ object EditIncomeIrregularHoursViewModel extends ViewModelHelper {
     new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount)
   }
 
-  def apply(employmentId: Int, employerName: String, currentAmount: BigDecimal)(
-    implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
+  def apply(employmentId: Int, employerName: String, currentAmount: BigDecimal)(implicit
+    messages: Messages
+  ): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 

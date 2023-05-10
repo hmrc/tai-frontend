@@ -24,16 +24,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait UpdatedEstimatedPayJourneyCache {
 
-  def journeyCache(key: String = "defaultCacheUpdate", cacheMap: Map[String, String])(
-    implicit hc: HeaderCarrier,
+  def journeyCache(key: String = "defaultCacheUpdate", cacheMap: Map[String, String])(implicit
+    hc: HeaderCarrier,
     ec: ExecutionContext,
-    journeyCacheService: JourneyCacheService): Future[Map[String, String]] = {
+    journeyCacheService: JourneyCacheService
+  ): Future[Map[String, String]] = {
 
     def yesNoAnswerResponse(cacheToUpdate: Map[String, String], keysToEmpty: List[String]) =
       if (cacheMap(key) == "Yes") journeyCacheService.cache(cacheMap) else updateStaleCache(cacheToUpdate, keysToEmpty)
 
-    def updateStaleCache(cacheToUpdate: Map[String, String], keysToEmpty: List[String])(
-      implicit hc: HeaderCarrier): Future[Map[String, String]] =
+    def updateStaleCache(cacheToUpdate: Map[String, String], keysToEmpty: List[String])(implicit
+      hc: HeaderCarrier
+    ): Future[Map[String, String]] =
       for {
         current <- journeyCacheService.currentCache
         updatedCacheMap = current.filterKeys(key => !keysToEmpty.contains(key)) ++ cacheToUpdate

@@ -27,9 +27,10 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CodingComponentService @Inject()(
+class CodingComponentService @Inject() (
   taxAccountConnector: TaxAccountConnector,
-  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector) {
+  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector
+) {
 
   def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
     taxAccountConnector.codingComponents(nino, year).map(filterOutZeroAmountsComponents)
@@ -38,7 +39,8 @@ class CodingComponentService @Inject()(
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(
-    taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison =
+    taxFreeAmountComparison: TaxFreeAmountComparison
+  ): TaxFreeAmountComparison =
     TaxFreeAmountComparison(
       filterOutZeroAmountsComponents(taxFreeAmountComparison.previous),
       filterOutZeroAmountsComponents(taxFreeAmountComparison.current)

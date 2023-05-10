@@ -47,7 +47,8 @@ case class EditIncomeForm(
   isLive: Boolean = true,
   isOccupationalPension: Boolean = false,
   hasMultipleIncomes: Boolean = false,
-  payToDate: Option[String] = None) {
+  payToDate: Option[String] = None
+) {
 
   def toEmploymentAmount(): EmploymentAmount =
     new EmploymentAmount(
@@ -71,7 +72,8 @@ object EditIncomeForm {
   def create(
     preFillData: EmploymentAmount,
     hasMultipleIncomes: Boolean = false,
-    taxablePayYTD: BigDecimal = BigDecimal(0))(implicit messages: Messages): Form[EditIncomeForm] = {
+    taxablePayYTD: BigDecimal = BigDecimal(0)
+  )(implicit messages: Messages): Form[EditIncomeForm] = {
 
     val newAmount = if (preFillData.oldAmount != preFillData.newAmount) {
       Some(preFillData.newAmount.toString)
@@ -116,14 +118,16 @@ object EditIncomeForm {
     employerName: String,
     taxablePayYTD: BigDecimal = BigDecimal(0),
     payDate: Option[LocalDate] = None,
-    errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages): Form[EditIncomeForm] =
+    errMessage: Option[String] = None
+  )(implicit request: Request[_], messages: Messages): Form[EditIncomeForm] =
     createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
 
   private def createForm(
     employerName: String,
     taxablePayYTD: BigDecimal,
     payDate: Option[LocalDate] = None,
-    errMessage: Option[String] = None)(implicit messages: Messages): Form[EditIncomeForm] = {
+    errMessage: Option[String] = None
+  )(implicit messages: Messages): Form[EditIncomeForm] = {
 
     val monthAndYearName = payDate.map(date => DateHelper.getMonthAndYear(Dates.formatDate(date))).getOrElse("")
 
@@ -166,7 +170,8 @@ object EditIncomeForm {
     Boolean,
     Boolean,
     Boolean,
-    Option[String]) => EditIncomeForm = (
+    Option[String]
+  ) => EditIncomeForm = (
     name: String,
     description: String,
     employmentId: Int,
@@ -179,7 +184,8 @@ object EditIncomeForm {
     isLive: Boolean,
     isOccupationalPension: Boolean,
     hasMultipleIncomes: Boolean,
-    payToDate: Option[String]) =>
+    payToDate: Option[String]
+  ) =>
     EditIncomeForm(
       name,
       description,
@@ -194,6 +200,6 @@ object EditIncomeForm {
       isOccupationalPension,
       hasMultipleIncomes,
       payToDate
-  )
+    )
 
 }

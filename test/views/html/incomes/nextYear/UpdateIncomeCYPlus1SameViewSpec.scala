@@ -39,7 +39,8 @@ class UpdateIncomeCYPlus1SameViewSpec extends TaiViewSpec {
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages(
         "tai.updateIncome.CYPlus1.same.heading",
-        TaxYearRangeUtil.futureTaxYearRange(1).replaceAll("\u00A0", " "))
+        TaxYearRangeUtil.futureTaxYearRange(1).replaceAll("\u00A0", " ")
+      )
     )
 
     "contain the correct content when new estimated pay equals current estimated pay" in {
@@ -50,7 +51,9 @@ class UpdateIncomeCYPlus1SameViewSpec extends TaiViewSpec {
         messages(
           "tai.updateEmployment.incomeSame.description",
           employerName,
-          TaxYearRangeUtil.futureTaxYearRange(1).replaceAll("\u00A0", " ")))
+          TaxYearRangeUtil.futureTaxYearRange(1).replaceAll("\u00A0", " ")
+        )
+      )
     }
   }
 }

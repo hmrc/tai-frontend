@@ -27,12 +27,14 @@ import utils.{FileHelper, IntegrationSpec, MockTemplateRenderer}
 class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
   val mockTemplateRenderer = MockTemplateRenderer
-  override def fakeApplication() = GuiceApplicationBuilder().configure(
-    "auditing.enabled" -> "false",
-    "microservice.services.auth.port" -> server.port(),
-    "microservice.services.tai.port" -> server.port(),
-    "microservice.services.digital-engagement-platform-partials.port" -> server.port()
-  ).overrides(bind[TemplateRenderer].toInstance(mockTemplateRenderer))
+  override def fakeApplication() = GuiceApplicationBuilder()
+    .configure(
+      "auditing.enabled"                                                -> "false",
+      "microservice.services.auth.port"                                 -> server.port(),
+      "microservice.services.tai.port"                                  -> server.port(),
+      "microservice.services.digital-engagement-platform-partials.port" -> server.port()
+    )
+    .overrides(bind[TemplateRenderer].toInstance(mockTemplateRenderer))
     .build()
 
   "/check-income-tax/income-summary" must {
@@ -81,7 +83,6 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       result.map(status) mustBe Some(OK)
     }
 
-
     List(
       BAD_REQUEST,
       NOT_FOUND,
@@ -122,7 +123,8 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
         result.map(fResult =>
           whenReady(fResult.failed) { e =>
             e mustBe a[RuntimeException]
-          })
+          }
+        )
       }
     }
   }

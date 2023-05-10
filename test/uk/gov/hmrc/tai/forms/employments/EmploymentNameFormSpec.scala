@@ -41,7 +41,8 @@ class EmploymentNameFormSpec extends BaseSpec {
         val validatedFormNoDayError = form.bind(emptyName)
 
         validatedFormNoDayError.errors must contain(
-          FormError("employmentName", List("Enter the name of your employer")))
+          FormError("employmentName", List("Enter the name of your employer"))
+        )
       }
     }
   }

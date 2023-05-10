@@ -34,5 +34,6 @@ object UserBuilder {
       Some(utr),
       Some(providerType),
       ConfidenceLevel.L200,
-      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", nino.toString())))
+      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", nino.toString()))
+    )
 }

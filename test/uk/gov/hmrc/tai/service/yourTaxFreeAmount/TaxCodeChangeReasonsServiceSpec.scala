@@ -44,7 +44,11 @@ class TaxCodeChangeReasonsServiceSpec extends BaseSpec {
       when(employmentTaxCodeChangeReasons.reasons(any())(any())).thenReturn(employmentReasons)
 
       service
-        .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe employmentReasons ++ iabdReasons
+        .combineTaxCodeChangeReasons(
+          iabdTaxCodeChangeReasons,
+          iabdPairs,
+          taxCodeChange
+        ) mustBe employmentReasons ++ iabdReasons
     }
 
     "show only unique tax code change reasons" in {

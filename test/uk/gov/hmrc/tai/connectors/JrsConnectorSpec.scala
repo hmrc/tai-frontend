@@ -20,7 +20,7 @@ import com.codahale.metrics.Timer
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
 import com.kenshoo.play.metrics.Metrics
 import java.time.YearMonth
-import org.mockito.Mockito.{times, verify, when, reset => resetMock}
+import org.mockito.Mockito.{reset => resetMock, times, verify, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.inject.bind
@@ -62,10 +62,12 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(200).withBody(jrsClaimsJsonResponse.toString())
-            ))
+            )
+        )
 
         jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Some(
-          JrsClaims(jrsClaimsModelResponse))
+          JrsClaims(jrsClaimsModelResponse)
+        )
       }
     }
 
@@ -77,7 +79,8 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(204)
-            ))
+            )
+        )
 
         jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Some(JrsClaims(List.empty))
       }
@@ -91,7 +94,8 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(502)
-            ))
+            )
+        )
 
         jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
@@ -102,7 +106,8 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(400).withBody("bad request exception")
-            ))
+            )
+        )
 
         jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
@@ -113,7 +118,8 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(401).withBody("bad request exception")
-            ))
+            )
+        )
 
         jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }
@@ -124,7 +130,8 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
           get(jrsClaimsUrl)
             .willReturn(
               aResponse.withStatus(403).withBody("bad request exception")
-            ))
+            )
+        )
 
         jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
       }

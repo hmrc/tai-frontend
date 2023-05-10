@@ -48,7 +48,9 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
         messages(
           "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
           personalAllowanceCYPlusOneAmount,
-          startOfNextTaxYear))
+          startOfNextTaxYear
+        )
+      )
 
     }
 

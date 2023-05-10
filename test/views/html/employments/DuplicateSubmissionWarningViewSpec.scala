@@ -90,7 +90,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
       doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-        "govuk-error-message")
+        "govuk-error-message"
+      )
     }
   }
 

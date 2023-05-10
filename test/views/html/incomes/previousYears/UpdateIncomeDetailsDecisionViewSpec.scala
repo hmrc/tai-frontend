@@ -31,12 +31,18 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
 
   "decision" should {
 
-    behave like pageWithTitle(messages(
-      "tai.income.previousYears.decision.title",
-      TaxPeriodLabelService.taxPeriodLabel(taxYear.year)).replaceU00A0)
+    behave like pageWithTitle(
+      messages(
+        "tai.income.previousYears.decision.title",
+        TaxPeriodLabelService.taxPeriodLabel(taxYear.year)
+      ).replaceU00A0
+    )
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.income.previousYears.journey.preHeader"),
-      messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)).replaceU00A0,
+      messages(
+        "tai.income.previousYears.decision.header",
+        TaxPeriodLabelService.taxPeriodLabel(taxYear.year)
+      ).replaceU00A0,
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
     behave like pageWithBackLink
@@ -66,7 +72,8 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
       val errorView: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(formWithErrors, taxYear)
       doc(errorView) must haveClassWithText(
         messages("tai.error.message") + " " + messages("tai.income.previousYears.decision.error"),
-        "govuk-error-message")
+        "govuk-error-message"
+      )
     }
   }
 
@@ -80,7 +87,8 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
   private lazy val formWithErrors: Form[Option[String]] = UpdateIncomeDetailsDecisionForm.form.bind(
     Map(
       UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> ""
-    ))
+    )
+  )
 
   override def view: HtmlFormat.Appendable = UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear)
 }

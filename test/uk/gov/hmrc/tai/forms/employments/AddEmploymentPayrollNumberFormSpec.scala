@@ -30,7 +30,8 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(
-        AddEmploymentPayrollNumberForm(Some(FormValuesConstants.YesValue), Some("123456")))
+        AddEmploymentPayrollNumberForm(Some(FormValuesConstants.YesValue), Some("123456"))
+      )
     }
 
     "return no errors with valid 'no' choice and no payroll number" in {
@@ -62,7 +63,8 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
-        Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+        Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption")
+      )
       invalidatedForm.value mustBe None
     }
 
@@ -71,7 +73,8 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
-        Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption"))
+        Messages("tai.addEmployment.employmentPayrollNumber.error.selectOption")
+      )
       invalidatedForm.value mustBe None
     }
 
@@ -80,7 +83,8 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
       val invalidatedForm = form.bind(invalidYesChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
-        Messages("tai.addEmployment.employmentPayrollNumber.error.blank"))
+        Messages("tai.addEmployment.employmentPayrollNumber.error.blank")
+      )
       invalidatedForm.value mustBe None
     }
 

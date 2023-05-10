@@ -28,7 +28,8 @@ class whyThisIsAnEstimateDescSpec extends TaiViewSpec {
     doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
 
     doc(view) must haveParagraphWithText(
-      Html(messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body)
+      Html(messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))).body
+    )
 
   }
 

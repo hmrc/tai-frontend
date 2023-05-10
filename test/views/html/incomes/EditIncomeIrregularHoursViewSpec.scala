@@ -36,15 +36,18 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.irregular.heading"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.estimatedPay.preHeading", employerName),
-      messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak))
+      messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak)
+    )
     behave like pageWithContinueButtonFormNew(
-      s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId")
+      s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId"
+    )
 
     "have the correct content" in {
       val document = doc(view)
       document must haveHeadingH2WithText(messages("tai.irregular.introduction", employerName))
       document must haveParagraphWithText(
-        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRangeBreak))
+        messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRangeBreak)
+      )
       document must haveHeadingH2WithText(messages("tai.incomes.edit.what.should.you.include"))
       document must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }

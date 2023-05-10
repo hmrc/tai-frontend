@@ -23,16 +23,17 @@ case class AnnualAccount(
   taxYear: TaxYear,
   realTimeStatus: RealTimeStatus,
   payments: Seq[Payment],
-  endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]) {
+  endOfTaxYearUpdates: Seq[EndOfTaxYearUpdate]
+) {
 
   lazy val totalIncomeYearToDate: BigDecimal = maxPayment(payments.max.amountYearToDate)
 
   lazy val latestPayment: Option[Payment] = if (payments.isEmpty) None else Some(payments.max)
 
-  lazy val isIrregularPayment: Boolean = latestPayment.exists(latestPayment => {
+  lazy val isIrregularPayment: Boolean = latestPayment.exists { latestPayment =>
     latestPayment.payFrequency == Irregular || latestPayment.payFrequency == Annually ||
     latestPayment.payFrequency == BiAnnually
-  })
+  }
 
   private def maxPayment(maximumPayment: => BigDecimal): BigDecimal =
     if (payments.isEmpty) 0 else maximumPayment

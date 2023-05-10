@@ -27,7 +27,8 @@ case class TaxCodePairs(
   primaryPairs: List[TaxCodePair],
   secondaryPairs: List[TaxCodePair],
   unMatchedPreviousCodes: List[TaxCodePair],
-  unMatchedCurrentCodes: List[TaxCodePair]) {
+  unMatchedCurrentCodes: List[TaxCodePair]
+) {
 
   def combinedTaxCodePairs: List[TaxCodePair] =
     primaryPairs ++
@@ -55,7 +56,8 @@ object TaxCodePairs {
       def innerCreateAllPairs(
         previous: List[TaxCodeRecord],
         current: List[TaxCodeRecord],
-        acc: List[TaxCodePair] = List.empty): List[TaxCodePair] =
+        acc: List[TaxCodePair] = List.empty
+      ): List[TaxCodePair] =
         (previous, current) match {
           case (Nil, Nil) => acc
           case (Nil, head :: tail) =>
@@ -66,10 +68,8 @@ object TaxCodePairs {
             curr
               .find(isMatchingPair(_, pHead))
               .fold(innerCreateAllPairs(pTail, curr, acc ++ List(TaxCodePair(Some(pHead), None)))) { matching =>
-                {
-                  val rest = curr.filter(record => record != matching)
-                  innerCreateAllPairs(pTail, rest, acc ++ List(TaxCodePair(Some(pHead), Some(matching))))
-                }
+                val rest = curr.filter(record => record != matching)
+                innerCreateAllPairs(pTail, rest, acc ++ List(TaxCodePair(Some(pHead), Some(matching))))
               }
         }
 
@@ -77,16 +77,16 @@ object TaxCodePairs {
     }
 
   private def primaryPairs(pairs: List[TaxCodePair]): List[TaxCodePair] =
-    pairs.filter(taxCodeRecordPair => {
+    pairs.filter { taxCodeRecordPair =>
       taxCodeRecordPair.previous.isDefined && taxCodeRecordPair.current.isDefined && taxCodeRecordPair.current
         .exists(_.primary)
-    })
+    }
 
   private def secondaryPairs(pairs: List[TaxCodePair]): List[TaxCodePair] =
-    pairs.filter(taxCodeRecordPair => {
+    pairs.filter { taxCodeRecordPair =>
       taxCodeRecordPair.previous.isDefined && taxCodeRecordPair.current.isDefined && !taxCodeRecordPair.current
         .exists(_.primary)
-    })
+    }
 
   private def unMatchedCurrentCodes(pairs: List[TaxCodePair]): List[TaxCodePair] =
     pairs.filter(taxCodeRecordPair => taxCodeRecordPair.previous.isEmpty)

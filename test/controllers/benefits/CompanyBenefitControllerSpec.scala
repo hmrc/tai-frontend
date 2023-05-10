@@ -84,7 +84,8 @@ class CompanyBenefitControllerSpec
         val cache = Map(
           EndCompanyBenefitConstants.EmploymentIdKey -> "1",
           EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType,
-          EndCompanyBenefitConstants.RefererKey      -> referer)
+          EndCompanyBenefitConstants.RefererKey      -> referer
+        )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -99,11 +100,15 @@ class CompanyBenefitControllerSpec
 
         verify(employmentService, times(1)).employment(any(), any())(any())
         verify(journeyCacheService, times(1)).currentCache(any())
-        verify(journeyCacheService, times(1)).cache(eqTo(Map(
-          EndCompanyBenefitConstants.EmploymentNameKey -> empName,
-          EndCompanyBenefitConstants.BenefitNameKey    -> benefitType,
-          EndCompanyBenefitConstants.RefererKey        -> referer
-        )))(any())
+        verify(journeyCacheService, times(1)).cache(
+          eqTo(
+            Map(
+              EndCompanyBenefitConstants.EmploymentNameKey -> empName,
+              EndCompanyBenefitConstants.BenefitNameKey    -> benefitType,
+              EndCompanyBenefitConstants.RefererKey        -> referer
+            )
+          )
+        )(any())
       }
 
       "prepopulate the decision selection" in {
@@ -143,7 +148,8 @@ class CompanyBenefitControllerSpec
         val cache = Map(
           EndCompanyBenefitConstants.EmploymentIdKey -> "1",
           EndCompanyBenefitConstants.BenefitTypeKey  -> "type",
-          EndCompanyBenefitConstants.RefererKey      -> "referrer")
+          EndCompanyBenefitConstants.RefererKey      -> "referrer"
+        )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -177,7 +183,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -195,7 +202,8 @@ class CompanyBenefitControllerSpec
         ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision()(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -216,7 +224,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
 
         val redirectUrl = redirectLocation(result)
 
@@ -231,7 +240,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
@@ -246,7 +256,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString))
+            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -268,7 +279,8 @@ class CompanyBenefitControllerSpec
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> "")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -285,7 +297,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
 
         Await.result(result, 5.seconds)
 
@@ -299,7 +312,8 @@ class CompanyBenefitControllerSpec
         val benefitType = ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
 
         Await.result(result, 5.seconds)
         verify(journeyCacheService, times(1))

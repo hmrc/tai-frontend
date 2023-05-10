@@ -54,7 +54,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
           "Employer 1",
           false,
           Some("1234"),
-          true)
+          true
+        )
         val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
         val json = Json.obj(
@@ -126,7 +127,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         "Employer 1",
         false,
         Some("1234"),
-        true)
+        true
+      )
       val taxCodeRecord2 = TaxCodeRecord(
         "code2",
         startDate,
@@ -135,7 +137,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         "Employer 2",
         false,
         Some("1239"),
-        true)
+        true
+      )
 
       val json = Json.obj(
         "data" -> Json.arr(
@@ -205,7 +208,9 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
   "has tax code changed" must {
     "tax code change url" must {
       "fetch the url to connect to TAI to retrieve tax code change" in {
-        sut.hasTaxCodeChangedUrl(nino.nino) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
+        sut.hasTaxCodeChangedUrl(
+          nino.nino
+        ) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
       }
     }
   }
@@ -229,7 +234,9 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
   "taxCodeMismatchUrl" must {
     "tax code change url" must {
       "fetch the url to connect to TAI to retrieve tax code change" in {
-        sut.hasTaxCodeChangedUrl(nino.nino) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
+        sut.hasTaxCodeChangedUrl(
+          nino.nino
+        ) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
       }
     }
   }

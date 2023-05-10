@@ -36,7 +36,8 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
           stopDateLine,
           valueOfBenefitLine,
           contactByPhoneLine,
-          phoneNumberLine)
+          phoneNumberLine
+        )
       }
     }
 
@@ -48,7 +49,8 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
         model.journeyConfirmationLines mustBe Seq(
           whatYouToldUsLine,
           stopDateLine,
-          contactByPhoneLine.copy(answer = "No"))
+          contactByPhoneLine.copy(answer = "No")
+        )
       }
 
       "only 'phone number' is not present" in {
@@ -58,7 +60,8 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
           whatYouToldUsLine,
           stopDateLine,
           valueOfBenefitLine,
-          contactByPhoneLine.copy(answer = "No"))
+          contactByPhoneLine.copy(answer = "No")
+        )
       }
 
       "only 'benefit value' is not present" in {

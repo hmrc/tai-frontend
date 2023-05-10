@@ -30,19 +30,23 @@ class CheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q1"),
         "pension provider",
-        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+      )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q2"),
         "13 June 2017",
-        controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url
+      )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q3"),
         "ref-123",
-        controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url
+      )
       res(3) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q4"),
         "No",
-        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url)
+        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+      )
     }
 
     "generate five confirmation lines when telephone contact is approved" in {
@@ -52,23 +56,28 @@ class CheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q1"),
         "pension provider",
-        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+      )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q2"),
         "13 June 2017",
-        controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url
+      )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q3"),
         "ref-123",
-        controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url
+      )
       res(3) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q4"),
         "Yes",
-        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url)
+        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+      )
       res(4) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.phoneNumber"),
         "123456789",
-        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url)
+        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+      )
     }
 
     "generate a view model with the correct navigational links" in {

@@ -57,9 +57,9 @@ object YearAndMonth {
 
     override def reads(json: JsValue): JsResult[YearMonth] = json match {
       case JsString(s) =>
-        try {
+        try
           JsSuccess(YearMonth.parse(s))
-        } catch {
+        catch {
           case _: DateTimeParseException => JsError("Invalid date parsed")
         }
     }

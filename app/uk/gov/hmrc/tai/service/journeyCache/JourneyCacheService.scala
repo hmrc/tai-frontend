@@ -28,7 +28,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
+class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
     extends Logging {
 
   def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
@@ -58,27 +58,25 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
   def mandatoryJourneyValues(keys: String*)(implicit hc: HeaderCarrier): Future[Either[String, Seq[String]]] =
     for {
       cache <- currentCache
-    } yield {
-      mappedMandatory(cache, keys)
-    }
+    } yield mappedMandatory(cache, keys)
 
   def optionalValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] =
     currentCache.map(cache => mappedOptional(cache, keys).toList)
 
-  def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(
-    implicit hc: HeaderCarrier): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
+  def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(implicit
+    hc: HeaderCarrier
+  ): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
     for {
       cache <- currentCache
-    } yield {
-      mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
-        val optionalResult = mappedOptional(cache, optionalValues)
-        (mandatoryResult, optionalResult)
-      }
+    } yield mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
+      val optionalResult = mappedOptional(cache, optionalValues)
+      (mandatoryResult, optionalResult)
     }
 
   private def mappedMandatory(
     cache: Map[String, String],
-    mandatoryJourneyValues: Seq[String]): Either[String, Seq[String]] = {
+    mandatoryJourneyValues: Seq[String]
+  ): Either[String, Seq[String]] = {
 
     val allPresentValues = mandatoryJourneyValues flatMap { key =>
       cache.get(key) match {
@@ -107,8 +105,9 @@ class JourneyCacheService @Inject()(val journeyName: String, journeyCacheConnect
   def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] =
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
 
-  def mandatoryJourneyValueAs[T](key: String, convert: String => T)(
-    implicit hc: HeaderCarrier): Future[Either[String, T]] =
+  def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[String, T]] =
     journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
 
   def cache(key: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =

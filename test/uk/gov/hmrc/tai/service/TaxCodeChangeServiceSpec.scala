@@ -155,7 +155,8 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     "Employer 1",
     false,
     Some("1234"),
-    true)
+    true
+  )
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
   private def createTestService = new TestService

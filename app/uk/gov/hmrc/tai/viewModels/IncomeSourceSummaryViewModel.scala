@@ -41,8 +41,8 @@ case class IncomeSourceSummaryViewModel(
   rtiAvailable: Boolean,
   taxDistrctNumber: String,
   payeNumber: String,
-  isUpdateInProgress: Boolean = false)
-    extends ViewModelHelper {
+  isUpdateInProgress: Boolean = false
+) extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
   def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().end)
@@ -58,7 +58,8 @@ object IncomeSourceSummaryViewModel {
     estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
     applicationConfig: ApplicationConfig,
-    cacheUpdatedIncomeAmount: Option[Int])(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+    cacheUpdatedIncomeAmount: Option[Int]
+  )(implicit messages: Messages): IncomeSourceSummaryViewModel = {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment       <- latestAnnualAccount.latestPayment
@@ -96,12 +97,12 @@ object IncomeSourceSummaryViewModel {
     )
   }
 
-  private def companyBenefitViewModels(empId: Int, benefits: Benefits, applicationConfig: ApplicationConfig)(
-    implicit messages: Messages): Seq[CompanyBenefitViewModel] = {
-    val ccBenVMs = benefits.companyCarBenefits collect {
-      case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
-        val changeUrl = applicationConfig.cocarFrontendUrl
-        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
+  private def companyBenefitViewModels(empId: Int, benefits: Benefits, applicationConfig: ApplicationConfig)(implicit
+    messages: Messages
+  ): Seq[CompanyBenefitViewModel] = {
+    val ccBenVMs = benefits.companyCarBenefits collect { case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
+      val changeUrl = applicationConfig.cocarFrontendUrl
+      CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
 
     val otherBenVMs = benefits.otherBenefits collect {

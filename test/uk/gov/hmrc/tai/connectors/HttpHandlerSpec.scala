@@ -56,7 +56,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withBody(Json.toJson(responseBodyObject).toString())))
+          .willReturn(aResponse().withBody(Json.toJson(responseBodyObject).toString()))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl)
       val response = Await.result(responseFuture, 5 seconds)
@@ -69,7 +70,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found")))
+          .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found"))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
       responseFuture mustBe a[NotFoundException]
@@ -80,7 +82,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error")))
+          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
       responseFuture mustBe a[Upstream5xxResponse]
@@ -90,7 +93,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request")))
+          .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request"))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
       responseFuture mustBe a[BadRequestException]
@@ -101,7 +105,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withStatus(LOCKED).withBody("locked")))
+          .willReturn(aResponse().withStatus(LOCKED).withBody("locked"))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
       responseFuture mustBe a[Upstream4xxResponse]
@@ -111,7 +116,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withStatus(UNAUTHORIZED).withBody("unauthorized")))
+          .willReturn(aResponse().withStatus(UNAUTHORIZED).withBody("unauthorized"))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
       responseFuture mustBe a[UnauthorizedException]
@@ -121,7 +127,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         get(anyUrl())
-          .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response")))
+          .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response"))
+      )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
       responseFuture mustBe a[Upstream4xxResponse]
@@ -135,7 +142,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         put(anyUrl())
-          .willReturn(aResponse().withStatus(OK)))
+          .willReturn(aResponse().withStatus(OK))
+      )
 
       val result = Await.result(httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())), 5.seconds)
 
@@ -147,7 +155,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         put(anyUrl())
-          .willReturn(aResponse().withStatus(NOT_FOUND)))
+          .willReturn(aResponse().withStatus(NOT_FOUND))
+      )
 
       val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
       result mustBe a[NotFoundException]
@@ -158,7 +167,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         put(anyUrl())
-          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server exception")))
+          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server exception"))
+      )
 
       val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
       result mustBe a[Upstream5xxResponse]
@@ -169,7 +179,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         put(anyUrl())
-          .willReturn(aResponse().withStatus(BAD_REQUEST)))
+          .willReturn(aResponse().withStatus(BAD_REQUEST))
+      )
 
       val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
       result mustBe a[BadRequestException]
@@ -180,7 +191,8 @@ class HttpHandlerSpec
 
       server.stubFor(
         put(anyUrl())
-          .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response")))
+          .willReturn(aResponse().withStatus(IM_A_TEAPOT).withBody("unknown response"))
+      )
 
       val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
       result mustBe a[Upstream4xxResponse]
@@ -199,7 +211,8 @@ class HttpHandlerSpec
 
         server.stubFor(
           post(anyUrl())
-            .willReturn(aResponse().withStatus(httpStatus).withBody(userInput)))
+            .willReturn(aResponse().withStatus(httpStatus).withBody(userInput))
+        )
 
         val response = Await.result(httpHandler.postToApi[String](testUrl, userInput), 5 seconds)
 
@@ -217,7 +230,8 @@ class HttpHandlerSpec
 
         server.stubFor(
           post(anyUrl())
-            .willReturn(aResponse().withStatus(httpStatus).withBody("error response")))
+            .willReturn(aResponse().withStatus(httpStatus).withBody("error response"))
+        )
 
         val responseFuture = httpHandler.postToApi(testUrl, userInput).failed.futureValue
         responseFuture mustBe a[Upstream5xxResponse]
@@ -228,7 +242,8 @@ class HttpHandlerSpec
     "should return a BAD_REQUEST response code when BAD_REQUEST response" in {
       server.stubFor(
         post(anyUrl())
-          .willReturn(aResponse().withStatus(BAD_REQUEST)))
+          .willReturn(aResponse().withStatus(BAD_REQUEST))
+      )
       val result = the[BadRequestException] thrownBy Await
         .result(httpHandler.postToApi[String](testUrl, userInput), 5 seconds)
 
@@ -238,7 +253,8 @@ class HttpHandlerSpec
     "should return a NOT_FOUND response code when NOT_FOUND response" in {
       server.stubFor(
         post(anyUrl())
-          .willReturn(aResponse().withStatus(NOT_FOUND)))
+          .willReturn(aResponse().withStatus(NOT_FOUND))
+      )
 
       val result = the[NotFoundException] thrownBy Await
         .result(httpHandler.postToApi[String](testUrl, userInput), 5 seconds)
@@ -261,7 +277,8 @@ class HttpHandlerSpec
 
         server.stubFor(
           delete(anyUrl())
-            .willReturn(aResponse().withStatus(httpStatus)))
+            .willReturn(aResponse().withStatus(httpStatus))
+        )
         val result = Await.result(httpHandler.deleteFromApi(testUrl), 5 seconds)
         result.status mustBe httpStatus
 
@@ -277,7 +294,8 @@ class HttpHandlerSpec
 
         server.stubFor(
           delete(anyUrl())
-            .willReturn(aResponse().withStatus(httpStatus).withBody("error response")))
+            .willReturn(aResponse().withStatus(httpStatus).withBody("error response"))
+        )
 
         val responseFuture = httpHandler.deleteFromApi(testUrl).failed.futureValue
         responseFuture mustBe a[Upstream5xxResponse]
@@ -288,7 +306,8 @@ class HttpHandlerSpec
     "return BadRequestException for BAD_REQUEST response" in {
       server.stubFor(
         delete(anyUrl())
-          .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request")))
+          .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request"))
+      )
       val responseFuture = httpHandler.deleteFromApi(testUrl)
       val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
       ex.message must include("bad request")
@@ -297,7 +316,8 @@ class HttpHandlerSpec
     "return NotFoundException for NOT_FOUND response" in {
       server.stubFor(
         delete(anyUrl())
-          .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found")))
+          .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found"))
+      )
       val responseFuture = httpHandler.deleteFromApi(testUrl)
       val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
       ex.message must include("not found")

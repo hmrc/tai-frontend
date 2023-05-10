@@ -89,13 +89,16 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false)
+          false
+        )
 
         sut(employments = List(sampleEmployment)).endOfTaxYearUpdateMessages mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.single.nationalInsurance",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "10.0 less"))
+            "10.0 less"
+          )
+        )
       }
     }
   }
@@ -221,7 +224,9 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           Messages(
             "tai.income.calculation.eyu.single.taxPaid",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "100.0 more"))
+            "100.0 more"
+          )
+        )
       }
 
       "have only NationalInsuranceAdjustment message" in {
@@ -232,7 +237,9 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           Messages(
             "tai.income.calculation.eyu.single.nationalInsurance",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "100.0 more"))
+            "100.0 more"
+          )
+        )
       }
 
       "have only IncomeAdjustment message" in {
@@ -243,7 +250,9 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           Messages(
             "tai.income.calculation.eyu.single.taxableincome",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "100.0 less"))
+            "100.0 less"
+          )
+        )
       }
 
       "there are multiple valid EndOfYearTaxUpdate object with multiple received dates" in {
@@ -264,11 +273,13 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           Messages(
             "tai.income.calculation.eyu.multi.nationalInsurance",
             date1.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "10.0 less"),
+            "10.0 less"
+          ),
           Messages(
             "tai.income.calculation.eyu.multi.taxPaid",
             date2.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "100.0 more")
+            "100.0 more"
+          )
         )
       }
 
@@ -284,11 +295,13 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           Messages(
             "tai.income.calculation.eyu.multi.nationalInsurance",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "10.0 less"),
+            "10.0 less"
+          ),
           Messages(
             "tai.income.calculation.eyu.multi.taxableincome",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
-            "100.0 more")
+            "100.0 more"
+          )
         )
       }
     }
@@ -325,7 +338,8 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       1,
       None,
       false,
-      false)
+      false
+    )
   val sampleEmployment2 = Employment(
     "emp2",
     Live,
@@ -338,7 +352,8 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
     2,
     None,
     false,
-    false)
+    false
+  )
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
   def sut(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: TaxYear = previousYear) =

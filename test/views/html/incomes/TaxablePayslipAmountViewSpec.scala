@@ -41,10 +41,12 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", Monthly))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.taxablePayslip.title.month", Monthly))
+      messages("tai.taxablePayslip.title.month", Monthly)
+    )
 
     behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url)
+      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url
+    )
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.employer.id))
     behave like pageWithButtonFormNew("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
   }
@@ -60,7 +62,8 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec {
       val viewModelError = createViewModel(formWithErrors)
       val errorView = template(viewModelError)
       doc(errorView) must haveErrorLinkWithTextNew(
-        messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"))
+        messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
+      )
     }
 
   }

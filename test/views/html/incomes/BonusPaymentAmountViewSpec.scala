@@ -39,12 +39,14 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
       messages("tai.bonusPaymentsAmount.preHeading", employer.name),
       messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited).replaceAll(
         "\u00A0",
-        " ") + " " + "This section is " + messages("tai.bonusPaymentsAmount.preHeading", employer.name)
+        " "
+      ) + " " + "This section is " + messages("tai.bonusPaymentsAmount.preHeading", employer.name)
     )
 
     behave like pageWithTitle(
       messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
-        .replaceAll("\u00A0", " "))
+        .replaceAll("\u00A0", " ")
+    )
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount/" + employer.id)
 
     "contain a paragraph with static text" in {
@@ -71,7 +73,8 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
         val emptySelectionErrorMessage =
           messages(
             "tai.bonusPaymentsAmount.error.form.mandatory",
-            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " "))
+            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
+          )
         val invalidRequest = Json.obj("amount" -> "")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
@@ -79,7 +82,8 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
         doc(errorView) must haveErrorLinkWithTextNew(emptySelectionErrorMessage)
         doc(errorView) must haveClassWithText(
           messages("tai.error.message") + " " + messages(emptySelectionErrorMessage),
-          "govuk-error-message")
+          "govuk-error-message"
+        )
       }
 
       "the user enters an invalid monetary amount" in {
@@ -91,7 +95,8 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
         doc(errorView) must haveErrorLinkWithTextNew(invalidAmountErrorMessage)
         doc(errorView) must haveClassWithText(
           messages("tai.error.message") + " " + messages(invalidAmountErrorMessage),
-          "govuk-error-message")
+          "govuk-error-message"
+        )
       }
     }
   }

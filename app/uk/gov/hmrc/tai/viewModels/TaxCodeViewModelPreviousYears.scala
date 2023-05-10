@@ -29,7 +29,8 @@ case class TaxCodeViewModelPreviousYears(
   ledeMessage: String,
   taxCodeDetails: Seq[DescriptionListViewModel],
   preHeader: String,
-  maybeUserName: Option[String])
+  maybeUserName: Option[String]
+)
 
 object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescriptor {
 
@@ -38,7 +39,8 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
     scottishTaxRateBands: Map[String, BigDecimal],
     year: TaxYear = TaxYear(),
     appConfig: ApplicationConfig,
-    maybeUserName: Option[String])(implicit messages: Messages): TaxCodeViewModelPreviousYears = {
+    maybeUserName: Option[String]
+  )(implicit messages: Messages): TaxCodeViewModelPreviousYears = {
 
     val preHeader = messages(s"tai.taxCode.prev.preHeader")
 
@@ -73,7 +75,8 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
   private def recordToDescriptionListViewModel(
     record: TaxCodeRecord,
     scottishTaxRateBands: Map[String, BigDecimal],
-    appConfig: ApplicationConfig)(implicit messages: Messages): DescriptionListViewModel = {
+    appConfig: ApplicationConfig
+  )(implicit messages: Messages): DescriptionListViewModel = {
     val taxCode = record.taxCode
     val explanation =
       describeTaxCode(taxCode, record.basisOfOperation, scottishTaxRateBands, isCurrentYear = false, appConfig)

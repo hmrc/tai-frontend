@@ -26,9 +26,9 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext)
-    extends Logging {
+class JourneyCacheConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -39,16 +39,18 @@ class JourneyCacheConnector @Inject()(httpHandler: HttpHandler, servicesConfig: 
       case e: HttpException if e.responseCode == NO_CONTENT => Map.empty[String, String]
     }
 
-  def currentValueAs[T](journeyName: String, key: String, convert: String => T)(
-    implicit hc: HeaderCarrier): Future[Option[T]] = {
+  def currentValueAs[T](journeyName: String, key: String, convert: String => T)(implicit
+    hc: HeaderCarrier
+  ): Future[Option[T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
     httpHandler.getFromApiV2(url).map(value => Some(convert(value.as[String]))) recover {
       case e: HttpException if e.responseCode == NO_CONTENT => None
     }
   }
 
-  def mandatoryJourneyValueAs[T](journeyName: String, key: String, convert: String => T)(
-    implicit hc: HeaderCarrier): Future[Either[String, T]] = {
+  def mandatoryJourneyValueAs[T](journeyName: String, key: String, convert: String => T)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[String, T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
 
     httpHandler.getFromApiV2(url).map(value => Right(convert(value.as[String]))) recover {

@@ -27,7 +27,8 @@ case class Activity(
   eventTime: LocalDateTime,
   eventType: String,
   eventDescriptionId: String,
-  principalTaxIds: TaxIds)
+  principalTaxIds: TaxIds
+)
 
 object Activity {
   implicit val taxIdsFormat: Format[TaxIds] = TaxIds.format(TaxIds.defaultSerialisableIds: _*)

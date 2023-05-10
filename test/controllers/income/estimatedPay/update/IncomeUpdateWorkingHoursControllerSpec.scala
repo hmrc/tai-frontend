@@ -128,11 +128,13 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val result = HandleWorkingHoursHarness
           .setup()
           .handleWorkingHours(
-            RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> EditIncomeIrregularPayConstants.RegularHours))
+            RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> EditIncomeIrregularPayConstants.RegularHours)
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url
+        )
       }
     }
 

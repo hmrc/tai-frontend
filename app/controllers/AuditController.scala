@@ -24,22 +24,20 @@ import uk.gov.hmrc.tai.service.AuditService
 
 import scala.concurrent.ExecutionContext
 
-class AuditController @Inject()(
+class AuditController @Inject() (
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  mcc: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def auditLinksToIForm(iformName: String): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      {
+      val taiUser = request.taiUser
 
-        val taiUser = request.taiUser
-
-        auditService.sendAuditEventAndGetRedirectUri(taiUser.nino, iformName) map { redirectUri =>
-          Redirect(redirectUri)
-        }
+      auditService.sendAuditEventAndGetRedirectUri(taiUser.nino, iformName) map { redirectUri =>
+        Redirect(redirectUri)
       }
   }
 }

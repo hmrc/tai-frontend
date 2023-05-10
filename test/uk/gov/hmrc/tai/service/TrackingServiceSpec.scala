@@ -47,24 +47,22 @@ class TrackingServiceSpec extends BaseSpec {
         }
       }
 
-      Seq("TES1", "TES7") foreach {
-        case tes =>
-          s"$tes should take three weeks to process" in {
-            when(trackingConnector.getUserTracking(any())(any()))
-              .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
-            val result = sut.isAnyIFormInProgress(nino.nino)
-            Await.result(result, 5 seconds) mustBe ThreeWeeks
-          }
+      Seq("TES1", "TES7") foreach { case tes =>
+        s"$tes should take three weeks to process" in {
+          when(trackingConnector.getUserTracking(any())(any()))
+            .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
+          val result = sut.isAnyIFormInProgress(nino.nino)
+          Await.result(result, 5 seconds) mustBe ThreeWeeks
+        }
       }
 
-      Seq("TES2", "TES3", "TES4", "TES5", "TES6") foreach {
-        case tes =>
-          s"$tes should take seven days to process" in {
-            when(trackingConnector.getUserTracking(any())(any()))
-              .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
-            val result = sut.isAnyIFormInProgress(nino.nino)
-            Await.result(result, 5 seconds) mustBe FifteenDays
-          }
+      Seq("TES2", "TES3", "TES4", "TES5", "TES6") foreach { case tes =>
+        s"$tes should take seven days to process" in {
+          when(trackingConnector.getUserTracking(any())(any()))
+            .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
+          val result = sut.isAnyIFormInProgress(nino.nino)
+          Await.result(result, 5 seconds) mustBe FifteenDays
+        }
       }
 
       "there is one iForm done and one IForm is in progress" in {
@@ -81,30 +79,28 @@ class TrackingServiceSpec extends BaseSpec {
         Map(TrackSuccessfulJourneyConstants.AddEmploymentKey      -> "true"),
         Map(TrackSuccessfulJourneyConstants.UpdatePensionKey      -> "true"),
         Map(TrackSuccessfulJourneyConstants.AddPensionProviderKey -> "true")
-      ) foreach {
-        case entry =>
-          s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
-            val controller = sut
-            when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-            when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
+      ) foreach { case entry =>
+        s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
+          val controller = sut
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+          when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
 
-            val result = controller.isAnyIFormInProgress(nino.nino)
-            Await.result(result, 5 seconds) mustBe FifteenDays
-          }
+          val result = controller.isAnyIFormInProgress(nino.nino)
+          Await.result(result, 5 seconds) mustBe FifteenDays
+        }
       }
 
       Seq(
         Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")
-      ) foreach {
-        case entry =>
-          s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
-            val controller = sut
-            when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-            when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
+      ) foreach { case entry =>
+        s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
+          val controller = sut
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+          when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
 
-            val result = controller.isAnyIFormInProgress(nino.nino)
-            Await.result(result, 5 seconds) mustBe ThreeWeeks
-          }
+          val result = controller.isAnyIFormInProgress(nino.nino)
+          Await.result(result, 5 seconds) mustBe ThreeWeeks
+        }
       }
 
       "tracking service returns an empty tracked form but user has completed a journey" in {
@@ -167,7 +163,8 @@ class TrackingServiceSpec extends BaseSpec {
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
         when(successfulJourneyCacheService.currentCache(any()))
           .thenReturn(
-            Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> true.toString)))
+            Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> true.toString))
+          )
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess

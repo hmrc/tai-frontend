@@ -89,7 +89,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       "total is equal" in {
         val model = incomeCalculationViewModel(
           payments = Seq(firstPayment),
-          paymentDetails = Seq(PaymentDetailsViewModel(firstPayment)))
+          paymentDetails = Seq(PaymentDetailsViewModel(firstPayment))
+        )
 
         model.messageWhenTotalNotEqual mustBe None
       }
@@ -160,7 +161,9 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.rti.emp.same",
               Dates.formatDate(TaxYear().start),
               "",
-              MoneyPounds(100, 0).quantity))
+              MoneyPounds(100, 0).quantity
+            )
+          )
       }
     }
   }
@@ -180,7 +183,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           Some(100),
           false,
-          false)
+          false
+        )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(Ceased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension", Dates.formatDate(TaxYear().end)))
       }
@@ -198,7 +202,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(Ceased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
@@ -227,7 +232,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(Live, employment, "pension") mustBe None
       }
     }
@@ -248,7 +254,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(Ceased, employment, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
       }
@@ -277,7 +284,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(Live, employment, 1000) mustBe None
       }
     }
@@ -298,7 +306,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Monthly), 1000, None) mustBe
           Some(messagesApi("tai.income.calculation.rti.continuous.weekly.emp", MoneyPounds(1000, 2).quantity, ""))
@@ -317,7 +326,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Annually), 1000, None) mustBe
           Some(messagesApi("tai.income.calculation.rti.continuous.annually.emp", MoneyPounds(1000, 2).quantity))
@@ -336,7 +346,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(OneOff), 1000, None) mustBe
           Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity))
@@ -355,7 +366,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Irregular), 1000, None) mustBe None
       }
@@ -375,7 +387,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Monthly), 1000, None) mustBe
           Some(
@@ -383,7 +396,9 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.rti.midYear.weekly",
               Dates.formatDate(employment.startDate),
               "",
-              MoneyPounds(1000, 2).quantity))
+              MoneyPounds(1000, 2).quantity
+            )
+          )
       }
 
       "payment frequency is Annually" in {
@@ -399,7 +414,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Annually), 1000, None) mustBe
           Some(
@@ -407,7 +423,9 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.rti.midYear.weekly",
               Dates.formatDate(employment.startDate),
               "",
-              MoneyPounds(1000, 2).quantity))
+              MoneyPounds(1000, 2).quantity
+            )
+          )
       }
 
       "payment frequency is OneOff" in {
@@ -423,7 +441,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(OneOff), 1000, None) mustBe
           Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity))
@@ -442,7 +461,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Irregular), 1000, None) mustBe None
       }
@@ -462,7 +482,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", None, 1000, None) mustBe None
       }
     }
@@ -539,7 +560,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.manual.update.phone",
               Dates.formatDate(taxCodeIncome.updateActionDate.get),
               Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
-            ))
+            )
+          )
       }
 
       "updateNotificationDate is not available" in {
@@ -554,7 +576,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(ManualTelephone),
           None,
-          Some(LocalDate.now))
+          Some(LocalDate.now)
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
@@ -589,7 +612,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(ManualTelephone),
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
@@ -616,7 +640,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.manual.update.letter",
               Dates.formatDate(taxCodeIncome.updateActionDate.get),
               Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
-            ))
+            )
+          )
       }
 
       "updateNotificationDate is not available" in {
@@ -631,7 +656,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Letter),
           None,
-          Some(LocalDate.now))
+          Some(LocalDate.now)
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
@@ -666,7 +692,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Letter),
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
@@ -693,7 +720,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.manual.update.email",
               Dates.formatDate(taxCodeIncome.updateActionDate.get),
               Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
-            ))
+            )
+          )
       }
 
       "updateNotificationDate is not available" in {
@@ -708,7 +736,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Email),
           None,
-          Some(LocalDate.now))
+          Some(LocalDate.now)
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
@@ -743,7 +772,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Email),
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
@@ -765,7 +795,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Some(LocalDate.now)
         )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe Some(
-          messagesApi("tai.income.calculation.agent"))
+          messagesApi("tai.income.calculation.agent")
+        )
       }
     }
 
@@ -790,7 +821,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.manual.update.informationLetter",
               Dates.formatDate(taxCodeIncome.updateActionDate.get),
               Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
-            ))
+            )
+          )
       }
 
       "updateNotificationDate is not available" in {
@@ -805,7 +837,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(OtherForm),
           None,
-          Some(LocalDate.now))
+          Some(LocalDate.now)
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
@@ -840,7 +873,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(OtherForm),
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
@@ -867,7 +901,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.manual.update.informationLetter",
               Dates.formatDate(taxCodeIncome.updateActionDate.get),
               Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
-            ))
+            )
+          )
       }
 
       "updateNotificationDate is not available" in {
@@ -918,7 +953,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(InformationLetter),
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
@@ -937,12 +973,15 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Internet),
           Some(LocalDate.now),
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(
             messagesApi(
               "tai.income.calculation.manual.update.internet",
-              Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
+              Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
+            )
+          )
       }
 
       "updateNotificationDate is not available" in {
@@ -957,7 +996,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           Some(Internet),
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.internet.withoutDate"))
       }
@@ -976,7 +1016,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           None,
           None,
-          None)
+          None
+        )
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe None
       }
     }
@@ -1035,7 +1076,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1047,12 +1089,13 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           None,
           None,
-          None)
+          None
+        )
         YourIncomeCalculationViewModel
-          .incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe (
-          (
-            Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1111, 0).quantity))))
+          .incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe ((
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
+          Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1111, 0).quantity))
+        ))
       }
 
       "getCeasedMsg returns first message" in {
@@ -1068,7 +1111,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           Some(100),
           false,
-          false)
+          false
+        )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1080,14 +1124,17 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Live,
           None,
           None,
-          None)
+          None
+        )
 
         YourIncomeCalculationViewModel
           .incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe
           (Some(
             messagesApi(
               "tai.income.calculation.rti.ceased.pension",
-              employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
+              employment.endDate.map(Dates.formatDate).getOrElse("")
+            )
+          ), None)
       }
 
       "getManualUpdateMsg returns both messages" in {
@@ -1103,7 +1150,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1125,7 +1173,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.manual.update.phone",
               Dates.formatDate(taxCodeIncome.updateActionDate.get),
               Dates.formatDate(taxCodeIncome.updateNotificationDate.get)
-            )),
+            )
+          ),
           Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
       }
 
@@ -1153,7 +1202,9 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
               "tai.income.calculation.rti.emp.same",
               Dates.formatDate(TaxYear().start),
               "",
-              MoneyPounds(1111, 0).quantity)), None)
+              MoneyPounds(1111, 0).quantity
+            )
+          ), None)
       }
 
       "getPayFreqMsg returns both messages" in {
@@ -1169,7 +1220,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1203,7 +1255,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1238,7 +1291,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1276,7 +1330,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     employmentType: TaxCodeIncomeComponentType = EmploymentIncome,
     hasTaxCodeIncome: Boolean = true,
     cessationPay: Option[BigDecimal] = None,
-    paymentDetails: Seq[PaymentDetailsViewModel] = paymentDetails) = {
+    paymentDetails: Seq[PaymentDetailsViewModel] = paymentDetails
+  ) = {
     val annualAccount = AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
 
     val employment = Employment(
@@ -1303,7 +1358,9 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "150L",
           "test employment",
           Week1Month1BasisOfOperation,
-          employmentStatus))
+          employmentStatus
+        )
+      )
     } else {
       None
     }

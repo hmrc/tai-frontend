@@ -62,7 +62,8 @@ class JrsClaimsControllerSpec extends BaseSpec {
     List(
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
-    ))
+    )
+  )
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 

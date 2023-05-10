@@ -29,7 +29,8 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
     "return no errors with valid 'yes' choice and text field content" in {
       val validYesChoice = Json.obj(
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-        FormValuesConstants.YesNoTextEntry -> "123456789")
+        FormValuesConstants.YesNoTextEntry -> "123456789"
+      )
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -40,7 +41,8 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       "phone number is less than 8 digits" in {
         val invalidPhoneNumberChoice = Json.obj(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-          FormValuesConstants.YesNoTextEntry -> "123456")
+          FormValuesConstants.YesNoTextEntry -> "123456"
+        )
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -50,7 +52,8 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       "phone number contains special characters" in {
         val invalidPhoneNumberChoice = Json.obj(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-          FormValuesConstants.YesNoTextEntry -> "@£-12344556")
+          FormValuesConstants.YesNoTextEntry -> "@£-12344556"
+        )
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -60,7 +63,8 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       "phone number is less than contains alphabets" in {
         val invalidPhoneNumberChoice = Json.obj(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-          FormValuesConstants.YesNoTextEntry -> "abc-abc-abc")
+          FormValuesConstants.YesNoTextEntry -> "abc-abc-abc"
+        )
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -70,7 +74,8 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       "phone number is less than contains alphanumeric" in {
         val invalidPhoneNumberChoice = Json.obj(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-          FormValuesConstants.YesNoTextEntry -> "123-abc-456")
+          FormValuesConstants.YesNoTextEntry -> "123-abc-456"
+        )
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -81,7 +86,8 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
         val invalidPhoneNumberChoice =
           Json.obj(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "123456123456123456123456123456123456")
+            FormValuesConstants.YesNoTextEntry -> "123456123456123456123456123456123456"
+          )
         val invalidatedForm = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -94,5 +100,6 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
   private val form = YesNoTextEntryForm.form(
     Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
     Messages("tai.canWeContactByPhone.telephone.empty"),
-    Some(telephoneNumberSizeConstraint))
+    Some(telephoneNumberSizeConstraint)
+  )
 }

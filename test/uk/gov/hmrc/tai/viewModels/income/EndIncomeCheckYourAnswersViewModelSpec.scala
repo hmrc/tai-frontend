@@ -37,7 +37,8 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         "2017-06-13",
         "No",
         None,
-        "/fake/backlink/url")
+        "/fake/backlink/url"
+      )
       val res = sut.journeyConfirmationLines
 
       when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
@@ -47,11 +48,13 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url)
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+      )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "No",
-        controllers.employments.routes.EndEmploymentController.submitTelephoneNumber.url)
+        controllers.employments.routes.EndEmploymentController.submitTelephoneNumber.url
+      )
     }
 
     "generate three confirmation lines when telephone contact is approved" in {
@@ -62,7 +65,8 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         "2017-06-13",
         "Yes",
         Some("123456789"),
-        "/fake/backlink/url")
+        "/fake/backlink/url"
+      )
       val res = sut.journeyConfirmationLines
 
       when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
@@ -72,15 +76,18 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url)
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+      )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "Yes",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+      )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.phoneNumber"),
         "123456789",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+      )
     }
   }
   private val employerName = "Employer Name"
