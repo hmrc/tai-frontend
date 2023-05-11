@@ -41,7 +41,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class UpdateIncomeNextYearController @Inject()(
+class UpdateIncomeNextYearController @Inject() (
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
   val auditConnector: AuditConnector,
   authenticate: AuthAction,
@@ -55,7 +55,8 @@ class UpdateIncomeNextYearController @Inject()(
   updateIncomeCYPlus1Edit: UpdateIncomeCYPlus1EditView,
   updateIncomeCYPlus1Same: UpdateIncomeCYPlus1SameView,
   sameEstimatedPay: SameEstimatedPayView,
-  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with I18nSupport with Logging {
 
   def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -86,7 +87,8 @@ class UpdateIncomeNextYearController @Inject()(
   private def duplicateWarningGet(
     employmentId: Int,
     nino: Nino,
-    resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result)(implicit hc: HeaderCarrier, messages: Messages) =
+    resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result
+  )(implicit hc: HeaderCarrier, messages: Messages) =
     updateNextYearsIncomeService.getNewAmount(employmentId).flatMap {
       case Right(newAmount) =>
         updateNextYearsIncomeService.get(employmentId, nino) map { model =>
@@ -110,22 +112,20 @@ class UpdateIncomeNextYearController @Inject()(
         val nino = user.nino
 
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-          formWithErrors => {
+          formWithErrors =>
             duplicateWarningGet(
               employmentId,
               nino,
               (employmentId: Int, vm: DuplicateSubmissionEstimatedPay) =>
                 BadRequest(updateIncomeCYPlus1Warning(formWithErrors, vm, employmentId))
-            )
-          },
-          success => {
+            ),
+          success =>
             success.yesNoChoice match {
               case Some(FormValuesConstants.YesValue) =>
                 Future.successful(Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url))
               case Some(FormValuesConstants.NoValue) =>
                 Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
             }
-          }
         )
       }
   }
@@ -148,15 +148,15 @@ class UpdateIncomeNextYearController @Inject()(
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        {
-          Ok(
-            updateIncomeCYPlus1Edit(
-              model.employmentName,
-              employmentId,
-              model.isPension,
-              model.currentValue,
-              AmountComparatorForm.createForm()))
-        }
+        Ok(
+          updateIncomeCYPlus1Edit(
+            model.employmentName,
+            employmentId,
+            model.isPension,
+            model.currentValue,
+            AmountComparatorForm.createForm()
+          )
+        )
       }
     }
   }
@@ -191,17 +191,17 @@ class UpdateIncomeNextYearController @Inject()(
         case Right(newAmount) =>
           updateNextYearsIncomeService
             .get(employmentId, user.nino)
-            .map {
-              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) =>
-                val vm =
-                  ConfirmAmountEnteredViewModel(
-                    employmentId,
-                    employmentName,
-                    currentValue,
-                    newAmount,
-                    NextYearPay,
-                    "javascript:history.go(-1)") //TODO this is temporary
-                Ok(updateIncomeCYPlus1Confirm(vm))
+            .map { case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) =>
+              val vm =
+                ConfirmAmountEnteredViewModel(
+                  employmentId,
+                  employmentName,
+                  currentValue,
+                  newAmount,
+                  NextYearPay,
+                  "javascript:history.go(-1)"
+                ) // TODO this is temporary
+              Ok(updateIncomeCYPlus1Confirm(vm))
             }
         case Left(error) =>
           logger.warn("Could not obtain new amount in confirm: " + error)
@@ -218,12 +218,13 @@ class UpdateIncomeNextYearController @Inject()(
         updateNextYearsIncomeService
           .submit(employmentId, user.nino)
           .map(_ => Redirect(routes.UpdateIncomeNextYearController.success(employmentId)))
-          .recover {
-            case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+          .recover { case NonFatal(e) =>
+            errorPagesHandler.internalServerError(e.getMessage)
           }
       } else {
         Future.successful(
-          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
+        )
       }
 
     }
@@ -239,7 +240,7 @@ class UpdateIncomeNextYearController @Inject()(
           .createForm()
           .bindFromRequest()
           .fold(
-            formWithErrors => {
+            formWithErrors =>
               Future.successful(
                 BadRequest(
                   updateIncomeCYPlus1Edit(
@@ -247,33 +248,34 @@ class UpdateIncomeNextYearController @Inject()(
                     employmentId,
                     model.isPension,
                     model.currentValue,
-                    formWithErrors)))
-            },
-            validForm => {
-              validForm.income.fold(throw new RuntimeException) {
-                newIncome =>
-                  if (model.currentValue.toString == newIncome)
-                    Future.successful(
-                      Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
-                  else {
-                    updateNextYearsIncomeService.getNewAmount(employmentId) flatMap {
-                      case Right(newAmount) if newAmount == newIncome.toInt =>
-                        val samePayViewModel = SameEstimatedPayViewModel(
-                          model.employmentName,
-                          model.employmentId,
-                          newAmount,
-                          model.isPension,
-                          controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+                    formWithErrors
+                  )
+                )
+              ),
+            validForm =>
+              validForm.income.fold(throw new RuntimeException) { newIncome =>
+                if (model.currentValue.toString == newIncome)
+                  Future
+                    .successful(Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
+                else {
+                  updateNextYearsIncomeService.getNewAmount(employmentId) flatMap {
+                    case Right(newAmount) if newAmount == newIncome.toInt =>
+                      val samePayViewModel = SameEstimatedPayViewModel(
+                        model.employmentName,
+                        model.employmentId,
+                        newAmount,
+                        model.isPension,
+                        controllers.routes.IncomeTaxComparisonController.onPageLoad.url
+                      )
 
-                        Future.successful(Ok(sameEstimatedPay(samePayViewModel)))
-                      case _ =>
-                        updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
-                          Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
-                        }
-                    }
+                      Future.successful(Ok(sameEstimatedPay(samePayViewModel)))
+                    case _ =>
+                      updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
+                        Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                      }
                   }
+                }
               }
-            }
           )
       }
     }
@@ -284,6 +286,7 @@ class UpdateIncomeNextYearController @Inject()(
       action
     } else {
       Future.successful(
-        NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+        NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
+      )
     }
 }

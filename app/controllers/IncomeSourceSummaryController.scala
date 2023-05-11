@@ -41,7 +41,7 @@ import views.html.IncomeSourceSummaryView
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
-class IncomeSourceSummaryController @Inject()(
+class IncomeSourceSummaryController @Inject() (
   val auditConnector: AuditConnector,
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
@@ -53,7 +53,8 @@ class IncomeSourceSummaryController @Inject()(
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
-  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -67,13 +68,15 @@ class IncomeSourceSummaryController @Inject()(
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
       estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
-      cacheUpdatedIncomeAmountFuture).mapN {
+      cacheUpdatedIncomeAmountFuture
+    ).mapN {
       case (
-          Right(taxCodeIncomes),
-          Some(employment),
-          benefitsDetails,
-          estimatedPayCompletion,
-          cacheUpdatedIncomeAmount) =>
+            Right(taxCodeIncomes),
+            Some(employment),
+            benefitsDetails,
+            estimatedPayCompletion,
+            cacheUpdatedIncomeAmount
+          ) =>
         val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
@@ -94,8 +97,8 @@ class IncomeSourceSummaryController @Inject()(
 
         Ok(incomeSourceSummary(incomeDetailsViewModel))
       case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
-    } recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
+    } recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
     }
   }
 }

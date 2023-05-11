@@ -26,12 +26,12 @@ import views.html.ErrorTemplateNoauth
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
-class UnauthorisedController @Inject()(
+class UnauthorisedController @Inject() (
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   errorTemplateNoAuth: ErrorTemplateNoauth,
-  implicit val ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+  implicit val ec: ExecutionContext
+) extends TaiBaseController(mcc) {
 
   def upliftUrl: String = applicationConfig.sa16UpliftUrl
   def failureUrl: String = applicationConfig.pertaxServiceUpliftFailedUrl
@@ -53,15 +53,18 @@ class UnauthorisedController @Inject()(
           Origin          -> Seq("TAI"),
           ConfidenceLevel -> Seq("200"),
           CompletionUrl   -> Seq(completionUrl),
-          FailureUrl      -> Seq(failureUrl))
+          FailureUrl      -> Seq(failureUrl)
+        )
       )
     )
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
     val postSignInUpliftUrl =
-      s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(applicationConfig.postSignInRedirectUrl
-        .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url))}"
+      s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(
+          applicationConfig.postSignInRedirectUrl
+            .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+        )}"
 
     lazy val ggSignIn =
       s"${applicationConfig.basGatewayFrontendSignInUrl}?continue_url=$postSignInUpliftUrl&accountType=individual"

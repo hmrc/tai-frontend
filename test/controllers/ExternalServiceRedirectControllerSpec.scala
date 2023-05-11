@@ -18,7 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.mockito.ArgumentMatchers.{eq => mockEq, any}
+import org.mockito.ArgumentMatchers.{any, eq => mockEq}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}

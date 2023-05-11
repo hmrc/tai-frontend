@@ -28,12 +28,13 @@ import views.html.PreviousYearUnderpaymentView
 
 import scala.concurrent.ExecutionContext
 
-class UnderpaymentFromPreviousYearController @Inject()(
+class UnderpaymentFromPreviousYearController @Inject() (
   codingComponentService: CodingComponentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  previousYearUnderpayment: PreviousYearUnderpaymentView)(implicit ec: ExecutionContext)
+  previousYearUnderpayment: PreviousYearUnderpaymentView
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
   def underpaymentExplanation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

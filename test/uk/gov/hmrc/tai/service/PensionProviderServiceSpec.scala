@@ -60,7 +60,8 @@ class PensionProviderServiceSpec extends BaseSpec {
       val model = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789"))
+        telephoneNumber = Some("123456789")
+      )
       when(pensionProviderConnector.incorrectPensionProvider(eq(nino), eq(1), eq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
@@ -75,7 +76,8 @@ class PensionProviderServiceSpec extends BaseSpec {
         val model = IncorrectPensionProvider(
           whatYouToldUs = "TEST",
           telephoneContactAllowed = "Yes",
-          telephoneNumber = Some("123456789"))
+          telephoneNumber = Some("123456789")
+        )
         when(pensionProviderConnector.incorrectPensionProvider(eq(nino), eq(1), eq(model))(any()))
           .thenReturn(Future.successful(None))
 

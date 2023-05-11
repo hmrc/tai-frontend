@@ -33,12 +33,13 @@ import views.html.incomes.PayPeriodView
 
 import scala.concurrent.ExecutionContext
 
-class IncomeUpdatePayPeriodController @Inject()(
+class IncomeUpdatePayPeriodController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   payPeriodView: PayPeriodView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService)(implicit ec: ExecutionContext)
+  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -47,7 +48,8 @@ class IncomeUpdatePayPeriodController @Inject()(
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
-        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)).mapN {
+        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)
+    ).mapN {
       case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
@@ -65,8 +67,7 @@ class IncomeUpdatePayPeriodController @Inject()(
       .createForm(None, payPeriod)
       .bindFromRequest()
       .fold(
-        formWithErrors => {
-
+        formWithErrors =>
           for {
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield {
@@ -78,14 +79,14 @@ class IncomeUpdatePayPeriodController @Inject()(
                 BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
               case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
             }
-          }
-        },
+          },
         formData => {
           val cacheMap = formData.otherInDays match {
             case Some(days) =>
               Map(
                 UpdateIncomeConstants.PayPeriodKey   -> formData.payPeriod.getOrElse(""),
-                UpdateIncomeConstants.OtherInDaysKey -> days.toString)
+                UpdateIncomeConstants.OtherInDaysKey -> days.toString
+              )
             case _ => Map(UpdateIncomeConstants.PayPeriodKey -> formData.payPeriod.getOrElse(""))
           }
 
