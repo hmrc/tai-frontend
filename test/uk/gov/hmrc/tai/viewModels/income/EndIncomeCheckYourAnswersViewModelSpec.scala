@@ -41,7 +41,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.any())(any()))
         .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
 
       res.size mustBe 2
@@ -69,7 +69,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.any())(any()))
         .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
 
       res.size mustBe 3

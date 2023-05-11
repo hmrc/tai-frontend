@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.http.HttpResponse
 import utils.BaseSpec
@@ -42,7 +41,7 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
     "call the proper url to invalidate the cache" in {
       Await.result(sut.invalidateCache(), 5.seconds)
-      verify(httpHandler, times(1)).deleteFromApi(eq("localhost/tai/session-cache"))(any(), any())
+      verify(httpHandler, times(1)).deleteFromApi(meq("localhost/tai/session-cache"))(any(), any(), any())
     }
   }
 
@@ -51,7 +50,7 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
   def sut: SessionConnector = new SessionConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "localhost"
 
-    when(httpHandler.deleteFromApi(any())(any(), any()))
+    when(httpHandler.deleteFromApi(any())(any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse(200)))
   }
 

@@ -20,10 +20,8 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
@@ -44,10 +42,12 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
       val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
         .thenReturn(Future.successful(codingComponents))
-      when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
-      when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
+      when(companyCarService.companyCarOnCodingComponents(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Nil))
+      when(employmentService.employmentNames(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Map.empty[Int, String]))
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
       val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -65,7 +65,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
     "display error page" when {
       "display any error" in {
         val SUT = createSUT()
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
           .thenReturn(Future.failed(new InternalError("error occurred")))
 
         val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -77,10 +77,11 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       "there is no tax account information returned" in {
         val SUT = createSUT()
 
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
           .thenReturn(Future.successful(codingComponents))
-        when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
-        when(employmentService.employmentNames(any(), any())(any()))
+        when(companyCarService.companyCarOnCodingComponents(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Nil))
+        when(employmentService.employmentNames(any(), any())(any(), any()))
           .thenReturn(Future.successful(Map.empty[Int, String]))
         when(taxAccountService.totalTax(any(), any())(any()))
           .thenReturn(Future.failed(new NotFoundException("no tax account information found")))

@@ -20,6 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 
 import java.time.LocalDate
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
 import play.api.libs.json.{Format, Json}
@@ -31,7 +32,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
+class HttpHandlerSpec
+    extends BaseSpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
+    with Injecting {
 
   lazy val httpHandler = inject[HttpHandler]
 

@@ -230,7 +230,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
 
     when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any(), any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
   override def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false, address)
