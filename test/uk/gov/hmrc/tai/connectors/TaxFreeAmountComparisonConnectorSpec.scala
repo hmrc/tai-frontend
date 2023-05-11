@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.BadRequestException
@@ -69,7 +69,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
         val taxFreeAmountUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
 
-        when(httpHandler.getFromApiV2(Matchers.eq(taxFreeAmountUrl))(any())).thenReturn(Future.successful(json))
+        when(httpHandler.getFromApiV2(eq(taxFreeAmountUrl))(any())).thenReturn(Future.successful(json))
 
         val codingComponents = Seq(CodingComponent(CarBenefit, Some(1), 1, "Car Benefit", Some(1)))
 

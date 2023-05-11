@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService

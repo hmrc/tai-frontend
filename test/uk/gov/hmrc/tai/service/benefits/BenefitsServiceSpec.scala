@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, EndedCompanyBenefit, GenericBenefit}
@@ -44,11 +44,8 @@ class BenefitsServiceSpec extends BaseSpec {
       val sut = createSut
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
-      when(
-        benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(
-          any()
-        )
-      ).thenReturn(Future.successful(Some("123-456-789")))
+      when(benefitsConnector.endedCompanyBenefit(eq(nino), eq(1), eq(endedCompanyBenefit))(any()))
+        .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
 
@@ -60,11 +57,8 @@ class BenefitsServiceSpec extends BaseSpec {
         val sut = createSut
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
-        when(
-          benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(
-            any()
-          )
-        ).thenReturn(Future.successful(None))
+        when(benefitsConnector.endedCompanyBenefit(eq(nino), eq(1), eq(endedCompanyBenefit))(any()))
+          .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await
           .result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)

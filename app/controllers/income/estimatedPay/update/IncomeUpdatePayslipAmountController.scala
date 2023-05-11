@@ -22,7 +22,6 @@ import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import cats.implicits._
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipDeductionsForm, PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -34,16 +33,14 @@ import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePays
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IncomeUpdatePayslipAmountController @Inject() (
+class IncomeUpdatePayslipAmountController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   payslipAmount: PayslipAmountView,
   taxablePayslipAmount: TaxablePayslipAmountView,
   payslipDeductionsView: PayslipDeductionsView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer
-)(implicit ec: ExecutionContext)
+  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   def payslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -53,8 +50,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     val optionalKeys = Seq(
       UpdateIncomeConstants.PayPeriodKey,
       UpdateIncomeConstants.OtherInDaysKey,
-      UpdateIncomeConstants.TotalSalaryKey
-    )
+      UpdateIncomeConstants.TotalSalaryKey)
 
     journeyCacheService.collectedJourneyValues(mandatoryKeys, optionalKeys).map {
       case Right((mandatorySeq, optionalSeq)) =>
@@ -85,31 +81,29 @@ class IncomeUpdatePayslipAmountController @Inject() (
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
-        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)
-    ).mapN { case (incomeSourceEither, payPeriod :: payPeriodInDays :: _) =>
-      val errorMessage = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
-      PayslipForm
-        .createForm(errorMessage)
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            incomeSourceEither match {
-              case Right(incomeSource) =>
-                val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                Future.successful(BadRequest(payslipAmount(viewModel)))
-              case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
-            },
-          {
-            case PayslipForm(Some(value)) =>
-              journeyCache(
-                UpdateIncomeConstants.TotalSalaryKey,
-                Map(UpdateIncomeConstants.TotalSalaryKey -> value)
-              ) map { _ =>
-                Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage)
+        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)).mapN {
+      case (incomeSourceEither, payPeriod :: payPeriodInDays :: _) =>
+        val errorMessage = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
+        PayslipForm
+          .createForm(errorMessage)
+          .bindFromRequest()
+          .fold(
+            formWithErrors => {
+              incomeSourceEither match {
+                case Right(incomeSource) =>
+                  val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
+                  Future.successful(BadRequest(payslipAmount(viewModel)))
+                case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
               }
-            case _ => Future.successful(Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage))
-          }
-        )
+            }, {
+              case PayslipForm(Some(value)) =>
+                journeyCache(UpdateIncomeConstants.TotalSalaryKey, Map(UpdateIncomeConstants.TotalSalaryKey -> value)) map {
+                  _ =>
+                    Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage)
+                }
+              case _ => Future.successful(Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage))
+            }
+          )
     }.flatten
 
   }
@@ -147,34 +141,34 @@ class IncomeUpdatePayslipAmountController @Inject() (
         .optionalValues(
           UpdateIncomeConstants.PayPeriodKey,
           UpdateIncomeConstants.OtherInDaysKey,
-          UpdateIncomeConstants.TotalSalaryKey
-        )
-    ).mapN { case (incomeSourceEither, payPeriod :: payPeriodInDays :: totalSalary :: _) =>
-      TaxablePayslipForm
-        .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            incomeSourceEither match {
-              case Right(incomeSource) =>
-                val viewModel =
-                  TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
-                Future.successful(BadRequest(taxablePayslipAmount(viewModel)))
-              case Left(_) =>
-                Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
+          UpdateIncomeConstants.TotalSalaryKey)).mapN {
+      case (incomeSourceEither, payPeriod :: payPeriodInDays :: totalSalary :: _) =>
+        TaxablePayslipForm
+          .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)
+          .bindFromRequest()
+          .fold(
+            formWithErrors => {
+              incomeSourceEither match {
+                case Right(incomeSource) =>
+                  val viewModel =
+                    TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
+                  Future.successful(BadRequest(taxablePayslipAmount(viewModel)))
+                case Left(_) =>
+                  Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
+              }
             },
-          formData =>
-            formData.taxablePay match {
-              case Some(taxablePay) =>
-                journeyCache(
-                  UpdateIncomeConstants.TaxablePayKey,
-                  Map(UpdateIncomeConstants.TaxablePayKey -> taxablePay)
-                ) map { _ =>
-                  Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage)
-                }
-              case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage))
+            formData => {
+              formData.taxablePay match {
+                case Some(taxablePay) =>
+                  journeyCache(
+                    UpdateIncomeConstants.TaxablePayKey,
+                    Map(UpdateIncomeConstants.TaxablePayKey -> taxablePay)) map { _ =>
+                    Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage)
+                  }
+                case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage))
+              }
             }
-        )
+          )
     }.flatten
   }
 
@@ -183,8 +177,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
 
     (
       IncomeSource.create(journeyCacheService),
-      journeyCacheService.currentValue(UpdateIncomeConstants.PayslipDeductionsKey)
-    )
+      journeyCacheService.currentValue(UpdateIncomeConstants.PayslipDeductionsKey))
       .mapN {
         case (Right(incomeSource), payslipDeductions) =>
           val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
@@ -203,29 +196,29 @@ class IncomeUpdatePayslipAmountController @Inject() (
         formWithErrors =>
           for {
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
-          } yield incomeSourceEither match {
-            case Right(incomeSource) => BadRequest(payslipDeductionsView(formWithErrors, incomeSource))
-            case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-          },
+          } yield {
+            incomeSourceEither match {
+              case Right(incomeSource) => BadRequest(payslipDeductionsView(formWithErrors, incomeSource))
+              case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+            }
+        },
         formData =>
           formData.payslipDeductions match {
             case Some(payslipDeductions) if payslipDeductions == "Yes" =>
               journeyCache(
                 UpdateIncomeConstants.PayslipDeductionsKey,
-                Map(UpdateIncomeConstants.PayslipDeductionsKey -> payslipDeductions)
-              ) map { _ =>
+                Map(UpdateIncomeConstants.PayslipDeductionsKey -> payslipDeductions)) map { _ =>
                 Redirect(routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage)
               }
             case Some(payslipDeductions) =>
               journeyCache(
                 UpdateIncomeConstants.PayslipDeductionsKey,
-                Map(UpdateIncomeConstants.PayslipDeductionsKey -> payslipDeductions)
-              ) map { _ =>
+                Map(UpdateIncomeConstants.PayslipDeductionsKey -> payslipDeductions)) map { _ =>
                 Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage)
               }
 
             case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage))
-          }
+        }
       )
   }
 

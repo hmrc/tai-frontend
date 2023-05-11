@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -95,8 +95,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[NoCYIncomeTaxErrorView],
-        templateRenderer
+        inject[NoCYIncomeTaxErrorView]
       ) {
 
     val sampleEmployment = Seq(

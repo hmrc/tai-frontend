@@ -24,7 +24,6 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -44,7 +43,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class IncomeUpdateCalculatorController @Inject() (
+class IncomeUpdateCalculatorController @Inject()(
   incomeService: IncomeService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
@@ -56,9 +55,7 @@ class IncomeUpdateCalculatorController @Inject() (
   checkYourAnswers: CheckYourAnswersView,
   confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
   val logger: Logger = Logger(this.getClass)
@@ -68,18 +65,18 @@ class IncomeUpdateCalculatorController @Inject() (
       estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString),
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id))
     ).mapN {
-      case (true, _) =>
-        Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
-      case _ =>
-        Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
-    }.recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError(e.getMessage)
-    }
+        case (true, _) =>
+          Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
+        case _ =>
+          Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
+      }
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
-  private def cacheEmploymentDetails(
-    id: Int
-  )(maybeEmployment: Option[Employment])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
+  private def cacheEmploymentDetails(id: Int)(maybeEmployment: Option[Employment])(
+    implicit hc: HeaderCarrier): Future[Map[String, String]] =
     maybeEmployment match {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
@@ -87,9 +84,7 @@ class IncomeUpdateCalculatorController @Inject() (
           cacheMap = Map(
             UpdateIncomeConstants.NameKey       -> employment.name,
             UpdateIncomeConstants.IdKey         -> id.toString,
-            UpdateIncomeConstants.IncomeTypeKey -> incomeType
-          )
-        )
+            UpdateIncomeConstants.IncomeTypeKey -> incomeType))
       case _ =>
         Future.failed(new RuntimeException("Not able to find employment"))
     }
@@ -124,8 +119,7 @@ class IncomeUpdateCalculatorController @Inject() (
         .mandatoryJourneyValues(
           UpdateIncomeConstants.NameKey,
           s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
-          UpdateIncomeConstants.IncomeTypeKey
-        )
+          UpdateIncomeConstants.IncomeTypeKey)
         .getOrFail
         .map { mandatoryJourneyValues =>
           val incomeName :: newAmount :: incomeType :: _ = mandatoryJourneyValues.toList
@@ -140,13 +134,14 @@ class IncomeUpdateCalculatorController @Inject() (
 
               BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId))
             },
-            success =>
+            success => {
               success.yesNoChoice match {
                 case Some(FormValuesConstants.YesValue) =>
                   Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId))
                 case Some(FormValuesConstants.NoValue) =>
                   Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
               }
+            }
           )
         }
   }
@@ -168,8 +163,7 @@ class IncomeUpdateCalculatorController @Inject() (
           Seq(
             UpdateIncomeConstants.TaxablePayKey,
             UpdateIncomeConstants.BonusOvertimeAmountKey,
-            UpdateIncomeConstants.OtherInDaysKey
-          )
+            UpdateIncomeConstants.OtherInDaysKey)
         )
 
       collectedValues.map {
@@ -218,15 +212,14 @@ class IncomeUpdateCalculatorController @Inject() (
 
     (for {
       mandatoryValues <- EitherT(
-                           journeyCacheService
-                             .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IdKey)
-                         )
+                          journeyCacheService
+                            .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IdKey))
       employmentName :: idStr :: _ = mandatoryValues.toList
       id = idStr.toInt
       income    <- EitherT.right[String](incomeService.employmentAmount(nino, id))
       netAmount <- EitherT.right[String](netAmountFuture)
     } yield {
-      val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
+      val convertedNetAmount = netAmount.map(BigDecimal(_).intValue).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
       if (employmentAmount.newAmount == income.oldAmount) {
@@ -235,8 +228,8 @@ class IncomeUpdateCalculatorController @Inject() (
         Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
       }
     }).getOrElse(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url))
-      .recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage)
+      .recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
 
   }

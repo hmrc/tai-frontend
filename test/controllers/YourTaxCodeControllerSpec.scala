@@ -19,7 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
@@ -50,7 +50,6 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     appConfig,
     inject[TaxCodeDetailsView],
     inject[TaxCodeDetailsPreviousYearsView],
-    templateRenderer,
     inject[ErrorPagesHandler]
   )
 

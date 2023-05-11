@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.tai.service
 
-import mocks.MockTemplateRenderer
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.{Matchers, Mockito}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
@@ -55,13 +54,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources Live PensionsIncome fails" in {
       val sut = createSUT
 
-      when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-          any[HeaderCarrier]
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new BadRequestException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new BadRequestException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -71,13 +67,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources Live EmploymentIncome fails" in {
       val sut = createSUT
 
-      when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
-          any[HeaderCarrier]
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(Live))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new BadRequestException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new BadRequestException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -88,12 +81,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-          any[HeaderCarrier]
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new BadRequestException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new BadRequestException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -104,12 +95,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-          any[HeaderCarrier]
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new BadRequestException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new BadRequestException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -119,13 +108,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources (PensionIncome) returned failed payload" in {
       val sut = createSUT
 
-      when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-          any[HeaderCarrier]
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new RuntimeException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new RuntimeException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -135,13 +121,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources (EmploymentIncome) returned failed payload" in {
       val sut = createSUT
 
-      when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
-          any[HeaderCarrier]
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(Live))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new RuntimeException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new RuntimeException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -152,12 +135,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-          any[HeaderCarrier]
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new RuntimeException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new RuntimeException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -179,13 +160,10 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if ceasedEmployments returned failed payload" in {
       val sut = createSUT
 
-      when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-          any[HeaderCarrier]
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+        .thenReturn(
+          Future.failed(new RuntimeException("Failed to fetch income details"))
         )
-      ).thenReturn(
-        Future.failed(new RuntimeException("Failed to fetch income details"))
-      )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -219,7 +197,6 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
         trackingService = trackingService,
         employmentService = employmentService,
         taxAccountService = taxAccountService,
-        templateRenderer = MockTemplateRenderer,
         mcc = mcc
       ) {
 
@@ -227,29 +204,21 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       Future.successful(Seq(employment))
     )
 
-    when(
-      taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(PensionIncome), Matchers.eq(Live))(
-        any[HeaderCarrier]
+    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+      .thenReturn(
+        Future.successful(Seq.empty[TaxedIncome])
       )
-    ).thenReturn(
-      Future.successful(Seq.empty[TaxedIncome])
-    )
+
+    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(Live))(any[HeaderCarrier]))
+      .thenReturn(
+        Future.successful(Seq.empty[TaxedIncome])
+      )
 
     when(
-      taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(Live))(
-        any[HeaderCarrier]
+      taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+      .thenReturn(
+        Future.successful(Seq.empty[TaxedIncome])
       )
-    ).thenReturn(
-      Future.successful(Seq.empty[TaxedIncome])
-    )
-
-    when(
-      taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq(EmploymentIncome), Matchers.eq(NotLive))(
-        any[HeaderCarrier]
-      )
-    ).thenReturn(
-      Future.successful(Seq.empty[TaxedIncome])
-    )
 
     when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
       Future.successful(nonTaxCodeIncome)

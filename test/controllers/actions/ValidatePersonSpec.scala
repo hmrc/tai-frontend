@@ -33,11 +33,10 @@
 package controllers.actions
 
 import controllers.{FakeAuthAction, routes}
-import org.mockito.Matchers._
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import play.api.mvc.AbstractController
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import utils.BaseSpec
 
@@ -60,12 +59,9 @@ class ValidatePersonSpec extends BaseSpec {
     "the person is deceased" must {
       "redirect the user to a deceased page " in {
 
-        when(personService.personDetails(any())(any()))
-          .thenReturn(
-            Future.successful(
-              Person(nino, "firstName", "Surname", personDeceased, manualCorrespondenceInd = false, address)
-            )
-          )
+        when(personService.personDetails(any())(any(), any()))
+          .thenReturn(Future.successful(
+            Person(nino, "firstName", "Surname", personDeceased, manualCorrespondenceInd = false, address)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -81,12 +77,9 @@ class ValidatePersonSpec extends BaseSpec {
     "the person is alive" must {
       "not redirect the user to a deceased page " in {
 
-        when(personService.personDetails(any())(any()))
-          .thenReturn(
-            Future.successful(
-              Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = false, address)
-            )
-          )
+        when(personService.personDetails(any())(any(), any()))
+          .thenReturn(Future.successful(
+            Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = false, address)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 
@@ -98,12 +91,9 @@ class ValidatePersonSpec extends BaseSpec {
       }
 
       "redirect to an mci error page if user's manualCorrespondenceInd is true " in {
-        when(personService.personDetails(any())(any()))
-          .thenReturn(
-            Future.successful(
-              Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = true, address)
-            )
-          )
+        when(personService.personDetails(any())(any(), any()))
+          .thenReturn(Future.successful(
+            Person(nino, "firstName", "Surname", personAlive, manualCorrespondenceInd = true, address)))
 
         val validatePerson = new ValidatePersonImpl(personService)
 

@@ -22,10 +22,7 @@ import play.api.Logging
 
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -36,7 +33,7 @@ import views.html.TaxFreeAmountView
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
-class TaxFreeAmountController @Inject() (
+class TaxFreeAmountController @Inject()(
   codingComponentService: CodingComponentService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
@@ -46,9 +43,7 @@ class TaxFreeAmountController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   taxFreeAmount: TaxFreeAmountView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

@@ -19,7 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
@@ -59,15 +59,13 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
             nonTaxCodeIncome,
             IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchedEmployments
-          )
-        )
+          ))
       )
 
       when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(
         Future.successful(
           Map.empty[String, BigDecimal]
-        )
-      )
+        ))
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(Nil)))
 
@@ -94,25 +92,21 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
             nonTaxCodeIncome,
             IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
             nonMatchedEmployments
-          )
-        )
+          ))
       )
 
       when(
         auditService.createAndSendAuditEvent(
-          Matchers.eq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
-          Matchers.eq(Map("nino" -> nino.nino))
-        )(any(), any())
-      )
+          eq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
+          eq(Map("nino" -> nino.nino)))(any(), any()))
         .thenReturn(Future.successful(Success))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
       verify(auditService, times(1))
         .createAndSendAuditEvent(
-          Matchers.eq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
-          Matchers.eq(Map("nino" -> nino.nino))
-        )(Matchers.any(), Matchers.any())
+          eq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
+          eq(Map("nino" -> nino.nino)))(Matchers.any(), Matchers.any())
     }
 
     "display an error page" when {
@@ -125,8 +119,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
               nonTaxCodeIncome,
               IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources),
               nonMatchedEmployments
-            )
-          )
+            ))
         )
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -238,8 +231,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
   override val nonTaxCodeIncome = NonTaxCodeIncome(
     Some(
       uk.gov.hmrc.tai.model.domain.income
-        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest", Seq.empty[BankAccount])
-    ),
+        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest", Seq.empty[BankAccount])),
     Seq(
       OtherNonTaxCodeIncome(Profit, None, testAmount, "Profit")
     )
@@ -260,7 +252,6 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
     appConfig,
     mcc,
     inject[IncomeTaxSummaryView],
-    templateRenderer,
     inject[ErrorPagesHandler]
   )
 

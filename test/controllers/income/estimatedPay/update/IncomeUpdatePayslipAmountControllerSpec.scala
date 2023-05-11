@@ -22,8 +22,8 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -70,14 +70,9 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
       sealed class PayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
-          .thenReturn(
-            Future.successful(
-              Right(
-                Seq[String](employer.id.toString, employer.name),
-                Seq[Option[String]](payPeriod, None, cachedAmount)
-              )
-            )
-          )
+          .thenReturn(Future.successful(
+            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](payPeriod, None, cachedAmount))
+          ))
 
         def payslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -158,9 +153,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         when(
           journeyCacheService.cache(
-            Matchers.eq[Map[String, String]](Map(UpdateIncomeConstants.TotalSalaryKey -> salary))
-          )(any())
-        )
+            Matchers.eq[Map[String, String]](Map(UpdateIncomeConstants.TotalSalaryKey -> salary)))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         def handlePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -182,8 +175,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url
-        )
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url)
       }
     }
 
@@ -212,18 +204,12 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val optionalKeys = Seq(
           UpdateIncomeConstants.PayPeriodKey,
           UpdateIncomeConstants.OtherInDaysKey,
-          UpdateIncomeConstants.TaxablePayKey
-        )
+          UpdateIncomeConstants.TaxablePayKey)
 
-        when(journeyCacheService.collectedJourneyValues(Matchers.eq(mandatoryKeys), Matchers.eq(optionalKeys))(any()))
-          .thenReturn(
-            Future.successful(
-              Right(
-                Seq[String](employer.id.toString, employer.name),
-                Seq[Option[String]](payPeriod, None, cachedAmount)
-              )
-            )
-          )
+        when(journeyCacheService.collectedJourneyValues(eq(mandatoryKeys), eq(optionalKeys))(any()))
+          .thenReturn(Future.successful(
+            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](payPeriod, None, cachedAmount))
+          ))
 
         def taxablePayslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -283,15 +269,11 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         when(
           journeyCacheService
-            .cache(eqTo[Map[String, String]](Map(UpdateIncomeConstants.TaxablePayKey -> "3000")))(any())
-        )
+            .cache(eqTo[Map[String, String]](Map(UpdateIncomeConstants.TaxablePayKey -> "3000")))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
-          Future.successful(
-            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None))
-          )
-        )
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(Future.successful(
+          Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None))))
 
         def handleTaxablePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new TestIncomeUpdatePayslipAmountController()
@@ -311,8 +293,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
-        )
+          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url)
       }
     }
 
@@ -405,8 +386,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url
-        )
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url)
       }
     }
 
@@ -418,8 +398,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
-        )
+          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url)
       }
     }
 

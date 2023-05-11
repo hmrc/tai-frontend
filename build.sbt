@@ -62,7 +62,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(defaultSettings(): _*)
-  .settings(scalaVersion := "2.12.13")
+  .settings(scalaVersion := "2.13.10")
   .settings(
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
@@ -110,7 +110,6 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )
 
-scalacOptions += "-Ypartial-unification"
 // Scalafix configuration - Only un comment if you want to correct the styling of the service, then comment again as this causes compile and test issues in the service
 //ThisBuild / semanticdbEnabled := true
 //ThisBuild / semanticdbVersion := scalafixSemanticdb.revision

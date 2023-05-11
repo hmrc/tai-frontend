@@ -24,8 +24,8 @@ import mocks.MockTemplateRenderer
 
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -70,9 +70,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(eq(UpdateIncomeConstants.IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
+    when(journeyCacheService.mandatoryJourneyValue(eq(UpdateIncomeConstants.NameKey))(any()))
       .thenReturn(Future.successful(Right(employer.name)))
   }
 
@@ -361,7 +361,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         ).thenReturn(
           Future.successful(Done)
         )
-        when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employer.id.toString))(any()))
+        when(estimatedPayJourneyCompletionService.journeyCompleted(eq(employer.id.toString))(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.cache(any(), any())(any()))

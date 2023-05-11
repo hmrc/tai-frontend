@@ -17,8 +17,8 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.Done
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json._
@@ -148,7 +148,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
   "flush" must {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(journeyName)}"
-      when(httpHandler.deleteFromApi(Matchers.eq(url))(any(), any()))
+      when(httpHandler.deleteFromApi(eq(url))(any(), any()))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
 
       val result = Await.result(sut.flush(journeyName), 5 seconds)
@@ -159,7 +159,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
   "flushWithEmpId" must {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(s"$journeyName/1")}"
-      when(httpHandler.deleteFromApi(Matchers.eq(url))(any(), any()))
+      when(httpHandler.deleteFromApi(eq(url))(any(), any()))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
 
       val result = Await.result(sut.flushWithEmpId(journeyName, 1), 5 seconds)

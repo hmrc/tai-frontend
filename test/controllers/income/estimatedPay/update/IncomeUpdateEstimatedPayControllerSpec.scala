@@ -23,8 +23,8 @@ import mocks.MockTemplateRenderer
 
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -127,7 +127,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return to /income-details when nothing is present in the cache" in {
       val result = estimatedPayLandingPage()
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("empty cache")))
+      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        .thenReturn(Future.successful(Left("empty cache")))
 
       redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     }

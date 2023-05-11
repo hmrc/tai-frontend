@@ -17,8 +17,8 @@
 package uk.gov.hmrc.tai.connectors
 
 import java.time.LocalDateTime
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
@@ -39,8 +39,7 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))(any(), any(), any())
-      )
+          .postToApi(eq(s"/tai/$nino/employments/years/2016/update"), eq(model))(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut().incorrectIncome(nino, 2016, model), 5.seconds)

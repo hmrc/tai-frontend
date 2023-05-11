@@ -22,20 +22,18 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PreviousYearsIncomeConnector
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PreviousYearsIncomeService @Inject() (previousYearsIncomeConnector: PreviousYearsIncomeConnector) {
+class PreviousYearsIncomeService @Inject()(previousYearsIncomeConnector: PreviousYearsIncomeConnector) {
 
-  def incorrectIncome(nino: Nino, id: Int, incorrectIncome: IncorrectIncome)(implicit
-    hc: HeaderCarrier
-  ): Future[String] =
+  def incorrectIncome(nino: Nino, id: Int, incorrectIncome: IncorrectIncome)(
+    implicit hc: HeaderCarrier,
+    executionContext: ExecutionContext): Future[String] =
     previousYearsIncomeConnector.incorrectIncome(nino, id, incorrectIncome) map {
       case Some(envId) => envId
       case _ =>
         throw new RuntimeException(
-          s"No envelope id was generated when sending previous years income details for ${nino.nino}"
-        )
+          s"No envelope id was generated when sending previous years income details for ${nino.nino}")
     }
 
 }

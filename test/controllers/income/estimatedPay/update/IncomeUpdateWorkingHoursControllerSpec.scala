@@ -21,8 +21,8 @@ import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -60,7 +60,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
     object WorkingHoursPageHarness {
       sealed class WorkingHoursPageHarness() {
 
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncomeConstants.WorkingHoursKey))(any()))
+        when(journeyCacheService.currentValue(eq(UpdateIncomeConstants.WorkingHoursKey))(any()))
           .thenReturn(Future.successful(Option(EditIncomeIrregularPayConstants.RegularHours)))
 
         def workingHoursPage(): Future[Result] =

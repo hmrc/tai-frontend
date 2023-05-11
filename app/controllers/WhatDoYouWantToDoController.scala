@@ -25,7 +25,6 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
@@ -39,7 +38,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhatDoYouWantToDoController @Inject() (
+class WhatDoYouWantToDoController @Inject()(
   employmentService: EmploymentService,
   taxCodeChangeService: TaxCodeChangeService,
   taxAccountService: TaxAccountService,
@@ -51,9 +50,7 @@ class WhatDoYouWantToDoController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   private implicit val recoveryLocation: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
@@ -66,17 +63,19 @@ class WhatDoYouWantToDoController @Inject() (
 
       lazy val employmentsFuture = employmentService.employments(nino, TaxYear())
       lazy val redirectFuture =
-        OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith { case ex =>
-          previousYearEmployments(nino).map { prevYearEmployments =>
-            val handler: PartialFunction[Throwable, Option[Result]] =
-              errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler
-                  .npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
-                errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => none }
-            handler(ex)
-          }
+        OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith {
+          case ex =>
+            previousYearEmployments(nino).map {
+              prevYearEmployments =>
+                val handler: PartialFunction[Throwable, Option[Result]] =
+                  errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                    errorPagesHandler
+                      .npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                    errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
+                    errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
+                    errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => none }
+                handler(ex)
+            }
         }).getOrElseF(allowWhatDoYouWantToDo)
 
       for {
@@ -87,8 +86,7 @@ class WhatDoYouWantToDoController @Inject() (
       val nino = request.taiUser.nino
 
       errorPagesHandler.hodBadRequestResult(nino.toString()) orElse errorPagesHandler.hodInternalErrorResult(
-        nino.toString()
-      )
+        nino.toString())
     }
   }
 
@@ -99,31 +97,27 @@ class WhatDoYouWantToDoController @Inject() (
       case _                                                         => false
     }
 
-  private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(implicit
-    request: Request[AnyContent]
-  ): Future[Option[LocalDate]] =
+  private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(
+    implicit request: Request[AnyContent]): Future[Option[LocalDate]] =
     if (retrieveTaxCodeChange(hasTaxCodeChanged)) {
       taxCodeChangeService.taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate.some)
     } else {
       Future.successful(none)
     }
 
-  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(implicit
-    request: Request[AnyContent]
-  ): Future[WhatDoYouWantToDoViewModel] =
+  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(
+    implicit request: Request[AnyContent]): Future[WhatDoYouWantToDoViewModel] =
     mostRecentTaxCodeChangeDate(nino, hasTaxCodeChanged).flatMap { maybeMostRecentTaxCodeChangeDate =>
       lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
         isCyPlusOneEnabled = applicationConfig.cyPlusOneEnabled,
         showJrsLink = showJrsLink,
-        maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
-      )
+        maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate)
 
       lazy val unsuccessfulResponseModel =
         WhatDoYouWantToDoViewModel(
           isCyPlusOneEnabled = false,
           showJrsLink = showJrsLink,
-          maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
-        )
+          maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate)
 
       if (applicationConfig.cyPlusOneEnabled) {
         taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
@@ -145,19 +139,18 @@ class WhatDoYouWantToDoController @Inject() (
       case Right(taxCodeChanged: HasTaxCodeChanged) =>
         for {
           showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino)
-          (model, _) <-
-            (whatToDoView(nino, taxCodeChanged, showJrsLink), auditNumberOfTaxCodesReturned(nino, showJrsLink)).tupled
+          (model, _) <- (
+                         whatToDoView(nino, taxCodeChanged, showJrsLink),
+                         auditNumberOfTaxCodesReturned(nino, showJrsLink)).tupled
         } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
       case Left(taxCodeError) =>
         Future.successful(
-          BadRequest(errorPagesHandler.error4xxPageWithLink(taxCodeError.errorMessage.getOrElse("Tax Code not Found")))
-        )
+          BadRequest(errorPagesHandler.error4xxPageWithLink(taxCodeError.errorMessage.getOrElse("Tax Code not Found"))))
     }
   }
 
-  private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit
-    request: Request[AnyContent]
-  ): Future[AuditResult] = {
+  private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(
+    implicit request: Request[AnyContent]): Future[AuditResult] = {
 
     val noOfTaxCodesF = taxAccountService.taxCodeIncomes(nino, TaxYear()).map { currentTaxYearTaxCodes =>
       currentTaxYearTaxCodes.getOrElse(Seq.empty[TaxCodeIncome])
@@ -171,14 +164,13 @@ class WhatDoYouWantToDoController @Inject() (
             request.headers.get("Referer").getOrElse("NA"),
             employments,
             noOfTaxCodes,
-            isJrsTileShown
-          )
+            isJrsTileShown)
       }
     }
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentService.employments(nino, TaxYear().prev) recover { case _ =>
-      Nil
+    employmentService.employments(nino, TaxYear().prev) recover {
+      case _ => Nil
     }
 }

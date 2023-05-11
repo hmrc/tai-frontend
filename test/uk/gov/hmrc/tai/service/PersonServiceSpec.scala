@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.Matchers
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
@@ -34,7 +34,7 @@ class PersonServiceSpec extends BaseSpec {
       "connector returns successfully" in {
         val sut = createSut
         val person = fakePerson(nino)
-        when(personConnector.person(Matchers.eq(nino))(any()))
+        when(personConnector.person(eq(nino))(any()))
           .thenReturn(Future.successful(person))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)
@@ -44,7 +44,7 @@ class PersonServiceSpec extends BaseSpec {
     "throw a runtime exception" when {
       "connector did not return successfully" in {
         val sut = createSut
-        when(personConnector.person(Matchers.eq(nino))(any()))
+        when(personConnector.person(eq(nino))(any()))
           .thenReturn(Future.failed(new NotFoundException("downstream not found")))
 
         val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)

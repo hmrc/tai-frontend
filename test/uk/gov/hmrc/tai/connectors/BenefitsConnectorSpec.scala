@@ -17,8 +17,8 @@
 package uk.gov.hmrc.tai.connectors
 
 import java.time.LocalDate
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
@@ -60,12 +60,9 @@ class BenefitsConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(
-          Matchers.eq(
-            s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
-          ),
-          Matchers.eq(endedCompanyBenefit)
-        )(any(), any(), any())
-      ).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+          eq(s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"),
+          eq(endedCompanyBenefit)
+        )(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
 
@@ -82,8 +79,7 @@ class BenefitsConnectorSpec extends BaseSpec {
       dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
       dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
       dateWithdrawn = None
-    )
-  )
+    ))
 
   val companyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
   val genericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
@@ -100,8 +96,7 @@ class BenefitsConnectorSpec extends BaseSpec {
           "hasActiveFuelBenefit"               -> true,
           "dateMadeAvailable"                  -> "2016-10-10",
           "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-        )
-      ),
+        )),
       "version" -> 1
     )
 
@@ -128,8 +123,7 @@ class BenefitsConnectorSpec extends BaseSpec {
     Json.obj(
       "data" -> Json.obj(
         "companyCarBenefits" -> Json.arr(invalidOtherBenefitsJson),
-        "otherBenefits"      -> Json.arr(otherBenefitsJson)
-      ),
+        "otherBenefits"      -> Json.arr(otherBenefitsJson)),
       "links" -> Json.arr()
     )
 

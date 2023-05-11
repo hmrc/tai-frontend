@@ -22,7 +22,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -37,7 +36,7 @@ import views.html.incomeTaxComparison.MainView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class IncomeTaxComparisonController @Inject() (
+class IncomeTaxComparisonController @Inject()(
   val auditConnector: AuditConnector,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
@@ -48,8 +47,7 @@ class IncomeTaxComparisonController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   mainView: MainView,
-  errorPagesHandler: ErrorPagesHandler
-)(implicit val ec: ExecutionContext, templateRenderer: TemplateRenderer)
+  errorPagesHandler: ErrorPagesHandler)(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -61,8 +59,7 @@ class IncomeTaxComparisonController @Inject() (
       taxAccountService.taxAccountSummary(nino, currentTaxYear).attemptTNel,
       taxAccountService.taxAccountSummary(nino, nextTaxYear).attemptTNel,
       EitherT(taxAccountService.taxCodeIncomes(nino, currentTaxYear)).leftMap(msg =>
-        NonEmptyList.one(new Throwable(msg))
-      ),
+        NonEmptyList.one(new Throwable(msg))),
       EitherT(taxAccountService.taxCodeIncomes(nino, nextTaxYear)).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
       codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
       codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
@@ -84,8 +81,7 @@ class IncomeTaxComparisonController @Inject() (
     codingComponentsCY: Seq[CodingComponent],
     codingComponentsCYPlusOne: Seq[CodingComponent],
     employmentsCY: Seq[Employment],
-    isEstimatedPayJourneyComplete: Boolean
-  )(implicit request: AuthenticatedRequest[AnyContent]) = {
+    isEstimatedPayJourneyComplete: Boolean)(implicit request: AuthenticatedRequest[AnyContent]) = {
     val estimatedIncomeTaxComparisonViewModel = {
       val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
       val cyPlusOneEstimatedTax =
@@ -107,8 +103,7 @@ class IncomeTaxComparisonController @Inject() (
 
       TaxFreeAmountComparisonViewModel(
         Seq(cyCodingComponents, cyPlusOneTaxComponents),
-        Seq(cyTaxSummary, cyPlusOneTaxSummary)
-      )
+        Seq(cyTaxSummary, cyPlusOneTaxSummary))
     }
 
     val employmentViewModel =

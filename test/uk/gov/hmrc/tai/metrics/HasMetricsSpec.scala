@@ -17,11 +17,9 @@
 package uk.gov.hmrc.tai.metrics
 
 import com.codahale.metrics.Timer
-import org.mockito.Matchers.anyString
-import org.mockito.Mockito
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.any
+import org.mockito.{Mockito, MockitoSugar}
 import org.scalatest.compatible.Assertion
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpecLike, BeforeAndAfterAll, Matchers, OptionValues}
 import play.api.mvc.{BaseController, ControllerComponents, Results}
 import play.api.test.{FakeRequest, Helpers}
@@ -36,7 +34,7 @@ class HasMetricsSpec
     val timer = mock[Timer.Context]
     val metrics = new TestMetrics
     override val localMetrics: LocalMetrics = mock[LocalMetrics]
-    when(localMetrics.startTimer(anyString())) thenReturn timer
+    when(localMetrics.startTimer(any())) thenReturn timer
   }
 
   class TestHasMetrics extends HasMetrics with MockHasMetrics

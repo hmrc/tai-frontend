@@ -38,7 +38,7 @@ trait UpdatedEstimatedPayJourneyCache {
     ): Future[Map[String, String]] =
       for {
         current <- journeyCacheService.currentCache
-        updatedCacheMap = current.filterKeys(key => !keysToEmpty.contains(key)) ++ cacheToUpdate
+        updatedCacheMap = current.filter(key => !keysToEmpty.contains(key)) ++ cacheToUpdate
         _            <- journeyCacheService.flush()
         updatedCache <- journeyCacheService.cache(updatedCacheMap)
       } yield updatedCache

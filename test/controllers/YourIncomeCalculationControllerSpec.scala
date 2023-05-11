@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
@@ -276,7 +276,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       inject[HistoricIncomeCalculationView],
       inject[YourIncomeCalculationView],
       inject[HistoricIncomePrintView],
-      templateRenderer,
       inject[ErrorPagesHandler]
     ) {
       when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))

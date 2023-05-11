@@ -22,7 +22,7 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import mocks.MockTemplateRenderer
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.concurrent.ScalaFutures
@@ -169,7 +169,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
       status(result) mustBe SEE_OTHER
 
-      verify(journeyCacheService, times(1)).cache(Matchers.eq(cacheMap))(any())
+      verify(journeyCacheService, times(1)).cache(eq(cacheMap))(any())
     }
 
     "employments return empty income is none" in {
@@ -338,7 +338,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
       sealed class HandleChooseHowToUpdateHarness() {
 
-        when(journeyCacheService.cache(Matchers.eq(UpdateIncomeConstants.HowToUpdateKey), any())(any()))
+        when(journeyCacheService.cache(eq(UpdateIncomeConstants.HowToUpdateKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         def handleChooseHowToUpdate(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =

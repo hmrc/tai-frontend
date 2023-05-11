@@ -23,29 +23,29 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 case class YourTaxFreeAmountComparison(
   previousTaxFreeInfo: Option[TaxFreeInfo],
   currentTaxFreeInfo: TaxFreeInfo,
-  iabdPairs: AllowancesAndDeductionPairs
-)
+  iabdPairs: AllowancesAndDeductionPairs)
 
-class YourTaxFreeAmountService @Inject() (
+class YourTaxFreeAmountService @Inject()(
   taxCodeChangeService: TaxCodeChangeService,
-  codingComponentService: CodingComponentService
-) extends YourTaxFreeAmount {
+  codingComponentService: CodingComponentService)
+    extends YourTaxFreeAmount {
 
-  def taxFreeAmountComparison(
-    nino: Nino
-  )(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountComparison] =
+  def taxFreeAmountComparison(nino: Nino)(
+    implicit hc: HeaderCarrier,
+    messages: Messages,
+    executionContext: ExecutionContext): Future[YourTaxFreeAmountComparison] =
     (taxCodeChangeService.taxCodeChange(nino), codingComponentService.taxFreeAmountComparison(nino))
-      .mapN { case (taxCodeChange, taxFreeAmountComparison) =>
-        buildTaxFreeAmount(
-          taxCodeChange.mostRecentTaxCodeChangeDate,
-          Some(taxFreeAmountComparison.previous),
-          taxFreeAmountComparison.current
-        )
+      .mapN {
+        case (taxCodeChange, taxFreeAmountComparison) =>
+          buildTaxFreeAmount(
+            taxCodeChange.mostRecentTaxCodeChangeDate,
+            Some(taxFreeAmountComparison.previous),
+            taxFreeAmountComparison.current
+          )
       }
 }

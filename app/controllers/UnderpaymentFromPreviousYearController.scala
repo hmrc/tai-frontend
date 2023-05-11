@@ -20,8 +20,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.Referral
@@ -30,14 +28,12 @@ import views.html.PreviousYearUnderpaymentView
 
 import scala.concurrent.ExecutionContext
 
-class UnderpaymentFromPreviousYearController @Inject() (
+class UnderpaymentFromPreviousYearController @Inject()(
   codingComponentService: CodingComponentService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  previousYearUnderpayment: PreviousYearUnderpaymentView,
-  implicit val templateRenderer: TemplateRenderer
-)(implicit ec: ExecutionContext)
+  previousYearUnderpayment: PreviousYearUnderpaymentView)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
   def underpaymentExplanation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

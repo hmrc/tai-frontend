@@ -22,11 +22,7 @@ import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import cats.implicits._
-import play.api.Logger
-import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
@@ -35,7 +31,7 @@ import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.ExecutionContext
 
-class PotentialUnderpaymentController @Inject() (
+class PotentialUnderpaymentController @Inject()(
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   auditService: AuditService,
@@ -43,9 +39,7 @@ class PotentialUnderpaymentController @Inject() (
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   potentialUnderpayment: PotentialUnderpaymentView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -56,17 +50,16 @@ class PotentialUnderpaymentController @Inject() (
         val nino = user.nino
         (
           taxAccountService.taxAccountSummary(nino, TaxYear()),
-          codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-        ).mapN { case (tas, ccs) =>
-          auditService.createAndSendAuditEvent(
-            AuditConstants.PotentialUnderpaymentInYearAdjustment,
-            Map("nino" -> nino.toString())
-          )
-          val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-          Ok(potentialUnderpayment(vm))
+          codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN {
+          case (tas, ccs) =>
+            auditService.createAndSendAuditEvent(
+              AuditConstants.PotentialUnderpaymentInYearAdjustment,
+              Map("nino" -> nino.toString()))
+            val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+            Ok(potentialUnderpayment(vm))
         }
-      } recover { case e: Exception =>
-        errorPagesHandler.internalServerError(e.getMessage, Some(e))
+      } recover {
+        case e: Exception => errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }
   }
 }

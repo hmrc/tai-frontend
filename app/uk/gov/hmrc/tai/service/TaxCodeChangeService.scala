@@ -22,14 +22,12 @@ import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class TaxCodeChangeService @Inject() (taxCodeChangeConnector: TaxCodeChangeConnector) extends Logging {
@@ -37,7 +35,9 @@ class TaxCodeChangeService @Inject() (taxCodeChangeConnector: TaxCodeChangeConne
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
     taxCodeChangeConnector.taxCodeChange(nino)
 
-  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
+  def hasTaxCodeChanged(nino: Nino)(
+    implicit hc: HeaderCarrier,
+    executionContext: ExecutionContext): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
 
     lazy val hasTaxCodeChangedFuture: EitherT[Future, TaxCodeError, Boolean] = EitherT(taxCodeChanged(nino))
     lazy val taxCodeMismatchFuture: EitherT[Future, TaxCodeError, TaxCodeMismatch] =
@@ -62,16 +62,20 @@ class TaxCodeChangeService @Inject() (taxCodeChangeConnector: TaxCodeChangeConne
   ): Future[List[TaxCodeRecord]] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year)
 
-  def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(
+    implicit hc: HeaderCarrier,
+    executionContext: ExecutionContext): Future[Boolean] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year).attemptT.map(_.nonEmpty).getOrElse(false)
 
-  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] =
+  def latestTaxCodeChangeDate(
+    nino: Nino)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[LocalDate] =
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
 
   private def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeMismatch] =
     taxCodeChangeConnector.taxCodeMismatch(nino)
 
-  private def taxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, Boolean]] =
+  private def taxCodeChanged(
+    nino: Nino)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Either[TaxCodeError, Boolean]] =
     taxCodeChangeConnector
       .hasTaxCodeChanged(nino)
       .map(_.asRight)

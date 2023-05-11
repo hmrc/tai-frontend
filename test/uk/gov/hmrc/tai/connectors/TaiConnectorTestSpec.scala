@@ -30,12 +30,15 @@ import uk.gov.hmrc.tai.model.{CalculatedPay, PayDetails}
 import utils.WireMockHelper
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 class TaiConnectorTestSpec
     extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
     with IntegrationPatience with Injecting {
+
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+
   "TaiConnector" must {
     "return estimated pay" in {
       val expectedResponse = CalculatedPay(Some(23000), Some(16000), None, None)

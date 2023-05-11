@@ -29,7 +29,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukDateInput: GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(stopDateForm: Form[LocalDate],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(stopDateForm: Form[LocalDate],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),

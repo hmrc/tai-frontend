@@ -22,7 +22,7 @@ import cats.implicits.catsStdInstancesForFuture
 import controllers.actions.FakeValidatePerson
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures.whenReady
 import play.api.i18n.Messages
@@ -54,8 +54,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
     mockAppConfig,
     inject[JrsClaimSummaryView],
     inject[InternalServerErrorView],
-    inject[NoJrsClaimView],
-    templateRenderer
+    inject[NoJrsClaimView]
   )
 
   val jrsClaimsServiceResponse = JrsClaims(

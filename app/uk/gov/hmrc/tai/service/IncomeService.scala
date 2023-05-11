@@ -23,7 +23,6 @@ import cats.implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.{TaxYear, _}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -31,8 +30,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.model.domain.income.Ceased
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeService @Inject() (
   taxAccountService: TaxAccountService,
@@ -40,7 +38,10 @@ class IncomeService @Inject() (
   taiConnector: TaiConnector
 ) {
 
-  def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] =
+  def employmentAmount(nino: Nino, id: Int)(
+    implicit hc: HeaderCarrier,
+    messages: Messages,
+    executionContext: ExecutionContext): Future[EmploymentAmount] =
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, id)
@@ -53,7 +54,9 @@ class IncomeService @Inject() (
       case _ => throw new RuntimeException("Exception while reading employment and tax code details")
     }
 
-  def latestPayment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Payment]] =
+  def latestPayment(nino: Nino, id: Int)(
+    implicit hc: HeaderCarrier,
+    executionContext: ExecutionContext): Future[Option[Payment]] =
     employmentService.employment(nino, id) map {
       case Some(employment) =>
         for {

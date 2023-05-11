@@ -20,20 +20,18 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.help.GetHelpView
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
-class HelpController @Inject() (
+class HelpController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  getHelp: GetHelpView
-)(implicit val ec: ExecutionContext, templateRenderer: TemplateRenderer)
+  getHelp: GetHelpView)(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def helpPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

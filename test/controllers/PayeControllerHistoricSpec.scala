@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -235,7 +235,6 @@ class PayeControllerHistoricSpec
         mcc,
         inject[RtiDisabledHistoricPayAsYouEarnView],
         inject[HistoricPayAsYouEarnView],
-        templateRenderer,
         inject[ErrorPagesHandler]
       ) {
 

@@ -199,7 +199,6 @@ class TaxCodeDescriptorSpec extends BaseSpec {
   private class SUT(welshEnabled: Boolean = true)
       extends TaiLanguageController(
         langUtils,
-        stubControllerComponents(),
-        templateRenderer
+        stubControllerComponents()
       )
 }

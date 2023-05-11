@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.http.NotFoundException
@@ -33,7 +33,7 @@ class PersonConnectorSpec extends BaseSpec {
 
     "return a Person model instance" when {
       "the http call returns successfully" in {
-        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(apiResponse(person)))
 
         val result = Await.result(sut.person(nino), 5.seconds)
@@ -43,7 +43,7 @@ class PersonConnectorSpec extends BaseSpec {
 
     "return a Failed Future" when {
       "the http call returns a not found exception" in {
-        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.failed(new NotFoundException("downstream not found")))
         assertThrows[NotFoundException] {
           Await.result(sut.person(nino), 5.seconds)
@@ -52,7 +52,7 @@ class PersonConnectorSpec extends BaseSpec {
 
       "the http call returns invalid json" in {
         val invalidJson = Json.obj("data" -> Json.obj("notEven" -> "close"))
-        when(httpHandler.getFromApiV2(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
+        when(httpHandler.getFromApiV2(eq(s"/fakeUrl/tai/${nino.nino}/person"))(any()))
           .thenReturn(Future.successful(invalidJson))
         assertThrows[JsResultException] {
           Await.result(sut.person(nino), 5.seconds)

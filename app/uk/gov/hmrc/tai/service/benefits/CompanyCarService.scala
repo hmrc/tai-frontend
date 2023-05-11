@@ -23,22 +23,21 @@ import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.CarBenefit
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {
+class CompanyCarService @Inject()(carConnector: CompanyCarConnector) {
 
-  def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit
-    hc: HeaderCarrier
-  ): Future[Seq[CompanyCarBenefit]] =
+  def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(
+    implicit hc: HeaderCarrier,
+    executionContext: ExecutionContext): Future[Seq[CompanyCarBenefit]] =
     if (codingComponents.exists(_.componentType == CarBenefit))
       companyCars(nino)
     else
       Future.successful(Seq.empty[CompanyCarBenefit])
 
-  def companyCars(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
+  def companyCars(
+    nino: Nino)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[CompanyCarBenefit]] =
     carConnector.companyCarsForCurrentYearEmployments(nino).map(_.filterNot(isCompanyCarDateWithdrawn))
 
   def isCompanyCarDateWithdrawn(companyCarBenefit: CompanyCarBenefit): Boolean =

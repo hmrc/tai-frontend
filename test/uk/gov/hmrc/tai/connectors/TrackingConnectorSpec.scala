@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.actor.ActorSystem
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach

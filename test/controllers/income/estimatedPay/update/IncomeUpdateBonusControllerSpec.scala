@@ -21,8 +21,8 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import mocks.MockTemplateRenderer
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
@@ -63,7 +63,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
       ) {
     when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
-    when(journeyCacheService.currentValue(Matchers.eq(UpdateIncomeConstants.TaxablePayKey))(any()))
+    when(journeyCacheService.currentValue(eq(UpdateIncomeConstants.TaxablePayKey))(any()))
       .thenReturn(Future.successful(maybeTaxablePayKey))
   }
 
@@ -153,7 +153,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
           .thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.flush()(any()))
           .thenReturn(Future.successful(Done))
-        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 
         def handleBonusPayments(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -303,7 +303,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 
         def handleBonusOvertimeAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =

@@ -17,8 +17,8 @@
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import builders.RequestBuilder
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -46,11 +46,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
       )
 
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(nino))(any(), any()))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(eq(nino))(any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
+      when(employmentService.employmentNames(eq(nino), eq(TaxYear()))(any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
-      when(companyCarService.companyCars(Matchers.eq(nino))(any()))
+      when(companyCarService.companyCars(eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
@@ -77,11 +77,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         AllowancesAndDeductionPairs(Seq(allowancePair), Seq(deductionPair))
       )
 
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(nino))(any(), any()))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(eq(nino))(any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
+      when(employmentService.employmentNames(eq(nino), eq(TaxYear()))(any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
-      when(companyCarService.companyCars(Matchers.eq(nino))(any()))
+      when(companyCarService.companyCars(eq(nino))(any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))

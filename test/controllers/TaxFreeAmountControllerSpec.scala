@@ -19,7 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.http.NotFoundException
@@ -115,7 +115,6 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         appConfig,
         mcc,
         inject[TaxFreeAmountView],
-        templateRenderer,
         inject[ErrorPagesHandler]
       )
 }

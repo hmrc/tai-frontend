@@ -22,12 +22,11 @@ import uk.gov.hmrc.tai.connectors.PersonConnector
 import uk.gov.hmrc.tai.model.domain.Person
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PersonService @Inject() (personConnector: PersonConnector) {
 
-  def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] =
+  def personDetails(nino: Nino)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Person] =
     personConnector
       .person(nino)
       .recoverWith { case _ =>

@@ -95,8 +95,7 @@ class ServiceControllerSpec extends BaseSpec {
         mcc,
         inject[TimeoutView],
         inject[SessionExpiredView],
-        inject[ManualCorrespondenceView],
-        templateRenderer
+        inject[ManualCorrespondenceView]
       )
 
 }

@@ -20,16 +20,14 @@ import controllers.auth.AuthAction
 
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import views.html.DeceasedHelplineView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeceasedController @Inject() (
+class DeceasedController @Inject()(
   authenticate: AuthAction,
   mcc: MessagesControllerComponents,
-  deceasedHelpline: DeceasedHelplineView
-)(implicit val templateRenderer: TemplateRenderer, ec: ExecutionContext)
+  deceasedHelpline: DeceasedHelplineView)(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def deceased(): Action[AnyContent] =

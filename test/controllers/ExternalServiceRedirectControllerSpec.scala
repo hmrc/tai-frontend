@@ -18,9 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.ArgumentMatchers.{eq => mockEq, any}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
@@ -37,7 +35,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), mockEq("Test"))(any(), any(), any()))
           .thenReturn(Future.successful(redirectUri))
         when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
@@ -56,7 +54,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), eq("Test"))(any(), any()))
           .thenReturn(Future.failed(new IllegalArgumentException))
 
         val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
@@ -73,7 +71,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), eq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
 
         val result = sut.auditAndRedirectService("Test")(request)
@@ -90,7 +88,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), eq("Test"))(any(), any()))
           .thenReturn(Future.failed(new IllegalArgumentException))
 
         val result = sut.auditAndRedirectService("Test")(request)

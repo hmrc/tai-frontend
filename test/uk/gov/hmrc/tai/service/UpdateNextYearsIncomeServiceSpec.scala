@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import akka.Done
 import controllers.FakeTaiPlayApplication
-import org.mockito.Matchers.{any, eq => Meq}
+import org.mockito.ArgumentMatchers.{any, eq => Meq}
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
@@ -49,15 +49,12 @@ class UpdateNextYearsIncomeServiceSpec
   "get" must {
     "initialize the journey cache and return the cache model" when {
       "an taxCodeIncome and Employment is returned" in {
-        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(eq(nino), eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(
-              any()
-            )
-        )
+            .taxCodeIncomeForEmployment(eq(nino), eq(TaxYear().next), eq(employmentId))(any()))
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
         when(journeyCacheService.currentCache(any())).thenReturn(
@@ -68,22 +65,18 @@ class UpdateNextYearsIncomeServiceSpec
           employmentName,
           employmentId,
           isPension,
-          employmentAmount
-        )
+          employmentAmount)
       }
     }
 
     "throw a runtime exception" when {
       "could not retrieve a TaxCodeIncome" in {
-        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(eq(nino), eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(
-              any()
-            )
-        )
+            .taxCodeIncomeForEmployment(eq(nino), eq(TaxYear().next), eq(employmentId))(any()))
           .thenReturn(Future.successful(Right(None)))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino)
@@ -91,21 +84,17 @@ class UpdateNextYearsIncomeServiceSpec
         whenReady(result.failed) { e =>
           e mustBe a[RuntimeException]
           e.getMessage must include(
-            "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
-          )
+            "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey")
         }
       }
 
       "could not retrieve a Employment" in {
-        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(eq(nino), eq(employmentId))(any()))
           .thenReturn(Future.successful(None))
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(
-              any()
-            )
-        )
+            .taxCodeIncomeForEmployment(eq(nino), eq(TaxYear().next), eq(employmentId))(any()))
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino)
@@ -113,23 +102,19 @@ class UpdateNextYearsIncomeServiceSpec
         whenReady(result.failed) { e =>
           e mustBe a[RuntimeException]
           e.getMessage must include(
-            "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
-          )
+            "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey")
         }
       }
     }
 
     "setup the cache" when {
       "journey values do not exist in the cache" in {
-        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(eq(nino), eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(
-              any()
-            )
-        )
+            .taxCodeIncomeForEmployment(eq(nino), eq(TaxYear().next), eq(employmentId))(any()))
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
         when(journeyCacheService.currentCache(any())).thenReturn(
@@ -142,22 +127,18 @@ class UpdateNextYearsIncomeServiceSpec
           employmentName,
           employmentId,
           isPension,
-          employmentAmount
-        )
+          employmentAmount)
       }
 
       "user selects a different employer" in {
         val newEmploymentId = 2
 
-        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(newEmploymentId))(any()))
+        when(employmentService.employment(eq(nino), eq(newEmploymentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(newEmploymentId))(
-              any()
-            )
-        )
+            .taxCodeIncomeForEmployment(eq(nino), eq(TaxYear().next), eq(newEmploymentId))(any()))
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
 
         when(journeyCacheService.currentCache(any())).thenReturn(
@@ -170,8 +151,7 @@ class UpdateNextYearsIncomeServiceSpec
           employmentName,
           newEmploymentId,
           isPension,
-          employmentAmount
-        )
+          employmentAmount)
       }
     }
   }
@@ -319,13 +299,12 @@ class UpdateNextYearsIncomeServiceSpec
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
 
   class SubmitSetup {
-    when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+    when(employmentService.employment(eq(nino), eq(employmentId))(any()))
       .thenReturn(Future.successful(Some(employment(employmentName))))
 
     when(
       taxAccountService
-        .taxCodeIncomeForEmployment(Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
-    )
+        .taxCodeIncomeForEmployment(eq(nino), eq(TaxYear().next), eq(employmentId))(any()))
       .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
     when(successfulJourneyCacheService.cache(any())(any()))
