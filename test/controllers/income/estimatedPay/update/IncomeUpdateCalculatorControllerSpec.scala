@@ -19,11 +19,8 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -34,14 +31,12 @@ import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
-
 import java.time.LocalDate
 import scala.concurrent.Future
 
@@ -86,7 +81,6 @@ class IncomeUpdateCalculatorControllerSpec
         inject[CheckYourAnswersView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {}
 
@@ -98,12 +92,12 @@ class IncomeUpdateCalculatorControllerSpec
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(eqTo("1"))(any()))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq("1"))(any(), any()))
           .thenReturn(Future.successful(hasJourneyCompleted))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(eq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(eq(UpdateIncomeConstants.NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employer.name)))
 
         def onPageLoad(employerId: Int = employerId): Future[Result] =
@@ -162,16 +156,16 @@ class IncomeUpdateCalculatorControllerSpec
   "duplicateSubmissionWarning" must {
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(
             Future.successful(
               Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))
             )
           )
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(eq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(eq(UpdateIncomeConstants.NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employer.name)))
 
         def duplicateSubmissionWarning(): Future[Result] =
@@ -197,12 +191,12 @@ class IncomeUpdateCalculatorControllerSpec
   "submitDuplicateSubmissionWarning" must {
     object SubmitDuplicateSubmissionWarningHarness {
       sealed class SubmitDuplicateSubmissionWarningHarness(employmentType: String) {
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employer.name, "123456", employmentType))))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(eq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(eq(UpdateIncomeConstants.NameKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employer.name)))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -295,10 +289,10 @@ class IncomeUpdateCalculatorControllerSpec
         val employerId = "1"
 
         if (cacheEmpty) {
-          when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
             .thenReturn(Future.successful(Left("cacheEmpty")))
         } else {
-          when(journeyCacheService.collectedJourneyValues(any(), any())(any()))
+          when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
             .thenReturn(
               Future.successful(
                 Right(
@@ -307,9 +301,9 @@ class IncomeUpdateCalculatorControllerSpec
                 )
               )
             )
-          when(journeyCacheService.mandatoryJourneyValueAsInt(eq(UpdateIncomeConstants.IdKey))(any()))
+          when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
             .thenReturn(Future.successful(Right(employer.id)))
-          when(journeyCacheService.mandatoryJourneyValue(eq(UpdateIncomeConstants.NameKey))(any()))
+          when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
             .thenReturn(Future.successful(Right(employer.name)))
         }
 
@@ -352,7 +346,7 @@ class IncomeUpdateCalculatorControllerSpec
     object HandleCalculationResultHarness {
       sealed class HandleCalculationResultHarness(currentValue: Option[String], cacheEmpty: Boolean) {
 
-        when(incomeService.employmentAmount(any(), any())(any(), any()))
+        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
 
         if (cacheEmpty) {
@@ -360,7 +354,7 @@ class IncomeUpdateCalculatorControllerSpec
             .thenReturn(Future.successful(Left("empty cache")))
           when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         } else {
-          when(journeyCacheService.currentValue(eqTo(UpdateIncomeConstants.NewAmountKey))(any()))
+          when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.NewAmountKey))(any()))
             .thenReturn(Future.successful(currentValue))
         }
 

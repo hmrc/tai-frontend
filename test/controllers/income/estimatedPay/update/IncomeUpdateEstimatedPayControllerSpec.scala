@@ -19,18 +19,13 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
-
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -64,10 +59,9 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
         journeyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -75,7 +69,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
 
-    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment))))
     when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
 
@@ -140,11 +134,11 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
-        when(incomeService.latestPayment(any(), any())(any()))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
           .thenReturn(Future.successful(payment))
         when(journeyCacheService.currentCache(any()))
           .thenReturn(Future.successful(currentCache))
-        when(incomeService.employmentAmount(any(), any())(any(), any()))
+        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(incomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
@@ -221,7 +215,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdateEstimatedPayController
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.any())(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())

@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 

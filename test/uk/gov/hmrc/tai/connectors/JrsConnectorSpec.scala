@@ -16,18 +16,13 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.codahale.metrics.Timer
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
-import com.kenshoo.play.metrics.Metrics
-import java.time.YearMonth
-import org.mockito.Mockito.{reset => resetMock, times, verify, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.tai.model.enums.APITypes
+import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.util.TestMetrics
 import uk.gov.hmrc.webchat.client.WebChatClient

@@ -20,11 +20,11 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
+
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => meq, _}
 import org.mockito.Mockito._
-import org.mockito.{Matchers, Mockito}
+import org.mockito.Mockito
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
@@ -81,7 +81,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
         status(result) mustBe OK
 
-        verify(journeyCacheService, times(1)).cache(eq(cache))(any())
+        verify(journeyCacheService, times(1)).cache(meq(cache))(any())
       }
     }
     "retrieve the employment update details from the cache" when {
@@ -92,7 +92,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cacheDetails))
         val cache =
           Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
-        when(journeyCacheService.cache(eq(cache))(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.cache(meq(cache))(any())).thenReturn(Future.successful(cache))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -156,7 +156,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
         status(result) mustBe SEE_OTHER
 
-        verify(journeyCacheService, times(1)).cache(eq(employmentDetails))(any())
+        verify(journeyCacheService, times(1)).cache(meq(employmentDetails))(any())
       }
     }
 
@@ -201,7 +201,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
         status(result) mustBe BAD_REQUEST
 
-        verify(journeyCacheService, never()).cache(eq(employmentDetails))(any())
+        verify(journeyCacheService, never).cache(meq(employmentDetails))(any())
       }
     }
   }
@@ -211,7 +211,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
       "valid details has been passed" in {
         val sut = createSUT
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(Future.successful(Right(1)))
-        when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
+        when(journeyCacheService.optionalValues(any())(any(), any())).thenReturn(Future.successful(Seq(None, None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -225,7 +225,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
       "we fetch telephone details form cache" in {
         val sut = createSUT
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(Future.successful(Right(1)))
-        when(journeyCacheService.optionalValues(any())(any()))
+        when(journeyCacheService.optionalValues(any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(FormValuesConstants.YesValue), Some("01215485965"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -244,7 +244,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
       when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
         .thenReturn(Future.successful(Left("Mandatory value missing from cache")))
-      when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
+      when(journeyCacheService.optionalValues(any())(any(), any())).thenReturn(Future.successful(Seq(None, None)))
 
       val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -368,7 +368,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
           journeyCacheService.collectedJourneyValues(
             any(classOf[scala.collection.immutable.List[String]]),
             any(classOf[scala.collection.immutable.List[String]])
-          )(any())
+          )(any(), any())
         ).thenReturn(
           Future.successful(
             Right(
@@ -394,7 +394,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any())
+        )(any(), any())
       )
         .thenReturn(Future.successful(Left("An error has occurred")))
 
@@ -411,7 +411,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
         val empId = 1
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String](empId.toString, "whatYouToldUs", "Yes"),
@@ -419,11 +419,11 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
             )
           )
         )
-        when(employmentService.incorrectEmployment(any(), eq(1), eq(incorrectEmployment))(any()))
+        when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
         when(
           successfulJourneyCacheService
-            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), eq("true"))(any())
+            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
         )
           .thenReturn(
             Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
@@ -441,7 +441,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
         val empId = 1
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String](empId.toString, "whatYouToldUs", "No"),
@@ -449,11 +449,11 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
             )
           )
         )
-        when(employmentService.incorrectEmployment(any(), eq(1), eq(incorrectEmployment))(any()))
+        when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
         when(
           successfulJourneyCacheService
-            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), eq("true"))(any())
+            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
         )
           .thenReturn(
             Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
@@ -528,7 +528,6 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         inject[ConfirmationView],
         journeyCacheService,
         successfulJourneyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )
 

@@ -21,7 +21,7 @@ import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => mockEq}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.{ArgumentMatchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
@@ -39,7 +39,6 @@ import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
-
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.duration._
@@ -55,7 +54,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "show the employment name form page" when {
       "the request has an authorised session and no previously supplied employment name is present in cache" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.currentValue(mockEq(AddEmploymentConstants.NameKey))(any()))
+        when(addEmploymentJourneyCacheService.currentValue(meq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(None))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -66,7 +65,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       }
       "the request has an authorised session and a previously supplied employment name is present in cache" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.currentValue(mockEq(AddEmploymentConstants.NameKey))(any()))
+        when(addEmploymentJourneyCacheService.currentValue(meq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(Some("employer one plc")))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -85,7 +84,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
 
         val expectedCache = Map("employmentName" -> "the employer")
-        when(addEmploymentJourneyCacheService.cache(mockEq(expectedCache))(any()))
+        when(addEmploymentJourneyCacheService.cache(meq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitEmploymentName()(
@@ -233,7 +232,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(
-          mockEq(
+          meq(
             Map(
               AddEmploymentConstants.NameKey                 -> "Test",
               AddEmploymentConstants.StartDateKey            -> "2017-02-01",
@@ -259,7 +258,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(
-          mockEq(
+          meq(
             Map(
               AddEmploymentConstants.NameKey                 -> "Test",
               AddEmploymentConstants.StartDateKey            -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
@@ -278,8 +277,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val employmentName = "TEST"
         when(
           addEmploymentJourneyCacheService.collectedJourneyValues(
-            mockEq(Seq(AddEmploymentConstants.NameKey)),
-            mockEq(Seq(AddEmploymentConstants.ReceivedFirstPayKey))
+            meq(Seq(AddEmploymentConstants.NameKey)),
+            meq(Seq(AddEmploymentConstants.ReceivedFirstPayKey))
           )(any(), any())
         )
           .thenReturn(Future.successful(Right(Seq(employmentName), Seq(None))))
@@ -298,8 +297,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val employmentName = "TEST"
         when(
           addEmploymentJourneyCacheService.collectedJourneyValues(
-            mockEq(Seq(AddEmploymentConstants.NameKey)),
-            mockEq(Seq(AddEmploymentConstants.ReceivedFirstPayKey))
+            meq(Seq(AddEmploymentConstants.NameKey)),
+            meq(Seq(AddEmploymentConstants.ReceivedFirstPayKey))
           )(any(), any())
         )
           .thenReturn(Future.successful(Right(Seq(employmentName), Seq(Some(FormValuesConstants.YesValue)))))
@@ -323,7 +322,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
         when(
           addEmploymentJourneyCacheService
-            .cache(mockEq(AddEmploymentConstants.ReceivedFirstPayKey), any())(any())
+            .cache(meq(AddEmploymentConstants.ReceivedFirstPayKey), any())(any())
         )
           .thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -346,7 +345,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val employmentName = "TEST-Employer"
         when(
           addEmploymentJourneyCacheService
-            .cache(mockEq(AddEmploymentConstants.ReceivedFirstPayKey), any())(any())
+            .cache(meq(AddEmploymentConstants.ReceivedFirstPayKey), any())(any())
         )
           .thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -365,7 +364,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(mockEq(AddEmploymentConstants.NameKey))(any()))
+        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(meq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employmentName)))
 
         Await.result(
@@ -380,8 +379,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         )
 
         verify(auditService, times(1)).createAndSendAuditEvent(
-          mockEq(AuditConstants.AddEmploymentCantAddEmployer),
-          mockEq(Map("nino" -> FakeAuthAction.nino.nino))
+          meq(AuditConstants.AddEmploymentCantAddEmployer),
+          meq(Map("nino" -> FakeAuthAction.nino.nino))
         )(any(), any(), any())
       }
     }
@@ -391,7 +390,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
         val employmentName = "TEST-Employer"
 
-        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(mockEq(AddEmploymentConstants.NameKey))(any()))
+        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(meq(AddEmploymentConstants.NameKey))(any()))
           .thenReturn(Future.successful(Right(employmentName)))
 
         val result = sut.submitFirstPay()(
@@ -496,7 +495,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           5 seconds
         )
 
-        verify(addEmploymentJourneyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(meq(mapWithPayrollNumber))(any())
       }
     }
 
@@ -508,7 +507,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
           AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
-        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
+        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder
@@ -534,7 +533,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
 
-        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
+        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
 
         Await.result(
@@ -546,7 +545,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           5 seconds
         )
 
-        verify(addEmploymentJourneyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(meq(mapWithPayrollNumber))(any())
       }
     }
 
@@ -559,7 +558,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.PayrollNumberKey         -> payrollNo
         )
 
-        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
+        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
 
         val result = sut.submitEmploymentPayrollNumber()(
@@ -769,7 +768,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         addEmploymentJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any())
+        )(any(), any())
       ).thenReturn(
         Future.successful(Left("An error has occurred"))
       )
@@ -798,12 +797,12 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           )
         )
 
-        when(employmentService.addEmployment(any(), mockEq(expectedModel))(any(), any()))
+        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
           .thenReturn(Future.successful("envelope-123"))
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(
           trackSuccessJourneyCacheService
-            .cache(mockEq(TrackSuccessfulJourneyConstants.AddEmploymentKey), mockEq("true"))(any())
+            .cache(meq(TrackSuccessfulJourneyConstants.AddEmploymentKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
 
@@ -822,7 +821,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None))))
 
-        when(employmentService.addEmployment(any(), mockEq(expectedModel))(any(), any()))
+        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
           .thenReturn(Future.successful("envelope-123"))
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(trackSuccessJourneyCacheService.cache(any(), any())(any()))

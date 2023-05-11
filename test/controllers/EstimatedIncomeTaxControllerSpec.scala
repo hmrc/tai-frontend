@@ -20,8 +20,6 @@ import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

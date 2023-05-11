@@ -19,7 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.{I18nSupport, Messages}
@@ -34,6 +34,7 @@ import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach {
 
@@ -74,7 +75,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
       Await
         .result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
       verify(auditService, times(1))
-        .createAndSendAuditEvent(eq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
+        .createAndSendAuditEvent(meq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()

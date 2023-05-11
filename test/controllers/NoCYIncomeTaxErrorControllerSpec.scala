@@ -22,7 +22,6 @@ import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.i18n.{I18nSupport, Messages}

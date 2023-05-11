@@ -21,11 +21,9 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
@@ -92,7 +90,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "display tax code page containing all tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startOfTaxYear: String =
@@ -110,7 +108,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "display tax code page containing the relevant tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val result = sut.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -129,7 +127,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val startOfTaxYear: String = TaxYear().prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
       val endOfTaxYear: String = TaxYear().prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startDate = TaxYear().start

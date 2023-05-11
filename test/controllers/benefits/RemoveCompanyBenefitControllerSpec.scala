@@ -21,7 +21,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
@@ -142,7 +142,7 @@ class RemoveCompanyBenefitControllerSpec
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(
-            eq(
+            meq(
               Map(
                 EndCompanyBenefitConstants.BenefitNameKey     -> "benefit",
                 EndCompanyBenefitConstants.EmploymentNameKey  -> "employment",
@@ -189,7 +189,7 @@ class RemoveCompanyBenefitControllerSpec
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
-          .cache(eq(EndCompanyBenefitConstants.BenefitStopDateKey), eq(s"$year-04-06"))(any())
+          .cache(meq(EndCompanyBenefitConstants.BenefitStopDateKey), meq(s"$year-04-06"))(any())
       }
     }
 
@@ -211,7 +211,7 @@ class RemoveCompanyBenefitControllerSpec
               )
             )
           )
-        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq("EmployerA", "Expenses", "Url"))))
         val result = SUT.submitStopDate(
           RequestBuilder
@@ -221,7 +221,7 @@ class RemoveCompanyBenefitControllerSpec
 
         status(result) mustBe BAD_REQUEST
 
-        verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(Matchers.anyVararg())(any())
+        verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(any())(any(), any())
       }
     }
   }
@@ -236,7 +236,7 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session with employment name and benefit name" in {
         val SUT = createSUT
 
-        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq(employmentName, benefitName, referer),
@@ -259,7 +259,7 @@ class RemoveCompanyBenefitControllerSpec
 
       val valueOfBenefit = Some("9876543")
 
-      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+      when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
         Future.successful(
           Right(
             Seq(employmentName, benefitName, referer),
@@ -303,7 +303,7 @@ class RemoveCompanyBenefitControllerSpec
         val removeCompanyBenefitFormData = ("totalValue", "1000.00")
         val totalValue = Map("benefitValue" -> "1000")
 
-        when(removeCompanyBenefitJourneyCacheService.cache(eq(totalValue))(any()))
+        when(removeCompanyBenefitJourneyCacheService.cache(meq(totalValue))(any()))
           .thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitBenefitValue()(
@@ -323,7 +323,7 @@ class RemoveCompanyBenefitControllerSpec
         val removeCompanyBenefitFormData = ("totalValue", "123,000.00")
         val totalValue = Map("benefitValue" -> "123000")
 
-        when(removeCompanyBenefitJourneyCacheService.cache(eq(totalValue))(any()))
+        when(removeCompanyBenefitJourneyCacheService.cache(meq(totalValue))(any()))
           .thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitBenefitValue()(
@@ -346,7 +346,7 @@ class RemoveCompanyBenefitControllerSpec
 
         val removeCompanyBenefitFormData = ("totalValue", "")
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employmentName, benefitName, referer))))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -369,7 +369,7 @@ class RemoveCompanyBenefitControllerSpec
 
         val removeCompanyBenefitFormData = ("totalValue", "1234Â£$%@")
 
-        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+        when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employmentName, benefitName, referer))))
         when(removeCompanyBenefitJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -470,7 +470,7 @@ class RemoveCompanyBenefitControllerSpec
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "12345678"
           )
-        when(removeCompanyBenefitJourneyCacheService.cache(eq(expectedCache))(any()))
+        when(removeCompanyBenefitJourneyCacheService.cache(meq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
@@ -494,7 +494,7 @@ class RemoveCompanyBenefitControllerSpec
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> ""
           )
-        when(removeCompanyBenefitJourneyCacheService.cache(eq(expectedCacheWithErasingNumber))(any()))
+        when(removeCompanyBenefitJourneyCacheService.cache(meq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
@@ -576,7 +576,7 @@ class RemoveCompanyBenefitControllerSpec
         removeCompanyBenefitJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any())
+        )(any(), any())
       ).thenReturn(
         Future.successful(
           Right(
@@ -610,7 +610,7 @@ class RemoveCompanyBenefitControllerSpec
         removeCompanyBenefitJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any())
+        )(any(), any())
       )
         .thenReturn(Future.successful(Left("An error has occurred")))
 
@@ -630,7 +630,7 @@ class RemoveCompanyBenefitControllerSpec
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", stopDateFormatted, Some("1000000"), "Yes", Some("0123456789"))
 
-        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
@@ -638,11 +638,13 @@ class RemoveCompanyBenefitControllerSpec
             )
           )
         )
-        when(benefitsService.endedCompanyBenefit(any(), eq(employmentId.toInt), eq(endedCompanyBenefit))(any()))
+        when(
+          benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
+        )
           .thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), eq("true"))(any())
+            .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -660,7 +662,7 @@ class RemoveCompanyBenefitControllerSpec
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", stopDateFormatted, None, "No", None)
 
-        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
@@ -668,11 +670,13 @@ class RemoveCompanyBenefitControllerSpec
             )
           )
         )
-        when(benefitsService.endedCompanyBenefit(any(), eq(employmentId.toInt), eq(endedCompanyBenefit))(any()))
+        when(
+          benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
+        )
           .thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), eq("true"))(any())
+            .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -689,7 +693,7 @@ class RemoveCompanyBenefitControllerSpec
         val employmentId: String = "1234"
         val endedCompanyBenefit = EndedCompanyBenefit("Accommodation", stopDateFormatted, Some("1000000"), "No", None)
 
-        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
@@ -697,11 +701,13 @@ class RemoveCompanyBenefitControllerSpec
             )
           )
         )
-        when(benefitsService.endedCompanyBenefit(any(), eq(employmentId.toInt), eq(endedCompanyBenefit))(any()))
+        when(
+          benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
+        )
           .thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), eq("true"))(any())
+            .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -719,7 +725,7 @@ class RemoveCompanyBenefitControllerSpec
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", stopDateFormatted, None, "Yes", Some("0123456789"))
 
-        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
@@ -727,11 +733,13 @@ class RemoveCompanyBenefitControllerSpec
             )
           )
         )
-        when(benefitsService.endedCompanyBenefit(any(), eq(employmentId.toInt), eq(endedCompanyBenefit))(any()))
+        when(
+          benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
+        )
           .thenReturn(Future.successful("1"))
         when(
           trackSuccessJourneyCacheService
-            .cache(eq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), eq("true"))(any())
+            .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
         when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -749,7 +757,7 @@ class RemoveCompanyBenefitControllerSpec
     "flush the cache and redirect to start of journey" in {
       val SUT = createSUT
 
-      when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any()))
+      when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
         .thenReturn(Future.successful(Right(Seq("Url"))))
       when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
@@ -758,7 +766,7 @@ class RemoveCompanyBenefitControllerSpec
 
       redirectLocation(result).get mustBe "Url"
       verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
-      verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(any())(any())
+      verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(any())(any(), any())
     }
   }
 
@@ -767,7 +775,7 @@ class RemoveCompanyBenefitControllerSpec
       "the request has an authorised session" in {
         val sut = createSUT
 
-        when(trackingService.isAnyIFormInProgress(any())(any()))
+        when(trackingService.isAnyIFormInProgress(any())(any(), any()))
           .thenReturn(Future.successful(ThreeWeeks))
 
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))

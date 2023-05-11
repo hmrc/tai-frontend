@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai
 
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -41,7 +41,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with Sca
     "return a None" when {
       "there is no cached BenefitType" in {
 
-        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = wrapper.getDecision()
@@ -51,7 +51,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with Sca
       }
 
       "there there is no cached Decision" in {
-        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Right(Telephone.name)))
         when(journeyCacheService.currentValue(any())(any()))
           .thenReturn(Future.successful(None))
@@ -65,7 +65,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with Sca
 
     "return the cached decision" when {
       "there is a cached value for the key given" in {
-        when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
           .thenReturn(Future.successful(Right(Telephone.name)))
         when(journeyCacheService.currentValue(any())(any()))
           .thenReturn(Future.successful(Option(YesIGetThisBenefit)))
@@ -101,7 +101,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with Sca
 
         whenReady(result) { r =>
           r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
-          verify(journeyCacheService, times(0)).cache(any(), eqTo(YesIGetThisBenefit))(any())
+          verify(journeyCacheService, times(0)).cache(any(), meq(YesIGetThisBenefit))(any())
         }
       }
     }
