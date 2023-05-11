@@ -38,10 +38,11 @@ class IncomeService @Inject() (
   taiConnector: TaiConnector
 ) {
 
-  def employmentAmount(nino: Nino, id: Int)(
-    implicit hc: HeaderCarrier,
+  def employmentAmount(nino: Nino, id: Int)(implicit
+    hc: HeaderCarrier,
     messages: Messages,
-    executionContext: ExecutionContext): Future[EmploymentAmount] =
+    executionContext: ExecutionContext
+  ): Future[EmploymentAmount] =
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, id)
@@ -54,9 +55,10 @@ class IncomeService @Inject() (
       case _ => throw new RuntimeException("Exception while reading employment and tax code details")
     }
 
-  def latestPayment(nino: Nino, id: Int)(
-    implicit hc: HeaderCarrier,
-    executionContext: ExecutionContext): Future[Option[Payment]] =
+  def latestPayment(nino: Nino, id: Int)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[Option[Payment]] =
     employmentService.employment(nino, id) map {
       case Some(employment) =>
         for {

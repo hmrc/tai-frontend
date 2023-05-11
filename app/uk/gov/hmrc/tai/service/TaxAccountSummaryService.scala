@@ -30,16 +30,18 @@ import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountSummaryService @Inject()(
+class TaxAccountSummaryService @Inject() (
   trackingService: TrackingService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
-  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  mcc: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(
-    implicit hc: HeaderCarrier,
-    messages: Messages): Future[TaxAccountSummaryViewModel] =
+  def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit
+    hc: HeaderCarrier,
+    messages: Messages
+  ): Future[TaxAccountSummaryViewModel] =
     (
       taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live),
       taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live),
@@ -49,12 +51,13 @@ class TaxAccountSummaryService @Inject()(
       trackingService.isAnyIFormInProgress(nino.nino)
     ).mapN {
       case (
-          livePensionIncomeSources,
-          liveEmploymentIncomeSources,
-          ceasedEmploymentIncomeSources,
-          nonMatchingCeasedEmployments,
-          nonTaxCodeIncome,
-          isAnyFormInProgress) =>
+            livePensionIncomeSources,
+            liveEmploymentIncomeSources,
+            ceasedEmploymentIncomeSources,
+            nonMatchingCeasedEmployments,
+            nonTaxCodeIncome,
+            isAnyFormInProgress
+          ) =>
         TaxAccountSummaryViewModel(
           taxAccountSummary,
           isAnyFormInProgress,

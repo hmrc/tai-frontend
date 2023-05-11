@@ -61,17 +61,20 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       val sut = createSut
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[String](eq(sut.journeyName), eq("stringKey"), any())(any()))
+          .mandatoryJourneyValueAs[String](eq(sut.journeyName), eq("stringKey"), any())(any())
+      )
         .thenReturn(Future.successful(Right("found")))
       when(journeyCacheConnector.mandatoryJourneyValueAs[Int](eq(sut.journeyName), eq("intKey"), any())(any()))
         .thenReturn(Future.successful(Right(1)))
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[Boolean](eq(sut.journeyName), eq("boolKey"), any())(any()))
+          .mandatoryJourneyValueAs[Boolean](eq(sut.journeyName), eq("boolKey"), any())(any())
+      )
         .thenReturn(Future.successful(Right(true)))
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[LocalDate](eq(sut.journeyName), eq("dateKey"), any())(any()))
+          .mandatoryJourneyValueAs[LocalDate](eq(sut.journeyName), eq("dateKey"), any())(any())
+      )
         .thenReturn(Future.successful(Right(LocalDate.parse("2017-10-10"))))
       Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds) mustBe "found".asRight
       Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds) mustBe 1.asRight
@@ -85,17 +88,20 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       val failed = Future.failed(new RuntimeException("not found"))
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[String](eq(sut.journeyName), eq("stringKey"), any())(any()))
+          .mandatoryJourneyValueAs[String](eq(sut.journeyName), eq("stringKey"), any())(any())
+      )
         .thenReturn(failed)
       when(journeyCacheConnector.mandatoryJourneyValueAs[Int](eq(sut.journeyName), eq("intKey"), any())(any()))
         .thenReturn(failed)
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[Boolean](eq(sut.journeyName), eq("boolKey"), any())(any()))
+          .mandatoryJourneyValueAs[Boolean](eq(sut.journeyName), eq("boolKey"), any())(any())
+      )
         .thenReturn(failed)
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[LocalDate](eq(sut.journeyName), eq("dateKey"), any())(any()))
+          .mandatoryJourneyValueAs[LocalDate](eq(sut.journeyName), eq("dateKey"), any())(any())
+      )
         .thenReturn(failed)
       val thrown1 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValue("stringKey"), 5 seconds)
       val thrown2 = the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValueAsInt("intKey"), 5 seconds)
@@ -126,7 +132,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(eq(sut.journeyName))(any()))
         .thenReturn(Future.successful(Map.empty[String, String]))
       Await.result(sut.mandatoryJourneyValues("key1", "key2"), 5 seconds) mustBe Left(
-        "Mandatory values missing from cache")
+        "Mandatory values missing from cache"
+      )
     }
 
   }
@@ -168,7 +175,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         journeyCacheConnector.mandatoryJourneyValueAs[String](
           eq(sut.journeyName),
           eq("key1"),
-          Matchers.any[Function1[String, String]]())(any()))
+          Matchers.any[Function1[String, String]]()
+        )(any())
+      )
         .thenReturn(Future.successful(Right(cacheValue)): Future[Either[String, String]])
 
       Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Right(cacheValue)
@@ -182,7 +191,9 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         journeyCacheConnector.mandatoryJourneyValueAs[String](
           eq(sut.journeyName),
           eq("key1"),
-          Matchers.any[Function1[String, String]]())(any()))
+          Matchers.any[Function1[String, String]]()
+        )(any())
+      )
         .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, String]])
       Await.result(sut.mandatoryJourneyValue("key1"), 5 seconds) mustBe Left(errorMessage)
     }
@@ -197,7 +208,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[Int](eq(sut.journeyName), eq("key1"), Matchers.any[Function1[String, Int]]())(any()))
+          .mandatoryJourneyValueAs[Int](eq(sut.journeyName), eq("key1"), Matchers.any[Function1[String, Int]]())(any())
+      )
         .thenReturn(Future.successful(Right(id)): Future[Either[String, Int]])
       Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Right(id)
     }
@@ -208,7 +220,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(
         journeyCacheConnector
-          .mandatoryJourneyValueAs[Int](eq(sut.journeyName), eq("key1"), Matchers.any[Function1[String, Int]]())(any()))
+          .mandatoryJourneyValueAs[Int](eq(sut.journeyName), eq("key1"), Matchers.any[Function1[String, Int]]())(any())
+      )
         .thenReturn(Future.successful(Left(errorMessage)): Future[Either[String, Int]])
       Await.result(sut.mandatoryJourneyValueAsInt("key1"), 5 seconds) mustBe Left(errorMessage)
     }
@@ -222,7 +235,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe Right(
         Seq("val1", "val2"),
-        Seq(Some("val3"), None))
+        Seq(Some("val3"), None)
+      )
     }
 
     "return left if one or more of the mandatory values is not found" in {
@@ -252,7 +266,8 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe Right(
         Seq("val1", "val2"),
-        Seq(Some("val3"), None))
+        Seq(Some("val3"), None)
+      )
     }
   }
 

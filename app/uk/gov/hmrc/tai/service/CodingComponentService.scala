@@ -31,13 +31,15 @@ class CodingComponentService @Inject() (
   taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector
 ) {
 
-  def taxFreeAmountComponents(nino: Nino, year: TaxYear)(
-    implicit hc: HeaderCarrier,
-    executionContext: ExecutionContext): Future[Seq[CodingComponent]] =
+  def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[Seq[CodingComponent]] =
     taxAccountConnector.codingComponents(nino, year).map(filterOutZeroAmountsComponents)
 
   def taxFreeAmountComparison(
-    nino: Nino)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[TaxFreeAmountComparison] =
+    nino: Nino
+  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[TaxFreeAmountComparison] =
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(

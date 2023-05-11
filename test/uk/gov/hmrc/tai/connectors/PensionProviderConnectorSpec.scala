@@ -38,7 +38,8 @@ class PensionProviderConnectorSpec extends BaseSpec {
         AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "Yes", Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler.postToApi(eq(sut.addPensionProviderServiceUrl(nino)), eq(addPensionProvider))(any(), any(), any()))
+        httpHandler.postToApi(eq(sut.addPensionProviderServiceUrl(nino)), eq(addPensionProvider))(any(), any(), any())
+      )
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addPensionProvider(nino, addPensionProvider), 5.seconds)
@@ -52,13 +53,16 @@ class PensionProviderConnectorSpec extends BaseSpec {
       val incorrectPensionProvider = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789"))
+        telephoneNumber = Some("123456789")
+      )
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(eq(sut.incorrectPensionProviderServiceUrl(nino, 1)), eq(incorrectPensionProvider))(
           any(),
           any(),
-          any()))
+          any()
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectPensionProvider(nino, 1, incorrectPensionProvider), 5.seconds)

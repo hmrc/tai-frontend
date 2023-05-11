@@ -62,7 +62,8 @@ class BenefitsConnectorSpec extends BaseSpec {
         httpHandler.postToApi(
           eq(s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"),
           eq(endedCompanyBenefit)
-        )(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        )(any(), any(), any())
+      ).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
 
@@ -79,7 +80,8 @@ class BenefitsConnectorSpec extends BaseSpec {
       dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
       dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
       dateWithdrawn = None
-    ))
+    )
+  )
 
   val companyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
   val genericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
@@ -96,7 +98,8 @@ class BenefitsConnectorSpec extends BaseSpec {
           "hasActiveFuelBenefit"               -> true,
           "dateMadeAvailable"                  -> "2016-10-10",
           "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-        )),
+        )
+      ),
       "version" -> 1
     )
 
@@ -123,7 +126,8 @@ class BenefitsConnectorSpec extends BaseSpec {
     Json.obj(
       "data" -> Json.obj(
         "companyCarBenefits" -> Json.arr(invalidOtherBenefitsJson),
-        "otherBenefits"      -> Json.arr(otherBenefitsJson)),
+        "otherBenefits"      -> Json.arr(otherBenefitsJson)
+      ),
       "links" -> Json.arr()
     )
 

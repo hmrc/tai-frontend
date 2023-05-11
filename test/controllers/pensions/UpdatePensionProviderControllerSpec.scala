@@ -56,7 +56,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
       when(
         journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
-          any()))
+          any()
+        )
+      )
         .thenReturn(Future.successful(Right(Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey)))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
@@ -72,7 +74,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
       when(
         journeyCacheService.collectedJourneyValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(
-          any()))
+          any()
+        )
+      )
         .thenReturn(Future.successful(Left("Data missing from cache")))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
@@ -92,7 +96,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
-          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> ""))
+          fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> "")
+        )
 
         status(result) mustBe BAD_REQUEST
       }
@@ -106,7 +111,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(
-            IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.NoValue))
+            IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.NoValue
+          )
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe appConfig.incomeFromEmploymentPensionLinkUrl
@@ -123,10 +130,14 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(
-            IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.YesValue))
+            IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.YesValue
+          )
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url
       }
     }
 
@@ -140,7 +151,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           journeyCacheService.collectedJourneyValues(
             eq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
             eq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any()))
+          )(any())
+        )
           .thenReturn(Future.successful(Right(Seq(pensionName, pensionId), Seq(None))))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
@@ -157,7 +169,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           journeyCacheService.collectedJourneyValues(
             eq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
             eq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any()))
+          )(any())
+        )
           .thenReturn(Future.successful(Right(cache, optionalCache)))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
@@ -173,7 +186,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           journeyCacheService.collectedJourneyValues(
             eq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
             eq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any()))
+          )(any())
+        )
           .thenReturn(Future.successful(Left("Data missing from cache")))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
@@ -192,10 +206,13 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
         val result = createController.submitWhatDoYouWantToTellUs(
           fakePostRequest
-            .withFormUrlEncodedBody(("pensionDetails", "test details")))
+            .withFormUrlEncodedBody(("pensionDetails", "test details"))
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
       }
     }
 
@@ -209,7 +226,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
         val result = createController.submitWhatDoYouWantToTellUs(
           fakePostRequest
-            .withFormUrlEncodedBody(pensionDetailsFormData))
+            .withFormUrlEncodedBody(pensionDetailsFormData)
+        )
 
         status(result) mustBe BAD_REQUEST
       }
@@ -266,16 +284,21 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
         val expectedCache = Map(
           UpdatePensionProviderConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          UpdatePensionProviderConstants.TelephoneNumberKey   -> "12345678")
+          UpdatePensionProviderConstants.TelephoneNumberKey   -> "12345678"
+        )
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "12345678"))
+            FormValuesConstants.YesNoTextEntry -> "12345678"
+          )
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers.url
       }
 
     }
@@ -284,7 +307,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       val expectedCacheWithErasingNumber =
         Map(
           UpdatePensionProviderConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-          UpdatePensionProviderConstants.TelephoneNumberKey   -> "")
+          UpdatePensionProviderConstants.TelephoneNumberKey   -> ""
+        )
       when(journeyCacheService.cache(any())(any()))
         .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
@@ -292,10 +316,14 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         fakePostRequest
           .withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
-            FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
+            FormValuesConstants.YesNoTextEntry -> "this value must not be cached"
+          )
+      )
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers.url
+      redirectLocation(
+        result
+      ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers.url
     }
 
     "return BadRequest" when {
@@ -307,7 +335,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> ""))
+            FormValuesConstants.YesNoTextEntry -> ""
+          )
+        )
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -323,7 +353,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val tooFewCharsResult = controller.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "1234"))
+            FormValuesConstants.YesNoTextEntry -> "1234"
+          )
+        )
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -332,7 +364,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           fakePostRequest
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"
+            )
+        )
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -348,7 +382,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           Future.successful(
             Right(
               Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes"),
-              Seq[Option[String]](Some("123456789")))
+              Seq[Option[String]](Some("123456789"))
+            )
           )
         )
 
@@ -365,7 +400,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       when(
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+          any(classOf[scala.collection.immutable.List[String]])
+        )(any())
+      ).thenReturn(
         Future.successful(Left("An error has occurred"))
       )
 
@@ -388,13 +425,15 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
             Right(
               Seq[String](empId.toString, "some random info", "Yes"),
               Seq[Option[String]](Some("123456789"))
-            ))
+            )
+          )
         )
         when(pensionProviderService.incorrectPensionProvider(any(), eq(1), eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(
           successfulJourneyCacheService
-            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), eq("true"))(any()))
+            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), eq("true"))(any())
+        )
           .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
@@ -414,13 +453,15 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
             Right(
               Seq[String](empId.toString, "some random info", "No"),
               Seq[Option[String]](None)
-            ))
+            )
+          )
         )
         when(pensionProviderService.incorrectPensionProvider(any(), eq(1), eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(
           successfulJourneyCacheService
-            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), eq("true"))(any()))
+            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), eq("true"))(any())
+        )
           .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
@@ -462,7 +503,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       taxAccountServiceCall
       when(
         successfulJourneyCacheService.currentValue(
-          eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId"))(any()))
+          eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId")
+        )(any())
+      )
         .thenReturn(Future.successful(None))
       journeyCacheCall
 
@@ -477,7 +520,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       taxAccountServiceCall
       when(
         successfulJourneyCacheService.currentValue(
-          eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId"))(any()))
+          eq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId")
+        )(any())
+      )
         .thenReturn(Future.successful(Some("true")))
       journeyCacheCall
 
@@ -545,10 +590,13 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         journeyCacheCall
 
         val result = createController.submitDuplicateSubmissionWarning(
-          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
+          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension.url
       }
     }
 
@@ -558,7 +606,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         journeyCacheCall
 
         val result = createController.submitDuplicateSubmissionWarning(
-          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
+          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
@@ -575,7 +624,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
         val result =
           createController.submitDuplicateSubmissionWarning(
-            fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> ""))
+            fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> "")
+          )
 
         status(result) mustBe BAD_REQUEST
       }

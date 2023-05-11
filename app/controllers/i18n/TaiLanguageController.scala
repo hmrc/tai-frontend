@@ -21,9 +21,9 @@ import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 
-class TaiLanguageController @Inject()(languageUtils: LanguageUtils, cc: ControllerComponents)(
-  implicit messagesApi: MessagesApi)
-    extends LanguageController(languageUtils, cc) {
+class TaiLanguageController @Inject() (languageUtils: LanguageUtils, cc: ControllerComponents)(implicit
+  messagesApi: MessagesApi
+) extends LanguageController(languageUtils, cc) {
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

@@ -58,7 +58,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
       doc.title() must include(
         Messages(
           "tai.income.previousYears.decision.title",
-          TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year).replaceAll("\u00A0", " ")))
+          TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year).replaceAll("\u00A0", " ")
+        )
+      )
     }
   }
 
@@ -70,7 +72,8 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
-              UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.YesValue)
+              UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.YesValue
+            )
         val result = SUT.submitDecision()(request)
 
         status(result) mustBe SEE_OTHER
@@ -85,12 +88,14 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
-              UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.NoValue)
+              UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.NoValue
+            )
         val result = SUT.submitDecision()(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url)
+          controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url
+        )
       }
     }
 
@@ -100,7 +105,8 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val result = sut.submitDecision()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> ""))
+            .withFormUrlEncodedBody(UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> "")
+        )
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -131,10 +137,13 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val result = SUT.submitDetails()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(("employmentDetails", "test details")))
+            .withFormUrlEncodedBody(("employmentDetails", "test details"))
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
       }
     }
 
@@ -150,7 +159,8 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val result = SUT.submitDetails()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(incomeDetailsFormData))
+            .withFormUrlEncodedBody(incomeDetailsFormData)
+        )
 
         status(result) mustBe SEE_OTHER
         verify(journeyCacheService, times(1)).cache(eq(incomeDetails))(any())
@@ -169,7 +179,8 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val result = SUT.submitDetails()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(employmentDetailsFormData))
+            .withFormUrlEncodedBody(employmentDetailsFormData)
+        )
 
         status(result) mustBe BAD_REQUEST
       }
@@ -209,10 +220,14 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> "12345678"))
+              FormValuesConstants.YesNoTextEntry -> "12345678"
+            )
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers.url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -220,7 +235,8 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val expectedCacheWithErasingNumber = Map(
           UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-          UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> "")
+          UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> ""
+        )
         when(journeyCacheService.cache(eq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
@@ -229,10 +245,14 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
-              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
+              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"
+            )
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers.url
       }
     }
 
@@ -247,7 +267,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> ""))
+              FormValuesConstants.YesNoTextEntry -> ""
+            )
+        )
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -263,7 +285,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> "1234"))
+              FormValuesConstants.YesNoTextEntry -> "1234"
+            )
+        )
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -273,7 +297,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"
+            )
+        )
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -301,7 +327,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
       when(
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(
+          any(classOf[scala.collection.immutable.List[String]])
+        )(any())
+      ).thenReturn(
         Future.successful(Left("An error has occurred"))
       )
 
@@ -324,20 +352,24 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             Right(
               Seq[String]("1", "whatYouToldUs", "Yes"),
               Seq[Option[String]](Some("123456789"))
-            ))
+            )
+          )
         )
         when(previousYearsIncomeService.incorrectIncome(any(), eq(1), eq(incorrectIncome))(any()))
           .thenReturn(Future.successful("1"))
         when(
           trackingjourneyCacheService
-            .cache(eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), eq("true"))(any()))
+            .cache(eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), eq("true"))(any())
+        )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation.url
         verify(journeyCacheService, times(1)).flush()(any())
       }
 
@@ -350,20 +382,24 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             Right(
               Seq[String]("1", "whatYouToldUs", "No"),
               Seq[Option[String]](None)
-            ))
+            )
+          )
         )
         when(previousYearsIncomeService.incorrectIncome(any(), eq(1), eq(incorrectEmployment))(any()))
           .thenReturn(Future.successful("1"))
         when(
           trackingjourneyCacheService
-            .cache(eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), eq("true"))(any()))
+            .cache(eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), eq("true"))(any())
+        )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation.url
+        redirectLocation(
+          result
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation.url
         verify(journeyCacheService, times(1)).flush()(any())
       }
     }

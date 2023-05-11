@@ -81,7 +81,8 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+      )
         .thenReturn(
           Future.failed(new BadRequestException("Failed to fetch income details"))
         )
@@ -95,7 +96,8 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+      )
         .thenReturn(
           Future.failed(new BadRequestException("Failed to fetch income details"))
         )
@@ -135,7 +137,8 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+      )
         .thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
@@ -215,7 +218,8 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       )
 
     when(
-      taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier]))
+      taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+    )
       .thenReturn(
         Future.successful(Seq.empty[TaxedIncome])
       )
