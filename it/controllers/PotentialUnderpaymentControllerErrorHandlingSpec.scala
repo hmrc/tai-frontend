@@ -20,19 +20,16 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlE
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.SessionKeys
 import utils.{FileHelper, IntegrationSpec}
 
 class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
-  override def fakeApplication() = GuiceApplicationBuilder()
-    .configure(
-      "auditing.enabled"                                                -> "false",
-      "microservice.services.auth.port"                                 -> server.port(),
-      "microservice.services.tai.port"                                  -> server.port(),
-      "microservice.services.digital-engagement-platform-partials.port" -> server.port()
-    )
-    .build()
+  override def fakeApplication() = GuiceApplicationBuilder().configure(
+    "auditing.enabled" -> "false",
+    "microservice.services.auth.port" -> server.port(),
+    "microservice.services.tai.port" -> server.port(),
+    "microservice.services.digital-engagement-platform-partials.port" -> server.port()
+  ).build()
 
   "/check-income-tax/income-summary" must {
 
@@ -73,13 +70,13 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
           .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
       )
 
-      val request =
-        FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
+      val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER)
 
       val result = route(app, request)
 
       result.map(status) mustBe Some(OK)
     }
+
 
     List(
       BAD_REQUEST,
@@ -114,16 +111,14 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
             .willReturn(aResponse().withStatus(httpStatus))
         )
 
-        val request =
-          FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
+        val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER)
 
         val result = route(app, request)
 
         result.map(fResult =>
           whenReady(fResult.failed) { e =>
             e mustBe a[RuntimeException]
-          }
-        )
+          })
       }
     }
   }

@@ -17,13 +17,15 @@
 package uk.gov.hmrc.tai.service
 
 import java.time.LocalDate
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.language.postfixOps
 
 class PensionProviderServiceSpec extends BaseSpec {
 
@@ -31,7 +33,7 @@ class PensionProviderServiceSpec extends BaseSpec {
     "return an envelope id" in {
       val sut = createSUT
       val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
-      when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
+      when(pensionProviderConnector.addPensionProvider(eq(nino), eq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.addPensionProvider(nino, model), 5 seconds)
@@ -43,7 +45,7 @@ class PensionProviderServiceSpec extends BaseSpec {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
         val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
-        when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
+        when(pensionProviderConnector.addPensionProvider(eq(nino), eq(model))(any()))
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addPensionProvider(nino, model), 5.seconds)
@@ -58,9 +60,8 @@ class PensionProviderServiceSpec extends BaseSpec {
       val model = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789")
-      )
-      when(pensionProviderConnector.incorrectPensionProvider(meq(nino), meq(1), meq(model))(any()))
+        telephoneNumber = Some("123456789"))
+      when(pensionProviderConnector.incorrectPensionProvider(eq(nino), eq(1), eq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectPensionProvider(nino, 1, model), 5 seconds)
@@ -74,9 +75,8 @@ class PensionProviderServiceSpec extends BaseSpec {
         val model = IncorrectPensionProvider(
           whatYouToldUs = "TEST",
           telephoneContactAllowed = "Yes",
-          telephoneNumber = Some("123456789")
-        )
-        when(pensionProviderConnector.incorrectPensionProvider(meq(nino), meq(1), meq(model))(any()))
+          telephoneNumber = Some("123456789"))
+        when(pensionProviderConnector.incorrectPensionProvider(eq(nino), eq(1), eq(model))(any()))
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1, model), 5.seconds)

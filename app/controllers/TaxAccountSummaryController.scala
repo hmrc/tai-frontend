@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 @Singleton
-class TaxAccountSummaryController @Inject() (
+class TaxAccountSummaryController @Inject()(
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,
@@ -44,8 +44,7 @@ class TaxAccountSummaryController @Inject() (
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,
   implicit val
-  errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -63,10 +62,10 @@ class TaxAccountSummaryController @Inject() (
           scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
           vm                    <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
         } yield {
-          val taxCodeIncomesByTaxCode =
-            taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map { case ((taxCode, maybeEmpId), seq) =>
+          val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
+            case ((taxCode, maybeEmpId), seq) =>
               taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)
-            }
+          }
 
           Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
         }

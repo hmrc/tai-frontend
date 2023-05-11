@@ -55,7 +55,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
     .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
   when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
     .thenReturn(Future.successful(NonTaxCodeIncome(None, Seq.empty)))
-  when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+  when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
     .thenReturn(Future.successful(Seq.empty))
 
   "Detailed Income Tax Estimate Controller" must {
@@ -96,7 +96,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       }
 
       "fetch of tax free amount components" in {
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
           .thenReturn(Future.failed(new Error))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR

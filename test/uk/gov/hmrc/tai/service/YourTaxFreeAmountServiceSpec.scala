@@ -18,16 +18,22 @@ package uk.gov.hmrc.tai.service
 
 import builders.RequestBuilder
 import java.time.LocalDate
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Random
 
 class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
@@ -37,9 +43,9 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
       val currentCodingComponents = List(codingComponent2)
       val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
-      when(codingComponentService.taxFreeAmountComparison(meq(nino))(any()))
+      when(codingComponentService.taxFreeAmountComparison(eq(nino))(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
-      when(taxCodeChangeService.taxCodeChange(meq(nino))(any()))
+      when(taxCodeChangeService.taxCodeChange(eq(nino))(any()))
         .thenReturn(Future.successful(taxCodeChange))
 
       val expectedModel: YourTaxFreeAmountComparison =

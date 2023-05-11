@@ -32,7 +32,7 @@ import views.html.taxCodeChange.{TaxCodeComparisonView, WhatHappensNextView, You
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxCodeChangeController @Inject() (
+class TaxCodeChangeController @Inject()(
   taxCodeChangeService: TaxCodeChangeService,
   taxAccountService: TaxAccountService,
   describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
@@ -44,8 +44,7 @@ class TaxCodeChangeController @Inject() (
   mcc: MessagesControllerComponents,
   taxCodeComparisonView: TaxCodeComparisonView,
   yourTaxFreeAmountView: YourTaxFreeAmountView,
-  whatHappensNextView: WhatHappensNextView
-)(implicit val ec: ExecutionContext)
+  whatHappensNextView: WhatHappensNextView)(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -70,8 +69,7 @@ class TaxCodeChangeController @Inject() (
           scottishTaxRateBands,
           taxCodeChangeReasons,
           isAGenericReason,
-          maybeUserName
-        )
+          maybeUserName)
 
       implicit val user: AuthedUser = request.taiUser
       Ok(taxCodeComparisonView(viewModel, appConfig))
@@ -84,7 +82,9 @@ class TaxCodeChangeController @Inject() (
 
     implicit val user: AuthedUser = request.taiUser
 
-    taxFreeAmountViewModel.map(viewModel => Ok(yourTaxFreeAmountView(viewModel)))
+    taxFreeAmountViewModel.map(viewModel => {
+      Ok(yourTaxFreeAmountView(viewModel))
+    })
   }
 
   def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

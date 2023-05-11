@@ -32,7 +32,7 @@ import views.html.print.HistoricIncomePrintView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class YourIncomeCalculationController @Inject() (
+class YourIncomeCalculationController @Inject()(
   personService: PersonService,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
@@ -44,8 +44,7 @@ class YourIncomeCalculationController @Inject() (
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
   historicIncomePrintView: HistoricIncomePrintView,
-  implicit val errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -62,19 +61,20 @@ class YourIncomeCalculationController @Inject() (
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
       employmentDetails    <- employmentFuture
-    } yield (taxCodeIncomeDetails, employmentDetails) match {
-      case (Right(taxCodeIncomes), Some(employment)) =>
-        val paymentDetails = paymentsService.filterDuplicates(employment)
+    } yield {
+      (taxCodeIncomeDetails, employmentDetails) match {
+        case (Right(taxCodeIncomes), Some(employment)) =>
+          val paymentDetails = paymentsService.filterDuplicates(employment)
 
-        val model = YourIncomeCalculationViewModel(
-          taxCodeIncomes.find(_.employmentId.contains(empId)),
-          employment,
-          paymentDetails,
-          request.fullName
-        )
-        implicit val user: AuthedUser = request.taiUser
-        Ok(yourIncomeCalculation(model))
-      case _ => errorPagesHandler.internalServerError("Error while fetching RTI details")
+          val model = YourIncomeCalculationViewModel(
+            taxCodeIncomes.find(_.employmentId.contains(empId)),
+            employment,
+            paymentDetails,
+            request.fullName)
+          implicit val user: AuthedUser = request.taiUser
+          Ok(yourIncomeCalculation(model))
+        case _ => errorPagesHandler.internalServerError("Error while fetching RTI details")
+      }
     }
   }
 
@@ -86,27 +86,27 @@ class YourIncomeCalculationController @Inject() (
 
   private def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int, printPage: Boolean): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
-      if (year <= TaxYear().prev) {
-        val nino = request.taiUser.nino
+      {
+        if (year <= TaxYear().prev) {
+          val nino = request.taiUser.nino
 
-        employmentService.employments(nino, year) map { employments =>
-          val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
+          employmentService.employments(nino, year) map { employments =>
+            val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
 
-          (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
-            case (_, "TemporarilyUnavailable") =>
-              errorPagesHandler.internalServerError(
-                "Employment contains stub annual account data found meaning payment information can't be displayed"
-              )
-            case (true, _) =>
-              Ok(historicIncomePrintView(historicIncomeCalculationViewModel, appConfig))
-            case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
+              case (_, "TemporarilyUnavailable") =>
+                errorPagesHandler.internalServerError(
+                  "Employment contains stub annual account data found meaning payment information can't be displayed")
+              case (true, _) =>
+                Ok(historicIncomePrintView(historicIncomeCalculationViewModel, appConfig))
+              case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            }
           }
-        }
 
-      } else {
-        Future.successful(
-          errorPagesHandler.internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year")
-        )
+        } else {
+          Future.successful(
+            errorPagesHandler.internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year"))
+        }
       }
     }
 }

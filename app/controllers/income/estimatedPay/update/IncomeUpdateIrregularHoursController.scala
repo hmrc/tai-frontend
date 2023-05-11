@@ -41,7 +41,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class IncomeUpdateIrregularHoursController @Inject() (
+class IncomeUpdateIrregularHoursController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   incomeService: IncomeService,
@@ -52,8 +52,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
   confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   private val logger = Logger(this.getClass)
@@ -65,11 +64,10 @@ class IncomeUpdateIrregularHoursController @Inject() (
         UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
       )
 
-      payment.fold(defaultCaching)(payment =>
-        defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
-          DateTimeFormatter.ofPattern(MonthAndYear)
-        ))
-      )
+      payment.fold(defaultCaching)(
+        payment =>
+          defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
+            DateTimeFormatter.ofPattern(MonthAndYear))))
     }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -79,8 +77,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
       (
         incomeService.latestPayment(nino, employmentId),
-        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
-      ).mapN {
+        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)).mapN {
         case (_, Left(value)) =>
           logger.error(value)
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad))
@@ -101,8 +98,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
           Seq(
             UpdateIncomeConstants.NameKey,
             UpdateIncomeConstants.IrregularAnnualPayKey,
-            UpdateIncomeConstants.PayToDateKey
-          ),
+            UpdateIncomeConstants.PayToDateKey),
           Seq(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employmentId")
         )
 
@@ -134,8 +130,8 @@ class IncomeUpdateIrregularHoursController @Inject() (
               Ok(confirmAmountEntered(vm))
             }
         }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
+        .recover {
+          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
         }
   }
 
@@ -160,7 +156,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
                 journeyCacheService.cache(UpdateIncomeConstants.IrregularAnnualPayKey, income) map { _ =>
                   Redirect(routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(employmentId))
                 }
-              }
+            }
           )
       }
   }
@@ -170,28 +166,29 @@ class IncomeUpdateIrregularHoursController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
-      val updateJourneyCompletion: String => Future[Map[String, String]] =
-        (incomeId: String) => estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+      val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
+        estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+      }
 
-      val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) =>
+      val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
         journeyCacheService.cache(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employmentId", newPay) map { _ =>
           Ok(editSuccess(incomeName, incomeId.toInt))
         }
+      }
 
       (for {
         cache <- journeyCacheService
-                   .mandatoryJourneyValues(
-                     UpdateIncomeConstants.NameKey,
-                     UpdateIncomeConstants.IrregularAnnualPayKey,
-                     UpdateIncomeConstants.IdKey
-                   )
-                   .getOrFail
+                  .mandatoryJourneyValues(
+                    UpdateIncomeConstants.NameKey,
+                    UpdateIncomeConstants.IrregularAnnualPayKey,
+                    UpdateIncomeConstants.IdKey)
+                  .getOrFail
         incomeName :: newPay :: incomeId :: Nil = cache.toList
         _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
         _      <- updateJourneyCompletion(incomeId)
         result <- cacheAndRespond(incomeName, incomeId, newPay)
-      } yield result).recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage)
+      } yield result).recover {
+        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
       }
 
   }

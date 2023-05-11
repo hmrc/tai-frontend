@@ -21,7 +21,9 @@ import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthenticatedRequest
 
 import java.time.LocalDate
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
@@ -69,7 +71,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         implicit val fakeAuthenticatedRequest =
           AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
 
-        when(describedYourTaxFreeAmountService.taxFreeAmountComparison(meq(FakeAuthAction.nino))(any(), any(), any()))
+        when(describedYourTaxFreeAmountService.taxFreeAmountComparison(eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
         val result = createController().yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -88,18 +90,18 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
-      when(taxAccountService.totalTax(meq(FakeAuthAction.nino), any())(any()))
+      when(taxAccountService.totalTax(eq(FakeAuthAction.nino), any())(any()))
         .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
       when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any(), any()))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any()))
         .thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
 
       val reasons = Seq("a reason")
-      when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), any(), meq(taxCodeChange))(any()))
+      when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), any(), eq(taxCodeChange))(any()))
         .thenReturn(reasons)
-      when(taxCodeChangeReasonsService.isAGenericReason(meq(reasons))(any())).thenReturn(false)
+      when(taxCodeChangeReasonsService.isAGenericReason(eq(reasons))(any())).thenReturn(false)
 
       val result = createController().taxCodeComparison()(request)
 

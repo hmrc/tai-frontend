@@ -28,25 +28,22 @@ import views.html.ErrorTemplateNoauth
 import scala.concurrent.ExecutionContext
 import views.html.includes.link
 
-class ErrorHandler @Inject() (
+class ErrorHandler @Inject()(
   applicationConfig: ApplicationConfig,
   errorTemplateNoauth: ErrorTemplateNoauth,
   val messagesApi: MessagesApi,
   val configuration: Configuration,
-  internalServerError: InternalServerErrorView
-)(implicit ec: ExecutionContext)
+  internalServerError: InternalServerErrorView)(implicit ec: ExecutionContext)
     extends FrontendErrorHandler {
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
-    request: Request[_]
-  ): Html = errorTemplateNoauth(pageTitle, heading, message, List.empty)
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(
+    implicit request: Request[_]): Html = errorTemplateNoauth(pageTitle, heading, message, List.empty)
 
   def badRequestErrorTemplate(
     pageTitle: String,
     heading: String,
     message1: String,
-    additionalMessages: List[String] = List.empty
-  )(implicit request: Request[_]): Html =
+    additionalMessages: List[String] = List.empty)(implicit request: Request[_]): Html =
     errorTemplateNoauth(pageTitle, heading, message1, additionalMessages)
 
   override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
@@ -59,10 +56,8 @@ class ErrorHandler @Inject() (
         link(
           url = "#report-name",
           copy = Messages("tai.errorMessage.reportAProblem"),
-          linkClasses = Seq("report-error__toggle")
-        )
-      )
-    )
+          linkClasses = Seq("report-error__toggle"))
+      ))
   )
 
   override def notFoundTemplate(implicit request: Request[_]): Html = {

@@ -19,8 +19,11 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -45,9 +48,10 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         FakeValidatePerson,
         mcc,
         inject[WorkingHoursView],
-        journeyCacheService
+        journeyCacheService,
+        MockTemplateRenderer
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -56,7 +60,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
     object WorkingHoursPageHarness {
       sealed class WorkingHoursPageHarness() {
 
-        when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.WorkingHoursKey))(any()))
+        when(journeyCacheService.currentValue(eq(UpdateIncomeConstants.WorkingHoursKey))(any()))
           .thenReturn(Future.successful(Option(EditIncomeIrregularPayConstants.RegularHours)))
 
         def workingHoursPage(): Future[Result] =
@@ -87,7 +91,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdateWorkingHoursController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.workingHoursPage(fakeRequest)
@@ -103,10 +107,10 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
     object HandleWorkingHoursHarness {
       sealed class HandleWorkingHoursHarness() {
 
-        when(journeyCacheService.cache(meq(UpdateIncomeConstants.WorkingHoursKey), any())(any()))
+        when(journeyCacheService.cache(eqTo(UpdateIncomeConstants.WorkingHoursKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(eqTo(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(1)))
 
         def handleWorkingHours(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -168,7 +172,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
       val controller = new TestIncomeUpdateWorkingHoursController()
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Left("")))
 
       val result = controller.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())

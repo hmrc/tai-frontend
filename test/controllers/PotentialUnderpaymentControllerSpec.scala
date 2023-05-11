@@ -19,7 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.{I18nSupport, Messages}
@@ -34,7 +34,6 @@ import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.language.postfixOps
 
 class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach {
 
@@ -75,7 +74,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
       Await
         .result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
       verify(auditService, times(1))
-        .createAndSendAuditEvent(meq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
+        .createAndSendAuditEvent(eq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
@@ -107,7 +106,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
 
-    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any())).thenReturn(
       Future.successful(
         Seq(
           CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),

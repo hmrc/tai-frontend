@@ -20,7 +20,8 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
+import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.OK
@@ -81,7 +82,7 @@ class IncomeTaxHistoryControllerSpec
             Seq(empEmployment1, empEmployment2)
           )
 
-          when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
         }
 
@@ -106,7 +107,7 @@ class IncomeTaxHistoryControllerSpec
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4)
           )
-          when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
         }
 
@@ -117,8 +118,8 @@ class IncomeTaxHistoryControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
-        verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
+        verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(Matchers.any(), any())(Matchers.any())
+        verify(employmentService, times(totalInvocations)).employments(Matchers.any(), any())(Matchers.any())
 
       }
 
@@ -128,7 +129,7 @@ class IncomeTaxHistoryControllerSpec
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4)
           )
-          when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
         }
 
         val controller = new TestController
@@ -147,7 +148,7 @@ class IncomeTaxHistoryControllerSpec
           when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
             Seq(pensionEmployment3, pensionEmployment4)
           )
-          when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
         }
 
         val controller = new TestController
@@ -165,7 +166,7 @@ class IncomeTaxHistoryControllerSpec
     "return an empty tax code if there isn't one" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
-      when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
       val controller = new TestController
       val result = controller.getIncomeTaxYear(nino, TaxYear())
@@ -176,7 +177,7 @@ class IncomeTaxHistoryControllerSpec
     "return an empty tax code if the taxAccountService fails to retrieve" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
-      when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
       val controller = new TestController
       val result = controller.getIncomeTaxYear(nino, TaxYear())
@@ -193,7 +194,7 @@ class IncomeTaxHistoryControllerSpec
           when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
             Upstream5xxResponse("", 500, 500, Map.empty)
           )
-          when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+          when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
         }
 
@@ -206,9 +207,9 @@ class IncomeTaxHistoryControllerSpec
         doc must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
 
         verify(taxAccountService, times(totalInvocations))
-          .taxCodeIncomes(any(), any())(any())
+          .taxCodeIncomes(Matchers.any(), any())(Matchers.any())
         verify(employmentService, times(totalInvocations))
-          .employments(any(), any())(any())
+          .employments(Matchers.any(), any())(Matchers.any())
 
       }
     }
@@ -218,7 +219,7 @@ class IncomeTaxHistoryControllerSpec
         Right(Seq(taxCodeIncome))
       )
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
-      when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
+      when(personService.personDetails(any())(any())) thenReturn Future.successful(fakePerson(nino))
 
       val controller = new TestController
       val result = controller.getIncomeTaxYear(nino, TaxYear())

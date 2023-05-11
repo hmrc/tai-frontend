@@ -41,8 +41,7 @@ class TrackingService @Inject() (
 ) {
 
   def isAnyIFormInProgress(
-    nino: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[TimeToProcess] =
+    nino: String)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[TimeToProcess] =
     (
       trackingConnector.getUserTracking(nino),
       successfulJourneyCacheService.currentCache

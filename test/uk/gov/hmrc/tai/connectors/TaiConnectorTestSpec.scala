@@ -18,17 +18,26 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, anyUrl, post}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.OK
 import play.api.libs.json.Json
+import play.api.test.Injecting
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.tai.model.{CalculatedPay, PayDetails}
-import utils.{BaseSpec, WireMockHelper}
+import utils.WireMockHelper
+
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
-class TaiConnectorTestSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
+class TaiConnectorTestSpec
+    extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
+    with IntegrationPatience with Injecting {
+
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   "TaiConnector" must {
     "return estimated pay" in {

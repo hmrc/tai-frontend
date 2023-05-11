@@ -26,13 +26,12 @@ import views.html.help.GetHelpView
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
-class HelpController @Inject() (
+class HelpController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  getHelp: GetHelpView
-)(implicit val ec: ExecutionContext)
+  getHelp: GetHelpView)(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def helpPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

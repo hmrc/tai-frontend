@@ -20,9 +20,11 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers._
+import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -59,7 +61,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
       val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
@@ -72,7 +74,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "redirect to the tax summary page if a value is missing from the cache " in {
       val endEmploymentTest = createEndEmploymentTest
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
 
       val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
@@ -89,7 +91,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val request = FakeRequest("POST", "")
@@ -117,14 +119,13 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val employment = employmentWithAccounts(List(annualAccount))
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -147,22 +148,19 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val employment = employmentWithAccounts(List(annualAccount))
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
 
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError.url
       }
 
       "cache the employment details for error page" in {
@@ -176,19 +174,17 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val dataToCache = Map(
           EndEmploymentConstants.LatestPaymentDateKey -> date.toString,
-          EndEmploymentConstants.NameKey              -> "employer name"
-        )
+          EndEmploymentConstants.NameKey              -> "employer name")
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         Await.result(endEmploymentTest.handleEmploymentUpdateRemove(request), 5 seconds)
       }
@@ -199,29 +195,25 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val endEmploymentTest = createEndEmploymentTest
 
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
+        val request = fakeGetRequest.withFormUrlEncodedBody(
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
-        when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Success))
+        when(auditService.createAndSendAuditEvent(any(), any())(any(), any())).thenReturn(Future.successful(Success))
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError.url
       }
     }
 
@@ -230,7 +222,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val request = FakeRequest("POST", "")
@@ -249,7 +241,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val dataFromCache = Right(Seq(LocalDate.now.minusWeeks(6).minusDays(1).toString, employerName, "1"))
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any()))
         .thenReturn(Future.successful(dataFromCache))
 
       val result = endEmploymentTest.endEmploymentError()(fakeGetRequest)
@@ -259,16 +251,14 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       doc.title() must include(
         Messages(
           "tai.endEmploymentWithinSixWeeksError.heading",
-          LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-        )
-      )
+          LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))))
     }
 
     "show the irregular payment error page" in {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
       val result = endEmploymentTest.irregularPaymentError(fakeGetRequest)
@@ -284,10 +274,10 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val dataFromCache = Right(Seq(employmentId, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST")))
       val cacheMap = Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId" -> "true")
 
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
+      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
         .thenReturn(Future.successful(dataFromCache))
       when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-      when(trackSuccessJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
+      when(trackSuccessJourneyCacheService.cache(eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
       val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
@@ -302,7 +292,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
+      when(endEmploymentJourneyCacheService.collectedJourneyValues(Matchers.anyVararg[Seq[String]], any())(any()))
         .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString), Seq())))
 
       val result = endEmploymentTest.endEmploymentPage(fakeGetRequest)
@@ -315,7 +305,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "redirect to the tax summary page if a value is missing from the cache " in {
       val endEmploymentTest = createEndEmploymentTest
 
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
+      when(endEmploymentJourneyCacheService.collectedJourneyValues(Matchers.anyVararg[Seq[String]], any())(any()))
         .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
 
       val result = endEmploymentTest.endEmploymentPage(fakeGetRequest)
@@ -328,12 +318,14 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "call processTellUsAboutEmploymentPage successfully with an authorised session" in {
       val endEmploymentTest = createEndEmploymentTest
 
+      val formData = Json.obj(
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+      )
+
       val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-        )
+        .withJsonBody(formData)
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -342,13 +334,14 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     "reload the page when there are form errors" in {
       val endEmploymentTest = createEndEmploymentTest
+      val formWithErrors = Json.obj(
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "abc"
+      )
 
       val request = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "abc"
-        )
+        .withJsonBody(formWithErrors)
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -363,15 +356,17 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         EndEmploymentConstants.EndDateKey      -> LocalDate.of(2017, 2, 1).toString
       )
 
-      when(endEmploymentJourneyCacheService.cache(meq(dataToCache))(any()))
+      when(endEmploymentJourneyCacheService.cache(eq(dataToCache))(any()))
         .thenReturn(Future.successful(dataToCache))
 
+      val formData = Json.obj(
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+      )
+
       val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-        )
+        .withJsonBody(formData)
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -384,15 +379,17 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
+      val formData = Json.obj(
+        EmploymentEndDateForm.EmploymentFormDay   -> "01",
+        EmploymentEndDateForm.EmploymentFormMonth -> "02",
+        EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+      )
+
       val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-        )
+        .withJsonBody(formData)
 
       Await.result(endEmploymentTest.handleEndEmploymentPage(0)(request), 5 seconds)
-      verify(endEmploymentJourneyCacheService, times(1)).cache(any())(any())
+      verify(endEmploymentJourneyCacheService, times(1)).cache(eq(dataToCache))(any())
     }
 
     "check your answers page" must {
@@ -404,9 +401,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(
           endEmploymentJourneyCacheService.collectedJourneyValues(
             any(classOf[scala.collection.immutable.List[String]]),
-            any(classOf[scala.collection.immutable.List[String]])
-          )(any(), any())
-        ).thenReturn(Future.successful(dataFromCache))
+            any(classOf[scala.collection.immutable.List[String]]))(any())).thenReturn(Future.successful(dataFromCache))
 
         val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakeGetRequest)
         val doc = Jsoup.parse(contentAsString(result))
@@ -422,12 +417,10 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(
           endEmploymentJourneyCacheService.collectedJourneyValues(
             any(classOf[scala.collection.immutable.List[String]]),
-            any(classOf[scala.collection.immutable.List[String]])
-          )(any(), any())
-        )
+            any(classOf[scala.collection.immutable.List[String]]))(any()))
           .thenReturn(Future.successful(Left("An error has occurred")))
 
-        val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakePostRequest)
+        val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
 
@@ -439,16 +432,14 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val dataFromCache =
           Right((Seq(empId.toString, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
 
-        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
+        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any()))
           .thenReturn(Future.successful(dataFromCache))
         when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
         when(
           trackSuccessJourneyCacheService
-            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
-        )
+            .cache(eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), eq("true"))(any()))
           .thenReturn(
-            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
-          )
+            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")))
         when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
@@ -477,11 +468,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "the request has an authorised session and there is cached data" in {
         val endEmploymentTest = createEndEmploymentTest
         when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(meq(EndEmploymentConstants.EmploymentIdKey))(
-            any()
-          )
-        ).thenReturn(Future.successful(Right(0)))
-        when(endEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
+          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(eq(EndEmploymentConstants.EmploymentIdKey))(
+            any())).thenReturn(Future.successful(Right(0)))
+        when(endEmploymentJourneyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
 
         val result = endEmploymentTest.addTelephoneNumber()(fakeGetRequest)
@@ -494,11 +483,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "the request has an authorised session no cached data" in {
         val endEmploymentTest = createEndEmploymentTest
         when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(meq(EndEmploymentConstants.EmploymentIdKey))(
-            any()
-          )
-        ).thenReturn(Future.successful(Right(0)))
-        when(endEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
+          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(eq(EndEmploymentConstants.EmploymentIdKey))(
+            any())).thenReturn(Future.successful(Right(0)))
+        when(endEmploymentJourneyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None, None)))
 
         val result = endEmploymentTest.addTelephoneNumber()(fakeGetRequest)
@@ -513,12 +500,10 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
 
         when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(meq(EndEmploymentConstants.EmploymentIdKey))(
-            any()
-          )
-        )
+          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(eq(EndEmploymentConstants.EmploymentIdKey))(
+            any()))
           .thenReturn(Future.successful(Left("Mandatory value missing from cache")))
-        when(endEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None, None)))
 
         val result = endEmploymentTest.addTelephoneNumber()(fakeGetRequest)
@@ -537,21 +522,16 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val expectedCache =
           Map(
             EndEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            EndEmploymentConstants.TelephoneNumberKey   -> "12345678"
-          )
-        when(endEmploymentJourneyCacheService.cache(meq(expectedCache))(any()))
+            EndEmploymentConstants.TelephoneNumberKey   -> "12345678")
+        when(endEmploymentJourneyCacheService.cache(eq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
         val result = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "12345678"
-          )
-        )
+            FormValuesConstants.YesNoTextEntry -> "12345678"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -560,22 +540,17 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val expectedCacheWithErasingNumber =
           Map(
             EndEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-            EndEmploymentConstants.TelephoneNumberKey   -> ""
-          )
-        when(endEmploymentJourneyCacheService.cache(meq(expectedCacheWithErasingNumber))(any()))
+            EndEmploymentConstants.TelephoneNumberKey   -> "")
+        when(endEmploymentJourneyCacheService.cache(eq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
-              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"
-            )
-        )
+              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
       }
     }
 
@@ -591,9 +566,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> ""
-          )
-        )
+            FormValuesConstants.YesNoTextEntry -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -611,9 +584,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val tooFewCharsResult = endEmploymentTest.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "1234"
-          )
-        )
+            FormValuesConstants.YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -622,9 +593,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           fakePostRequest
             .withFormUrlEncodedBody(
               FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"
-            )
-        )
+              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
@@ -638,7 +607,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val result = endEmploymentTest.handleIrregularPaymentError(fakePostRequest.withFormUrlEncodedBody())
@@ -652,14 +621,12 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        val result = endEmploymentTest.handleIrregularPaymentError(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer)
-        )
+        val result = endEmploymentTest.handleIrregularPaymentError(RequestBuilder
+          .buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
@@ -671,14 +638,13 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val result = endEmploymentTest.handleIrregularPaymentError(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails)
-        )
+            .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
@@ -692,14 +658,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val endEmploymentTest = createEndEmploymentTest
       val cacheMap = Map(
         EndEmploymentConstants.EmploymentIdKey -> employmentId.toString,
-        EndEmploymentConstants.NameKey         -> employerName
-      )
-      when(endEmploymentJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
+        EndEmploymentConstants.NameKey         -> employerName)
+      when(endEmploymentJourneyCacheService.cache(eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(
         trackSuccessJourneyCacheService.currentValue(
-          meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId")
-        )(any())
-      )
+          eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId"))(any()))
         .thenReturn(Future.successful(None))
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
@@ -712,14 +675,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val endEmploymentTest = createEndEmploymentTest
       val cacheMap = Map(
         EndEmploymentConstants.EmploymentIdKey -> employmentId.toString,
-        EndEmploymentConstants.NameKey         -> employerName
-      )
-      when(endEmploymentJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
+        EndEmploymentConstants.NameKey         -> employerName)
+      when(endEmploymentJourneyCacheService.cache(eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(
         trackSuccessJourneyCacheService.currentValue(
-          meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId")
-        )(any())
-      )
+          eq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId"))(any()))
         .thenReturn(Future.successful(Some("true")))
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
@@ -733,7 +693,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
       val result = endEmploymentTest.duplicateSubmissionWarning(fakeGetRequest)
@@ -746,7 +706,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "redirect to the tax summary page if a value is missing from the cache " in {
       val endEmploymentTest = createEndEmploymentTest
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
 
       val result = endEmploymentTest.duplicateSubmissionWarning(fakeGetRequest)
@@ -762,18 +722,15 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val result = endEmploymentTest.submitDuplicateSubmissionWarning(
           fakePostRequest
-            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
-        )
+            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
       }
     }
 
@@ -782,13 +739,12 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val result = endEmploymentTest.submitDuplicateSubmissionWarning(
           fakePostRequest
-            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
-        )
+            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
@@ -802,13 +758,12 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
         val result = endEmploymentTest.submitDuplicateSubmissionWarning(
           fakePostRequest
-            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> "")
-        )
+            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -839,8 +794,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       8,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
+      receivingOccupationalPension = false)
 
   def paymentOnDate(date: LocalDate): Payment =
     Payment(
@@ -882,7 +836,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         inject[ConfirmationView],
         inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
-        trackSuccessJourneyCacheService
+        trackSuccessJourneyCacheService,
+        MockTemplateRenderer
       ) {
 
     val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")
@@ -903,11 +858,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
               1,
               None,
               hasPayrolledBenefit = false,
-              receivingOccupationalPension = false
-            )
-          )
-        )
-      )
+              receivingOccupationalPension = false))))
 
     when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
       .thenReturn(Future.successful(Some(LocalDate.parse("2017-09-09"))))

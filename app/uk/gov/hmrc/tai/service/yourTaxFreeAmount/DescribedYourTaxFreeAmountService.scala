@@ -31,39 +31,36 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DescribedYourTaxFreeAmountService @Inject() (
+class DescribedYourTaxFreeAmountService @Inject()(
   yourTaxFreeAmountService: YourTaxFreeAmountService,
   companyCarService: CompanyCarService,
   employmentService: EmploymentService,
-  taxAccountService: TaxAccountService
-) {
+  taxAccountService: TaxAccountService) {
 
-  def taxFreeAmountComparison(nino: Nino)(implicit
-    hc: HeaderCarrier,
+  def taxFreeAmountComparison(nino: Nino)(
+    implicit hc: HeaderCarrier,
     messages: Messages,
-    executionContext: ExecutionContext
-  ): Future[YourTaxFreeAmountViewModel] =
+    executionContext: ExecutionContext): Future[YourTaxFreeAmountViewModel] =
     taxFreeAmount(nino, yourTaxFreeAmountService.taxFreeAmountComparison)
 
-  private def taxFreeAmount(nino: Nino, getTaxFreeAmount: Nino => Future[YourTaxFreeAmountComparison])(implicit
-    hc: HeaderCarrier,
+  private def taxFreeAmount(nino: Nino, getTaxFreeAmount: Nino => Future[YourTaxFreeAmountComparison])(
+    implicit hc: HeaderCarrier,
     messages: Messages,
-    executionContext: ExecutionContext
-  ): Future[YourTaxFreeAmountViewModel] =
+    executionContext: ExecutionContext): Future[YourTaxFreeAmountViewModel] =
     (
       employmentService.employmentNames(nino, TaxYear()),
       getTaxFreeAmount(nino),
       companyCarService.companyCars(nino),
-      taxAccountService.totalTax(nino, TaxYear())
-    ).mapN { (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>
-      val describedPairs =
-        describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
-      YourTaxFreeAmountViewModel(
-        taxFreeAmountComparison.previousTaxFreeInfo,
-        taxFreeAmountComparison.currentTaxFreeInfo,
-        describedPairs.allowances,
-        describedPairs.deductions
-      )
+      taxAccountService.totalTax(nino, TaxYear())).mapN {
+      (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>
+        val describedPairs =
+          describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
+        YourTaxFreeAmountViewModel(
+          taxFreeAmountComparison.previousTaxFreeInfo,
+          taxFreeAmountComparison.currentTaxFreeInfo,
+          describedPairs.allowances,
+          describedPairs.deductions
+        )
     }
 
   case class describedIabdPairs(allowances: Seq[CodingComponentPairModel], deductions: Seq[CodingComponentPairModel])
@@ -72,16 +69,13 @@ class DescribedYourTaxFreeAmountService @Inject() (
     allowancesAndDeductions: AllowancesAndDeductionPairs,
     companyCarBenefit: Seq[CompanyCarBenefit],
     employmentIds: Map[Int, String],
-    totalTax: TotalTax
-  )(implicit hc: HeaderCarrier, messages: Messages) = {
+    totalTax: TotalTax)(implicit hc: HeaderCarrier, messages: Messages) = {
 
-    val allowancesDescription =
-      for (allowance <- allowancesAndDeductions.allowances)
-        yield CodingComponentPairModel(allowance, TaxFreeAmountDetails(employmentIds, companyCarBenefit, totalTax))
+    val allowancesDescription = for (allowance <- allowancesAndDeductions.allowances)
+      yield CodingComponentPairModel(allowance, TaxFreeAmountDetails(employmentIds, companyCarBenefit, totalTax))
 
-    val deductionsDescription =
-      for (deduction <- allowancesAndDeductions.deductions)
-        yield CodingComponentPairModel(deduction, TaxFreeAmountDetails(employmentIds, companyCarBenefit, totalTax))
+    val deductionsDescription = for (deduction <- allowancesAndDeductions.deductions)
+      yield CodingComponentPairModel(deduction, TaxFreeAmountDetails(employmentIds, companyCarBenefit, totalTax))
 
     describedIabdPairs(allowancesDescription, deductionsDescription)
   }

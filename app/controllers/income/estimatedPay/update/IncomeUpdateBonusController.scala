@@ -34,14 +34,13 @@ import views.html.incomes._
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
-class IncomeUpdateBonusController @Inject() (
+class IncomeUpdateBonusController @Inject()(
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
   bonusPaymentAmount: BonusPaymentAmountView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
-)(implicit ec: ExecutionContext)
+  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
   def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -49,8 +48,7 @@ class IncomeUpdateBonusController @Inject() (
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService.currentValue(UpdateIncomeConstants.BonusPaymentsKey),
-      bonusPaymentBackUrl
-    ).mapN {
+      bonusPaymentBackUrl).mapN {
       case (Right(incomeSource), bonusPayment, backUrl) =>
         val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
         Ok(bonusPayments(form, incomeSource, backUrl))
@@ -66,12 +64,13 @@ class IncomeUpdateBonusController @Inject() (
       BonusPaymentsForm.createForm
         .bindFromRequest()
         .fold(
-          formWithErrors =>
+          formWithErrors => {
             (IncomeSource.create(journeyCacheService), bonusPaymentBackUrl).mapN {
               case (Right(incomeSource), backUrl) =>
                 BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
               case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-            },
+            }
+          },
           formData => {
             val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
               Map(UpdateIncomeConstants.BonusPaymentsKey -> bonusPayments)
@@ -92,8 +91,7 @@ class IncomeUpdateBonusController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     (
       IncomeSource.create(journeyCacheService),
-      journeyCacheService.currentValue(UpdateIncomeConstants.BonusOvertimeAmountKey)
-    )
+      journeyCacheService.currentValue(UpdateIncomeConstants.BonusOvertimeAmountKey))
       .mapN {
         case (Right(incomeSource), bonusOvertimeAmount) =>
           val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
@@ -110,25 +108,28 @@ class IncomeUpdateBonusController @Inject() (
         .createForm()
         .bindFromRequest()
         .fold(
-          formWithErrors =>
+          formWithErrors => {
             for {
               incomeSourceEither <- IncomeSource.create(journeyCacheService)
-            } yield incomeSourceEither match {
-              case Right(incomeSource) =>
-                BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-            },
-          formData =>
+            } yield {
+              incomeSourceEither match {
+                case Right(incomeSource) =>
+                  BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
+                case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+              }
+            }
+          },
+          formData => {
             formData.amount match {
               case Some(amount) =>
                 journeyCache(
                   UpdateIncomeConstants.BonusOvertimeAmountKey,
-                  Map(UpdateIncomeConstants.BonusOvertimeAmountKey -> amount)
-                ) map { _ =>
+                  Map(UpdateIncomeConstants.BonusOvertimeAmountKey -> amount)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
                 }
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId)))
             }
+          }
         )
   }
 

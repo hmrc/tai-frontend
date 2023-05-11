@@ -31,7 +31,7 @@ import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.ExecutionContext
 
-class PotentialUnderpaymentController @Inject() (
+class PotentialUnderpaymentController @Inject()(
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   auditService: AuditService,
@@ -39,8 +39,7 @@ class PotentialUnderpaymentController @Inject() (
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   potentialUnderpayment: PotentialUnderpaymentView,
-  implicit val errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext)
+  implicit val errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -51,17 +50,16 @@ class PotentialUnderpaymentController @Inject() (
         val nino = user.nino
         (
           taxAccountService.taxAccountSummary(nino, TaxYear()),
-          codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-        ).mapN { case (tas, ccs) =>
-          auditService.createAndSendAuditEvent(
-            AuditConstants.PotentialUnderpaymentInYearAdjustment,
-            Map("nino" -> nino.toString())
-          )
-          val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-          Ok(potentialUnderpayment(vm))
+          codingComponentService.taxFreeAmountComponents(nino, TaxYear())).mapN {
+          case (tas, ccs) =>
+            auditService.createAndSendAuditEvent(
+              AuditConstants.PotentialUnderpaymentInYearAdjustment,
+              Map("nino" -> nino.toString()))
+            val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+            Ok(potentialUnderpayment(vm))
         }
-      } recover { case e: Exception =>
-        errorPagesHandler.internalServerError(e.getMessage, Some(e))
+      } recover {
+        case e: Exception => errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }
   }
 }
