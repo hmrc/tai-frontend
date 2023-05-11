@@ -128,6 +128,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       val result = estimatedPayLandingPage()
 
       when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("empty cache")))
+      when(journeyCacheService.currentValueAsInt(any())(any())).thenReturn(Future.successful(None))
 
       redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     }
