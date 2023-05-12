@@ -36,7 +36,8 @@ private object AppDependencies {
           "com.github.tomakehurst" % "wiremock-jre8"       % "2.27.2"            % scope,
           "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
           "org.scalacheck"         %% "scalacheck"         % "1.14.3"            % scope,
-          "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"             % bootstrapVersion
+          "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"             % bootstrapVersion,
+          "org.scalatestplus" %% "scalacheck-1-15" % "3.2.3.0"
         )
       }.test
   }

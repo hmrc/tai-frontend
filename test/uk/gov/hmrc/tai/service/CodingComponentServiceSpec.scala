@@ -128,8 +128,6 @@ class CodingComponentServiceSpec extends BaseSpec {
 
   private val currentTaxYear = TaxYear()
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
   def generateNino: Nino = new Generator(new Random).nextNino
 
   val codingComponents: Seq[CodingComponent] = Seq(

@@ -20,18 +20,17 @@ import org.jsoup.nodes.{Attributes, Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 import play.api.i18n.Messages
+import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
 
 trait JsoupMatchers {
-
-  import scala.collection.JavaConversions._
 
   class TagWithTextMatcher(expectedContent: String, tag: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val elements: List[String] =
         left
           .getElementsByTag(tag)
-          .toList
-          .map(_.text)
+          .eachText()
+          .asInstanceOf[List[String]]
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -48,8 +47,8 @@ trait JsoupMatchers {
       val elements: List[String] =
         left
           .select(selector)
-          .toList
-          .map(_.text)
+          .eachText()
+          .asInstanceOf[List[String]]
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -66,8 +65,8 @@ trait JsoupMatchers {
       val elements: List[String] =
         left
           .select(selector)
-          .toList
-          .map(_.text)
+          .eachText()
+          .asInstanceOf[List[String]]
 
       MatchResult(
         elements.length == expectedCount,
@@ -86,8 +85,8 @@ trait JsoupMatchers {
       val attributes: List[Attributes] =
         left
           .select(selector)
-          .toList
-          .map(_.attributes())
+          .eachAttr(attributeName)
+          .asInstanceOf[List[Attributes]]
 
       lazy val attributeContents = attributes.mkString("\t", "\n\t", "")
 
@@ -101,16 +100,13 @@ trait JsoupMatchers {
 
   class CssSelectorWithClassMatcher(className: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val classes: List[String] =
-        left
-          .select(selector)
-          .toList
-          .map(_.className())
+      val classes =
+        left.getElementsByClass(className).select(selector)
 
       lazy val classContents = classes.mkString("\t", "\n\t", "")
 
       MatchResult(
-        classes.exists(_.contains(className)),
+        classes.exists(_.classNames().contains(className)),
         s"[class=$className] not found in elements with '$selector' selector:[\n$classContents]",
         s"[class=$className] element found with '$selector' selector"
       )
@@ -215,8 +211,8 @@ trait JsoupMatchers {
 
   class ElementWithClassMatcher(expectedClass: String) extends Matcher[Element] {
     def apply(left: Element): MatchResult = {
-      val classes = left.classNames.toList
-      val classNames = classes.mkString("\t", "\n\t", "")
+      val classes = left.getElementsByClass(expectedClass)
+      val classNames = classes.toString.mkString("\t", "\n\t", "")
 
       MatchResult(
         classes.contains(expectedClass),

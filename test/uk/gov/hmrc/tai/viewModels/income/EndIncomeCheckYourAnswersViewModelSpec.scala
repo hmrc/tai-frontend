@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
@@ -41,7 +39,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.any())(any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
         .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
 
       res.size mustBe 2
@@ -69,7 +67,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(Matchers.any())(any()))
+      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
         .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
 
       res.size mustBe 3

@@ -16,20 +16,15 @@
 
 package uk.gov.hmrc.tai.model
 
-import org.mockito.Mockito.when
-import org.scalatest.Matchers.convertToAnyShouldWrapper
-import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Lang
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
+import utils.BaseSpec
 
-class YearAndMonthSpec extends PlaySpec with MockitoSugar {
+class YearAndMonthSpec extends BaseSpec {
 
-  val appConfig = mock[ApplicationConfig]
-
-  val lang = Lang("en")
+  override lazy val appConfig = mock[ApplicationConfig]
 
   when(appConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
@@ -45,7 +40,7 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
       val result = json.as[YearAndMonth]
 
-      result shouldBe data
+      result mustBe data
 
     }
 
@@ -59,7 +54,7 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage shouldBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),WrappedArray())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),WrappedArray())))))"
 
     }
 
@@ -73,20 +68,20 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage shouldBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
 
     }
 
     "serialise to json" in {
 
-      Json.toJson(data) shouldBe json
+      Json.toJson(data) mustBe json
     }
 
     "serialise/deserialise to the same value" in {
 
       val result = Json.toJson(data).as[YearAndMonth]
 
-      result shouldBe data
+      result mustBe data
 
     }
 
@@ -95,7 +90,7 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
       val result =
         YearAndMonth.sortYearAndMonth(List(YearAndMonth("2021-01"), YearAndMonth("2020-12")), appConfig)
 
-      result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-01"))
+      result mustBe List(YearAndMonth("2020-12"), YearAndMonth("2021-01"))
 
     }
 
@@ -105,13 +100,13 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
         YearAndMonth
           .sortYearAndMonth(List(YearAndMonth("2021-02"), YearAndMonth("2020-12"), YearAndMonth("2020-11")), appConfig)
 
-      result shouldBe List(YearAndMonth("2020-12"), YearAndMonth("2021-02"))
+      result mustBe List(YearAndMonth("2020-12"), YearAndMonth("2021-02"))
 
     }
 
     "YearMonth should be formatted to MMMM YYYY" in {
 
-      data.formatYearAndMonth(lang) shouldBe "December 2020"
+      data.formatYearAndMonth(lang) mustBe "December 2020"
 
     }
 
@@ -119,13 +114,13 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
       val lang = Lang("cy")
 
-      data.formatYearAndMonth(lang) shouldBe "Rhagfyr 2020"
+      data.formatYearAndMonth(lang) mustBe "Rhagfyr 2020"
 
     }
 
     "formattedDate with no date should return first claim date formatted to MMMM YYYY" in {
 
-      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) shouldBe "December 2020"
+      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) mustBe "December 2020"
 
     }
 
@@ -133,7 +128,7 @@ class YearAndMonthSpec extends PlaySpec with MockitoSugar {
 
       val lang = Lang("cy")
 
-      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) shouldBe "Rhagfyr 2020"
+      YearAndMonth.formattedDate(firstClaimDate(appConfig), lang) mustBe "Rhagfyr 2020"
 
     }
   }
