@@ -16,15 +16,10 @@
 
 package uk.gov.hmrc.tai.service
 
-import java.time.LocalDateTime
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.connectors.PreviousYearsIncomeConnector
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import utils.BaseSpec
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -35,7 +30,7 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
       val sut = createSUT
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(previousYearsIncomeConnector.incorrectIncome(eq(nino), eq(2016), eq(model))(any()))
+      when(previousYearsIncomeConnector.incorrectIncome(meq(nino), meq(2016), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
@@ -48,7 +43,7 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
         val sut = createSUT
         val model =
           IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(previousYearsIncomeConnector.incorrectIncome(eq(nino), eq(2016), eq(model))(any()))
+        when(previousYearsIncomeConnector.incorrectIncome(meq(nino), meq(2016), meq(model))(any()))
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
@@ -56,8 +51,6 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
       }
     }
   }
-
-  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
   val previousYearsIncomeConnector = mock[PreviousYearsIncomeConnector]
 

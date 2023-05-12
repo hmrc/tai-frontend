@@ -17,12 +17,7 @@
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import builders.RequestBuilder
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}
@@ -31,10 +26,8 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFre
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import utils.BaseSpec
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
 class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
 
@@ -46,11 +39,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
       )
 
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(eq(nino))(any(), any()))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(meq(nino))(any(), any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(eq(nino), eq(TaxYear()))(any()))
+      when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
-      when(companyCarService.companyCars(eq(nino))(any()))
+      when(companyCarService.companyCars(meq(nino))(any(), any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
@@ -77,11 +70,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         AllowancesAndDeductionPairs(Seq(allowancePair), Seq(deductionPair))
       )
 
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(eq(nino))(any(), any()))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(meq(nino))(any(), any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(eq(nino), eq(TaxYear()))(any()))
+      when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
-      when(companyCarService.companyCars(eq(nino))(any()))
+      when(companyCarService.companyCars(meq(nino))(any(), any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))

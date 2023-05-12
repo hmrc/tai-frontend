@@ -43,7 +43,7 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with BeforeAndAf
         successfulJourneyCacheService
       )
 
-  override def beforeEach(): Unit =
+  override def beforeEach: Unit =
     Mockito.reset(successfulJourneyCacheService)
 
   "Estimated Pay Journey Completed Service" must {
@@ -52,24 +52,24 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with BeforeAndAf
 
       when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any()))
         .thenReturn(Future.successful(Map(idKey -> trueValue)))
-      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec), 5 seconds)
+      Await.result(createTestService.journeyCompleted(incomeId)(hc, any()), 5 seconds)
       verify(successfulJourneyCacheService, times(1)).cache(meq(idKey), meq(trueValue))(any())
     }
 
     "return an empty collection upon failing to add a journey completion" in {
       when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(failedCacheCall)
-      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec), 5 seconds) mustBe Map.empty[String, String]
+      Await.result(createTestService.journeyCompleted(incomeId)(hc, any()), 5 seconds) mustBe Map.empty[String, String]
     }
 
     "retrieve a successful journey completion" in {
       when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(Future.successful(Some(trueValue)))
-      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, ec), 5 seconds)
+      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, any()), 5 seconds)
       verify(successfulJourneyCacheService, times(1)).currentValue(meq(idKey))(any())
     }
 
     "return false upon failing to retrieve a journey completion" in {
       when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(failedCacheCall)
-      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, ec), 5 seconds) mustBe false
+      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, any()), 5 seconds) mustBe false
     }
 
   }

@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.domain.Nino
@@ -54,7 +53,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources Live PensionsIncome fails" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(PensionIncome), meq(Live))(any[HeaderCarrier]))
         .thenReturn(
           Future.failed(new BadRequestException("Failed to fetch income details"))
         )
@@ -67,7 +66,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources Live EmploymentIncome fails" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(Live))(any[HeaderCarrier]))
+      when(
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(Live))(any[HeaderCarrier])
+      )
         .thenReturn(
           Future.failed(new BadRequestException("Failed to fetch income details"))
         )
@@ -81,7 +82,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(NotLive))(
+          any[HeaderCarrier]
+        )
       )
         .thenReturn(
           Future.failed(new BadRequestException("Failed to fetch income details"))
@@ -96,7 +99,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(NotLive))(
+          any[HeaderCarrier]
+        )
       )
         .thenReturn(
           Future.failed(new BadRequestException("Failed to fetch income details"))
@@ -110,7 +115,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources (PensionIncome) returned failed payload" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(PensionIncome), meq(Live))(any[HeaderCarrier]))
         .thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
@@ -123,7 +128,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if incomeSources (EmploymentIncome) returned failed payload" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(Live))(any[HeaderCarrier]))
+      when(
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(Live))(any[HeaderCarrier])
+      )
         .thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
@@ -137,7 +144,9 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       val sut = createSUT
 
       when(
-        taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+        taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(NotLive))(
+          any[HeaderCarrier]
+        )
       )
         .thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
@@ -163,7 +172,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
     "return a RuntimeException if ceasedEmployments returned failed payload" in {
       val sut = createSUT
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(PensionIncome), meq(Live))(any[HeaderCarrier]))
         .thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )
@@ -207,18 +216,18 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       Future.successful(Seq(employment))
     )
 
-    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(PensionIncome), eq(Live))(any[HeaderCarrier]))
+    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(PensionIncome), meq(Live))(any[HeaderCarrier]))
       .thenReturn(
         Future.successful(Seq.empty[TaxedIncome])
       )
 
-    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(Live))(any[HeaderCarrier]))
+    when(taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(Live))(any[HeaderCarrier]))
       .thenReturn(
         Future.successful(Seq.empty[TaxedIncome])
       )
 
     when(
-      taxAccountService.incomeSources(any[Nino], any[TaxYear], eq(EmploymentIncome), eq(NotLive))(any[HeaderCarrier])
+      taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(EmploymentIncome), meq(NotLive))(any[HeaderCarrier])
     )
       .thenReturn(
         Future.successful(Seq.empty[TaxedIncome])
@@ -228,7 +237,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
       Future.successful(nonTaxCodeIncome)
     )
 
-    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(ThreeWeeks))
+    when(trackingService.isAnyIFormInProgress(any())(any(), any())).thenReturn(Future.successful(ThreeWeeks))
 
     when(personService.personDetails(any())(any(), any())).thenReturn(Future.successful(fakePerson(nino)))
   }
