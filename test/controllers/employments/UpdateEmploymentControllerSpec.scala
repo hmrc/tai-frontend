@@ -22,8 +22,7 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{eq => meq, _}
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
@@ -56,7 +55,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cache =
           Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
-        when(journeyCacheService.cache(eq(cache))(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.cache(meq(cache))(any())).thenReturn(Future.successful(cache))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -74,7 +73,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cache =
           Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
-        when(journeyCacheService.cache(eq(cache))(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.cache(meq(cache))(any())).thenReturn(Future.successful(cache))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))

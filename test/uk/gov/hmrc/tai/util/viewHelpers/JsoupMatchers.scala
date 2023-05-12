@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.tai.util.viewHelpers
 
-import org.jsoup.nodes.{Document, Element}
+import org.jsoup.nodes.{Attributes, Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
-
-import scala.collection.convert.ImplicitConversions.`list asScalaBuffer`
+import play.api.i18n.Messages
+import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
 
 trait JsoupMatchers {
 
   class TagWithTextMatcher(expectedContent: String, tag: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements =
+      val elements: List[String] =
         left
           .getElementsByTag(tag)
           .eachText()
+          .asInstanceOf[List[String]]
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -43,10 +44,11 @@ trait JsoupMatchers {
 
   class CssSelectorWithTextMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements =
+      val elements: List[String] =
         left
           .select(selector)
           .eachText()
+          .asInstanceOf[List[String]]
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -60,9 +62,11 @@ trait JsoupMatchers {
 
   class CssSelectorWithTextCount(selector: String, expectedCount: Int) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements =
+      val elements: List[String] =
         left
           .select(selector)
+          .eachText()
+          .asInstanceOf[List[String]]
 
       MatchResult(
         elements.length == expectedCount,
@@ -78,15 +82,16 @@ trait JsoupMatchers {
   class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String)
       extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val attributes =
+      val attributes: List[Attributes] =
         left
           .select(selector)
           .eachAttr(attributeName)
+          .asInstanceOf[List[Attributes]]
 
       lazy val attributeContents = attributes.mkString("\t", "\n\t", "")
 
       MatchResult(
-        attributes.contains(attributeValue),
+        attributes.map(_.get(attributeName)).contains(attributeValue),
         s"[$attributeName=$attributeValue] not found in elements with '$selector' selector:[\n$attributeContents]",
         s"[$attributeName=$attributeValue] element found with '$selector' selector"
       )
@@ -96,12 +101,12 @@ trait JsoupMatchers {
   class CssSelectorWithClassMatcher(className: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val classes =
-        left.select(selector)
+        left.getElementsByClass(className).select(selector)
 
       lazy val classContents = classes.mkString("\t", "\n\t", "")
 
       MatchResult(
-        classContents.contains(className),
+        classes.exists(_.classNames().contains(className)),
         s"[class=$className] not found in elements with '$selector' selector:[\n$classContents]",
         s"[class=$className] element found with '$selector' selector"
       )

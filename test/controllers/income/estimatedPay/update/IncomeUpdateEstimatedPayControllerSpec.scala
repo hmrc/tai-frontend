@@ -215,7 +215,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdateEstimatedPayController
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())

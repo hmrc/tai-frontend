@@ -214,7 +214,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
           UpdateIncomeConstants.TaxablePayKey
         )
 
-        when(journeyCacheService.collectedJourneyValues(meq(mandatoryKeys), meq(optionalKeys))(any()))
+        when(journeyCacheService.collectedJourneyValues(meq(mandatoryKeys), meq(optionalKeys))(any(), any()))
           .thenReturn(
             Future.successful(
               Right(
@@ -286,7 +286,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         )
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None))
           )
@@ -333,7 +333,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdatePayslipAmountController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())

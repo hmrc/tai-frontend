@@ -288,8 +288,6 @@ class UpdateNextYearsIncomeServiceSpec
   private val isPension = false
   private val employmentAmount = 1000
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
