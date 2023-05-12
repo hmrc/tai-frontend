@@ -110,6 +110,10 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )
 
+ThisBuild / libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+)
+
 // Scalafix configuration - Only un comment if you want to correct the styling of the service, then comment again as this causes compile and test issues in the service
 //ThisBuild / semanticdbEnabled := true
 //ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
