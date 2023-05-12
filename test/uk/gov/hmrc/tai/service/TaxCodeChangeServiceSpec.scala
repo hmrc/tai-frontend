@@ -29,6 +29,7 @@ import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class TaxCodeChangeServiceSpec extends BaseSpec {
 

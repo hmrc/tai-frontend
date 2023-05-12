@@ -44,7 +44,8 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
   "getUserTracking" should {
     "fetch the user tracking details" when {
       "provided with id and idType" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
+        when(httpHandler.getFromApiV2(any())(any(), any()))
+          .thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe trackedFormSeq
