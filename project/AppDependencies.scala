@@ -19,11 +19,6 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0"
   )
 
-  trait TestDependencies {
-    lazy val scope: String = "test,it"
-    lazy val test: Seq[ModuleID] = Seq.empty
-  }
-
   val test: Seq[ModuleID] = Seq(
           "org.scalatestplus.play" %% "scalatestplus-play"            % "5.1.0",
           "org.pegdown"            % "pegdown"                        % "1.6.0",
@@ -56,5 +51,5 @@ private object AppDependencies {
   ).map(_ % jacksonVersion)
 
 
-  def apply(): Seq[ModuleID] = compile ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides ++ test
+  val all: Seq[ModuleID] = compile ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides ++ test
 }
