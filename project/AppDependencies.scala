@@ -28,7 +28,7 @@ private object AppDependencies {
           "com.typesafe.play"      %% "play-test"                     % PlayVersion.current,
           "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
           "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.15.0"
-  )
+  ).map(_ % "test,it")
 
   val jacksonVersion         = "2.13.2"
   val jacksonDatabindVersion = "2.13.2.2"
