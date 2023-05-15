@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import java.time.LocalDateTime
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import utils.BaseSpec
 
@@ -37,9 +35,9 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(meq(s"/tai/$nino/employments/years/2016/update"), eq(model))(any(), any(), any(), any())
+          .postToApi(meq(s"/tai/$nino/employments/years/2016/update"), meq(model))(any(), any(), any(), any())
       )
-        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        .thenReturn(Future.successful(HttpResponse.apply(200, json.toString)))
 
       val result = Await.result(sut().incorrectIncome(nino, 2016, model), 5.seconds)
 
@@ -47,8 +45,6 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
     }
 
   }
-
-  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 

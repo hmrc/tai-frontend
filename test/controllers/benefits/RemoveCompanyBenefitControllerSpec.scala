@@ -111,11 +111,6 @@ class RemoveCompanyBenefitControllerSpec
 
         val SUT = createSUT
         val year = TaxYear().year.toString
-        val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
-          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
-        )
 
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
           .thenReturn(
@@ -132,7 +127,11 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withJsonBody(formData)
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
+              RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
+              RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
+            )
         )
         status(result) mustBe SEE_OTHER
 
@@ -158,11 +157,6 @@ class RemoveCompanyBenefitControllerSpec
 
         val taxYear = TaxYear()
         val year = taxYear.year.toString
-        val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "06",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "04",
-          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
-        )
 
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
@@ -180,7 +174,11 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withJsonBody(formData)
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "06",
+              RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "04",
+              RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
+            )
         )
         status(result) mustBe SEE_OTHER
 

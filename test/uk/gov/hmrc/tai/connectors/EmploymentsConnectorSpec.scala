@@ -34,7 +34,7 @@ import scala.language.postfixOps
 
 class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(httpHandler)
 
   "EmploymentsConnector employments" must {
@@ -278,7 +278,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(meq(sut().addEmploymentServiceUrl(nino)), eq(addEmployment))(any(), any(), any(), any())
+          .postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment))(any(), any(), any(), any())
       )
         .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
@@ -293,7 +293,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), eq(model))(any(), any(), any(), any()))
+      when(httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model))(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
       val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)

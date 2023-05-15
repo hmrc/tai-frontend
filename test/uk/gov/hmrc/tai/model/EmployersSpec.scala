@@ -73,7 +73,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
         invalidJson.as[Employers]
       }
 
-      ex.getMessage shouldBe "JsResultException(errors:List((/name,List(JsonValidationError(List(error.expected.jsstring),WrappedArray())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/name,List(JsonValidationError(List(error.expected.jsstring),ArraySeq())))))"
 
     }
 
@@ -96,7 +96,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
         invalidJson.as[Employers]
       }
 
-      ex.getMessage shouldBe "JsResultException(errors:List((/employerReference,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/employerReference,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 

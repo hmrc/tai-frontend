@@ -6,8 +6,6 @@ resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.19")
 
-addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
-
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.0")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-distributables" % "2.2.0")
@@ -16,10 +14,8 @@ addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.9.0")
 
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
 
-addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.5.1")
+addSbtPlugin("io.github.irundaia" % "sbt-sassify" % "1.5.2")
 
 addSbtPlugin("net.ground5hark.sbt" % "sbt-concat" % "0.2.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "2.0.0")
-
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.10.4")

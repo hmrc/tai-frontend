@@ -54,7 +54,7 @@ class YearAndMonthSpec extends BaseSpec {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),WrappedArray())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),ArraySeq())))))"
 
     }
 
@@ -68,7 +68,7 @@ class YearAndMonthSpec extends BaseSpec {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),WrappedArray())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 

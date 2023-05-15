@@ -63,7 +63,7 @@
                     RadioItem(
                         content = Text(messages("tai.label.yes")),
                         value = Some("Yes"),
-                        checked = firstPayForm.data.get(AddPensionFirstPayChoiceConstants.FirstPayChoice).exists(_ == "No")
+                        checked = firstPayForm.data.get(AddPensionFirstPayChoiceConstants.FirstPayChoice).exists(_ == "Yes")
                     ),
                     RadioItem(
                         content = Text(messages("tai.label.no")),
