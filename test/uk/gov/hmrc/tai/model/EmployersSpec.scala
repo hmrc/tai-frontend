@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.model
 
+import java.time.YearMonth
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
 import utils.BaseSpec
@@ -48,7 +50,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
 
       val result = json.as[Employers]
 
-      result mustBe Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2021-01")))
+      result shouldBe Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2021-01")))
 
     }
 
@@ -71,7 +73,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
         invalidJson.as[Employers]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/name,List(JsonValidationError(List(error.expected.jsstring),ArraySeq())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/name,List(JsonValidationError(List(error.expected.jsstring),ArraySeq())))))"
 
     }
 
@@ -94,20 +96,20 @@ class EmployersSpec extends PlaySpec with BaseSpec {
         invalidJson.as[Employers]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/employerReference,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/employerReference,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 
     "serialise to json" in {
 
-      Json.toJson(data) mustBe json
+      Json.toJson(data) shouldBe json
     }
 
     "serialise/deserialise to the same value" in {
 
       val result = Json.toJson(data).as[Employers]
 
-      result mustBe data
+      result shouldBe data
 
     }
 
@@ -116,7 +118,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
       val result =
         Employers.sortEmployerslist(appConfig, employersList)
 
-      result mustBe List(
+      result shouldBe List(
         Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
         Employers("Co-Operative", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02")))
       )
@@ -125,7 +127,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
 
     "hasMultipleClaims should return true if there is more than one claim" in {
 
-      data.hasMultipleClaims mustBe true
+      data.hasMultipleClaims shouldBe true
 
     }
 
@@ -133,7 +135,7 @@ class EmployersSpec extends PlaySpec with BaseSpec {
 
       val result = Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
 
-      result.hasMultipleClaims mustBe false
+      result.hasMultipleClaims shouldBe false
 
     }
 

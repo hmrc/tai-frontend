@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.tai.model
 
+import java.time.YearMonth
+import org.mockito.Mockito.when
+import org.scalatest.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
 import utils.BaseSpec
@@ -54,7 +57,7 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
 
       val result = json.as[JrsClaims]
 
-      result mustBe JrsClaims(
+      result shouldBe JrsClaims(
         List(Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2020-12"))))
       )
 
@@ -70,7 +73,7 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 
@@ -97,13 +100,13 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
         invalidJson.as[JrsClaims]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/employers,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
+      ex.getMessage shouldBe "JsResultException(errors:List((/employers,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 
     "serialise to json" in {
 
-      Json.toJson(data) mustBe json
+      Json.toJson(data) shouldBe json
 
     }
 
@@ -111,37 +114,37 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
 
       val result = Json.toJson(data).as[JrsClaims]
 
-      result mustBe data
+      result shouldBe data
 
     }
 
     "hasMultipleEmployments should return true if there is more than one claim" in {
 
-      jrsClaims.hasMultipleEmployments mustBe true
+      jrsClaims.hasMultipleEmployments shouldBe true
 
     }
 
     "hasMultipleEmployments should return false if there is only one claim" in {
 
-      data.hasMultipleEmployments mustBe false
+      data.hasMultipleEmployments shouldBe false
 
     }
 
     "employerMessageKey should return employers when hasMultipleEmployments is true" in {
 
-      jrsClaims.employerMessageKey mustBe "employers"
+      jrsClaims.employerMessageKey shouldBe "employers"
 
     }
 
     "employerMessageKey should return employer when hasMultipleEmployments is false" in {
 
-      data.employerMessageKey mustBe "employer"
+      data.employerMessageKey shouldBe "employer"
 
     }
 
     "JrsClaims apply method should return sorted data" in {
 
-      JrsClaims(appConfig, jrsClaims) mustBe Some(
+      JrsClaims(appConfig, jrsClaims) shouldBe Some(
         JrsClaims(
           List(
             Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"))),
@@ -153,7 +156,7 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
 
     "JrsClaims apply method should return none for empty employer list" in {
 
-      JrsClaims(appConfig, JrsClaims(List.empty)) mustBe None
+      JrsClaims(appConfig, JrsClaims(List.empty)) shouldBe None
 
     }
 

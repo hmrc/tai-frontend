@@ -119,10 +119,29 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     }
     "return to /income-details when nothing is present in the cache" in {
-      val result = estimatedPayLandingPage()
+      val testController = new IncomeUpdateEstimatedPayController(
+        FakeAuthAction,
+        FakeValidatePerson,
+        incomeService,
+        appConfig,
+        mcc,
+        mockTaxAccountService,
+        inject[EstimatedPayLandingPageView],
+        inject[EstimatedPayView],
+        inject[IncorrectTaxableIncomeView],
+        journeyCacheService,
+        inject[ErrorPagesHandler]
+      )
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Left("empty cache")))
+      when(
+        journeyCacheService.mandatoryJourneyValues(
+          any()
+        )(any(), any())
+      ).thenReturn(Future.successful(Left("empty cache")))
+
+      val result = testController.estimatedPayLandingPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
+
+      status(result) mustBe SEE_OTHER
 
       redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     }
