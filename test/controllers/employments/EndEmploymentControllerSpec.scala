@@ -213,7 +213,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
-        when(auditService.createAndSendAuditEvent(any(), any())(any(), any(), any()))
+        when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
           .thenReturn(Future.successful(Success))
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)

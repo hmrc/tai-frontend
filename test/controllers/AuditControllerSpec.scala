@@ -44,7 +44,7 @@ class AuditControllerSpec extends BaseSpec {
 
           status(result) mustBe SEE_OTHER
           verify(auditService, times(1))
-            .sendAuditEventAndGetRedirectUri(any(), any())(any(), any(), any())
+            .sendAuditEventAndGetRedirectUri(any(), any())(any(), any())
           redirectLocation(result) mustBe Some(redirectUri)
         }
       }
@@ -63,7 +63,7 @@ class AuditControllerSpec extends BaseSpec {
         mcc
       ) {
 
-    when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any(), any()))
+    when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))
       .thenReturn(Future.successful(redirectUri))
   }
 

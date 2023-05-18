@@ -51,7 +51,7 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
         mcc,
         inject[PreviousYearUnderpaymentView]
       ) {
-    when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
       .thenReturn(Future.successful(Seq.empty))
   }
 

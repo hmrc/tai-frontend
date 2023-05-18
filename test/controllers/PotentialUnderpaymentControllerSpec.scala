@@ -75,7 +75,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
       Await
         .result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
       verify(auditService, times(1))
-        .createAndSendAuditEvent(meq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any(), any())
+        .createAndSendAuditEvent(meq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
@@ -107,7 +107,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
 
-    when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any())).thenReturn(
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
       Future.successful(
         Seq(
           CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),

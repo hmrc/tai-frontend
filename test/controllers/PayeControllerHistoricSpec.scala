@@ -238,7 +238,7 @@ class PayeControllerHistoricSpec
       ) {
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
-    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any(), any()))
+    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }
 

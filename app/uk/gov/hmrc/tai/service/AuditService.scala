@@ -34,7 +34,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuditService @Inject() (
   @Named("appName") appName: String,
   val auditConnector: AuditConnector,
-  appConfig: ApplicationConfig
+  appConfig: ApplicationConfig,
+  implicit val executionContext: ExecutionContext
 ) {
 
   val userEnterEvent = "userEntersService"
@@ -50,14 +51,12 @@ class AuditService @Inject() (
 
   def createAndSendAuditEvent(eventName: String, details: Map[String, String])(implicit
     hc: HeaderCarrier,
-    request: Request[AnyContent],
-    executionContext: ExecutionContext
+    request: Request[AnyContent]
   ): Future[AuditResult] =
     createAndSendAuditEvent(eventName, fetchPath(request), details)
 
   def createAndSendAuditEvent(eventName: String, path: String, details: Map[String, String])(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext
+    hc: HeaderCarrier
   ): Future[AuditResult] =
     auditConnector.sendEvent(
       DataEvent(
@@ -75,7 +74,7 @@ class AuditService @Inject() (
     numberOfEmployments: Seq[Employment],
     numberOfTaxCodeIncomes: Seq[TaxCodeIncome],
     isJrsTileShown: Boolean
-  )(implicit hc: HeaderCarrier, request: Request[_], executionContext: ExecutionContext): Future[AuditResult] = {
+  )(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
@@ -93,7 +92,7 @@ class AuditService @Inject() (
     fuelBenefitDate: Option[String],
     isSuccessful: Boolean,
     path: String
-  )(implicit hc: HeaderCarrier, request: Request[_], executionContext: ExecutionContext): Future[AuditResult] = {
+  )(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
       "nino"          -> nino,
       "employmentId"  -> employmentId,
@@ -108,8 +107,7 @@ class AuditService @Inject() (
 
   def sendAuditEventAndGetRedirectUri(nino: Nino, iformName: String)(implicit
     hc: HeaderCarrier,
-    request: Request[AnyContent],
-    executionContext: ExecutionContext
+    request: Request[AnyContent]
   ): Future[String] = {
     def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String) = {
       val details = Map(

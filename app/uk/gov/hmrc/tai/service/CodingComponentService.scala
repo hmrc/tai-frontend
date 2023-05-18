@@ -28,18 +28,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CodingComponentService @Inject() (
   taxAccountConnector: TaxAccountConnector,
-  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector
+  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector,
+  implicit val executionContext: ExecutionContext
 ) {
 
   def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext
+    hc: HeaderCarrier
   ): Future[Seq[CodingComponent]] =
     taxAccountConnector.codingComponents(nino, year).map(filterOutZeroAmountsComponents)
 
   def taxFreeAmountComparison(
     nino: Nino
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[TaxFreeAmountComparison] =
+  )(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(

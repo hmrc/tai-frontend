@@ -140,6 +140,6 @@ class CodingComponentServiceSpec extends BaseSpec {
   val taxAccountConnector = mock[TaxAccountConnector]
   val taxFreeAmountComparisonConnector = mock[TaxFreeAmountComparisonConnector]
 
-  private class SUT extends CodingComponentService(taxAccountConnector, taxFreeAmountComparisonConnector)
+  private class SUT extends CodingComponentService(taxAccountConnector, taxFreeAmountComparisonConnector, ec)
 
 }

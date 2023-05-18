@@ -33,7 +33,7 @@ import scala.concurrent.Future
 class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with ScalaFutures with Results {
 
   val journeyCacheService = mock[JourneyCacheService]
-  val wrapper = new DecisionCacheWrapper(journeyCacheService)
+  val wrapper = new DecisionCacheWrapper(journeyCacheService, ec)
 
   override def beforeEach: Unit = Mockito.reset(journeyCacheService)
 

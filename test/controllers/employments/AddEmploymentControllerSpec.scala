@@ -424,7 +424,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         verify(auditService, times(1)).createAndSendAuditEvent(
           meq(AuditConstants.AddEmploymentCantAddEmployer),
           meq(Map("nino" -> FakeAuthAction.nino.nino))
-        )(any(), any(), any())
+        )(any(), any())
       }
     }
 

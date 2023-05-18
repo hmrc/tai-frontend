@@ -315,7 +315,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         verify(auditService, times(1)).createAndSendAuditEvent(
           meq(AuditConstants.AddPensionCantAddPensionProvider),
           meq(Map("nino" -> nino.nino))
-        )(any(), any(), any())
+        )(any(), any())
       }
     }
   }

@@ -28,26 +28,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
 
-  def read(
-    response: Future[Either[UpstreamErrorResponse, HttpResponse]]
-  )(implicit executionContext: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    EitherT(response.map {
-      case Right(response) =>
-        Right(response)
-      case Left(error) if error.statusCode == NOT_FOUND || error.statusCode == UNPROCESSABLE_ENTITY =>
-        logger.info(error.message)
-        Left(error)
-      case Left(error) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
-        logger.error(error.message)
-        Left(error)
-      case Left(error) =>
-        logger.error(error.message, error)
-        Left(error)
-    } recover { case exception: HttpException =>
-      logger.error(exception.message)
-      Left(UpstreamErrorResponse(exception.message, 502, 502))
-    })
-
   def getFromApiV2(url: String)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[JsValue] = {
     implicit val httpRds = new HttpReads[HttpResponse] {
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =

@@ -100,7 +100,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
         auditService.createAndSendAuditEvent(
           meq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
           meq(Map("nino" -> nino.nino))
-        )(any(), any(), any())
+        )(any(), any())
       )
         .thenReturn(Future.successful(Success))
 
@@ -110,7 +110,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
         .createAndSendAuditEvent(
           meq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
           meq(Map("nino" -> nino.nino))
-        )(any(), any(), any())
+        )(any(), any())
     }
 
     "display an error page" when {
