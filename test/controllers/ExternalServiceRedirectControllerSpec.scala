@@ -35,7 +35,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
         when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
 
@@ -54,7 +54,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.failed(new IllegalArgumentException))
 
         val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
@@ -71,7 +71,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
 
         val result = sut.auditAndRedirectService("Test")(request)
@@ -88,7 +88,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
-        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any(), any()))
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.failed(new IllegalArgumentException))
 
         val result = sut.auditAndRedirectService("Test")(request)

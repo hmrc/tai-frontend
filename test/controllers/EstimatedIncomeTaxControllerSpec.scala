@@ -142,7 +142,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             totalTax
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
@@ -239,7 +239,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             totalTax
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
@@ -329,7 +329,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             totalTax
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
@@ -365,7 +365,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
@@ -401,7 +401,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(

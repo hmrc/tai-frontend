@@ -346,7 +346,7 @@ class CompanyBenefitControllerSpec
   class SUT
       extends CompanyBenefitController(
         employmentService,
-        new DecisionCacheWrapper(journeyCacheService),
+        new DecisionCacheWrapper(journeyCacheService, ec),
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,

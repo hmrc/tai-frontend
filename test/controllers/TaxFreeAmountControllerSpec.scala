@@ -42,7 +42,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
       val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
         .thenReturn(Future.successful(codingComponents))
       when(companyCarService.companyCarOnCodingComponents(any(), any())(any(), any()))
         .thenReturn(Future.successful(Nil))
@@ -65,7 +65,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
     "display error page" when {
       "display any error" in {
         val SUT = createSUT()
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.failed(new InternalError("error occurred")))
 
         val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -77,7 +77,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       "there is no tax account information returned" in {
         val SUT = createSUT()
 
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any(), any()))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
         when(companyCarService.companyCarOnCodingComponents(any(), any())(any(), any()))
           .thenReturn(Future.successful(Nil))

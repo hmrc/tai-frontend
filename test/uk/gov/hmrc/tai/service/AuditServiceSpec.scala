@@ -690,7 +690,8 @@ class AuditServiceSpec extends BaseSpec {
       extends AuditService(
         appName,
         mock[AuditConnector],
-        appConfig
+        appConfig,
+        ec
       )
 
 }

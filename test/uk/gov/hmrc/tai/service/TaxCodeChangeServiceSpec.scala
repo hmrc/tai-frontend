@@ -164,5 +164,5 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
 
   val taxCodeChangeConnector = mock[TaxCodeChangeConnector]
 
-  private class TestService extends TaxCodeChangeService(taxCodeChangeConnector)
+  private class TestService extends TaxCodeChangeService(taxCodeChangeConnector, ec)
 }

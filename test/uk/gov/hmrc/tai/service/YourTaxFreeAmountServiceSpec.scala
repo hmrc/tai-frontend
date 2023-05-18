@@ -37,7 +37,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
       val currentCodingComponents = List(codingComponent2)
       val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
-      when(codingComponentService.taxFreeAmountComparison(meq(nino))(any(), any()))
+      when(codingComponentService.taxFreeAmountComparison(meq(nino))(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
       when(taxCodeChangeService.taxCodeChange(meq(nino))(any()))
         .thenReturn(Future.successful(taxCodeChange))

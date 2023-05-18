@@ -76,6 +76,13 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings(Test / Keys.fork := true)
   .settings(
+    scalacOptions += "-P:silencer:pathFilters=views;routes",
+      libraryDependencies ++= Seq(
+        compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+        "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+      )
+  )
+  .settings(
     // concatenate js
     Concat.groups := Seq(
       "javascripts/tai-app.js" -> group(Seq(
