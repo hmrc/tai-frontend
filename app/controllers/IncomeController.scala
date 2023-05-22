@@ -322,7 +322,7 @@ class IncomeController @Inject() (
     if (isCachedIncomeTheSame(currentCache, income.newAmount, empId)) {
       Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache(empId)))
     } else if (isIncomeTheSame(income)) {
-      Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay))
+      Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay()))
     } else {
       cacheAndRedirect(income, confirmationCallback)
     }
@@ -416,9 +416,9 @@ class IncomeController @Inject() (
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(request.taiUser.nino, id))
     } yield (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
       case (true, false)  => Redirect(routes.IncomeController.regularIncome(id))
-      case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad)
+      case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
       case _              => Redirect(routes.IncomeController.pensionIncome(id))
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+    }).fold(errorPagesHandler.internalServerError(_, None), identity)
       .recover { case NonFatal(e) =>
         errorPagesHandler.internalServerError(e.getMessage)
       }

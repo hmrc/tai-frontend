@@ -46,7 +46,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
@@ -74,17 +74,17 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "Yes",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.phoneNumber"),
         "123456789",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
     }
   }

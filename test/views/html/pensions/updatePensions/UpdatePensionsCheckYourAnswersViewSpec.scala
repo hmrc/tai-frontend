@@ -41,7 +41,7 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
         "page is displayed" in {
           behave like haveLinkWithUrlWithID(
             "backLink",
-            controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+            controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
           )
         }
       }
@@ -59,21 +59,21 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(2, viewModel.whatYouToldUs)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url
+        controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(3, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(3, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
-        controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+        controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
-        controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+        controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
       )
     }
 

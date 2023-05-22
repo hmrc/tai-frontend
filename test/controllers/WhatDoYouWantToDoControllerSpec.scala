@@ -335,7 +335,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe SEE_OTHER
           verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
-          redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage.url
+          redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url
         }
 
       "nps tax account hod call has returned a bad request exception, indicating no employments recorded" in {

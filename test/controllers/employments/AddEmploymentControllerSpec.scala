@@ -120,7 +120,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       }
     }
 
@@ -178,7 +178,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 
@@ -206,7 +206,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
       }
 
       "form is valid and start date is less than 6 weeks" in {
@@ -228,7 +228,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.receivedFirstPay.url
+        redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
+          .receivedFirstPay()
+          .url
       }
     }
 
@@ -378,7 +380,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
       }
     }
 
@@ -563,7 +565,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       }
     }
 
@@ -613,7 +615,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       }
     }
 
@@ -708,7 +710,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers().url
       }
       "the request has an authorised session, and telephone number contact has not been approved" in {
         val sut = createSUT
@@ -732,7 +734,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers.url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers().url
       }
     }
 
@@ -818,7 +820,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = sut.addEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
   }
@@ -898,7 +900,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = createSUT.cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
   }
 }

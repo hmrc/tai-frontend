@@ -54,7 +54,7 @@ class IncomeUpdateBonusController @Inject() (
       case (Right(incomeSource), bonusPayment, backUrl) =>
         val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
         Ok(bonusPayments(form, incomeSource, backUrl))
-      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
 
     }
   }
@@ -70,7 +70,7 @@ class IncomeUpdateBonusController @Inject() (
             (IncomeSource.create(journeyCacheService), bonusPaymentBackUrl).mapN {
               case (Right(incomeSource), backUrl) =>
                 BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
-              case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+              case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             },
           formData => {
             val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
@@ -79,7 +79,7 @@ class IncomeUpdateBonusController @Inject() (
 
             journeyCache(UpdateIncomeConstants.BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
               if (formData.yesNoChoice.contains(FormValuesConstants.YesValue)) {
-                Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage)
+                Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
               } else {
                 Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
               }
@@ -98,7 +98,7 @@ class IncomeUpdateBonusController @Inject() (
         case (Right(incomeSource), bonusOvertimeAmount) =>
           val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
           Ok(bonusPaymentAmount(form, incomeSource))
-        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
   }
 
@@ -116,7 +116,7 @@ class IncomeUpdateBonusController @Inject() (
             } yield incomeSourceEither match {
               case Right(incomeSource) =>
                 BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             },
           formData =>
             formData.amount match {
@@ -135,8 +135,8 @@ class IncomeUpdateBonusController @Inject() (
   private def bonusPaymentBackUrl(implicit hc: HeaderCarrier): Future[String] =
     journeyCacheService.currentValue(UpdateIncomeConstants.TaxablePayKey).map {
       case None =>
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
       case _ =>
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
     }
 }

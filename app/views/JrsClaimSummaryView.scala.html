@@ -19,14 +19,14 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.{JrsClaims, YearAndMonth}
 
-@import scala.concurrent.ExecutionContext
+
 @import uk.gov.hmrc.tai.model.YearAndMonth.firstClaimDate
 @import includes.link
 @import includes.ptaHeader
 
 @this(main: MainTemplate, languageUtils: LanguageUtils)
 
-@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, ec: ExecutionContext)
+@(viewModel: JrsClaims, appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
 
 @employerMessageKey = @{viewModel.employerMessageKey}
 
@@ -34,7 +34,7 @@
 @main(
     title = messages("check.jrs.claims.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     backLinkContent = Some(Messages("check.jrs.back.link")),
 ){
 

@@ -40,10 +40,10 @@ object CalculateIncomeForm {
   def create(preFillData: EmploymentAmount): Form[CalculateIncomeForm] = {
 
     val calculateIncomeForm = new CalculateIncomeForm(name = preFillData.name, employmentId = preFillData.employmentId)
-    CalculateIncomeForm.createForm.fill(calculateIncomeForm)
+    CalculateIncomeForm.createForm().fill(calculateIncomeForm)
   }
 
-  def bind(implicit request: Request[_]) = createForm.bindFromRequest
+  def bind(implicit request: Request[_]): Form[CalculateIncomeForm] = createForm().bindFromRequest()
 
   def createForm(): Form[CalculateIncomeForm] =
     Form[CalculateIncomeForm](
@@ -51,7 +51,7 @@ object CalculateIncomeForm {
         "name"         -> text,
         "employmentId" -> number,
         "ytdAmount"    -> optional(text),
-        "paymentDate"  -> TaiValidator.validateOptionalDate
+        "paymentDate"  -> TaiValidator.validateOptionalDate()
       )(CalculateIncomeForm.apply)(CalculateIncomeForm.unapply)
     )
 }

@@ -188,7 +188,7 @@ class CompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
 
       }
     }
@@ -227,7 +227,7 @@ class CompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result)
 
-        redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
       }
 
@@ -243,7 +243,7 @@ class CompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
       }
 
@@ -261,7 +261,7 @@ class CompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 

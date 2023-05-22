@@ -78,7 +78,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
 
   }
@@ -135,7 +135,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           case _               => ""
         }
 
-        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError.url
+        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
       }
 
       "the form has the value No in EmploymentDecision and the employment has a payment 6 weeks of todays date" in {
@@ -162,7 +162,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError.url
+        ).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
       }
 
       "cache the employment details for error page" in {
@@ -320,7 +320,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = endEmploymentTest.endEmploymentPage(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
   }
 
@@ -429,7 +429,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val result = endEmploymentTest.endEmploymentCheckYourAnswers()(fakePostRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
       }
 
@@ -523,7 +523,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         val result = endEmploymentTest.addTelephoneNumber()(fakeGetRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
       }
     }
@@ -551,7 +551,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
+        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -575,7 +575,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url
+        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url
       }
     }
 
@@ -662,7 +662,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
 
@@ -681,7 +681,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
+          .endEmploymentPage()
+          .url
       }
     }
   }
@@ -752,7 +754,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val result = endEmploymentTest.duplicateSubmissionWarning(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
   }
 
@@ -773,7 +775,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
+        ).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url
       }
     }
 

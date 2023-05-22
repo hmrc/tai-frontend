@@ -137,7 +137,7 @@ class RemoveCompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(
@@ -184,7 +184,7 @@ class RemoveCompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(meq(EndCompanyBenefitConstants.BenefitStopDateKey), meq(s"$year-04-06"))(any())
@@ -291,7 +291,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
       }
     }
 
@@ -404,7 +404,7 @@ class RemoveCompanyBenefitControllerSpec
         doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
       }
 
       "has the yes field and telephone number prepopulated from the cache" in {
@@ -454,7 +454,7 @@ class RemoveCompanyBenefitControllerSpec
         doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
       }
     }
   }
@@ -482,7 +482,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers.url
+        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers().url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -506,7 +506,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers.url
+        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers().url
       }
     }
 
@@ -614,7 +614,7 @@ class RemoveCompanyBenefitControllerSpec
 
       val result = sut.checkYourAnswers()(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
 
@@ -650,7 +650,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -682,7 +684,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -713,7 +717,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -745,7 +751,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
     }

@@ -22,7 +22,6 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
-import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 case class TaxCodeChangeViewModel(

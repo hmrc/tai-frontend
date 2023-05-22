@@ -14,14 +14,14 @@
  * limitations under the License.
  *@
 
-@()(implicit m: Messages)
+@()(implicit messages: Messages)
 
 
 
 <p class="flush--bottom">
     @includes.link(
         id=Some("backLink"),
-        copy=Messages("tai.back-link.upper"),
+        copy=messages("tai.back-link.upper"),
         url = "#",
         linkClasses=Seq("link-back js-visible")
     )

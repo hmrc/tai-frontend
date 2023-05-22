@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@import includes.forms._
 @import includes.{ptaHeader, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.tai.viewModels.pensions.update._
 
-@import scala.concurrent.ExecutionContext
+
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
@@ -28,11 +27,10 @@
 )(
     implicit request: Request[_],
     messages: Messages,
-    user: controllers.auth.AuthedUser,
-    ec: ExecutionContext
+    user: controllers.auth.AuthedUser
 )
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.checkYourAnswers.title"),
         preHeadingText = Messages("tai.updatePension.preHeading"),
@@ -46,11 +44,11 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url)
+    backLinkUrl = Some(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url)
 ) {
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
 
             @checkYourAnswers(
                 title = Some(viewModel.pensionProviderName),
@@ -59,7 +57,7 @@
 
             <p class="govuk-body">@Messages("tai.checkYourAnswers.confirmText")</p>
 
-            @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitYourAnswers) {
+            @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitYourAnswers()) {
                 @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
             }
 

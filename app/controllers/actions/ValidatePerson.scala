@@ -17,14 +17,15 @@
 package controllers.actions
 
 import com.google.inject.ImplementedBy
+
 import javax.inject.{Inject, Singleton}
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.routes
-import play.api.mvc.{ActionFilter, ActionRefiner, Result}
+import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.tai.service.PersonService
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,8 +47,8 @@ class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: E
     val person = personService.personDetails(personNino)
 
     person map {
-      case p if p.isDeceased              => Left(Redirect(routes.DeceasedController.deceased))
-      case p if p.manualCorrespondenceInd => Left(Redirect(routes.ServiceController.mciErrorPage))
+      case p if p.isDeceased              => Left(Redirect(routes.DeceasedController.deceased()))
+      case p if p.manualCorrespondenceInd => Left(Redirect(routes.ServiceController.mciErrorPage()))
       case p                              => Right(AuthenticatedRequest(request, request.taiUser, p.name))
     }
   }

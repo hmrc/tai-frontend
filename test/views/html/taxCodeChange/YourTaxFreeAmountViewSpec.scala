@@ -116,7 +116,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     "have a 'see what happens next' button" in {
       doc must haveLinkElement(
         "seeWhatHappensNext",
-        routes.TaxCodeChangeController.whatHappensNext.url,
+        routes.TaxCodeChangeController.whatHappensNext().url,
         messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")
       )
     }

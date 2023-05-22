@@ -52,7 +52,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           "taxCode.change.whatHappensNext.paragragh3",
           link(
             id = Some("update-current-income-or-benefits-link"),
-            url = routes.TaxAccountSummaryController.onPageLoad.url,
+            url = routes.TaxAccountSummaryController.onPageLoad().url,
             copy = messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")
           )
         )

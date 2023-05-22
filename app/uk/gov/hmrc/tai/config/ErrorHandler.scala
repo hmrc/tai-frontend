@@ -21,11 +21,9 @@ import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
-
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.InternalServerErrorView
 import views.html.ErrorTemplateNoauth
-import scala.concurrent.ExecutionContext
 import views.html.includes.link
 
 class ErrorHandler @Inject() (
@@ -34,8 +32,7 @@ class ErrorHandler @Inject() (
   val messagesApi: MessagesApi,
   val configuration: Configuration,
   internalServerError: InternalServerErrorView
-)(implicit ec: ExecutionContext)
-    extends FrontendErrorHandler {
+) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
     request: Request[_]

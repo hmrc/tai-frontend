@@ -25,7 +25,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
+@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -33,7 +33,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage.url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url),
     formForErrorSummary = Some(payPeriodForm)
 
 ){
@@ -43,7 +43,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = payPeriodForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod(), Symbol("data-dynamic-form") -> "true"){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(

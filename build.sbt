@@ -75,6 +75,16 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers ++= Seq(Resolver.jcenterRepo))
   .settings(majorVersion := 0)
   .settings(Test / Keys.fork := true)
+  .settings(scalacOptions ++= Seq(
+    "-feature",
+    "-Werror",
+    "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
+    "-Wconf:cat=unused-imports&site=<empty>:s",
+    "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
+    "-Wconf:cat=unused&src=.*Routes\\.scala:s",
+    "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
+    "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s"
+  ))
   .settings(
     // concatenate js
     Concat.groups := Seq(

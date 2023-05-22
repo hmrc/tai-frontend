@@ -21,7 +21,7 @@ import java.time.YearMonth
 import play.api.i18n.Lang
 import play.api.libs.json._
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.YearAndMonth.{MonthNamesInWelsh, dateFormatter, formattedDate}
+import uk.gov.hmrc.tai.model.YearAndMonth.formattedDate
 
 import java.time.format.DateTimeParseException
 

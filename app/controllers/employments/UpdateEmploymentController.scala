@@ -70,7 +70,7 @@ class UpdateEmploymentController @Inject() (
       messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       messages("tai.canWeContactByPhone.title"),
       controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url,
-      controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber.url,
+      controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber().url,
       controllers.employments.routes.UpdateEmploymentController.cancel(id).url
     )
 
@@ -109,22 +109,24 @@ class UpdateEmploymentController @Inject() (
 
   def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      UpdateEmploymentDetailsForm.form.bindFromRequest.fold(
-        formWithErrors =>
-          journeyCacheService.currentCache map { currentCache =>
-            implicit val user: AuthedUser = request.taiUser
-            BadRequest(
-              whatDoYouWantToTellUs(
-                EmploymentViewModel(currentCache(UpdateEmploymentConstants.NameKey), empId),
-                formWithErrors
+      UpdateEmploymentDetailsForm.form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            journeyCacheService.currentCache map { currentCache =>
+              implicit val user: AuthedUser = request.taiUser
+              BadRequest(
+                whatDoYouWantToTellUs(
+                  EmploymentViewModel(currentCache(UpdateEmploymentConstants.NameKey), empId),
+                  formWithErrors
+                )
               )
-            )
-          },
-        employmentDetails =>
-          journeyCacheService
-            .cache(Map(UpdateEmploymentConstants.EmploymentDetailsKey -> employmentDetails))
-            .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber))
-      )
+            },
+          employmentDetails =>
+            journeyCacheService
+              .cache(Map(UpdateEmploymentConstants.EmploymentDetailsKey -> employmentDetails))
+              .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber()))
+        )
   }
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -181,7 +183,7 @@ class UpdateEmploymentController @Inject() (
             case _ => mandatoryData ++ Map(UpdateEmploymentConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers)
+            Redirect(controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers())
           }
         }
       )
@@ -236,12 +238,11 @@ class UpdateEmploymentController @Inject() (
       _ <-
         successfulJourneyCacheService
           .cache(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}", true.toString)
-      _ <- journeyCacheService.flush
-    } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation)
+      _ <- journeyCacheService.flush()
+    } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())
   }
 
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
     Future.successful(Ok(confirmationView()))
   }
 }

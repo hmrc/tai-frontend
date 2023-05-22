@@ -45,7 +45,7 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.addEmployment.startDateForm.pagetitle"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-start-date")
-    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel)
+    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {

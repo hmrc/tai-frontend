@@ -23,10 +23,10 @@
 
 @this(main: MainTemplate)
 
-@(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(taxCodeViewModel: TaxCodeViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
     mainHeadingText = taxCodeViewModel.title,
     preHeadingText = taxCodeViewModel.preHeader,
@@ -42,7 +42,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 
@@ -92,21 +92,21 @@
                 <li>
                     @link(
                         id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                        url=routes.TaxFreeAmountController.taxFreeAmount().url,
                         copy=Messages("check.your.tax.free.amount"),
                         linkClasses=Seq("link-list__item"))
                 </li>
                 <li>
                     @link(
                         id=Some("incomeTaxEstimateLink"),
-                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
                         copy=Messages("check.your.income.tax.estimate"),
                         linkClasses=Seq("link-list__item"))
                 </li>
                 <li>
                     @link(
                         id=Some("taxableIncomeLink"),
-                        url=routes.TaxAccountSummaryController.onPageLoad.url,
+                        url=routes.TaxAccountSummaryController.onPageLoad().url,
                         copy=Messages("return.to.your.income.tax.summary"),
                         linkClasses=Seq("link-list__item"))
                 </li>

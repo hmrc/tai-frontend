@@ -292,7 +292,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
           )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
 
         verify(journeyCacheService, never).cache(any(), any())(any())
       }
@@ -787,7 +787,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
           )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
     "redirect to /income-details" when {
@@ -926,7 +926,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
 
         val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad().url
       }
 
       "employment is not live and is occupational pension" in {

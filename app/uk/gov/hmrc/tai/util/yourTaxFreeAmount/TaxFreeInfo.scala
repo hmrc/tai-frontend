@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaxAccountCalculator
 
 case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance: BigDecimal)
 
 object TaxFreeInfo {
-  def apply(date: String, codingComponents: Seq[CodingComponent], taxAccountCalculator: TaxAccountCalculator)(implicit
-    messages: Messages
+  def apply(
+    date: String,
+    codingComponents: Seq[CodingComponent],
+    taxAccountCalculator: TaxAccountCalculator
   ): TaxFreeInfo = {
     val annualTaxFreeAmount = taxAccountCalculator.taxFreeAmount(codingComponents)
     val personalAllowanceAmount = sumOfPersonalAllowances(codingComponents)

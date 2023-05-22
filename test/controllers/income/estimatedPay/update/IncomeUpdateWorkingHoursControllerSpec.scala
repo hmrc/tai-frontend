@@ -93,7 +93,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val result = controller.workingHoursPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -129,7 +129,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
         )
       }
     }
@@ -174,7 +174,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
       val result = controller.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
     }
   }

@@ -19,7 +19,7 @@
 
 @(viewModel: IFormInProgressBannerViewModel, appConfig: ApplicationConfig)(implicit messages: Messages)
 
-@viewModel.durationMessage.map { durationMessage =>
+@viewModel.durationMessage().map { durationMessage =>
 
     <div id="isAnyFormInProgressBanner" class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
         <div class="govuk-notification-banner__header">

@@ -16,7 +16,6 @@
 
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
 @import includes.cancelLink
-@import includes.forms.errorSummary
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
@@ -24,7 +23,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
+@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @hint = {
     <p>@messages("tai.payslip.p1")</p>
@@ -37,7 +36,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url),
     formForErrorSummary = Some(viewModel.payslipForm)
 
 ) {
@@ -48,7 +47,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = viewModel.payslipForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount) {
+            @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount()) {
                 @govukInput(Input(
                     id = "totalSalary",
                     name = "totalSalary",

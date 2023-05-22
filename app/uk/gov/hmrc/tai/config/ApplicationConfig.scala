@@ -79,10 +79,6 @@ class ApplicationConfig @Inject() (
   lazy val taxYouPaidStatus: String = s"$taxCalcFrontendHost/tax-you-paid/status"
   lazy val hardshipHelpUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
-  private lazy val contactHost = getOptional[String](s"microservice.services.contact-frontend.host").getOrElse("")
-  private lazy val contactPort = getOptional[String](s"microservice.services.contact-frontend.port").getOrElse("")
-  private lazy val contactProtocol =
-    getOptional[String](s"microservice.services.contact-frontend.protocol").getOrElse("")
 
   lazy val assetsPath: String =
     s"${getOptional[String](s"assets.url").getOrElse("")}${getOptional[String](s"assets.version").getOrElse("")}/"

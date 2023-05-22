@@ -22,10 +22,9 @@
 
 @this(main: MainTemplate)
 
-@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-
-@header = @{
+@header() = @{
     ptaHeader(
     mainHeadingText = taxCodeViewModel.mainHeading,
     preHeadingText = taxCodeViewModel.preHeader,
@@ -44,7 +43,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 

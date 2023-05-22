@@ -115,7 +115,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "" +
           "check-your-tax-button",
-        routes.TaxCodeChangeController.yourTaxFreeAmount.url,
+        routes.TaxCodeChangeController.yourTaxFreeAmount().url,
         Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
       )
     }

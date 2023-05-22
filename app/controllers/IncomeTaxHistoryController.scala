@@ -19,7 +19,6 @@ package controllers
 import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -50,8 +49,7 @@ class IncomeTaxHistoryController @Inject() (
     extends TaiBaseController(mcc) {
 
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
-    hc: HeaderCarrier,
-    messages: Messages
+    hc: HeaderCarrier
   ): Future[IncomeTaxYear] =
     for {
       maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>

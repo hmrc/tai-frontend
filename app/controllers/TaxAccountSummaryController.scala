@@ -73,14 +73,14 @@ class TaxAccountSummaryController @Inject() (
       }
       .recover {
         case _: NotFoundException =>
-          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage)
+          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
         case e: UnauthorizedException =>
           logger.warn("taxAccountSummary failed with: " + e.getMessage)
-          Redirect(controllers.routes.UnauthorisedController.onPageLoad)
+          Redirect(controllers.routes.UnauthorisedController.onPageLoad())
         case NonFatal(e)
             if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
               e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage)
+          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
         case NonFatal(e) =>
           errorPagesHandler.internalServerError(e.getMessage, Some(e))
       }

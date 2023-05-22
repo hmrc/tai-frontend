@@ -37,7 +37,7 @@ class PreviousYearUnderpaymentViewModelSpec extends BaseSpec {
       result.poundedAmountDue mustEqual "£123"
 
       result.returnLink mustBe link(
-        url = routes.TaxAccountSummaryController.onPageLoad.url,
+        url = routes.TaxAccountSummaryController.onPageLoad().url,
         copy = messagesApi("return.to.your.income.tax.summary")
       )
     }

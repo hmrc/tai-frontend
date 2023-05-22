@@ -14,15 +14,14 @@
  * limitations under the License.
  *@
 
-@import scala.concurrent.ExecutionContext
 @import views.html.includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
 @this(mainTemplate: MainTemplate)
 
-@(contactUrl: String)(implicit request: Request[_], messages: Messages, ec: ExecutionContext)
+@(contactUrl: String)(implicit request: Request[_], messages: Messages)
 
-    @header = @{
+    @header() = @{
         ptaHeader(
             mainHeadingText = messages("mci.title"),
             preHeadingText = "",
@@ -40,7 +39,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
             <p class="govuk-body">@messages("mci.p1")</p>
 
             <p class="govuk-body">

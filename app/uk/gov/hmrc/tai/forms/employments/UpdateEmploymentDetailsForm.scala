@@ -42,13 +42,13 @@ object UpdateEmploymentDetailsForm {
     )
   )
 
-  def nonEmptyText(requiredErrMsg: String)(implicit messages: Messages): Constraint[String] =
+  def nonEmptyText(requiredErrMsg: String): Constraint[String] =
     Constraint[String]("required") {
       case textValue: String if textValue.nonEmpty => Valid
       case _                                       => Invalid(requiredErrMsg)
     }
 
-  def textExceedsCharacterLimit(exceedErrorMsg: String)(implicit messages: Messages): Constraint[String] =
+  def textExceedsCharacterLimit(exceedErrorMsg: String): Constraint[String] =
     Constraint[String]("characterLimitExceeded") {
       case textValue if textValue.length <= employmentDetailsCharacterLimit => Valid
       case _                                                                => Invalid(exceedErrorMsg)

@@ -274,7 +274,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
                 Some(
                   HelpLink(
                     Messages("what.is.underpayment"),
-                    controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+                    controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url.toString,
                     "underPaymentFromPreviousYear"
                   )
                 )
@@ -287,7 +287,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
                 Some(
                   HelpLink(
                     Messages("what.is.tax.estimation"),
-                    controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                    controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url.toString,
                     "estimatedTaxOwedLink"
                   )
                 )
@@ -357,7 +357,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
 
           val tabIndexLink = {
             val links = link(
-              url = routes.YourTaxCodeController.taxCodes.url,
+              url = routes.YourTaxCodeController.taxCodes().url,
               copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
               tabindexMinusOne = true
             )

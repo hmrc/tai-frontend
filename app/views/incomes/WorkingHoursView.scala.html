@@ -18,7 +18,6 @@
 @import views.html.includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
-@import includes.forms.inputRadioGroupStylingWithH1Label
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukInput
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukRadios
@@ -37,16 +36,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
-
-@header = @{
-    ptaHeaderNoH1(
-        formForErrorSummary = Some(workingHoursForm),
-        mainHeadingText = messages("tai.workingHours.heading"),
-        preHeadingText = messages("tai.workingHours.preHeading", employerName)
-    )
-}
-
+@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -65,7 +55,7 @@
                @govukErrorSummary(ErrorSummary(errorList = workingHoursForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours){
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours()){
                 @govukRadios(Radios(
                     fieldset = Some(
                         Fieldset(

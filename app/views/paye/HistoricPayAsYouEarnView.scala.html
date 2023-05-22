@@ -26,24 +26,12 @@
 @this(main: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-messages: Messages, ec: scala.concurrent.ExecutionContext)
-
-
-@backLinkToChooseTaxYear = {
-<p class="flush--bottom">
-    @link(
-        id=Some("returnToChooseTaxYearLink"),
-        url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-        copy=messages("tai.returnToChooseTaxYear"),
-        linkClasses=Seq("link-back")
-    )
-</p>
-}
+messages: Messages)
 
 @employmentPairsList = @{viewModel.employments.sliding(2, 2).toList}
 @pensionPairsList = @{viewModel.pensions.sliding(2, 2).toList}
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = request.fullName,
@@ -54,7 +42,7 @@ messages: Messages, ec: scala.concurrent.ExecutionContext)
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     authedUser = Some(request.taiUser),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
     pagePrintName = Some("historic-pay-as-you-earn")
@@ -62,7 +50,7 @@ messages: Messages, ec: scala.concurrent.ExecutionContext)
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 

@@ -25,8 +25,7 @@ private object AppDependencies {
           "com.github.tomakehurst" % "wiremock-jre8"                  % "2.35.0",
           "com.typesafe.play"      %% "play-test"                     % PlayVersion.current,
           "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
-          "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.15.0",
-          "com.vladsch.flexmark"   %  "flexmark-all"                  % "0.62.2"
+          "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.15.0"
   ).map(_ % "test,it")
 
   val jacksonVersion         = "2.13.2"

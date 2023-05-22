@@ -22,9 +22,9 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@header = @{
+@header() = @{
     ptaHeader(
         showGdsVersion = true,
         mainHeadingText = messages("tai.checkYourAnswers.heading"),
@@ -43,7 +43,7 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-    @header
+    @header()
 
     @includes.checkYourAnswers(
         title = None,

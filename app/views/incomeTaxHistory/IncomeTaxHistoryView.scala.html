@@ -35,7 +35,7 @@
 @this(main: MainTemplate, govukDetails : GovukDetails)
 
 @(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
-messages: Messages, ec: scala.concurrent.ExecutionContext)
+messages: Messages)
 
 @address = @{
     import person.address._
@@ -68,7 +68,7 @@ messages: Messages, ec: scala.concurrent.ExecutionContext)
     title = messages("tai.incomeTax.history.pageTitle"),
     authedUser = Some(request.taiUser),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true
 ){

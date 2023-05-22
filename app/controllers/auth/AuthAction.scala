@@ -26,7 +26,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -70,7 +70,7 @@ class AuthActionImpl @Inject() (override val authConnector: AuthConnector, mcc: 
     block: InternalAuthenticatedRequest[A] => Future[Result],
     credentials: Option[Credentials],
     user: AuthedUser
-  )(implicit hc: HeaderCarrier): Future[Result] =
+  ): Future[Result] =
     credentials match {
       case Some(Credentials(_, TaiConstants.AuthProviderGG)) =>
         processRequest(user, request, block, handleGGFailure)
@@ -82,26 +82,26 @@ class AuthActionImpl @Inject() (override val authConnector: AuthConnector, mcc: 
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result],
     failureHandler: PartialFunction[Throwable, Result]
-  )(implicit hc: HeaderCarrier): Future[Result] =
+  ): Future[Result] =
     (user.confidenceLevel.level match {
       case level if level >= 200 =>
         for {
           result <- block(InternalAuthenticatedRequest(request, user))
         } yield result
       case _ =>
-        Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl))
+        Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
 
   private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = handleGGFailure
 
   private def handleGGFailure: PartialFunction[Throwable, Result] =
-    handleFailure(routes.UnauthorisedController.loginGG)
+    handleFailure(routes.UnauthorisedController.loginGG())
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession => Redirect(redirect)
     case ex: AuthorisationException =>
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
-      Redirect(routes.UnauthorisedController.onPageLoad)
+      Redirect(routes.UnauthorisedController.onPageLoad())
   }
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = ec

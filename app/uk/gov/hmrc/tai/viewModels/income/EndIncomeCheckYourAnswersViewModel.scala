@@ -37,12 +37,12 @@ case class EndIncomeCheckYourAnswersViewModel(
       CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         Dates.formatDate(LocalDate.parse(employmentEndDate)),
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       ),
       CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         contactableByPhone,
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
     )
 
@@ -51,7 +51,7 @@ case class EndIncomeCheckYourAnswersViewModel(
         CheckYourAnswersConfirmationLine(
           Messages("tai.phoneNumber"),
           phoneNo,
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
         )
       )
     }

@@ -221,12 +221,12 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       )
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
-        routes.TaxFreeAmountController.taxFreeAmount.url,
+        routes.TaxFreeAmountController.taxFreeAmount().url,
         messages("check.your.tax.free.amount")
       )
       doc must haveLinkElement(
         "taxSummarySideLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary")
       )
     }

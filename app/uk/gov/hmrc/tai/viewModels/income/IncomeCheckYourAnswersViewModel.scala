@@ -20,6 +20,7 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+
 case class IncomeCheckYourAnswersViewModel(
   preHeading: String,
   backLinkUrl: String,
@@ -49,22 +50,22 @@ object IncomeCheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q1"),
           incomeSourceName,
-          controllers.employments.routes.AddEmploymentController.addEmploymentName.url
+          controllers.employments.routes.AddEmploymentController.addEmploymentName().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q2"),
           Dates.formatDate(LocalDate.parse(incomeSourceStart)),
-          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q3"),
           incomeSourceRefNo,
-          controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
+          controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q4"),
           contactableByPhone,
-          controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+          controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
         )
       )
 
@@ -73,7 +74,7 @@ object IncomeCheckYourAnswersViewModel {
           CheckYourAnswersConfirmationLine(
             Messages("tai.phoneNumber"),
             phoneNo,
-            controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
           )
         )
       }
@@ -110,12 +111,12 @@ object IncomeCheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.dateEmploymentEnded"),
           Dates.formatDate(LocalDate.parse(incomeSourceEnd)),
-          controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+          controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.contactByPhone"),
           contactableByPhone,
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
         )
       )
 
@@ -124,7 +125,7 @@ object IncomeCheckYourAnswersViewModel {
           CheckYourAnswersConfirmationLine(
             Messages("tai.phoneNumber"),
             phoneNo,
-            controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+            controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
           )
         )
       }

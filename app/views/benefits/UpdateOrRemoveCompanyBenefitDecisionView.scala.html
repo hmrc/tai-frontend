@@ -26,7 +26,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @main(
@@ -44,7 +44,7 @@
             @govukErrorSummary(ErrorSummary(errorList = viewModel.decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision, Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+        @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
@@ -78,7 +78,7 @@
 
         }
 
-        @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
+        @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url)))
     </div>
 </div>
 }

@@ -66,7 +66,7 @@ class AddEmploymentController @Inject() (
 
   def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
-      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -74,9 +74,9 @@ class AddEmploymentController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("add.missing.employment"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url,
-      controllers.employments.routes.AddEmploymentController.submitTelephoneNumber.url,
-      controllers.employments.routes.AddEmploymentController.cancel.url
+      controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
+      controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
+      controllers.employments.routes.AddEmploymentController.cancel().url
     )
 
   def addEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -88,17 +88,19 @@ class AddEmploymentController @Inject() (
   }
 
   def submitEmploymentName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    EmploymentNameForm.form.bindFromRequest.fold(
-      formWithErrors => {
-        implicit val user: AuthedUser = request.taiUser
+    EmploymentNameForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => {
+          implicit val user: AuthedUser = request.taiUser
 
-        Future.successful(BadRequest(addEmploymentNameForm(formWithErrors)))
-      },
-      employmentName =>
-        journeyCacheService
-          .cache(Map(AddEmploymentConstants.NameKey -> employmentName))
-          .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate))
-    )
+          Future.successful(BadRequest(addEmploymentNameForm(formWithErrors)))
+        },
+        employmentName =>
+          journeyCacheService
+            .cache(Map(AddEmploymentConstants.NameKey -> employmentName))
+            .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()))
+      )
   }
 
   def addEmploymentStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -137,12 +139,12 @@ class AddEmploymentController @Inject() (
                 val firstPayChoiceCacheData =
                   data + (AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
-                Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay)
+                Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
               } else {
                 val firstPayChoiceCacheData =
                   data + (AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.NoValue)
                 journeyCacheService.cache(firstPayChoiceCacheData)
-                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber)
+                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
               }
             }
           )
@@ -172,8 +174,8 @@ class AddEmploymentController @Inject() (
           journeyCacheService.cache(AddEmploymentConstants.ReceivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
             firstPayYesNo match {
               case Some(FormValuesConstants.YesValue) =>
-                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber)
-              case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError)
+                Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
+              case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
             }
           }
       )
@@ -231,7 +233,7 @@ class AddEmploymentController @Inject() (
             )
             journeyCacheService
               .cache(payrollNumberToCache)
-              .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber))
+              .map(_ => Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber()))
           }
         )
   }
@@ -282,7 +284,7 @@ class AddEmploymentController @Inject() (
             case _ => mandatoryData ++ Map(AddEmploymentConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers)
+            Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers())
           }
         }
       )
@@ -310,11 +312,10 @@ class AddEmploymentController @Inject() (
                 mandatoryJourneyValues(2),
                 mandatoryJourneyValues(3),
                 optionalVals.head,
-                controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url,
-                controllers.employments.routes.AddEmploymentController.submitYourAnswers.url,
-                controllers.employments.routes.AddEmploymentController.cancel.url
+                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
+                controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
+                controllers.employments.routes.AddEmploymentController.cancel().url
               )
-            implicit val user: AuthedUser = request.taiUser
             Ok(addIncomeCheckYourAnswers(model))
           case Left(_) =>
             Redirect(taxAccountSummaryRedirect)
@@ -345,11 +346,10 @@ class AddEmploymentController @Inject() (
       _ <- employmentService.addEmployment(user.nino, model)
       _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddEmploymentKey, "true")
       _ <- journeyCacheService.flush()
-    } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation)
+    } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
   }
 
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
     Future.successful(Ok(confirmationView()))
 
   }

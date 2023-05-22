@@ -65,19 +65,19 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends BaseSpec {
   private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.whatYouToldUs"),
     "something",
-    controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url
+    controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url
   )
 
   private lazy val contactByPhoneLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.contactByPhone"),
     "Yes",
-    controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+    controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
   )
 
   private lazy val phoneNumberLine = CheckYourAnswersConfirmationLine(
     Messages("tai.phoneNumber"),
     "1234567890",
-    controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+    controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
   )
 
 }

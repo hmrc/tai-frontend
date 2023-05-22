@@ -21,19 +21,18 @@
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import scala.concurrent.ExecutionContext
+
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@import scala.concurrent.ExecutionContext
+
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(      incomingAuthedUser: Option[controllers.auth.AuthedUser],
         viewModel: CanWeContactByPhoneViewModel,
         yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_],
-        messages: Messages,
-        ec: ExecutionContext)
+        messages: Messages)
 
 
 @hint = {

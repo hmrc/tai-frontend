@@ -43,7 +43,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
     "display a back button" in {
       doc must haveLinkWithUrlWithID(
         "backLink",
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
       )
     }
 
@@ -64,7 +64,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       )
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
+        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
       )
 
       val benefitValue =
@@ -73,21 +73,21 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(3, benefitValue)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
-        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
+        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(5, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(5, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         5,
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
       )
 
     }
