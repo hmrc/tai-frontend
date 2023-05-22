@@ -21,8 +21,7 @@
 
 @this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-ec: scala.concurrent.ExecutionContext)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{

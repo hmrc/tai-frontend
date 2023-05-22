@@ -17,10 +17,8 @@
 package controllers.auth
 
 import controllers.routes
-import org.mockito.Matchers._
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.any
 import play.api.mvc.AbstractController
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper

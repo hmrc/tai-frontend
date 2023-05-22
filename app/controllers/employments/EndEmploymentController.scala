@@ -26,7 +26,6 @@ import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
@@ -65,8 +64,7 @@ class EndEmploymentController @Inject() (
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
@@ -110,8 +108,8 @@ class EndEmploymentController @Inject() (
       _                      <- journeyCacheFuture
       successfulJourneyCache <- successfulJourneyCacheFuture
     } yield successfulJourneyCache match {
-      case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning)
-      case _       => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision)
+      case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning)
+      case _       => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision)
     }
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -424,7 +422,7 @@ class EndEmploymentController @Inject() (
                Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
              )
         _ <- journeyCacheService.flush
-      } yield Redirect(routes.EndEmploymentController.showConfirmationPage)
+      } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage)
   }
 
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

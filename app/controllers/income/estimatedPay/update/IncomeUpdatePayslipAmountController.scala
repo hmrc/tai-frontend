@@ -22,7 +22,6 @@ import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import cats.implicits._
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipDeductionsForm, PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -41,8 +40,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
   payslipAmount: PayslipAmountView,
   taxablePayslipAmount: TaxablePayslipAmountView,
   payslipDeductionsView: PayslipDeductionsView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer
+  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 

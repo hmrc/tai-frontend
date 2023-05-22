@@ -19,7 +19,6 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
@@ -39,8 +38,7 @@ class YourTaxCodeController @Inject() (
   applicationConfig: ApplicationConfig,
   taxCodeDetails: TaxCodeDetailsView,
   taxCodeDetailsPreviousYears: TaxCodeDetailsPreviousYearsView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

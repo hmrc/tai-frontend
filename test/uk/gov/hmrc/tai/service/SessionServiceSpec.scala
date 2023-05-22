@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.tai.connectors.SessionConnector
+import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class SessionServiceSpec extends PlaySpec with MockitoSugar {
+class SessionServiceSpec extends BaseSpec {
 
   "Session Service" must {
     "invalidate the cache" in {

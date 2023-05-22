@@ -45,9 +45,9 @@
         <appender-ref ref="STDOUT_IGNORE_NETTY" />
     </logger>
 
-    <logger name="controllers.auth.TaiAuthenticationProvider" level="${logger.auth:-INFO}"/>
-    <logger name="controllers.benefits.CompanyBenefitController" level="${logger.benefits:-WARN}"/>
-    <logger name="uk.gov.hmrc.tai.DecisionCacheWrapper" level="${logger.benefits:-WARN"/>
+    <logger name="controllers.auth.TaiAuthenticationProvider" level="INFO"/>
+    <logger name="controllers.benefits.CompanyBenefitController" level="WARN"/>
+    <logger name="uk.gov.hmrc.tai.DecisionCacheWrapper" level="WARN"/>
 
     <root level="WARN">
         <appender-ref ref="FILE"/>

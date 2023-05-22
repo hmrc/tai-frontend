@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxCodeDetail}
 import views.html.includes.link
+import scala.language.postfixOps
 
 class TaxCodesSpec extends TaiViewSpec {
   "Cy plus one tax codes view" must {

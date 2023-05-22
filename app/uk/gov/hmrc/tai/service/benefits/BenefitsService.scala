@@ -22,8 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) {
 
@@ -31,7 +30,8 @@ class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) {
     benefitsConnector.benefits(nino, taxYear)
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
   ): Future[String] =
     benefitsConnector.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit) map {
       case Some(envId) => envId

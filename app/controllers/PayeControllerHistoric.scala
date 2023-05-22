@@ -21,7 +21,6 @@ import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
 import javax.inject.Inject
 import cats.implicits._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
@@ -40,8 +39,7 @@ class PayeControllerHistoric @Inject() (
   mcc: MessagesControllerComponents,
   RtiDisabledHistoricPayAsYouEarnView: RtiDisabledHistoricPayAsYouEarnView,
   historicPayAsYouEarnView: HistoricPayAsYouEarnView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

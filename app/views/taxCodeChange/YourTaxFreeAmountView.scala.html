@@ -21,7 +21,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: AuthenticatedRequest[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: AuthenticatedRequest[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 
 @header = @{

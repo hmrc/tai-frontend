@@ -28,14 +28,14 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuditService @Inject() (
   @Named("appName") appName: String,
   val auditConnector: AuditConnector,
-  appConfig: ApplicationConfig
+  appConfig: ApplicationConfig,
+  implicit val executionContext: ExecutionContext
 ) {
 
   val userEnterEvent = "userEntersService"

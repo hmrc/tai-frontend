@@ -19,10 +19,10 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
+
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -48,10 +48,9 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         FakeValidatePerson,
         mcc,
         inject[PayPeriodView],
-        journeyCacheService,
-        MockTemplateRenderer
+        journeyCacheService
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -59,7 +58,8 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
     object PayPeriodPageHarness {
       sealed class PayPeriodPageHarness() {
 
-        when(journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(Monthly), None)))
+        when(journeyCacheService.optionalValues(any())(any(), any()))
+          .thenReturn(Future.successful(Seq(Some(Monthly), None)))
         def payPeriodPage(): Future[Result] =
           new TestIncomeUpdatePayPeriodController()
             .payPeriodPage()(RequestBuilder.buildFakeGetRequestWithAuth())
@@ -88,7 +88,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdatePayPeriodController
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.payPeriodPage(fakeRequest)
@@ -145,7 +145,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdatePayPeriodController
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))

@@ -20,14 +20,11 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => mockEq}
-import org.mockito.Mockito._
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
@@ -40,7 +37,6 @@ import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditC
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.pensions._
-
 import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -48,7 +44,7 @@ import scala.language.postfixOps
 
 class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(addPensionProviderJourneyCacheService)
 
   "addPensionProviderName" must {
@@ -56,9 +52,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "the request has an authorised session and no previous value in cache" in {
         val sut = createSUT
 
-        when(
-          addPensionProviderJourneyCacheService.currentValue(Matchers.eq(AddPensionProviderConstants.NameKey))(any())
-        )
+        when(addPensionProviderJourneyCacheService.currentValue(meq(AddPensionProviderConstants.NameKey))(any()))
           .thenReturn(Future.successful(None))
 
         val result = sut.addPensionProviderName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -77,9 +71,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "the request has an authorised session and previous value exists in cache" in {
         val sut = createSUT
 
-        when(
-          addPensionProviderJourneyCacheService.currentValue(Matchers.eq(AddPensionProviderConstants.NameKey))(any())
-        )
+        when(addPensionProviderJourneyCacheService.currentValue(meq(AddPensionProviderConstants.NameKey))(any()))
           .thenReturn(Future.successful(Some("testPensionName123")))
 
         val result = sut.addPensionProviderName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -99,7 +91,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val sut = createSUT
 
         val expectedCache = Map("pensionProviderName" -> "the pension provider")
-        when(addPensionProviderJourneyCacheService.cache(Matchers.eq(expectedCache))(any()))
+        when(addPensionProviderJourneyCacheService.cache(meq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitPensionProviderName()(
@@ -146,7 +138,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         )
 
         verify(addPensionProviderJourneyCacheService, times(1))
-          .cache(mockEq(Map("pensionProviderName" -> "the pension provider")))(any())
+          .cache(meq(Map("pensionProviderName" -> "the pension provider")))(any())
       }
     }
   }
@@ -161,11 +153,10 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val optionalSeq = List(AddPensionProviderConstants.FirstPaymentKey)
 
         when(
-          addPensionProviderJourneyCacheService.collectedJourneyValues(
-            Matchers.eq(mandatorySeq),
-            Matchers.eq(optionalSeq)
-          )(any())
-        ).thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(None))))
+          addPensionProviderJourneyCacheService
+            .collectedJourneyValues(meq(mandatorySeq), meq(optionalSeq))(any(), any())
+        )
+          .thenReturn(Future.successful(Right((Seq(pensionProviderName), Seq(None)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -183,11 +174,11 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         when(
           addPensionProviderJourneyCacheService
-            .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())
+            .collectedJourneyValues(meq(mandatorySeq), meq(optionalSeq))(any(), any())
         )
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some(FormValuesConstants.NoValue)))))
+          .thenReturn(Future.successful(Right((Seq(pensionProviderName), Seq(Some(FormValuesConstants.NoValue))))))
 
-        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithOnlySession("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -204,9 +195,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         when(
           addPensionProviderJourneyCacheService
-            .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())
+            .collectedJourneyValues(meq(mandatorySeq), meq(optionalSeq))(any(), any())
         )
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some(FormValuesConstants.YesValue)))))
+          .thenReturn(Future.successful(Right((Seq(pensionProviderName), Seq(Some(FormValuesConstants.YesValue))))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -225,7 +216,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         when(
           addPensionProviderJourneyCacheService
-            .collectedJourneyValues(Matchers.eq(mandatorySeq), Matchers.eq(optionalSeq))(any())
+            .collectedJourneyValues(meq(mandatorySeq), meq(optionalSeq))(any(), any())
         )
           .thenReturn(Future.successful(Left("Data missing from the cache")))
 
@@ -284,7 +275,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val sut = createSUT
         val pensionProviderName = "TEST-Pension-Provider"
         when(
-          addPensionProviderJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddPensionProviderConstants.NameKey))(
+          addPensionProviderJourneyCacheService.mandatoryJourneyValue(meq(AddPensionProviderConstants.NameKey))(
             any()
           )
         )
@@ -306,7 +297,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val sut = createSUT
         val pensionProviderName = "TEST-Pension-Provider"
         when(
-          addPensionProviderJourneyCacheService.mandatoryJourneyValue(Matchers.eq(AddPensionProviderConstants.NameKey))(
+          addPensionProviderJourneyCacheService.mandatoryJourneyValue(meq(AddPensionProviderConstants.NameKey))(
             any()
           )
         )
@@ -322,9 +313,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         )
 
         verify(auditService, times(1)).createAndSendAuditEvent(
-          Matchers.eq(AuditConstants.AddPensionCantAddPensionProvider),
-          Matchers.eq(Map("nino" -> nino.nino))
-        )(Matchers.any(), Matchers.any())
+          meq(AuditConstants.AddPensionCantAddPensionProvider),
+          meq(Map("nino" -> nino.nino))
+        )(any(), any())
       }
     }
   }
@@ -340,9 +331,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         when(
           addPensionProviderJourneyCacheService
-            .collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any())
+            .collectedJourneyValues(meq(mandatorySequence), meq(optionalSequence))(any(), any())
         )
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(None))))
+          .thenReturn(Future.successful(Right((Seq(pensionProviderName), Seq(None)))))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -361,9 +352,9 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         when(
           addPensionProviderJourneyCacheService
-            .collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any())
+            .collectedJourneyValues(meq(mandatorySequence), meq(optionalSequence))(any(), any())
         )
-          .thenReturn(Future.successful(Right(Seq(pensionProviderName), Seq(Some("2037-01-18")))))
+          .thenReturn(Future.successful(Right((Seq(pensionProviderName), Seq(Some("2037-01-18"))))))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -381,7 +372,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
         when(
           addPensionProviderJourneyCacheService
-            .collectedJourneyValues(Matchers.eq(mandatorySequence), Matchers.eq(optionalSequence))(any())
+            .collectedJourneyValues(meq(mandatorySequence), meq(optionalSequence))(any(), any())
         )
           .thenReturn(Future.successful(Left("Data missing from the cache")))
 
@@ -395,7 +386,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "return error" when {
       "cache throws an exception" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any()))
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.failed(new RuntimeException("An error occurred")))
         when(addPensionProviderJourneyCacheService.currentValueAs[String](any(), any())(any()))
           .thenReturn(Future.successful(None))
@@ -411,18 +402,22 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "return redirect" when {
       "form is valid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          PensionAddDateForm.PensionFormDay   -> "09",
-          PensionAddDateForm.PensionFormMonth -> "06",
-          PensionAddDateForm.PensionFormYear  -> "2017"
-        )
+
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
         when(addPensionProviderJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result =
-          sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitPensionProviderStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                PensionAddDateForm.PensionFormDay   -> "09",
+                PensionAddDateForm.PensionFormMonth -> "06",
+                PensionAddDateForm.PensionFormYear  -> "2017"
+              )
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(
@@ -434,16 +429,20 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "return bad request" when {
       "form is invalid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          PensionAddDateForm.PensionFormDay   -> "01",
-          PensionAddDateForm.PensionFormMonth -> "02",
-          PensionAddDateForm.PensionFormYear  -> (LocalDate.now().getYear + 1).toString
-        )
+
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
 
         val result =
-          sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+          sut.submitPensionProviderStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                PensionAddDateForm.PensionFormDay   -> "01",
+                PensionAddDateForm.PensionFormMonth -> "02",
+                PensionAddDateForm.PensionFormYear  -> (LocalDate.now().getYear + 1).toString
+              )
+          )
 
         status(result) mustBe BAD_REQUEST
       }
@@ -452,22 +451,26 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "save details in cache" when {
       "form is valid" in {
         val sut = createSUT
-        val formData = Json.obj(
-          PensionAddDateForm.PensionFormDay   -> "01",
-          PensionAddDateForm.PensionFormMonth -> "02",
-          PensionAddDateForm.PensionFormYear  -> "2017"
-        )
+
         when(addPensionProviderJourneyCacheService.currentCache(any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
         when(addPensionProviderJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
         Await.result(
-          sut.submitPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)),
+          sut.submitPensionProviderStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
+              .withFormUrlEncodedBody(
+                PensionAddDateForm.PensionFormDay   -> "01",
+                PensionAddDateForm.PensionFormMonth -> "02",
+                PensionAddDateForm.PensionFormYear  -> "2017"
+              )
+          ),
           5 seconds
         )
 
         verify(addPensionProviderJourneyCacheService, times(1))
-          .cache(Matchers.eq(AddPensionProviderConstants.StartDateKey), Matchers.eq("2017-02-01"))(any())
+          .cache(meq(AddPensionProviderConstants.StartDateKey), meq("2017-02-01"))(any())
       }
     }
   }
@@ -581,7 +584,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           AddPensionProviderConstants.PayrollNumberChoice -> FormValuesConstants.YesValue,
           AddPensionProviderConstants.PayrollNumberKey    -> payrollNo
         )
-        when(addPensionProviderJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
+        when(addPensionProviderJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
         Await.result(
           sut.submitPensionNumber()(
@@ -595,7 +598,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           5 seconds
         )
 
-        verify(addPensionProviderJourneyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
+        verify(addPensionProviderJourneyCacheService, times(1)).cache(meq(mapWithPayrollNumber))(any())
       }
     }
 
@@ -607,7 +610,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           AddPensionProviderConstants.PayrollNumberChoice -> FormValuesConstants.YesValue,
           AddPensionProviderConstants.PayrollNumberKey    -> payrollNo
         )
-        when(addPensionProviderJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any()))
+        when(addPensionProviderJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithPayrollNumber))
         val result = sut.submitPensionNumber()(
           RequestBuilder
@@ -633,7 +636,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           AddPensionProviderConstants.PayrollNumberKey    -> payrollNo
         )
 
-        when(addPensionProviderJourneyCacheService.cache(mockEq(mapWithoutPayrollNumber))(any()))
+        when(addPensionProviderJourneyCacheService.cache(meq(mapWithoutPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithoutPayrollNumber))
 
         Await.result(
@@ -645,7 +648,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           5 seconds
         )
 
-        verify(addPensionProviderJourneyCacheService, times(1)).cache(mockEq(mapWithoutPayrollNumber))(any())
+        verify(addPensionProviderJourneyCacheService, times(1)).cache(meq(mapWithoutPayrollNumber))(any())
       }
     }
 
@@ -658,7 +661,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           AddPensionProviderConstants.PayrollNumberKey    -> payrollNo
         )
 
-        when(addPensionProviderJourneyCacheService.cache(mockEq(mapWithoutPayrollNumber))(any()))
+        when(addPensionProviderJourneyCacheService.cache(meq(mapWithoutPayrollNumber))(any()))
           .thenReturn(Future.successful(mapWithoutPayrollNumber))
 
         val result = sut.submitPensionNumber()(
@@ -702,7 +705,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "show the contact by telephone page" when {
       "the request has an authorised session and no previously cached pension number present" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.optionalValues(any())(any()))
+        when(addPensionProviderJourneyCacheService.optionalValues(any())(any(), any()))
           .thenReturn(Future.successful(Seq(None, None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -719,7 +722,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
       "the request has an authorised session and previously cached telephone number choice is 'No', and no telephone number is held in cache" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.optionalValues(any())(any()))
+        when(addPensionProviderJourneyCacheService.optionalValues(any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(FormValuesConstants.NoValue), None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -737,7 +740,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "the request has an authorised session and previously cached telephone number choice is 'No', and a telephone number is held in cache" in {
         val sut = createSUT
 
-        when(addPensionProviderJourneyCacheService.optionalValues(any())(any()))
+        when(addPensionProviderJourneyCacheService.optionalValues(any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(FormValuesConstants.NoValue), Some("01215485965"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -754,7 +757,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "the request has an authorised session and previously cached telephone number choice is 'Yes', and no telephone number is held in cache" in {
         val sut = createSUT
 
-        when(addPensionProviderJourneyCacheService.optionalValues(any())(any()))
+        when(addPensionProviderJourneyCacheService.optionalValues(any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(FormValuesConstants.YesValue), None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -771,7 +774,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
 
       "the request has an authorised session and previously cached telephone number choice is 'Yes', and a telephone number is held in cache" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.optionalValues(any())(any()))
+        when(addPensionProviderJourneyCacheService.optionalValues(any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(FormValuesConstants.YesValue), Some("01215485965"))))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -892,11 +895,13 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
     "show the check answers summary page" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String]("a pension provider", "2017-06-15", "pension-ref-1234", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String]("a pension provider", "2017-06-15", "pension-ref-1234", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -916,7 +921,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         addPensionProviderJourneyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any())
+        )(any(), any())
       ).thenReturn(
         Future.successful(Left("An error has occurred"))
       )
@@ -932,7 +937,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val mockedJCExceptionMsg =
           "The mandatory value under key <some key> was not found in the journey cache for add-pension-provider   BBBB"
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.failed(new RuntimeException(mockedJCExceptionMsg))
         )
 
@@ -954,13 +959,15 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         Some("123456789")
       )
 
-      when(pensionProviderService.addPensionProvider(any(), Matchers.eq(expectedModel))(any()))
+      when(pensionProviderService.addPensionProvider(any(), meq(expectedModel))(any(), any()))
         .thenReturn(Future.successful("envelope-123"))
-      when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+      when(addPensionProviderJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
         Future.successful(
           Right(
-            Seq[String]("a pension provider", "2017-06-09", "pension-ref-1234", "Yes"),
-            Seq[Option[String]](Some("123456789"))
+            (
+              Seq[String]("a pension provider", "2017-06-09", "pension-ref-1234", "Yes"),
+              Seq[Option[String]](Some("123456789"))
+            )
           )
         )
       )
@@ -1022,7 +1029,6 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         inject[AddPensionStartDateView],
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
 

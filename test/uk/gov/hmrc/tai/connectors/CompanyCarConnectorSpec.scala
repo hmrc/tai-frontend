@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsResultException, Json}
@@ -27,6 +27,7 @@ import utils.BaseSpec
 import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class CompanyCarConnectorSpec extends BaseSpec {
 
@@ -43,7 +44,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
   "getCompanyCarBenefits" should {
     "fetch the company car details" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(companyCarForEmploymentJson))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(companyCarForEmploymentJson))
 
         val result = sut.companyCarBenefitForEmployment(nino, employmentId)
         Await.result(result, 5 seconds) mustBe Some(companyCar)
@@ -52,7 +53,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(corruptJsonResponse))
 
         val ex = the[JsResultException] thrownBy Await
           .result(sut.companyCarBenefitForEmployment(nino, employmentId), 5 seconds)
@@ -64,7 +65,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
   "companyCarsForCurrentYearEmployments" must {
     "return CompanyCarBenefit" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(companyCars))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(companyCars))
 
         val result = sut.companyCarsForCurrentYearEmployments(nino)
         Await.result(result, 5 seconds) mustBe Seq(companyCar)
@@ -73,14 +74,14 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
     "return empty sequence of company car benefit" when {
       "company car service returns no car" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(emptyCompanyCars))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(emptyCompanyCars))
 
         val result = sut.companyCarsForCurrentYearEmployments(nino)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
       }
 
       "company car service returns a failure response" in {
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpHandler.getFromApiV2(any())(any(), any()))
           .thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
 
         val result = sut.companyCarsForCurrentYearEmployments(nino)

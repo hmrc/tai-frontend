@@ -21,7 +21,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
@@ -41,7 +40,7 @@ class EstimatedIncomeTaxController @Inject() (
   complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
   simpleEstimatedIncomeTax: SimpleEstimatedIncomeTaxView,
   zeroTaxEstimatedIncomeTax: ZeroTaxEstimatedIncomeTaxView,
-  implicit val templateRenderer: TemplateRenderer,
+  implicit val
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)

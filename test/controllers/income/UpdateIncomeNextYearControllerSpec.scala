@@ -20,10 +20,9 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.FormBinding.Implicits.formBinding
@@ -110,7 +109,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         DuplicateSubmissionWarningForm.createForm,
         vm,
         employmentID
-      )(request, authedUser, messages, templateRenderer, ec)
+      )(request, authedUser, messages, ec)
     }
 
     "redirect to the landing page if there is no new amount entered" in {
@@ -192,7 +191,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           request,
           messages,
           authedUser,
-          templateRenderer,
           ec
         )
       }
@@ -347,7 +345,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           AmountComparatorForm
             .createForm()
             .bindFromRequest()
-        )(request, messages, authedUser, templateRenderer, ec)
+        )(request, messages, authedUser, ec)
       }
     }
 
@@ -380,7 +378,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             request,
             messages,
             authedUser,
-            templateRenderer,
             ec
           )
         }
@@ -416,7 +413,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             request,
             messages,
             authedUser,
-            templateRenderer,
             ec
           )
         }
@@ -466,7 +462,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             request,
             messages,
             authedUser,
-            templateRenderer,
             ec
           )
 
@@ -540,7 +535,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
 
-      when(updateNextYearsIncomeService.get(meq(employmentID), Matchers.any())(any()))
+      when(updateNextYearsIncomeService.get(meq(employmentID), any())(any()))
         .thenReturn(Future.successful(model))
 
       when(updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any()))
@@ -562,7 +557,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[SameEstimatedPayView],
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )
 }

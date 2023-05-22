@@ -17,22 +17,21 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+
 import java.time.LocalDate
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{MustMatchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
 import play.api.libs.json.{Format, Json}
 import play.api.test.Injecting
 import uk.gov.hmrc.http._
-import utils.WireMockHelper
+import utils.{BaseSpec, WireMockHelper}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
-class HttpHandlerSpec
-    extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
-    with IntegrationPatience with Injecting {
+class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
   lazy val httpHandler = inject[HttpHandler]
 
@@ -40,7 +39,7 @@ class HttpHandlerSpec
 
   protected case class ResponseObject(name: String, age: Int)
   implicit val responseObjectFormat = Json.format[ResponseObject]
-  implicit val hc = HeaderCarrier()
+
   private val responseBodyObject = ResponseObject("Name", 24)
 
   case class DateRequest(date: LocalDate)

@@ -17,16 +17,14 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlEqualTo}
-import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.renderer.TemplateRenderer
-import utils.{FileHelper, IntegrationSpec, MockTemplateRenderer}
+import uk.gov.hmrc.http.SessionKeys
+import utils.{FileHelper, IntegrationSpec}
 
 class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
-  val mockTemplateRenderer = MockTemplateRenderer
   override def fakeApplication() = GuiceApplicationBuilder()
     .configure(
       "auditing.enabled"                                                -> "false",
@@ -34,7 +32,6 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       "microservice.services.tai.port"                                  -> server.port(),
       "microservice.services.digital-engagement-platform-partials.port" -> server.port()
     )
-    .overrides(bind[TemplateRenderer].toInstance(mockTemplateRenderer))
     .build()
 
   "/check-income-tax/income-summary" must {
@@ -76,7 +73,8 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
           .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
       )
 
-      val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER)
+      val request =
+        FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
 
       val result = route(app, request)
 
@@ -116,7 +114,8 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
             .willReturn(aResponse().withStatus(httpStatus))
         )
 
-        val request = FakeRequest(GET, url).withHeaders("referer" -> REFERER)
+        val request =
+          FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
 
         val result = route(app, request)
 

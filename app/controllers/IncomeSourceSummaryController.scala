@@ -24,7 +24,6 @@ import cats.implicits._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -54,8 +53,7 @@ class IncomeSourceSummaryController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

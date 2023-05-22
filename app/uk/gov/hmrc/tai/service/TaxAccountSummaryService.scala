@@ -23,7 +23,6 @@ import play.api.i18n.Messages
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, NotLive}
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
@@ -35,8 +34,7 @@ class TaxAccountSummaryService @Inject() (
   trackingService: TrackingService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
-  mcc: MessagesControllerComponents,
-  implicit val templateRenderer: TemplateRenderer
+  mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

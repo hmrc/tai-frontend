@@ -18,8 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -45,7 +44,6 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       FakeValidatePerson,
       mcc,
       inject[DetailedIncomeTaxEstimateView],
-      templateRenderer,
       inject[ErrorPagesHandler]
     )
 
@@ -57,7 +55,8 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
     .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
   when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
     .thenReturn(Future.successful(NonTaxCodeIncome(None, Seq.empty)))
-  when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+  when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+    .thenReturn(Future.successful(Seq.empty))
 
   "Detailed Income Tax Estimate Controller" must {
     "return OK when responses are " when {
@@ -97,7 +96,8 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       }
 
       "fetch of tax free amount components" in {
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new Error))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+          .thenReturn(Future.failed(new Error))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

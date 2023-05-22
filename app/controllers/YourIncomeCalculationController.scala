@@ -21,7 +21,6 @@ import controllers.auth._
 
 import javax.inject.Inject
 import play.api.mvc._
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -45,8 +44,7 @@ class YourIncomeCalculationController @Inject() (
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
   historicIncomePrintView: HistoricIncomePrintView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

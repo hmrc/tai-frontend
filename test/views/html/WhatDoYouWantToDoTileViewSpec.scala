@@ -16,13 +16,9 @@
 
 package views.html
 
-import mocks.MockTemplateRenderer
-import org.mockito.Matchers.contains
-import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -36,8 +32,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   val modelWithiFormNoCyPlus1 = createViewModel(false)
 
   private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
-
-  override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
 
   "whatDoYouWantTodo Page" should {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))

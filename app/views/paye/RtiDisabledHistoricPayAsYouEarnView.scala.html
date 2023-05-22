@@ -26,7 +26,7 @@
 @this(mainTemplate: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 
 @employmentPairsList = @{viewModel.employments.sliding(2, 2).toList}

@@ -19,11 +19,9 @@ package controllers.benefits
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -62,7 +60,7 @@ class CompanyBenefitControllerSpec
 
       val SUT = createSUT
 
-      when(journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
       val result =
         SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -101,7 +99,7 @@ class CompanyBenefitControllerSpec
         verify(employmentService, times(1)).employment(any(), any())(any())
         verify(journeyCacheService, times(1)).currentCache(any())
         verify(journeyCacheService, times(1)).cache(
-          eqTo(
+          meq(
             Map(
               EndCompanyBenefitConstants.EmploymentNameKey -> empName,
               EndCompanyBenefitConstants.BenefitNameKey    -> benefitType,
@@ -165,13 +163,13 @@ class CompanyBenefitControllerSpec
 
     def ensureBenefitTypeInCache(): String = {
       val benefitType = Telephone.name
-      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Right(benefitType)))
       benefitType
     }
 
     def ensureBenefitTypeOutOfCache(): Unit =
-      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Left("")))
 
     "redirect to the 'When did you stop getting benefits from company?' page" when {
@@ -303,7 +301,7 @@ class CompanyBenefitControllerSpec
         Await.result(result, 5.seconds)
 
         verify(journeyCacheService, times(1))
-          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(NoIDontGetThisBenefit))(any())
+          .cache(meq(s"$benefitType $DecisionChoice"), meq(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
@@ -317,7 +315,7 @@ class CompanyBenefitControllerSpec
 
         Await.result(result, 5.seconds)
         verify(journeyCacheService, times(1))
-          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(YesIGetThisBenefit))(any())
+          .cache(meq(s"$benefitType $DecisionChoice"), meq(YesIGetThisBenefit))(any())
       }
     }
   }
@@ -348,13 +346,12 @@ class CompanyBenefitControllerSpec
   class SUT
       extends CompanyBenefitController(
         employmentService,
-        new DecisionCacheWrapper(journeyCacheService),
+        new DecisionCacheWrapper(journeyCacheService, ec),
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
         updateOrRemoveCompanyBenefitDecisionView,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))

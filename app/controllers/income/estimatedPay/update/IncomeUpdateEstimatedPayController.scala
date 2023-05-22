@@ -26,7 +26,6 @@ import play.api.Logger
 import java.time.LocalDate
 import play.api.mvc._
 import uk.gov.hmrc.tai.util.MoneyPounds
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiSuccessResponseWithPayload}
@@ -56,8 +55,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
   estimatedPay: EstimatedPayView,
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
