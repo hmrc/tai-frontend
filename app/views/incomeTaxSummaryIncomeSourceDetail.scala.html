@@ -26,12 +26,12 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
 
 @pairsList = @{incomeSources.sliding(2, 2).toList}
 
-@for((pair, pidx) <- pairsList zip (Stream from (1,2))) {
+@for((pair, pidx) <- pairsList zip (LazyList.from(1,2))) {
 
 
 <div class="govuk-grid-row grid-row">
 
-    @for((incomeSource, idx) <- pair zip (Stream from pidx)) {
+    @for((incomeSource, idx) <- pair zip (LazyList.from(pidx))) {
     <div id="@typeLabel@idx"
          class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
 
@@ -53,7 +53,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
                         linkClasses = Seq("display-tax-code-for-print"))
                         @for((taxCodeList, listIdx) <-
                         taxCodeViewModel.get(incomeSource.taxCode).map(_.taxCodeDetails).getOrElse(Seq.empty[DescriptionListViewModel])
-                        zip (Stream from 1)) {
+                        zip (LazyList.from(1))) {
             <div  style="display: none;" id="@{typeLabel}TaxCodeList@{pidx.toString}">
                 <details class="govuk-details" data-module="govuk-details">
                     <summary class="govuk-details__summary">
@@ -63,7 +63,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
                     </summary>
                     <div class="govuk-details__text">
                         <div class="govuk-!-padding-bottom-3">
-                            @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                            @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (LazyList.from(1))) {
                             <div class="govuk-grid-row under-line custom-align">
                                 <div class="govuk-grid-column-one-quarter" id="@{typeLabel}TaxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
                                     <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>

@@ -117,7 +117,7 @@ class RemoveCompanyBenefitController @Inject() (
               for {
                 current <- journeyCacheService.currentCache
                 _       <- journeyCacheService.flush()
-                filtered = current.filter(_ != EndCompanyBenefitConstants.BenefitValueKey)
+                filtered = current.filter(_._1 != EndCompanyBenefitConstants.BenefitValueKey)
                 _ <-
                   journeyCacheService
                     .cache(filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))

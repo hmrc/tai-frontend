@@ -35,7 +35,7 @@ class HelpFormHelperSpec extends BaseSpec {
 
       "the partial is retrieved with the expected message" in {
 
-        when(mockFormPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html(
+        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Html(
           messages("tai.deskpro.link.text.original")
         )
 
@@ -50,7 +50,7 @@ class HelpFormHelperSpec extends BaseSpec {
 
         val expectedMessage = "A wild content appears"
 
-        when(mockFormPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html(
+        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Html(
           expectedMessage
         )
 
@@ -58,7 +58,7 @@ class HelpFormHelperSpec extends BaseSpec {
       }
 
       "an empty partial is retrieved" in {
-        when(mockFormPartialRetriever.getPartialContent(any(), any(), any())(any(), any())) thenReturn Html("")
+        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Html("")
 
         HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe empty
       }

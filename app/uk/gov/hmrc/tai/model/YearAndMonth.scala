@@ -53,7 +53,7 @@ object YearAndMonth {
   def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
   implicit val yearMonthFormat: Format[YearMonth] = new Format[YearMonth] {
-    override def writes(o: YearMonth): JsValue = JsString(o.toString())
+    override def writes(o: YearMonth): JsValue = JsString(o.toString)
 
     override def reads(json: JsValue): JsResult[YearMonth] = json match {
       case JsString(s) =>
@@ -62,6 +62,7 @@ object YearAndMonth {
         catch {
           case _: DateTimeParseException => JsError("Invalid date parsed")
         }
+      case _ => JsError("Invalid json value")
     }
   }
 

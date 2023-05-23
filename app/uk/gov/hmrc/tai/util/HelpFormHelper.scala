@@ -31,7 +31,7 @@ object HelpFormHelper {
     messages: Messages,
     ec: ExecutionContext
   ): Html = {
-    def partial = formPartialRetriever.getPartialContent(applicationConfig.reportAProblemPartialUrl)
+    def partial = formPartialRetriever.getPartialContentAsync(applicationConfig.reportAProblemPartialUrl)
 
     Html(
       partial.toString

@@ -125,11 +125,11 @@ messages: Messages)
 }
 
 @incomeList(incomeSourcePairs: List[Seq[EmploymentViewModel]], incomeType: String) = {
-    @for((pair, pidx) <- incomeSourcePairs zip (Stream from (1,2))) {
+    @for((pair, pidx) <- incomeSourcePairs zip (LazyList.from(1,2))) {
 
         <div class="govuk-grid-row">
 
-            @for((employment, idx) <- pair zip (Stream from pidx)) {
+            @for((employment, idx) <- pair zip (LazyList.from(pidx))) {
 
                 <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
                     <h3 class="govuk-heading-l carry-over">@employment.name</h3>

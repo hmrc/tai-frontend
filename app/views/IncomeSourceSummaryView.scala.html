@@ -226,7 +226,7 @@
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                        @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
+                        @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell  xgovuk-!-width-one-half ">
                                 <div id="companyBenefitTerm@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >

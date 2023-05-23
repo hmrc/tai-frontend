@@ -41,7 +41,7 @@ class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: E
   ): Future[Either[Result, AuthenticatedRequest[A]]] = {
 
     implicit val hc: HeaderCarrier =
-      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)

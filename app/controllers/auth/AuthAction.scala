@@ -46,7 +46,7 @@ class AuthActionImpl @Inject() (override val authConnector: AuthConnector, mcc: 
     block: InternalAuthenticatedRequest[A] => Future[Result]
   ): Future[Result] = {
     implicit val hc: HeaderCarrier =
-      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(
       Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper
