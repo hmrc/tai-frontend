@@ -73,7 +73,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
 
   private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: PensionProviderConnector = new PensionProviderConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "testUrl"

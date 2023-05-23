@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, I
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class EmploymentsConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) {
 
@@ -34,45 +34,62 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
-      if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
-        (json \ "data" \ "employments").as[Seq[Employment]]
-      } else {
-        throw new RuntimeException("Invalid employment json")
+    httpHandler
+      .getFromApiV2(employmentServiceUrl(nino, year))
+      .map { json =>
+        if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
+          (json \ "data" \ "employments").as[Seq[Employment]]
+        } else {
+          throw new RuntimeException("Invalid employment json")
+        }
       }
-    }
+      .getOrElse(Seq.empty) // TODO - To remove one at a time to avoid an overextended change
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
-      (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
-    }
+    httpHandler
+      .getFromApiV2(ceasedEmploymentServiceUrl(nino, year))
+      .map { json =>
+        (json \ "data")
+          .validate[Seq[Employment]]
+          .recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
+      }
+      .getOrElse(Seq.empty) // TODO - To remove one at a time to avoid an overextended change
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler
       .getFromApiV2(employmentUrl(nino, id))
       .map(json => (json \ "data").asOpt[Employment])
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
-    httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>
-      if ((response.json \ "data").validate[String].isSuccess) {
-        (response.json \ "data").as[String]
-      } else {
-        throw new RuntimeException("Invalid json")
+    httpHandler
+      .putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData)
+      .map { response =>
+        if ((response.json \ "data").validate[String].isSuccess) {
+          (response.json \ "data").as[String]
+        } else {
+          throw new RuntimeException("Invalid json")
+        }
       }
-    }
+      .getOrElse("") // TODO - To remove one at a time to avoid an overextended change
 
   def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    httpHandler.postToApi[AddEmployment](addEmploymentServiceUrl(nino), employment).map { response =>
-      (response.json \ "data").asOpt[String]
-    }
+    httpHandler
+      .postToApi[AddEmployment](addEmploymentServiceUrl(nino), employment)
+      .map { response =>
+        (response.json \ "data").asOpt[String]
+      }
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier
   ): Future[Option[String]] =
-    httpHandler.postToApi[IncorrectIncome](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment).map {
-      response =>
+    httpHandler
+      .postToApi[IncorrectIncome](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment)
+      .map { response =>
         (response.json \ "data").asOpt[String]
-    }
+      }
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
   def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 

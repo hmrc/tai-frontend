@@ -46,7 +46,7 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
 
   }
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut(servUrl: String = ""): PreviousYearsIncomeConnector =
     new PreviousYearsIncomeConnector(httpHandler, servicesConfig) {

@@ -491,7 +491,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
   private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut(servUrl: String = "") = new EmploymentsConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = servUrl

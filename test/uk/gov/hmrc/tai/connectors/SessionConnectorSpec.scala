@@ -45,7 +45,7 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
     }
   }
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: SessionConnector = new SessionConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "localhost"

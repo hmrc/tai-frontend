@@ -26,7 +26,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class CompanyCarConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class CompanyCarConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -39,19 +39,15 @@ class CompanyCarConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
   def companyCarBenefitForEmployment(nino: Nino, empId: Int)(implicit
     hc: HeaderCarrier
   ): Future[Option[CompanyCarBenefit]] =
-    httpHandler.getFromApiV2(companyCarEmploymentUrl(nino, empId)) map (json =>
-      Some((json \ "data").as[CompanyCarBenefit])
-    ) recover { case e: NotFoundException =>
-      logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
-      None
-    }
+    httpHandler
+      .getFromApiV2(companyCarEmploymentUrl(nino, empId))
+      .map(json => Some((json \ "data").as[CompanyCarBenefit]))
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
   def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
-    httpHandler.getFromApiV2(companyCarUrl(nino)) map (json =>
-      (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]]
-    ) recover { case NonFatal(_) =>
-      logger.warn(s"Couldn't retrieve company car benefits for nino: $nino")
-      Seq.empty[CompanyCarBenefit]
-    }
+    httpHandler
+      .getFromApiV2(companyCarUrl(nino))
+      .map(json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]])
+      .getOrElse(Seq.empty[CompanyCarBenefit]) // TODO - To remove one at a time to avoid an overextended change
 
 }

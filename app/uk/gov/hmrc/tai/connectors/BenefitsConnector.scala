@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BenefitsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class BenefitsConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -36,11 +36,10 @@ class BenefitsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: Ser
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
-    httpHandler.getFromApiV2(benefitsUrl(nino.nino, taxYear)) map (json => (json \ "data").as[Benefits]) recover {
-      case _: RuntimeException =>
-        logger.warn(s"Couldn't retrieve benefits for nino: $nino")
-        throw new RuntimeException(s"Couldn't retrieve benefits for nino: $nino")
-    }
+    httpHandler
+      .getFromApiV2(benefitsUrl(nino.nino, taxYear))
+      .map(json => (json \ "data").as[Benefits])
+      .getOrElse(Benefits(Seq.empty, Seq.empty)) // TODO - To remove one at a time to avoid an overextended change
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
     hc: HeaderCarrier
@@ -50,5 +49,6 @@ class BenefitsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: Ser
       .map { response =>
         (response.json \ "data").asOpt[String]
       }
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
 }

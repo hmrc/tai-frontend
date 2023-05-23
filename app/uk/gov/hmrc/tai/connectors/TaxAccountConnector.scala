@@ -25,14 +25,14 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
-import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) extends CodingComponentFormatters with Logging {
 
@@ -69,35 +69,43 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
         incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)
       )
       .map(json => (json \ "data").as[Seq[TaxedIncome]])
+      .getOrElse(Seq.empty) // TODO - To remove one at a time to avoid an overextended change
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): Future[Either[String, Seq[TaxCodeIncome]]] =
-    httpHandler.getFromApiV2(taxAccountUrl(nino.nino, year)) map (json =>
-      Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
-    ) recover { case e: Exception =>
-      logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
-      Left(e.getMessage)
-    }
+    httpHandler
+      .getFromApiV2(taxAccountUrl(nino.nino, year))
+      .map(json => Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads))))
+      .getOrElse(Left("")) // TODO - To remove one at a time to avoid an overextended change
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
-    httpHandler.getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year)).map { json =>
-      (json \ "data").as[Incomes].nonTaxCodeIncomes
-    } recover { case e: Exception =>
-      logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
-      throw e
-    }
+    httpHandler
+      .getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year))
+      .map { json =>
+        (json \ "data").as[Incomes].nonTaxCodeIncomes
+      }
+      .getOrElse(
+        NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+      ) // TODO - To remove one at a time to avoid an overextended change
 
   def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
-    httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (json =>
-      (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads))
-    ) recover { case e: NotFoundException =>
-      logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
-      Seq.empty[CodingComponent]
-    }
+    httpHandler
+      .getFromApiV2(codingComponentsUrl(nino.nino, year))
+      .map(json => (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
+      .recover { case e: NotFoundException =>
+        logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
+        Seq.empty[CodingComponent]
+      }
+      .getOrElse(Seq.empty[CodingComponent]) // TODO - To remove one at a time to avoid an overextended change
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
-    httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (json => (json \ "data").as[TaxAccountSummary])
+    httpHandler
+      .getFromApiV2(taxAccountSummaryUrl(nino.nino, year))
+      .map(json => (json \ "data").as[TaxAccountSummary])
+      .getOrElse(
+        TaxAccountSummary(BigDecimal(10), BigDecimal(10), BigDecimal(10), BigDecimal(10), BigDecimal(10))
+      ) // TODO - To remove one at a time to avoid an overextended change
 
   def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(implicit
     hc: HeaderCarrier
@@ -105,7 +113,14 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
     httpHandler
       .putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount))
       .map(_ => Done)
+      .getOrElse(Done) // TODO - To remove one at a time to avoid an overextended change
 
   def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
-    httpHandler.getFromApiV2(totalTaxUrl(nino.nino, year)) map (json => (json \ "data").as[TotalTax])
+    httpHandler
+      .getFromApiV2(totalTaxUrl(nino.nino, year))
+      .map(json => (json \ "data").as[TotalTax])
+      .getOrElse(
+        TotalTax(BigDecimal(10), Seq.empty[IncomeCategory], None, None, None)
+      ) // TODO - To remove one at a time to avoid an overextended change
+
 }

@@ -91,7 +91,7 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
   val trackedFormSeq =
     Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived), TrackedForm("R38_EN", "TES2", TrackedFormAcquired))
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig, appConfig, inject[ActorSystem]) {
     override lazy val serviceUrl: String = "mockUrl"

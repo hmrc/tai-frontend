@@ -63,7 +63,7 @@ class PersonConnectorSpec extends BaseSpec {
 
   val person = fakePerson(nino)
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: PersonConnector = new PersonConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "/fakeUrl"

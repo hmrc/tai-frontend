@@ -89,7 +89,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
 //  "mandatoryValueAs" must {
 //
 //    "return the requested values where present" in {
-//      when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(JsString("true")))
+//      when(httpHandler).thenReturn(Future.successful(JsString("true")))
 //      Await
 //        .result(
 //          sut.mandatoryJourneyValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean),
@@ -97,7 +97,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
 //    }
 //
 //    "throw a runtime exception when the requested value is not found" in {
-//      when(httpHandler.getFromApiV2(any())(any()))
+//      when(httpHandler)
 //        .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
 //
 //      val expectedMsg = "The mandatory value under key 'key1' was not found in the journey cache for 'journey1'"
@@ -167,7 +167,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
 
   private val journeyName = "journey1"
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"

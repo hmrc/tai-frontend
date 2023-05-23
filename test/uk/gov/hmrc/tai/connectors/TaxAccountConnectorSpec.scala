@@ -671,5 +671,5 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   )
   val incomeSource = TaxedIncome(taxCodeIncome, employment)
 
-  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
+  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpClientResponse], servicesConfig)
 }

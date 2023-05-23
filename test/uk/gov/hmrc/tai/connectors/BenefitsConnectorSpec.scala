@@ -132,7 +132,7 @@ class BenefitsConnectorSpec extends BaseSpec {
       "links" -> Json.arr()
     )
 
-  val httpHandler = mock[HttpHandler]
+  val httpHandler = mock[HttpClientResponse]
 
   def sut: BenefitsConnector = new BenefitsConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"

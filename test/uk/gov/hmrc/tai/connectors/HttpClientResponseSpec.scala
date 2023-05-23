@@ -31,9 +31,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
+class HttpClientResponseSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
-  lazy val httpHandler = inject[HttpHandler]
+  lazy val httpHandler = inject[HttpClientResponse]
 
   lazy val testUrl = server.url("/")
 

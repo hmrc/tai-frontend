@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PreviousYearsIncomeConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class PreviousYearsIncomeConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) {
 
@@ -36,8 +36,11 @@ class PreviousYearsIncomeConnector @Inject() (httpHandler: HttpHandler, services
   def incorrectIncome(nino: Nino, year: Int, incorrectIncome: IncorrectIncome)(implicit
     hc: HeaderCarrier
   ): Future[Option[String]] =
-    httpHandler.postToApi[IncorrectIncome](previousYearsIncomeServiceUrl(nino, year), incorrectIncome).map { response =>
-      (response.json \ "data").asOpt[String]
-    }
+    httpHandler
+      .postToApi[IncorrectIncome](previousYearsIncomeServiceUrl(nino, year), incorrectIncome)
+      .map { response =>
+        (response.json \ "data").asOpt[String]
+      }
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
 }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PensionProviderConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class PensionProviderConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) {
 
@@ -33,19 +33,24 @@ class PensionProviderConnector @Inject() (httpHandler: HttpHandler, servicesConf
   def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit
     hc: HeaderCarrier
   ): Future[Option[String]] =
-    httpHandler.postToApi[AddPensionProvider](addPensionProviderServiceUrl(nino), pensionProvider).map { response =>
-      (response.json \ "data").asOpt[String]
-    }
+    httpHandler
+      .postToApi[AddPensionProvider](addPensionProviderServiceUrl(nino), pensionProvider)
+      .map { response =>
+        (response.json \ "data").asOpt[String]
+      }
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
   def addPensionProviderServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/pensionProvider"
 
   def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit
     hc: HeaderCarrier
   ): Future[Option[String]] =
-    httpHandler.postToApi[IncorrectPensionProvider](incorrectPensionProviderServiceUrl(nino, id), pensionProvider).map {
-      response =>
+    httpHandler
+      .postToApi[IncorrectPensionProvider](incorrectPensionProviderServiceUrl(nino, id), pensionProvider)
+      .map { response =>
         (response.json \ "data").asOpt[String]
-    }
+      }
+      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
 
   def incorrectPensionProviderServiceUrl(nino: Nino, id: Int): String =
     s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"

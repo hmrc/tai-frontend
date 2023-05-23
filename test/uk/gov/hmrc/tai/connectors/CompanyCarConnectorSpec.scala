@@ -166,7 +166,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
   val employmentId: Int = 2
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: CompanyCarConnector = new CompanyCarConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"

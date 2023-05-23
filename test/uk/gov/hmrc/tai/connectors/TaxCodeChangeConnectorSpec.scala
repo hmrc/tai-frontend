@@ -271,6 +271,6 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
   private def sut = new TaxCodeChangeConnector(httpHandler, servicesConfig)
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
 }
