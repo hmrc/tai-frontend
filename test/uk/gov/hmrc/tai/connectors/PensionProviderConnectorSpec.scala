@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
+
 import java.time.LocalDateTime
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.libs.json.{JsString, Json}
-import uk.gov.hmrc.http.HttpResponse
+import play.api.http.Status.OK
+import play.api.libs.json.{JsString, JsValue, Json}
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 import utils.BaseSpec
@@ -37,9 +40,13 @@ class PensionProviderConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider))(any(), any(), any(), any())
+          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider))(any(), any())
       )
-        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, HttpResponse](
+            Future.successful(Right(HttpResponse(OK, json.toString)))
+          )
+        )
 
       val result = Await.result(sut.addPensionProvider(nino, addPensionProvider), 5.seconds)
 
@@ -58,12 +65,14 @@ class PensionProviderConnectorSpec extends BaseSpec {
       when(
         httpHandler.postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider))(
           any(),
-          any(),
-          any(),
           any()
         )
       )
-        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, HttpResponse](
+            Future.successful(Right(HttpResponse(OK, json.toString)))
+          )
+        )
 
       val result = Await.result(sut.incorrectPensionProvider(nino, 1, incorrectPensionProvider), 5.seconds)
 

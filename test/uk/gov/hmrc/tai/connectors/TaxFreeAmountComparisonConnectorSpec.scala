@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.BadRequestException
+import play.api.http.Status.BAD_REQUEST
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.{BadRequestException, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxComponentType, TaxFreeAmountComparison}
 import utils.BaseSpec
@@ -67,7 +69,8 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
         val taxFreeAmountUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
 
-        when(httpHandler.getFromApiV2(meq(taxFreeAmountUrl))(any(), any())).thenReturn(Future.successful(json))
+        when(httpHandler.getFromApiV2(meq(taxFreeAmountUrl))(any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
         val codingComponents = Seq(CodingComponent(CarBenefit, Some(1), 1, "Car Benefit", Some(1)))
 
@@ -82,8 +85,12 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
     "return a BadRequestException" when {
       "the api responds with invalid json" in {
         val exceptionMessage = "exception message"
-        when(httpHandler.getFromApiV2(any())(any(), any()))
-          .thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](
+              Future.successful(Left(UpstreamErrorResponse("", BAD_REQUEST)))
+            )
+          )
 
         val ex = the[BadRequestException] thrownBy Await.result(sut.taxFreeAmountComparison(nino), 5 seconds)
 

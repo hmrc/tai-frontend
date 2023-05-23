@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
+
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.libs.json.{JsObject, JsString, Json}
-import uk.gov.hmrc.http.HttpResponse
+import play.api.http.Status.OK
+import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain.MedicalInsurance
 import uk.gov.hmrc.tai.model.domain.benefits._
 import utils.BaseSpec
@@ -33,7 +36,10 @@ class BenefitsConnectorSpec extends BaseSpec {
   "getCompanyCarBenefits" must {
     "fetch the company car details" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(benefitsJson))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(benefitsJson)))
+          )
 
         val result = sut.benefits(nino, 2018)
         Await.result(result, 5 seconds) mustBe benefits
@@ -42,7 +48,10 @@ class BenefitsConnectorSpec extends BaseSpec {
 
     "thrown exception" when {
       "benefit type is invalid" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(invalidBenefitsJson))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(invalidBenefitsJson)))
+          )
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
         ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
@@ -63,8 +72,13 @@ class BenefitsConnectorSpec extends BaseSpec {
             s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
           ),
           meq(endedCompanyBenefit)
-        )(any(), any(), any(), any())
-      ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
+        )(any(), any())
+      )
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, HttpResponse](
+            Future.successful(Right(HttpResponse(OK, json.toString)))
+          )
+        )
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
 

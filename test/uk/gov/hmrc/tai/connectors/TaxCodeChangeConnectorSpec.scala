@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.libs.json.{JsArray, Json}
-import uk.gov.hmrc.http.BadRequestException
+import play.api.http.Status.{BAD_REQUEST, IM_A_TEAPOT}
+import play.api.libs.json.{JsArray, JsValue, Json}
+import uk.gov.hmrc.http.{BadRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
@@ -87,7 +89,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         )
 
         val expectedResult = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
-        when(httpHandler.getFromApiV2(meq(taxCodeChangeUrl))(any(), any())).thenReturn(Future.successful(json))
+        when(httpHandler.getFromApiV2(meq(taxCodeChangeUrl))(any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
         val result = Await.result(sut.taxCodeChange(nino), 5 seconds)
         result mustEqual expectedResult
@@ -101,8 +104,12 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
         val expectedMessage = s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''"
 
-        when(httpHandler.getFromApiV2(meq(taxCodeChangeUrl))(any(), any()))
-          .thenReturn(Future.failed(new RuntimeException(expectedMessage)))
+        when(httpHandler.getFromApiV2(meq(taxCodeChangeUrl))(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](
+              Future.successful(Left(UpstreamErrorResponse("", IM_A_TEAPOT)))
+            )
+          )
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxCodeChange(nino), 5 seconds)
         ex.getMessage must include(s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''")
@@ -166,7 +173,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
       val expectedResult = List(taxCodeRecord, taxCodeRecord2)
 
-      when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl))(any(), any())).thenReturn(Future.successful(json))
+      when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl))(any()))
+        .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual expectedResult
@@ -182,7 +190,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         "links" -> JsArray(List())
       )
 
-      when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl))(any(), any())).thenReturn(Future.successful(json))
+      when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl))(any()))
+        .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
       val result = Await.result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual List.empty
@@ -193,8 +202,12 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         val year = TaxYear().prev.year
         val latestTaxCodeRecordUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
         val expectedMessage = s"Couldn't retrieve tax code records for $nino for year $year with exception: bad request"
-        when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl))(any(), any()))
-          .thenReturn(Future.failed(new BadRequestException(expectedMessage)))
+        when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl))(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](
+              Future.successful(Left(UpstreamErrorResponse("", BAD_REQUEST)))
+            )
+          )
 
         val expected = the[BadRequestException] thrownBy Await
           .result(sut.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
@@ -219,9 +232,10 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
         val hasTaxCodeChangedUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
 
-        val json = Future.successful(Json.toJson(true))
+        val json = Json.toJson(true)
 
-        when(httpHandler.getFromApiV2(meq(hasTaxCodeChangedUrl))(any(), any())).thenReturn(json)
+        when(httpHandler.getFromApiV2(meq(hasTaxCodeChangedUrl))(any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
         val result = Await.result(sut.hasTaxCodeChanged(nino), 5 seconds)
         result mustEqual true
@@ -244,10 +258,11 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
       "provided with a valid nino" in {
 
         val expectedResult = TaxCodeMismatchFactory.matchedTaxCode
-        val json = Future.successful(TaxCodeMismatchFactory.matchedTaxCodeJson)
+        val json = TaxCodeMismatchFactory.matchedTaxCodeJson
 
         val url = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
-        when(httpHandler.getFromApiV2(meq(url))(any(), any())).thenReturn(json)
+        when(httpHandler.getFromApiV2(meq(url))(any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
         val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
         result mustEqual expectedResult
@@ -258,10 +273,11 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
       "provided with a valid nino" in {
 
         val expectedResult = TaxCodeMismatchFactory.mismatchedTaxCode
-        val json = Future.successful(TaxCodeMismatchFactory.mismatchedTaxCodeJson)
+        val json = TaxCodeMismatchFactory.mismatchedTaxCodeJson
 
         val url = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
-        when(httpHandler.getFromApiV2(meq(url))(any(), any())).thenReturn(json)
+        when(httpHandler.getFromApiV2(meq(url))(any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(json))))
 
         val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
         result mustEqual expectedResult
