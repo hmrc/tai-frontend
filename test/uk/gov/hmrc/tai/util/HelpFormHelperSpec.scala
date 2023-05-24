@@ -18,10 +18,11 @@ package uk.gov.hmrc.tai.util
 
 import builders.RequestBuilder
 import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import utils.BaseSpec
+
+import scala.concurrent.Future
 
 class HelpFormHelperSpec extends BaseSpec {
 
@@ -35,9 +36,12 @@ class HelpFormHelperSpec extends BaseSpec {
 
       "the partial is retrieved with the expected message" in {
 
-        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Html(
-          messages("tai.deskpro.link.text.original")
-        )
+        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Future
+          .successful(
+            Html(
+              messages("tai.deskpro.link.text.original")
+            )
+          )
 
         HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe
           messages("tai.deskpro.link.text.replacement")
@@ -50,15 +54,19 @@ class HelpFormHelperSpec extends BaseSpec {
 
         val expectedMessage = "A wild content appears"
 
-        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Html(
-          expectedMessage
-        )
+        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Future
+          .successful(
+            Html(
+              expectedMessage
+            )
+          )
 
         HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe expectedMessage
       }
 
       "an empty partial is retrieved" in {
-        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Html("")
+        when(mockFormPartialRetriever.getPartialContentAsync(any(), any(), any())(any(), any())) thenReturn Future
+          .successful(Html(""))
 
         HelpFormHelper.replaceMessage(mockFormPartialRetriever, appConfig).toString() mustBe empty
       }

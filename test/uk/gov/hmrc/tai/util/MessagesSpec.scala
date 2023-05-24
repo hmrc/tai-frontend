@@ -166,15 +166,4 @@ class MessagesSpec extends BaseSpec {
   private val commonProvidedKeys = Set(
     "error.address.invalid.character"
   )
-
-  private val frameworkProvidedKeys = Set(
-    "global.error.badRequest400.heading",
-    "global.error.badRequest400.message",
-    "global.error.badRequest400.title",
-    "global.error.pageNotFound404.heading",
-    "global.error.pageNotFound404.message",
-    "global.error.pageNotFound404.title"
-  )
-
-  private val providedKeys = commonProvidedKeys ++ frameworkProvidedKeys
 }

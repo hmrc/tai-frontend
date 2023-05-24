@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking._

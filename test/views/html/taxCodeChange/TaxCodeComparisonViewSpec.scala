@@ -83,7 +83,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   }
 
   "tax code comparison" should {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
 
     behave like pageWithTitle(Messages("taxCode.change.journey.preHeading"))
 

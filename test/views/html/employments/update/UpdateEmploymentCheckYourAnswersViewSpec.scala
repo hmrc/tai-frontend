@@ -32,7 +32,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
       "/check-income-tax/update-employment/check-your-answers",
       messages("tai.confirmAndSend")
     )
-    behave like pageWithCheckYourAnswersSummaryNew
+    behave like pageWithCheckYourAnswersSummaryNew()
     behave like pageWithCancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(employmentId))
 
     "display a back button" which {

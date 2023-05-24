@@ -32,7 +32,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
   val isPension = false
 
   "CYPlus1 Edit Page" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
 
     behave like pageWithCombinedHeaderNewFormat(

@@ -22,13 +22,10 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
 
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -72,8 +69,10 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
           .thenReturn(
             Future.successful(
               Right(
-                Seq[String](employer.id.toString, employer.name),
-                Seq[Option[String]](payPeriod, None, cachedAmount)
+                (
+                  Seq[String](employer.id.toString, employer.name),
+                  Seq[Option[String]](payPeriod, None, cachedAmount)
+                )
               )
             )
           )
@@ -218,8 +217,10 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
           .thenReturn(
             Future.successful(
               Right(
-                Seq[String](employer.id.toString, employer.name),
-                Seq[Option[String]](payPeriod, None, cachedAmount)
+                (
+                  Seq[String](employer.id.toString, employer.name),
+                  Seq[Option[String]](payPeriod, None, cachedAmount)
+                )
               )
             )
           )
@@ -257,9 +258,6 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val cachedAmount = None
-        val payPeriod = None
-
         val controller = new TestIncomeUpdatePayslipAmountController
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
@@ -288,7 +286,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
-            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None))
+            Right((Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None)))
           )
         )
 

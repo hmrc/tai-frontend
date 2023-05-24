@@ -39,7 +39,7 @@ import scala.concurrent.Future
 
 class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(auditService)
 
   "onPageLoad" must {

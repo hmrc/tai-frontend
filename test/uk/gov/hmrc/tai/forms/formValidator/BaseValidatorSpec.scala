@@ -19,8 +19,6 @@ package uk.gov.hmrc.tai.forms.formValidator
 import org.scalatestplus.play.PlaySpec
 import play.api.data.validation.{Invalid, Valid, ValidationError}
 
-import scala.collection.mutable
-
 class BaseValidatorSpec extends PlaySpec {
 
   val taxablePayYTD = BigDecimal("10000")

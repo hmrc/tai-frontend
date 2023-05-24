@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCate
 class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
   "your tax free amount" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     behave like pageWithTitle(Messages("taxCode.change.yourTaxFreeAmount.title"))
 

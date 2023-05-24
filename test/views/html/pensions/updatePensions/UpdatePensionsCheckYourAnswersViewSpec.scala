@@ -33,7 +33,7 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
       "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend")
     )
-    behave like pageWithCheckYourAnswersSummaryNew
+    behave like pageWithCheckYourAnswersSummaryNew()
     behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId))
 
     "display a back button" which {

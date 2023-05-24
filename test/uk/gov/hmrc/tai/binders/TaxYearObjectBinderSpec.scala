@@ -28,13 +28,13 @@ class TaxYearObjectBinderSpec extends BaseSpec {
 
         val testTaxYear: TaxYear = TaxYear(currentYear + 1)
 
-        val taxYearBinder = createSut
+        val taxYearBinder = createSut()
 
         val taxBinderResult = taxYearBinder.bind("", testTaxYear.year.toString)
 
         taxBinderResult.isRight mustBe true
 
-        taxBinderResult.right map { tbr =>
+        taxBinderResult map { tbr =>
           tbr mustBe testTaxYear
         }
       }
@@ -43,13 +43,13 @@ class TaxYearObjectBinderSpec extends BaseSpec {
 
         val testTaxYear: TaxYear = TaxYear(currentYear - 5)
 
-        val taxYearBinder = createSut
+        val taxYearBinder = createSut()
 
         val taxBinderResult = taxYearBinder.bind("", testTaxYear.year.toString)
 
         taxBinderResult.isRight mustBe true
 
-        taxBinderResult.right map { tbr =>
+        taxBinderResult map { tbr =>
           tbr mustBe testTaxYear
         }
       }
@@ -60,7 +60,7 @@ class TaxYearObjectBinderSpec extends BaseSpec {
 
         val testTaxYear: TaxYear = TaxYear(currentYear + 2)
 
-        val taxYearBinder = createSut
+        val taxYearBinder = createSut()
 
         val taxBinderResult = taxYearBinder.bind("", testTaxYear.year.toString)
 
@@ -77,7 +77,7 @@ class TaxYearObjectBinderSpec extends BaseSpec {
 
         val testTaxYear: TaxYear = TaxYear(currentYear - 6)
 
-        val taxYearBinder = createSut
+        val taxYearBinder = createSut()
 
         val taxBinderResult = taxYearBinder.bind("", testTaxYear.year.toString)
 
@@ -94,7 +94,7 @@ class TaxYearObjectBinderSpec extends BaseSpec {
 
         val nonTaxYear: String = "NonTaxYearValue"
 
-        val taxYearBinder = createSut
+        val taxYearBinder = createSut()
 
         val taxBinderResult = taxYearBinder.bind("taxYear", nonTaxYear)
 
@@ -114,7 +114,7 @@ class TaxYearObjectBinderSpec extends BaseSpec {
 
         val testTaxYear: TaxYear = TaxYear(currentYear + 1)
 
-        val taxYearBinder = createSut
+        val taxYearBinder = createSut()
 
         val taxBinderResult = taxYearBinder.unbind("", testTaxYear)
 

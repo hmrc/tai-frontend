@@ -165,7 +165,7 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
     messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(taxablePay), zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url
+    controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(

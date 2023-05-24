@@ -51,7 +51,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCombinedHeaderNewTemplate(
       preHeaderText = messages("tai.incomes.warning.preHeading"),
       mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName)
@@ -68,7 +68,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
 
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
+      val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
       val validatedForm = duplicateSubmissionWarningForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -76,7 +76,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
+      val validNoChoice = Map(choice -> FormValuesConstants.NoValue)
       val validatedForm = duplicateSubmissionWarningForm.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -84,7 +84,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
     }
 
     "display an error for invalid choice" in {
-      val invalidChoice = Json.obj(choice -> "")
+      val invalidChoice = Map(choice -> "")
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 

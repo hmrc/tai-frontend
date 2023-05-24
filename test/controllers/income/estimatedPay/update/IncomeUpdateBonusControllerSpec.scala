@@ -96,7 +96,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
           expectedForm,
           employer,
           controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
-        )(fakeRequest, messages, authedUser, ec)
+        )(fakeRequest, messages, authedUser)
 
       result rendersTheSameViewAs expectedView
     }
@@ -119,7 +119,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
           controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
             .taxablePayslipAmountPage()
             .url
-        )(fakeRequest, messages, authedUser, ec)
+        )(fakeRequest, messages, authedUser)
 
       result rendersTheSameViewAs expectedView
     }
@@ -216,8 +216,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         )(
           fakeRequest,
           messages,
-          authedUser,
-          ec
+          authedUser
         )
       }
     }
@@ -270,8 +269,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
       result rendersTheSameViewAs bonusPaymentAmountView(expectedForm, employer)(
         fakeRequest,
         messages,
-        authedUser,
-        ec
+        authedUser
       )
     }
 
@@ -342,7 +340,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         result rendersTheSameViewAs bonusPaymentAmountView(
           BonusOvertimeAmountForm.createForm().bindFromRequest(),
           employer
-        )(fakeRequest, messages, authedUser, ec)
+        )(fakeRequest, messages, authedUser)
       }
     }
 

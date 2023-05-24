@@ -259,7 +259,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
             Future.successful(Left("Error"))
           } else {
             Future.successful(
-              Right(Seq(employer.name, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString)))
+              Right(
+                (Seq(employer.name, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString)))
+              )
             )
           }
 

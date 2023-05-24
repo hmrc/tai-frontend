@@ -40,7 +40,7 @@ import scala.language.postfixOps
 
 class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I18nSupport with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(employmentService)
 
   "Calling the Current Year Page method" should {

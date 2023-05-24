@@ -23,8 +23,6 @@ import play.api.test.Helpers._
 import utils.BaseSpec
 import views.html.DeceasedHelplineView
 
-import scala.language.postfixOps
-
 class DeceasedControllerSpec extends BaseSpec {
 
   "Deceased Controller" must {

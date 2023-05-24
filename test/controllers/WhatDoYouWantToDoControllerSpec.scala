@@ -19,9 +19,8 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.jsoup.nodes.{Document, Element}
+import org.jsoup.nodes.Element
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
@@ -121,12 +120,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     )
   )
 
-  override def beforeEach: Unit =
-    Mockito.reset(auditService, employmentService)
+  override def beforeEach(): Unit =
+    reset(auditService, employmentService)
 
   "Calling the What do you want to do page method" must {
-    def toStringBreak(doc: Document) =
-      doc.body()
 
     "call whatDoYouWantToDoPage() successfully with an authorised session" when {
 
@@ -483,7 +480,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       result.header.status mustBe OK
 
-      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any())
     }
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
@@ -497,7 +494,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       result.header.status mustBe OK
 
-      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any())
     }
 
     "landed to the page and get failure from taxCodeIncomes" in {
@@ -606,7 +603,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     when(mockAppConfig.incomeTaxHistoryEnabled) thenReturn true
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any()))
+    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(Future.successful(taxAccountSummary))

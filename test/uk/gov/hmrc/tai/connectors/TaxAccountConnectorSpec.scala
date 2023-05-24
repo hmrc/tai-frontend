@@ -38,7 +38,6 @@ import utils.{BaseSpec, WireMockHelper}
 import java.time.LocalDate
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.language.postfixOps
 
 class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
@@ -90,7 +89,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
       }
     }
 
@@ -102,7 +101,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             .willReturn(unauthorized())
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[String, Seq[TaxCodeIncome]]]
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
       }
     }
   }

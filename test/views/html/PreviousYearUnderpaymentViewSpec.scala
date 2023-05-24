@@ -35,7 +35,7 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(Messages("tai.previous.year.underpayment.title"))
 
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
 
     "display paragraphs" in {
 

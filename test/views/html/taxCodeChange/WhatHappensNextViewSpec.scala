@@ -25,7 +25,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
 
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCombinedHeaderNewTemplate(
       messages("taxCode.change.journey.preHeading"),
       messages("taxCode.change.whatHappensNext.title")
@@ -39,7 +39,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
           "taxCode.change.whatHappensNext.paragragh2",
           link(
             id = Some("income-tax-estimate-link"),
-            url = routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+            url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
             copy = messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")
           )
         )

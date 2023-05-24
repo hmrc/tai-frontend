@@ -355,13 +355,11 @@ class DetailedIncomeTaxEstimateViewModelSpec
             CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None)
           )
 
-          val tabIndexLink = {
-            val links = link(
-              url = routes.YourTaxCodeController.taxCodes().url,
-              copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
-              tabindexMinusOne = true
-            )
-          }
+          val tabIndexLink = link(
+            url = routes.YourTaxCodeController.taxCodes().url,
+            copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
+            tabindexMinusOne = true
+          )
 
           val result: Seq[ReductionTaxRow] =
             DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)

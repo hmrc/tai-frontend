@@ -50,7 +50,7 @@ import scala.util.Random
 class CompanyBenefitControllerSpec
     extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(journeyCacheService)
 
   "redirectCompanyBenefitSelection" must {
@@ -66,7 +66,7 @@ class CompanyBenefitControllerSpec
         SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.CompanyBenefitController.decision.url
+      redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
     }
   }
 

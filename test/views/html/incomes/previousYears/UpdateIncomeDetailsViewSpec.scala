@@ -42,7 +42,7 @@ class UpdateIncomeDetailsViewSpec extends TaiViewSpec {
     )
     behave like pageWithContinueButtonForm("/check-income-tax/update-income-details/what-do-you-want-to-tell-us")
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(givenTaxYear))
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     "display a text area to collect further information" in {
       doc must haveElementAtPathWithAttribute("textarea", "name", "employmentDetails")
       doc must haveElementAtPathWithAttribute("textarea", "rows", "5")

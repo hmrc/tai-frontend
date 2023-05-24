@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service.journeyCache
 
 import akka.Done
-import cats.syntax.either._
+import cats.implicits.catsSyntaxEitherId
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
@@ -32,7 +32,7 @@ import scala.language.postfixOps
 
 class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(journeyCacheConnector)
 
   "current value methods" must {
@@ -234,8 +234,10 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(meq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe Right(
-        Seq("val1", "val2"),
-        Seq(Some("val3"), None)
+        (
+          Seq("val1", "val2"),
+          Seq(Some("val3"), None)
+        )
       )
     }
 
@@ -265,8 +267,10 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe Right(
-        Seq("val1", "val2"),
-        Seq(Some("val3"), None)
+        (
+          Seq("val1", "val2"),
+          Seq(Some("val3"), None)
+        )
       )
     }
   }
@@ -278,7 +282,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
       when(journeyCacheConnector.currentCache(meq(sut.journeyName))(any()))
         .thenReturn(Future.successful(testCache))
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key9")), 5 seconds) mustBe
-        Right(Seq("val1", "val2"), Seq(Some("val3"), None))
+        Right((Seq("val1", "val2"), Seq(Some("val3"), None)))
     }
 
     "return an error message if one or more of the mandatory values are not found" in {
@@ -305,7 +309,7 @@ class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
         .thenReturn(Future.successful(testCache))
 
       Await.result(sut.collectedJourneyValues(Seq("key1", "key2"), Seq("key4", "key3")), 5 seconds) mustBe
-        Right(Seq("val1", "val2"), Seq(Some("val3"), None))
+        Right((Seq("val1", "val2"), Seq(Some("val3"), None)))
     }
 
   }

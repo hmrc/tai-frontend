@@ -41,7 +41,7 @@ import scala.concurrent.Future
 class PayeControllerHistoricSpec
     extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(employmentService)
 
   "Calling the payePage method with an authorised session" must {

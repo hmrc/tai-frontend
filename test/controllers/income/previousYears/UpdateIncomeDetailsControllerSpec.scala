@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(journeyCacheService, trackingjourneyCacheService)
 
   "decision" must {
@@ -308,7 +308,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
       when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-        Future.successful(Right(Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789"))))
+        Future.successful(Right((Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789")))))
       )
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -347,8 +347,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String]("1", "whatYouToldUs", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String]("1", "whatYouToldUs", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -377,8 +379,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String]("1", "whatYouToldUs", "No"),
-              Seq[Option[String]](None)
+              (
+                Seq[String]("1", "whatYouToldUs", "No"),
+                Seq[Option[String]](None)
+              )
             )
           )
         )

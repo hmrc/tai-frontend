@@ -20,10 +20,8 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 
 import java.time.LocalDate
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
 import play.api.libs.json.{Format, Json}
-import play.api.test.Injecting
 import uk.gov.hmrc.http._
 import utils.{BaseSpec, WireMockHelper}
 
@@ -77,7 +75,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
 
     }
 
-    "should return a Upstream5xxResponse when INTERNAL_SERVER_ERROR response" in {
+    "should return a UpstreamErrorResponse when INTERNAL_SERVER_ERROR response" in {
 
       server.stubFor(
         get(anyUrl())
@@ -85,7 +83,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
-      responseFuture mustBe a[Upstream5xxResponse]
+      responseFuture mustBe a[UpstreamErrorResponse]
     }
 
     "should return a BadRequestException when BAD_REQUEST response" in {
@@ -100,7 +98,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
 
     }
 
-    "should return a Upstream4xxResponse when LOCKED response" in {
+    "should return a UpstreamErrorResponse when LOCKED response" in {
 
       server.stubFor(
         get(anyUrl())
@@ -108,7 +106,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
-      responseFuture mustBe a[Upstream4xxResponse]
+      responseFuture mustBe a[UpstreamErrorResponse]
     }
 
     "should return a UnauthorizedException when UNAUTHORIZED response" in {
@@ -122,7 +120,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       responseFuture mustBe a[UnauthorizedException]
     }
 
-    "should return a Upstream4xxResponse when unknown response" in {
+    "should return a UpstreamErrorResponse when unknown response" in {
 
       server.stubFor(
         get(anyUrl())
@@ -130,7 +128,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl).failed.futureValue
-      responseFuture mustBe a[Upstream4xxResponse]
+      responseFuture mustBe a[UpstreamErrorResponse]
     }
 
   }
@@ -162,7 +160,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
 
     }
 
-    "should return a Upstream5xxResponse when INTERNAL_SERVER_ERROR response" in {
+    "should return a UpstreamErrorResponse when INTERNAL_SERVER_ERROR response" in {
 
       server.stubFor(
         put(anyUrl())
@@ -170,7 +168,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       )
 
       val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
-      result mustBe a[Upstream5xxResponse]
+      result mustBe a[UpstreamErrorResponse]
 
     }
 
@@ -186,7 +184,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
 
     }
 
-    "should return a Upstream4xxResponse when unknown response" in {
+    "should return a UpstreamErrorResponse when unknown response" in {
 
       server.stubFor(
         put(anyUrl())
@@ -194,7 +192,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       )
 
       val result = httpHandler.putToApi[DateRequest](testUrl, DateRequest(LocalDate.now())).failed.futureValue
-      result mustBe a[Upstream4xxResponse]
+      result mustBe a[UpstreamErrorResponse]
 
     }
   }
@@ -225,7 +223,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       INTERNAL_SERVER_ERROR,
       SERVICE_UNAVAILABLE
     ).foreach { httpStatus =>
-      s"return Upstream5xxResponse for $httpStatus response" in {
+      s"return UpstreamErrorResponse for $httpStatus response" in {
 
         server.stubFor(
           post(anyUrl())
@@ -233,7 +231,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
         )
 
         val responseFuture = httpHandler.postToApi(testUrl, userInput).failed.futureValue
-        responseFuture mustBe a[Upstream5xxResponse]
+        responseFuture mustBe a[UpstreamErrorResponse]
 
       }
     }
@@ -265,8 +263,6 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
   }
 
   "deleteFromApi" must {
-    val userInput = "userInput"
-
     List(
       ACCEPTED,
       OK,
@@ -289,7 +285,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       INTERNAL_SERVER_ERROR,
       SERVICE_UNAVAILABLE
     ).foreach { httpStatus =>
-      s"return Upstream5xxResponse for $httpStatus response" in {
+      s"return UpstreamErrorResponse for $httpStatus response" in {
 
         server.stubFor(
           delete(anyUrl())
@@ -297,7 +293,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
         )
 
         val responseFuture = httpHandler.deleteFromApi(testUrl).failed.futureValue
-        responseFuture mustBe a[Upstream5xxResponse]
+        responseFuture mustBe a[UpstreamErrorResponse]
 
       }
     }

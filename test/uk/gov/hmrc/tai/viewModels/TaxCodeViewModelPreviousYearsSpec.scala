@@ -201,8 +201,6 @@ class TaxCodeViewModelPreviousYearsSpec extends BaseSpec {
     val taxCodeRecord0T = makeTestTaxCodeRecord("0T", OtherBasisOfOperation)
     "be able to create table contents for 0 personal allowance income tax code" when {
       "provide taxCodeExplanation for a previous tax year" in {
-        val taxCodeIncome =
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "0T", "employer", OtherBasisOfOperation, Live)
         val result = previousYearTestViewModel(List(taxCodeRecord0T))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap("0T" -> Messages("tai.taxCode.prev.0T"))
       }

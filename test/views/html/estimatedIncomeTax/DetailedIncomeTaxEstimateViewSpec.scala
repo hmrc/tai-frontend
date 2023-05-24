@@ -38,7 +38,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.estimatedIncome.detailedEstimate.title"))
     behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     behave like pageWithCombinedHeaderNewFormat(
       Messages(

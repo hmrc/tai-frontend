@@ -33,7 +33,7 @@ class UpdateIncomeCYPlus1SameViewSpec extends TaiViewSpec {
   override def view: Html = updateIncomeCYPlus1Same(employerName, employmentID, newAmount)
 
   "CYPlus1 Same Page" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),

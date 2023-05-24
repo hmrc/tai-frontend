@@ -37,8 +37,8 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       "/check-income-tax/remove-company-benefit/submit-your-answers",
       messages("tai.confirmAndSend")
     )
-    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
-    behave like pageWithCheckYourAnswersSummaryNew
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
+    behave like pageWithCheckYourAnswersSummaryNew()
 
     "display a back button" in {
       doc must haveLinkWithUrlWithID(

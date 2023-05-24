@@ -42,7 +42,7 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para3"))
     }
 
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
   }
   private val template = inject[AddEmploymentErrorPageView]
 

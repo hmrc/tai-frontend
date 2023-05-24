@@ -22,10 +22,8 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -51,8 +49,8 @@ import scala.language.postfixOps
 
 class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
-    Mockito.reset(employmentService, endEmploymentJourneyCacheService)
+  override def beforeEach(): Unit =
+    reset(employmentService, endEmploymentJourneyCacheService)
 
   "employmentUpdateRemove" must {
     "call updateRemoveEmployer page successfully with an authorised session" in {
@@ -221,7 +219,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError.url
+        ).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
       }
     }
 
@@ -281,7 +279,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     "submit the details to backend" in {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = "0"
-      val dataFromCache = Right(Seq(employmentId, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST")))
+      val dataFromCache = Right((Seq(employmentId, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
       val cacheMap = Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId" -> "true")
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
@@ -293,7 +291,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage.url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
     }
   }
 
@@ -303,7 +301,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       val employmentId = 1
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString), Seq())))
+        .thenReturn(Future.successful(Right((Seq(employerName, employmentId.toString), Seq()))))
 
       val result = endEmploymentTest.endEmploymentPage(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
@@ -399,7 +397,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "show the check your answers page" in {
         val endEmploymentTest = createEndEmploymentTest
 
-        val dataFromCache = Right(Seq("0", LocalDate.of(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST")))
+        val dataFromCache = Right((Seq("0", LocalDate.of(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST"))))
 
         when(
           endEmploymentJourneyCacheService.collectedJourneyValues(
@@ -454,7 +452,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val result = endEmploymentTest.confirmAndSendEndEmployment()(fakeGetRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage.url
+        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
         verify(endEmploymentJourneyCacheService, times(1)).flush()(any())
       }
     }
@@ -706,7 +704,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision.url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
     }
 
     "redirect to warning page when there is an end employment ID cache value present" in {
@@ -726,7 +724,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning.url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
     }
   }
 

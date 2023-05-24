@@ -35,7 +35,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       messages("tai.confirmAndSend")
     )
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev))
-    behave like pageWithCheckYourAnswersSummaryNew
+    behave like pageWithCheckYourAnswersSummaryNew()
 
     "display a back button" which {
       "links to the add telephone form page" when {

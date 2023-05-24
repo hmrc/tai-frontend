@@ -37,7 +37,7 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     "have a heading for the Total estimated Income" in {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading"))

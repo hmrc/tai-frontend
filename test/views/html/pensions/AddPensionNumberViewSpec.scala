@@ -38,7 +38,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec {
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(
       AddPensionNumberConstants.PayrollNumberChoice + "-yes",

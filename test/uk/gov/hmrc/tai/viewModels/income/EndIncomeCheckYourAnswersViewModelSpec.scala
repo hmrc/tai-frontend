@@ -51,7 +51,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "No",
-        controllers.employments.routes.EndEmploymentController.submitTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url
       )
     }
 

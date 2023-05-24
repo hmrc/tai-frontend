@@ -26,13 +26,13 @@ class BenefitComponentTypeBinderSpec extends BaseSpec {
     "return the BenefitComponentType" when {
       "the supplied value is a valid BenefitComponentType" in {
 
-        val benefitComponentTypeBinder = createSut
+        val benefitComponentTypeBinder = createSut()
 
         val benefitComponentTypeBinderResult = benefitComponentTypeBinder.bind("", "BenefitInKind")
 
         benefitComponentTypeBinderResult.isRight mustBe true
 
-        benefitComponentTypeBinderResult.right map { tbr =>
+        benefitComponentTypeBinderResult map { tbr =>
           tbr mustBe BenefitInKind
         }
       }
@@ -41,7 +41,7 @@ class BenefitComponentTypeBinderSpec extends BaseSpec {
     "return a message stating that the value isn't a valid BenefitComponentType" when {
       "the supplied value isn't a valid BenefitComponentType" in {
 
-        val benefitComponentTypeBinder = createSut
+        val benefitComponentTypeBinder = createSut()
 
         val benefitComponentTypeBinderResult = benefitComponentTypeBinder.bind("", "InvalidComponentType")
 
@@ -59,7 +59,7 @@ class BenefitComponentTypeBinderSpec extends BaseSpec {
     "return the tax year as a string" when {
       "a TaxYear object is supplied" in {
 
-        val benefitComponentTypeBinder = createSut
+        val benefitComponentTypeBinder = createSut()
 
         val benefitComponentTypeBinderResult = benefitComponentTypeBinder.unbind("", BenefitInKind)
 

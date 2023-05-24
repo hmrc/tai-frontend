@@ -61,7 +61,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments/" + employer.id)
 
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
+      val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
       val validatedForm = bonusPaymentsForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -69,7 +69,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
+      val validNoChoice = Map(choice -> FormValuesConstants.NoValue)
       val validatedForm = bonusPaymentsForm.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -77,7 +77,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
     }
 
     "display an error for invalid choice" in {
-      val invalidChoice = Json.obj(choice -> "")
+      val invalidChoice = Map(choice -> "")
       val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
 
       val errorView = bonusPayments(invalidatedForm, employer, "backUrl")

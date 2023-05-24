@@ -37,7 +37,7 @@ class AddPensionErrorViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(messages("tai.addPensionProvider.errorPage.para2"))
     }
 
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
   }
   private val addPensionErrorPage = inject[AddPensionErrorView]
   override def view: Html = addPensionErrorPage("fake pension provider")

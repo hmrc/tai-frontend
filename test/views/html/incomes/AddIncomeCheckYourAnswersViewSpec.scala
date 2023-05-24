@@ -34,7 +34,7 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
 
     behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 
-    behave like pageWithCheckYourAnswersSummaryNew
+    behave like pageWithCheckYourAnswersSummaryNew()
 
     "display a back button" in {
       doc must haveBackLinkNew

@@ -54,7 +54,7 @@ import scala.concurrent.Future
 class RemoveCompanyBenefitControllerSpec
     extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
 
   "stopDate" must {
@@ -237,8 +237,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq(employmentName, benefitName, referer),
-              Seq[Option[String]](None)
+              (
+                Seq(employmentName, benefitName, referer),
+                Seq[Option[String]](None)
+              )
             )
           )
         )
@@ -260,8 +262,10 @@ class RemoveCompanyBenefitControllerSpec
       when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
         Future.successful(
           Right(
-            Seq(employmentName, benefitName, referer),
-            Seq[Option[String]](valueOfBenefit)
+            (
+              Seq(employmentName, benefitName, referer),
+              Seq[Option[String]](valueOfBenefit)
+            )
           )
         )
       )
@@ -578,8 +582,10 @@ class RemoveCompanyBenefitControllerSpec
       ).thenReturn(
         Future.successful(
           Right(
-            Seq[String]("AwesomeType", "TestCompany", stopDate.toString, "Yes", "Url"),
-            Seq[Option[String]](Some("10000"), Some("123456789"))
+            (
+              Seq[String]("AwesomeType", "TestCompany", stopDate.toString, "Yes", "Url"),
+              Seq[Option[String]](Some("10000"), Some("123456789"))
+            )
           )
         )
       )
@@ -631,8 +637,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
-              Seq[Option[String]](Some("1000000"), Some("0123456789"))
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
+                Seq[Option[String]](Some("1000000"), Some("0123456789"))
+              )
             )
           )
         )
@@ -665,8 +673,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
-              Seq[Option[String]](None, None)
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
+                Seq[Option[String]](None, None)
+              )
             )
           )
         )
@@ -698,8 +708,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
-              Seq[Option[String]](Some("1000000"), None)
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
+                Seq[Option[String]](Some("1000000"), None)
+              )
             )
           )
         )
@@ -732,8 +744,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
-              Seq[Option[String]](None, Some("0123456789"))
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
+                Seq[Option[String]](None, Some("0123456789"))
+              )
             )
           )
         )

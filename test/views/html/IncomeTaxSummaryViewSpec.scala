@@ -477,7 +477,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url
       )
 
     }
@@ -526,7 +526,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url
       )
     }
   }

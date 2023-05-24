@@ -296,8 +296,10 @@ class IncomeUpdateCalculatorControllerSpec
             .thenReturn(
               Future.successful(
                 Right(
-                  Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-                  Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+                  (
+                    Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
+                    Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+                  )
                 )
               )
             )

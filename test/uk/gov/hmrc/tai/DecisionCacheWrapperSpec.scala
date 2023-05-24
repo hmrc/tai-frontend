@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
@@ -35,7 +34,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with Sca
   val journeyCacheService = mock[JourneyCacheService]
   val wrapper = new DecisionCacheWrapper(journeyCacheService, ec)
 
-  override def beforeEach: Unit = Mockito.reset(journeyCacheService)
+  override def beforeEach(): Unit = Mockito.reset(journeyCacheService)
 
   "getDecision" must {
     "return a None" when {
