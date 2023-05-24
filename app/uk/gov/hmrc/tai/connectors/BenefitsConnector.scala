@@ -16,16 +16,22 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
+import cats.data.EitherT
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
+import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class BenefitsConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
+class BenefitsConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -35,20 +41,20 @@ class BenefitsConnector @Inject() (httpHandler: HttpClientResponse, servicesConf
   def endedCompanyBenefitUrl(nino: String, employmentId: Int): String =
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
-  def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
-    httpHandler
-      .getFromApiV2(benefitsUrl(nino.nino, taxYear))
-      .map(json => (json \ "data").as[Benefits])
-      .getOrElse(Benefits(Seq.empty, Seq.empty)) // TODO - To remove one at a time to avoid an overextended change
+  def benefits(nino: Nino, taxYear: Int)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse
+      .read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](benefitsUrl(nino.nino, taxYear)))
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
     hc: HeaderCarrier
-  ): Future[Option[String]] =
-    httpHandler
-      .postToApi[EndedCompanyBenefit](endedCompanyBenefitUrl(nino.nino, employmentId), endedCompanyBenefit)
-      .map { response =>
-        (response.json \ "data").asOpt[String]
-      }
-      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
-
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse
+      .read(
+        httpClient.POST[EndedCompanyBenefit, Either[UpstreamErrorResponse, HttpResponse]](
+          endedCompanyBenefitUrl(nino.nino, employmentId),
+          endedCompanyBenefit
+        )
+      )
 }

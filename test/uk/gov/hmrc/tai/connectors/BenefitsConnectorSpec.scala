@@ -16,140 +16,151 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import cats.data.EitherT
-
-import java.time.LocalDate
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.http.Status.OK
-import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import com.github.tomakehurst.wiremock.client.WireMock._
+import play.api
+import play.api.Application
+import play.api.http.Status._
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
-import uk.gov.hmrc.tai.model.domain.MedicalInsurance
 import uk.gov.hmrc.tai.model.domain.benefits._
-import utils.BaseSpec
+import uk.gov.hmrc.webchat.client.WebChatClient
+import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-import scala.language.postfixOps
+class BenefitsConnectorSpec extends ConnectorSpec {
 
-class BenefitsConnectorSpec extends BaseSpec {
+  override def fakeApplication(): Application = GuiceApplicationBuilder()
+    .configure(
+      "microservice.services.tai.port"                      -> server.port(),
+      "microservice.services.tai-frontend.port"             -> server.port(),
+      "microservice.services.contact-frontend.port"         -> "6666",
+      "microservice.services.pertax-frontend.port"          -> "1111",
+      "microservice.services.personal-tax-summary.port"     -> "2222",
+      "microservice.services.activity-logger.port"          -> "5555",
+      "tai.cy3.enabled"                                     -> true,
+      "microservice.services.feedback-survey-frontend.port" -> "3333",
+      "microservice.services.company-auth.port"             -> "4444",
+      "microservice.services.citizen-auth.port"             -> "9999"
+    )
+    .overrides(
+      api.inject.bind[WebChatClient].toInstance(new WebChatClientStub)
+    )
+    .build()
 
-  "getCompanyCarBenefits" must {
-    "fetch the company car details" when {
-      "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(benefitsJson)))
+  "BenefitsConnector" when {
+    "benefits" must {
+      def benefitsUrl(nino: String, taxYear: Int): String = s"/tai/$nino/tax-account/$taxYear/benefits"
+
+      "return an OK response with the correct data" in {
+        val companyCarsJson: JsObject =
+          Json.obj(
+            "employmentSeqNo" -> 10,
+            "grossAmount"     -> 1000,
+            "companyCars" -> Json.arr(
+              Json.obj(
+                "carSeqNo"                           -> 100,
+                "makeModel"                          -> "Make Model",
+                "hasActiveFuelBenefit"               -> true,
+                "dateMadeAvailable"                  -> "2016-10-10",
+                "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
+              )
+            ),
+            "version" -> 1
+          )
+        val otherBenefitsJson: JsObject = Json.obj(
+          "benefitType"  -> "MedicalInsurance",
+          "employmentId" -> 10,
+          "amount"       -> 1000
+        )
+        val benefitsJson: JsObject =
+          Json.obj(
+            "data" -> Json
+              .obj("companyCarBenefits" -> Json.arr(companyCarsJson), "otherBenefits" -> Json.arr(otherBenefitsJson)),
+            "links" -> Json.arr()
+          )
+        server.stubFor(
+          get(urlPathMatching(benefitsUrl(nino.nino, currentTaxYear)))
+            .willReturn(okJson(benefitsJson.toString))
+        )
+
+        connector.benefits(nino, currentTaxYear).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe benefitsJson
+        }
+      }
+
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        UNPROCESSABLE_ENTITY,
+        TOO_MANY_REQUESTS,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse with the status $errorStatus" in {
+          server.stubFor(
+            get(urlPathMatching(benefitsUrl(nino.nino, currentTaxYear)))
+              .willReturn(aResponse().withStatus(errorStatus))
           )
 
-        val result = sut.benefits(nino, 2018)
-        Await.result(result, 5 seconds) mustBe benefits
+          val result =
+            connector.benefits(nino, currentTaxYear).value.futureValue.swap.getOrElse(UpstreamErrorResponse("", OK))
+          result.statusCode mustBe errorStatus
+        }
       }
     }
 
-    "thrown exception" when {
-      "benefit type is invalid" in {
-        when(httpHandler.getFromApiV2(any())(any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(invalidBenefitsJson)))
-          )
+    "endedCompanyBenefit" must {
+      def endedCompanyBenefitUrl(nino: String, employmentId: Int): String =
+        s"/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
-        ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
-      }
-    }
-  }
-
-  "removeCompanyBenefit" must {
-
-    "return an envelope id on a successful invocation" in {
-      val employmentId = 1
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(
-        httpHandler.postToApi(
-          meq(
-            s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
-          ),
-          meq(endedCompanyBenefit)
-        )(any(), any())
-      )
-        .thenReturn(
-          EitherT[Future, UpstreamErrorResponse, HttpResponse](
-            Future.successful(Right(HttpResponse(OK, json.toString)))
+
+      "return an OK response containing the correct String" in {
+        server.stubFor(
+          post(urlPathMatching(endedCompanyBenefitUrl(nino.nino, 1)))
+            .willReturn(okJson(json.toString))
+        )
+
+        val result = connector
+          .endedCompanyBenefit(nino, 1, endedCompanyBenefit)
+          .value
+          .futureValue
+          .getOrElse(HttpResponse(BAD_REQUEST, ""))
+        result.status mustBe OK
+        result.json mustBe json
+      }
+
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        UNPROCESSABLE_ENTITY,
+        TOO_MANY_REQUESTS,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse with the status $errorStatus" in {
+          server.stubFor(
+            post(urlPathMatching(endedCompanyBenefitUrl(nino.nino, 1)))
+              .willReturn(aResponse().withStatus(errorStatus))
           )
-        )
 
-      val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
-
-      result mustBe Some("123-456-789")
+          val result = connector
+            .endedCompanyBenefit(nino, 1, endedCompanyBenefit)
+            .value
+            .futureValue
+            .swap
+            .getOrElse(UpstreamErrorResponse("", OK))
+          result.statusCode mustBe errorStatus
+        }
+      }
     }
-
-  }
-
-  val companyCars = List(
-    CompanyCar(
-      100,
-      "Make Model",
-      hasActiveFuelBenefit = true,
-      dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
-      dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
-      dateWithdrawn = None
-    )
-  )
-
-  val companyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
-  val genericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
-  val benefits = Benefits(Seq(companyCarBenefit), Seq(genericBenefit))
-
-  val companyCarsJson: JsObject =
-    Json.obj(
-      "employmentSeqNo" -> 10,
-      "grossAmount"     -> 1000,
-      "companyCars" -> Json.arr(
-        Json.obj(
-          "carSeqNo"                           -> 100,
-          "makeModel"                          -> "Make Model",
-          "hasActiveFuelBenefit"               -> true,
-          "dateMadeAvailable"                  -> "2016-10-10",
-          "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-        )
-      ),
-      "version" -> 1
-    )
-
-  val otherBenefitsJson: JsObject = Json.obj(
-    "benefitType"  -> "MedicalInsurance",
-    "employmentId" -> 10,
-    "amount"       -> 1000
-  )
-
-  val benefitsJson: JsObject =
-    Json.obj(
-      "data" -> Json
-        .obj("companyCarBenefits" -> Json.arr(companyCarsJson), "otherBenefits" -> Json.arr(otherBenefitsJson)),
-      "links" -> Json.arr()
-    )
-
-  val invalidOtherBenefitsJson: JsObject = Json.obj(
-    "benefitType"  -> "GiftAidPayments",
-    "employmentId" -> 10,
-    "amount"       -> 1000
-  )
-
-  val invalidBenefitsJson: JsObject =
-    Json.obj(
-      "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr(invalidOtherBenefitsJson),
-        "otherBenefits"      -> Json.arr(otherBenefitsJson)
-      ),
-      "links" -> Json.arr()
-    )
-
-  val httpHandler = mock[HttpClientResponse]
-
-  def sut: BenefitsConnector = new BenefitsConnector(httpHandler, servicesConfig) {
-    override val serviceUrl: String = "mockUrl"
   }
 
 }

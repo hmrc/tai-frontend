@@ -16,28 +16,46 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
+import cats.data.EitherT
+import play.api.Logging
+import play.api.http.Status.BAD_REQUEST
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) {
+class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) extends Logging {
 
-  def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
-    benefitsConnector.benefits(nino, taxYear)
+  def benefits(nino: Nino, taxYear: Int)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Benefits] =
+    benefitsConnector.benefits(nino, taxYear).map(_.json.as[Benefits])
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[String] =
-    benefitsConnector.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit) map {
-      case Some(envId) => envId
-      case _ =>
-        throw new RuntimeException(
-          s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
-        )
-    }
+  ): EitherT[Future, UpstreamErrorResponse, String] =
+    benefitsConnector
+      .endedCompanyBenefit(nino, employmentId, endedCompanyBenefit)
+      .transform {
+        case Left(error) => Left(error)
+        case Right(response) =>
+          val data = (response.json \ "data").asOpt[String]
+          data match {
+            case Some(data) => Right(data)
+            case None =>
+              val exception = new RuntimeException(
+                s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+              )
+              logger.error(exception.getMessage, exception)
+              Left(
+                UpstreamErrorResponse(exception.getMessage, BAD_REQUEST, BAD_REQUEST)
+              ) // TODO - Correct error status? May delete later
+          }
+      }
 }

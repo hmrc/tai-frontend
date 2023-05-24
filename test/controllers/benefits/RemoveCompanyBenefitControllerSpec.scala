@@ -18,6 +18,7 @@ package controllers.benefits
 
 import akka.Done
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import org.jsoup.Jsoup
@@ -29,6 +30,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -639,7 +641,7 @@ class RemoveCompanyBenefitControllerSpec
         when(
           benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
         )
-          .thenReturn(Future.successful("1"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("1"))))
         when(
           trackSuccessJourneyCacheService
             .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
@@ -671,7 +673,7 @@ class RemoveCompanyBenefitControllerSpec
         when(
           benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
         )
-          .thenReturn(Future.successful("1"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("1"))))
         when(
           trackSuccessJourneyCacheService
             .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
@@ -702,7 +704,7 @@ class RemoveCompanyBenefitControllerSpec
         when(
           benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
         )
-          .thenReturn(Future.successful("1"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("1"))))
         when(
           trackSuccessJourneyCacheService
             .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
@@ -734,7 +736,9 @@ class RemoveCompanyBenefitControllerSpec
         when(
           benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
         )
-          .thenReturn(Future.successful("1"))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("1")))
+          ) // TODO - A lot of these mocks are duplicates, can be moved to a beforeEach() section
         when(
           trackSuccessJourneyCacheService
             .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())

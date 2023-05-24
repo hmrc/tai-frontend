@@ -45,7 +45,7 @@ class HttpClientResponse @Inject() (httpClient: HttpClient)(implicit ec: Executi
         Left(error)
     } recover { case exception: HttpException =>
       logger.error(exception.message)
-      Left(UpstreamErrorResponse(exception.message, 502, 502))
+      Left(UpstreamErrorResponse(exception.message, BAD_GATEWAY, BAD_GATEWAY))
     })
 
   def getFromApiV2(url: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, JsValue] = { /// To be removed

@@ -66,7 +66,7 @@ class IncomeSourceSummaryController @Inject() (
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
-      benefitsService.benefits(nino, TaxYear().year),
+      benefitsService.benefits(nino, TaxYear().year).value, // TODO - Was Future[Benefits], ensure correct behaviour
       estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
@@ -84,7 +84,7 @@ class IncomeSourceSummaryController @Inject() (
           request.fullName,
           taxCodeIncomes,
           employment,
-          benefitsDetails,
+          benefitsDetails.get(0).get, // TODO - Remove .get once changed to for yield
           estimatedPayCompletion,
           rtiAvailable,
           applicationConfig,
