@@ -30,7 +30,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {
 
-  def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit
+  def companyCars(
+    nino: Nino
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]] =
+    carConnector.companyCarsForCurrentYearEmployments(nino).map(_.json.as[Seq[CompanyCarBenefit]])
+
+  def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(
+    implicit // TODO - Delete?
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): Future[Seq[CompanyCarBenefit]] =
@@ -38,12 +47,4 @@ class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {
       companyCars(nino).getOrElse(Seq.empty[CompanyCarBenefit])
     else
       Future.successful(Seq.empty[CompanyCarBenefit])
-
-  def companyCars(
-    nino: Nino
-  )(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext
-  ): EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]] =
-    carConnector.companyCarsForCurrentYearEmployments(nino).map(_.json.as[Seq[CompanyCarBenefit]]) // Needs testing
 }

@@ -142,7 +142,7 @@ class BenefitsServiceSpec extends BaseSpec {
         when(mockBenefitsConnector.endedCompanyBenefit(meq(nino), meq(1), meq(endedCompanyBenefit))(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(NO_CONTENT, Json.obj("d" -> "").toString)))
+              Future.successful(Right(HttpResponse(OK, Json.obj("d" -> "").toString)))
             )
           )
 

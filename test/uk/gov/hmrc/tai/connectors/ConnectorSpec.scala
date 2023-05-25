@@ -33,12 +33,13 @@ import uk.gov.hmrc.tai.model.TaxYear
 import utils.WireMockHelper
 
 trait ConnectorSpec
-    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with MockitoSugar with I18nSupport with ScalaFutures with Injecting with PatienceConfiguration {
-
-  def connector: BenefitsConnector = inject[BenefitsConnector]
+    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with MockitoSugar with I18nSupport with ScalaFutures
+    with Injecting with PatienceConfiguration {
 
   val nino: Nino = FakeAuthAction.nino
   val currentTaxYear: Int = TaxYear().year
+  val employmentId: Int = 1
+
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   implicit val defaultPatience: PatienceConfig =

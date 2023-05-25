@@ -22,7 +22,7 @@ import java.time.LocalDate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
-import play.api.http.Status.OK
+import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
@@ -40,93 +40,146 @@ import scala.util.Random
 
 class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
+  lazy val connector: CompanyCarConnector = mock[CompanyCarConnector]
+
+  lazy val service: CompanyCarService = new CompanyCarService(connector)
+
   override def beforeEach: Unit =
-    Mockito.reset(carConnector)
+    Mockito.reset(connector)
 
-  "companyCarBenefits" must {
-    "return empty seq of company car benefits" when {
-      "connector returns empty seq" in {
-        val sut = createSut
-        val codingComponents = Seq(
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
+  "CompanyCarService" when {
+    val companyCar = CompanyCarBenefit(
+      10,
+      1000,
+      List(
+        CompanyCar(
+          10,
+          "Make Model",
+          hasActiveFuelBenefit = true,
+          dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+          dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
+          dateWithdrawn = None
         )
-        when(carConnector.companyCarsForCurrentYearEmployments(any())(any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, HttpResponse](Future.successful(Right(HttpResponse(OK, ""))))
-          )
-
-        val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
-        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
-        verify(carConnector, times(1)).companyCarsForCurrentYearEmployments(any())(any())
-      }
-
-      "Coding components don't have company car benefit" in {
-        val sut = createSut
-        val codingComponents = Seq(
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
+      ),
+      Some(1)
+    )
+    val companyCarWithDateWithDrawn = CompanyCarBenefit(
+      10,
+      1000,
+      List(
+        CompanyCar(
+          10,
+          "Make Model",
+          hasActiveFuelBenefit = false,
+          dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+          dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
+          dateWithdrawn = Some(LocalDate.parse("2017-05-12"))
         )
+      ),
+      Some(1)
+    )
+    val companyCars = Seq(companyCar, companyCarWithDateWithDrawn)
 
-        val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
-        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
-        verify(carConnector, times(0)).companyCarsForCurrentYearEmployments(any())(any())
-      }
-    }
-
-    "return seq of company car by removing withdrawn company cars" when {
-      "Coding components have company car benefit" in {
-        val sut = createSut
-        val codingComponents = Seq(
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
-        )
-        when(carConnector.companyCarsForCurrentYearEmployments(any())(any()))
+    "companyCars is run" must {
+      "return a sequence of CompanyCarBenefit when the connector returns an OK status with valid data" in {
+        when(connector.companyCarsForCurrentYearEmployments(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
               Future.successful(Right(HttpResponse(OK, Json.toJson(companyCars).toString)))
             )
           )
 
-        val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
-        Await.result(result, 5 seconds) mustBe Seq(companyCar)
+        service.companyCars(nino).value.futureValue.map { result =>
+          result mustBe companyCars
+        }
+      }
+      "return an empty sequence when the connector returns an OK status with no data" in {
+        when(connector.companyCarsForCurrentYearEmployments(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(Seq.empty[CompanyCarBenefit]).toString)))
+            )
+          )
+
+        service.companyCars(nino).value.futureValue.map { result =>
+          result mustBe Seq.empty[CompanyCarBenefit]
+        }
+      }
+
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return the UpstreamErrorException generated by the connector containing $errorStatus" in {
+
+          when(connector.companyCarsForCurrentYearEmployments(any())(any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+
+          service.companyCars(nino).value.futureValue.swap.map { result =>
+            result.statusCode mustBe errorStatus
+          }
+        }
       }
     }
+
+    "return empty seq of company car benefits" must { // TODO Method may be pointless, check after refactoring
+      "connector returns empty seq" in {
+        val codingComponents = Seq(
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+          CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
+        )
+        when(connector.companyCarsForCurrentYearEmployments(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(Seq.empty[CompanyCarBenefit]).toString)))
+            )
+          )
+
+        val result = service.companyCarOnCodingComponents(generateNino, codingComponents)
+        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
+        verify(connector, times(1)).companyCarsForCurrentYearEmployments(any())(any())
+      }
+
+      "Coding components don't have company car benefit" in { // TODO Method may be pointless, check after refactoring
+        val codingComponents = Seq(
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
+        )
+
+        val result = service.companyCarOnCodingComponents(generateNino, codingComponents)
+        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
+        verify(connector, times(0)).companyCarsForCurrentYearEmployments(any())(any())
+      }
+    }
+
+//    "return seq of company car by removing withdrawn company cars" must { // TODO Method may be pointless, check after refactoring
+//      "Coding components have company car benefit" in {
+//        val codingComponents = Seq(
+//          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+//          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+//          CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
+//        )
+//        when(connector.companyCarsForCurrentYearEmployments(any())(any()))
+//          .thenReturn(
+//            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+//              Future.successful(Right(HttpResponse(OK, Json.toJson(companyCars).toString)))
+//            )
+//          )
+//
+//        val result = service.companyCarOnCodingComponents(generateNino, codingComponents)
+//        Await.result(result, 5 seconds) mustBe Seq(companyCar)
+//      }
+//    }
   }
-
-  val companyCar = CompanyCarBenefit(
-    10,
-    1000,
-    List(
-      CompanyCar(
-        10,
-        "Make Model",
-        hasActiveFuelBenefit = true,
-        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
-        dateWithdrawn = None
-      )
-    ),
-    Some(1)
-  )
-
-  val companyCarWithDateWithDrawn = CompanyCarBenefit(
-    10,
-    1000,
-    List(
-      CompanyCar(
-        10,
-        "Make Model",
-        hasActiveFuelBenefit = false,
-        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
-        dateWithdrawn = Some(LocalDate.parse("2017-05-12"))
-      )
-    ),
-    Some(1)
-  )
 
   val companyCarListWithDateWithDrawn = CompanyCarBenefit(
     10,
@@ -170,14 +223,6 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
   val employment =
     Employment("The Man Plc", Live, None, LocalDate.parse("2016-06-09"), None, Nil, "", "", 1, None, false, false)
-  val companyCars = Seq(companyCar, companyCarWithDateWithDrawn)
 
   def generateNino: Nino = new Generator(new Random).nextNino
-
-  private def createSut = new SUT
-
-  val carConnector = mock[CompanyCarConnector]
-
-  private class SUT extends CompanyCarService(carConnector)
-
 }

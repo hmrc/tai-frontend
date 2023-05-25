@@ -35,6 +35,7 @@ class BenefitsConnectorSpec extends ConnectorSpec {
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .configure(
+      "microservice.services.tai.port"                      -> server.port(),
       "microservice.services.tai-frontend.port"             -> server.port(),
       "microservice.services.contact-frontend.port"         -> "6666",
       "microservice.services.pertax-frontend.port"          -> "1111",
@@ -49,6 +50,8 @@ class BenefitsConnectorSpec extends ConnectorSpec {
       api.inject.bind[WebChatClient].toInstance(new WebChatClientStub)
     )
     .build()
+
+  override def messagesApi: MessagesApi = inject[MessagesApi]
 
   def connector: BenefitsConnector = inject[BenefitsConnector]
 
@@ -127,7 +130,7 @@ class BenefitsConnectorSpec extends ConnectorSpec {
 
       "return an OK response containing the correct String" in {
         server.stubFor(
-          post(urlPathMatching(endedCompanyBenefitUrl(nino.nino, 1)))
+          post(urlPathMatching(endedCompanyBenefitUrl(nino.nino, employmentId)))
             .willReturn(okJson(json.toString))
         )
 
@@ -167,5 +170,4 @@ class BenefitsConnectorSpec extends ConnectorSpec {
       }
     }
   }
-
 }
