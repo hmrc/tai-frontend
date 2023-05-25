@@ -16,11 +16,16 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
+import cats.data.EitherT
+
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
+import play.api.http.Status.OK
+import play.api.libs.json.Json
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
@@ -48,7 +53,9 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
           CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
         )
         when(carConnector.companyCarsForCurrentYearEmployments(any())(any()))
-          .thenReturn(Future.successful(Seq.empty[CompanyCarBenefit]))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](Future.successful(Right(HttpResponse(OK, ""))))
+          )
 
         val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -76,27 +83,15 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(CarBenefit, None, 1000, "CarBenefit description")
         )
+        when(carConnector.companyCarsForCurrentYearEmployments(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(companyCars).toString)))
+            )
+          )
 
-        when(carConnector.companyCarsForCurrentYearEmployments(any())(any())).thenReturn(Future.successful(companyCars))
         val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
         Await.result(result, 5 seconds) mustBe Seq(companyCar)
-      }
-    }
-  }
-
-  "isCompanyCarDateWithdrawn" must {
-    "return false if there a company car without date withdrawn" in {
-      val sut = createSut
-      sut.isCompanyCarDateWithdrawn(companyCar) mustBe false
-    }
-    "return true" when {
-      "there is a car with dateWithdrawn" in {
-        val sut = createSut
-        sut.isCompanyCarDateWithdrawn(companyCarWithDateWithDrawn) mustBe true
-      }
-      "there is a list of cars and one of them has dateWithdrawn" in {
-        val sut = createSut
-        sut.isCompanyCarDateWithdrawn(companyCarListWithDateWithDrawn) mustBe true
       }
     }
   }

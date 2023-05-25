@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
+import cats.data.EitherT
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -33,16 +35,15 @@ class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {
     executionContext: ExecutionContext
   ): Future[Seq[CompanyCarBenefit]] =
     if (codingComponents.exists(_.componentType == CarBenefit))
-      companyCars(nino)
+      companyCars(nino).getOrElse(Seq.empty[CompanyCarBenefit])
     else
       Future.successful(Seq.empty[CompanyCarBenefit])
 
   def companyCars(
     nino: Nino
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[CompanyCarBenefit]] =
-    carConnector.companyCarsForCurrentYearEmployments(nino).map(_.filterNot(isCompanyCarDateWithdrawn))
-
-  def isCompanyCarDateWithdrawn(companyCarBenefit: CompanyCarBenefit): Boolean =
-    companyCarBenefit.companyCars.exists(_.dateWithdrawn.isDefined)
-
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]] =
+    carConnector.companyCarsForCurrentYearEmployments(nino).map(_.json.as[Seq[CompanyCarBenefit]]) // Needs testing
 }

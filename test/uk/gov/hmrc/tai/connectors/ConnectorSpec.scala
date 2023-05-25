@@ -20,7 +20,9 @@ import controllers.FakeAuthAction
 import org.mockito.MockitoSugar
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -28,18 +30,16 @@ import play.api.test.Injecting
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
+import utils.WireMockHelper
 
-class ConnectorSpec
-    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with MockitoSugar with I18nSupport
-    with BeforeAndAfterEach with ScalaFutures with Injecting with PatienceConfiguration {
+trait ConnectorSpec
+    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with MockitoSugar with I18nSupport with ScalaFutures with Injecting with PatienceConfiguration {
 
   def connector: BenefitsConnector = inject[BenefitsConnector]
 
   val nino: Nino = FakeAuthAction.nino
   val currentTaxYear: Int = TaxYear().year
   implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  override def messagesApi: MessagesApi = inject[MessagesApi]
 
   implicit val defaultPatience: PatienceConfig =
     PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))

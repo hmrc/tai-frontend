@@ -16,38 +16,37 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
-class CompanyCarConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
+class CompanyCarConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def companyCarEmploymentUrl(nino: Nino, empId: Int): String =
-    s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car"
+//  def companyCarEmploymentUrl(nino: Nino, empId: Int): String =
+//    s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car" // TODO - Remove from backend if not used
   def companyCarUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
 
-  def companyCarBenefitForEmployment(nino: Nino, empId: Int)(implicit
-    hc: HeaderCarrier
-  ): Future[Option[CompanyCarBenefit]] =
-    httpHandler
-      .getFromApiV2(companyCarEmploymentUrl(nino, empId))
-      .map(json => Some((json \ "data").as[CompanyCarBenefit]))
-      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
-
-  def companyCarsForCurrentYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] =
-    httpHandler
-      .getFromApiV2(companyCarUrl(nino))
-      .map(json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]])
-      .getOrElse(Seq.empty[CompanyCarBenefit]) // TODO - To remove one at a time to avoid an overextended change
-
+  def companyCarsForCurrentYearEmployments(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse
+      .read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](companyCarUrl(nino)))
+//    httpHandler
+//      .getFromApiV2(companyCarUrl(nino))
+//      .map(json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]])
+//      .getOrElse(Seq.empty[CompanyCarBenefit]) // TODO - To remove one at a time to avoid an overextended change
 }

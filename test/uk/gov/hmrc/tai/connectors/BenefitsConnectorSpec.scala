@@ -17,21 +17,24 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api
 import play.api.Application
 import play.api.http.Status._
+import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.test.Injecting
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain.benefits._
 import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
+import utils.WireMockHelper
 
 class BenefitsConnectorSpec extends ConnectorSpec {
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .configure(
-      "microservice.services.tai.port"                      -> server.port(),
       "microservice.services.tai-frontend.port"             -> server.port(),
       "microservice.services.contact-frontend.port"         -> "6666",
       "microservice.services.pertax-frontend.port"          -> "1111",
@@ -41,14 +44,16 @@ class BenefitsConnectorSpec extends ConnectorSpec {
       "microservice.services.feedback-survey-frontend.port" -> "3333",
       "microservice.services.company-auth.port"             -> "4444",
       "microservice.services.citizen-auth.port"             -> "9999"
-    )
+    ) // TODO - Trim down on configs
     .overrides(
       api.inject.bind[WebChatClient].toInstance(new WebChatClientStub)
     )
     .build()
 
+  def connector: BenefitsConnector = inject[BenefitsConnector]
+
   "BenefitsConnector" when {
-    "benefits" must {
+    "benefits is run" must {
       def benefitsUrl(nino: String, taxYear: Int): String = s"/tai/$nino/tax-account/$taxYear/benefits"
 
       "return an OK response with the correct data" in {
