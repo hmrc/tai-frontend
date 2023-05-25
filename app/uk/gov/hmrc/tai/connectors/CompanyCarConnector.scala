@@ -30,8 +30,6 @@ class CompanyCarConnector @Inject() (
   httpClient: HttpClient,
   httpClientResponse: HttpClientResponse,
   servicesConfig: ServicesConfig
-)(implicit
-  ec: ExecutionContext
 ) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
@@ -42,11 +40,7 @@ class CompanyCarConnector @Inject() (
 
   def companyCarsForCurrentYearEmployments(
     nino: Nino
-  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     httpClientResponse
       .read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](companyCarUrl(nino)))
-//    httpHandler
-//      .getFromApiV2(companyCarUrl(nino))
-//      .map(json => (json \ "data" \ "companyCarBenefits").as[Seq[CompanyCarBenefit]])
-//      .getOrElse(Seq.empty[CompanyCarBenefit]) // TODO - To remove one at a time to avoid an overextended change
 }

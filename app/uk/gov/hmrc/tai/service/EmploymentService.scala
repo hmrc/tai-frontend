@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
@@ -27,46 +29,37 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.employments(nino, year)
+  def employments(nino: Nino, year: TaxYear)(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
+    employmentsConnector.employments(nino, year).map(_.json.as[Seq[Employment]]) /// TODO - Consider .validate()
 
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.ceasedEmployments(nino, year)
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
+    employmentsConnector.ceasedEmployments(nino, year).map(_.json.as[Seq[Employment]])
 
-  def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    employmentsConnector.employment(nino, id.toString)
+  def employment(nino: Nino, id: Int)(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[Employment]] =
+    employmentsConnector.employment(nino, id.toString) .map(_.json.asOpt[Employment])// TODO - Merge this with employments()
 
-  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
-    employmentsConnector.endEmployment(nino, id, endEmploymentData)
+  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, String] =
+    employmentsConnector.endEmployment(nino, id, endEmploymentData).map(_.json.as[String])
 
   def addEmployment(nino: Nino, employment: AddEmployment)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[String] =
-    employmentsConnector.addEmployment(nino, employment) map {
-      case Some(envId) => envId
-      case _ =>
-        throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
-    }
-
+  ): EitherT[Future, UpstreamErrorResponse, String] =
+    employmentsConnector.addEmployment(nino, employment).map(_.json.as[String])
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[String] =
-    employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
-      case Some(envId) => envId
-      case _ =>
-        throw new RuntimeException(
-          s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
-        )
-    }
+  ): EitherT[Future, UpstreamErrorResponse, String] =
+    employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment).map(_.json.as[String])
 
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[Map[Int, String]] =
-    for {
-      employments <- employments(nino, year)
-    } yield employments.map(employment => employment.sequenceNumber -> employment.name).toMap
-
+  ): Future[Map[Int, String]] = {
+    employments(nino, year).fold(
+      _ => Map.empty[Int, String],
+      employments =>
+        employments.map(employment => employment.sequenceNumber -> employment.name).toMap
+    )
+  }
 }

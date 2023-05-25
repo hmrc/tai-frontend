@@ -42,9 +42,11 @@ class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {
     implicit // TODO - Delete?
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[Seq[CompanyCarBenefit]] =
-    if (codingComponents.exists(_.componentType == CarBenefit))
+  ): Future[Seq[CompanyCarBenefit]] = {
+    if (codingComponents.exists(_.componentType == CarBenefit)) {
       companyCars(nino).getOrElse(Seq.empty[CompanyCarBenefit])
-    else
+    } else {
       Future.successful(Seq.empty[CompanyCarBenefit])
+    }
+  }
 }

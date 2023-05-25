@@ -42,13 +42,13 @@ class BenefitsConnector @Inject() (
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
   def benefits(nino: Nino, taxYear: Int)(implicit
-    hc: HeaderCarrier
+                                         ec: ExecutionContext, hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     httpClientResponse
       .read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](benefitsUrl(nino.nino, taxYear)))
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
-    hc: HeaderCarrier
+                                                                                                   ec: ExecutionContext, hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     httpClientResponse
       .read(
