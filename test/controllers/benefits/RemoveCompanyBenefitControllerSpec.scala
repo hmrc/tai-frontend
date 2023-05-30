@@ -131,7 +131,8 @@ class RemoveCompanyBenefitControllerSpec
               RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "01",
               RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
               RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> year
-            ))
+            )
+        )
         status(result) mustBe SEE_OTHER
 
         val redirectUrl = redirectLocation(result).getOrElse("")
@@ -212,7 +213,8 @@ class RemoveCompanyBenefitControllerSpec
               RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
               RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
               RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
-            ))
+            )
+        )
 
         status(result) mustBe BAD_REQUEST
 

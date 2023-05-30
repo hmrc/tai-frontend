@@ -29,7 +29,7 @@ import javax.inject.Inject
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
-class MessageFrontendConnector @Inject()(
+class MessageFrontendConnector @Inject() (
   httpClient: HttpClientV2,
   headerCarrierForPartialsConverter: HeaderCarrierForPartialsConverter,
   httpHandler: HttpHandler,
@@ -38,10 +38,10 @@ class MessageFrontendConnector @Inject()(
 
   private lazy val messageFrontendUrl: String = appConfig.messagesFrontendUrl
 
-  def getUnreadMessageCount()(
-    implicit
+  def getUnreadMessageCount()(implicit
     request: RequestHeader,
-    ec: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
+    ec: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
     val url = messageFrontendUrl + "/messages/count?read=No"
 
     implicit val hc = headerCarrierForPartialsConverter.fromRequestWithEncryptedCookie(request)

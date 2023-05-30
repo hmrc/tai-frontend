@@ -41,7 +41,7 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
     "call the proper url to invalidate the cache" in {
       Await.result(sut.invalidateCache(), 5.seconds)
-      verify(httpHandler, times(1)).deleteFromApi(meq("localhost/tai/session-cache"))(any(), any(), any())
+      verify(httpHandler, times(1)).deleteFromApi(meq("localhost/tai/session-cache"))(any(), any())
     }
   }
 
@@ -50,7 +50,7 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
   def sut: SessionConnector = new SessionConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "localhost"
 
-    when(httpHandler.deleteFromApi(any())(any(), any(), any()))
+    when(httpHandler.deleteFromApi(any())(any(), any()))
       .thenReturn(Future.successful(HttpResponse(200)))
   }
 

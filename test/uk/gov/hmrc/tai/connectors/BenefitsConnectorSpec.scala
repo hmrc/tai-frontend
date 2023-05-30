@@ -33,7 +33,7 @@ class BenefitsConnectorSpec extends BaseSpec {
   "getCompanyCarBenefits" must {
     "fetch the company car details" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(benefitsJson))
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(benefitsJson))
 
         val result = sut.benefits(nino, 2018)
         Await.result(result, 5 seconds) mustBe benefits
@@ -42,7 +42,7 @@ class BenefitsConnectorSpec extends BaseSpec {
 
     "thrown exception" when {
       "benefit type is invalid" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(invalidBenefitsJson))
+        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(invalidBenefitsJson))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
         ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
@@ -63,7 +63,7 @@ class BenefitsConnectorSpec extends BaseSpec {
             s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
           ),
           meq(endedCompanyBenefit)
-        )(any(), any(), any(), any())
+        )(any(), any(), any())
       ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)

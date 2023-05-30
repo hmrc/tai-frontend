@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.test.FakeRequest

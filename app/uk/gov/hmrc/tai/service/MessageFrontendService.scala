@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.MessageCount
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MessageFrontendService @Inject()(
+class MessageFrontendService @Inject() (
   messageFrontendConnector: MessageFrontendConnector
 )(implicit executionContext: ExecutionContext)
     extends Logging {
@@ -35,9 +35,8 @@ class MessageFrontendService @Inject()(
       .fold(
         _ => None,
         response => response.json.asOpt[MessageCount].map(_.count)
-      ) recover {
-      case ex: Exception =>
-        logger.error(ex.getMessage, ex)
-        None
+      ) recover { case ex: Exception =>
+      logger.error(ex.getMessage, ex)
+      None
     }
 }

@@ -199,9 +199,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
               .withFormUrlEncodedBody(
                 EmploymentAddDateForm.EmploymentFormDay   -> "01",
                 EmploymentAddDateForm.EmploymentFormMonth -> "02",
-                EmploymentAddDateForm.EmploymentFormYear  -> "2017"))
-        )
-        )
+                EmploymentAddDateForm.EmploymentFormYear  -> "2017"
+              )
+          )
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
@@ -223,7 +223,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
                 EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
                 EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
                 EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
-              ))
+              )
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.receivedFirstPay.url
@@ -245,7 +246,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
                 EmploymentAddDateForm.EmploymentFormDay   -> "01",
                 EmploymentAddDateForm.EmploymentFormMonth -> "02",
                 EmploymentAddDateForm.EmploymentFormYear  -> (LocalDate.now().getYear + 1).toString
-              ))
+              )
+          )
 
         status(result) mustBe BAD_REQUEST
       }
@@ -264,7 +266,9 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
               .withFormUrlEncodedBody(
                 EmploymentAddDateForm.EmploymentFormDay   -> "01",
                 EmploymentAddDateForm.EmploymentFormMonth -> "02",
-                EmploymentAddDateForm.EmploymentFormYear  -> "2017"))
+                EmploymentAddDateForm.EmploymentFormYear  -> "2017"
+              )
+          )
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(
@@ -292,7 +296,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
                 EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
                 EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
                 EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
-              ))
+              )
+          )
 
         status(result) mustBe SEE_OTHER
         verify(addEmploymentJourneyCacheService, times(1)).cache(

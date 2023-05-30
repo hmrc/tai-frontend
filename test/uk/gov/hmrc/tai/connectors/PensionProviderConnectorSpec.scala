@@ -37,7 +37,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider))(any(), any(), any(), any())
+          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider))(any(), any(), any())
       )
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
@@ -57,7 +57,6 @@ class PensionProviderConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider))(
-          any(),
           any(),
           any(),
           any()

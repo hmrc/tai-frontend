@@ -59,7 +59,8 @@ class MessageFrontendConnectorSpec extends BaseSpec with WireMockHelper with Sca
         .getUnreadMessageCount()(
           FakeRequest(GET, "")
             .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}", SessionKeys.authToken -> "Bearer 1"),
-          ec)
+          ec
+        )
         .value
         .futureValue
 

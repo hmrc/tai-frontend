@@ -38,10 +38,11 @@ trait AuthAction
     with ActionFunction[Request, InternalAuthenticatedRequest]
 
 @Singleton
-class AuthActionImpl @Inject()(
+class AuthActionImpl @Inject() (
   override val authConnector: AuthConnector,
   messageFrontendService: MessageFrontendService,
-  mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  mcc: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](

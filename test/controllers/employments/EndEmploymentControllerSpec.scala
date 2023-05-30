@@ -153,7 +153,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           .thenReturn(Future.successful(Some(employment)))
 
         val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
+        )
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
@@ -185,7 +186,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
         val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
+        )
 
         Await.result(endEmploymentTest.handleEmploymentUpdateRemove(request), 5 seconds)
       }
@@ -197,7 +199,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val endEmploymentTest = createEndEmploymentTest
 
         val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
+          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
+        )
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
@@ -328,7 +331,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         .withFormUrlEncodedBody(
           EmploymentEndDateForm.EmploymentFormDay   -> "01",
           EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017")
+          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+        )
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -342,7 +346,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         .withFormUrlEncodedBody(
           EmploymentEndDateForm.EmploymentFormDay   -> "01",
           EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "abc")
+          EmploymentEndDateForm.EmploymentFormYear  -> "abc"
+        )
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -364,7 +369,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         .withFormUrlEncodedBody(
           EmploymentEndDateForm.EmploymentFormDay   -> "01",
           EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017")
+          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+        )
 
       val result = endEmploymentTest.handleEndEmploymentPage(0)(request)
 
@@ -381,7 +387,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         .withFormUrlEncodedBody(
           EmploymentEndDateForm.EmploymentFormDay   -> "01",
           EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017")
+          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+        )
 
       Await.result(endEmploymentTest.handleEndEmploymentPage(0)(request), 5 seconds)
       verify(endEmploymentJourneyCacheService, times(1)).cache(any())(any())
