@@ -24,6 +24,7 @@ import play.api.mvc._
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
@@ -61,7 +62,7 @@ class YourIncomeCalculationController @Inject() (
 
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
-      employmentDetails    <- employmentFuture
+      employmentDetails    <- employmentFuture.getOrElse(None) // TODO - Check .getOrElse()
     } yield (taxCodeIncomeDetails, employmentDetails) match {
       case (Right(taxCodeIncomes), Some(employment)) =>
         val paymentDetails = paymentsService.filterDuplicates(employment)
@@ -89,18 +90,19 @@ class YourIncomeCalculationController @Inject() (
       if (year <= TaxYear().prev) {
         val nino = request.taiUser.nino
 
-        employmentService.employments(nino, year) map { employments =>
-          val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
+        employmentService.employments(nino, year).getOrElse(Seq.empty[Employment]) map {
+          employments => // TODO - Check .getOrElse(None)
+            val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
 
-          (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
-            case (_, "TemporarilyUnavailable") =>
-              errorPagesHandler.internalServerError(
-                "Employment contains stub annual account data found meaning payment information can't be displayed"
-              )
-            case (true, _) =>
-              Ok(historicIncomePrintView(historicIncomeCalculationViewModel, appConfig))
-            case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
-          }
+            (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
+              case (_, "TemporarilyUnavailable") =>
+                errorPagesHandler.internalServerError(
+                  "Employment contains stub annual account data found meaning payment information can't be displayed"
+                )
+              case (true, _) =>
+                Ok(historicIncomePrintView(historicIncomeCalculationViewModel, appConfig))
+              case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            }
         }
 
       } else {

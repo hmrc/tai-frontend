@@ -62,7 +62,8 @@ class WhatDoYouWantToDoController @Inject() (
       val nino = request.taiUser.nino
       val ninoString = request.taiUser.nino.toString()
 
-      lazy val employmentsFuture = employmentService.employments(nino, TaxYear())
+      lazy val employmentsFuture =
+        employmentService.employments(nino, TaxYear()).getOrElse(Seq.empty[Employment]) // TODO - Check .getOrElse()
       lazy val redirectFuture =
         OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith { case ex =>
           previousYearEmployments(nino).map { prevYearEmployments =>
@@ -162,21 +163,23 @@ class WhatDoYouWantToDoController @Inject() (
     }
 
     noOfTaxCodesF.flatMap { noOfTaxCodes =>
-      employmentService.employments(nino, TaxYear()).flatMap { employments =>
-        auditService
-          .sendUserEntryAuditEvent(
-            nino,
-            request.headers.get("Referer").getOrElse("NA"),
-            employments,
-            noOfTaxCodes,
-            isJrsTileShown
-          )
+      employmentService.employments(nino, TaxYear()).getOrElse(Seq.empty[Employment]).flatMap {
+        employments => // TODO - Check .getOrElse()
+          auditService
+            .sendUserEntryAuditEvent(
+              nino,
+              request.headers.get("Referer").getOrElse("NA"),
+              employments,
+              noOfTaxCodes,
+              isJrsTileShown
+            )
       }
     }
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentService.employments(nino, TaxYear().prev) recover { case _ =>
-      Nil
+    employmentService.employments(nino, TaxYear().prev).getOrElse(Seq.empty[Employment]) recover {
+      case _ => // TODO - Check .getOrElse()
+        Nil
     }
 }

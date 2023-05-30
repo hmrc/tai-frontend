@@ -51,7 +51,7 @@ class UpdateNextYearsIncomeService @Inject() (
   ): Future[UpdateNextYearsIncomeCacheModel] =
     (
       taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId),
-      employmentService.employment(nino, employmentId)
+      employmentService.employment(nino, employmentId).getOrElse(None) // TODO - Check if correct behaviour
     ).mapN {
       case (Right(Some(taxCodeIncome)), Some(employment)) =>
         val isPension = taxCodeIncome.componentType == PensionIncome

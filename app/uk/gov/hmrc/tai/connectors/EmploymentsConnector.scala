@@ -28,16 +28,25 @@ import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, I
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject()(httpClient: HttpClient, httpClientResponse: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
-                                                                                                             ec: ExecutionContext
+class EmploymentsConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
+  ec: ExecutionContext
 ) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
-  def employments(nino: Nino, year: TaxYear)(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    httpClientResponse.read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentServiceUrl(nino, year)))
+  def employments(nino: Nino, year: TaxYear)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentServiceUrl(nino, year))
+    )
 //    httpClientResponse
 //      .getFromApiV2(employmentServiceUrl(nino, year))
 //      .map { json =>
@@ -49,22 +58,46 @@ class EmploymentsConnector @Inject()(httpClient: HttpClient, httpClientResponse:
 //      }
 //      .getOrElse(Seq.empty) // TODO - To remove one at a time to avoid an overextended change
 
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    httpClientResponse.read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](ceasedEmploymentServiceUrl(nino, year)))
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](ceasedEmploymentServiceUrl(nino, year))
+    )
 
-  def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] = // TODO - Merge this with employments()
+  def employment(nino: Nino, id: String)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = // TODO - Merge this with employments()
     httpClientResponse.read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentUrl(nino, id)))
 
-  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    httpClientResponse.read(httpClient.PUT[EndEmployment, Either[UpstreamErrorResponse, HttpResponse]](endEmploymentServiceUrl(nino, id), endEmploymentData))
+  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.PUT[EndEmployment, Either[UpstreamErrorResponse, HttpResponse]](
+        endEmploymentServiceUrl(nino, id),
+        endEmploymentData
+      )
+    )
 
-  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    httpClientResponse.read(httpClient.POST[AddEmployment, Either[UpstreamErrorResponse, HttpResponse]](addEmploymentServiceUrl(nino), employment))
+  def addEmployment(nino: Nino, employment: AddEmployment)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient
+        .POST[AddEmployment, Either[UpstreamErrorResponse, HttpResponse]](addEmploymentServiceUrl(nino), employment)
+    )
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    httpClientResponse.read(httpClient.POST[IncorrectIncome, Either[UpstreamErrorResponse, HttpResponse]](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment))
+    httpClientResponse.read(
+      httpClient.POST[IncorrectIncome, Either[UpstreamErrorResponse, HttpResponse]](
+        incorrectEmploymentServiceUrl(nino, id),
+        incorrectEmployment
+      )
+    )
 
   def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 

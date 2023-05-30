@@ -60,7 +60,7 @@ class PayeControllerHistoric @Inject() (
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage))
     } else {
       (
-        employmentService.employments(nino, taxYear),
+        employmentService.employments(nino, taxYear).getOrElse(Seq.empty[Employment]), // TODO - Check .getOrElse()
         taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
       ).mapN { case (employments, hasTaxCodeRecordsInYearPerEmployment) =>
         implicit val user: AuthedUser = request.taiUser

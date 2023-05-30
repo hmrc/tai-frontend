@@ -120,7 +120,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
 
         val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
@@ -150,7 +150,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employment(any(), any())(any(), any()))
           .thenReturn(Future.successful(Some(employment)))
 
         val request = fakePostRequest.withFormUrlEncodedBody(
@@ -183,7 +183,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
         val request = fakePostRequest.withFormUrlEncodedBody(
@@ -211,7 +211,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employment(any(), any())(any(), any()))
           .thenReturn(Future.successful(Some(employment)))
         when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
           .thenReturn(Future.successful(Success))
@@ -286,7 +286,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
         .thenReturn(Future.successful(dataFromCache))
-      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+      when(employmentService.endEmployment(any(), any(), any())(any(), any())).thenReturn(Future.successful("123-456-789"))
       when(trackSuccessJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
@@ -441,7 +441,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(dataFromCache))
-        when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+        when(employmentService.endEmployment(any(), any(), any())(any(), any())).thenReturn(Future.successful("123-456-789"))
         when(
           trackSuccessJourneyCacheService
             .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())

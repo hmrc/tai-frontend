@@ -76,7 +76,7 @@ class IncomeController @Inject() (
 
     (for {
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
-      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
+      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId).getOrElse(None)) // TODO
       cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
       _ <- EitherT.right[String](journeyCacheService.cache(cacheData))
     } yield {
@@ -89,7 +89,7 @@ class IncomeController @Inject() (
           amountYearToDate.toString
         )
       )
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+    }).fold(errorPagesHandler.internalServerError(_, None), identity) // TODO - Check
       .recover { case NonFatal(e) =>
         errorPagesHandler.internalServerError(e.getMessage)
       }
@@ -197,7 +197,10 @@ class IncomeController @Inject() (
             logger.warn(errorMessage)
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
           case Right(cachedData) =>
-            (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
+            (
+              taxAccountService.taxCodeIncomes(nino, TaxYear()),
+              employmentService.employment(nino, empId).getOrElse(None)
+            ) // TODO
               .mapN {
                 case (
                       Right(taxCodeIncomes),
@@ -287,7 +290,7 @@ class IncomeController @Inject() (
 
     (for {
       employmentAmount <- incomeService.employmentAmount(nino, empId)
-      latestPayment    <- incomeService.latestPayment(nino, empId)
+      latestPayment    <- incomeService.latestPayment(nino, empId).getOrElse(None) // TODO
       cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
       _ <- journeyCacheService.cache(cacheData)
     } yield {
@@ -380,7 +383,10 @@ class IncomeController @Inject() (
           case Left(_) =>
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
           case Right(newAmountKey) =>
-            (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
+            (
+              taxAccountService.taxCodeIncomes(nino, TaxYear()),
+              employmentService.employment(nino, empId).getOrElse(None)
+            )
               .mapN {
                 case (
                       Right(taxCodeIncomes),

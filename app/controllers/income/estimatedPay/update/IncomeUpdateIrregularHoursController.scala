@@ -78,7 +78,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val nino = user.nino
 
       (
-        incomeService.latestPayment(nino, employmentId),
+        incomeService.latestPayment(nino, employmentId).getOrElse(None), // TODO - Check .getOrElse(None)
         taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
       ).mapN {
         case (_, Left(value)) =>

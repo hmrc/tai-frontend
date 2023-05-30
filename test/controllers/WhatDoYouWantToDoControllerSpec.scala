@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
@@ -274,8 +275,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       "an internal server error is returned from any HOD call" in {
         val testController = createTestController()
-        when(employmentService.employments(any(), meq(TaxYear()))(any()))
-          .thenReturn(Future.failed(new InternalServerException("something bad")))
+        when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Left(UpstreamErrorResponse("", INTERNAL_SERVER_ERROR)))))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -290,8 +291,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
       "a general bad request exception is returned from any HOD call" in {
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new BadRequestException("bad request")))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Left(UpstreamErrorResponse("", BAD_REQUEST)))))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
@@ -308,14 +309,14 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           val testController = createTestController()
           when(taxAccountService.taxAccountSummary(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
-          when(employmentService.employments(any(), meq(TaxYear()))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
-          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-            .thenReturn(Future.failed(new NotFoundException("no data found")))
+          when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Left(UpstreamErrorResponse("", NOT_FOUND)))))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe BAD_REQUEST
-          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any(), any())
           val doc = Jsoup.parse(contentAsString(result))
           doc.title() must include("Sorry, there is a problem so you cannot use this service")
           doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
@@ -327,14 +328,14 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           val testController = createTestController()
           when(taxAccountService.taxAccountSummary(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException(TaiConstants.NpsTaxAccountDataAbsentMsg)))
-          when(employmentService.employments(any(), meq(TaxYear()))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
-          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-            .thenReturn(Future.failed(new NotFoundException("no data found")))
+          when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Left(UpstreamErrorResponse("", NOT_FOUND)))))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe SEE_OTHER
-          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any(), any())
           redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage.url
         }
 
@@ -342,8 +343,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         val testController = createTestController()
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException(TaiConstants.NpsNoEmploymentsRecorded)))
-        when(employmentService.employments(any(), meq(TaxYear()))(any()))
-          .thenReturn(Future.successful(fakeEmploymentData))
+        when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
@@ -358,14 +359,14 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           val testController = createTestController()
           when(taxAccountService.taxAccountSummary(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException(TaiConstants.NpsNoEmploymentForCurrentTaxYear)))
-          when(employmentService.employments(any(), meq(TaxYear()))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
-          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-            .thenReturn(Future.failed(new NotFoundException("no data found")))
+          when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Left(UpstreamErrorResponse("", NOT_FOUND)))))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe BAD_REQUEST
-          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any(), any())
           val doc = Jsoup.parse(contentAsString(result))
           doc.title() must include("Sorry, there is a problem so you cannot use this service")
           doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
@@ -384,16 +385,16 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
           when(taxAccountService.taxAccountSummary(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
-          when(employmentService.employments(any(), meq(TaxYear()))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
-          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
+          when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
           when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
             .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
-          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any(), any())
           val doc = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("your.paye.income.tax.overview"))
         }
@@ -404,16 +405,16 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
           when(taxAccountService.taxAccountSummary(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException(TaiConstants.NpsTaxAccountDataAbsentMsg)))
-          when(employmentService.employments(any(), meq(TaxYear()))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
-          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-            .thenReturn(Future.successful(fakeEmploymentData))
+          when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any(), any()))
+            .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
           when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
             .thenReturn(Future.successful(Right(taxCodeNotChanged)))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
-          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any(), any())
           val doc = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("your.paye.income.tax.overview"))
         }
@@ -524,12 +525,21 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       employments mustBe fakeEmploymentData
     }
 
-    "supply an empty list in the event of a downstream failure" in {
-      val testController = createTestController()
-      when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-        .thenReturn(Future.failed(new NotFoundException("no data found")))
-      val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
-      employments mustBe Nil
+    List(
+      NOT_FOUND,
+      BAD_REQUEST,
+      IM_A_TEAPOT,
+      INTERNAL_SERVER_ERROR,
+      BAD_GATEWAY,
+      SERVICE_UNAVAILABLE
+    ).foreach { errorResponse =>
+      s"supply an empty list in the service returning an error response containing the status $errorResponse" in {
+        val testController = createTestController()
+        when(employmentService.employments(any(), meq(TaxYear().prev))(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Left(UpstreamErrorResponse("", errorResponse)))))
+        val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
+        employments mustBe Nil
+      }
     }
   }
 
@@ -605,7 +615,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
     when(mockAppConfig.incomeTaxHistoryEnabled) thenReturn true
 
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
+    when(employmentService.employments(any(), any())(any(), any())).thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(fakeEmploymentData))))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))

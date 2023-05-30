@@ -86,7 +86,7 @@ class CompanyBenefitControllerSpec
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
@@ -96,7 +96,7 @@ class CompanyBenefitControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
-        verify(employmentService, times(1)).employment(any(), any())(any())
+        verify(employmentService, times(1)).employment(any(), any())(any(), any())
         verify(journeyCacheService, times(1)).currentCache(any())
         verify(journeyCacheService, times(1)).cache(
           meq(
@@ -123,7 +123,7 @@ class CompanyBenefitControllerSpec
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Right(benefitType)))
         when(journeyCacheService.currentValue(any())(any()))
@@ -150,7 +150,7 @@ class CompanyBenefitControllerSpec
         )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(None))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

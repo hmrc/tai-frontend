@@ -117,15 +117,21 @@ class EndEmploymentController @Inject() (
 
     val nino = user.nino
 
-    employmentService.employment(nino, empId) flatMap { case Some(employment) =>
-      val journeyCacheFuture = journeyCacheService.cache(
-        Map(EndEmploymentConstants.EmploymentIdKey -> empId.toString, EndEmploymentConstants.NameKey -> employment.name)
-      )
+    employmentService.employment(nino, empId).getOrElse(None) flatMap {
+      case Some(employment) => // TODO - Check .getOrElse(None)
+        val journeyCacheFuture = journeyCacheService.cache(
+          Map(
+            EndEmploymentConstants.EmploymentIdKey -> empId.toString,
+            EndEmploymentConstants.NameKey         -> employment.name
+          )
+        )
 
-      val successfulJourneyCacheFuture =
-        successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
+        val successfulJourneyCacheFuture =
+          successfulJourneyCacheService.currentValue(
+            s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"
+          )
 
-      redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
+        redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
     } recover { case _ =>
       NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
     }
@@ -162,7 +168,9 @@ class EndEmploymentController @Inject() (
                   )
                 case _ =>
                   val nino = user.nino
-                  employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap { case Some(employment) =>
+                  employmentService
+                    .employment(nino, mandatoryJourneyValues(1).toInt)
+                    .getOrElse(None) flatMap { case Some(employment) => // TODO - Check .getOrElse(None)
                     val today = LocalDate.now
                     val latestPaymentDate: Option[LocalDate] = for {
                       latestAnnualAccount <- employment.latestAnnualAccount
@@ -299,7 +307,7 @@ class EndEmploymentController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      employmentService.employment(nino, employmentId).flatMap {
+      employmentService.employment(nino, employmentId).getOrElse(None).flatMap {
         case Some(employment) =>
           EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
             formWithErrors =>
@@ -417,7 +425,9 @@ class EndEmploymentController @Inject() (
                                                    )
                                                    .getOrFail
         model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)), mandatoryCacheSeq(2), optionalCacheSeq.head)
-        _ <- employmentService.endEmployment(nino, mandatoryCacheSeq.head.toInt, model)
+        _ <- employmentService
+               .endEmployment(nino, mandatoryCacheSeq.head.toInt, model)
+               .getOrElse(None) // TODO - Check .getOrElse(None)
         _ <- successfulJourneyCacheService.cache(
                Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
              )

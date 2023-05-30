@@ -41,7 +41,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -56,7 +56,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(None))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -75,7 +75,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details for passed employment is not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -86,7 +86,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "show historic data" when {
       "historic data has been passed" in {
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any(), any())).thenReturn(Future.successful(sampleEmployment))
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -101,7 +101,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "throw internal server error" when {
       "RTI throws service unavailable" in {
-        when(employmentService.employments(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any(), any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -127,7 +127,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "show historic data" when {
       "historic data has been passed" in {
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any(), any())).thenReturn(Future.successful(sampleEmployment))
         val result =
           sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -142,7 +142,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "throw internal server error" when {
       "RTI throws service unavailable" in {
-        when(employmentService.employments(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any(), any()))
           .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
         val result =
           sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))

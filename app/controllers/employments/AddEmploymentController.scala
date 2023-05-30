@@ -342,7 +342,7 @@ class AddEmploymentController @Inject() (
                 mandatoryVals(3),
                 optionalVals.head
               )
-      _ <- employmentService.addEmployment(user.nino, model)
+      _ <- employmentService.addEmployment(user.nino, model).getOrElse(None) // TODO - Check .getOrElse(None)
       _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddEmploymentKey, "true")
       _ <- journeyCacheService.flush()
     } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation)
