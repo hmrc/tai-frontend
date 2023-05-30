@@ -286,7 +286,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
         .thenReturn(Future.successful(dataFromCache))
-      when(employmentService.endEmployment(any(), any(), any())(any(), any())).thenReturn(Future.successful("123-456-789"))
+      when(employmentService.endEmployment(any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful("123-456-789"))
       when(trackSuccessJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
@@ -441,7 +442,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(dataFromCache))
-        when(employmentService.endEmployment(any(), any(), any())(any(), any())).thenReturn(Future.successful("123-456-789"))
+        when(employmentService.endEmployment(any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful("123-456-789"))
         when(
           trackSuccessJourneyCacheService
             .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())

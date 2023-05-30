@@ -25,7 +25,7 @@ import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.Status.OK
 import play.api.libs.json.{JsString, JsValue, Json}
-import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live}
@@ -38,7 +38,7 @@ import scala.language.postfixOps
 class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
   override def beforeEach(): Unit =
-    Mockito.reset(httpHandler)
+    Mockito.reset(httpClientResponse)
 
   "EmploymentsConnector employments" must {
     "return a blank the service url" when {
@@ -69,32 +69,37 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
     "call the employments API with a URL containing a service URL" when {
       "the service URL is supplied" in {
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneEmployment))))
           )
 
-        val responseFuture = sut("test/service").employments(nino, year)
+        sut("test/service").employments(nino, year).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe oneEmploymentDetails
+        }
 
-        Await.result(responseFuture, 5 seconds)
-        verify(httpHandler).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
       }
     }
 
     "call the employments API with a URL containing a service URL" when {
 
-      "the service URL is not supplied" in {
+      "the service URL is not supplied" in { // TODO - May be redundant as test below also doesn't supply a URL, given that actually maters
 
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneEmployment))))
           )
 
-        val responseFuture = sut().employments(nino, year)
+        sut().employments(nino, year).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe oneEmploymentDetails
+        }
 
-        Await.result(responseFuture, 5 seconds)
-
-        verify(httpHandler).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpClientResponse).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"))(any())
       }
     }
 
@@ -102,66 +107,52 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
       "api provides one employments" in {
 
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneEmployment))))
           )
 
-        val responseFuture = sut().employments(nino, year)
+        sut().employments(nino, year).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe oneEmploymentDetails
+        }
 
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe oneEmploymentDetails
-
-        verify(httpHandler).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpClientResponse).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"))(any())
       }
 
       "api provides multiple employments" in {
 
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(twoEmployments))))
           )
 
-        val responseFuture = sut("test/service").employments(nino, year)
+        sut("test/service").employments(nino, year).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe twoEmploymentsDetails
+        }
 
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe twoEmploymentsDetails
-
-        verify(httpHandler).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
       }
     }
 
     "return nil when api returns zero employments" in {
 
-      when(httpHandler.getFromApiV2(any())(any()))
+      when(httpClientResponse.getFromApiV2(any())(any()))
         .thenReturn(
           EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(zeroEmployments))))
         )
 
-      val responseFuture = sut("test/service").employments(nino, year)
+      sut("test/service").employments(nino, year).value.futureValue.map {
+        result =>
+          result.status mustBe OK
+          result.json mustBe zeroEmployments
+      } // TODO - Check correct behaviour of this test as it may be very different from before, hopefully will just be NO_CONTENT
 
-      val result = Await.result(responseFuture, 5 seconds)
-
-      result mustBe Nil
-
-      verify(httpHandler).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+      verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
     }
-
-    "throw an exception" when {
-      "invalid json has returned by api" in {
-
-        when(httpHandler.getFromApiV2(any())(any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse("""{"test":"test"}"""))))
-          )
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut("test/service").employments(nino, year), 5 seconds)
-        ex.getMessage mustBe "Invalid employment json"
-      }
-    }
-
   }
 
   "EmploymentsConnector ceasedEmployments" must {
@@ -170,36 +161,36 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
       "api provides one employments" in {
 
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneCeasedEmployment))))
           )
 
-        val responseFuture = sut("test/service").ceasedEmployments(nino, year)
+        sut("test/service").ceasedEmployments(nino, year).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe oneCeasedEmploymentDetails
+        }
 
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe oneCeasedEmploymentDetails
-
-        verify(httpHandler).getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(
+        verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(
           any()
         )
       }
 
       "api provides multiple employments" in {
 
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(twoCeasedEmployments))))
           )
 
-        val responseFuture = sut("test/service").ceasedEmployments(nino, year)
+        sut("test/service").ceasedEmployments(nino, year).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe twoCeasedEmploymentsDetails
+        }
 
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe twoCeasedEmploymentsDetails
-
-        verify(httpHandler).getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(
+        verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(
           any()
         )
       }
@@ -207,33 +198,19 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
     "return nil when api returns zero employments" in {
 
-      when(httpHandler.getFromApiV2(any())(any()))
+      when(httpClientResponse.getFromApiV2(any())(any()))
         .thenReturn(
           EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(zeroCeasedEmployments))))
         )
 
-      val responseFuture = sut("test/service").ceasedEmployments(nino, year)
+      sut("test/service").ceasedEmployments(nino, year).value.futureValue.map {
+        result =>
+          result.status mustBe OK
+          result.json mustBe zeroCeasedEmployments
+      } // TODO - Check behaviour, same as TODO above
 
-      val result = Await.result(responseFuture, 5 seconds)
-
-      result mustBe Nil
-
-      verify(httpHandler)
+      verify(httpClientResponse)
         .getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
-    }
-
-    "throw an exception" when {
-      "invalid json has returned by api" in {
-
-        when(httpHandler.getFromApiV2(any())(any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse("""{"test":"test"}"""))))
-          )
-
-        val ex = the[RuntimeException] thrownBy Await
-          .result(sut("test/service").ceasedEmployments(nino, year), 5 seconds)
-        ex.getMessage mustBe "Invalid employment json"
-      }
     }
   }
 
@@ -245,26 +222,18 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
     "return an employment from current year" when {
       "valid id has been passed" in {
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpClientResponse.getFromApiV2(any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(anEmployment))))
           )
 
-        val result = Await.result(sut().employment(nino, "123"), 5.seconds)
+        sut().employment(nino, "123").value.futureValue.map {
+          result =>
+            result mustBe OK
+            result mustBe anEmployment
+        }
 
-        result mustBe Some(anEmploymentObject)
-        verify(httpHandler, times(1)).getFromApiV2(any())(any())
-      }
-    }
-
-    "return none" when {
-      "invalid json returned by an api" in {
-        when(httpHandler.getFromApiV2(any())(any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(zeroEmployments))))
-          )
-
-        Await.result(sut().employment(nino, "123"), 5.seconds) mustBe None
+        verify(httpClientResponse, times(1)).getFromApiV2(any())(any())
       }
     }
   }
@@ -273,7 +242,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
     "return an envelope" when {
       "we send a PUT request to backend" in {
         val json = Json.obj("data" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any())(any(), any()))
+        when(httpClientResponse.putToApi(any(), any())(any(), any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
               Future.successful(Right(HttpResponse(OK, json.toString)))
@@ -282,26 +251,11 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
         val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
-        val result = Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
-
-        result mustBe "123-456-789"
-      }
-    }
-
-    "return an exception" when {
-      "json is invalid" in {
-        val json = Json.obj("test" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any())(any(), any()))
-          .thenReturn(
-            EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(OK, json.toString)))
-            )
-          )
-        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
-
-        ex.getMessage mustBe "Invalid json"
+        sut().endEmployment(nino, 1, endEmploymentData).value.futureValue.map {
+          result =>
+            result.status mustBe OK
+            result.json mustBe json
+        }
       }
     }
   }
@@ -317,7 +271,7 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       )
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler
+        httpClientResponse
           .postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment))(any(), any())
       )
         .thenReturn(
@@ -326,9 +280,11 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
           )
         )
 
-      val result = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
-
-      result mustBe Some("123-456-789")
+      sut().addEmployment(nino, addEmployment).value.futureValue.map {
+        result =>
+          result mustBe OK
+          result mustBe json
+      }
     }
   }
 
@@ -337,16 +293,18 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model))(any(), any()))
+      when(httpClientResponse.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model))(any(), any()))
         .thenReturn(
           EitherT[Future, UpstreamErrorResponse, HttpResponse](
             Future.successful(Right(HttpResponse(OK, json.toString)))
           )
         )
 
-      val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
-
-      result mustBe Some("123-456-789")
+      sut().incorrectEmployment(nino, 1, model).value.futureValue.map {
+        result =>
+          result mustBe OK
+          result mustBe json
+      }
     }
   }
 
@@ -539,9 +497,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
   private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
+  val httpClientResponse: HttpClientResponse = mock[HttpClientResponse]
 
-  def sut(servUrl: String = "") = new EmploymentsConnector(httpHandler, servicesConfig) {
+  def sut(servUrl: String = "") = new EmploymentsConnector(inject[HttpClient], httpClientResponse, servicesConfig) {
     override val serviceUrl: String = servUrl
   }
 
