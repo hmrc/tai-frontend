@@ -74,10 +74,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneEmployment))))
           )
 
-        sut("test/service").employments(nino, year).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe oneEmploymentDetails
+        sut("test/service").employments(nino, year).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe oneEmploymentDetails
         }
 
         verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
@@ -93,10 +92,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneEmployment))))
           )
 
-        sut().employments(nino, year).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe oneEmploymentDetails
+        sut().employments(nino, year).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe oneEmploymentDetails
         }
 
         verify(httpClientResponse).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"))(any())
@@ -112,10 +110,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneEmployment))))
           )
 
-        sut().employments(nino, year).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe oneEmploymentDetails
+        sut().employments(nino, year).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe oneEmploymentDetails
         }
 
         verify(httpClientResponse).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"))(any())
@@ -128,10 +125,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(twoEmployments))))
           )
 
-        sut("test/service").employments(nino, year).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe twoEmploymentsDetails
+        sut("test/service").employments(nino, year).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe twoEmploymentsDetails
         }
 
         verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
@@ -145,10 +141,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
           EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(zeroEmployments))))
         )
 
-      sut("test/service").employments(nino, year).value.futureValue.map {
-        result =>
-          result.status mustBe OK
-          result.json mustBe zeroEmployments
+      sut("test/service").employments(nino, year).value.futureValue.map { result =>
+        result.status mustBe OK
+        result.json mustBe zeroEmployments
       } // TODO - Check correct behaviour of this test as it may be very different from before, hopefully will just be NO_CONTENT
 
       verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
@@ -166,13 +161,14 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(oneCeasedEmployment))))
           )
 
-        sut("test/service").ceasedEmployments(nino, year).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe oneCeasedEmploymentDetails
+        sut("test/service").ceasedEmployments(nino, year).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe oneCeasedEmploymentDetails
         }
 
-        verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(
+        verify(httpClientResponse).getFromApiV2(
+          meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased")
+        )(
           any()
         )
       }
@@ -184,13 +180,14 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(twoCeasedEmployments))))
           )
 
-        sut("test/service").ceasedEmployments(nino, year).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe twoCeasedEmploymentsDetails
+        sut("test/service").ceasedEmployments(nino, year).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe twoCeasedEmploymentsDetails
         }
 
-        verify(httpClientResponse).getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(
+        verify(httpClientResponse).getFromApiV2(
+          meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased")
+        )(
           any()
         )
       }
@@ -203,10 +200,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
           EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(zeroCeasedEmployments))))
         )
 
-      sut("test/service").ceasedEmployments(nino, year).value.futureValue.map {
-        result =>
-          result.status mustBe OK
-          result.json mustBe zeroCeasedEmployments
+      sut("test/service").ceasedEmployments(nino, year).value.futureValue.map { result =>
+        result.status mustBe OK
+        result.json mustBe zeroCeasedEmployments
       } // TODO - Check behaviour, same as TODO above
 
       verify(httpClientResponse)
@@ -227,10 +223,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
             EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(anEmployment))))
           )
 
-        sut().employment(nino, "123").value.futureValue.map {
-          result =>
-            result mustBe OK
-            result mustBe anEmployment
+        sut().employment(nino, "123").value.futureValue.map { result =>
+          result mustBe OK
+          result mustBe anEmployment
         }
 
         verify(httpClientResponse, times(1)).getFromApiV2(any())(any())
@@ -251,10 +246,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
         val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
-        sut().endEmployment(nino, 1, endEmploymentData).value.futureValue.map {
-          result =>
-            result.status mustBe OK
-            result.json mustBe json
+        sut().endEmployment(nino, 1, endEmploymentData).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe json
         }
       }
     }
@@ -280,10 +274,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
           )
         )
 
-      sut().addEmployment(nino, addEmployment).value.futureValue.map {
-        result =>
-          result mustBe OK
-          result mustBe json
+      sut().addEmployment(nino, addEmployment).value.futureValue.map { result =>
+        result mustBe OK
+        result mustBe json
       }
     }
   }
@@ -300,10 +293,9 @@ class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
           )
         )
 
-      sut().incorrectEmployment(nino, 1, model).value.futureValue.map {
-        result =>
-          result mustBe OK
-          result mustBe json
+      sut().incorrectEmployment(nino, 1, model).value.futureValue.map { result =>
+        result mustBe OK
+        result mustBe json
       }
     }
   }

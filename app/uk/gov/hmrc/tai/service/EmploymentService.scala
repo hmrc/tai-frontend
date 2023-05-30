@@ -52,18 +52,19 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
     ec: ExecutionContext,
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, String] =
-    employmentsConnector.endEmployment(nino, id, endEmploymentData).map(_.json.as[String])
+    employmentsConnector.endEmployment(nino, id, endEmploymentData).map(_.json.as[String]) // TODO - Check behaviour
 
   def addEmployment(nino: Nino, employment: AddEmployment)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, String] =
-    employmentsConnector.addEmployment(nino, employment).map(_.json.as[String])
+    employmentsConnector.addEmployment(nino, employment).map(_.json.as[String]) // TODO - Check behaviour
+
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, String] =
-    employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment).map(_.json.as[String])
+    employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment).map(_.json.as[String]) // TODO - Check behaviour
 
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier,
