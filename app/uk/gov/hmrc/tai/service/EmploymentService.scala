@@ -17,6 +17,8 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
+import play.api.Logging
+import play.api.http.Status.BAD_GATEWAY
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
@@ -26,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
+class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) extends Logging {
 
   def employments(nino: Nino, year: TaxYear)(implicit
     ec: ExecutionContext,
@@ -52,19 +54,70 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
     ec: ExecutionContext,
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, String] =
-    employmentsConnector.endEmployment(nino, id, endEmploymentData).map(_.json.as[String]) // TODO - Check behaviour
+    employmentsConnector
+      .endEmployment(nino, id, endEmploymentData)
+      .transform {
+        case Left(error) => Left(error)
+        case Right(response) =>
+          val data = (response.json \ "data").asOpt[String]
+          data match {
+            case Some(data) => Right(data)
+            case None =>
+              val exception = new RuntimeException(
+                s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+              )
+              logger.error(exception.getMessage, exception)
+              Left(
+                UpstreamErrorResponse(exception.getMessage, BAD_GATEWAY, BAD_GATEWAY)
+              ) // TODO - Correct error status? May delete later
+          }
+      }
 
   def addEmployment(nino: Nino, employment: AddEmployment)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, String] =
-    employmentsConnector.addEmployment(nino, employment).map(_.json.as[String]) // TODO - Check behaviour
+    employmentsConnector
+      .addEmployment(nino, employment)
+      .transform {
+        case Left(error) => Left(error)
+        case Right(response) =>
+          val data = (response.json \ "data").asOpt[String]
+          data match {
+            case Some(data) => Right(data)
+            case None =>
+              val exception = new RuntimeException(
+                s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+              )
+              logger.error(exception.getMessage, exception)
+              Left(
+                UpstreamErrorResponse(exception.getMessage, BAD_GATEWAY, BAD_GATEWAY)
+              ) // TODO - Correct error status? May delete later
+          }
+      }
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, String] =
-    employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment).map(_.json.as[String]) // TODO - Check behaviour
+    employmentsConnector
+      .incorrectEmployment(nino, id, incorrectEmployment)
+      .transform {
+        case Left(error) => Left(error)
+        case Right(response) =>
+          val data = (response.json \ "data").asOpt[String]
+          data match {
+            case Some(data) => Right(data)
+            case None =>
+              val exception = new RuntimeException(
+                s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+              )
+              logger.error(exception.getMessage, exception)
+              Left(
+                UpstreamErrorResponse(exception.getMessage, BAD_GATEWAY, BAD_GATEWAY)
+              ) // TODO - Correct error status? May delete later
+          }
+      }
 
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier,

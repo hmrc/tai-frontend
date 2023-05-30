@@ -32,29 +32,23 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import cats.data.EitherT
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, okJson, urlPathMatching}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.Application
 import play.api.http.Status._
 import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsObject, JsResultException, JsValue, Json}
-import play.twirl.api
-import uk.gov.hmrc.http.{HttpClient, HttpException, UpstreamErrorResponse}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
-import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
 class CompanyCarConnectorSpec extends ConnectorSpec {
+
+  implicit val ec: ExecutionContext = inject[ExecutionContext]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .configure(

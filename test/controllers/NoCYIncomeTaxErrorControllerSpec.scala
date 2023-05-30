@@ -17,7 +17,9 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -26,7 +28,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, Person}
@@ -56,7 +58,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
     "call employment service to fetch sequence of employments" in {
       val sut = createSUT()
       Await.result(sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(employmentService).employments(any(), any())(any())
+      verify(employmentService).employments(any(), any())(any(), any())
     }
 
     "display the page" when {
@@ -65,7 +67,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService).employments(any(), any())(any())
+        verify(employmentService).employments(any(), any())(any(), any())
         status(result) mustBe OK
       }
 
@@ -74,7 +76,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService).employments(any(), any())(any())
+        verify(employmentService).employments(any(), any())(any(), any())
         status(result) mustBe OK
       }
     }
@@ -114,11 +116,19 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I
       )
     )
 
-    employmentDataFailure match {
+    employmentDataFailure match { // TODO - What is this doing?
       case None =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(sampleEmployment)))
+          )
       case Some(throwable) =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Left(UpstreamErrorResponse("", INTERNAL_SERVER_ERROR)))
+            )
+          )
     }
 
   }

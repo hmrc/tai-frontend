@@ -17,15 +17,17 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.{NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -154,7 +156,11 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
         when(incomeService.latestPayment(any(), any())(any(), any()))
-          .thenReturn(Future.successful(payment))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Payment]](
+              Future.successful(Right(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
+            )
+          )
         when(journeyCacheService.currentCache(any()))
           .thenReturn(Future.successful(currentCache))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))

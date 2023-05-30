@@ -17,12 +17,15 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
@@ -41,7 +44,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          ) // TODO - Before each block with all shared mocks
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -56,7 +62,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(None)))
+          ) // TODO - Before each block with all shared mocks
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -66,7 +75,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details are not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          ) // TODO - Before each block with all shared mocks
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -75,7 +87,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details for passed employment is not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employment(any(), any())(any(), any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          ) // TODO - Before each block with all shared mocks
 
         val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -86,7 +101,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "show historic data" when {
       "historic data has been passed" in {
-        when(employmentService.employments(any(), any())(any(), any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(sampleEmployment)))
+          ) // TODO - Before each block with all shared mocks
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -102,7 +120,11 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     "throw internal server error" when {
       "RTI throws service unavailable" in {
         when(employmentService.employments(any(), any())(any(), any()))
-          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Right(sampleEmploymentForRtiUnavailable))
+            )
+          ) // TODO - Before each block with all shared mocks
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -127,7 +149,10 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "show historic data" when {
       "historic data has been passed" in {
-        when(employmentService.employments(any(), any())(any(), any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(sampleEmployment)))
+          )
         val result =
           sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -143,7 +168,11 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     "throw internal server error" when {
       "RTI throws service unavailable" in {
         when(employmentService.employments(any(), any())(any(), any()))
-          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Right(sampleEmploymentForRtiUnavailable))
+            )
+          ) // TODO - Before each block with all shared mocks
         val result =
           sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

@@ -32,6 +32,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
 import utils.WireMockHelper
 
+import scala.concurrent.ExecutionContext
+
 trait ConnectorSpec
     extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with MockitoSugar with I18nSupport with ScalaFutures
     with Injecting with PatienceConfiguration {
@@ -40,9 +42,8 @@ trait ConnectorSpec
   val currentTaxYear: Int = TaxYear().year
   val employmentId: Int = 1
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit val defaultPatience: PatienceConfig =
+  implicit lazy val defaultPatience: PatienceConfig =
     PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
-
 }

@@ -17,9 +17,6 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.EitherT
-
-import java.time.LocalDateTime
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
@@ -31,11 +28,11 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live}
 import utils.BaseSpec
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import java.time.{LocalDate, LocalDateTime}
+import scala.concurrent.Future
 import scala.language.postfixOps
 
-class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
+class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach { // TODO - Change to WireMock
 
   override def beforeEach(): Unit =
     Mockito.reset(httpClientResponse)

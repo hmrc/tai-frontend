@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service.benefits
 
 import cats.data.EitherT
 import play.api.Logging
-import play.api.http.Status.BAD_REQUEST
+import play.api.http.Status.{BAD_GATEWAY, BAD_REQUEST}
 
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
@@ -54,7 +54,7 @@ class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) extends L
               )
               logger.error(exception.getMessage, exception)
               Left(
-                UpstreamErrorResponse(exception.getMessage, BAD_REQUEST, BAD_REQUEST)
+                UpstreamErrorResponse(exception.getMessage, BAD_GATEWAY, BAD_GATEWAY)
               ) // TODO - Correct error status? May delete later
           }
       }

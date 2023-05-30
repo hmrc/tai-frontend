@@ -18,15 +18,16 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
@@ -52,7 +53,10 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
     "show the 'What Do You Want To Tell Us' Page" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
         val cache =
           Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
         when(journeyCacheService.cache(meq(cache))(any())).thenReturn(Future.successful(cache))
@@ -70,7 +74,10 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
     "retrieve the employer name from the cache" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
         val cache =
           Map(UpdateEmploymentConstants.EmploymentIdKey -> "1", UpdateEmploymentConstants.NameKey -> employment.name)
         when(journeyCacheService.cache(meq(cache))(any())).thenReturn(Future.successful(cache))
@@ -86,7 +93,10 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
     "retrieve the employment update details from the cache" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
         val cacheDetails = Some("updateDetails")
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cacheDetails))
         val cache =
@@ -106,7 +116,8 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
     "throw exception" when {
       "employment not found" in {
         val sut = createSUT
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(None))))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some("updateDetails")))
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -419,7 +430,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
           )
         )
         when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
-          .thenReturn(Future.successful("1"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("1"))))
         when(
           successfulJourneyCacheService
             .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
@@ -449,7 +460,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
           )
         )
         when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
-          .thenReturn(Future.successful("1"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("1"))))
         when(
           successfulJourneyCacheService
             .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())

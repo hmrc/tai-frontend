@@ -31,6 +31,8 @@ import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 import utils.WireMockHelper
 
+import scala.concurrent.ExecutionContext
+
 class BenefitsConnectorSpec extends ConnectorSpec {
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
@@ -52,6 +54,8 @@ class BenefitsConnectorSpec extends ConnectorSpec {
     .build()
 
   override def messagesApi: MessagesApi = inject[MessagesApi]
+
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
 
   def connector: BenefitsConnector = inject[BenefitsConnector]
 

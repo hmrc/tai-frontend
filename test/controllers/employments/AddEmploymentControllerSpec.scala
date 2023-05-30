@@ -18,6 +18,7 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
@@ -26,6 +27,7 @@ import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.domain.AddEmployment
@@ -38,6 +40,7 @@ import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.duration._
@@ -841,7 +844,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         )
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
-          .thenReturn(Future.successful("envelope-123"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("envelope-123"))))
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(
           trackSuccessJourneyCacheService
@@ -863,9 +866,8 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None))))
-
         when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
-          .thenReturn(Future.successful("envelope-123"))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("envelope-123"))))
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
         when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(expectedSuccessfulJourneyCache))
