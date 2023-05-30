@@ -26,9 +26,9 @@ import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasFormPartialService @Inject()(httpClient: DefaultHttpClient, applicationConfig: ApplicationConfig)(
-  implicit ec: ExecutionContext)
-    extends EnhancedPartialRetriever {
+class HasFormPartialService @Inject() (httpClient: DefaultHttpClient, applicationConfig: ApplicationConfig)(implicit
+  ec: ExecutionContext
+) extends EnhancedPartialRetriever {
 
   override val http: HttpGet = httpClient
 

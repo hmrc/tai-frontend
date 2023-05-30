@@ -33,8 +33,9 @@ case class AmountComparatorForm(income: Option[String])
 object AmountComparatorForm {
   implicit val formats: OFormat[AmountComparatorForm] = Json.format[AmountComparatorForm]
 
-  def createForm(latestPayDate: Option[String] = None, taxablePayYTD: Option[BigDecimal] = None)(
-    implicit messages: Messages): Form[AmountComparatorForm] = {
+  def createForm(latestPayDate: Option[String] = None, taxablePayYTD: Option[BigDecimal] = None)(implicit
+    messages: Messages
+  ): Form[AmountComparatorForm] = {
 
     val fallbackDate = LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear))
 
@@ -48,7 +49,8 @@ object AmountComparatorForm {
           messages("error.tai.updateDataEmployment.maxLength"),
           taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome", _, latestPaymentDate)),
           taxablePayYTD.getOrElse(0)
-        ))(customApply)(customUnapply)
+        )
+      )(customApply)(customUnapply)
     )
   }
 

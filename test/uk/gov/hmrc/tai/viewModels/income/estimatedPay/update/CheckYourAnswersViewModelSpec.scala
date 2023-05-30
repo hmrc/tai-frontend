@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.prop.TableDrivenPropertyChecks
 import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
-class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with ScalaCheckPropertyChecks {
+class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with TableDrivenPropertyChecks {
 
   "Update income estimate check your answers view model" must {
     "return all journey lines" when {
@@ -40,7 +40,8 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
             hasDeductionAnswer,
             taxablePayAnswer,
             hasBonusOrOvertimeAnswer,
-            totalYearlyBonusOrOvertimeAnswer)
+            totalYearlyBonusOrOvertimeAnswer
+          )
       }
     }
 
@@ -56,7 +57,8 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
             totalPayAnswer,
             hasDeductionAnswer,
             taxablePayAnswer,
-            hasBonusOrOvertimeAnswer)
+            hasBonusOrOvertimeAnswer
+          )
       }
 
       "there are no payslip deductions" in {
@@ -69,7 +71,8 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
             totalPayAnswer,
             hasDeductionAnswer,
             hasBonusOrOvertimeAnswer,
-            totalYearlyBonusOrOvertimeAnswer)
+            totalYearlyBonusOrOvertimeAnswer
+          )
       }
 
     }
@@ -168,7 +171,8 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     messagesApi(
       "tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",
-      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
+    ),
     hasBonusOrOvertime,
     controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
   )
@@ -176,7 +180,8 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     messagesApi(
       "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
-      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
+    ),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime), zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url
   )
@@ -192,7 +197,8 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with S
     totalBonusOrOvertime: Option[String] = None,
     taxablePay: Option[String] = None,
     payPeriodInDays: Option[String] = None,
-    paymentFrequency: String = Monthly): CheckYourAnswersViewModel =
+    paymentFrequency: String = Monthly
+  ): CheckYourAnswersViewModel =
     CheckYourAnswersViewModel(
       paymentFrequency,
       payPeriodInDays,

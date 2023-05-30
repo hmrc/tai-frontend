@@ -31,14 +31,16 @@ trait TaxCodeDescriptor {
   case class TaxCodeDescription(
     taxCode: String,
     basisOperation: BasisOfOperation,
-    scottishTaxRateBands: Map[String, BigDecimal])
+    scottishTaxRateBands: Map[String, BigDecimal]
+  )
 
   def describeTaxCode(
     taxCode: String,
     basisOperation: BasisOfOperation,
     scottishTaxRateBands: Map[String, BigDecimal],
     isCurrentYear: Boolean = true,
-    applicationConfig: ApplicationConfig)(implicit messages: Messages): ListMap[String, String] = {
+    applicationConfig: ApplicationConfig
+  )(implicit messages: Messages): ListMap[String, String] = {
 
     val explanationRules: Seq[TaxCodeDescriptionTranslator] = Seq(
       scottishTaxCodeExplanation(isCurrentYear, applicationConfig),
@@ -52,8 +54,9 @@ trait TaxCodeDescriptor {
     explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
   }
 
-  private def scottishTaxCodeExplanation(isCurrent: Boolean, applicationConfig: ApplicationConfig)(
-    implicit messages: Messages): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
+  private def scottishTaxCodeExplanation(isCurrent: Boolean, applicationConfig: ApplicationConfig)(implicit
+    messages: Messages
+  ): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
     val scottishRegex = "^S".r
     val taxCode = taxCodeDescription.taxCode
@@ -65,14 +68,17 @@ trait TaxCodeDescriptor {
             s"tai.taxCode$previousOrCurrent.$code",
             link(
               url = applicationConfig.scottishRateIncomeTaxUrl,
-              copy = messages("tai.taxCode.scottishIncomeText.link"))
-          ))
+              copy = messages("tai.taxCode.scottishIncomeText.link")
+            )
+          )
+        )
       case _ => ListMap[String, String]()
     }
   }
 
-  private def welshTaxCodeExplanation(isCurrent: Boolean, applicationConfig: ApplicationConfig)(
-    implicit messages: Messages): TaxCodeDescriptionTranslator =
+  private def welshTaxCodeExplanation(isCurrent: Boolean, applicationConfig: ApplicationConfig)(implicit
+    messages: Messages
+  ): TaxCodeDescriptionTranslator =
     (taxCodeDescription: TaxCodeDescription) => {
       val previousOrCurrent = if (isCurrent) "" else ".prev"
       val welshRegex = "^C".r
@@ -83,12 +89,14 @@ trait TaxCodeDescriptor {
             code -> messages(
               s"tai.taxCode$previousOrCurrent.$code",
               link(
-                url = if (messages.lang.language == "cy") { applicationConfig.welshRateIncomeTaxWelshUrl } else {
+                url = if (messages.lang.language == "cy") { applicationConfig.welshRateIncomeTaxWelshUrl }
+                else {
                   applicationConfig.welshRateIncomeTaxUrl
                 },
                 copy = messages("tai.taxCode.welshIncomeText.link")
               )
-            ))
+            )
+          )
         case _ => ListMap[String, String]()
       }
     }
@@ -105,7 +113,8 @@ trait TaxCodeDescriptor {
           val messageAmount = MoneyPounds(amount * TaiConstants.TaxAmountFactor, 0).quantity
           ListMap(
             code            -> messages(s"tai.taxCode$previousOrCurrent.$code"),
-            amount.toString -> messages(s"tai.taxCode.untaxedAmount", messageAmount))
+            amount.toString -> messages(s"tai.taxCode.untaxedAmount", messageAmount)
+          )
         case _ => ListMap[String, String]()
       }
     }
@@ -120,8 +129,9 @@ trait TaxCodeDescriptor {
         codeExplanation
     }
 
-  private def emergencyTaxCodeExplanation(isCurrent: Boolean)(
-    implicit messages: Messages): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
+  private def emergencyTaxCodeExplanation(
+    isCurrent: Boolean
+  )(implicit messages: Messages): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
 
     taxCodeDescription.basisOperation match {
@@ -131,8 +141,9 @@ trait TaxCodeDescriptor {
     }
   }
 
-  private def standAloneTaxCodeExplanation(taxCodeDescription: TaxCodeDescription, isCurrent: Boolean)(
-    implicit messages: Messages): ListMap[String, String] = {
+  private def standAloneTaxCodeExplanation(taxCodeDescription: TaxCodeDescription, isCurrent: Boolean)(implicit
+    messages: Messages
+  ): ListMap[String, String] = {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
 
     val standAloneRegex = "0T|BR|NT".r
@@ -146,13 +157,16 @@ trait TaxCodeDescriptor {
         ListMap(
           code -> messages(
             s"tai.taxCode$previousOrCurrent.DX",
-            taxCodeDescription.scottishTaxRateBands.getOrElse(code, BigDecimal(0))))
+            taxCodeDescription.scottishTaxRateBands.getOrElse(code, BigDecimal(0))
+          )
+        )
       case _ => ListMap[String, String]()
     }
   }
 
-  private def suffixTaxCodeExplanation(taxCodeDescription: TaxCodeDescription, isCurrent: Boolean)(
-    implicit messages: Messages): ListMap[String, String] = {
+  private def suffixTaxCodeExplanation(taxCodeDescription: TaxCodeDescription, isCurrent: Boolean)(implicit
+    messages: Messages
+  ): ListMap[String, String] = {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
     val suffixRegex = """L|M|\d[0-9]*N|\d[1-9]T|\d+0T|[1-9]T""".r
     val taxCode = taxCodeDescription.taxCode

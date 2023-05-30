@@ -37,7 +37,8 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveDivWithId("taxFreeAmountSummary")
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountSummary]>h2",
-          messages("tai.taxFreeAmount.summarysection.heading"))
+          messages("tai.taxFreeAmount.summarysection.heading")
+        )
         val summarySection = doc.select("div[id=taxFreeAmountSummary]")
         summarySection.select("p").get(1) must haveText("£2020")
       }
@@ -45,13 +46,16 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       "contains the correct text content" in {
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountSummary] p",
-          messages("tai.taxFreeAmount.summarysection.p2"))
+          messages("tai.taxFreeAmount.summarysection.p2")
+        )
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountSummary] li",
-          messages("tai.taxFreeAmount.summarysection.bullet1"))
+          messages("tai.taxFreeAmount.summarysection.bullet1")
+        )
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountSummary] li",
-          messages("tai.taxFreeAmount.summarysection.bullet2"))
+          messages("tai.taxFreeAmount.summarysection.bullet2")
+        )
       }
     }
 
@@ -61,7 +65,8 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveDivWithId("taxFreeAmountDetail")
         doc must haveElementAtPathWithText(
           "div[id=taxFreeAmountDetail]>h2",
-          messages("tai.taxFreeAmount.detailsection.heading"))
+          messages("tai.taxFreeAmount.detailsection.heading")
+        )
       }
 
       "contains one group per summary category view model" in {
@@ -99,10 +104,11 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       "displays a link & inner link element, where present in the view model" in {
         doc must haveElementWithId("summaryTable2Row1ChangeLinkCell")
         doc must haveLinkWithUrlWithID("summaryTable2Row1ChangeLink", "/dummy/url1")
-        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "visuallyhidden")
+        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "govuk-visually-hidden")
         doc must haveElementAtPathWithText(
           "a[id=summaryTable2Row1ChangeLink] > span",
-          messages("tai.updateOrRemove") + " context1")
+          messages("tai.updateOrRemove") + " context1"
+        )
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
@@ -122,15 +128,18 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "taxCodesLink",
         controllers.routes.YourTaxCodeController.taxCodes().url,
-        messages("check.your.tax.codes"))
+        messages("check.your.tax.codes")
+      )
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
         controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-        messages("check.your.income.tax.estimate"))
+        messages("check.your.income.tax.estimate")
+      )
       doc must haveLinkElement(
         "taxableIncomeLink",
         controllers.routes.TaxAccountSummaryController.onPageLoad.url,
-        messages("return.to.your.income.tax.summary"))
+        messages("return.to.your.income.tax.summary")
+      )
     }
 
     "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
@@ -145,7 +154,10 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
             hideHeaders = true,
             hideCaption = false,
             "Deductions from your Personal Allowance",
-            vm)))
+            vm
+          )
+        )
+      )
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
       val document = doc(template(viewModel, appConfig, "test user"))
@@ -173,15 +185,18 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryRowViewModel(
       "An example addition benefit",
       "£11,500",
-      ChangeLinkViewModel(isDisplayed = true, "context1", "/dummy/url1")),
+      ChangeLinkViewModel(isDisplayed = true, "context1", "/dummy/url1")
+    ),
     TaxFreeAmountSummaryRowViewModel(
       "Some Other Allowance",
       "£12,322",
-      ChangeLinkViewModel(isDisplayed = true, "context2", "/dummy/url2")),
+      ChangeLinkViewModel(isDisplayed = true, "context2", "/dummy/url2")
+    ),
     TaxFreeAmountSummaryRowViewModel(
       "Blah Blah Random Extra Row Content",
       "£11,111",
-      ChangeLinkViewModel(isDisplayed = false))
+      ChangeLinkViewModel(isDisplayed = false)
+    )
   )
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel =
     TaxFreeAmountSummaryViewModel(
@@ -193,7 +208,8 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
           hideCaption = true,
           messages("tai.taxFreeAmount.table.allowances.caption"),
           Seq(
-            TaxFreeAmountSummaryRowViewModel("Personal Allowance", "£11,500", ChangeLinkViewModel(isDisplayed = false)))
+            TaxFreeAmountSummaryRowViewModel("Personal Allowance", "£11,500", ChangeLinkViewModel(isDisplayed = false))
+          )
         ),
         TaxFreeAmountSummaryCategoryViewModel(
           "header3",
@@ -201,7 +217,8 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
           hideHeaders = true,
           hideCaption = false,
           "Additions to your Personal Allowance",
-          rowViewModels),
+          rowViewModels
+        ),
         TaxFreeAmountSummaryCategoryViewModel(
           "header5",
           "header6",
@@ -212,7 +229,9 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
             TaxFreeAmountSummaryRowViewModel(
               "An example single deduction benefit",
               "£12,300",
-              ChangeLinkViewModel(isDisplayed = true, "context1", "/dummy/url1")))
+              ChangeLinkViewModel(isDisplayed = true, "context1", "/dummy/url1")
+            )
+          )
         ),
         TaxFreeAmountSummaryCategoryViewModel(
           "header7",
@@ -224,9 +243,12 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
             TaxFreeAmountSummaryRowViewModel(
               "Your total tax-free amount",
               "£11,500",
-              ChangeLinkViewModel(isDisplayed = false)))
+              ChangeLinkViewModel(isDisplayed = false)
+            )
+          )
         )
-      ))
+      )
+    )
   val viewModel: TaxFreeAmountViewModel =
     TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 

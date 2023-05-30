@@ -31,7 +31,8 @@ object TaxablePaySlipAmountViewModel {
     taxablePayslipForm: Form[TaxablePayslipForm],
     payPeriod: Option[String],
     payPeriodInDays: Option[String],
-    employer: IncomeSource)(implicit message: Messages): TaxablePaySlipAmountViewModel = {
+    employer: IncomeSource
+  )(implicit message: Messages): TaxablePaySlipAmountViewModel = {
 
     val messages = Map(
       Monthly     -> "tai.taxablePayslip.title.month",

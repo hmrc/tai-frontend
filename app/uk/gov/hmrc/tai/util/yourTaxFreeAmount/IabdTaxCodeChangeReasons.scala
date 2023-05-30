@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
 class IabdTaxCodeChangeReasons {
@@ -69,7 +68,8 @@ class IabdTaxCodeChangeReasons {
         case EstimatedTaxYouOweThisYear =>
           messages(
             "tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid",
-            formattedValue(pair.currentInputAmount))
+            formattedValue(pair.currentInputAmount)
+          )
         case taxComponentType =>
           messages(
             "tai.taxCodeComparison.iabd.added",
@@ -84,13 +84,12 @@ class IabdTaxCodeChangeReasons {
 
     val createAmmendmentMessage: (BigDecimal, BigDecimal) => String =
       (previousAmount: BigDecimal, currentAmount: BigDecimal) => {
-        val adjustmentMessage: String = {
+        val adjustmentMessage: String =
           if (previousAmount < currentAmount) {
             messages("tai.taxCodeComparison.iabd.increased")
           } else {
             messages("tai.taxCodeComparison.iabd.reduced")
           }
-        }
 
         messages(
           "tai.taxCodeComparison.iabd.ammended",

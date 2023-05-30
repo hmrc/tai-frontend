@@ -40,9 +40,11 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
     doc(view) must haveLinkWithText(messages("tai.incomes.landing.employment.ended.link", employerName))
     doc(view) must haveLinkWithUrlWithID(
       "updateEmployer",
-      controllers.employments.routes.EndEmploymentController.onPageLoad(empId).url)
+      controllers.employments.routes.EndEmploymentController.onPageLoad(empId).url
+    )
     doc(view).getElementsByClass("govuk-button").text must include(
-      messages("tai.income.details.updateTaxableIncome.update"))
+      messages("tai.income.details.updateTaxableIncome.update")
+    )
   }
 
   "contain the correct content when income is from pension" in {
@@ -51,7 +53,8 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
     doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
     doc(testView) must haveLinkWithUrlWithID("updatePension", appConfig.incomeFromEmploymentPensionLinkUrl)
     doc(testView).getElementsByClass("govuk-button").text must include(
-      messages("tai.income.details.updateTaxableIncome.update"))
+      messages("tai.income.details.updateTaxableIncome.update")
+    )
   }
 
   override def view: Html = estimatedPayLandingPage(employerName, empId, "", isPension = false, appConfig)

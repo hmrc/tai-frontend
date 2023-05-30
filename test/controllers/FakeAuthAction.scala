@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
+import controllers.auth.{AuthAction, AuthedUser, InternalAuthenticatedRequest}
 import play.api.mvc._
 import play.api.test.Helpers.stubControllerComponents
 import uk.gov.hmrc.auth.core.ConfidenceLevel
@@ -34,7 +34,8 @@ object FakeAuthAction extends AuthAction {
 
   override def invokeBlock[A](
     request: Request[A],
-    block: InternalAuthenticatedRequest[A] => Future[Result]): Future[Result] =
+    block: InternalAuthenticatedRequest[A] => Future[Result]
+  ): Future[Result] =
     block(InternalAuthenticatedRequest(request, user))
   override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = cc.executionContext

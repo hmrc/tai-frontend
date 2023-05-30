@@ -26,10 +26,11 @@ import scala.concurrent.ExecutionContext
 
 object HelpFormHelper {
 
-  def replaceMessage(formPartialRetriever: FormPartialRetriever, applicationConfig: ApplicationConfig)(
-    implicit request: Request[_],
+  def replaceMessage(formPartialRetriever: FormPartialRetriever, applicationConfig: ApplicationConfig)(implicit
+    request: Request[_],
     messages: Messages,
-    ec: ExecutionContext): Html = {
+    ec: ExecutionContext
+  ): Html = {
     def partial = formPartialRetriever.getPartialContent(applicationConfig.reportAProblemPartialUrl)
 
     Html(
@@ -37,6 +38,7 @@ object HelpFormHelper {
         .replace(
           messages("tai.deskpro.link.text.original"),
           messages("tai.deskpro.link.text.replacement")
-        ))
+        )
+    )
   }
 }

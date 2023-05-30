@@ -27,12 +27,14 @@ import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheService: JourneyCacheService)
-    extends Results with Logging {
+class DecisionCacheWrapper @Inject() (
+  @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
+  implicit val ec: ExecutionContext
+) extends Results with Logging {
 
   private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
 
-  def getDecision()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+  def getDecision()(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
     benefitType.flatMap[Option[String]] {
       case Right(bt) =>
@@ -49,9 +51,9 @@ class DecisionCacheWrapper @Inject()(@Named("End Company Benefit") journeyCacheS
     }
   }
 
-  def cacheDecision(decision: String, f: (String, Result) => Result)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Result] = {
+  def cacheDecision(decision: String, f: (String, Result) => Result)(implicit
+    hc: HeaderCarrier
+  ): Future[Result] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
     benefitType.flatMap[Result] {
       case Right(bt) =>

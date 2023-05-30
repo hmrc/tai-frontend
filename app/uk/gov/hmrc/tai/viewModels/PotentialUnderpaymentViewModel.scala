@@ -30,7 +30,8 @@ case class PotentialUnderpaymentViewModel(
   iyaTotalAmount: BigDecimal,
   pageTitle: String,
   returnLink: Html,
-  gaDimensions: Option[Map[String, String]] = None)
+  gaDimensions: Option[Map[String, String]] = None
+)
 
 object PotentialUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
 
@@ -38,11 +39,12 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
     taxAccountSummary: TaxAccountSummary,
     codingComponents: Seq[CodingComponent],
     referer: String,
-    resourceName: String)(implicit messages: Messages): PotentialUnderpaymentViewModel = {
+    resourceName: String
+  )(implicit messages: Messages): PotentialUnderpaymentViewModel = {
 
     val iyaTaxCodeChangeAmount = codingComponents
-      .collectFirst {
-        case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) => amount
+      .collectFirst { case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) =>
+        amount
       }
       .getOrElse(BigDecimal(0))
 
@@ -52,17 +54,23 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
           Some(
             Map(
               ValueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
-              IycdcReconciliationStatus -> CurrentYear))
+              IycdcReconciliationStatus -> CurrentYear
+            )
+          )
         case (cy, ny) if cy == 0 && ny > 0 =>
           Some(
             Map(
               ValueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(),
-              IycdcReconciliationStatus -> NextYear))
+              IycdcReconciliationStatus -> NextYear
+            )
+          )
         case (cy, ny) if cy > 0 && ny > 0 =>
           Some(
             Map(
               ValueOfIycdcPayment       -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(),
-              IycdcReconciliationStatus -> CurrentAndNextYear))
+              IycdcReconciliationStatus -> CurrentAndNextYear
+            )
+          )
         case _ => None
       }
 

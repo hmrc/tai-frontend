@@ -36,7 +36,8 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
     behave like pageWithYesNoRadioButton(
       AddEmploymentFirstPayChoiceConstants.FirstPayChoice,
-      AddEmploymentFirstPayChoiceConstants.FirstPayChoice + "-2")
+      AddEmploymentFirstPayChoiceConstants.FirstPayChoice + "-2"
+    )
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel)
 
     "have an error message with the form inputs" when {
@@ -59,7 +60,8 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
   private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm.form.bind(
     Map(
       AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
-    ))
+    )
+  )
   private val template = inject[AddEmploymentFirstPayFormView]
 
   override def view: Html = template(employmentFirstPayForm, employerName)

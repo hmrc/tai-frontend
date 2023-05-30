@@ -29,10 +29,10 @@ trait IncomeTaxEstimateHelper {
 
     val employments: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == EmploymentIncome)
     val pensions: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == PensionIncome)
-    val other: Boolean = taxCodeIncomes.exists(
-      taxCodeIncome =>
-        taxCodeIncome.componentType == JobSeekerAllowanceIncome ||
-          taxCodeIncome.componentType == OtherIncome)
+    val other: Boolean = taxCodeIncomes.exists(taxCodeIncome =>
+      taxCodeIncome.componentType == JobSeekerAllowanceIncome ||
+        taxCodeIncome.componentType == OtherIncome
+    )
 
     (employments, pensions, other)
   }
@@ -44,8 +44,9 @@ trait IncomeTaxEstimateHelper {
       case (_, _, _)            => Messages(s"tax.on.your.paye.income")
     }
 
-  def getTaxOnIncomeTypeDescription(taxCodeIncomes: Seq[TaxCodeIncome], taxAccountSummary: TaxAccountSummary)(
-    implicit messages: Messages): String = {
+  def getTaxOnIncomeTypeDescription(taxCodeIncomes: Seq[TaxCodeIncome], taxAccountSummary: TaxAccountSummary)(implicit
+    messages: Messages
+  ): String = {
 
     val incomeType = determineIncomeTypes(taxCodeIncomes) match {
       case (true, false, false) => "employment"
@@ -59,7 +60,8 @@ trait IncomeTaxEstimateHelper {
       link(
         id = Some("taxFreeAmountLink"),
         url = routes.TaxFreeAmountController.taxFreeAmount.url,
-        copy = Messages("tai.estimatedIncome.taxFree.link")),
+        copy = Messages("tai.estimatedIncome.taxFree.link")
+      ),
       pounds(taxAccountSummary.taxFreeAllowance)
     )
 

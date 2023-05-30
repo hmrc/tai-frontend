@@ -27,7 +27,7 @@
 @this(main: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ZeroTaxEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,  ec: ExecutionContext)
+request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, ec: ExecutionContext)
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak

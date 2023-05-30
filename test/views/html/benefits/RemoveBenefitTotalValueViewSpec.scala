@@ -64,7 +64,8 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
           TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy")),
           TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy")),
           TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-        ))
+        )
+      )
     }
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "totalValue")

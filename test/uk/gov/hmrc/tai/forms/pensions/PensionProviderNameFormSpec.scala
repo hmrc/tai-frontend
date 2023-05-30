@@ -40,7 +40,8 @@ class PensionProviderNameFormSpec extends BaseSpec {
         val validatedFormNoDayError = form.bind(emptyName)
 
         validatedFormNoDayError.errors must contain(
-          FormError("pensionProviderName", List(Messages("tai.pensionProviderName.error.blank"))))
+          FormError("pensionProviderName", List(Messages("tai.pensionProviderName.error.blank")))
+        )
       }
     }
   }

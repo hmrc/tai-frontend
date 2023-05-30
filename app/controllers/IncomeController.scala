@@ -25,7 +25,6 @@ import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
@@ -46,7 +45,7 @@ import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 @Singleton
-class IncomeController @Inject()(
+class IncomeController @Inject() (
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
@@ -61,8 +60,7 @@ class IncomeController @Inject()(
   editPensionSuccess: EditPensionSuccessView,
   editIncome: EditIncomeView,
   sameEstimatedPay: SameEstimatedPayView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
@@ -88,10 +86,12 @@ class IncomeController @Inject()(
           EditIncomeForm.create(employmentAmount),
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
-          amountYearToDate.toString))
+          amountYearToDate.toString
+        )
+      )
     }).fold(errorPagesHandler.internalServerError(_, None), identity _)
-      .recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      .recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError(e.getMessage)
       }
   }
 
@@ -99,11 +99,12 @@ class IncomeController @Inject()(
     implicit request =>
       (for {
         cachedData <- journeyCacheService
-                       .mandatoryJourneyValues(
-                         UpdateIncomeConstants.NameKey,
-                         UpdateIncomeConstants.IdKey,
-                         s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId")
-                       .getOrFail
+                        .mandatoryJourneyValues(
+                          UpdateIncomeConstants.NameKey,
+                          UpdateIncomeConstants.IdKey,
+                          s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"
+                        )
+                        .getOrFail
       } yield {
         val employerId = cachedData(1).toInt
         val model = SameEstimatedPayViewModel(
@@ -111,10 +112,11 @@ class IncomeController @Inject()(
           employerId,
           cachedData(2).toInt,
           isPension = false,
-          routes.IncomeSourceSummaryController.onPageLoad(employerId).url)
+          routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+        )
         Ok(sameEstimatedPay(model))
-      }).recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      }).recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError(e.getMessage)
       }
   }
 
@@ -134,7 +136,8 @@ class IncomeController @Inject()(
         id,
         income.oldAmount,
         income.isOccupationalPension,
-        routes.IncomeSourceSummaryController.onPageLoad(id).url)
+        routes.IncomeSourceSummaryController.onPageLoad(id).url
+      )
       Ok(sameEstimatedPay(model))
     }
   }
@@ -146,7 +149,8 @@ class IncomeController @Inject()(
       journeyCacheService
         .collectedJourneyValues(
           Seq(UpdateIncomeConstants.PayToDateKey, UpdateIncomeConstants.NameKey),
-          Seq(UpdateIncomeConstants.DateKey))
+          Seq(UpdateIncomeConstants.DateKey)
+        )
         .flatMap {
           case Left(errorMessage) =>
             logger.warn(errorMessage)
@@ -167,7 +171,8 @@ class IncomeController @Inject()(
               .fold(
                 (formWithErrors: Form[EditIncomeForm]) =>
                   Future.successful(
-                    BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))),
+                    BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, mandatorySeq.head))
+                  ),
                 (income: EditIncomeForm) =>
                   determineEditRedirect(income, routes.IncomeController.confirmRegularIncome(empId), empId)
               )
@@ -195,8 +200,8 @@ class IncomeController @Inject()(
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
-                    Right(taxCodeIncomes),
-                    Some(employment)
+                      Right(taxCodeIncomes),
+                      Some(employment)
                     ) =>
                   taxCodeIncomes.find(_.employmentId.contains(empId)) match {
                     case Some(taxCodeIncome) =>
@@ -218,17 +223,16 @@ class IncomeController @Inject()(
                   errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
               }
         }
-        .recoverWith {
-          case NonFatal(e) =>
-            journeyCacheService
-              .mandatoryJourneyValueAsInt(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId")
-              .flatMap {
-                case Right(_) =>
-                  journeyCacheService.flush().map { _ =>
-                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-                  }
-                case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
-              }
+        .recoverWith { case NonFatal(e) =>
+          journeyCacheService
+            .mandatoryJourneyValueAsInt(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId")
+            .flatMap {
+              case Right(_) =>
+                journeyCacheService.flush().map { _ =>
+                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+                }
+              case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
+            }
         }
   }
 
@@ -236,8 +240,8 @@ class IncomeController @Inject()(
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
-      def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(
-        implicit user: AuthedUser,
+      def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(implicit
+        user: AuthedUser,
         request: Request[AnyContent]
       ): Result = {
         journeyCacheService.cache(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId", newAmount)
@@ -252,7 +256,8 @@ class IncomeController @Inject()(
           UpdateIncomeConstants.NameKey,
           UpdateIncomeConstants.NewAmountKey,
           UpdateIncomeConstants.IdKey,
-          UpdateIncomeConstants.IncomeTypeKey)
+          UpdateIncomeConstants.IncomeTypeKey
+        )
 
       collectedValues
         .flatMap {
@@ -265,16 +270,14 @@ class IncomeController @Inject()(
 
             for {
               _ <- journeyCacheService.flush()
-              _ <- taxAccountService.updateEstimatedIncome(
-                    user.nino,
-                    FormHelper.stripNumber(newAmount).toInt,
-                    TaxYear(),
-                    incomeId.toInt)
+              _ <-
+                taxAccountService
+                  .updateEstimatedIncome(user.nino, FormHelper.stripNumber(newAmount).toInt, TaxYear(), incomeId.toInt)
               _ <- estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
             } yield respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmountInt.toString)
         }
-        .recover {
-          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage, Some(e))
+        .recover { case NonFatal(e) =>
+          errorPagesHandler.internalServerError(e.getMessage, Some(e))
         }
   }
 
@@ -294,21 +297,21 @@ class IncomeController @Inject()(
           EditIncomeForm.create(employmentAmount),
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
-          amountYearToDate.toString()))
-    }).recover {
-      case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+          amountYearToDate.toString()
+        )
+      )
+    }).recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 
-  private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call, empId: Int)(
-    implicit hc: HeaderCarrier
+  private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call, empId: Int)(implicit
+    hc: HeaderCarrier
   ): Future[Result] =
     for {
       currentCache <- journeyCacheService.currentCache
       result       <- pickRedirectLocation(currentCache, income, confirmationCallback, empId)
-    } yield {
-      result
-    }
+    } yield result
 
   private def pickRedirectLocation(
     currentCache: Map[String, String],
@@ -324,8 +327,8 @@ class IncomeController @Inject()(
       cacheAndRedirect(income, confirmationCallback)
     }
 
-  private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(
-    implicit hc: HeaderCarrier
+  private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
+    hc: HeaderCarrier
   ): Future[Result] =
     journeyCacheService
       .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
@@ -338,7 +341,8 @@ class IncomeController @Inject()(
       journeyCacheService
         .collectedJourneyValues(
           Seq(UpdateIncomeConstants.PayToDateKey, UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey),
-          Seq(UpdateIncomeConstants.DateKey))
+          Seq(UpdateIncomeConstants.DateKey)
+        )
         .flatMap {
           case Left(errorMessage) =>
             logger.warn(errorMessage)
@@ -353,10 +357,12 @@ class IncomeController @Inject()(
             EditIncomeForm
               .bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date)
               .fold(
-                formWithErrors => {
-                  Future.successful(BadRequest(
-                    editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)))
-                },
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(
+                      editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)
+                    )
+                  ),
                 (income: EditIncomeForm) =>
                   determineEditRedirect(income, routes.IncomeController.confirmPensionIncome(empId), empId)
               )
@@ -377,8 +383,8 @@ class IncomeController @Inject()(
             (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
               .mapN {
                 case (
-                    Right(taxCodeIncomes),
-                    Some(employment)
+                      Right(taxCodeIncomes),
+                      Some(employment)
                     ) =>
                   taxCodeIncomes.find(_.employmentId.contains(empId)) match {
                     case Some(taxCodeIncome) =>
@@ -388,7 +394,7 @@ class IncomeController @Inject()(
                         employment.name,
                         employmentAmount.oldAmount,
                         newAmountKey.toInt,
-                        "javascript:history.go(-1)", //TODO this is temporary
+                        "javascript:history.go(-1)", // TODO this is temporary
                         empId
                       )
 
@@ -399,8 +405,8 @@ class IncomeController @Inject()(
                   errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
               }
         }
-        .recover {
-          case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+        .recover { case NonFatal(e) =>
+          errorPagesHandler.internalServerError(e.getMessage)
         }
   }
 
@@ -408,15 +414,13 @@ class IncomeController @Inject()(
     (for {
       id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey))
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(request.taiUser.nino, id))
-    } yield {
-      (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
-        case (true, false)  => Redirect(routes.IncomeController.regularIncome(id))
-        case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad)
-        case _              => Redirect(routes.IncomeController.pensionIncome(id))
-      }
+    } yield (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
+      case (true, false)  => Redirect(routes.IncomeController.regularIncome(id))
+      case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad)
+      case _              => Redirect(routes.IncomeController.pensionIncome(id))
     }).fold(errorPagesHandler.internalServerError(_, None), identity _)
-      .recover {
-        case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage)
+      .recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError(e.getMessage)
       }
 
   }

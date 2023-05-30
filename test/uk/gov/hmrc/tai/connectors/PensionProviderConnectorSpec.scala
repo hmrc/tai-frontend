@@ -17,9 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import java.time.LocalDateTime
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
@@ -38,10 +36,10 @@ class PensionProviderConnectorSpec extends BaseSpec {
         AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "Yes", Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler.postToApi(Matchers.eq(sut.addPensionProviderServiceUrl(nino)), Matchers.eq(addPensionProvider))(
-          any(),
-          any(),
-          any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        httpHandler
+          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider))(any(), any(), any(), any())
+      )
+        .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addPensionProvider(nino, addPensionProvider), 5.seconds)
 
@@ -54,12 +52,17 @@ class PensionProviderConnectorSpec extends BaseSpec {
       val incorrectPensionProvider = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789"))
+        telephoneNumber = Some("123456789")
+      )
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler.postToApi(
-          Matchers.eq(sut.incorrectPensionProviderServiceUrl(nino, 1)),
-          Matchers.eq(incorrectPensionProvider))(any(), any(), any()))
+        httpHandler.postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider))(
+          any(),
+          any(),
+          any(),
+          any()
+        )
+      )
         .thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectPensionProvider(nino, 1, incorrectPensionProvider), 5.seconds)

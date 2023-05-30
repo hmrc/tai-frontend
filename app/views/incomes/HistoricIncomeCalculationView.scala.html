@@ -27,7 +27,7 @@
 @this(main: MainTemplate)
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec : scala.concurrent.ExecutionContext)
+)(implicit request: AuthenticatedRequest[_], messages: Messages, ec : scala.concurrent.ExecutionContext)
 
 @header = @{
     ptaHeader(

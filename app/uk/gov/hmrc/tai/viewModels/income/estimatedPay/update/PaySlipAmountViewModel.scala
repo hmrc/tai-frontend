@@ -29,7 +29,8 @@ object PaySlipAmountViewModel extends DynamicPayPeriodTitle {
     payslipForm: Form[PayslipForm],
     payPeriod: Option[String],
     payPeriodInDays: Option[String],
-    employer: IncomeSource)(implicit message: Messages): PaySlipAmountViewModel = {
+    employer: IncomeSource
+  )(implicit message: Messages): PaySlipAmountViewModel = {
     val title = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
     PaySlipAmountViewModel(payslipForm, title, employer)
   }

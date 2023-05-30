@@ -24,12 +24,14 @@ import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 final case class PreviousYearUnderpaymentViewModel(
   allowanceReducedBy: BigDecimal,
   poundedAmountDue: String,
-  returnLink: Html)
+  returnLink: Html
+)
 
 object PreviousYearUnderpaymentViewModel extends ViewModelHelper with ReturnLink {
 
-  def apply(codingComponents: Seq[CodingComponent], referer: String, resourceName: String)(
-    implicit messages: Messages): PreviousYearUnderpaymentViewModel = {
+  def apply(codingComponents: Seq[CodingComponent], referer: String, resourceName: String)(implicit
+    messages: Messages
+  ): PreviousYearUnderpaymentViewModel = {
 
     val underpaymentDue = UnderpaymentDue(codingComponents)
     val formattedAmount = MonetaryUtil.withPoundPrefix(underpaymentDue.sourceAmount.toInt, 2)
@@ -37,6 +39,7 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper with ReturnLink
     PreviousYearUnderpaymentViewModel(
       underpaymentDue.allowanceReducedBy,
       formattedAmount,
-      createReturnLink(referer, resourceName))
+      createReturnLink(referer, resourceName)
+    )
   }
 }

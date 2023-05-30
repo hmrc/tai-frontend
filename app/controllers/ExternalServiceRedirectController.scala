@@ -25,40 +25,32 @@ import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 
 import scala.concurrent.ExecutionContext
 
-class ExternalServiceRedirectController @Inject()(
+class ExternalServiceRedirectController @Inject() (
   sessionService: SessionService,
   auditService: AuditService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
-      {
-        (for {
-          _           <- sessionService.invalidateCache()
-          redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
-        } yield {
-          Redirect(redirectUri)
-        }) recover {
-          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
-        }
+      (for {
+        _           <- sessionService.invalidateCache()
+        redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
+      } yield Redirect(redirectUri)) recover { case _ =>
+        errorPagesHandler.internalServerError("Unable to audit and redirect")
       }
     }
 
   def auditAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
-      {
-
-        (for {
-          redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
-        } yield {
-          Redirect(redirectUri)
-        }) recover {
-          case _ => errorPagesHandler.internalServerError("Unable to audit and redirect")
-        }
+      (for {
+        redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
+      } yield Redirect(redirectUri)) recover { case _ =>
+        errorPagesHandler.internalServerError("Unable to audit and redirect")
       }
     }
 }

@@ -16,14 +16,11 @@
 
 package controllers
 
-import cats.implicits.catsStdInstancesForFuture
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.service._
 import views.html._
@@ -31,7 +28,7 @@ import views.html._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JrsClaimsController @Inject()(
+class JrsClaimsController @Inject() (
   val auditConnector: AuditConnector,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
@@ -40,8 +37,8 @@ class JrsClaimsController @Inject()(
   appConfig: ApplicationConfig,
   jrsClaimSummary: JrsClaimSummaryView,
   internalServerError: InternalServerErrorView,
-  noJrsClaim: NoJrsClaimView,
-  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  noJrsClaim: NoJrsClaimView
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -53,9 +50,7 @@ class JrsClaimsController @Inject()(
         .getJrsClaims(nino)
         .fold(
           NotFound(noJrsClaim(appConfig))
-        )(
-          jrsClaims => Ok(jrsClaimSummary(jrsClaims, appConfig))
-        )
+        )(jrsClaims => Ok(jrsClaimSummary(jrsClaims, appConfig)))
     } else {
       Future.successful(InternalServerError(internalServerError(appConfig)))
     }

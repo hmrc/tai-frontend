@@ -18,8 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.mockito.Matchers.any
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.AuditService
 import utils.BaseSpec
@@ -37,8 +36,11 @@ class AuditControllerSpec extends BaseSpec {
           val result = testAuditController.auditLinksToIForm("any-iform")(
             RequestBuilder
               .buildFakeRequestWithAuth("GET")
-              .withHeaders("Referer" ->
-                redirectUri))
+              .withHeaders(
+                "Referer" ->
+                  redirectUri
+              )
+          )
 
           status(result) mustBe SEE_OTHER
           verify(auditService, times(1))

@@ -23,7 +23,8 @@ case class PaymentDetailsViewModel(
   date: LocalDate,
   taxableIncome: BigDecimal,
   taxAmount: BigDecimal,
-  nationalInsuranceAmount: BigDecimal)
+  nationalInsuranceAmount: BigDecimal
+)
 
 object PaymentDetailsViewModel {
   def apply(payment: Payment): PaymentDetailsViewModel =

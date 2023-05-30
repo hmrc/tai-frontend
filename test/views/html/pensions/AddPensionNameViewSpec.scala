@@ -49,12 +49,14 @@ class AddPensionNameViewSpec extends TaiViewSpec {
   private lazy val formWithErrors: Form[String] = PensionProviderNameForm.form.bind(
     Map(
       "pensionProviderName" -> ""
-    ))
+    )
+  )
 
   private lazy val pensionProviderNameForm: Form[String] = PensionProviderNameForm.form.bind(
     Map(
       "pensionProviderName" -> "the company"
-    ))
+    )
+  )
 
   override def view: Html = addPensionName(pensionProviderNameForm)
 }

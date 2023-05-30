@@ -35,8 +35,11 @@ object UpdateIncomeDetailsForm {
             textExceedsCharacterLimit(
               Messages(
                 "tai.income.previousYears.details.textarea.error.maximumExceeded",
-                historicEmploymentDetailsCharLimit))
-          ))
+                historicEmploymentDetailsCharLimit
+              )
+            )
+          )
+    )
   )
 
   def nonEmptyText(requiredErrMsg: String): Constraint[String] =
@@ -48,7 +51,7 @@ object UpdateIncomeDetailsForm {
   def textExceedsCharacterLimit(exceedErrorMsg: String): Constraint[String] =
     Constraint[String]("characterLimitExceeded") {
       case textValue if textValue.trim.replace("\r", "").length <= historicEmploymentDetailsCharLimit => Valid
-      case _                                                                                          => Invalid(exceedErrorMsg)
+      case _ => Invalid(exceedErrorMsg)
     }
 
 }

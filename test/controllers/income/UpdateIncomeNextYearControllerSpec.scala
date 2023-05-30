@@ -20,10 +20,9 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.FormBinding.Implicits.formBinding
@@ -109,7 +108,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       result rendersTheSameViewAs updateIncomeCYPlus1WarningView(
         DuplicateSubmissionWarningForm.createForm,
         vm,
-        employmentID)(request, authedUser, messages, templateRenderer, ec)
+        employmentID
+      )(request, authedUser, messages, ec)
     }
 
     "redirect to the landing page if there is no new amount entered" in {
@@ -134,7 +134,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
           .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue))
+          .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
+      )
 
       status(result) mustBe SEE_OTHER
 
@@ -147,7 +148,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
           .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue))
+          .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
+      )
 
       status(result) mustBe SEE_OTHER
 
@@ -165,7 +167,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
-          .buildFakeRequestWithAuth("POST"))
+          .buildFakeRequestWithAuth("POST")
+      )
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
@@ -188,8 +191,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           request,
           messages,
           authedUser,
-          templateRenderer,
-          ec)
+          ec
+        )
       }
     }
 
@@ -224,7 +227,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           employmentID,
           isPension,
           currentEstPay,
-          AmountComparatorForm.createForm())
+          AmountComparatorForm.createForm()
+        )
       }
     }
 
@@ -250,13 +254,15 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         when(
           updateNextYearsIncomeService
-            .setNewAmount(meq(newEstPay), meq(employmentID), meq(nino))(any()))
+            .setNewAmount(meq(newEstPay), meq(employmentID), meq(nino))(any())
+        )
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.update(employmentID)(
           RequestBuilder
             .buildFakeRequestWithOnlySession(POST)
-            .withFormUrlEncodedBody("income" -> newEstPay))
+            .withFormUrlEncodedBody("income" -> newEstPay)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -270,7 +276,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result = testController.update(employmentID)(
             RequestBuilder
               .buildFakeRequestWithOnlySession(POST)
-              .withFormUrlEncodedBody("income" -> newEstPay))
+              .withFormUrlEncodedBody("income" -> newEstPay)
+          )
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
         }
@@ -288,7 +295,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result = testController.update(employmentID)(
             RequestBuilder
               .buildFakeRequestWithOnlySession(POST)
-              .withFormUrlEncodedBody("income" -> newEstPay))
+              .withFormUrlEncodedBody("income" -> newEstPay)
+          )
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
@@ -307,7 +315,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result = testController.update(employmentID)(
             RequestBuilder
               .buildFakeRequestWithOnlySession(POST)
-              .withFormUrlEncodedBody("income" -> newEstPay))
+              .withFormUrlEncodedBody("income" -> newEstPay)
+          )
 
           status(result) mustBe OK
           val doc = Jsoup.parse(contentAsString(result))
@@ -335,7 +344,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           currentEstPay,
           AmountComparatorForm
             .createForm()
-            .bindFromRequest())(request, messages, authedUser, templateRenderer, ec)
+            .bindFromRequest()
+        )(request, messages, authedUser, ec)
       }
     }
 
@@ -368,7 +378,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             request,
             messages,
             authedUser,
-            templateRenderer,
             ec
           )
         }
@@ -404,8 +413,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             request,
             messages,
             authedUser,
-            templateRenderer,
-            ec)
+            ec
+          )
         }
       }
 
@@ -447,12 +456,12 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             currentAmount,
             newAmount,
             NextYearPay,
-            "javascript:history.go(-1)")
+            "javascript:history.go(-1)"
+          )
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,
             messages,
             authedUser,
-            templateRenderer,
             ec
           )
 
@@ -526,7 +535,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
 
-      when(updateNextYearsIncomeService.get(meq(employmentID), Matchers.any())(any()))
+      when(updateNextYearsIncomeService.get(meq(employmentID), any())(any()))
         .thenReturn(Future.successful(model))
 
       when(updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any()))
@@ -548,7 +557,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[SameEstimatedPayView],
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )
 }

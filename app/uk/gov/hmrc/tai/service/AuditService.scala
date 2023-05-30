@@ -28,14 +28,15 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuditService @Inject()(
+class AuditService @Inject() (
   @Named("appName") appName: String,
   val auditConnector: AuditConnector,
-  appConfig: ApplicationConfig) {
+  appConfig: ApplicationConfig,
+  implicit val executionContext: ExecutionContext
+) {
 
   val userEnterEvent = "userEntersService"
   val employmentPensionEvent = "startedEmploymentPensionJourney"
@@ -48,13 +49,15 @@ class AuditService @Inject()(
   val stateBenefitEvent = "startedStateBenefitJourney"
   val marriageAllowanceEvent = "startedMarriageAllowanceJourney"
 
-  def createAndSendAuditEvent(eventName: String, details: Map[String, String])(
-    implicit hc: HeaderCarrier,
-    request: Request[AnyContent]): Future[AuditResult] =
+  def createAndSendAuditEvent(eventName: String, details: Map[String, String])(implicit
+    hc: HeaderCarrier,
+    request: Request[AnyContent]
+  ): Future[AuditResult] =
     createAndSendAuditEvent(eventName, fetchPath(request), details)
 
-  def createAndSendAuditEvent(eventName: String, path: String, details: Map[String, String])(
-    implicit hc: HeaderCarrier): Future[AuditResult] =
+  def createAndSendAuditEvent(eventName: String, path: String, details: Map[String, String])(implicit
+    hc: HeaderCarrier
+  ): Future[AuditResult] =
     auditConnector.sendEvent(
       DataEvent(
         auditSource = appName,
@@ -62,14 +65,16 @@ class AuditService @Inject()(
         detail = details,
         tags = AuditExtensions.auditHeaderCarrier(hc).toAuditDetails() ++
           AuditExtensions.auditHeaderCarrier(hc).toAuditTags(eventName, path)
-      ))
+      )
+    )
 
   def sendUserEntryAuditEvent(
     nino: Nino,
     path: String,
     numberOfEmployments: Seq[Employment],
     numberOfTaxCodeIncomes: Seq[TaxCodeIncome],
-    isJrsTileShown: Boolean)(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
+    isJrsTileShown: Boolean
+  )(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
@@ -86,7 +91,8 @@ class AuditService @Inject()(
     endDate: String,
     fuelBenefitDate: Option[String],
     isSuccessful: Boolean,
-    path: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
+    path: String
+  )(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
     val details = Map(
       "nino"          -> nino,
       "employmentId"  -> employmentId,
@@ -99,9 +105,10 @@ class AuditService @Inject()(
     createAndSendAuditEvent(finishedCompanyCarEvent, path, details)
   }
 
-  def sendAuditEventAndGetRedirectUri(nino: Nino, iformName: String)(
-    implicit hc: HeaderCarrier,
-    request: Request[AnyContent]): Future[String] = {
+  def sendAuditEventAndGetRedirectUri(nino: Nino, iformName: String)(implicit
+    hc: HeaderCarrier,
+    request: Request[AnyContent]
+  ): Future[String] = {
     def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String) = {
       val details = Map(
         "nino" -> nino.nino

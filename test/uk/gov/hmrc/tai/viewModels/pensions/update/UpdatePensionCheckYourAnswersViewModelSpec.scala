@@ -32,7 +32,8 @@ class UpdatePensionCheckYourAnswersViewModelSpec extends BaseSpec {
         model.journeyConfirmationLines mustBe Seq(
           receivePensionLine,
           whatYouToldUsLine,
-          contactByPhoneLine.copy(answer = "No"))
+          contactByPhoneLine.copy(answer = "No")
+        )
       }
     }
 
@@ -44,14 +45,16 @@ class UpdatePensionCheckYourAnswersViewModelSpec extends BaseSpec {
           "Yes",
           "My pension decreased",
           "Yes",
-          Some("1234567890"))
+          Some("1234567890")
+        )
 
         model.journeyConfirmationLines.size mustBe 4
         model.journeyConfirmationLines mustBe Seq(
           receivePensionLine,
           whatYouToldUsLine,
           contactByPhoneLine,
-          phoneNumberLine)
+          phoneNumberLine
+        )
       }
     }
   }

@@ -20,4 +20,5 @@ final case class UpdateNextYearsIncomeCacheModel(
   employmentName: String,
   employmentId: Int,
   isPension: Boolean,
-  currentValue: Int)
+  currentValue: Int
+)

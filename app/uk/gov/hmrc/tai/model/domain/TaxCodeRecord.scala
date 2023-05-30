@@ -30,7 +30,8 @@ case class TaxCodeRecord(
   employerName: String,
   pensionIndicator: Boolean,
   payrollNumber: Option[String],
-  primary: Boolean)
+  primary: Boolean
+)
 
 object TaxCodeRecord {
   implicit val format: OFormat[TaxCodeRecord] = Json.format[TaxCodeRecord]

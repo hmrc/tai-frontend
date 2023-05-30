@@ -24,21 +24,27 @@ import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CodingComponentService @Inject()(
+class CodingComponentService @Inject() (
   taxAccountConnector: TaxAccountConnector,
-  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector) {
+  taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector,
+  implicit val executionContext: ExecutionContext
+) {
 
-  def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
+  def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): Future[Seq[CodingComponent]] =
     taxAccountConnector.codingComponents(nino, year).map(filterOutZeroAmountsComponents)
 
-  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
+  def taxFreeAmountComparison(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(
-    taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison =
+    taxFreeAmountComparison: TaxFreeAmountComparison
+  ): TaxFreeAmountComparison =
     TaxFreeAmountComparison(
       filterOutZeroAmountsComponents(taxFreeAmountComparison.previous),
       filterOutZeroAmountsComponents(taxFreeAmountComparison.current)

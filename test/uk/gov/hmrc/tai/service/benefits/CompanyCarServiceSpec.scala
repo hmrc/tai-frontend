@@ -17,12 +17,10 @@
 package uk.gov.hmrc.tai.service.benefits
 
 import java.time.LocalDate
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
@@ -32,6 +30,7 @@ import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 import scala.util.Random
 
 class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
@@ -60,7 +59,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSut
         val codingComponents = Seq(
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"))
+          CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
+        )
 
         val result = sut.companyCarOnCodingComponents(generateNino, codingComponents)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -112,7 +112,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
         dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
-      )),
+      )
+    ),
     Some(1)
   )
 
@@ -127,7 +128,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
         dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = Some(LocalDate.parse("2017-05-12"))
-      )),
+      )
+    ),
     Some(1)
   )
 
@@ -166,7 +168,8 @@ class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
         dateMadeAvailable = None,
         dateActiveFuelBenefitMadeAvailable = None,
         dateWithdrawn = None
-      )),
+      )
+    ),
     Some(1)
   )
 

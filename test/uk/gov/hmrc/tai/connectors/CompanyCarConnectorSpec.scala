@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsResultException, Json}
@@ -27,20 +27,24 @@ import utils.BaseSpec
 import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class CompanyCarConnectorSpec extends BaseSpec {
 
   "Company car url" should {
     "fetch the correct Url" in {
       sut
-        .companyCarEmploymentUrl(nino, employmentId) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
+        .companyCarEmploymentUrl(
+          nino,
+          employmentId
+        ) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
     }
   }
 
   "getCompanyCarBenefits" should {
     "fetch the company car details" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(companyCarForEmploymentJson))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(companyCarForEmploymentJson))
 
         val result = sut.companyCarBenefitForEmployment(nino, employmentId)
         Await.result(result, 5 seconds) mustBe Some(companyCar)
@@ -49,7 +53,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
     "thrown exception" when {
       "tai sends an invalid json" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(corruptJsonResponse))
 
         val ex = the[JsResultException] thrownBy Await
           .result(sut.companyCarBenefitForEmployment(nino, employmentId), 5 seconds)
@@ -61,7 +65,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
   "companyCarsForCurrentYearEmployments" must {
     "return CompanyCarBenefit" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(companyCars))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(companyCars))
 
         val result = sut.companyCarsForCurrentYearEmployments(nino)
         Await.result(result, 5 seconds) mustBe Seq(companyCar)
@@ -70,14 +74,14 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
     "return empty sequence of company car benefit" when {
       "company car service returns no car" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(emptyCompanyCars))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(emptyCompanyCars))
 
         val result = sut.companyCarsForCurrentYearEmployments(nino)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
       }
 
       "company car service returns a failure response" in {
-        when(httpHandler.getFromApiV2(any())(any()))
+        when(httpHandler.getFromApiV2(any())(any(), any()))
           .thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
 
         val result = sut.companyCarsForCurrentYearEmployments(nino)
@@ -98,7 +102,8 @@ class CompanyCarConnectorSpec extends BaseSpec {
         dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
         dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
         dateWithdrawn = None
-      )),
+      )
+    ),
     Some(1)
   )
 
@@ -114,7 +119,8 @@ class CompanyCarConnectorSpec extends BaseSpec {
             "hasActiveFuelBenefit"               -> true,
             "dateMadeAvailable"                  -> "2016-10-10",
             "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-          )),
+          )
+        ),
         "version" -> 1
       ),
       "links" -> Json.arr()
@@ -127,25 +133,31 @@ class CompanyCarConnectorSpec extends BaseSpec {
           Json.obj(
             "carSeqNo"  -> 10,
             "makeModel" -> "Make Model"
-          ))
+          )
+        )
       )
     )
 
   val companyCars: JsObject =
     Json.obj(
       "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr(Json.obj(
-          "employmentSeqNo" -> 10,
-          "grossAmount"     -> 1000,
-          "companyCars" -> Json.arr(Json.obj(
-            "carSeqNo"                           -> 10,
-            "makeModel"                          -> "Make Model",
-            "hasActiveFuelBenefit"               -> true,
-            "dateMadeAvailable"                  -> "2016-10-10",
-            "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-          )),
-          "version" -> 1
-        ))),
+        "companyCarBenefits" -> Json.arr(
+          Json.obj(
+            "employmentSeqNo" -> 10,
+            "grossAmount"     -> 1000,
+            "companyCars" -> Json.arr(
+              Json.obj(
+                "carSeqNo"                           -> 10,
+                "makeModel"                          -> "Make Model",
+                "hasActiveFuelBenefit"               -> true,
+                "dateMadeAvailable"                  -> "2016-10-10",
+                "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
+              )
+            ),
+            "version" -> 1
+          )
+        )
+      ),
       "links" -> Json.arr()
     )
 

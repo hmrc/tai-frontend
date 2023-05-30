@@ -21,7 +21,7 @@ import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-class ApplicationConfig @Inject()(
+class ApplicationConfig @Inject() (
   val runModeConfiguration: Configuration,
   servicesConfig: ServicesConfig
 ) extends FeatureTogglesConfig with AuthConfigProperties {
@@ -55,8 +55,7 @@ class ApplicationConfig @Inject()(
   lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
   lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
   def accessibilityStatementUrl(referrer: String): String =
-    s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=${SafeRedirectUrl(
-      accessibilityBaseUrl + referrer).encodedUrl}"
+    s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=${SafeRedirectUrl(accessibilityBaseUrl + referrer).encodedUrl}"
 
   lazy val reportAProblemPartialUrl: String =
     s"${servicesConfig.baseUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
@@ -114,7 +113,7 @@ class ApplicationConfig @Inject()(
 
   lazy val personDetailsMessageCountToggle: Boolean = servicesConfig.getBoolean("messages-frontend.unread-toggle")
 
-  //These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
+  // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   lazy val citizenAuthHost: String = decorateUrlForLocalDev("citizen-auth.host")
   lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")
   lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")

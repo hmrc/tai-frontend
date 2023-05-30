@@ -18,22 +18,16 @@ package uk.gov.hmrc.tai.service
 
 import builders.RequestBuilder
 import java.time.LocalDate
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import utils.BaseSpec
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
 class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
@@ -43,9 +37,9 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
       val currentCodingComponents = List(codingComponent2)
       val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
-      when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any()))
+      when(codingComponentService.taxFreeAmountComparison(meq(nino))(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
-      when(taxCodeChangeService.taxCodeChange(Matchers.eq(nino))(any()))
+      when(taxCodeChangeService.taxCodeChange(meq(nino))(any()))
         .thenReturn(Future.successful(taxCodeChange))
 
       val expectedModel: YourTaxFreeAmountComparison =
@@ -68,7 +62,8 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
     override def buildTaxFreeAmount(
       unused1: LocalDate,
       previous: Option[Seq[CodingComponent]],
-      unused3: Seq[CodingComponent])(implicit messages: Messages): YourTaxFreeAmountComparison = {
+      unused3: Seq[CodingComponent]
+    )(implicit messages: Messages): YourTaxFreeAmountComparison = {
 
       val previousTaxFreeInfo = previous.map(_ => TaxFreeInfo("previousTaxDate", 0, 0))
 
@@ -94,7 +89,8 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
     "Employer 1",
     false,
     Some("1234"),
-    true)
+    true
+  )
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
   val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
@@ -104,5 +100,6 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
   private class TestService
       extends YourTaxFreeAmountService(
         taxCodeChangeService: TaxCodeChangeService,
-        codingComponentService: CodingComponentService) with YourTaxFreeAmountMock
+        codingComponentService: CodingComponentService
+      ) with YourTaxFreeAmountMock
 }

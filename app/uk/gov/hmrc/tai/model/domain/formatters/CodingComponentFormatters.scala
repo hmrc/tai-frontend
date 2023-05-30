@@ -178,7 +178,9 @@ trait CodingComponentFormatters {
           status,
           iabdUpdateSource,
           updateNotificationDate,
-          updateActionDate))
+          updateActionDate
+        )
+      )
     }
   }
 }

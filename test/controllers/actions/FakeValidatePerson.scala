@@ -23,7 +23,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object FakeValidatePerson extends ValidatePerson {
   override protected def refine[A](
-    request: InternalAuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
+    request: InternalAuthenticatedRequest[A]
+  ): Future[Either[Result, AuthenticatedRequest[A]]] =
     Future.successful(Right(AuthenticatedRequest(request, request.taiUser, "Firstname Surname")))
   override protected def executionContext: ExecutionContext = stubControllerComponents().executionContext
 }

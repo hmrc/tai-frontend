@@ -52,7 +52,8 @@ class TaxYearRangeUtilSpec extends BaseSpec {
       val expectedTaxYear = messages(
         "tai.taxYear",
         TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy")),
-        TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy")))
+        TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy"))
+      )
 
       TaxYearRangeUtil.currentTaxYearRangeYearOnly mustBe expectedTaxYear
     }

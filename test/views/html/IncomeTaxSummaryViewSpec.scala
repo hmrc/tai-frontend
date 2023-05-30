@@ -34,7 +34,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     behave like pageWithCombinedHeaderNewFormat(
       preHeaderAnnouncementText = Some("This section is the income tax summary for"),
       preHeaderText = "Firstname Surname",
-      mainHeaderText = "main heading")
+      mainHeaderText = "main heading"
+    )
 
     "contain details element with tax code information" in {
       val view = template(vm, viewModel, appConfig)
@@ -42,7 +43,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
       doc must haveElementAtPathWithText(
         "#employmentTaxCodeTerm_1_1",
-        messages("tai.taxCode.part.announce", "K") + " K")
+        messages("tai.taxCode.part.announce", "K") + " K"
+      )
       doc must haveElementWithId("employmentTaxCodeDescription_1_1")
     }
 
@@ -82,15 +84,18 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         doc must haveDivWithId("incomeFromEmploymentSection")
         doc must haveElementAtPathWithText(
           "#incomeFromEmploymentSection h2",
-          messages("tai.incomeTaxSummary.employment.section.heading"))
+          messages("tai.incomeTaxSummary.employment.section.heading")
+        )
         doc must haveDivWithId("incomeFromPensionSection")
         doc must haveElementAtPathWithText(
           "#incomeFromPensionSection h2",
-          messages("tai.incomeTaxSummary.pension.section.heading"))
+          messages("tai.incomeTaxSummary.pension.section.heading")
+        )
         doc must haveDivWithId("endedIncomeSection")
         doc must haveElementAtPathWithText(
           "#endedIncomeSection h2",
-          messages("tai.incomeTaxSummary.ceased.section.heading", vm.lastTaxYearEnd))
+          messages("tai.incomeTaxSummary.ceased.section.heading", vm.lastTaxYearEnd)
+        )
       }
     }
 
@@ -108,7 +113,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveDivWithId("annualAmountsSummarySection")
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection h2",
-        messages("tai.incomeTaxSummary.annualAmounts.section.heading"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.heading")
+      )
 
     }
 
@@ -116,7 +122,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveDivWithId("addMissingIncomeSourceSection")
       doc must haveElementAtPathWithText(
         "#addMissingIncomeSourceSection h2",
-        messages("tai.incomeTaxSummary.addMissingIncome.section.heading"))
+        messages("tai.incomeTaxSummary.addMissingIncome.section.heading")
+      )
     }
 
     "hide the 'In Year Adjustment' banner" when {
@@ -140,12 +147,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
           rtiAvailable = true,
-          "0")
+          "0"
+        )
 
         val docWithIyaBanner = doc(template(vm, viewModel, appConfig))
         docWithIyaBanner must haveElementAtPathWithText(
           "#inYearAdjustmentBanner",
-          s"${messages("tai.notifications.iya.banner.text")} ${messages("tai.notifications.iya.linkText")}")
+          s"${messages("tai.notifications.iya.banner.text")} ${messages("tai.notifications.iya.linkText")}"
+        )
       }
     }
 
@@ -177,7 +186,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           Seq(
             activeEmployment.copy(name = "name1"),
             activeEmployment.copy(name = "name2"),
-            activeEmployment.copy(name = "name3")),
+            activeEmployment.copy(name = "name3")
+          ),
           Nil,
           Nil,
           displayIyaBanner = false,
@@ -192,15 +202,18 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         docWithMultipleEmployments must haveElementAtPathWithId("div", "employment1")
         docWithMultipleEmployments must haveElementAtPathWithText(
           "#incomeFromEmploymentSection #employment1 h3",
-          "name1")
+          "name1"
+        )
         docWithMultipleEmployments must haveElementAtPathWithId("div", "employment2")
         docWithMultipleEmployments must haveElementAtPathWithText(
           "#incomeFromEmploymentSection #employment2 h3",
-          "name2")
+          "name2"
+        )
         docWithMultipleEmployments must haveElementAtPathWithId("div", "employment3")
         docWithMultipleEmployments must haveElementAtPathWithText(
           "#incomeFromEmploymentSection #employment3 h3",
-          "name3")
+          "name3"
+        )
         docWithMultipleEmployments must not(haveElementAtPathWithId("div", "employment4"))
       }
     }
@@ -226,7 +239,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
             endedEmployment.copy(name = "name1"),
             endedEmployment.copy(name = "name2"),
             endedEmployment.copy(name = "name3"),
-            endedEmployment.copy(name = "name4")),
+            endedEmployment.copy(name = "name4")
+          ),
           Nil,
           displayIyaBanner = false,
           ThreeWeeks,
@@ -276,7 +290,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
             pensionIncome.copy(name = "name1"),
             pensionIncome.copy(name = "name2"),
             pensionIncome.copy(name = "name3"),
-            pensionIncome.copy(name = "name4")),
+            pensionIncome.copy(name = "name4")
+          ),
           displayIyaBanner = false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
@@ -309,13 +324,15 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display a tax year amount" in {
       doc must haveElementAtPathWithText(
         "#employment1 p",
-        s"${messages("tai.incomeTaxSummary.incomeAmount.prefix")} ${activeEmployment.amount}")
+        s"${messages("tai.incomeTaxSummary.incomeAmount.prefix")} ${activeEmployment.amount}"
+      )
     }
 
     "show a tax code in link form when instructed" in {
       doc must haveElementAtPathWithText(
         "#employment1TaxCodeLink",
-        messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode))
+        messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode)
+      )
 
       doc must haveElementAtPathWithAttribute("#employment1TaxCodeLink", "href", url.url)
     }
@@ -349,7 +366,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           ": " +
           activeEmployment.taxDistrictNumber +
           "/" +
-          activeEmployment.payeNumber)
+          activeEmployment.payeNumber
+      )
     }
 
     "omit a payroll number when instructed" in {
@@ -389,12 +407,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
         rtiAvailable = true,
-        "0")
+        "0"
+      )
 
       val document = doc(template(vm, viewModel, appConfig))
       document must haveElementAtPathWithText(
         "#employment1EndDate",
-        messages("tai.incomeTaxSummary.endDate.prefix", inactiveEmployment.endDate))
+        messages("tai.incomeTaxSummary.endDate.prefix", inactiveEmployment.endDate)
+      )
     }
 
     "omit an end date when instructed" in {
@@ -404,7 +424,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display a view details link when instructed" in {
       doc must haveElementAtPathWithText(
         "#employment1DetailsLink",
-        s"${activeEmployment.detailsLinkLabel} ${messages("tai.updateOrRemove.fromOtherSources", "Company1")}")
+        s"${activeEmployment.detailsLinkLabel} ${messages("tai.updateOrRemove.fromOtherSources", "Company1")}"
+      )
       doc must haveElementAtPathWithAttribute("#employment1DetailsLink", "href", activeEmployment.detailsLinkUrl)
     }
 
@@ -435,63 +456,78 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display your total estimated income details" in {
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection h3",
-        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading")
+      )
 
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara")
+      )
 
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.totalEstimatedIncome}")
+        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.totalEstimatedIncome}"
+      )
 
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection a",
-        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+      )
 
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url)
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url
+      )
 
     }
 
     "display tax free amount details" in {
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection h3",
-        messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")
+      )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")}")
+        s"${messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")}"
+      )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.taxFreeAmount}")
+        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.taxFreeAmount}"
+      )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection a",
-        messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
+      )
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.TaxFreeAmountController.taxFreeAmount.url)
+        controllers.routes.TaxFreeAmountController.taxFreeAmount.url
+      )
     }
 
     "display estimated income tax details" in {
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection h3",
-        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")
+      )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")}")
+        s"${messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")}"
+      )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.estimatedIncomeTaxAmount}")
+        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.estimatedIncomeTaxAmount}"
+      )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection a",
-        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink"))
+        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+      )
       doc must haveElementAtPathWithAttribute(
         "#annualAmountsSummarySection a",
         "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url)
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url
+      )
     }
   }
 
@@ -500,23 +536,27 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display an link to add a missing employer" in {
       doc must haveElementAtPathWithText(
         "#addMissingIncomeSourceSection a",
-        messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink"))
+        messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")
+      )
       doc must haveElementAtPathWithAttribute(
         "#addMissingIncomeSourceSection a",
         "href",
-        controllers.employments.routes.AddEmploymentController.addEmploymentName.url)
+        controllers.employments.routes.AddEmploymentController.addEmploymentName.url
+      )
     }
     "display an IForm link to add a missing pension" in {
       doc must haveElementAtPathWithText("#addMissingIncomeSourceSection a", messages("add.missing.pension"))
       doc must haveElementAtPathWithAttribute(
         "#addMissingIncomeSourceSection a",
         "href",
-        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
+        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+      )
     }
     "display an IForm link to add a missing income source" in {
       doc must haveElementAtPathWithText(
         "#addMissingIncomeSourceSection a",
-        messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink"))
+        messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")
+      )
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", appConfig.otherIncomeLinkUrl)
     }
 
@@ -582,7 +622,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       displayEndDate = false,
       "view income details",
       "fake/url"
-    ))
+    )
+  )
 
   val otherIncomeSourceViewModel = IncomeSourceViewModel(
     "State Pension",
@@ -647,7 +688,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       messages("tai.taxCode.preHeader"),
       messages("tai.taxCode.check_employment"),
       Some(employerId)
-    ))
+    )
+  )
 
   override def view: Html = template(vm, viewModel, appConfig)
 }

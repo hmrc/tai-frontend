@@ -79,8 +79,9 @@ case class DateForm(emptyDateMessage: String) {
 
 object DateForm {
 
-  def verifyDate(dateForm: Form[LocalDate], startDateInString: Option[String])(
-    implicit messages: Messages): Form[LocalDate] =
+  def verifyDate(dateForm: Form[LocalDate], startDateInString: Option[String])(implicit
+    messages: Messages
+  ): Form[LocalDate] =
     if (!dateForm.hasErrors) {
       val day = dateForm.data.get("dateForm_day").map(Integer.parseInt)
       val month = dateForm.data.get("dateForm_month").map(Integer.parseInt)

@@ -41,7 +41,8 @@ class WhatDoYouWantToTellUsFormSpec extends BaseSpec {
 
         val validatedFormForPensionDetails = form.bind(emptyDetails)
         validatedFormForPensionDetails.errors must contain(
-          FormError("pensionDetails", List(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank"))))
+          FormError("pensionDetails", List(Messages("tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank")))
+        )
       }
     }
 
@@ -55,8 +56,11 @@ class WhatDoYouWantToTellUsFormSpec extends BaseSpec {
             List(
               Messages(
                 "tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
-                WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit))
-          ))
+                WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit
+              )
+            )
+          )
+        )
       }
     }
   }
@@ -65,7 +69,7 @@ class WhatDoYouWantToTellUsFormSpec extends BaseSpec {
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Json.obj("pensionDetails"        -> "test")
+  private val validDetails = Json.obj("pensionDetails" -> "test")
   private val exceededCharDetails = Json.obj("pensionDetails" -> exceedingCharacters)
-  private val emptyDetails = Json.obj("pensionDetails"        -> "")
+  private val emptyDetails = Json.obj("pensionDetails" -> "")
 }

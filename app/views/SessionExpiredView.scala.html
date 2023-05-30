@@ -16,21 +16,23 @@
 
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.renderer.TemplateRenderer
 
-@this(unauthenticatedMain: unauthenticatedMain)
+@this(main: MainTemplate)
 
-@(appConfig: ApplicationConfig)(implicit request:Request[_], messages: Messages, templateRenderer: TemplateRenderer)
+@(appConfig: ApplicationConfig)(implicit request:Request[_], messages: Messages)
 
-@unauthenticatedMain(
-title = messages("session_expired.title")) {
+@main(
+title = messages("session_expired.title"),
+pageTitle = Some(Messages("tai.service.navTitle")),
+backLinkContent = None,
+showPtaAccountNav = false) {
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
-            <h1 class="heading-xlarge">@messages("session_expired.title")</h1>
+            <h1 class="govuk-heading-xl">@messages("session_expired.title")</h1>
 
-            <p>@messages("session_expired.guidance")</p>
+            <p class="govuk-body">@messages("session_expired.guidance")</p>
 
             @includes.link(
                 url=routes.TaxAccountSummaryController.onPageLoad.toString,

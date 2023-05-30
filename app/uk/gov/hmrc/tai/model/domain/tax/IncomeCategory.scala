@@ -23,7 +23,8 @@ case class IncomeCategory(
   totalTax: BigDecimal,
   totalTaxableIncome: BigDecimal,
   totalIncome: BigDecimal,
-  taxBands: Seq[TaxBand])
+  taxBands: Seq[TaxBand]
+)
 
 object IncomeCategory {
   implicit val formats: OFormat[IncomeCategory] = Json.format[IncomeCategory]

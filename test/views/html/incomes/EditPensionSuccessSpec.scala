@@ -42,7 +42,8 @@ class EditPensionSuccessSpec extends TaiViewSpec {
 
     "contain the may change paragraph" in {
       doc(view).getElementsByTag("p").text must include(
-        messages("tai.incomes.updated.pension.seeChanges.text", employerName))
+        messages("tai.incomes.updated.pension.seeChanges.text", employerName)
+      )
     }
   }
 

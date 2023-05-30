@@ -28,8 +28,9 @@ class CompanyBenefitDecisionViewModel private (
 
 object CompanyBenefitDecisionViewModel {
 
-  def apply(benefitType: String, employerName: String, decisionForm: Form[Option[String]], employerId: Int)(
-    implicit messages: Messages): CompanyBenefitDecisionViewModel = {
+  def apply(benefitType: String, employerName: String, decisionForm: Form[Option[String]], employerId: Int)(implicit
+    messages: Messages
+  ): CompanyBenefitDecisionViewModel = {
     val formattedBenefitName =
       (raw"(B|b)enefit(s)?".r replaceAllIn (messages(s"tai.taxFreeAmount.table.taxComponent.$benefitType"), "")).trim
     new CompanyBenefitDecisionViewModel(formattedBenefitName, employerName, decisionForm, employerId)

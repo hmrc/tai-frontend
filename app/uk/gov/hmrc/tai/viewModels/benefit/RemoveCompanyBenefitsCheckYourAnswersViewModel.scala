@@ -31,7 +31,8 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
   stopDate: LocalDate,
   valueOfBenefit: Option[String],
   contactByPhone: String,
-  phoneNumber: Option[String]) {
+  phoneNumber: Option[String]
+) {
 
   val beforeTaxYearStart = stopDate isBefore TaxYear().start
 
@@ -45,7 +46,7 @@ case class RemoveCompanyBenefitsCheckYourAnswersViewModel(
 
     val stopDateLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.dateBenefitEnded"),
-      stopDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")), //TODO add welsh?
+      stopDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy")), // TODO add welsh?
       controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
     )
 
@@ -96,14 +97,16 @@ object RemoveCompanyBenefitsCheckYourAnswersViewModel extends ViewModelHelper {
     stopDate: LocalDate,
     valueOfBenefit: Option[String],
     contactByPhone: String,
-    phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitsCheckYourAnswersViewModel = {
+    phoneNumber: Option[String]
+  )(implicit messages: Messages): RemoveCompanyBenefitsCheckYourAnswersViewModel = {
     val tableHeader = Messages("tai.benefits.ended.tableHeader", employerName, benefitType)
     new RemoveCompanyBenefitsCheckYourAnswersViewModel(
       tableHeader,
       stopDate,
       valueOfBenefit,
       contactByPhone,
-      phoneNumber)
+      phoneNumber
+    )
   }
 
 }

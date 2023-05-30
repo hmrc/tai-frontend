@@ -25,13 +25,12 @@ import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
 
-  lazy val taxComparison: TaxComparison[BigDecimal] = {
+  lazy val taxComparison: TaxComparison[BigDecimal] =
     changeInTaxAmount match {
       case gt if gt > 0 => GT(gt)
       case lt if lt < 0 => LT(lt)
       case _            => EQ
     }
-  }
 
   private def formatDate(date: LocalDate)(implicit messages: Messages) = htmlNonBroken(Dates.formatDate(date))
 
@@ -43,8 +42,8 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
 
   lazy val comparisonItemsByYear: Seq[EstimatedIncomeTaxComparisonItem] = items.sortBy(_.year)
 
-  lazy val changeInTaxAmount
-    : BigDecimal = comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
+  lazy val changeInTaxAmount: BigDecimal =
+    comparisonItemsByYear(1).estimatedIncomeTax - comparisonItemsByYear.head.estimatedIncomeTax
 
 }
 

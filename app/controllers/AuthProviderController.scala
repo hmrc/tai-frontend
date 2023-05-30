@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import play.api.mvc
 import play.api.mvc.AnyContent
 
-class AuthProviderController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+class AuthProviderController @Inject() (mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def governmentGatewayEntryPoint: mvc.Action[AnyContent] = Action { implicit request =>
     Redirect(routes.TaxAccountSummaryController.onPageLoad.url).withNewSession.addingToSession(

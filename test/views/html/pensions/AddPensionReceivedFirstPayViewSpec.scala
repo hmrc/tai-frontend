@@ -35,11 +35,13 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
     )
     behave like haveLinkWithUrlWithID(
       "backLink",
-      controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url)
+      controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+    )
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
     behave like pageWithYesNoRadioButton(
       AddPensionFirstPayChoiceConstants.FirstPayChoice,
-      AddPensionFirstPayChoiceConstants.FirstPayChoice + "-2")
+      AddPensionFirstPayChoiceConstants.FirstPayChoice + "-2"
+    )
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
 
     "display an error notification" when {
@@ -63,7 +65,8 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
   private val pensionFirstPayForm: Form[Option[String]] = AddPensionProviderFirstPayForm.form.bind(
     Map(
       AddPensionFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
-    ))
+    )
+  )
 
   private val addPensionReceivedFirstPay = inject[AddPensionReceivedFirstPayView]
   override def view: Html = addPensionReceivedFirstPay(pensionFirstPayForm, pensionProviderName)

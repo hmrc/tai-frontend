@@ -16,22 +16,20 @@
 
 package uk.gov.hmrc.tai.util.viewHelpers
 
-import org.jsoup.nodes.{Attributes, Document, Element}
+import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
-import play.api.i18n.Messages
+
+import scala.collection.convert.ImplicitConversions.`list asScalaBuffer`
 
 trait JsoupMatchers {
 
-  import scala.collection.JavaConversions._
-
   class TagWithTextMatcher(expectedContent: String, tag: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements: List[String] =
+      val elements =
         left
           .getElementsByTag(tag)
-          .toList
-          .map(_.text)
+          .eachText()
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -45,11 +43,10 @@ trait JsoupMatchers {
 
   class CssSelectorWithTextMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements: List[String] =
+      val elements =
         left
           .select(selector)
-          .toList
-          .map(_.text)
+          .eachText()
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -63,11 +60,9 @@ trait JsoupMatchers {
 
   class CssSelectorWithTextCount(selector: String, expectedCount: Int) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val elements: List[String] =
+      val elements =
         left
           .select(selector)
-          .toList
-          .map(_.text)
 
       MatchResult(
         elements.length == expectedCount,
@@ -83,16 +78,15 @@ trait JsoupMatchers {
   class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String)
       extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val attributes: List[Attributes] =
+      val attributes =
         left
           .select(selector)
-          .toList
-          .map(_.attributes())
+          .eachAttr(attributeName)
 
       lazy val attributeContents = attributes.mkString("\t", "\n\t", "")
 
       MatchResult(
-        attributes.map(_.get(attributeName)).contains(attributeValue),
+        attributes.contains(attributeValue),
         s"[$attributeName=$attributeValue] not found in elements with '$selector' selector:[\n$attributeContents]",
         s"[$attributeName=$attributeValue] element found with '$selector' selector"
       )
@@ -101,16 +95,13 @@ trait JsoupMatchers {
 
   class CssSelectorWithClassMatcher(className: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val classes: List[String] =
-        left
-          .select(selector)
-          .toList
-          .map(_.className())
+      val classes =
+        left.select(selector)
 
       lazy val classContents = classes.mkString("\t", "\n\t", "")
 
       MatchResult(
-        classes.exists(_.contains(className)),
+        classContents.contains(className),
         s"[class=$className] not found in elements with '$selector' selector:[\n$classContents]",
         s"[class=$className] element found with '$selector' selector"
       )
@@ -215,8 +206,8 @@ trait JsoupMatchers {
 
   class ElementWithClassMatcher(expectedClass: String) extends Matcher[Element] {
     def apply(left: Element): MatchResult = {
-      val classes = left.classNames.toList
-      val classNames = classes.mkString("\t", "\n\t", "")
+      val classes = left.getElementsByClass(expectedClass)
+      val classNames = classes.toString.mkString("\t", "\n\t", "")
 
       MatchResult(
         classes.contains(expectedClass),
@@ -226,7 +217,7 @@ trait JsoupMatchers {
     }
   }
 
-  //document matchers
+  // document matchers
   def haveHeadingH2WithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h2")
   def haveHeadingH3WithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h3")
   def haveHeadingH4WithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h4")
@@ -238,7 +229,8 @@ trait JsoupMatchers {
 
   def havePreHeadingWithTextNewTemplate(
     expectedText: String,
-    expectedPreHeadingAnnouncement: String = "This section is") =
+    expectedPreHeadingAnnouncement: String = "This section is"
+  ) =
     new CssSelectorWithTextMatcher(s"$expectedPreHeadingAnnouncement $expectedText", "span")
 
   def havePreHeadingWithTextGds(expectedText: String, expectedPreHeadingAnnouncement: String = "This section is") =
@@ -334,7 +326,7 @@ trait JsoupMatchers {
   def haveReturnToSummaryButtonWithUrl(expectedURL: String) =
     new IdSelectorWithUrlMatcher(expectedURL, "returnToSummary")
 
-  //element matchers
+  // element matchers
   def haveText(expectedText: String) = new ElementWithTextMatcher(expectedText)
   def haveLinkURL(expectedUrl: String) = new ElementWithAttributeValueMatcher(expectedUrl, "href")
   def haveClass(expectedClass: String) = new ElementWithClassMatcher(expectedClass)

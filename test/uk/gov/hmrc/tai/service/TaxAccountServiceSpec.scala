@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import akka.Done
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
@@ -29,6 +29,7 @@ import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class TaxAccountServiceSpec extends BaseSpec {
 
@@ -148,7 +149,10 @@ class TaxAccountServiceSpec extends BaseSpec {
               30,
               List(
                 TaxBand("D0", "", 0, 0, None, None, 20),
-                TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10)))),
+                TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10)
+              )
+            )
+          ),
           None,
           None,
           None
@@ -208,7 +212,8 @@ class TaxAccountServiceSpec extends BaseSpec {
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
   val taxCodeIncomes = Seq(
     taxCodeIncome1,
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live))
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
 
   val taxCodes = Seq("SD0", "1150L")
 

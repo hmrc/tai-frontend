@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import java.time._
 
 import org.mockito.ArgumentCaptor
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
@@ -64,7 +64,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(stuff, 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
 
@@ -94,7 +94,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(stuff, 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
 
@@ -123,7 +123,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(stuff, 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
 
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
 
@@ -150,13 +150,15 @@ class AuditServiceSpec extends BaseSpec {
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         Await.result(
           sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome), isJrsTileShown = true),
-          5.seconds)
+          5.seconds
+        )
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = sut.userEnterEvent,
-          detail = auditDetail(sut.userEnterEvent, Some("1"), true))
+          detail = auditDetail(sut.userEnterEvent, Some("1"), true)
+        )
           .copy(generatedAt = now, eventId = eventId)
       }
 
@@ -173,14 +175,17 @@ class AuditServiceSpec extends BaseSpec {
               "NA",
               Seq.empty[Employment],
               Seq.empty[TaxCodeIncome],
-              isJrsTileShown = false),
-            5.seconds)
+              isJrsTileShown = false
+            ),
+            5.seconds
+          )
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = sut.userEnterEvent,
-          detail = auditDetail(sut.userEnterEvent, Some("0"), false)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.userEnterEvent, Some("0"), false)
+        ).copy(generatedAt = now, eventId = eventId)
       }
     }
 
@@ -194,11 +199,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, EmployeePensionIForm), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = sut.employmentPensionEvent,
-          detail = auditDetail(sut.employmentPensionEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.employmentPensionEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started employee-pension iform journey with proper headers" in {
@@ -218,7 +224,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, EmployeePensionIForm), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.employmentPensionEvent,
@@ -246,11 +252,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyBenefitsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.companyBenefitsEvent,
-          detail = auditDetail(sut.companyBenefitsEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.companyBenefitsEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started company-benefits iform journey with proper headers" in {
@@ -270,7 +277,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyBenefitsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.companyBenefitsEvent,
@@ -296,11 +303,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyCarsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.companyCarEvent,
-          detail = auditDetail(sut.companyCarEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.companyCarEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started company-car iform journey with proper headers" in {
@@ -320,7 +328,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyCarsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.companyCarEvent,
@@ -346,11 +354,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MedicalBenefitsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.medicalBenefitsEvent,
-          detail = auditDetail(sut.medicalBenefitsEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.medicalBenefitsEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started medical-benefits iform journey with proper headers" in {
@@ -370,7 +379,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MedicalBenefitsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.medicalBenefitsEvent,
@@ -396,11 +405,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, OtherIncomeIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.otherIncomeEvent,
-          detail = auditDetail(sut.otherIncomeEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.otherIncomeEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started other-income iform journey with proper headers" in {
@@ -420,7 +430,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, OtherIncomeIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.otherIncomeEvent,
@@ -446,11 +456,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, StateBenefitsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.stateBenefitEvent,
-          detail = auditDetail(sut.stateBenefitEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.stateBenefitEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started state-benefit iform journey with proper headers" in {
@@ -470,7 +481,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, StateBenefitsIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.stateBenefitEvent,
@@ -496,11 +507,12 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, InvestIncomeIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.investIncomeEvent,
-          detail = auditDetail(sut.investIncomeEvent)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(sut.investIncomeEvent)
+        ).copy(generatedAt = now, eventId = eventId)
       }
 
       "user started investment-income iform journey with proper headers" in {
@@ -520,7 +532,7 @@ class AuditServiceSpec extends BaseSpec {
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, InvestIncomeIform), 5.seconds)
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(
           sut.investIncomeEvent,
@@ -548,11 +560,12 @@ class AuditServiceSpec extends BaseSpec {
 
         result mustBe appConfig.marriageServiceHistoryUrl
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           sut.marriageAllowanceEvent,
-          detail = auditDetail(MarriageAllowanceService)).copy(generatedAt = now, eventId = eventId)
+          detail = auditDetail(MarriageAllowanceService)
+        ).copy(generatedAt = now, eventId = eventId)
       }
     }
 
@@ -566,11 +579,12 @@ class AuditServiceSpec extends BaseSpec {
 
         val result = Await.result(
           sut.sendEndCompanyCarAuditEvent(nino.toString, "1", "1", "2017-01-01", Some("2017-01-01"), true, path = "NA"),
-          5.seconds)
+          5.seconds
+        )
 
         result mustBe AuditResult.Success
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent = event(sut.finishedCompanyCarEvent, detail = auditDetail(sut.finishedCompanyCarEvent))
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe expectedDataEvent
@@ -587,11 +601,12 @@ class AuditServiceSpec extends BaseSpec {
 
         val result = Await.result(
           sut.sendEndCompanyCarAuditEvent(nino.toString, "1", "1", "2017-01-01", None, true, path = "NA"),
-          5.seconds)
+          5.seconds
+        )
 
         result mustBe AuditResult.Success
 
-        val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
+        val argumentCaptor: ArgumentCaptor[DataEvent] = ArgumentCaptor.forClass(classOf[DataEvent])
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         val expectedDataEvent =
           event(sut.finishedCompanyCarEvent, detail = auditDetail("finishedCompanyCarJourneyNoFuel"))
@@ -607,10 +622,10 @@ class AuditServiceSpec extends BaseSpec {
       "noOfCurrentYearEmployments" -> noOfEmpAndTax,
       "noOfTaxCodes"               -> noOfEmpAndTax,
       "isJrsTileShown"             -> isJrsTileShown
-  )
+    )
 
   private val employmentOrPensionAuditDetails = Map("nino" -> nino.nino)
-  private val companyBenefitsAuditDetails = Map("nino"     -> nino.nino)
+  private val companyBenefitsAuditDetails = Map("nino" -> nino.nino)
   private val endCompanyCarDetails = Map(
     "nino"          -> nino.nino,
     "employmentId"  -> "1",
@@ -631,7 +646,8 @@ class AuditServiceSpec extends BaseSpec {
   private def auditDetail(
     auditType: String,
     noOfEmpAndTax: Option[String] = None,
-    isJrsTileShown: Boolean = false): Map[String, String] =
+    isJrsTileShown: Boolean = false
+  ): Map[String, String] =
     auditType match {
       case "userEntersService"               => entryAuditDetails(noOfEmpAndTax.getOrElse("0"), isJrsTileShown.toString)
       case "startedEmploymentPensionJourney" => employmentOrPensionAuditDetails
@@ -650,7 +666,8 @@ class AuditServiceSpec extends BaseSpec {
     deviceId: Option[String] = None,
     ipAddress: Option[String] = None,
     clientPort: Option[String] = None,
-    detail: Map[String, String]) =
+    detail: Map[String, String]
+  ) =
     DataEvent(
       auditSource = "test",
       auditType = auditType,
@@ -673,7 +690,8 @@ class AuditServiceSpec extends BaseSpec {
       extends AuditService(
         appName,
         mock[AuditConnector],
-        appConfig
+        appConfig,
+        ec
       )
 
 }

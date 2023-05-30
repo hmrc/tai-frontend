@@ -24,7 +24,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.util.MoneyPounds
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -37,7 +36,7 @@ import views.html.incomeTaxHistory.IncomeTaxHistoryView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IncomeTaxHistoryController @Inject()(
+class IncomeTaxHistoryController @Inject() (
   val config: ApplicationConfig,
   personService: PersonService,
   authenticate: AuthAction,
@@ -47,16 +46,17 @@ class IncomeTaxHistoryController @Inject()(
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   errorPagesHandler: ErrorPagesHandler
-)(implicit ec: ExecutionContext, templateRenderer: TemplateRenderer)
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(
-    implicit hc: HeaderCarrier,
-    messages: Messages): Future[IncomeTaxYear] =
+  def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
+    hc: HeaderCarrier,
+    messages: Messages
+  ): Future[IncomeTaxYear] =
     for {
-      maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover {
-                                    case _ => None
-                                  }
+      maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
+                                     None
+                                   }
       employmentDetails <- employmentService.employments(nino, taxYear)
     } yield {
       val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
@@ -89,7 +89,7 @@ class IncomeTaxHistoryController @Inject()(
       IncomeTaxYear(taxYear, incomeTaxHistory)
     }
 
-  //This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
+  // This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
   private def fetchLastPayment(employment: Employment, taxYear: TaxYear) =
     employment.annualAccounts.find(_.taxYear.year == taxYear.year).flatMap(_.payments.lastOption)
 
@@ -99,12 +99,11 @@ class IncomeTaxHistoryController @Inject()(
       .map(TaxYear(_))
       .toList
 
-    val allTaxYearsList = taxYears traverse (taxYear => {
-      getIncomeTaxYear(nino, taxYear).recover {
-        case e: Exception =>
-          IncomeTaxYear(taxYear, Nil)
+    val allTaxYearsList = taxYears traverse (taxYear =>
+      getIncomeTaxYear(nino, taxYear).recover { case e: Exception =>
+        IncomeTaxYear(taxYear, Nil)
       }
-    })
+    )
 
     for {
       person        <- personService.personDetails(nino)

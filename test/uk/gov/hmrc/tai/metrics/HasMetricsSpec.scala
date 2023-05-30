@@ -17,26 +17,24 @@
 package uk.gov.hmrc.tai.metrics
 
 import com.codahale.metrics.Timer
-import org.mockito.Matchers.anyString
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito._
 import org.scalatest.compatible.Assertion
-import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{AsyncWordSpecLike, BeforeAndAfterAll, Matchers, OptionValues}
+import org.scalatest.{BeforeAndAfterAll, OptionValues}
 import play.api.mvc.{BaseController, ControllerComponents, Results}
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.tai.util.TestMetrics
+import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class HasMetricsSpec
-    extends AsyncWordSpecLike with Matchers with OptionValues with MockitoSugar with BeforeAndAfterAll {
+class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
 
   trait MockHasMetrics { self: HasMetrics =>
     val timer = mock[Timer.Context]
     val metrics = new TestMetrics
     override val localMetrics: LocalMetrics = mock[LocalMetrics]
-    when(localMetrics.startTimer(anyString())) thenReturn timer
+    when(localMetrics.startTimer(any())) thenReturn timer
   }
 
   class TestHasMetrics extends HasMetrics with MockHasMetrics
@@ -92,9 +90,8 @@ class HasMetricsSpec
       }
 
       "increment failure counter for a failed future" in withTestMetrics { metrics =>
-        metrics.withMetricsTimerAsync(TestMetric)(_ => Future.failed(new Exception)).recover {
-          case _ =>
-            verifyCompletedWithFailure(TestMetric, metrics)
+        metrics.withMetricsTimerAsync(TestMetric)(_ => Future.failed(new Exception)).recover { case _ =>
+          verifyCompletedWithFailure(TestMetric, metrics)
         }
       }
 
@@ -192,8 +189,8 @@ class HasMetricsSpec
             Future.failed(new Exception)
           }
           .map(_ => fail("should not get here, this should be transformWith in Scala 2.12"))
-          .recover {
-            case _ => verifyCompletedWithFailure(TestMetric, metrics)
+          .recover { case _ =>
+            verifyCompletedWithFailure(TestMetric, metrics)
           }
       }
 

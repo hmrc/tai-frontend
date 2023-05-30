@@ -40,7 +40,8 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.yourIncome.heading"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.yourIncome.preHeading"),
-      messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))
+      messages("tai.income.calculation.TaxableIncomeDetails", "Foo")
+    )
 
     "have a back link" in {
       doc must haveBackLinkNew
@@ -61,7 +62,9 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
+            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
+        )
       }
 
       "there is no RTI data for cy - 2" in {
@@ -70,7 +73,9 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 2).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
+            TaxYear(TaxYear().year - 2).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
+        )
       }
 
       "RTI is available but payment data is not available" in {
@@ -79,7 +84,9 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(
           messages(
             "tai.income.calculation.noRtiDataPreviousYear",
-            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))))
+            TaxYear(TaxYear().year - 1).end.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
+        )
       }
     }
 
@@ -92,7 +99,8 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
             "tai.income.calculation.summary.previous",
             samplePayments.head.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)),
             samplePayments.last.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
-          ))
+          )
+        )
       }
 
       "payment information, employer name but no EYU messages are available" in {
@@ -113,13 +121,17 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          messages("tai.income.calculation.incomeTable.dateHeader"))
+          messages("tai.income.calculation.incomeTable.dateHeader")
+        )
         doc.getElementById("taxable-income-table").text must include(
-          messages("tai.income.calculation.incomeTable.incomeHeader"))
+          messages("tai.income.calculation.incomeTable.incomeHeader")
+        )
         doc.getElementById("taxable-income-table").text must include(
-          messages("tai.income.calculation.incomeTable.taxPaidHeader"))
+          messages("tai.income.calculation.incomeTable.taxPaidHeader")
+        )
         doc.getElementById("taxable-income-table").text must include(
-          messages("tai.income.calculation.incomeTable.nationalInsuranceHeader"))
+          messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")
+        )
       }
 
       "payment information is available and should have valid table footers with no NIC paid" in {
@@ -135,14 +147,16 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(messages("tai.taxFree.total"))
         doc.getElementById("taxable-income-table").text must include(
-          f"${samplePaymentWithNic.nationalInsuranceAmountYearToDate}%,.2f")
+          f"${samplePaymentWithNic.nationalInsuranceAmountYearToDate}%,.2f"
+        )
       }
 
       "payment information is available and should have valid content in table with no NIC paid" in {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          samplePaymentWithoutNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+          samplePaymentWithoutNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+        )
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithoutNic.amount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithoutNic.taxAmount}%,.2f")
       }
@@ -151,11 +165,13 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
         val view: Html = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
-          samplePaymentWithNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+          samplePaymentWithNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+        )
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithNic.amount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(f"${samplePaymentWithNic.taxAmount}%,.2f")
         doc.getElementById("taxable-income-table").text must include(
-          f"${samplePaymentWithNic.nationalInsuranceAmount}%,.2f")
+          f"${samplePaymentWithNic.nationalInsuranceAmount}%,.2f"
+        )
       }
     }
 
@@ -204,20 +220,23 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     payments: Seq[Payment],
     eyuMessage: Seq[String],
     realTimeStatus: RealTimeStatus,
-    year: TaxYear) =
+    year: TaxYear
+  ) =
     HistoricIncomeCalculationViewModel(
       employerName = Some("Foo"),
       employmentId = 1,
       payments = payments,
       endOfTaxYearUpdateMessages = eyuMessage,
       realTimeStatus = realTimeStatus,
-      year)
+      year
+    )
 
   private def customView(
     payments: Seq[Payment] = Nil,
     eyuMessage: Seq[String] = Nil,
     realTimeStatus: RealTimeStatus = Available,
-    year: TaxYear = TaxYear().prev) = {
+    year: TaxYear = TaxYear().prev
+  ) = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
       createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
     template(historicIncomeCalculationVM)

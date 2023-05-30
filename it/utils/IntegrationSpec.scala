@@ -18,14 +18,16 @@ package utils
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlEqualTo}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.test.Injecting
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.TaxYear
 
-class IntegrationSpec extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures with IntegrationPatience with Injecting {
+class IntegrationSpec
+    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
+    with Injecting {
 
   val generatedNino = new Generator().nextNino
 
@@ -64,7 +66,9 @@ class IntegrationSpec extends WordSpec with GuiceOneAppPerSuite with MustMatcher
          |}
          |""".stripMargin
 
-    server.stubFor(post(urlEqualTo("/auth/authorise"))
-      .willReturn(aResponse().withBody(authResponse)))
+    server.stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .willReturn(aResponse().withBody(authResponse))
+    )
   }
 }

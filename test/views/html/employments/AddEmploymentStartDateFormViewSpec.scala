@@ -34,7 +34,8 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
       EmploymentAddDateForm.EmploymentFormDay -> "1",
       "month"                                 -> "1",
       "year"                                  -> "2017"
-    ))
+    )
+  )
   private val template = inject[AddEmploymentStartDateFormView]
 
   override def view: Html =
@@ -66,7 +67,8 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
       val legendItem2 = doc(view).select("#tellUsStartDateForm-hint").text
 
       legendItem2 mustBe Messages("tai.addEmployment.startDateForm.subHeading", employmentName) + " " + Messages(
-        "tai.label.date.example")
+        "tai.label.date.example"
+      )
     }
 
     "have a form input for day with relevant label" in {

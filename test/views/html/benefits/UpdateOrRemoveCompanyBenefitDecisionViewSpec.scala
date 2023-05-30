@@ -36,7 +36,8 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
     )
     behave like haveLinkWithUrlWithID(
       "backLink",
-      controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url)
+      controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url
+    )
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
     behave like pageWithContinueButtonFormNew(s"/check-income-tax/company-benefit/decision")
 
@@ -44,7 +45,8 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
       doc must haveInputLabelWithText(idYesIGetThisBenefit, messages("tai.benefits.updateOrRemove.decision.radio.yes"))
       doc must haveInputLabelWithText(
         idNoIDontGetThisBenefit,
-        messages("tai.benefits.updateOrRemove.decision.radio.no"))
+        messages("tai.benefits.updateOrRemove.decision.radio.no")
+      )
 
     }
 
@@ -54,7 +56,8 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
         doc(errorView) must haveClassWithText(
           messages("tai.income.error.form.summary") + " " +
             messages("tai.benefits.updateOrRemove.decision.radio.error"),
-          "govuk-error-summary")
+          "govuk-error-summary"
+        )
       }
     }
 
@@ -68,7 +71,8 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
   private lazy val formWithErrors: Form[Option[String]] = UpdateOrRemoveCompanyBenefitDecisionForm.form.bind(
     Map(
       DecisionChoice -> ""
-    ))
+    )
+  )
 
   private val idYesIGetThisBenefit = "decisionChoice"
   private val idNoIDontGetThisBenefit = "decisionChoice-2"

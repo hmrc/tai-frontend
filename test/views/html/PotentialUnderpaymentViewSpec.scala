@@ -62,14 +62,16 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
     "display a section on what happens next" in {
       document() must haveParagraphWithText(
-        messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")))
+        messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " "))
+      )
     }
 
     "display get help link" in {
       document() must haveLinkElement(
         "getHelpLink",
         controllers.routes.HelpController.helpPage.url,
-        messages("tai.iya.paidTooLittle.get.help.linkText"))
+        messages("tai.iya.paidTooLittle.get.help.linkText")
+      )
     }
 
     "contain a link to return to the previous page" in {
@@ -108,7 +110,8 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
       "display amount owing" in {
         cyAndCYPlusOneDoc must haveH2HeadingWithText(
-          withPoundPrefix(MoneyPounds(cyAndCYPlusOneViewModel.iyaCYAmount, 2)))
+          withPoundPrefix(MoneyPounds(cyAndCYPlusOneViewModel.iyaCYAmount, 2))
+        )
       }
 
       "display heading text in " in {
@@ -131,7 +134,8 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
       "display amount owing" in {
         cyPlusOneOnlyDoc must haveParagraphWithText(
-          withPoundPrefix(MoneyPounds(cyPlusOneOnlyViewModel.iyaCYPlusOneAmount, 2)))
+          withPoundPrefix(MoneyPounds(cyPlusOneOnlyViewModel.iyaCYPlusOneAmount, 2))
+        )
       }
 
       "display heading text in " in {
@@ -144,7 +148,8 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
       "display text regarding tax free amount " in {
         cyPlusOneOnlyDoc must haveParagraphWithText(
-          messages("tai.iya.reduce.tax-free.amount.description", Dates.formatDate(TaxYear().next.start)))
+          messages("tai.iya.reduce.tax-free.amount.description", Dates.formatDate(TaxYear().next.start))
+        )
       }
 
       "display tax code may change text" in {

@@ -35,8 +35,11 @@ object UpdateEmploymentDetailsForm {
             textExceedsCharacterLimit(
               Messages(
                 "tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
-                employmentDetailsCharacterLimit))
-          ))
+                employmentDetailsCharacterLimit
+              )
+            )
+          )
+    )
   )
 
   def nonEmptyText(requiredErrMsg: String)(implicit messages: Messages): Constraint[String] =

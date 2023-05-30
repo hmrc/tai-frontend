@@ -23,12 +23,11 @@ object JsonExtra {
     new Format[Map[K, V]] {
       def writes(m: Map[K, V]): JsValue =
         JsArray(
-          m.map {
-            case (t, v) =>
-              Json.obj(
-                keyLabel   -> kf.writes(t),
-                valueLabel -> vf.writes(v)
-              )
+          m.map { case (t, v) =>
+            Json.obj(
+              keyLabel   -> kf.writes(t),
+              valueLabel -> vf.writes(v)
+            )
           }.toSeq
         )
 

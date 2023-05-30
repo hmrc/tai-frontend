@@ -17,17 +17,14 @@
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import java.time.LocalDate
-import play.api.i18n.I18nSupport
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{tax, _}
 import uk.gov.hmrc.tai.model.domain.tax.{DoubleTaxationRelief, MaintenancePayments => _, _}
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import utils.BaseSpec
-
-import scala.collection.immutable.Seq
 
 class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
@@ -37,7 +34,9 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
     }
 
     "return false when no NonCodedIncome exists" in {
-      EstimatedIncomeTaxService.hasNonCodedIncome(Seq(OtherNonTaxCodeIncome(PartTimeEarnings, None, 0, ""))) mustBe false
+      EstimatedIncomeTaxService.hasNonCodedIncome(
+        Seq(OtherNonTaxCodeIncome(PartTimeEarnings, None, 0, ""))
+      ) mustBe false
     }
 
     "return false when an empty sequence is returned" in {
@@ -55,7 +54,9 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
             0,
             0,
             15000,
-            Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))))
+            Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))
+          )
+        )
 
         EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe true
 
@@ -68,7 +69,9 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
             0,
             0,
             15000,
-            Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))))
+            Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))
+          )
+        )
 
         EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe true
       }
@@ -79,14 +82,16 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           0,
           0,
           15000,
-          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0)))
+          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))
+        )
 
         val foreignDividend = IncomeCategory(
           ForeignDividendsIncomeCategory,
           0,
           0,
           15000,
-          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0)))
+          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))
+        )
 
         val incomeCategories = Seq(UKDividend, foreignDividend)
 
@@ -98,12 +103,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
     "return false" when {
       "there are no dividends present which have no income" in {
         val incomeCategory = List(
-          IncomeCategory(
-            UkDividendsIncomeCategory,
-            0,
-            0,
-            0,
-            Seq(TaxBand("SDR", "", 0, 0, Some(14000), Some(32000), 0))))
+          IncomeCategory(UkDividendsIncomeCategory, 0, 0, 0, Seq(TaxBand("SDR", "", 0, 0, Some(14000), Some(32000), 0)))
+        )
 
         EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe false
 
@@ -253,7 +254,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           Some(tax.TaxAdjustment(3500, alreadyTaxedAtSource)),
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -271,7 +273,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           Some(tax.TaxAdjustment(3500, alreadyTaxedAtSource)),
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -289,7 +292,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -306,7 +310,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -323,7 +328,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -340,7 +346,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -357,7 +364,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          None)
+          None
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -374,7 +382,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          Some(tax.TaxAdjustment(1000, taxReliefComponent)))
+          Some(tax.TaxAdjustment(1000, taxReliefComponent))
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -391,7 +400,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           None,
           None,
           None,
-          Some(tax.TaxAdjustment(1000, taxReliefComponent)))
+          Some(tax.TaxAdjustment(1000, taxReliefComponent))
+        )
 
         EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
       }
@@ -431,7 +441,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 0),
+          rate = 0
+        ),
         TaxBand(
           bandType = BandTypesConstants.DividendBasicRate,
           code = "",
@@ -439,7 +450,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 10),
+          rate = 10
+        ),
         TaxBand(
           bandType = BandTypesConstants.DividendHigherRate,
           code = "",
@@ -447,7 +459,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 20),
+          rate = 20
+        ),
         TaxBand(
           bandType = BandTypesConstants.DividendAdditionalRate,
           code = "",
@@ -455,7 +468,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 30)
+          rate = 30
+        )
       )
       val incomeCategories = Seq(
         IncomeCategory(UntaxedInterestIncomeCategory, 0, 6000, 0, taxBands),
@@ -477,7 +491,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 0),
+          rate = 0
+        ),
         TaxBand(
           bandType = BandTypesConstants.DividendBasicRate,
           code = "",
@@ -485,7 +500,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 10),
+          rate = 10
+        ),
         TaxBand(
           bandType = BandTypesConstants.DividendHigherRate,
           code = "",
@@ -493,7 +509,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 20),
+          rate = 20
+        ),
         TaxBand(
           bandType = BandTypesConstants.DividendAdditionalRate,
           code = "",
@@ -501,7 +518,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
           tax = 0,
           lowerBand = None,
           upperBand = Some(5000),
-          rate = 30)
+          rate = 30
+        )
       )
       val incomeCategories = Seq(
         IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
@@ -544,14 +562,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
     }
 
     "createPABand must return a Personal Allowance Taxband for a given Tax Free Allowance" in {
-      EstimatedIncomeTaxService.createPABand(11500) mustBe TaxBand(
-        BandTypesConstants.TaxFreeAllowanceBand,
-        "",
-        11500,
-        0,
-        Some(0),
-        None,
-        0)
+      EstimatedIncomeTaxService
+        .createPABand(11500) mustBe TaxBand(BandTypesConstants.TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
     }
 
     "findTaxRegion" must {
@@ -608,7 +620,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
         taxBands mustBe List(
           TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),
-          TaxBand("B", "", 15000, 3000, Some(11000), Some(32000), 20))
+          TaxBand("B", "", 15000, 3000, Some(11000), Some(32000), 20)
+        )
       }
 
       "return ordered tax bands for multiple PSR SR SDR bands" in {
@@ -642,7 +655,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
     None,
     Seq(
       OtherNonTaxCodeIncome(UkDividend, None, 3000, "")
-    ))
+    )
+  )
 
   val alreadyTaxedAtSource = Seq(
     TaxAdjustmentComponent(tax.TaxOnBankBSInterest, 100),
@@ -665,7 +679,8 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
     Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
     None,
     Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
-    Some(100))
+    Some(100)
+  )
 
   val codingComponents = Seq(
     CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),

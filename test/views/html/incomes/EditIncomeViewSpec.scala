@@ -42,5 +42,6 @@ class EditIncomeViewSpec extends TaiViewSpec {
       hasMultipleIncomes = false,
       empId,
       "0",
-      None)
+      None
+    )
 }

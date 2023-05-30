@@ -56,8 +56,8 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends BaseSpec {
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
       val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
-      val dateRange = HtmlFormatter.htmlNonBroken("6 Ebrill 2016") + " i " + HtmlFormatter.htmlNonBroken(
-        "5 Ebrill 2017")
+      val dateRange =
+        HtmlFormatter.htmlNonBroken("6 Ebrill 2016") + " i " + HtmlFormatter.htmlNonBroken("5 Ebrill 2017")
       model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)
     }
   }

@@ -18,24 +18,18 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, anyUrl, post}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{MustMatchers, WordSpec}
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.OK
 import play.api.libs.json.Json
-import play.api.test.Injecting
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.tai.model.{CalculatedPay, PayDetails}
-import utils.WireMockHelper
-
+import utils.{BaseSpec, WireMockHelper}
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-class TaiConnectorTestSpec
-    extends WordSpec with GuiceOneAppPerSuite with MustMatchers with WireMockHelper with ScalaFutures
-    with IntegrationPatience with Injecting {
+class TaiConnectorTestSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
+
   "TaiConnector" must {
     "return estimated pay" in {
       val expectedResponse = CalculatedPay(Some(23000), Some(16000), None, None)
@@ -46,7 +40,8 @@ class TaiConnectorTestSpec
       implicit val hc = HeaderCarrier()
       server.stubFor(
         post(anyUrl())
-          .willReturn(aResponse().withStatus(OK).withBody(Json.toJson(expectedResponse).toString())))
+          .willReturn(aResponse().withStatus(OK).withBody(Json.toJson(expectedResponse).toString()))
+      )
 
       val response = Await.result(taiConnector.calculateEstimatedPay(payDetails), 5.seconds)
 

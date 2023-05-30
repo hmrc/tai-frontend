@@ -20,5 +20,5 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
 
 @Singleton
-class AssetsController @Inject()(errorHandler: HttpErrorHandler, metaData: AssetsMetadata)
+class AssetsController @Inject() (errorHandler: HttpErrorHandler, metaData: AssetsMetadata)
     extends AssetsBuilder(errorHandler, metaData)

@@ -25,6 +25,7 @@ object UpdateRemovePensionForm {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(
       IncorrectPensionDecisionConstants.IncorrectPensionDecision ->
-        optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = _.nonEmpty))
+        optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = _.nonEmpty)
+    )
   )
 }

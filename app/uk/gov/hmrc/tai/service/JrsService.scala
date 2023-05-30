@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.JrsClaims
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JrsService @Inject()(jrsConnector: JrsConnector, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
+class JrsService @Inject() (jrsConnector: JrsConnector, appConfig: ApplicationConfig)(implicit ec: ExecutionContext) {
 
   def getJrsClaims(nino: Nino)(implicit hc: HeaderCarrier): OptionT[Future, JrsClaims] = OptionT {
     jrsConnector

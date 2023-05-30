@@ -38,7 +38,8 @@ object TaxSummaryLabel {
     employmentId: Option[Int],
     taxFreeAmountDetails: TaxFreeAmountDetails,
     amount: BigDecimal,
-    currentInputAmount: Option[BigDecimal])(implicit messages: Messages): TaxSummaryLabel = {
+    currentInputAmount: Option[BigDecimal]
+  )(implicit messages: Messages): TaxSummaryLabel = {
     val codingComponent = CodingComponent(
       taxComponentType,
       employmentId = employmentId,
@@ -50,8 +51,9 @@ object TaxSummaryLabel {
     TaxSummaryLabel(codingComponent, taxFreeAmountDetails)
   }
 
-  def apply(codingComponent: CodingComponent, taxFreeAmountDetails: TaxFreeAmountDetails)(
-    implicit messages: Messages): TaxSummaryLabel = {
+  def apply(codingComponent: CodingComponent, taxFreeAmountDetails: TaxFreeAmountDetails)(implicit
+    messages: Messages
+  ): TaxSummaryLabel = {
 
     val taxComponentType = codingComponent.componentType
     val employmentId = codingComponent.employmentId
@@ -61,7 +63,8 @@ object TaxSummaryLabel {
       codingComponent.componentType,
       employmentId,
       taxFreeAmountDetails.companyCarBenefits,
-      taxFreeAmountDetails.employmentIdNameMap)
+      taxFreeAmountDetails.employmentIdNameMap
+    )
 
     val labelLink = amountDue.flatMap { amount =>
       createLabelLink(taxComponentType, amount)
@@ -70,8 +73,9 @@ object TaxSummaryLabel {
     TaxSummaryLabel(labelString, labelLink)
   }
 
-  private def createLabelLink(taxComponentType: TaxComponentType, amount: BigDecimal)(
-    implicit messages: Messages): Option[HelpLink] =
+  private def createLabelLink(taxComponentType: TaxComponentType, amount: BigDecimal)(implicit
+    messages: Messages
+  ): Option[HelpLink] =
     taxComponentType match {
       case UnderPaymentFromPreviousYear =>
         val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url
@@ -80,9 +84,12 @@ object TaxSummaryLabel {
           HelpLink(
             Messages(
               "tai.taxFreeAmount.table.underpaymentFromPreviousYear.link",
-              MonetaryUtil.withPoundPrefix(amount.toInt)),
+              MonetaryUtil.withPoundPrefix(amount.toInt)
+            ),
             href,
-            id))
+            id
+          )
+        )
 
       case EstimatedTaxYouOweThisYear =>
         val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url
@@ -91,9 +98,12 @@ object TaxSummaryLabel {
           HelpLink(
             Messages(
               "tai.taxFreeAmount.table.underpaymentFromCurrentYear.link",
-              MonetaryUtil.withPoundPrefix(amount.toInt, 2)),
+              MonetaryUtil.withPoundPrefix(amount.toInt, 2)
+            ),
             href,
-            id))
+            id
+          )
+        )
 
       case _ => None
     }
@@ -102,7 +112,8 @@ object TaxSummaryLabel {
     componentType: TaxComponentType,
     employmentId: Option[Int],
     companyCarBenefits: Seq[CompanyCarBenefit],
-    employmentIdNameMap: Map[Int, String])(implicit messages: Messages): String =
+    employmentIdNameMap: Map[Int, String]
+  )(implicit messages: Messages): String =
     (componentType, employmentId) match {
       case (CarBenefit, Some(id)) if employmentIdNameMap.contains(id) =>
         val makeModel = CompanyCarMakeModel

@@ -20,17 +20,12 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
-
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
@@ -67,12 +62,11 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         inject[EditIncomeIrregularHoursView],
         inject[ConfirmAmountEnteredView],
         journeyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(Matchers.eq(UpdateIncomeConstants.IdKey))(any()))
+    when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
       .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(Matchers.eq(UpdateIncomeConstants.NameKey))(any()))
+    when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
       .thenReturn(Future.successful(Right(employer.name)))
   }
 
@@ -81,16 +75,17 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
       sealed class EditIncomeIrregularHoursHarness(taxCodeIncome: Option[TaxCodeIncome]) {
 
-        when(incomeService.latestPayment(any(), any())(any()))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
           .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(taxCodeIncome)))
 
         def editIncomeIrregularHours(
           incomeNumber: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
+          request: FakeRequest[AnyContentAsFormUrlEncoded]
+        ): Future[Result] =
           new TestIncomeUpdateIrregularHoursController()
             .editIncomeIrregularHours(incomeNumber)(request)
       }
@@ -101,8 +96,11 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     "respond with OK and show the irregular hours edit page" in {
 
       val result = EditIncomeIrregularHoursHarness
-        .setup(Some(
-          TaxCodeIncome(EmploymentIncome, Some(1), 123, "description", "taxCode", "name", OtherBasisOfOperation, Live)))
+        .setup(
+          Some(
+            TaxCodeIncome(EmploymentIncome, Some(1), 123, "description", "taxCode", "name", OtherBasisOfOperation, Live)
+          )
+        )
         .editIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
@@ -126,7 +124,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         val service = EditIncomeIrregularHoursHarness.setup(Option.empty[TaxCodeIncome])
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("error")))
         val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
 
@@ -149,10 +147,10 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq("name", "123"))))
 
-        when(journeyCacheService.cache(eqTo(UpdateIncomeConstants.IrregularAnnualPayKey), any())(any()))
+        when(journeyCacheService.cache(meq(UpdateIncomeConstants.IrregularAnnualPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.currentCache(any()))
@@ -160,7 +158,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         def handleIncomeIrregularHours(
           employmentId: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
+          request: FakeRequest[AnyContentAsFormUrlEncoded]
+        ): Future[Result] =
           new TestIncomeUpdateIrregularHoursController()
             .handleIncomeIrregularHours(employmentId)(request)
       }
@@ -176,7 +175,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result) mustBe Some(
-        routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(1).url)
+        routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(1).url
+      )
     }
 
     "respond with BAD_REQUEST" when {
@@ -195,7 +195,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
             "tai.irregular.error.error.incorrectTaxableIncome",
             123,
             LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear)),
-            "name"))
+            "name"
+          )
+        )
       }
 
       "given invalid form data of invalid currency" in {
@@ -247,7 +249,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         newAmount: Int,
         confirmedNewAmount: Int,
         payToDate: Int,
-        futureFailed: Boolean = false) {
+        futureFailed: Boolean = false
+      ) {
 
         val future: Future[Either[String, (Seq[String], Seq[Option[String]])]] =
           if (futureFailed) {
@@ -256,14 +259,16 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
             Future.successful(Left("Error"))
           } else {
             Future.successful(
-              Right(Seq(employer.name, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString))))
+              Right(Seq(employer.name, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString)))
+            )
           }
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(future)
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(future)
 
         def confirmIncomeIrregularHours(
           employmentId: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
+          request: FakeRequest[AnyContentAsFormUrlEncoded]
+        ): Future[Result] =
           new TestIncomeUpdateIrregularHoursController()
             .confirmIncomeIrregularHours(employmentId)(request)
       }
@@ -273,7 +278,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         newAmount: Int = 1235,
         confirmedNewAmount: Int = 1234,
         payToDate: Int = 123,
-        futureFailed: Boolean = false): ConfirmIncomeIrregularHoursHarness =
+        futureFailed: Boolean = false
+      ): ConfirmIncomeIrregularHoursHarness =
         new ConfirmIncomeIrregularHoursHarness(failure, newAmount, confirmedNewAmount, payToDate, futureFailed)
     }
 
@@ -306,7 +312,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url)
+          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url
+        )
       }
     }
 
@@ -329,7 +336,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url
+        )
       }
     }
   }
@@ -340,14 +348,14 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Either[String, Seq[String]]]) {
 
         when(
-          journeyCacheService.mandatoryJourneyValues(any())(any())
+          journeyCacheService.mandatoryJourneyValues(any())(any(), any())
         ).thenReturn(mandatoryValuesFuture)
         when(
           taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
         ).thenReturn(
           Future.successful(Done)
         )
-        when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employer.id.toString))(any()))
+        when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employer.id.toString))(any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.cache(any(), any())(any()))
@@ -355,7 +363,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         def submitIncomeIrregularHours(
           employmentId: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
+          request: FakeRequest[AnyContentAsFormUrlEncoded]
+        ): Future[Result] =
           new TestIncomeUpdateIrregularHoursController()
             .submitIncomeIrregularHours(employmentId)(request)
       }

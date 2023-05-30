@@ -22,7 +22,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: ExecutionContext)
 
 
 @header = @{

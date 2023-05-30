@@ -36,7 +36,8 @@ object PayslipDeductionsForm {
 
     Form[PayslipDeductionsForm](
       mapping("payslipDeductions" -> optional(text).verifying(payslipDeductionsValidation))(
-        PayslipDeductionsForm.apply)(PayslipDeductionsForm.unapply)
+        PayslipDeductionsForm.apply
+      )(PayslipDeductionsForm.unapply)
     )
   }
 }

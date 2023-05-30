@@ -32,7 +32,8 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
 
   val emptySelectionErrorMessage = messages(
     "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " "))
+    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
+  )
   val bonusPaymentsForm = BonusPaymentsForm.createForm
   val choice = FormValuesConstants.YesNoChoice
 
@@ -47,13 +48,16 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
       messages("tai.bonusPayments.preHeading", employer.name),
       messages(
         "tai.bonusPayments.title",
-        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")),
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
+      ),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
     behave like pageWithTitle(
       messages(
         "tai.bonusPayments.title",
-        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")))
+        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
+      )
+    )
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-payments/" + employer.id)
 
     "return no errors with valid 'yes' choice" in {
@@ -80,7 +84,8 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
       doc(errorView) must haveErrorLinkWithTextNew(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(
         messages("tai.income.error.form.summary") + " " + messages(emptySelectionErrorMessage),
-        "govuk-error-summary")
+        "govuk-error-summary"
+      )
     }
   }
 }

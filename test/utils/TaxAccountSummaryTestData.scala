@@ -52,7 +52,8 @@ trait TaxAccountSummaryTestData {
   val nonTaxCodeIncome = NonTaxCodeIncome(
     Some(
       uk.gov.hmrc.tai.model.domain.income
-        .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])),
+        .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])
+    ),
     Seq(
       OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
     )
@@ -74,7 +75,8 @@ trait TaxAccountSummaryTestData {
     "1150L",
     "employer9",
     OtherBasisOfOperation,
-    PotentiallyCeased)
+    PotentiallyCeased
+  )
   val ceasedEmployment10 = TaxCodeIncome(
     EmploymentIncome,
     Some(10),
@@ -83,7 +85,8 @@ trait TaxAccountSummaryTestData {
     "BR",
     "employer10",
     Week1Month1BasisOfOperation,
-    Ceased)
+    Ceased
+  )
   val empEmployment1 = Employment(
     "Employer name1",
     Live,
@@ -96,7 +99,8 @@ trait TaxAccountSummaryTestData {
     1,
     None,
     false,
-    false)
+    false
+  )
   val empEmployment2 = Employment(
     "Employer name2",
     Live,
@@ -109,7 +113,8 @@ trait TaxAccountSummaryTestData {
     2,
     None,
     false,
-    false)
+    false
+  )
   val pensionEmployment3 = Employment(
     "Pension name1",
     Live,
@@ -122,7 +127,8 @@ trait TaxAccountSummaryTestData {
     3,
     None,
     false,
-    false)
+    false
+  )
   val pensionEmployment4 = Employment(
     "Pension name2",
     Live,
@@ -135,7 +141,8 @@ trait TaxAccountSummaryTestData {
     4,
     None,
     false,
-    false)
+    false
+  )
   val empEmployment9 = Employment(
     "Employer name3",
     Live,
@@ -148,7 +155,8 @@ trait TaxAccountSummaryTestData {
     9,
     None,
     false,
-    false)
+    false
+  )
   val empEmployment10 = Employment(
     "Employer name4",
     Live,
@@ -192,7 +200,8 @@ trait TaxAccountSummaryTestData {
     BigDecimal(444.44),
     BigDecimal(555.55),
     BigDecimal(666.66),
-    Monthly)
+    Monthly
+  )
   val annualAccount = AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
   val ceasedEmployment = Employment(
     "Ceased employer name",
@@ -223,7 +232,8 @@ trait TaxAccountSummaryTestData {
       999,
       None,
       false,
-      false)
+      false
+    )
   )
 
 }

@@ -31,7 +31,8 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replaceAll("\u00A0", " "),
-        Dates.formatDate(TaxYear().end).replaceAll("\u00A0", " ")),
+        Dates.formatDate(TaxYear().end).replaceAll("\u00A0", " ")
+      ),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
@@ -57,7 +58,8 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc(view) must haveLinkElement(
         "detailEstimateView",
         routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
-        messages("tai.estimatedIncome.detailedEstimate.Link"))
+        messages("tai.estimatedIncome.detailedEstimate.Link")
+      )
 
     }
 
@@ -70,15 +72,18 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "taxCodesSideLink",
         routes.YourTaxCodeController.taxCodes().url,
-        messages("check.your.tax.codes"))
+        messages("check.your.tax.codes")
+      )
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
         routes.TaxFreeAmountController.taxFreeAmount.url,
-        messages("check.your.tax.free.amount"))
+        messages("check.your.tax.free.amount")
+      )
       doc must haveLinkElement(
         "taxSummarySideLink",
         controllers.routes.TaxAccountSummaryController.onPageLoad.url,
-        messages("return.to.your.income.tax.summary"))
+        messages("return.to.your.income.tax.summary")
+      )
     }
 
   }

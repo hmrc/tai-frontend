@@ -27,9 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 @Singleton
-class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, servicesConfig: ServicesConfig)(
-  implicit ec: ExecutionContext)
-    extends Logging {
+class TaxFreeAmountComparisonConnector @Inject() (val httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
+) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
@@ -38,9 +38,8 @@ class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler, s
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
     httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)).map { json =>
       (json \ "data").as[TaxFreeAmountComparison]
-    } recover {
-      case NonFatal(e) =>
-        logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception: ${e.getMessage}")
-        throw e
+    } recover { case NonFatal(e) =>
+      logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception: ${e.getMessage}")
+      throw e
     }
 }

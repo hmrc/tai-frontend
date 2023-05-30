@@ -58,7 +58,8 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec {
 
         errorDoc must haveElementAtPathWithText(
           ".govuk-error-message",
-          Messages("tai.error.message") + " " + Messages("tai.error.chooseOneOption"))
+          Messages("tai.error.message") + " " + Messages("tai.error.chooseOneOption")
+        )
         errorDoc must haveElementAtPathWithClass("form div", "govuk-form-group--error")
       }
     }
@@ -66,7 +67,8 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec {
 
   private lazy val pensionUpdateRemoveForm =
     UpdateRemovePensionForm.form.bind(
-      Map(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.YesValue))
+      Map(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> FormValuesConstants.YesValue)
+    )
   private lazy val model = PensionProviderViewModel(1, "Test Pension")
   override def view: Html = doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
 }

@@ -39,9 +39,10 @@ object ConfirmAmountEnteredViewModel {
   private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
   def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType, backUrl: String)(
-    implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+    implicit messages: Messages
+  ): ConfirmAmountEnteredViewModel = {
 
-    val irregularPayCurrentYear = {
+    val irregularPayCurrentYear =
       ConfirmAmountEnteredViewModel(
         yearRange = TaxYearRangeUtil.currentTaxYearRange,
         employerName = empName,
@@ -53,9 +54,8 @@ object ConfirmAmountEnteredViewModel {
         estimatedIncome = estIncome,
         backUrl = backUrl
       )
-    }
 
-    val nextYearEstimatedPay = {
+    val nextYearEstimatedPay =
       ConfirmAmountEnteredViewModel(
         yearRange = TaxYearRangeUtil.futureTaxYearRange(1),
         employerName = empName,
@@ -64,7 +64,6 @@ object ConfirmAmountEnteredViewModel {
         estimatedIncome = estIncome,
         backUrl = backUrl
       )
-    }
 
     payType match {
       case IrregularPay => irregularPayCurrentYear
@@ -73,8 +72,9 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(
-    implicit messages: Messages): ConfirmAmountEnteredViewModel =
+  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(implicit
+    messages: Messages
+  ): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(
       yearRange = TaxYearRangeUtil.currentTaxYearRange,
       employerName = empName,

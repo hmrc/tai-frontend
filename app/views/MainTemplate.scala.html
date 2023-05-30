@@ -299,14 +299,13 @@
 @govukTemplate(
     htmlLang = Some("en"),
     pageTitle = Some(fullPageTitle),
-    headBlock = Some(hmrcHead(nonce = None, headBlock = Some(additionalHeadBlock))),
+    headBlock = Some(hmrcHead(headBlock = Some(additionalHeadBlock))),
     headerBlock = headerBlock,
     beforeContentBlock = Some(beforeContent),
     mainClasses = Some("govuk-main-wrapper--auto-spacing"),
     bodyClasses = Some(addPrintableClass),
-    bodyEndBlock = Some(hmrcScripts(nonce = None, scriptsBlock = Some(additionalScriptsBlock))),
-    footerBlock = footerDefault,
-    cspNonce = None,
+    bodyEndBlock = Some(hmrcScripts(scriptsBlock = Some(additionalScriptsBlock))),
+    footerBlock = footerDefault
 )(mainContentDefault)
 
 

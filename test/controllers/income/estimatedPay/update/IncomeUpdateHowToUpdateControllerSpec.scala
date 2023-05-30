@@ -19,17 +19,14 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
@@ -58,7 +55,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false)
+      receivingOccupationalPension = false
+    )
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
@@ -75,10 +73,9 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         mcc,
         inject[HowToUpdateView],
         journeyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -90,7 +87,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       newAmount = 200,
       oldAmount = 200,
       isLive = isLive,
-      isOccupationalPension = isOccupationPension)
+      isOccupationalPension = isOccupationPension
+    )
 
   def BuildTaxCodeIncomes(incomeCount: Int): Seq[TaxCodeIncome] = {
 
@@ -117,7 +115,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(employment))
 
-        when(incomeService.employmentAmount(any(), any())(any(), any()))
+        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(BuildEmploymentAmount()))
 
         Mockito.reset(journeyCacheService)
@@ -132,7 +130,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
       def setup(
         cacheMap: Map[String, String],
-        employment: Option[Employment] = Some(defaultEmployment)): HowToUpdatePageHarness =
+        employment: Option[Employment] = Some(defaultEmployment)
+      ): HowToUpdatePageHarness =
         new HowToUpdatePageHarness(cacheMap, employment)
     }
 
@@ -141,7 +140,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       val cacheMap = Map(
         UpdateIncomeConstants.NameKey       -> "company",
         UpdateIncomeConstants.IdKey         -> "1",
-        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension)
+        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension
+      )
 
       val result = HowToUpdatePageHarness
         .setup(cacheMap)
@@ -156,7 +156,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       val cacheMap = Map(
         UpdateIncomeConstants.NameKey       -> "company",
         UpdateIncomeConstants.IdKey         -> "1",
-        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypeEmployment)
+        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypeEmployment
+      )
 
       val result = HowToUpdatePageHarness
         .setup(cacheMap)
@@ -164,7 +165,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
       status(result) mustBe SEE_OTHER
 
-      verify(journeyCacheService, times(1)).cache(Matchers.eq(cacheMap))(any())
+      verify(journeyCacheService, times(1)).cache(meq(cacheMap))(any())
     }
 
     "employments return empty income is none" in {
@@ -172,7 +173,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       val cacheMap = Map(
         UpdateIncomeConstants.NameKey       -> "company",
         UpdateIncomeConstants.IdKey         -> "1",
-        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension)
+        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension
+      )
 
       val result = HowToUpdatePageHarness
         .setup(cacheMap, None)
@@ -202,7 +204,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
         currentValue match {
           case Some(x) =>
-            when(journeyCacheService.currentValue(eqTo(UpdateIncomeConstants.HowToUpdateKey))(any()))
+            when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.HowToUpdateKey))(any()))
               .thenReturn(Future.successful(Some(x)))
           case None =>
         }
@@ -211,7 +213,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
           new TestIncomeUpdateHowToUpdateController()
             .processHowToUpdatePage(1, "name", employmentAmount, Right(Seq.empty[TaxCodeIncome]))(
               RequestBuilder.buildFakeGetRequestWithAuth(),
-              FakeAuthAction.user)
+              FakeAuthAction.user
+            )
       }
 
       def setup(incomeCount: Int = -1, currentValue: Option[String] = None): ProcessHowToUpdatePageHarness =
@@ -331,7 +334,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
       sealed class HandleChooseHowToUpdateHarness() {
 
-        when(journeyCacheService.cache(Matchers.eq(UpdateIncomeConstants.HowToUpdateKey), any())(any()))
+        when(journeyCacheService.cache(meq(UpdateIncomeConstants.HowToUpdateKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         def handleChooseHowToUpdate(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -347,12 +350,15 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       "user selected income calculator" in {
         val result = HandleChooseHowToUpdateHarness
           .setup()
-          .handleChooseHowToUpdate(RequestBuilder
-            .buildFakePostRequestWithAuth("howToUpdate" -> "incomeCalculator"))
+          .handleChooseHowToUpdate(
+            RequestBuilder
+              .buildFakePostRequestWithAuth("howToUpdate" -> "incomeCalculator")
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage.url)
+          controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage.url
+        )
       }
     }
 
@@ -360,8 +366,10 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       "user selected anything apart from income calculator" in {
         val result = HandleChooseHowToUpdateHarness
           .setup()
-          .handleChooseHowToUpdate(RequestBuilder
-            .buildFakePostRequestWithAuth("howToUpdate" -> "income"))
+          .handleChooseHowToUpdate(
+            RequestBuilder
+              .buildFakePostRequestWithAuth("howToUpdate" -> "income")
+          )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.viewIncomeForEdit.url)
@@ -372,8 +380,10 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       "user input has error" in {
         val result = HandleChooseHowToUpdateHarness
           .setup()
-          .handleChooseHowToUpdate(RequestBuilder
-            .buildFakePostRequestWithAuth("howToUpdate" -> ""))
+          .handleChooseHowToUpdate(
+            RequestBuilder
+              .buildFakePostRequestWithAuth("howToUpdate" -> "")
+          )
 
         status(result) mustBe BAD_REQUEST
 
@@ -386,7 +396,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdateHowToUpdateController
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleChooseHowToUpdate(RequestBuilder.buildFakePostRequestWithAuth())

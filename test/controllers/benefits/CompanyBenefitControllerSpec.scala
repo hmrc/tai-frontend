@@ -19,11 +19,9 @@ package controllers.benefits
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -62,7 +60,7 @@ class CompanyBenefitControllerSpec
 
       val SUT = createSUT
 
-      when(journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
       val result =
         SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -84,7 +82,8 @@ class CompanyBenefitControllerSpec
         val cache = Map(
           EndCompanyBenefitConstants.EmploymentIdKey -> "1",
           EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType,
-          EndCompanyBenefitConstants.RefererKey      -> referer)
+          EndCompanyBenefitConstants.RefererKey      -> referer
+        )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -99,11 +98,15 @@ class CompanyBenefitControllerSpec
 
         verify(employmentService, times(1)).employment(any(), any())(any())
         verify(journeyCacheService, times(1)).currentCache(any())
-        verify(journeyCacheService, times(1)).cache(eqTo(Map(
-          EndCompanyBenefitConstants.EmploymentNameKey -> empName,
-          EndCompanyBenefitConstants.BenefitNameKey    -> benefitType,
-          EndCompanyBenefitConstants.RefererKey        -> referer
-        )))(any())
+        verify(journeyCacheService, times(1)).cache(
+          meq(
+            Map(
+              EndCompanyBenefitConstants.EmploymentNameKey -> empName,
+              EndCompanyBenefitConstants.BenefitNameKey    -> benefitType,
+              EndCompanyBenefitConstants.RefererKey        -> referer
+            )
+          )
+        )(any())
       }
 
       "prepopulate the decision selection" in {
@@ -143,7 +146,8 @@ class CompanyBenefitControllerSpec
         val cache = Map(
           EndCompanyBenefitConstants.EmploymentIdKey -> "1",
           EndCompanyBenefitConstants.BenefitTypeKey  -> "type",
-          EndCompanyBenefitConstants.RefererKey      -> "referrer")
+          EndCompanyBenefitConstants.RefererKey      -> "referrer"
+        )
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -159,13 +163,13 @@ class CompanyBenefitControllerSpec
 
     def ensureBenefitTypeInCache(): String = {
       val benefitType = Telephone.name
-      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Right(benefitType)))
       benefitType
     }
 
     def ensureBenefitTypeOutOfCache(): Unit =
-      when(journeyCacheService.mandatoryJourneyValue(eqTo(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Left("")))
 
     "redirect to the 'When did you stop getting benefits from company?' page" when {
@@ -177,7 +181,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -195,7 +200,8 @@ class CompanyBenefitControllerSpec
         ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision()(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -216,7 +222,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
 
         val redirectUrl = redirectLocation(result)
 
@@ -231,7 +238,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
@@ -246,7 +254,8 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString))
+            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString)
+        )
 
         status(result) mustBe SEE_OTHER
 
@@ -268,7 +277,8 @@ class CompanyBenefitControllerSpec
 
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> "")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -285,12 +295,13 @@ class CompanyBenefitControllerSpec
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
 
         Await.result(result, 5.seconds)
 
         verify(journeyCacheService, times(1))
-          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(NoIDontGetThisBenefit))(any())
+          .cache(meq(s"$benefitType $DecisionChoice"), meq(NoIDontGetThisBenefit))(any())
       }
 
       "it is a YesIGetThisBenefit" in {
@@ -299,11 +310,12 @@ class CompanyBenefitControllerSpec
         val benefitType = ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
 
         Await.result(result, 5.seconds)
         verify(journeyCacheService, times(1))
-          .cache(eqTo(s"$benefitType $DecisionChoice"), eqTo(YesIGetThisBenefit))(any())
+          .cache(meq(s"$benefitType $DecisionChoice"), meq(YesIGetThisBenefit))(any())
       }
     }
   }
@@ -334,13 +346,12 @@ class CompanyBenefitControllerSpec
   class SUT
       extends CompanyBenefitController(
         employmentService,
-        new DecisionCacheWrapper(journeyCacheService),
+        new DecisionCacheWrapper(journeyCacheService, ec),
         journeyCacheService,
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
         updateOrRemoveCompanyBenefitDecisionView,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))

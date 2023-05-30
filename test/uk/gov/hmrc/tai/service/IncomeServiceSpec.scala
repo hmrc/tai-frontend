@@ -17,12 +17,8 @@
 package uk.gov.hmrc.tai.service
 
 import java.time.LocalDate
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
@@ -59,7 +55,8 @@ class IncomeServiceSpec extends BaseSpec {
           Some(LocalDate.of(2000, 5, 20)),
           None,
           true,
-          false)
+          false
+        )
 
       }
     }
@@ -144,7 +141,8 @@ class IncomeServiceSpec extends BaseSpec {
         when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(
           None,
-          None)
+          None
+        )
       }
 
       "cache is not empty" in {
@@ -180,7 +178,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(4),
@@ -189,7 +188,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer4",
             Week1Month1BasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             JobSeekerAllowanceIncome,
             Some(5),
@@ -198,7 +198,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer5",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             JobSeekerAllowanceIncome,
             Some(6),
@@ -207,7 +208,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer6",
             Week1Month1BasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
           TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOfOperation, Live),
           TaxCodeIncome(
@@ -218,7 +220,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer9",
             OtherBasisOfOperation,
-            PotentiallyCeased),
+            PotentiallyCeased
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(10),
@@ -227,7 +230,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer10",
             Week1Month1BasisOfOperation,
-            Ceased),
+            Ceased
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(11),
@@ -236,7 +240,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer11",
             OtherBasisOfOperation,
-            PotentiallyCeased),
+            PotentiallyCeased
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(12),
@@ -245,7 +250,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer12",
             Week1Month1BasisOfOperation,
-            Ceased)
+            Ceased
+          )
         )
 
         val expectedTaxCodeIncomes = Seq(
@@ -257,7 +263,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(4),
@@ -266,7 +273,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer4",
             Week1Month1BasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             EmploymentIncome,
             Some(9),
@@ -275,7 +283,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer9",
             OtherBasisOfOperation,
-            PotentiallyCeased),
+            PotentiallyCeased
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(11),
@@ -284,7 +293,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer11",
             OtherBasisOfOperation,
-            PotentiallyCeased)
+            PotentiallyCeased
+          )
         )
 
         sut.editableIncomes(taxCodeIncomes) mustBe expectedTaxCodeIncomes
@@ -305,7 +315,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(4),
@@ -314,7 +325,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer4",
             Week1Month1BasisOfOperation,
-            Ceased)
+            Ceased
+          )
         )
 
         sut.singularIncomeId(taxCodeIncomes) mustBe Some(1)
@@ -333,7 +345,8 @@ class IncomeServiceSpec extends BaseSpec {
             "1150L",
             "employer1",
             OtherBasisOfOperation,
-            Live),
+            Live
+          ),
           TaxCodeIncome(
             PensionIncome,
             Some(4),
@@ -342,7 +355,8 @@ class IncomeServiceSpec extends BaseSpec {
             "BR",
             "employer4",
             Week1Month1BasisOfOperation,
-            Live)
+            Live
+          )
         )
 
         sut.singularIncomeId(taxCodeIncomes) mustBe None

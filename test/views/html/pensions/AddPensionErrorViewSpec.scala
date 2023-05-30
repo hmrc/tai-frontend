@@ -25,7 +25,8 @@ class AddPensionErrorViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.addPensionProvider.errorPage.title"))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("add.missing.pension"),
-      messages("tai.addPensionProvider.errorPage.title"))
+      messages("tai.addPensionProvider.errorPage.title")
+    )
 
     "have link" in {
       doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad.url)

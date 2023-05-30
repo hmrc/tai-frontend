@@ -21,7 +21,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
@@ -31,7 +30,7 @@ import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIn
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class EstimatedIncomeTaxController @Inject()(
+class EstimatedIncomeTaxController @Inject() (
   codingComponentService: CodingComponentService,
   partialService: HasFormPartialService,
   taxAccountService: TaxAccountService,
@@ -41,9 +40,10 @@ class EstimatedIncomeTaxController @Inject()(
   complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
   simpleEstimatedIncomeTax: SimpleEstimatedIncomeTaxView,
   zeroTaxEstimatedIncomeTax: ZeroTaxEstimatedIncomeTaxView,
-  implicit val templateRenderer: TemplateRenderer,
+  implicit val
   mcc: MessagesControllerComponents,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -55,15 +55,16 @@ class EstimatedIncomeTaxController @Inject()(
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
-      partialService.getIncomeTaxPartial)
+      partialService.getIncomeTaxPartial
+    )
       .mapN {
         case (
-            taxAccountSummary,
-            totalTaxDetails,
-            nonTaxCodeIncome,
-            Right(taxCodeIncomes),
-            codingComponents,
-            iFormLinks
+              taxAccountSummary,
+              totalTaxDetails,
+              nonTaxCodeIncome,
+              Right(taxCodeIncomes),
+              codingComponents,
+              iFormLinks
             ) =>
           implicit val user: AuthedUser = request.taiUser
 
@@ -95,8 +96,8 @@ class EstimatedIncomeTaxController @Inject()(
         case _ =>
           errorPagesHandler.internalServerError("Failed to get estimated income tax")
       }
-      .recover {
-        case _ => errorPagesHandler.internalServerError("Failed to get estimated income tax")
+      .recover { case _ =>
+        errorPagesHandler.internalServerError("Failed to get estimated income tax")
       }
   }
 }

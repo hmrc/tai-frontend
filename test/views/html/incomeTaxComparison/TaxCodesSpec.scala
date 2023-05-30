@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxCodeDetail}
 import views.html.includes.link
+import scala.language.postfixOps
 
 class TaxCodesSpec extends TaiViewSpec {
   "Cy plus one tax codes view" must {
@@ -38,8 +39,10 @@ class TaxCodesSpec extends TaiViewSpec {
           link(
             url = appConfig.scottishRateIncomeTaxUrl,
             copy = messages("tai.taxCode.scottishIncomeText.link"),
-            externalLink = true)
-        )).body.replaceAll("\\s+", "")
+            externalLink = true
+          )
+        )
+      ).body.replaceAll("\\s+", "")
     }
 
     "display tax code comparision table" in {

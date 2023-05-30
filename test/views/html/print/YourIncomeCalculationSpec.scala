@@ -39,7 +39,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "payments are empty" in {
         val model = incomeCalculationViewModel(
           payments = Seq.empty[PaymentDetailsViewModel],
-          employmentStatus = PotentiallyCeased)
+          employmentStatus = PotentiallyCeased
+        )
 
         def potentiallyCeasedView = views.html.print.yourIncomeCalculation(model, appConfig)
 
@@ -60,10 +61,12 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
         doc(potentiallyCeasedView) must haveStrongWithText(
           messages(
             "tai.income.calculation.heading.withRti",
-            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
         )
         doc(potentiallyCeasedView) must haveParagraphWithText(
-          messages("tai.income.calculation.potentially.ceased.lede"))
+          messages("tai.income.calculation.potentially.ceased.lede")
+        )
       }
     }
 
@@ -90,10 +93,12 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
         doc(ceasedView) must haveStrongWithText(
           messages(
             "tai.income.calculation.ceased.heading",
-            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
         )
         doc(ceasedView) must haveParagraphWithText(
-          messages("tai.income.calculation.rti.ceased.emp", s"${DateHelper.toDisplayFormat(model.endDate)}"))
+          messages("tai.income.calculation.rti.ceased.emp", s"${DateHelper.toDisplayFormat(model.endDate)}")
+        )
       }
     }
 
@@ -116,7 +121,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
         doc(view) must haveStrongWithText(
           messages(
             "tai.income.calculation.heading.withRti",
-            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern)))
+            model.latestPayment.get.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
+          )
         )
       }
     }
@@ -131,7 +137,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       doc(view) must haveTdWithText(messages("£ " + f"${model.latestPayment.get.amountYearToDate}%,.2f"))
       doc(view) must haveTdWithText(messages("£ " + f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"))
       doc(view) must haveTdWithText(
-        messages("£ " + f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"))
+        messages("£ " + f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f")
+      )
 
       model.payments.foreach { payment =>
         doc(view) must haveTdWithText(TaxYearRangeUtil.formatDateAbbrMonth(payment.date))
@@ -156,7 +163,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "employment is live" in {
         val model = incomeCalculationViewModel(
           incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
+          incomeCalculationEstimateMessage = Some("ESTIMATE")
+        )
 
         def incomeMessagesView = views.html.print.yourIncomeCalculation(model, appConfig)
 
@@ -167,7 +175,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
         val model = incomeCalculationViewModel(
           employmentStatus = Ceased,
           incomeCalculationMessage = "TEST",
-          incomeCalculationEstimateMessage = Some("ESTIMATE"))
+          incomeCalculationEstimateMessage = Some("ESTIMATE")
+        )
 
         def incomeMessagesView = views.html.print.yourIncomeCalculation(model, appConfig)
 
@@ -209,7 +218,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
     totalNotEqualMessage: Option[String] = None,
     incomeCalculationMessage: String = "",
     incomeCalculationEstimateMessage: Option[String] = None,
-    hasPayrolledBenefit: Boolean = false) = {
+    hasPayrolledBenefit: Boolean = false
+  ) = {
 
     val latestPayment =
       if (payments.isEmpty) None else Some(LatestPayment(LocalDate.now.minusWeeks(4), 400, 50, 25, Weekly))

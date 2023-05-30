@@ -18,8 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service._
 import utils.BaseSpec
@@ -50,10 +49,10 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
         FakeAuthAction,
         FakeValidatePerson,
         mcc,
-        inject[PreviousYearUnderpaymentView],
-        templateRenderer
+        inject[PreviousYearUnderpaymentView]
       ) {
-    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+      .thenReturn(Future.successful(Seq.empty))
   }
 
 }

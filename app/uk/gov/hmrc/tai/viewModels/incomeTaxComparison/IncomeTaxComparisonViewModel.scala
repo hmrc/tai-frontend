@@ -24,7 +24,8 @@ case class IncomeTaxComparisonViewModel(
   taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
   taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
   incomeSourceComparisonViewModel: IncomeSourceComparisonViewModel,
-  isEstimatedCYPlusOneJourneyCompleted: Boolean)
+  isEstimatedCYPlusOneJourneyCompleted: Boolean
+)
 
 object IncomeTaxComparisonViewModel {
   def apply(
@@ -34,7 +35,8 @@ object IncomeTaxComparisonViewModel {
     taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
     incomeSourceComparisonViewModel: IncomeSourceComparisonViewModel,
     confirmApiEnabled: Boolean,
-    isEstimatedCYPlusOneJourneyCompleted: Boolean): IncomeTaxComparisonViewModel = {
+    isEstimatedCYPlusOneJourneyCompleted: Boolean
+  ): IncomeTaxComparisonViewModel = {
 
     val showBanner = isEstimatedCYPlusOneJourneyCompleted && confirmApiEnabled
 
@@ -44,6 +46,7 @@ object IncomeTaxComparisonViewModel {
       taxCodeComparisonViewModel,
       taxFreeAmountComparisonViewModel,
       incomeSourceComparisonViewModel,
-      showBanner)
+      showBanner
+    )
   }
 }

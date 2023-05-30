@@ -80,7 +80,8 @@ class TaxCodeChangeSpec extends PlaySpec {
     "A Employer 1",
     false,
     Some("1234"),
-    false)
+    false
+  )
   val currentTaxCodeRecord1 =
     previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().end)
   val fullYearTaxCode =

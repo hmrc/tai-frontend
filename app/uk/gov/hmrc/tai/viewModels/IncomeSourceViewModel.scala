@@ -39,7 +39,8 @@ case class IncomeSourceViewModel(
   detailsLinkLabel: String,
   detailsLinkUrl: String,
   taxCodeUrl: Option[Call] = None,
-  displayDetailsLink: Boolean = true)
+  displayDetailsLink: Boolean = true
+)
 
 object IncomeSourceViewModel extends ViewModelHelper {
 
@@ -85,7 +86,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
     }
 
     val detailsLinkUrl =
-      if (taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live) {
+      if (
+        taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
+      ) {
         controllers.routes.YourIncomeCalculationController
           .yourIncomeCalculationPage(taxedIncome.employment.sequenceNumber)
           .url
@@ -110,8 +113,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
     )
   }
 
-  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(
-    implicit messages: Messages): IncomeSourceViewModel = {
+  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit
+    messages: Messages
+  ): IncomeSourceViewModel = {
 
     val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
     val detailsLinkLabel = taxCodeIncome.componentType match {
@@ -151,8 +155,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       .withFilter(
         _.incomeComponentType != BankOrBuildingSocietyInterest
       )
-      .map(otherNonTaxCodeIncome => {
-
+      .map { otherNonTaxCodeIncome =>
         val model = IncomeSourceViewModel(
           messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
           withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
@@ -179,5 +182,5 @@ object IncomeSourceViewModel extends ViewModelHelper {
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url)
           case _ => model.copy(displayDetailsLink = false)
         }
-      })
+      }
 }

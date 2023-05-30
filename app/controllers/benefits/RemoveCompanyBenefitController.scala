@@ -23,13 +23,12 @@ import controllers.auth.{AuthAction, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
-import uk.gov.hmrc.tai.service.{FifteenDays, NoTimeToProcess, ThreeWeeks, TrackingService}
+import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
@@ -48,7 +47,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
 
-class RemoveCompanyBenefitController @Inject()(
+class RemoveCompanyBenefitController @Inject() (
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   benefitsService: BenefitsService,
@@ -61,8 +60,8 @@ class RemoveCompanyBenefitController @Inject()(
   removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
   canWeContactByPhone: CanWeContactByPhoneView,
-  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
-  implicit val templateRenderer: TemplateRenderer)(implicit ec: ExecutionContext)
+  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def stopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -83,7 +82,9 @@ class RemoveCompanyBenefitController @Inject()(
         removeCompanyBenefitStopDate(
           form,
           currentCache(EndCompanyBenefitConstants.BenefitNameKey),
-          currentCache(EndCompanyBenefitConstants.EmploymentNameKey)))
+          currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
+        )
+      )
     }
   }
 
@@ -95,29 +96,31 @@ class RemoveCompanyBenefitController @Inject()(
       val currentBenefitName = currentCache(EndCompanyBenefitConstants.BenefitNameKey)
       val currentEmploymentName = currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
       RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form.bindFromRequest.fold(
-        formWithErrors => {
+        formWithErrors =>
           journeyCacheService
             .mandatoryJourneyValues(
               EndCompanyBenefitConstants.BenefitNameKey,
-              EndCompanyBenefitConstants.EmploymentNameKey)
+              EndCompanyBenefitConstants.EmploymentNameKey
+            )
             .getOrFail
             .map { mandatoryJourneyValues =>
               BadRequest(
-                removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1)))
-            }
-        }, { date =>
+                removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1))
+              )
+            },
+        { date =>
           val dateString = date.toString
           if (date isBefore taxYear.start) {
-            //BeforeTaxYearEnd
+            // BeforeTaxYearEnd
             for {
               current <- journeyCacheService.currentCache
               _       <- journeyCacheService.flush()
-              filtered = current.filterKeys(_ != EndCompanyBenefitConstants.BenefitValueKey)
-              _ <- journeyCacheService.cache(
-                    filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))
+              filtered = current.filter(_ != EndCompanyBenefitConstants.BenefitValueKey)
+              _ <-
+                journeyCacheService.cache(filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))
             } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber)
           } else {
-            //OnOrAfterTaxYearEnd
+            // OnOrAfterTaxYearEnd
             journeyCacheService
               .cache(EndCompanyBenefitConstants.BenefitStopDateKey, dateString)
               .map { _ =>
@@ -144,20 +147,23 @@ class RemoveCompanyBenefitController @Inject()(
   def submitBenefitValue(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
-      formWithErrors => {
+      formWithErrors =>
         journeyCacheService
           .mandatoryJourneyValues(
             EndCompanyBenefitConstants.EmploymentNameKey,
-            EndCompanyBenefitConstants.BenefitNameKey)
+            EndCompanyBenefitConstants.BenefitNameKey
+          )
           .getOrFail
           .flatMap { mandatoryJourneyValues =>
             Future.successful(
               BadRequest(
                 removeBenefitTotalValue(
                   BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)),
-                  formWithErrors)))
-          }
-      },
+                  formWithErrors
+                )
+              )
+            )
+          },
       totalValue => {
         val rounded = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
         journeyCacheService
@@ -176,7 +182,8 @@ class RemoveCompanyBenefitController @Inject()(
         .fill(
           YesNoTextEntryForm(
             currentCache.get(EndCompanyBenefitConstants.TelephoneQuestionKey),
-            currentCache.get(EndCompanyBenefitConstants.TelephoneNumberKey))
+            currentCache.get(EndCompanyBenefitConstants.TelephoneNumberKey)
+          )
         )
 
       Ok(canWeContactByPhone(Some(user), telephoneNumberViewModel, form))
@@ -189,20 +196,20 @@ class RemoveCompanyBenefitController @Inject()(
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
         Messages("tai.canWeContactByPhone.telephone.empty"),
-        Some(telephoneNumberSizeConstraint))
+        Some(telephoneNumberSizeConstraint)
+      )
       .bindFromRequest()
       .fold(
-        formWithErrors => {
+        formWithErrors =>
           journeyCacheService.currentCache map { currentCache =>
             val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
             BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors))
-          }
-        },
+          },
         form => {
           val mandatoryData =
             Map(
-              EndCompanyBenefitConstants.TelephoneQuestionKey -> form.yesNoChoice.getOrElse(
-                FormValuesConstants.NoValue))
+              EndCompanyBenefitConstants.TelephoneQuestionKey -> form.yesNoChoice.getOrElse(FormValuesConstants.NoValue)
+            )
 
           val dataForCache = form.yesNoChoice match {
             case Some(FormValuesConstants.YesValue) =>
@@ -248,7 +255,10 @@ class RemoveCompanyBenefitController @Inject()(
                 stopDate,
                 optionalSeq.head,
                 mandatoryJourneyValues(3),
-                optionalSeq(1))))
+                optionalSeq(1)
+              )
+            )
+          )
       }
   }
 
@@ -257,27 +267,28 @@ class RemoveCompanyBenefitController @Inject()(
 
     for {
       (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
-                                                .collectedJourneyValues(
-                                                  Seq(
-                                                    EndCompanyBenefitConstants.EmploymentIdKey,
-                                                    EndCompanyBenefitConstants.EmploymentNameKey,
-                                                    EndCompanyBenefitConstants.BenefitTypeKey,
-                                                    EndCompanyBenefitConstants.BenefitStopDateKey,
-                                                    EndCompanyBenefitConstants.TelephoneQuestionKey
-                                                  ),
-                                                  Seq(
-                                                    EndCompanyBenefitConstants.BenefitValueKey,
-                                                    EndCompanyBenefitConstants.TelephoneNumberKey)
-                                                )
-                                                .getOrFail
+                                                 .collectedJourneyValues(
+                                                   Seq(
+                                                     EndCompanyBenefitConstants.EmploymentIdKey,
+                                                     EndCompanyBenefitConstants.EmploymentNameKey,
+                                                     EndCompanyBenefitConstants.BenefitTypeKey,
+                                                     EndCompanyBenefitConstants.BenefitStopDateKey,
+                                                     EndCompanyBenefitConstants.TelephoneQuestionKey
+                                                   ),
+                                                   Seq(
+                                                     EndCompanyBenefitConstants.BenefitValueKey,
+                                                     EndCompanyBenefitConstants.TelephoneNumberKey
+                                                   )
+                                                 )
+                                                 .getOrFail
       stopDate = LocalDate.parse(mandatoryCacheSeq(3)).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
       model = EndedCompanyBenefit(
-        benefitType = mandatoryCacheSeq(2),
-        stopDate = stopDate,
-        valueOfBenefit = optionalCacheSeq.head,
-        contactByPhone = mandatoryCacheSeq(4),
-        phoneNumber = optionalCacheSeq(1)
-      )
+                benefitType = mandatoryCacheSeq(2),
+                stopDate = stopDate,
+                valueOfBenefit = optionalCacheSeq.head,
+                contactByPhone = mandatoryCacheSeq(4),
+                phoneNumber = optionalCacheSeq(1)
+              )
       _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toInt, model)
       _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey, true.toString)
       _ <- journeyCacheService.flush
@@ -287,8 +298,8 @@ class RemoveCompanyBenefitController @Inject()(
   def cancel: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
       mandatoryJourneyValues <- journeyCacheService
-                                 .mandatoryJourneyValues(EndCompanyBenefitConstants.RefererKey)
-                                 .getOrFail
+                                  .mandatoryJourneyValues(EndCompanyBenefitConstants.RefererKey)
+                                  .getOrFail
       _ <- journeyCacheService.flush
     } yield Redirect(mandatoryJourneyValues.head)
   }

@@ -27,14 +27,15 @@ import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, Tax
 trait YourTaxFreeAmount {
 
   def buildTaxFreeAmount(changeDate: LocalDate, previous: Option[Seq[CodingComponent]], current: Seq[CodingComponent])(
-    implicit messages: Messages): YourTaxFreeAmountComparison = {
+    implicit messages: Messages
+  ): YourTaxFreeAmountComparison = {
 
     val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 
-    val previousTaxFreeInfo: Option[TaxFreeInfo] = previous.map(codingComponents => {
+    val previousTaxFreeInfo: Option[TaxFreeInfo] = previous.map { codingComponents =>
       val previousTaxCodeDateRange = Dates.formatDate(changeDate)
       TaxFreeInfo(previousTaxCodeDateRange, codingComponents, taxAccountCalculator)
-    })
+    }
 
     val currentTaxFreeInfo = {
       val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(changeDate, TaxYear().end)
@@ -52,6 +53,7 @@ trait YourTaxFreeAmount {
 
   def buildAllowancesAndDeductionPairs(
     previous: Seq[CodingComponent],
-    current: Seq[CodingComponent]): AllowancesAndDeductionPairs =
+    current: Seq[CodingComponent]
+  ): AllowancesAndDeductionPairs =
     AllowancesAndDeductionPairs.fromCodingComponents(previous, current)
 }

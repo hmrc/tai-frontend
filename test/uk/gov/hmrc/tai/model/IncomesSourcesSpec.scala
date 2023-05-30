@@ -18,12 +18,13 @@ package uk.gov.hmrc.tai.model
 
 import java.time.LocalDate
 import org.scalacheck.Gen
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
+import utils.BaseSpec
 
-class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
+class IncomesSourcesSpec extends BaseSpec with ScalaCheckDrivenPropertyChecks with TableDrivenPropertyChecks {
 
   val employmentTaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
@@ -38,29 +39,25 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
       for {
         employerName   <- Gen.alphaNumStr
         realTimeStatus <- rtiAvailableStatuses
-      } yield {
-        Employment(
-          employerName,
-          Live,
-          Some("1ABC"),
-          LocalDate.of(2017, 3, 1),
-          None,
-          Seq(AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, Nil, Nil)),
-          "DIST1",
-          "PAYE1",
-          1,
-          None,
-          false,
-          false
-        )
-      }
+      } yield Employment(
+        employerName,
+        Live,
+        Some("1ABC"),
+        LocalDate.of(2017, 3, 1),
+        None,
+        Seq(AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, Nil, Nil)),
+        "DIST1",
+        "PAYE1",
+        1,
+        None,
+        false,
+        false
+      )
 
     for {
       employment  <- employmentGen
       taxedIncome <- Gen.listOf(TaxedIncome(employmentTaxCodeIncome, employment))
-    } yield {
-      taxedIncome
-    }
+    } yield taxedIncome
   }
 
   def rtiUnAvailableIncomeSource: Gen[Seq[TaxedIncome]] = {
@@ -82,9 +79,7 @@ class IncomesSourcesSpec extends PlaySpec with ScalaCheckPropertyChecks {
 
     for {
       taxedIncome <- Gen.listOf(TaxedIncome(employmentTaxCodeIncome, employment))
-    } yield {
-      taxedIncome
-    }
+    } yield taxedIncome
   }
 
   "rti is available if all income sources have an Avialable status" in {

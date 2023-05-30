@@ -49,7 +49,8 @@ class EstimatedPayViewModelSpec extends PlaySpec {
         false,
         Some(annualSalary),
         Some(employmentStartDate),
-        employer)
+        employer
+      )
 
       viewModel.isGrossPayApportioned mustBe true
     }

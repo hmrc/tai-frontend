@@ -33,9 +33,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 @Singleton
-class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, applicationConfig: ApplicationConfig)(
-  implicit ec: ExecutionContext)
-    extends HasMetrics with Logging {
+class JrsConnector @Inject() (httpClient: HttpClient, val metrics: Metrics, applicationConfig: ApplicationConfig)(
+  implicit ec: ExecutionContext
+) extends HasMetrics with Logging {
 
   def getJrsClaimsForIndividual(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = {
 
@@ -63,10 +63,9 @@ class JrsConnector @Inject()(httpClient: HttpClient, val metrics: Metrics, appli
           case Left(error) =>
             logger.error(error.message, error)
             None
-        } recover {
-          case exception: HttpException =>
-            logger.error(exception.message)
-            None
+        } recover { case exception: HttpException =>
+          logger.error(exception.message)
+          None
         }
       }
     }

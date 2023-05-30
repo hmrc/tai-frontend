@@ -56,19 +56,22 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     "show the correct h2 when user pays more tax next year" in {
 
       doc(viewWithMore(welshMessage)) must haveH2HeadingWithText(
-        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more", "£1"))
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.more", "£1")
+      )
     }
 
     "show the correct h2 when user pays less tax next year" in {
 
       doc(viewWithSame(welshMessage)) must haveH2HeadingWithText(
-        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.same"))
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.same")
+      )
     }
 
     "show the correct h2 when user pays same tax next year" in {
 
       doc(viewWithLess(welshMessage)) must haveH2HeadingWithText(
-        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less", "£1"))
+        welshMessage("tai.incomeTaxComparison.incomeTax.subHeading.less", "£1")
+      )
     }
 
     "show the correct table heading in welsh when user pays more tax next year" in {
@@ -76,7 +79,9 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithMore(welshMessage)).text() must include(
         welshMessage(
           "tai.incomeTaxComparison.dateWithoutWelshAmendment",
-          Dates.formatDate(TaxYear().next.start)(welshMessage)))
+          Dates.formatDate(TaxYear().next.start)(welshMessage)
+        )
+      )
     }
 
     "show the correct table heading in welsh when user pays less tax next year" in {
@@ -84,7 +89,9 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithLess(welshMessage)).text() must include(
         welshMessage(
           "tai.incomeTaxComparison.welshAmendmentToDate",
-          Dates.formatDate(TaxYear().next.start)(welshMessage)))
+          Dates.formatDate(TaxYear().next.start)(welshMessage)
+        )
+      )
     }
 
     "show the correct table heading in welsh when user pays same tax next year" in {
@@ -92,7 +99,9 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       doc(viewWithSame(welshMessage)).text() must include(
         welshMessage(
           "tai.incomeTaxComparison.welshAmendmentToDate",
-          Dates.formatDate(TaxYear().next.start)(welshMessage)))
+          Dates.formatDate(TaxYear().next.start)(welshMessage)
+        )
+      )
     }
 
     behave like pageWithCombinedHeaderNewFormat(
@@ -109,7 +118,8 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID(
         "backLinkId",
-        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+      )
       doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
 
@@ -137,22 +147,26 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
 
     "have the what happens next section with paragraph - estimation apply date" in {
       doc(view) must haveParagraphWithText(
-        messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text", startOfNextTaxYear))
+        messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text", startOfNextTaxYear)
+      )
     }
 
     "have the what happens next section with paragraph - calculation may change" in {
       doc(view) must haveParagraphWithText(
-        messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text"))
+        messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")
+      )
     }
 
     "have the if information is wrong or incomplete title" in {
       doc(view) must haveHeadingH3WithText(
-        messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading"))
+        messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")
+      )
     }
 
     "have the tell us about a change paragraph" in {
       doc(view) must haveParagraphWithText(
-        messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description", startOfNextTaxYear))
+        messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description", startOfNextTaxYear)
+      )
     }
 
     "have the tell us about a change links" in {
@@ -203,7 +217,8 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
   def buildIncomeTaxComparisonViewModel(
     currentYearItem: EstimatedIncomeTaxComparisonItem,
     nextYearItem: EstimatedIncomeTaxComparisonItem,
-    cyPlusOneComplete: Boolean = false): IncomeTaxComparisonViewModel =
+    cyPlusOneComplete: Boolean = false
+  ): IncomeTaxComparisonViewModel =
     IncomeTaxComparisonViewModel(
       "USERNAME",
       EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem)),
@@ -221,10 +236,10 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
   def viewWithMore(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, templateRenderer, ec)
+    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, ec)
   def viewWithLess(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, templateRenderer, ec)
+    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, ec)
   def viewWithSame(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, templateRenderer, ec)
+    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, ec)
   override def view: Html = viewWithSame
 }

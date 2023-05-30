@@ -20,7 +20,6 @@ import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector
-import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import utils.BaseSpec
@@ -40,13 +39,15 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
     List(
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2020-11"))),
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-02"), YearAndMonth("2021-01")))
-    ))
+    )
+  )
 
   val jrsClaimsServiceResponse = JrsClaims(
     List(
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
-    ))
+    )
+  )
 
   "getJrsClaims" should {
 

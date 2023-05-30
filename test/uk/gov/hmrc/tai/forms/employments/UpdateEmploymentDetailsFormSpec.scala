@@ -43,7 +43,9 @@ class UpdateEmploymentDetailsFormSpec extends BaseSpec {
         validatedFormForEmploymentDetails.errors must contain(
           FormError(
             "employmentDetails",
-            List(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank"))))
+            List(Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank"))
+          )
+        )
       }
     }
 
@@ -57,8 +59,11 @@ class UpdateEmploymentDetailsFormSpec extends BaseSpec {
             List(
               Messages(
                 "tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded",
-                UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit))
-          ))
+                UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit
+              )
+            )
+          )
+        )
       }
     }
   }
@@ -67,7 +72,7 @@ class UpdateEmploymentDetailsFormSpec extends BaseSpec {
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Json.obj("employmentDetails"        -> "test")
+  private val validDetails = Json.obj("employmentDetails" -> "test")
   private val exceededCharDetails = Json.obj("employmentDetails" -> exceedingCharacters)
-  private val emptyDetails = Json.obj("employmentDetails"        -> "")
+  private val emptyDetails = Json.obj("employmentDetails" -> "")
 }

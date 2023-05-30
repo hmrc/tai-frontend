@@ -25,12 +25,12 @@ class IncomeCalculatorFormSpec extends BaseSpec {
 
   "PayPeriodForm" must {
     "return no errors" when {
-      Seq("monthly", "weekly", "fortnightly").foreach(period => {
+      Seq("monthly", "weekly", "fortnightly").foreach { period =>
         s"provided with valid data payPeriod: $period" in {
           val payPeriodForm = PayPeriodForm.createForm(None).bind(Map("payPeriod" -> period))
           payPeriodForm.errors mustBe empty
         }
-      })
+      }
 
       "provided with a 'other' payPeriod and a valid number of days" in {
         val validDaysMap = Map("payPeriod" -> "other", "otherInDays" -> "3")
@@ -43,30 +43,34 @@ class IncomeCalculatorFormSpec extends BaseSpec {
       "no payPeriod is sent" in {
         val payPeriodForm = PayPeriodForm.createForm(None).bind(Map("payPeriod" -> ""))
         payPeriodForm.errors must contain(
-          FormError("payPeriod", List(Messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))))
+          FormError("payPeriod", List(Messages("tai.payPeriod.error.form.incomes.radioButton.mandatory")))
+        )
       }
 
       "invalid payPeriod is sent" in {
         val payPeriodForm = PayPeriodForm.createForm(None).bind(Map("payPeriod" -> "Nope"))
         payPeriodForm.errors must contain(
-          FormError("payPeriod", List(Messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))))
+          FormError("payPeriod", List(Messages("tai.payPeriod.error.form.incomes.radioButton.mandatory")))
+        )
       }
 
       "provided with a 'other' payPeriod with no number of days passed" in {
         val invalidDaysMap = Map("otherInDays" -> "")
         val payPeriodForm = PayPeriodForm.createForm(None, Some("other")).bind(invalidDaysMap)
         payPeriodForm.errors must contain(
-          FormError("otherInDays", List(Messages("tai.payPeriod.error.form.incomes.other.mandatory"))))
+          FormError("otherInDays", List(Messages("tai.payPeriod.error.form.incomes.other.mandatory")))
+        )
       }
 
-      Seq("Nope", "123A", "A123", "2232.00", "Ten", "3 Days").foreach(invalidInput => {
+      Seq("Nope", "123A", "A123", "2232.00", "Ten", "3 Days").foreach { invalidInput =>
         s"provided with a 'other' payPeriod with invalid input '$invalidInput' for number of days" in {
           val invalidDaysMap = Map("payPeriod" -> "other", "otherInDays" -> invalidInput)
           val payPeriodForm = PayPeriodForm.createForm(None, Some("other")).bind(invalidDaysMap)
           payPeriodForm.errors must contain(
-            FormError("otherInDays", List(Messages("tai.payPeriod.error.form.incomes.other.invalid"))))
+            FormError("otherInDays", List(Messages("tai.payPeriod.error.form.incomes.other.invalid")))
+          )
         }
-      })
+      }
     }
   }
 }

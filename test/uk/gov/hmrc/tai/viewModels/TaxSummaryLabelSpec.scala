@@ -101,7 +101,8 @@ class TaxSummaryLabelSpec extends BaseSpec {
             employmentId = None,
             taxFreeAmountDetails,
             amount = 1000,
-            Some(234))
+            Some(234)
+          )
         actual mustBe TaxSummaryLabel("Underpayment from previous year", link)
       }
 
@@ -117,7 +118,8 @@ class TaxSummaryLabelSpec extends BaseSpec {
             employmentId = None,
             taxFreeAmountDetails,
             amount = 1000,
-            Some(456))
+            Some(456)
+          )
         actual mustBe TaxSummaryLabel("Estimated tax you owe this year", link)
       }
     }

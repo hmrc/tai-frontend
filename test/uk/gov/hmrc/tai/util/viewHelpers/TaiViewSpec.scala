@@ -47,7 +47,8 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   def pageWithCombinedHeader(
     preHeaderText: String,
     mainHeaderText: String,
-    preHeaderAnnouncementText: Option[String] = None): Unit = {
+    preHeaderAnnouncementText: Option[String] = None
+  ): Unit = {
     "have an accessible pre heading" in {
       if (preHeaderAnnouncementText.isDefined) {
         doc must havePreHeadingWithText(preHeaderText, expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get)
@@ -63,12 +64,14 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   def pageWithCombinedHeaderNewTemplate(
     preHeaderText: String,
     mainHeaderText: String,
-    preHeaderAnnouncementText: Option[String] = None): Unit =
+    preHeaderAnnouncementText: Option[String] = None
+  ): Unit =
     "have an accessible pre heading" in {
       if (preHeaderAnnouncementText.isDefined) {
         doc must havePreHeadingWithTextNewTemplate(
           preHeaderText,
-          expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get)
+          expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get
+        )
         doc must haveHeadingWithText(mainHeaderText + " " + preHeaderAnnouncementText.get + " " + preHeaderText)
 
       } else {
@@ -81,12 +84,14 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   def pageWithCombinedHeaderNewFormat(
     preHeaderText: String,
     mainHeaderText: String,
-    preHeaderAnnouncementText: Option[String] = None): Unit = {
+    preHeaderAnnouncementText: Option[String] = None
+  ): Unit = {
     "have an accessible pre heading" in {
       if (preHeaderAnnouncementText.isDefined) {
         doc must havePreHeadingWithTextGds(
           preHeaderText,
-          expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get)
+          expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get
+        )
       } else {
         doc must havePreHeadingWithTextGds(preHeaderText)
       }
@@ -168,7 +173,8 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
     idYes: String,
     idNo: String,
     yesLabelText: String = Messages("tai.label.yes"),
-    noLabelText: String = Messages("tai.label.no")): Unit =
+    noLabelText: String = Messages("tai.label.no")
+  ): Unit =
     "have a yes/no radio button" in {
       doc must haveInputLabelWithText(idYes, yesLabelText)
       doc must haveInputLabelWithText(idNo, noLabelText)

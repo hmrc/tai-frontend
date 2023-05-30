@@ -27,7 +27,8 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(
   tableHeader: String,
   whatYouToldUs: String,
   contactByPhone: String,
-  phoneNumber: Option[String]) {
+  phoneNumber: Option[String]
+) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -61,8 +62,9 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(
 
 object UpdateIncomeDetailsCheckYourAnswersViewModel extends ViewModelHelper {
 
-  def apply(taxYear: TaxYear, whatYouToldUs: String, contactByPhone: String, phoneNumber: Option[String])(
-    implicit messages: Messages): UpdateIncomeDetailsCheckYourAnswersViewModel = {
+  def apply(taxYear: TaxYear, whatYouToldUs: String, contactByPhone: String, phoneNumber: Option[String])(implicit
+    messages: Messages
+  ): UpdateIncomeDetailsCheckYourAnswersViewModel = {
     val tablelHeader =
       Messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year))
     new UpdateIncomeDetailsCheckYourAnswersViewModel(tablelHeader, whatYouToldUs, contactByPhone, phoneNumber)

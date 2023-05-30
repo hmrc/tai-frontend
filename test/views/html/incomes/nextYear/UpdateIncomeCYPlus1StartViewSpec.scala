@@ -32,16 +32,20 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.start.heading", employerName))
+      messages("tai.updateIncome.CYPlus1.start.heading", employerName)
+    )
 
     "contain the correct content when income is from employment" in {
       doc(view).getElementsByTag("p").text must include(
-        messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName))
+        messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName)
+      )
       doc(view).getElementsByTag("p").text must include(
-        messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName))
+        messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName)
+      )
       doc(view) must haveLinkWithUrlWithID(
         "CYPlus1StartButton",
-        controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
+        controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url
+      )
       doc(view).getElementsByClass("govuk-button").text must include(messages("tai.updateIncome.CYPlus1.start.button"))
     }
 
@@ -49,16 +53,21 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
       val isPension = true
       val pensionView: Html = updateIncomeCYPlus1Start(employerName, employmentID, isPension)
       doc(pensionView).getElementsByTag("p").text must include(
-        messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName))
+        messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName)
+      )
       doc(pensionView).getElementsByTag("p").text mustNot include(
-        messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName))
+        messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName)
+      )
       doc(pensionView).getElementsByTag("p").text must include(
-        messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employerName))
+        messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employerName)
+      )
       doc(pensionView) must haveLinkWithUrlWithID(
         "CYPlus1StartButton",
-        controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
+        controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url
+      )
       doc(pensionView).getElementsByClass("govuk-button").text must include(
-        messages("tai.income.details.updateTaxableIncome.update"))
+        messages("tai.income.details.updateTaxableIncome.update")
+      )
     }
 
   }

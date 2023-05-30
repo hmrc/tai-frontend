@@ -25,7 +25,8 @@ case class AddPensionProvider(
   startDate: LocalDate,
   pensionNumber: String,
   telephoneContactAllowed: String,
-  telephoneNumber: Option[String])
+  telephoneNumber: Option[String]
+)
 
 object AddPensionProvider {
   implicit val addPensionProviderFormat: Format[AddPensionProvider] = Json.format[AddPensionProvider]

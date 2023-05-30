@@ -18,14 +18,11 @@ package views.html
 
 import builders.UserBuilder
 import controllers.auth.AuthedUser
-import mocks.MockTemplateRenderer
-import org.mockito.Matchers.contains
 import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.test.Helpers.contentAsString
 import play.twirl.api.Html
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -41,15 +38,14 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
 
-  override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-
   "whatDoYouWantTodo Page" should {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
     behave like haveInternalLink(
       appConfig.taxReliefExpenseClaimLink,
       messages("claim.tax.relief.claimOtherExpense"),
-      "other-expense-link")
+      "other-expense-link"
+    )
 
     "display cards correctly" when {
       "CY+1 is not enabled" in {
@@ -59,12 +55,14 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.size mustBe 2
         cards.toString must include(Messages("current.tax.year"))
         doc(view) must haveParagraphWithText(
-          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak))
+          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak)
+        )
         cards.toString mustNot include(Messages("next.year"))
         cards.toString mustNot include(Messages("check.estimated.income"))
         cards.toString must include(Messages("income.tax.history"))
         cards.toString must include(
-          Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory))
+          Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory)
+        )
       }
 
       "CY+1 is enabled" in {
@@ -77,10 +75,12 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.size mustBe 3
         cards.toString must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(
-          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak))
+          Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak)
+        )
         cards.toString must include(Messages("next.year"))
         doc(nextYearView) must haveParagraphWithText(
-          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)).replaceU00A0)
+          Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)).replaceU00A0
+        )
       }
 
       "Tax Code Change is disabled" in {
@@ -112,7 +112,9 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         doc(nextYearView).toString must include(
           Messages(
             "tai.WhatDoYouWantToDo.ChangedTaxCode",
-            TaxYearRangeUtil.formatDate(localDate).replace(" ", "&nbsp;")))
+            TaxYearRangeUtil.formatDate(localDate).replace(" ", "&nbsp;")
+          )
+        )
       }
     }
 
@@ -132,7 +134,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       doc(jrsClaimView) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad}")
       assertThrows[NullPointerException](
-        doc(view) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad}"))
+        doc(view) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad}")
+      )
     }
 
     "IncomeTaxHistory enabled" in {
@@ -146,7 +149,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.size mustBe 2
       cards.toString must include(Messages("income.tax.history"))
       cards.toString must include(
-        Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory))
+        Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory)
+      )
     }
 
     "IncomeTaxHistory disabled" in {
@@ -160,7 +164,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.size mustBe 1
       cards.toString mustNot include(Messages("income.tax.history"))
       cards.toString mustNot include(
-        Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory))
+        Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory)
+      )
     }
 
     "show the unread messages indicator when user has unread messages" in {
@@ -178,7 +183,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   def createViewModel(
     isCyPlusOneEnabled: Boolean,
     showJrsLink: Boolean = false,
-    maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = None): WhatDoYouWantToDoViewModel =
+    maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = None
+  ): WhatDoYouWantToDoViewModel =
     WhatDoYouWantToDoViewModel(isCyPlusOneEnabled, showJrsLink, maybeMostRecentTaxCodeChangeDate)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))

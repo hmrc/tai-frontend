@@ -38,7 +38,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
     "A Employer 1",
     false,
     Some("1234"),
-    false)
+    false
+  )
   val currentTaxCodeRecord1 =
     previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
   val fullYearTaxCode = TaxCodeRecord(
@@ -49,7 +50,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
     "B Employer 1",
     false,
     Some("12345"),
-    false)
+    false
+  )
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
@@ -124,7 +126,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
           "B Employer 1",
           false,
           Some("12345"),
-          false)
+          false
+        )
         val scottishTaxRateBands = Map(taxCode -> BigDecimal(21.5))
 
         val expected = DescriptionListViewModel(

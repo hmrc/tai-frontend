@@ -18,17 +18,15 @@ package uk.gov.hmrc.tai.service
 
 import java.time.LocalDateTime
 import java.time.LocalDate
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 import utils.BaseSpec
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class EmploymentServiceSpec extends BaseSpec {
 
@@ -79,7 +77,8 @@ class EmploymentServiceSpec extends BaseSpec {
           1,
           None,
           false,
-          false)
+          false
+        )
         val employment2 = Employment(
           "company name 2",
           Live,
@@ -92,7 +91,8 @@ class EmploymentServiceSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         when(employmentsConnector.employments(any(), any())(any()))
           .thenReturn(Future.successful(List(employment1, employment2)))
@@ -159,8 +159,9 @@ class EmploymentServiceSpec extends BaseSpec {
         payrollNumber = "12345",
         startDate = LocalDate.of(2017, 6, 6),
         telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789"))
-      when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
+        telephoneNumber = Some("123456789")
+      )
+      when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.addEmployment(nino, model), 5.seconds)
@@ -175,8 +176,9 @@ class EmploymentServiceSpec extends BaseSpec {
           payrollNumber = "12345",
           startDate = LocalDate.of(2017, 6, 6),
           telephoneContactAllowed = "Yes",
-          telephoneNumber = Some("123456789"))
-        when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any()))
+          telephoneNumber = Some("123456789")
+        )
+        when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addEmployment(nino, model), 5.seconds)
@@ -190,7 +192,7 @@ class EmploymentServiceSpec extends BaseSpec {
       val sut = createSUT
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any()))
+      when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
@@ -203,7 +205,7 @@ class EmploymentServiceSpec extends BaseSpec {
         val sut = createSUT
         val model =
           IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any()))
+        when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
@@ -226,7 +228,8 @@ class EmploymentServiceSpec extends BaseSpec {
     2,
     None,
     false,
-    false)
+    false
+  )
   private val employmentDetails = List(employment)
   private val employments = employmentDetails.head :: employmentDetails.head :: Nil
 

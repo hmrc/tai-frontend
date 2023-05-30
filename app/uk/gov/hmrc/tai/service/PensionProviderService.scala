@@ -22,21 +22,26 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
-class PensionProviderService @Inject()(pensionProviderConnector: PensionProviderConnector) {
+class PensionProviderService @Inject() (pensionProviderConnector: PensionProviderConnector) {
 
-  def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit hc: HeaderCarrier): Future[String] =
+  def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[String] =
     pensionProviderConnector.addPensionProvider(nino, pensionProvider) map {
       case Some(envId) => envId
       case _ =>
         throw new RuntimeException(
-          s"No envelope id was generated when adding the new pension provider for ${nino.nino}")
+          s"No envelope id was generated when adding the new pension provider for ${nino.nino}"
+        )
     }
 
-  def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(
-    implicit hc: HeaderCarrier): Future[String] =
+  def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[String] =
     pensionProviderConnector.incorrectPensionProvider(nino, id, pensionProvider) map {
       case Some(envId) => envId
       case _ =>

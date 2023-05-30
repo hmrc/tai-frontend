@@ -22,20 +22,22 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class BenefitsService @Inject()(benefitsConnector: BenefitsConnector) {
+class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) {
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
     benefitsConnector.benefits(nino, taxYear)
 
-  def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(
-    implicit hc: HeaderCarrier): Future[String] =
+  def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[String] =
     benefitsConnector.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit) map {
       case Some(envId) => envId
       case _ =>
         throw new RuntimeException(
-          s"No envelope id was generated when attempting to end company benefit for ${nino.nino}")
+          s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+        )
     }
 }

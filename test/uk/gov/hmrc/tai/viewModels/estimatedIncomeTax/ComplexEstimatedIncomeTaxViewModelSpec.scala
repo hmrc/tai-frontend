@@ -47,7 +47,8 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         BandTypesConstants.TaxGraph,
         List(
           Band(BandTypesConstants.TaxFree, 69.69, 11500, 0, BandTypesConstants.ZeroBand),
-          Band("Band", 30.30, 5000, 700, BandTypesConstants.NonZeroBand)),
+          Band("Band", 30.30, 5000, 700, BandTypesConstants.NonZeroBand)
+        ),
         0,
         16500,
         16500,
@@ -61,7 +62,12 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
 
       val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, bandedGraph, UkTaxRegion)
 
-      ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands) mustBe expectedViewModel
+      ComplexEstimatedIncomeTaxViewModel(
+        codingComponents,
+        taxAccountSummary,
+        taxCodeIncome,
+        taxBands
+      ) mustBe expectedViewModel
 
     }
   }

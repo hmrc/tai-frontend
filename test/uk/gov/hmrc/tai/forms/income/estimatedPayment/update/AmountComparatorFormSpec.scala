@@ -46,7 +46,8 @@ class AmountComparatorFormSpec extends BaseSpec {
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
-        messagesApi("error.tai.update.estimatedTaxableIncome.input.invalid"))
+        messagesApi("error.tai.update.estimatedTaxableIncome.input.invalid")
+      )
       invalidatedForm.value mustBe None
     }
 
@@ -63,7 +64,8 @@ class AmountComparatorFormSpec extends BaseSpec {
       val invalidatedForm = form.bind(newAmount)
 
       invalidatedForm.errors.head.messages mustBe List(
-        messagesApi("tai.irregular.error.error.incorrectTaxableIncome", taxablePayYTD, currentDate))
+        messagesApi("tai.irregular.error.error.incorrectTaxableIncome", taxablePayYTD, currentDate)
+      )
       invalidatedForm.value mustBe None
 
     }

@@ -24,10 +24,9 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
+class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
 
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
@@ -96,9 +95,12 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
     }
   }
 
-  def putToApi[I](
-    url: String,
-    data: I)(implicit hc: HeaderCarrier, rds: HttpReads[I], writes: Writes[I]): Future[HttpResponse] =
+  def putToApi[I](url: String, data: I)(implicit
+    hc: HeaderCarrier,
+    rds: HttpReads[I],
+    writes: Writes[I],
+    executionContext: ExecutionContext
+  ): Future[HttpResponse] =
     http.PUT[I, HttpResponse](url, data).flatMap { httpResponse =>
       httpResponse.status match {
 
@@ -123,9 +125,12 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
       }
     }
 
-  def postToApi[I](
-    url: String,
-    data: I)(implicit hc: HeaderCarrier, rds: HttpReads[I], writes: Writes[I]): Future[HttpResponse] =
+  def postToApi[I](url: String, data: I)(implicit
+    hc: HeaderCarrier,
+    rds: HttpReads[I],
+    writes: Writes[I],
+    executionContext: ExecutionContext
+  ): Future[HttpResponse] =
     http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
       httpResponse.status match {
         case OK | CREATED =>
@@ -133,19 +138,25 @@ class HttpHandler @Inject()(val http: DefaultHttpClient) extends HttpErrorFuncti
 
         case _ =>
           logger.warn(
-            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")
+            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
+          )
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }
     }
 
-  def deleteFromApi(url: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[HttpResponse] =
+  def deleteFromApi(url: String)(implicit
+    hc: HeaderCarrier,
+    rds: HttpReads[HttpResponse],
+    executionContext: ExecutionContext
+  ): Future[HttpResponse] =
     http.DELETE[HttpResponse](url) flatMap { httpResponse =>
       httpResponse.status match {
         case OK | NO_CONTENT | ACCEPTED =>
           Future.successful(httpResponse)
         case _ =>
           logger.warn(
-            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}")
+            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
+          )
           Future.failed(new HttpException(httpResponse.body, httpResponse.status))
       }
     }

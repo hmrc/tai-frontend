@@ -34,7 +34,8 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
       PensionAddDateForm.PensionFormDay -> "9",
       "month"                           -> "6",
       "year"                            -> "2017"
-    ))
+    )
+  )
   private val addPensionStartDate = inject[AddPensionStartDateView]
   override def view: Html = addPensionStartDate(pensionStartDateForm, pensionName)
 
@@ -47,7 +48,8 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
     )
     behave like haveLinkWithUrlWithID(
       "backLink",
-      controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url)
+      controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url
+    )
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/first-payment-date")
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
 

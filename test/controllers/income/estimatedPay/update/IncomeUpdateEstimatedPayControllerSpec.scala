@@ -19,18 +19,13 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import mocks.MockTemplateRenderer
-
 import java.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse, TaiUnauthorisedResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -64,10 +59,9 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
         journeyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -75,7 +69,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
 
-    when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment))))
     when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
 
@@ -96,7 +90,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException(""))
+        new NotFoundException("")
+      )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -105,7 +100,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException(""))
+        new NotFoundException("")
+      )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -115,16 +111,37 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new RuntimeException(""))
+        new RuntimeException("")
+      )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
 
     }
     "return to /income-details when nothing is present in the cache" in {
-      val result = estimatedPayLandingPage()
+      val testController = new IncomeUpdateEstimatedPayController(
+        FakeAuthAction,
+        FakeValidatePerson,
+        incomeService,
+        appConfig,
+        mcc,
+        mockTaxAccountService,
+        inject[EstimatedPayLandingPageView],
+        inject[EstimatedPayView],
+        inject[IncorrectTaxableIncomeView],
+        journeyCacheService,
+        inject[ErrorPagesHandler]
+      )
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any())).thenReturn(Future.successful(Left("empty cache")))
+      when(
+        journeyCacheService.mandatoryJourneyValues(
+          any()
+        )(any(), any())
+      ).thenReturn(Future.successful(Left("empty cache")))
+
+      val result = testController.estimatedPayLandingPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
+
+      status(result) mustBe SEE_OTHER
 
       redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     }
@@ -136,11 +153,11 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
-        when(incomeService.latestPayment(any(), any())(any()))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
           .thenReturn(Future.successful(payment))
         when(journeyCacheService.currentCache(any()))
           .thenReturn(Future.successful(currentCache))
-        when(incomeService.employmentAmount(any(), any())(any(), any()))
+        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(incomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
@@ -152,7 +169,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       def setup(
         payment: Option[Payment] = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly)),
-        currentCache: Map[String, String] = Map.empty[String, String]): EstimatedPayPageHarness =
+        currentCache: Map[String, String] = Map.empty[String, String]
+      ): EstimatedPayPageHarness =
         new EstimatedPayPageHarness(payment, currentCache)
     }
     "display estimatedPay page" when {
@@ -166,7 +184,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak.replace("\u00A0", " ")))
+          messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak.replace("\u00A0", " "))
+        )
       }
 
       "payYearToDate is None" in {
@@ -206,7 +225,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url)
+          controllers.routes.IncomeController.sameEstimatedPayInCache(employer.id).url
+        )
       }
     }
     "Redirect to /income-summary page" when {
@@ -214,7 +234,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdateEstimatedPayController
 
-        when(journeyCacheService.mandatoryJourneyValues(Matchers.anyVararg[String])(any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())

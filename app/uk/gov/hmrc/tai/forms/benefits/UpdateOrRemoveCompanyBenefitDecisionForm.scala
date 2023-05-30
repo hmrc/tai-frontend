@@ -23,8 +23,9 @@ import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConsta
 
 object UpdateOrRemoveCompanyBenefitDecisionForm {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(DecisionChoice -> optional(text).verifying(Messages("tai.benefits.updateOrRemove.decision.radio.error"), {
-      _.isDefined
-    }))
+    single(
+      DecisionChoice -> optional(text)
+        .verifying(Messages("tai.benefits.updateOrRemove.decision.radio.error"), _.isDefined)
+    )
   )
 }

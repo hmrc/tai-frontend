@@ -21,4 +21,5 @@ case class IncomeSourceComparisonDetail(
   name: String,
   amountCY: String,
   amountCYPlusOne: String,
-  isLive: Boolean)
+  isLive: Boolean
+)

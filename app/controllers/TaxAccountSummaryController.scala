@@ -21,7 +21,6 @@ import controllers.auth.AuthAction
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
@@ -34,7 +33,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 @Singleton
-class TaxAccountSummaryController @Inject()(
+class TaxAccountSummaryController @Inject() (
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,
@@ -44,8 +43,9 @@ class TaxAccountSummaryController @Inject()(
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler)(implicit ec: ExecutionContext)
+  implicit val
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -63,10 +63,10 @@ class TaxAccountSummaryController @Inject()(
           scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
           vm                    <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
         } yield {
-          val taxCodeIncomesByTaxCode = taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map {
-            case ((taxCode, maybeEmpId), seq) =>
+          val taxCodeIncomesByTaxCode =
+            taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map { case ((taxCode, maybeEmpId), seq) =>
               taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)
-          }
+            }
 
           Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
         }

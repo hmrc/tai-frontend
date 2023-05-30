@@ -57,7 +57,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false)
+            false
+          )
 
         val employment2 =
           Employment(
@@ -72,7 +73,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false)
+            false
+          )
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe None
@@ -93,7 +95,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment))
         sut.endDate mustBe Some(Dates.formatDate(empEndDateOne))
@@ -118,7 +121,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val employment2 = Employment(
           "test employment2",
@@ -132,7 +136,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe Some(Dates.formatDate(empEndDateThree))
@@ -150,7 +155,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val employment1 = Employment(
           "test employment1",
@@ -164,7 +170,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val employment2 = Employment(
           "test employment2",
@@ -178,7 +185,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false)
+          false
+        )
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe Some(Dates.formatDate(empEndDateThree))
