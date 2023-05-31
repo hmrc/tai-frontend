@@ -38,14 +38,12 @@ class EmploymentsConnector @Inject() (
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
-
   def employments(nino: Nino, year: TaxYear)(implicit
     ec: ExecutionContext,
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     httpClientResponse.read(
-      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentServiceUrl(nino, year))
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentsUrl(nino, year))
     )
 //    httpClientResponse
 //      .getFromApiV2(employmentServiceUrl(nino, year))
@@ -99,14 +97,18 @@ class EmploymentsConnector @Inject() (
       )
     )
 
-  def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
+  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
-  def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
+  private def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 
-  def employmentServiceUrl(nino: Nino, year: TaxYear): String = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+  private def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
 
-  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
+  private def employmentsUrl(nino: Nino, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+
+  private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
-  def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/reason"
+  private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

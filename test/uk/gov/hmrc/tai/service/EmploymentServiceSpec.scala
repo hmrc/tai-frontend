@@ -187,16 +187,16 @@ class EmploymentServiceSpec extends BaseSpec { // TODO - Needs error scenarios
         when(connector.endEmployment(any(), any(), any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(OK, Json.toJson("123-456-789").toString)))
+              Future.successful(Right(HttpResponse(CREATED, Json.toJson("123-456-789").toString)))
             )
           )
         service.endEmployment(nino, 8, endEmploymentData).value.futureValue.map(_ mustBe "123-456-789")
       }
-      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+      "return BAD_GATEWAY if no data is returned" in {
         when(connector.endEmployment(any(), any(), any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(NO_CONTENT, "[]")))
+              Future.successful(Right(HttpResponse(CREATED, "[]")))
             )
           )
         service.endEmployment(nino, 8, endEmploymentData).value.futureValue.swap.map(_.statusCode mustBe BAD_GATEWAY)
@@ -232,16 +232,16 @@ class EmploymentServiceSpec extends BaseSpec { // TODO - Needs error scenarios
         when(connector.addEmployment(any(), any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(OK, Json.toJson("123-456-789").toString)))
+              Future.successful(Right(HttpResponse(CREATED, Json.toJson("123-456-789").toString)))
             )
           )
         service.addEmployment(nino, addEmployment).value.futureValue.map(_ mustBe "123-456-789")
       }
-      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+      "return BAD_GATEWAY if no data is returned" in {
         when(connector.addEmployment(any(), any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(NO_CONTENT, "[]")))
+              Future.successful(Right(HttpResponse(CREATED, "[]")))
             )
           )
         service.addEmployment(nino, addEmployment).value.futureValue.swap.map(_.statusCode mustBe BAD_GATEWAY)
@@ -272,16 +272,16 @@ class EmploymentServiceSpec extends BaseSpec { // TODO - Needs error scenarios
         when(connector.incorrectEmployment(any(), any(), any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(OK, Json.toJson("123-456-789").toString)))
+              Future.successful(Right(HttpResponse(CREATED, Json.toJson("123-456-789").toString)))
             )
           )
         service.incorrectEmployment(nino, 1, incorrectIncome).value.futureValue.map(_ mustBe "123-456-789")
       }
-      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+      "return BAD_GATEWAY if no data is returned" in {
         when(connector.incorrectEmployment(any(), any(), any())(any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, HttpResponse](
-              Future.successful(Right(HttpResponse(NO_CONTENT, "[]")))
+              Future.successful(Right(HttpResponse(CREATED, "[]")))
             )
           )
         service

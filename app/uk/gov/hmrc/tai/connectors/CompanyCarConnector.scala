@@ -34,8 +34,6 @@ class CompanyCarConnector @Inject() (
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-//  def companyCarEmploymentUrl(nino: Nino, empId: Int): String =
-//    s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car" // TODO - Remove from backend if not used
   def companyCarUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
 
   def companyCarsForCurrentYearEmployments(

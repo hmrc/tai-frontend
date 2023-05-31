@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2023 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, okJson, urlPathMatching}
@@ -47,8 +31,6 @@ import scala.concurrent.ExecutionContext
 import scala.language.postfixOps
 
 class CompanyCarConnectorSpec extends ConnectorSpec {
-
-  implicit val ec: ExecutionContext = inject[ExecutionContext]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .configure(
@@ -70,10 +52,27 @@ class CompanyCarConnectorSpec extends ConnectorSpec {
 
   override def messagesApi: MessagesApi = inject[MessagesApi]
 
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
+
   def connector: CompanyCarConnector = inject[CompanyCarConnector]
 
   "CompanyCarConnector" when {
     "companyCarsForCurrentYearEmployments is run" must {
+      val companyCar: CompanyCarBenefit = CompanyCarBenefit(
+        10,
+        1000,
+        List(
+          CompanyCar(
+            10,
+            "Make Model",
+            hasActiveFuelBenefit = true,
+            dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
+            dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
+            dateWithdrawn = None
+          )
+        ),
+        Some(1)
+      )
       val url = s"/tai/$nino/tax-account/tax-components/benefits/company-cars"
       "return an OK response status and company car data" in {
         server.stubFor(
@@ -118,78 +117,5 @@ class CompanyCarConnectorSpec extends ConnectorSpec {
 //        val result = connector.companyCarsForCurrentYearEmployments(nino)
 //        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
 //      }
-
-  val companyCar: CompanyCarBenefit = CompanyCarBenefit(
-    10,
-    1000,
-    List(
-      CompanyCar(
-        10,
-        "Make Model",
-        hasActiveFuelBenefit = true,
-        dateMadeAvailable = Some(LocalDate.parse("2016-10-10")),
-        dateActiveFuelBenefitMadeAvailable = Some(LocalDate.parse("2016-10-11")),
-        dateWithdrawn = None
-      )
-    ),
-    Some(1)
-  )
-
-  val companyCarForEmploymentJson: JsObject =
-    Json.obj(
-      "data" -> Json.obj(
-        "employmentSeqNo" -> 10,
-        "grossAmount"     -> 1000,
-        "companyCars" -> Json.arr(
-          Json.obj(
-            "carSeqNo"                           -> 10,
-            "makeModel"                          -> "Make Model",
-            "hasActiveFuelBenefit"               -> true,
-            "dateMadeAvailable"                  -> "2016-10-10",
-            "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-          )
-        ),
-        "version" -> 1
-      ),
-      "links" -> Json.arr()
-    )
-
-  val corruptJsonResponse: JsObject =
-    Json.obj(
-      "data" -> Json.obj(
-        "companyCars" -> Json.arr(
-          Json.obj(
-            "carSeqNo"  -> 10,
-            "makeModel" -> "Make Model"
-          )
-        )
-      )
-    )
-
-  val companyCars: JsObject =
-    Json.obj(
-      "data" -> Json.obj(
-        "companyCarBenefits" -> Json.arr(
-          Json.obj(
-            "employmentSeqNo" -> 10,
-            "grossAmount"     -> 1000,
-            "companyCars" -> Json.arr(
-              Json.obj(
-                "carSeqNo"                           -> 10,
-                "makeModel"                          -> "Make Model",
-                "hasActiveFuelBenefit"               -> true,
-                "dateMadeAvailable"                  -> "2016-10-10",
-                "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
-              )
-            ),
-            "version" -> 1
-          )
-        )
-      ),
-      "links" -> Json.arr()
-    )
-
-  val emptyCompanyCars: JsObject =
-    Json.obj("data" -> Json.obj("companyCarBenefits" -> Json.arr()), "links" -> Json.arr())
 
 }
