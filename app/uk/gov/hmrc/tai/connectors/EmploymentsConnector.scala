@@ -17,15 +17,14 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.EitherT
-
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
+import uk.gov.hmrc.tai.model.domain.{AddEmployment, EndEmployment, IncorrectIncome}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentsConnector @Inject() (

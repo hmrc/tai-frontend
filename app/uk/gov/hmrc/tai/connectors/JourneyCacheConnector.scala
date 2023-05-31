@@ -17,25 +17,31 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.Done
+import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status.NO_CONTENT
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyCacheConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
-  ec: ExecutionContext
+class JourneyCacheConnector @Inject()(httpClient: HttpClient, httpClientResponse: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
+                                                                                                                                      ec: ExecutionContext
 ) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def cacheUrl(journeyName: String): String = s"$serviceUrl/tai/journey-cache/$journeyName"
 
-  def currentCache(journeyName: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    httpHandler
+  def currentCache(journeyName: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](cacheUrl(journeyName))
+    )
+
+    httpClientResponse
       .getFromApiV2(cacheUrl(journeyName))
       .map(_.as[Map[String, String]])
       .recover {
@@ -47,7 +53,7 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpClientResponse, services
     hc: HeaderCarrier
   ): Future[Option[T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
-    httpHandler.getFromApiV2(url).map(value => Some(convert(value.as[String]))).getOrElse(None)
+    httpClientResponse.getFromApiV2(url).map(value => Some(convert(value.as[String]))).getOrElse(None)
 
 //      .recover {
 //      case e: HttpException if e.responseCode == NO_CONTENT => None
@@ -59,7 +65,7 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpClientResponse, services
   ): Future[Either[String, T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
 
-    httpHandler
+    httpClientResponse
       .getFromApiV2(url)
       .map(value => Right(convert(value.as[String])))
       .getOrElse(Right(convert(""))) // TODO - To remove one at a time to avoid an overextended change
@@ -73,7 +79,7 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpClientResponse, services
   }
 
   def cache(journeyName: String, data: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    httpHandler
+    httpClientResponse
       .postToApi(
         cacheUrl(journeyName),
         data
@@ -82,13 +88,13 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpClientResponse, services
       .getOrElse(Map.empty[String, String]) // TODO - To remove one at a time to avoid an overextended change
 
   def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[Done] =
-    httpHandler
+    httpClientResponse
       .deleteFromApi(cacheUrl(journeyName))
       .map(_ => Done)
       .getOrElse(Done) // TODO - To remove one at a time to avoid an overextended change
 
   def flushWithEmpId(journeyName: String, empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
-    httpHandler
+    httpClientResponse
       .deleteFromApi(cacheUrl(s"$journeyName/$empId"))
       .map(_ => Done)
       .getOrElse(Done) // TODO - To remove one at a time to avoid an overextended change
@@ -96,7 +102,7 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpClientResponse, services
   def testOnlyCacheUrl(journeyName: String): String = s"$serviceUrl/tai/test-only/journey-cache/$journeyName"
 
   def delete(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler
+    httpClientResponse
       .deleteFromApi(testOnlyCacheUrl(journeyName))
       .map(_ => TaiSuccessResponse)
       .getOrElse(TaiSuccessResponse) // TODO - To remove one at a time to avoid an overextended change

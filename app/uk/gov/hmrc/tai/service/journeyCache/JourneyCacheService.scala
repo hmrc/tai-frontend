@@ -17,8 +17,11 @@
 package uk.gov.hmrc.tai.service.journeyCache
 
 import akka.Done
+import cats.data.EitherT
+import cats.implicits.catsStdInstancesForFuture
 import play.api.Logging
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.http.Status.NO_CONTENT
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -103,8 +106,16 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
       }
     }
 
-  def currentCache(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    journeyCacheConnector.currentCache(journeyName)
+  def currentCache(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Map[String, String]] =
+    journeyCacheConnector.currentCache(journeyName).fold(
+      _ => Map.empty[String, String],
+      result =>
+        if (result.status == NO_CONTENT) {
+          Map.empty[String, String]
+        } else {
+          result.json.as[Map[String, String]]
+        }
+    )
 
   def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] =
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
