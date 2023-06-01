@@ -83,7 +83,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   }
 
   "tax code comparison" should {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
 
     behave like pageWithTitle(Messages("taxCode.change.journey.preHeading"))
 
@@ -115,7 +115,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       doc must haveLinkElement(
         "" +
           "check-your-tax-button",
-        routes.TaxCodeChangeController.yourTaxFreeAmount.url,
+        routes.TaxCodeChangeController.yourTaxFreeAmount().url,
         Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
       )
     }

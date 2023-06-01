@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
-import builders.RequestBuilder
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -57,7 +56,6 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = service.taxFreeAmountComparison(nino)
 
       Await.result(result, 5.seconds) mustBe expectedModel
@@ -88,7 +86,6 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = service.taxFreeAmountComparison(nino)
 
       Await.result(result, 5.seconds) mustBe expectedModel

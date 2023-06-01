@@ -27,9 +27,9 @@
 @this(main: MainTemplate)
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: AuthenticatedRequest[_], messages: Messages, ec : scala.concurrent.ExecutionContext)
+)(implicit request: AuthenticatedRequest[_], messages: Messages)
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
         preHeadingText = messages("tai.yourIncome.preHeading"),
@@ -45,7 +45,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
     <div class="govuk-grid-row">

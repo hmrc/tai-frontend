@@ -106,12 +106,12 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveH2HeadingWithText(headerText)
     }
 
-  def pageWithBackLink: Unit =
+  def pageWithBackLink(): Unit =
     "have a back link" in {
       doc must haveBackLink
     }
 
-  def pageWithBackLinkNew: Unit =
+  def pageWithBackLinkNew(): Unit =
     "have a back link" in {
       doc must haveBackLinkNew
     }

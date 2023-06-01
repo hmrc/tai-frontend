@@ -35,7 +35,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       messages("tai.confirmAndSend")
     )
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev))
-    behave like pageWithCheckYourAnswersSummaryNew
+    behave like pageWithCheckYourAnswersSummaryNew()
 
     "display a back button" which {
       "links to the add telephone form page" when {
@@ -55,21 +55,21 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(1, viewModel.whatYouToldUs)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         1,
-        controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url
+        controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(2, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(2, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+        controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(3, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(3, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
-        controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+        controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
       )
     }
 

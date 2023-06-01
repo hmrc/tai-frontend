@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
+import controllers.auth.{AuthAction, AuthenticatedRequest}
 import javax.inject.Inject
 import cats.implicits._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -57,13 +57,12 @@ class PayeControllerHistoric @Inject() (
     val nino = request.taiUser.nino
 
     if (taxYear >= TaxYear()) {
-      Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage))
+      Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
       (
         employmentService.employments(nino, taxYear),
         taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
       ).mapN { case (employments, hasTaxCodeRecordsInYearPerEmployment) =>
-        implicit val user: AuthedUser = request.taiUser
         if (isRtiUnavailable(employments)) {
           Ok(
             RtiDisabledHistoricPayAsYouEarnView(

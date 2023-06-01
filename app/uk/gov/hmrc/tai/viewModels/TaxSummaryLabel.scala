@@ -20,12 +20,9 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, EstimatedTaxYouOweThisYear, TaxComponentType, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.util.MonetaryUtil
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CompanyCarMakeModel
-
-import scala.util.Try
 
 case class TaxSummaryLabel(value: String, link: Option[HelpLink] = None)
 
@@ -78,7 +75,7 @@ object TaxSummaryLabel {
   ): Option[HelpLink] =
     taxComponentType match {
       case UnderPaymentFromPreviousYear =>
-        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url
+        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url
         val id = "underPaymentFromPreviousYear"
         Some(
           HelpLink(
@@ -92,7 +89,7 @@ object TaxSummaryLabel {
         )
 
       case EstimatedTaxYouOweThisYear =>
-        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url
+        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url
         val id = "estimatedTaxOwedLink"
         Some(
           HelpLink(

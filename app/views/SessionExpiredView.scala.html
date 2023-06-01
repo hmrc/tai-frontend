@@ -35,7 +35,7 @@ showPtaAccountNav = false) {
             <p class="govuk-body">@messages("session_expired.guidance")</p>
 
             @includes.link(
-                url=routes.TaxAccountSummaryController.onPageLoad.toString,
+                url=routes.TaxAccountSummaryController.onPageLoad().url,
                 copy=messages("tai.unauthorised.button-text"),
                 linkClasses=Seq("button margin-bottom-large")
             )

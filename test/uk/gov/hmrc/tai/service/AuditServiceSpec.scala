@@ -20,7 +20,6 @@ import java.time._
 
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.{Authorization, ForwardedFor, RequestId, SessionId}
@@ -52,13 +51,8 @@ class AuditServiceSpec extends BaseSpec {
         val eventName = "testEvent"
         val eventDetails = Map("nino" -> nino.nino)
         val testPath = "/test-path"
-        val ingoredPath = "/ignored-path"
 
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-
-        implicit val hc = HeaderCarrier()
-        implicit val request =
-          FakeRequest().withSession((AuthProvider, AuthProviderGG)).withHeaders(("Referer", ingoredPath))
 
         val stuff = sut.createAndSendAuditEvent("testEvent", testPath, eventDetails)
 
@@ -142,7 +136,6 @@ class AuditServiceSpec extends BaseSpec {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
         implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         val employment =
           Employment("The Man Plc", Live, None, LocalDate.parse("2016-06-09"), None, Nil, "", "", 1, None, false, false)
@@ -166,7 +159,6 @@ class AuditServiceSpec extends BaseSpec {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
         implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await
           .result(
@@ -573,8 +565,7 @@ class AuditServiceSpec extends BaseSpec {
       "fuelEndDate is provided" in {
         val sut = createSUT
         implicit val hc = HeaderCarrier()
-        implicit val request =
-          FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
+
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         val result = Await.result(
@@ -594,8 +585,6 @@ class AuditServiceSpec extends BaseSpec {
       "no fuelEndDate is provided" in {
         val sut = createSUT
         implicit val hc = HeaderCarrier()
-        implicit val request =
-          FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 

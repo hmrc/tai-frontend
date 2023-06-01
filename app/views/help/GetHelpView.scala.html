@@ -16,15 +16,15 @@
 
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.ptaHeader
-@import scala.concurrent.ExecutionContext
+
 
 @this(mainTemplate: MainTemplate)
 
 @(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.AuthedUser, ec: ExecutionContext)
+user: controllers.auth.AuthedUser)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.getHelp.h1"),
         preHeadingText = Messages("tai.iya.tax.you.owe.preHeading"),
@@ -42,7 +42,7 @@ user: controllers.auth.AuthedUser, ec: ExecutionContext)
 
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">
-        @header
+        @header()
 
         <p class="govuk-body">@Messages("tai.getHelp.p1")</p>
         

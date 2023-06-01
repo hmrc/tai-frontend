@@ -23,8 +23,7 @@
 @(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
-    user: controllers.auth.AuthedUser,
-    ec: scala.concurrent.ExecutionContext
+    user: controllers.auth.AuthedUser
 )
 
 @main(
@@ -50,7 +49,7 @@
             </p>
 
             @govukButton(Button(
-                href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString),
+                href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url.toString),
                 content = Text(messages("return.to.your.income.tax.summary"))
             ))
         </div>

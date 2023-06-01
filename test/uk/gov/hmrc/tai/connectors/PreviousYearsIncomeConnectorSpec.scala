@@ -35,7 +35,7 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(meq(s"/tai/$nino/employments/years/2016/update"), meq(model))(any(), any(), any(), any())
+          .postToApi(meq(s"/tai/$nino/employments/years/2016/update"), meq(model))(any(), any(), any())
       )
         .thenReturn(Future.successful(HttpResponse.apply(200, json.toString)))
 

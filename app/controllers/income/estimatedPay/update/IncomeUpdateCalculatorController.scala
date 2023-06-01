@@ -34,7 +34,6 @@ import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionSe
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
@@ -128,24 +127,26 @@ class IncomeUpdateCalculatorController @Inject() (
         .map { mandatoryJourneyValues =>
           val incomeName :: newAmount :: incomeType :: _ = mandatoryJourneyValues.toList
 
-          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-            formWithErrors => {
-              val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-                DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
-              } else {
-                DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
-              }
+          DuplicateSubmissionWarningForm.createForm
+            .bindFromRequest()
+            .fold(
+              formWithErrors => {
+                val vm = if (incomeType == TaiConstants.IncomeTypePension) {
+                  DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+                } else {
+                  DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+                }
 
-              BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId))
-            },
-            success =>
-              success.yesNoChoice match {
-                case Some(FormValuesConstants.YesValue) =>
-                  Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId))
-                case Some(FormValuesConstants.NoValue) =>
-                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-              }
-          )
+                BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId))
+              },
+              success =>
+                success.yesNoChoice match {
+                  case Some(FormValuesConstants.YesValue) =>
+                    Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId))
+                  case Some(FormValuesConstants.NoValue) =>
+                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+                }
+            )
         }
   }
 
@@ -187,9 +188,9 @@ class IncomeUpdateCalculatorController @Inject() (
 
           val backUrl = bonusPaymentAmount match {
             case None =>
-              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
+              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
             case _ =>
-              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage.url
+              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
           }
 
           val viewModel = CheckYourAnswersViewModel(
@@ -228,7 +229,7 @@ class IncomeUpdateCalculatorController @Inject() (
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
       if (employmentAmount.newAmount == income.oldAmount) {
-        Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay)
+        Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
       } else {
         Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
       }

@@ -28,8 +28,8 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
   private val updateIncomeCYPlus1Start = inject[UpdateIncomeCYPlus1StartView]
 
   "CYPlus1 Start Page" should {
-    behave like pageWithBackLink
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
+    behave like pageWithBackLink()
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.updateIncome.CYPlus1.start.heading", employerName)

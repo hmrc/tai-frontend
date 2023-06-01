@@ -27,7 +27,6 @@ import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Random
 
 class IncomeServiceSpec extends BaseSpec {
 
@@ -35,6 +34,7 @@ class IncomeServiceSpec extends BaseSpec {
     "return employment amount" when {
       "valid inputs are passed" in {
         val sut = createSUT
+
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -64,6 +64,7 @@ class IncomeServiceSpec extends BaseSpec {
     "return an error" when {
       "employment details not found" in {
         val sut = createSUT
+
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -77,6 +78,7 @@ class IncomeServiceSpec extends BaseSpec {
 
       "income not found" in {
         val sut = createSUT
+
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -90,6 +92,7 @@ class IncomeServiceSpec extends BaseSpec {
 
       "employment not found" in {
         val sut = createSUT
+
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -104,6 +107,7 @@ class IncomeServiceSpec extends BaseSpec {
     "return latest payment" when {
       "valid inputs are passed" in {
         val sut = createSUT
+
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -116,6 +120,7 @@ class IncomeServiceSpec extends BaseSpec {
     "return none" when {
       "employment details are not found" in {
         val sut = createSUT
+
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
@@ -123,6 +128,7 @@ class IncomeServiceSpec extends BaseSpec {
 
       "payments details are not present" in {
         val sut = createSUT
+
         val annualAccount = AnnualAccount(TaxYear(), Available, Seq.empty[Payment], Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -136,6 +142,7 @@ class IncomeServiceSpec extends BaseSpec {
     "return calculated pay" when {
       "cache is empty and start date is not available" in {
         val sut = createSUT
+
         val payDetails = PayDetails("", Some(0), None, Some(0), None, None)
 
         when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))

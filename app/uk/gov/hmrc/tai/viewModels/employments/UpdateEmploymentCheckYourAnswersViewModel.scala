@@ -40,12 +40,12 @@ case class UpdateEmploymentCheckYourAnswersViewModel(
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
       messages("tai.checkYourAnswers.contactByPhone"),
       contactByPhone,
-      controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url
+      controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
     )
     val phoneNumberLine = CheckYourAnswersConfirmationLine(
       messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
-      controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url
+      controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
     )
 
     if (contactByPhone == messages("tai.label.yes")) {

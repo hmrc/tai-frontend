@@ -83,7 +83,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       ).mapN {
         case (_, Left(value)) =>
           logger.error(value)
-          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad))
+          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
         case (maybePayment, Right(Some(tci))) =>
           journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, maybePayment)).map { _ =>
             val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
@@ -118,7 +118,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
             } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay)
+              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
             } else {
               val vm =
                 ConfirmAmountEnteredViewModel(

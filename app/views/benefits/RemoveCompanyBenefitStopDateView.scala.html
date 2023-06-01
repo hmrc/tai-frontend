@@ -29,7 +29,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukDateInput: GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(stopDateForm: Form[LocalDate],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(stopDateForm: Form[LocalDate],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -37,14 +37,14 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.benefits.routes.CompanyBenefitController.decision.url),
+    backLinkUrl = Some(controllers.benefits.routes.CompanyBenefitController.decision().url),
     formForErrorSummary = Some(stopDateForm)
 ){
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
-        @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate, Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
+        @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
             @if(stopDateForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
@@ -86,7 +86,7 @@
 
         }
 
-        @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
+        @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url)))
 
         </div>
     </div>

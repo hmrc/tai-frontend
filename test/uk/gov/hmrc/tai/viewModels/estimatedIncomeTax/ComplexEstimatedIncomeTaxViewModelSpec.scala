@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.language.postfixOps
 
 class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
 

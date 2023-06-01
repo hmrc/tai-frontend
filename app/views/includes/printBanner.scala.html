@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(preHeadingText: String, maybeUserName: Option[String] = None)(implicit m: Messages)
+@(preHeadingText: String, maybeUserName: Option[String] = None)
 
 @printDisplayName = {
     @maybeUserName.getOrElse(preHeadingText)

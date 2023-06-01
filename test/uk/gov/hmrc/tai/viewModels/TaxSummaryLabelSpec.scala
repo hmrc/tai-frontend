@@ -90,7 +90,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
     "show the underpayment explanation link" when {
       "tax component type is an underPaymentFromPreviousYear" in {
-        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url
+        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url
         val id = "underPaymentFromPreviousYear"
         val link =
           Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", "£234"), href, id))
@@ -107,7 +107,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
       }
 
       "tax component type is an EstimatedTaxYouOweThisYear" in {
-        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url
+        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url
         val id = "estimatedTaxOwedLink"
         val link =
           Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£456"), href, id))

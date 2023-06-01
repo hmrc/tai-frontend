@@ -47,29 +47,29 @@ object CheckYourAnswersViewModel {
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q1"),
           pensionProviderName,
-          controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+          controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q2"),
           Dates.formatDate(LocalDate.parse(pensionStartDate)),
-          controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url
+          controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q3"),
           pensionRefNo,
-          controllers.pensions.routes.AddPensionProviderController.addPensionNumber.url
+          controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q4"),
           contactableByPhone,
-          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
         )
       )
       val optionalPhoneNoLine = phoneNumber map {
         CheckYourAnswersConfirmationLine(
           Messages("tai.phoneNumber"),
           _,
-          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url
+          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
         )
       }
       if (optionalPhoneNoLine.isDefined) mandatoryLines :+ optionalPhoneNoLine.get else mandatoryLines
@@ -80,12 +80,12 @@ object CheckYourAnswersViewModel {
 
     CheckYourAnswersViewModel(
       Messages("add.missing.pension"),
-      controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url,
+      controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url,
       Messages("tai.addPensionProvider.cya.title"),
       journeyConfirmationLines,
       postConfirmationText,
-      controllers.pensions.routes.AddPensionProviderController.submitYourAnswers.url,
-      controllers.pensions.routes.AddPensionProviderController.cancel.url
+      controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url,
+      controllers.pensions.routes.AddPensionProviderController.cancel().url
     )
   }
 }

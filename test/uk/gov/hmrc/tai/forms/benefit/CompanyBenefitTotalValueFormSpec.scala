@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.forms.benefit
 
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages}
-import play.api.libs.json.Json
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 import utils.BaseSpec
 
@@ -26,26 +25,26 @@ class CompanyBenefitTotalValueFormSpec extends BaseSpec {
 
   "Company Benefit Total Value Form" must {
     "return no error with valid data" in {
-      val totalValue = form.bind(Json.obj("totalValue" -> "1,000"))
+      val totalValue = form.bind(Map("totalValue" -> "1,000"))
 
       totalValue.errors mustBe empty
     }
 
     "return error" when {
       "passed empty value" in {
-        val totalValue = form.bind(Json.obj("totalValue" -> ""))
+        val totalValue = form.bind(Map("totalValue" -> ""))
 
         totalValue.errors must contain(FormError("totalValue", List(Messages("tai.interest.blank"))))
       }
 
       "passed characters" in {
-        val totalValue = form.bind(Json.obj("totalValue" -> "dasdas"))
+        val totalValue = form.bind(Map("totalValue" -> "dasdas"))
 
         totalValue.errors must contain(FormError("totalValue", Messages("tai.interest.isCurrency")))
       }
 
       "entered (,) at wrong place" in {
-        val totalValue = form.bind(Json.obj("totalValue" -> "1,00"))
+        val totalValue = form.bind(Map("totalValue" -> "1,00"))
 
         totalValue.errors must contain(FormError("totalValue", Messages("tai.interest.isCurrency")))
       }

@@ -24,7 +24,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -78,8 +77,8 @@ class EndEmploymentController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("tai.endEmployment.preHeadingText"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.EndEmploymentController.endEmploymentPage.url,
-      controllers.employments.routes.EndEmploymentController.submitTelephoneNumber.url,
+      controllers.employments.routes.EndEmploymentController.endEmploymentPage().url,
+      controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url,
       controllers.employments.routes.EndEmploymentController.cancel(employmentId).url
     )
 
@@ -103,13 +102,13 @@ class EndEmploymentController @Inject() (
   private def redirectToWarningOrDecisionPage(
     journeyCacheFuture: Future[Map[String, String]],
     successfulJourneyCacheFuture: Future[Option[String]]
-  )(implicit hc: HeaderCarrier): Future[Result] =
+  ): Future[Result] =
     for {
       _                      <- journeyCacheFuture
       successfulJourneyCache <- successfulJourneyCacheFuture
     } yield successfulJourneyCache match {
-      case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning)
-      case _       => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision)
+      case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
+      case _       => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
     }
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -140,7 +139,7 @@ class EndEmploymentController @Inject() (
         .flatMap { mandatoryJourneyValues =>
           UpdateRemoveEmploymentForm
             .form(mandatoryJourneyValues.head)
-            .bindFromRequest
+            .bindFromRequest()
             .fold(
               formWithErrors =>
                 Future(
@@ -183,14 +182,14 @@ class EndEmploymentController @Inject() (
                             AuditConstants.EndEmploymentWithinSixWeeksError,
                             Map("nino" -> nino.nino)
                           )
-                        Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError)
+                        Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
                       }
                     } else if (hasIrregularPayment) {
                       auditService
                         .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino.nino))
-                      Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError))
+                      Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError()))
                     } else {
-                      Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage))
+                      Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
                     }
                   } recover { case _ =>
                     NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
@@ -245,22 +244,24 @@ class EndEmploymentController @Inject() (
         .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
         .getOrFail
         .map { mandatoryJourneyValues =>
-          IrregularPayForm.createForm.bindFromRequest.fold(
-            formWithErrors =>
-              BadRequest(
-                endEmploymentIrregularPaymentError(
-                  formWithErrors,
-                  EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
-                )
-              ),
-            formData =>
-              formData.irregularPayDecision match {
-                case Some(IrregularPayConstants.ContactEmployer) =>
-                  Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
-                case _ =>
-                  Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage)
-              }
-          )
+          IrregularPayForm.createForm
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                BadRequest(
+                  endEmploymentIrregularPaymentError(
+                    formWithErrors,
+                    EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
+                  )
+                ),
+              formData =>
+                formData.irregularPayDecision match {
+                  case Some(IrregularPayConstants.ContactEmployer) =>
+                    Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+                  case _ =>
+                    Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+                }
+            )
         }
   }
 
@@ -301,18 +302,20 @@ class EndEmploymentController @Inject() (
       val nino = user.nino
       employmentService.employment(nino, employmentId).flatMap {
         case Some(employment) =>
-          EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
-              ),
-            date => {
-              val employmentJourneyCacheData = Map(EndEmploymentConstants.EndDateKey -> date.toString)
-              journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
-                Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber)
+          EmploymentEndDateForm(employment.name).form
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
+                ),
+              date => {
+                val employmentJourneyCacheData = Map(EndEmploymentConstants.EndDateKey -> date.toString)
+                journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
+                  Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+                }
               }
-            }
-          )
+            )
         case _ => Future.successful(NotFound(errorPagesHandler.error4xxPageWithLink("No employment found")))
       }
   }
@@ -365,7 +368,7 @@ class EndEmploymentController @Inject() (
             case _ => mandatoryData ++ Map(EndEmploymentConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers)
+            Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
           }
         }
       )
@@ -373,8 +376,6 @@ class EndEmploymentController @Inject() (
 
   def endEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-
       journeyCacheService
         .collectedJourneyValues(
           Seq(
@@ -392,8 +393,8 @@ class EndEmploymentController @Inject() (
               incomeSourceEnd = mandatoryValues(1),
               contactableByPhone = mandatoryValues(2),
               phoneNumber = optionalSeq.head,
-              backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url,
-              submissionUrl = controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url,
+              backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
+              submissionUrl = controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
               cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url
             )
             Ok(addIncomeCheckYourAnswers(model))
@@ -421,8 +422,8 @@ class EndEmploymentController @Inject() (
         _ <- successfulJourneyCacheService.cache(
                Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
              )
-        _ <- journeyCacheService.flush
-      } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage)
+        _ <- journeyCacheService.flush()
+      } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
   }
 
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -450,19 +451,21 @@ class EndEmploymentController @Inject() (
         .flatMap { mandatoryValues =>
           val empId = mandatoryValues(1).toInt
 
-          DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-            formWithErrors =>
-              Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues.head, empId))),
-            success =>
-              success.yesNoChoice match {
-                case Some(FormValuesConstants.YesValue) =>
-                  Future.successful(
-                    Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision)
-                  )
-                case Some(FormValuesConstants.NoValue) =>
-                  Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-              }
-          )
+          DuplicateSubmissionWarningForm.createForm
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues.head, empId))),
+              success =>
+                success.yesNoChoice match {
+                  case Some(FormValuesConstants.YesValue) =>
+                    Future.successful(
+                      Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+                    )
+                  case Some(FormValuesConstants.NoValue) =>
+                    Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+                }
+            )
         }
   }
 

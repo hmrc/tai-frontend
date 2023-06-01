@@ -66,13 +66,13 @@ class UpdateEmploymentCheckYourAnswersViewModelSpec extends BaseSpec {
   private lazy val contactByPhoneLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.contactByPhone"),
     "Yes",
-    controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url
+    controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
   )
 
   private lazy val phoneNumberLine = CheckYourAnswersConfirmationLine(
     Messages("tai.phoneNumber"),
     "1234567890",
-    controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url
+    controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
   )
 
 }

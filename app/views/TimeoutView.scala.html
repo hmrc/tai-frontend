@@ -18,7 +18,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@()(implicit request: Request[_], messages: Messages, ec: scala.concurrent.ExecutionContext)
+@()(implicit request: Request[_], messages: Messages)
 
 
 
@@ -36,7 +36,7 @@
         <p class="govuk-body">@messages("tai.timeout.message")</p>
         <p class="govuk-body">@messages("tai.timeout.message.pleaseLogin")</p>
         @includes.link(
-            url=routes.TaxAccountSummaryController.onPageLoad.toString,
+            url=routes.TaxAccountSummaryController.onPageLoad().url,
             copy=messages("tai.timeout.login_button.text"),
             linkClasses=Seq("govuk-button")
         )

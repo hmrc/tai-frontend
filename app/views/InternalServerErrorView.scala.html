@@ -16,11 +16,11 @@
 
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import scala.concurrent.ExecutionContext
+
 
 @this(mainTemplate: MainTemplate)
 
-@(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, ec: ExecutionContext)
+@(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
 
 @mainTemplate(
     title = messages("global.error.InternalServerError500.tai.title"),

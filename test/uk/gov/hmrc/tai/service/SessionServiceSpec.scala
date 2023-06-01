@@ -29,7 +29,7 @@ class SessionServiceSpec extends BaseSpec {
   "Session Service" must {
     "invalidate the cache" in {
       val sut = new SUT
-      when(sessionConnector.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(200)))
+      when(sessionConnector.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(200, "")))
 
       val result = Await.result(sut.invalidateCache()(HeaderCarrier()), 5.seconds)
 

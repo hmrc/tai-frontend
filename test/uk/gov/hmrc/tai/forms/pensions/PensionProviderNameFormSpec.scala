@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.forms.pensions
 
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages}
-import play.api.libs.json.Json
+import play.api.i18n.Messages
 import utils.BaseSpec
 
 class PensionProviderNameFormSpec extends BaseSpec {
@@ -48,6 +47,6 @@ class PensionProviderNameFormSpec extends BaseSpec {
 
   private val form = PensionProviderNameForm.form
 
-  private val validName = Json.obj("pensionProviderName" -> "the employer name")
-  private val emptyName = Json.obj("pensionProviderName" -> "")
+  private val validName = Map("pensionProviderName" -> "the employer name")
+  private val emptyName = Map("pensionProviderName" -> "")
 }

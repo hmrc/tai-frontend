@@ -22,7 +22,7 @@
 @this(mainTemplate: MainTemplate)
 
 @( payYTD: BigDecimal = 0, payDate: java.time.LocalDate, id: Int, employerId: Int)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+user: controllers.auth.AuthedUser)
 
 @mainTemplate(
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),

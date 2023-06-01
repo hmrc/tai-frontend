@@ -62,25 +62,25 @@ class UpdatePensionCheckYourAnswersViewModelSpec extends BaseSpec {
   private lazy val receivePensionLine = CheckYourAnswersConfirmationLine(
     Messages("tai.updatePension.cya.currentlyReceivePension"),
     Messages("tai.label.yes"),
-    controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension.url
+    controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
   )
 
   private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.whatYouToldUs"),
     "My pension decreased",
-    controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url
+    controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
   )
 
   private lazy val contactByPhoneLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.contactByPhone"),
     "Yes",
-    controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+    controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
   )
 
   private lazy val phoneNumberLine = CheckYourAnswersConfirmationLine(
     Messages("tai.phoneNumber"),
     "1234567890",
-    controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+    controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
   )
 
 }

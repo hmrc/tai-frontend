@@ -51,7 +51,7 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     inject[ErrorPagesHandler]
   )
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(taxAccountService)
 
   "renderTaxCodes" must {

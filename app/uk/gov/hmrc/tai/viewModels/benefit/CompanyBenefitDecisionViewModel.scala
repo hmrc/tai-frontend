@@ -32,7 +32,7 @@ object CompanyBenefitDecisionViewModel {
     messages: Messages
   ): CompanyBenefitDecisionViewModel = {
     val formattedBenefitName =
-      (raw"(B|b)enefit(s)?".r replaceAllIn (messages(s"tai.taxFreeAmount.table.taxComponent.$benefitType"), "")).trim
+      raw"(B|b)enefit(s)?".r.replaceAllIn(messages(s"tai.taxFreeAmount.table.taxComponent.$benefitType"), "").trim
     new CompanyBenefitDecisionViewModel(formattedBenefitName, employerName, decisionForm, employerId)
   }
 

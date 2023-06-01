@@ -35,7 +35,7 @@ class TaiLanguageControllerSpec extends BaseSpec {
 
         val result = sut.english()(FakeRequest())
 
-        redirectLocation(result) mustBe Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+        redirectLocation(result) mustBe Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       }
     }
   }

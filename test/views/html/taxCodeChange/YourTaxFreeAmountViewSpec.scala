@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCate
 class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
   "your tax free amount" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     behave like pageWithTitle(Messages("taxCode.change.yourTaxFreeAmount.title"))
 
@@ -116,7 +116,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     "have a 'see what happens next' button" in {
       doc must haveLinkElement(
         "seeWhatHappensNext",
-        routes.TaxCodeChangeController.whatHappensNext.url,
+        routes.TaxCodeChangeController.whatHappensNext().url,
         messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")
       )
     }

@@ -28,7 +28,7 @@ class ConfirmationViewSpec extends TaiViewSpec {
   "Confirmation View" must {
 
     behave like pageWithTitle(messages("tai.employmentConfirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad)
+    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
 
   }
 }

@@ -19,8 +19,7 @@
 @this(main: MainTemplate)
 
 @(incomeName: String, id: Int, totalEstimatedIncome: String, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser,
-ec: scala.concurrent.ExecutionContext)
+messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @import includes.ptaHeader
@@ -28,7 +27,7 @@ ec: scala.concurrent.ExecutionContext)
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.link
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.incomes.landing.Heading", incomeName),
         showGdsVersion = true,
@@ -46,12 +45,12 @@ ec: scala.concurrent.ExecutionContext)
 ){
     <div class="govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">@messages("tai.incomes.landing.intro")</p>
             <a id="updateEstimatedPayTotalIncome" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</a>
-            <p id="updateEstimatedPayLink" aria-hidden="true" ><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax">@messages("tai.incomes.landing.employment.affect")</a></p>
+            <p id="updateEstimatedPayLink" aria-hidden="true" ><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax().url">@messages("tai.incomes.landing.employment.affect")</a></p>
             <p class="govuk-body carry-over">
                 @if(isPension) {
                     @messages("tai.incomes.landing.pension.ended", incomeName)

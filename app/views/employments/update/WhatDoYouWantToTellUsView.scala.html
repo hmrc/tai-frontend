@@ -14,8 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{submit, textArea}
-@import includes.{cancelLink, ptaHeader}
+@import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
@@ -24,7 +23,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
-@import scala.concurrent.ExecutionContext
+
 
 
 @this(main: MainTemplate,
@@ -38,17 +37,8 @@
 @(viewmodel: EmploymentViewModel, updateEmploymentDetailsForm: Form[String]
 )( implicit request: Request[_],
     user: controllers.auth.AuthedUser,
-    messages: Messages,
-    ec: ExecutionContext
+    messages: Messages
 )
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(updateEmploymentDetailsForm),
-        mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName),
-        preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
-    )
-}
 
 @main(
     title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"),
@@ -56,7 +46,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.toString),
+    backLinkUrl = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url),
     formForErrorSummary = Some(updateEmploymentDetailsForm),
 ) {
 

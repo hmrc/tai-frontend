@@ -18,14 +18,14 @@
 @import java.time.LocalDate
 @import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
 @import includes.ptaHeader
-@import scala.concurrent.ExecutionContext
+
 
 @this(mainTemplate: MainTemplate)
 
-@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: ExecutionContext)
+@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading"),
         preHeadingText = Messages("tai.endEmployment.preHeadingText"),
@@ -41,7 +41,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
     <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>
     <p class="govuk-body">@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.employerName, model.latestPayDate, model.earliestUpdateDateInHtml)</p>
     <ul class="govuk-list govuk-list--bullet">
@@ -54,7 +54,7 @@
         @includes.link(
             id=Some("returnToYourSummary"),
             copy=Messages("return.to.your.income.tax.summary"),
-            url = routes.TaxAccountSummaryController.onPageLoad.url,
+            url = routes.TaxAccountSummaryController.onPageLoad().url,
             linkClasses=Seq("govuk-button","govuk-!-margin-top-4")
         )
     </div>

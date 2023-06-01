@@ -16,11 +16,10 @@
 
 @import includes.ptaHeader
 @import includes.cancelLink
-@import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
 @import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-@import scala.concurrent.ExecutionContext
+
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -29,7 +28,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(yesNoForm: Form[YesNoForm], employer: IncomeSource, backUrl: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: ExecutionContext)
+@(yesNoForm: Form[YesNoForm], employer: IncomeSource, backUrl: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @main(
     title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),

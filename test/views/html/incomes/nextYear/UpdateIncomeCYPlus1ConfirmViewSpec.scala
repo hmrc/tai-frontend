@@ -43,7 +43,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
   override lazy val view: Html = template(vm)
 
   "Edit income Irregular Hours view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithTitle(messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeBreak))
     behave like pageWithCombinedHeaderNewFormat(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),

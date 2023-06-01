@@ -27,7 +27,7 @@ class WorkingHoursViewSpec extends TaiViewSpec {
   val employerName = "Employer"
 
   "How to update view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
 
     "display label with heading" in {

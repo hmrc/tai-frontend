@@ -17,20 +17,20 @@
 package controllers.i18n
 
 import javax.inject.Inject
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 
-class TaiLanguageController @Inject() (languageUtils: LanguageUtils, cc: ControllerComponents)(implicit
-  messagesApi: MessagesApi
-) extends LanguageController(languageUtils, cc) {
+class TaiLanguageController @Inject() (languageUtils: LanguageUtils, cc: ControllerComponents)
+    extends LanguageController(languageUtils, cc) {
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy")
   )
 
-  override protected def fallbackURL: String = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+  override protected def fallbackURL: String =
+    controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
 
   def english(): Action[AnyContent] = switchToLanguage(language = "english")
   def welsh(): Action[AnyContent] = switchToLanguage(language = "cymraeg")

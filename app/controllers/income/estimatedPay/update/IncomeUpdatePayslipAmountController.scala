@@ -20,7 +20,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.{Inject, Named}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import cats.implicits._
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipDeductionsForm, PayslipForm, TaxablePayslipForm}
@@ -73,7 +73,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
         Ok(payslipAmount(viewModel))
 
       case Left(_) =>
-        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -95,7 +95,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
               case Right(incomeSource) =>
                 val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
                 Future.successful(BadRequest(payslipAmount(viewModel)))
-              case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
+              case Left(_) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
             },
           {
             case PayslipForm(Some(value)) =>
@@ -103,9 +103,9 @@ class IncomeUpdatePayslipAmountController @Inject() (
                 UpdateIncomeConstants.TotalSalaryKey,
                 Map(UpdateIncomeConstants.TotalSalaryKey -> value)
               ) map { _ =>
-                Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage)
+                Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage())
               }
-            case _ => Future.successful(Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage))
+            case _ => Future.successful(Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage()))
           }
         )
     }.flatten
@@ -113,8 +113,6 @@ class IncomeUpdatePayslipAmountController @Inject() (
   }
 
   def taxablePayslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
     val mandatoryKeys = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
     val optionalKeys =
       Seq(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey, UpdateIncomeConstants.TaxablePayKey)
@@ -132,13 +130,11 @@ class IncomeUpdatePayslipAmountController @Inject() (
         }
         Ok(taxablePayslipAmount(viewModel))
 
-      case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+      case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
   def handleTaxablePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
@@ -159,7 +155,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
                   TaxablePaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, incomeSource)
                 Future.successful(BadRequest(taxablePayslipAmount(viewModel)))
               case Left(_) =>
-                Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
+                Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
             },
           formData =>
             formData.taxablePay match {
@@ -168,9 +164,9 @@ class IncomeUpdatePayslipAmountController @Inject() (
                   UpdateIncomeConstants.TaxablePayKey,
                   Map(UpdateIncomeConstants.TaxablePayKey -> taxablePay)
                 ) map { _ =>
-                  Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage)
+                  Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage())
                 }
-              case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage))
+              case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))
             }
         )
     }.flatten
@@ -187,7 +183,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
         case (Right(incomeSource), payslipDeductions) =>
           val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
           Ok(payslipDeductionsView(form, incomeSource))
-        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
   }
 
@@ -203,7 +199,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
           } yield incomeSourceEither match {
             case Right(incomeSource) => BadRequest(payslipDeductionsView(formWithErrors, incomeSource))
-            case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+            case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         formData =>
           formData.payslipDeductions match {
@@ -212,17 +208,17 @@ class IncomeUpdatePayslipAmountController @Inject() (
                 UpdateIncomeConstants.PayslipDeductionsKey,
                 Map(UpdateIncomeConstants.PayslipDeductionsKey -> payslipDeductions)
               ) map { _ =>
-                Redirect(routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage)
+                Redirect(routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage())
               }
             case Some(payslipDeductions) =>
               journeyCache(
                 UpdateIncomeConstants.PayslipDeductionsKey,
                 Map(UpdateIncomeConstants.PayslipDeductionsKey -> payslipDeductions)
               ) map { _ =>
-                Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage)
+                Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage())
               }
 
-            case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage))
+            case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))
           }
       )
   }

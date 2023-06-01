@@ -17,21 +17,19 @@
 @import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
-@import includes.forms.{submit, input}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary, govukButton: GovukButton)
 
-@(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_], messages: Messages)
 
 @mainTemplate(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages(viewModel.title),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url),
     formForErrorSummary = Some(viewModel.form)
 
 ){
@@ -53,7 +51,7 @@ messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.Exec
         <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
         <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
 
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount){
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handleTaxablePayslipAmount()){
 
             <div class="govuk-form-group">
                 <div class="govuk-input__wrapper">

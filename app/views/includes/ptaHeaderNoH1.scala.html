@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.forms.errorSummary
+@import includes.errorSummary
 
 @(formForErrorSummary: Option[Form[_]] = None,
 mainHeadingText: String,
@@ -23,10 +23,10 @@ headerWidthClasses: Option[String] = Some("column-two-thirds"),
 preHeadingAccessibleAnnouncement: String = "",
 customBackLinkContent: Option[Html] = None,
 additionalTopLinkContent: Option[Html] = None
-)(implicit m: Messages)
+)(implicit messages: Messages)
 
 @preHeadingHidden = @{
-if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
+if(preHeadingAccessibleAnnouncement=="") messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
 }
 
 <div class="grid-row">

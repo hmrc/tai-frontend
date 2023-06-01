@@ -16,10 +16,7 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.libs.json.Json
 import utils.BaseSpec
 
 class EmploymentNameFormSpec extends BaseSpec {
@@ -49,7 +46,7 @@ class EmploymentNameFormSpec extends BaseSpec {
 
   private val form = EmploymentNameForm.form
 
-  private val validName = Json.obj("employmentName" -> "the employer name")
-  private val emptyName = Json.obj("employmentName" -> "")
+  private val validName = Map("employmentName" -> "the employer name")
+  private val emptyName = Map("employmentName" -> "")
 
 }

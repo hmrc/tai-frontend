@@ -39,7 +39,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec {
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
     behave like pageWithContinueButtonFormNew("continueUrl")
     behave like pageWithYesNoRadioButton(FormValuesConstants.YesNoChoice, FormValuesConstants.YesNoChoice + "-2")
     behave like pageWithCancelLink(Call("GET", "cancelUrl"))

@@ -74,7 +74,7 @@ class AuditService @Inject() (
     numberOfEmployments: Seq[Employment],
     numberOfTaxCodeIncomes: Seq[TaxCodeIncome],
     isJrsTileShown: Boolean
-  )(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
+  )(implicit hc: HeaderCarrier): Future[AuditResult] = {
     val details = Map(
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
@@ -92,7 +92,7 @@ class AuditService @Inject() (
     fuelBenefitDate: Option[String],
     isSuccessful: Boolean,
     path: String
-  )(implicit hc: HeaderCarrier, request: Request[_]): Future[AuditResult] = {
+  )(implicit hc: HeaderCarrier): Future[AuditResult] = {
     val details = Map(
       "nino"          -> nino,
       "employmentId"  -> employmentId,

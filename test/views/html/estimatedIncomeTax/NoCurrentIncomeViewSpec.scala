@@ -35,7 +35,7 @@ class NoCurrentIncomeViewSpec extends TaiViewSpec {
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     "display no current income" in {
       doc(view) must haveParagraphWithText(messages("tai.no.increasesTax"))

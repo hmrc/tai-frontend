@@ -45,7 +45,7 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
       ).replaceU00A0,
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
     behave like pageWithYesNoRadioButton(
       UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice,

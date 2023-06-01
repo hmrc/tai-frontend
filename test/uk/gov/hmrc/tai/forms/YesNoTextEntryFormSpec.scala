@@ -17,8 +17,6 @@
 package uk.gov.hmrc.tai.forms
 
 import play.api.data.validation.{Constraint, Invalid}
-import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import utils.BaseSpec
 
@@ -26,7 +24,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
 
   "YesNoTextEntryFormSpec" must {
     "return no errors with valid 'yes' choice and text field content" in {
-      val validYesChoice = Json.obj(
+      val validYesChoice = Map(
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> "123456"
       )
@@ -37,8 +35,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice and no text field content" in {
-      val validNoChoice = Json
-        .obj(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue, FormValuesConstants.YesNoTextEntry -> "")
+      val validNoChoice =
+        Map(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue, FormValuesConstants.YesNoTextEntry -> "")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -46,8 +44,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice and text field content as space" in {
-      val validNoChoice = Json
-        .obj(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue, FormValuesConstants.YesNoTextEntry -> " ")
+      val validNoChoice =
+        Map(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue, FormValuesConstants.YesNoTextEntry -> " ")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -55,7 +53,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice and text field content" in {
-      val validNoChoice = Json.obj(
+      val validNoChoice = Map(
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
         FormValuesConstants.YesNoTextEntry -> "123456"
       )
@@ -66,7 +64,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return an error for an empty yes/no choice" in {
-      val invalidChoice = Json.obj(FormValuesConstants.YesNoChoice -> "", FormValuesConstants.YesNoTextEntry -> "")
+      val invalidChoice = Map(FormValuesConstants.YesNoChoice -> "", FormValuesConstants.YesNoTextEntry -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List("select yes or no")
@@ -74,7 +72,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return an error for an empty yes/no choice and missing value" in {
-      val invalidChoice = Json.obj(FormValuesConstants.YesNoChoice -> "")
+      val invalidChoice = Map(FormValuesConstants.YesNoChoice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List("select yes or no")
@@ -82,8 +80,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return errors with valid 'yes' choice and no text field content" in {
-      val invalidYesChoice = Json.obj(
-        FormValuesConstants.YesNoChoice    -> Some(FormValuesConstants.YesValue),
+      val invalidYesChoice = Map(
+        FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> ""
       )
       val invalidatedForm = form.bind(invalidYesChoice)
@@ -97,8 +95,8 @@ class YesNoTextEntryFormSpec extends BaseSpec {
       val formWithExtraConstraint =
         YesNoTextEntryForm.form("select yes or no", "enter some text", Some(extraConstraint))
 
-      val validChoiceUntilExtraConstraint = Json.obj(
-        FormValuesConstants.YesNoChoice    -> Some(FormValuesConstants.YesValue),
+      val validChoiceUntilExtraConstraint = Map(
+        FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> "123"
       )
       val invalidatedForm = formWithExtraConstraint.bind(validChoiceUntilExtraConstraint)

@@ -57,7 +57,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
     behave like pageWithContinueButtonFormNew(s"/check-income-tax/end-employment/date/$employmentId")
 
@@ -113,11 +113,11 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
         def view: Html = template(formWithErrors, viewmodel)
-        val errorMessage = doc(view).select(".error-message").text
+        val errorMessage = doc(view).select(".govuk-error-message").text
         val fieldSetError = doc(view).select("form div").hasClass("govuk-form-group--error")
 
         fieldSetError mustBe true
-//        errorMessage mustBe globalErrorMessage
+        errorMessage mustBe "Error: " + globalErrorMessage
       }
     }
 

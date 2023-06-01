@@ -14,8 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.forms.submit
-@import includes.cancelLink
+@import includes.{cancelLink, submit}
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 @import uk.gov.hmrc.tai.util.constants.AddPensionFirstPayChoiceConstants
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -25,7 +24,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @mainTemplate(
     title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
@@ -33,7 +32,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url),
+    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url),
     formForErrorSummary = Some(firstPayForm)
 ) {
 
@@ -44,7 +43,7 @@
             @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay, Symbol("data-dynamic-form") -> "true") {
+        @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
@@ -76,7 +75,7 @@
             @submit()
         }
 
-        @cancelLink(controllers.employments.routes.AddEmploymentController.cancel)
+        @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
     </div>
 </div>
 }

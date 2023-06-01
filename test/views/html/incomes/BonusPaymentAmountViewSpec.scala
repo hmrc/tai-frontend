@@ -33,7 +33,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
   override def view: Html = bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 
   "Bonus payments amount view" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplate(
       messages("tai.bonusPaymentsAmount.preHeading", employer.name),
@@ -61,7 +61,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
     "return no errors when a valid monetary amount is entered" in {
 
       val monetaryAmount = "£10,000"
-      val monetaryAmountRequest = Json.obj("amount" -> monetaryAmount)
+      val monetaryAmountRequest = Map("amount" -> monetaryAmount)
       val validatedForm = bonusPaymentsAmountForm.bind(monetaryAmountRequest)
 
       validatedForm.errors mustBe empty
@@ -75,7 +75,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
             "tai.bonusPaymentsAmount.error.form.mandatory",
             TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
           )
-        val invalidRequest = Json.obj("amount" -> "")
+        val invalidRequest = Map("amount" -> "")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
@@ -88,7 +88,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
       "the user enters an invalid monetary amount" in {
         val invalidAmountErrorMessage = messages("tai.bonusPaymentsAmount.error.form.input.invalid")
-        val invalidRequest = Json.obj("amount" -> "£10,0")
+        val invalidRequest = Map("amount" -> "£10,0")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)

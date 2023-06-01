@@ -35,19 +35,19 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
       whatYouToldUs,
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url
     )
 
     val contactByPhoneLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.contactByPhone"),
       contactByPhone,
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
     )
 
     val phoneNumberLine = CheckYourAnswersConfirmationLine(
       Messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
     )
 
     if (contactByPhone == FormValuesConstants.YesValue) {

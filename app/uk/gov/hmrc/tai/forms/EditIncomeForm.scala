@@ -22,7 +22,6 @@ import java.time.LocalDate
 import play.api.data.{Form, Forms}
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.data.Forms._
-import play.api.data.JodaForms._
 import play.api.data.format.Formats.localDateFormat
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -110,7 +109,7 @@ object EditIncomeForm {
       employmentAmount.endDate,
       employmentAmount.isLive,
       employmentAmount.isOccupationalPension,
-      false,
+      hasMultipleIncomes = false,
       payToDate
     )
 
@@ -120,7 +119,7 @@ object EditIncomeForm {
     payDate: Option[LocalDate] = None,
     errMessage: Option[String] = None
   )(implicit request: Request[_], messages: Messages): Form[EditIncomeForm] =
-    createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
+    createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest()
 
   private def createForm(
     employerName: String,
@@ -141,7 +140,7 @@ object EditIncomeForm {
           messages("error.tai.updateDataEmployment.blankValue"),
           messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
           messages("error.tai.updateDataEmployment.maxLength"),
-          messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, monthAndYearName, employerName),
+          messages(errMsg, MoneyPounds(taxablePayYTD, 0, roundUp = true).quantity, monthAndYearName, employerName),
           taxablePayYTD
         ),
         "oldAmount"             -> number,

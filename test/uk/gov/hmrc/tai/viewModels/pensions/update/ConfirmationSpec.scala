@@ -29,7 +29,7 @@ class ConfirmationSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.updatePension.confirmation.heading"))
     behave like pageWithHeader(messages("tai.confirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad)
+    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
 
   }
 }

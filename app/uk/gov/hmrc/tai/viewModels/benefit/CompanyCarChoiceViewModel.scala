@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.benefit
 
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 case class CompanyCarChoiceViewModel(carModel: String, carProvider: String)
@@ -26,7 +25,7 @@ object CompanyCarChoiceViewModel {
   val missingCarModelMessage = "No company car model found in supplied cache map"
   val missingCarProviderMessage = "No company car provider found in supplied cache map"
 
-  def apply(carDetails: Map[String, String])(implicit messages: Messages): CompanyCarChoiceViewModel = {
+  def apply(carDetails: Map[String, String]): CompanyCarChoiceViewModel = {
     val carModel =
       carDetails.getOrElse(CompanyCarConstants.CarModelKey, throw new RuntimeException(missingCarModelMessage))
     val carProvider =

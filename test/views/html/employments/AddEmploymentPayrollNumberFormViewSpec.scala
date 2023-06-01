@@ -38,19 +38,19 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(
       AddEmploymentPayrollNumberConstants.PayrollNumberChoice,
       AddEmploymentPayrollNumberConstants.PayrollNumberChoice + "-2"
     )
-    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel)
+    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have gone back to firstPayChoice page" in {
       val payrollNumberViewModel = PayrollNumberViewModel(
         employerName,
         true,
-        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       )
       def view: Html = add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
@@ -98,6 +98,6 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
   private lazy val payrollNumberViewModel = PayrollNumberViewModel(
     employerName,
     firstPayChoice = false,
-    controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+    controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
   )
 }

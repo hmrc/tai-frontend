@@ -19,7 +19,7 @@
 @this(mainTemplate: MainTemplate)
 
 @(employerName: String, employerId: Int)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+messages: Messages, user: controllers.auth.AuthedUser)
 
 @mainTemplate(
     title = messages("tai.incomes.updated.check.title", employerName),

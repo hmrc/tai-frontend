@@ -15,12 +15,10 @@
  *@
 
 @import includes.{backLink, cancelLink}
-@import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 @import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 @import includes.ptaHeader
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
-@import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -29,15 +27,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(updateOrRemoveForm),
-        mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
-        preHeadingText = Messages("tai.updatePension.preHeading")
-    )
-}
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @main(
     title = Messages("tai.updatePension.decision.pagetitle"),
@@ -53,7 +43,7 @@
             @if(updateOrRemoveForm.errors.nonEmpty){
                 @govukErrorSummary(ErrorSummary(errorList = updateOrRemoveForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
-            @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension) {
+            @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension()) {
                 @govukRadios(Radios(
                     fieldset = Some(
                         Fieldset(

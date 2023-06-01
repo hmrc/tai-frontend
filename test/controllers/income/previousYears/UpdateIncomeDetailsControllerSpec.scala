@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(journeyCacheService, trackingjourneyCacheService)
 
   "decision" must {
@@ -91,7 +91,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url
+          controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url
         )
       }
     }
@@ -140,7 +140,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber.url
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
       }
     }
 
@@ -224,7 +224,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers.url
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers().url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -249,7 +249,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers.url
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers().url
       }
     }
 
@@ -308,7 +308,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
       when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-        Future.successful(Right(Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789"))))
+        Future.successful(Right((Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789")))))
       )
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -332,7 +332,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
 
@@ -347,8 +347,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String]("1", "whatYouToldUs", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String]("1", "whatYouToldUs", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -366,7 +368,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation.url
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation().url
         verify(journeyCacheService, times(1)).flush()(any())
       }
 
@@ -377,8 +379,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String]("1", "whatYouToldUs", "No"),
-              Seq[Option[String]](None)
+              (
+                Seq[String]("1", "whatYouToldUs", "No"),
+                Seq[Option[String]](None)
+              )
             )
           )
         )
@@ -396,7 +400,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation.url
+        ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation().url
         verify(journeyCacheService, times(1)).flush()(any())
       }
     }

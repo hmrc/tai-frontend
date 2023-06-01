@@ -26,7 +26,7 @@
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayslipDeductionsForm], employer: IncomeSource)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @main(
@@ -35,7 +35,7 @@ messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.Exec
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url),
     formForErrorSummary = Some(payslipDeductionsForm)
 
 ){
@@ -45,7 +45,7 @@ messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.Exec
                 @govukErrorSummary(ErrorSummary(errorList = payslipDeductionsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions){
+            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions()){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(

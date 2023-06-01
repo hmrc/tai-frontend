@@ -20,7 +20,6 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.OK
@@ -28,7 +27,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
-import uk.gov.hmrc.http.Upstream5xxResponse
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -46,8 +45,7 @@ class IncomeTaxHistoryControllerSpec
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val personService: PersonService = mock[PersonService]
 
-  override def beforeEach: Unit =
-    Mockito.reset(taxAccountService, employmentService, personService)
+  override def beforeEach(): Unit = reset(taxAccountService, employmentService, personService)
 
   class TestController
       extends IncomeTaxHistoryController(
@@ -191,7 +189,7 @@ class IncomeTaxHistoryControllerSpec
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
-            Upstream5xxResponse("", 500, 500, Map.empty)
+            UpstreamErrorResponse("", 500, 500, Map.empty)
           )
           when(personService.personDetails(any())(any(), any())) thenReturn Future.successful(fakePerson(nino))
 
