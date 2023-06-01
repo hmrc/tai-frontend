@@ -17,25 +17,26 @@
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(mainWithoutNav: mainWithoutNav)
+@this(main: MainTemplate)
 
-@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer)
+@(appConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
 
 
 
-@mainWithoutNav(
-title=messages("check.jrs.claims.no.claim.title")
+@main(
+title=messages("check.jrs.claims.no.claim.title"),
+pageTitle = Some(Messages("tai.service.navTitle")),
+backLinkContent = None,
+showPtaAccountNav = false
 ){
-    <div class="grid-row">
-        <div class="grid grid-2-3">
-            <div class="inner-block">
-                <h1 class="heading-xlarge">@messages("check.jrs.claims.no.claim.title")</h1>
-                <p>@messages("check.jrs.claims.no.claim.check.later")</p>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">@messages("check.jrs.claims.no.claim.title")</h1>
+            <p class="govuk-body">@messages("check.jrs.claims.no.claim.check.later")</p>
 
-                <p><a id="account-home-page" href="@appConfig.taiHomePageUrl">
-                        @messages("check.jrs.claims.no.claim.link")
-                    </a>
-            </div>
+            <p class="govuk-bdy"><a id="account-home-page" class="govuk-link" href="@appConfig.taiHomePageUrl">
+                @messages("check.jrs.claims.no.claim.link")
+            </a>
         </div>
     </div>
 }

@@ -20,15 +20,12 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import controllers.actions.FakeValidatePerson
-import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => mockEq}
-import org.mockito.Mockito._
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service._
@@ -163,7 +160,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         )
 
         status(result) mustBe SEE_OTHER
-        verify(journeyCacheService, times(1)).cache(mockEq(incomeDetails))(any())
+        verify(journeyCacheService, times(1)).cache(meq(incomeDetails))(any())
       }
     }
 
@@ -213,7 +210,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
           UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
           UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> "12345678"
         )
-        when(journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+        when(journeyCacheService.cache(meq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
@@ -237,7 +234,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
           UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
           UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> ""
         )
-        when(journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any()))
+        when(journeyCacheService.cache(meq(expectedCacheWithErasingNumber))(any()))
           .thenReturn(Future.successful(expectedCacheWithErasingNumber))
 
         val result = sut.submitTelephoneNumber()(
@@ -310,7 +307,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
       val SUT = createSUT
-      when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+      when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
         Future.successful(Right(Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789"))))
       )
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -328,7 +325,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any())
+        )(any(), any())
       ).thenReturn(
         Future.successful(Left("An error has occurred"))
       )
@@ -347,7 +344,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val sut = createSUT
         val incorrectIncome = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String]("1", "whatYouToldUs", "Yes"),
@@ -355,13 +352,11 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             )
           )
         )
-        when(previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectIncome))(any()))
+        when(previousYearsIncomeService.incorrectIncome(any(), meq(1), meq(incorrectIncome))(any(), any()))
           .thenReturn(Future.successful("1"))
         when(
           trackingjourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(
-              any()
-            )
+            .cache(meq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -379,7 +374,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
               Seq[String]("1", "whatYouToldUs", "No"),
@@ -387,13 +382,11 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
             )
           )
         )
-        when(previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any()))
+        when(previousYearsIncomeService.incorrectIncome(any(), meq(1), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
         when(
           trackingjourneyCacheService
-            .cache(Matchers.eq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(
-              any()
-            )
+            .cache(meq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), meq("true"))(any())
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -443,7 +436,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         inject[UpdateIncomeDetailsConfirmationView],
         trackingjourneyCacheService,
         journeyCacheService,
-        MockTemplateRenderer,
         inject[ErrorPagesHandler]
       )
 }

@@ -21,8 +21,6 @@ import controllers.auth.AuthAction
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.domain.Nino
-
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
@@ -36,8 +34,7 @@ class ServiceController @Inject() (
   mcc: MessagesControllerComponents,
   timeout: TimeoutView,
   sessionExpired: SessionExpiredView,
-  manualCorrespondence: ManualCorrespondenceView,
-  implicit val templateRenderer: TemplateRenderer
+  manualCorrespondence: ManualCorrespondenceView
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

@@ -18,10 +18,9 @@ package uk.gov.hmrc.tai.util
 
 import builders.RequestBuilder
 import controllers.FakeTaiPlayApplication
-import org.scalatest.MustMatchers
-import org.scalatestplus.play.PlaySpec
+import utils.BaseSpec
 
-class ReferralSpec extends PlaySpec with MustMatchers with FakeTaiPlayApplication {
+class ReferralSpec extends BaseSpec with FakeTaiPlayApplication {
   val referral = new Referral {}
 
   "referer" must {

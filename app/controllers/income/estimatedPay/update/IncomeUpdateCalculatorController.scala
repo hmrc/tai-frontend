@@ -24,7 +24,6 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -56,7 +55,6 @@ class IncomeUpdateCalculatorController @Inject() (
   checkYourAnswers: CheckYourAnswersView,
   confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
@@ -226,7 +224,7 @@ class IncomeUpdateCalculatorController @Inject() (
       income    <- EitherT.right[String](incomeService.employmentAmount(nino, id))
       netAmount <- EitherT.right[String](netAmountFuture)
     } yield {
-      val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
+      val convertedNetAmount = netAmount.map(BigDecimal(_).intValue).getOrElse(income.oldAmount)
       val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
       if (employmentAmount.newAmount == income.oldAmount) {

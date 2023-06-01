@@ -23,7 +23,6 @@ import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
@@ -35,8 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(implicit
-  val templateRenderer: TemplateRenderer,
-  ec: ExecutionContext
+  val ec: ExecutionContext
 ) extends Logging {
   type RecoveryLocation = Class[_]
 

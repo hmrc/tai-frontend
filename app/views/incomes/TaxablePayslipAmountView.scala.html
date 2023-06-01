@@ -24,7 +24,7 @@
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary, govukButton: GovukButton)
 
 @(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),

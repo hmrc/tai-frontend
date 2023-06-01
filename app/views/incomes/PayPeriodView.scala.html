@@ -25,8 +25,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),

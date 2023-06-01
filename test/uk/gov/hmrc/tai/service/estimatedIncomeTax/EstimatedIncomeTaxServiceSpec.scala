@@ -17,17 +17,14 @@
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import java.time.LocalDate
-import play.api.i18n.I18nSupport
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{tax, _}
 import uk.gov.hmrc.tai.model.domain.tax.{DoubleTaxationRelief, MaintenancePayments => _, _}
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import utils.BaseSpec
-
-import scala.collection.immutable.Seq
 
 class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 

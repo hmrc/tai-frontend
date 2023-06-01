@@ -21,9 +21,7 @@ import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.mvc._
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
@@ -32,8 +30,7 @@ class TaiUpdateIncomeController @Inject() (
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
-  mcc: MessagesControllerComponents,
-  implicit val templateRenderer: TemplateRenderer
+  mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

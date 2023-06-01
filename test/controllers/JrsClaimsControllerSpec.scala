@@ -17,19 +17,17 @@
 package controllers
 
 import builders.{RequestBuilder, UserBuilder}
-import cats.data.{EitherT, OptionT}
+import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
 import controllers.actions.FakeValidatePerson
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import org.scalatest.concurrent.ScalaFutures.whenReady
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.http.{HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
@@ -54,8 +52,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
     mockAppConfig,
     inject[JrsClaimSummaryView],
     inject[InternalServerErrorView],
-    inject[NoJrsClaimView],
-    templateRenderer
+    inject[NoJrsClaimView]
   )
 
   val jrsClaimsServiceResponse = JrsClaims(

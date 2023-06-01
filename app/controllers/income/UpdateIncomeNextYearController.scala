@@ -25,7 +25,6 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
@@ -56,8 +55,7 @@ class UpdateIncomeNextYearController @Inject() (
   updateIncomeCYPlus1Edit: UpdateIncomeCYPlus1EditView,
   updateIncomeCYPlus1Same: UpdateIncomeCYPlus1SameView,
   sameEstimatedPay: SameEstimatedPayView,
-  implicit val templateRenderer: TemplateRenderer,
-  errorPagesHandler: ErrorPagesHandler
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with I18nSupport with Logging {
 

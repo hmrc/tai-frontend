@@ -16,9 +16,7 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaxAccountCalculator
@@ -37,7 +35,7 @@ class TaxFreeInfoSpec extends BaseSpec {
     when(taxAccountCalculatorMock.taxFreeAmount(any())).thenReturn(taxFreeAmount)
 
     "return a TaxFreeInfo" in {
-      when(taxAccountCalculatorMock.taxFreeAmount(Matchers.eq(Seq.empty))).thenReturn(0)
+      when(taxAccountCalculatorMock.taxFreeAmount(meq(Seq.empty))).thenReturn(0)
 
       val expected = TaxFreeInfo(date, 0, 0)
       TaxFreeInfo(date, Seq.empty, taxAccountCalculatorMock) mustBe expected

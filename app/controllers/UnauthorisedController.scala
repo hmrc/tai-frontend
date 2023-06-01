@@ -19,14 +19,10 @@ package controllers
 import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc._
-import uk.gov.hmrc.http.SessionKeys
-
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import views.html.ErrorTemplateNoauth
-
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
@@ -34,8 +30,7 @@ class UnauthorisedController @Inject() (
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   errorTemplateNoAuth: ErrorTemplateNoauth,
-  implicit val ec: ExecutionContext,
-  implicit val templateRenderer: TemplateRenderer
+  implicit val ec: ExecutionContext
 ) extends TaiBaseController(mcc) {
 
   def upliftUrl: String = applicationConfig.sa16UpliftUrl

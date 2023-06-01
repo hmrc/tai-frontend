@@ -31,7 +31,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount: GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
-@(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
     title = Messages("tai.income.previousYears.details.title", viewModel.formattedTaxYear),

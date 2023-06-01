@@ -20,9 +20,8 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.SEE_OTHER
@@ -50,8 +49,7 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport with Befor
     journeyCacheService,
     FakeAuthAction,
     FakeValidatePerson,
-    mcc,
-    templateRenderer
+    mcc
   )
 
   "TaiUpdateIncomeController" must {

@@ -29,7 +29,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukDetails : GovukDetails, govukErrorSummary: GovukErrorSummary)
 
-@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,ec: ExecutionContext)
 
 
 @totalValueField = @{companyBenefitTotalValueForm("totalValue")}

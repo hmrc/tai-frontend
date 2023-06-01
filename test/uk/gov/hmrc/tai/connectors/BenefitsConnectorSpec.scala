@@ -17,9 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import java.time.LocalDate
-import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.domain.MedicalInsurance
@@ -28,13 +26,14 @@ import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class BenefitsConnectorSpec extends BaseSpec {
 
   "getCompanyCarBenefits" must {
     "fetch the company car details" when {
       "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(benefitsJson))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(benefitsJson))
 
         val result = sut.benefits(nino, 2018)
         Await.result(result, 5 seconds) mustBe benefits
@@ -43,7 +42,7 @@ class BenefitsConnectorSpec extends BaseSpec {
 
     "thrown exception" when {
       "benefit type is invalid" in {
-        when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(invalidBenefitsJson))
+        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(invalidBenefitsJson))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
         ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
@@ -60,12 +59,12 @@ class BenefitsConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(
-          Matchers.eq(
+          meq(
             s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
           ),
-          Matchers.eq(endedCompanyBenefit)
-        )(any(), any(), any())
-      ).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+          meq(endedCompanyBenefit)
+        )(any(), any(), any(), any())
+      ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
 

@@ -21,7 +21,6 @@ import controllers.auth.AuthAction
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
@@ -44,7 +43,7 @@ class TaxAccountSummaryController @Inject() (
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,
-  implicit val templateRenderer: TemplateRenderer,
+  implicit val
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {

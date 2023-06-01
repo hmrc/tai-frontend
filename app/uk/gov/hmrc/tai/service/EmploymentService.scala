@@ -23,8 +23,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
@@ -40,7 +39,10 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.endEmployment(nino, id, endEmploymentData)
 
-  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): Future[String] =
+  def addEmployment(nino: Nino, employment: AddEmployment)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[String] =
     employmentsConnector.addEmployment(nino, employment) map {
       case Some(envId) => envId
       case _ =>
@@ -48,7 +50,8 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
     }
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
   ): Future[String] =
     employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
       case Some(envId) => envId
@@ -58,7 +61,10 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
         )
     }
 
-  def employmentNames(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[Int, String]] =
+  def employmentNames(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[Map[Int, String]] =
     for {
       employments <- employments(nino, year)
     } yield employments.map(employment => employment.sequenceNumber -> employment.name).toMap

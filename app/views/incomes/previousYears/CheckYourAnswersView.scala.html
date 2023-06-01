@@ -23,7 +23,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(viewModel: UpdateIncomeDetailsCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(viewModel: UpdateIncomeDetailsCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
 
 @mainTemplate(
   title = messages("tai.checkYourAnswers.title"),

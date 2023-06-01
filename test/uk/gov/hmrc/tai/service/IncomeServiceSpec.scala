@@ -17,12 +17,8 @@
 package uk.gov.hmrc.tai.service
 
 import java.time.LocalDate
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}

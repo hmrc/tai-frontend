@@ -33,7 +33,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount : GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
-@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 
 @mainTemplate(

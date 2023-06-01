@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
 class IabdTaxCodeChangeReasons {

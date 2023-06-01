@@ -25,8 +25,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
     extends Logging {
@@ -55,16 +54,21 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
   def mandatoryValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[Either[String, LocalDate]] =
     mandatoryJourneyValueAs[LocalDate](key, string => LocalDate.parse(string))
 
-  def mandatoryJourneyValues(keys: String*)(implicit hc: HeaderCarrier): Future[Either[String, Seq[String]]] =
+  def mandatoryJourneyValues(
+    keys: String*
+  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, Seq[String]]] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, keys)
 
-  def optionalValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] =
+  def optionalValues(
+    keys: String*
+  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[Option[String]]] =
     currentCache.map(cache => mappedOptional(cache, keys).toList)
 
   def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
   ): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
     for {
       cache <- currentCache

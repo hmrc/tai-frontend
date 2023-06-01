@@ -29,8 +29,7 @@ class UnauthorisedControllerSpec extends BaseSpec {
     mcc,
     appConfig,
     inject[ErrorTemplateNoauth],
-    ec,
-    templateRenderer
+    ec
   ) {
     override def upliftUrl: String = "/uplift"
     override def failureUrl: String = "/failure"

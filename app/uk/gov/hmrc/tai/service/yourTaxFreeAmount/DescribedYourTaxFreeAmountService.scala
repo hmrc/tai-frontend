@@ -29,8 +29,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFre
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DescribedYourTaxFreeAmountService @Inject() (
   yourTaxFreeAmountService: YourTaxFreeAmountService,
@@ -39,14 +38,17 @@ class DescribedYourTaxFreeAmountService @Inject() (
   taxAccountService: TaxAccountService
 ) {
 
-  def taxFreeAmountComparison(
-    nino: Nino
-  )(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountViewModel] =
+  def taxFreeAmountComparison(nino: Nino)(implicit
+    hc: HeaderCarrier,
+    messages: Messages,
+    executionContext: ExecutionContext
+  ): Future[YourTaxFreeAmountViewModel] =
     taxFreeAmount(nino, yourTaxFreeAmountService.taxFreeAmountComparison)
 
   private def taxFreeAmount(nino: Nino, getTaxFreeAmount: Nino => Future[YourTaxFreeAmountComparison])(implicit
     hc: HeaderCarrier,
-    messages: Messages
+    messages: Messages,
+    executionContext: ExecutionContext
   ): Future[YourTaxFreeAmountViewModel] =
     (
       employmentService.employmentNames(nino, TaxYear()),

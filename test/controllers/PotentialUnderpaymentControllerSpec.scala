@@ -19,14 +19,12 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
-import org.mockito.Matchers._
-import org.mockito.Mockito._
-import org.mockito.{Matchers, Mockito}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.ForbiddenException
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._
@@ -36,6 +34,7 @@ import views.html.PotentialUnderpaymentView
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach {
 
@@ -76,7 +75,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
       Await
         .result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
       verify(auditService, times(1))
-        .createAndSendAuditEvent(Matchers.eq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
+        .createAndSendAuditEvent(meq(AuditConstants.PotentialUnderpaymentInYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
@@ -103,7 +102,6 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
         FakeValidatePerson,
         mcc,
         inject[PotentialUnderpaymentView],
-        templateRenderer,
         inject[ErrorPagesHandler]
       ) {
     when(taxAccountService.taxAccountSummary(any(), any())(any()))

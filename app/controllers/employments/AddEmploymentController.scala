@@ -23,7 +23,6 @@ import controllers.auth.{AuthAction, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
@@ -61,8 +60,7 @@ class AddEmploymentController @Inject() (
   addEmploymentPayrollNumberForm: AddEmploymentPayrollNumberFormView,
   canWeContactByPhone: CanWeContactByPhoneView,
   confirmationView: ConfirmationView,
-  addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
-  implicit val templateRenderer: TemplateRenderer
+  addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 

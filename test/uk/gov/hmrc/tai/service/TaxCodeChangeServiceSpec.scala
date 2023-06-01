@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
@@ -29,6 +29,7 @@ import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class TaxCodeChangeServiceSpec extends BaseSpec {
 
@@ -163,5 +164,5 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
 
   val taxCodeChangeConnector = mock[TaxCodeChangeConnector]
 
-  private class TestService extends TaxCodeChangeService(taxCodeChangeConnector)
+  private class TestService extends TaxCodeChangeService(taxCodeChangeConnector, ec)
 }

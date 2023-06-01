@@ -21,7 +21,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import cats.implicits._
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -37,8 +36,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
-  implicit val templateRenderer: TemplateRenderer
+  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

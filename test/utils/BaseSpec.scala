@@ -18,9 +18,8 @@ package utils
 import builders.UserBuilder
 import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import mocks.MockTemplateRenderer
 import org.jsoup.nodes.Element
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.mvc.MessagesControllerComponents
@@ -28,9 +27,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-
+import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
@@ -49,9 +47,9 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
 
   val nino: Nino = FakeAuthAction.nino
 
-  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  override implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   implicit class ElemUtil(elem: Element) {
     def toStringBreak = elem.toString.replaceAll("&nbsp;", " ")

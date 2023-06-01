@@ -20,8 +20,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.Referral
@@ -35,8 +33,7 @@ class UnderpaymentFromPreviousYearController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  previousYearUnderpayment: PreviousYearUnderpaymentView,
-  implicit val templateRenderer: TemplateRenderer
+  previousYearUnderpayment: PreviousYearUnderpaymentView
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral {
 

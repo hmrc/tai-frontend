@@ -19,7 +19,8 @@ package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 import controllers.routes
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -32,7 +33,8 @@ import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import utils.BaseSpec
 import views.html.includes.link
 
-class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPropertyChecks {
+class DetailedIncomeTaxEstimateViewModelSpec
+    extends BaseSpec with TableDrivenPropertyChecks with ScalaCheckDrivenPropertyChecks {
 
   "DetailedIncomeTaxEstimateViewModel" when {
 
@@ -226,7 +228,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
             nonHigherBands <- Gen.listOf(nonHigherTaxBandGen)
           } yield higherBands ++ nonHigherBands
 
-          forAll(gen) { taxBands =>
+          forAll(gen) { taxBands: Seq[TaxBand] =>
             DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
           }
         }
@@ -236,7 +238,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends BaseSpec with ScalaCheckPro
           val gen: Gen[Seq[TaxBand]] =
             Gen.listOf[TaxBand](nonHigherTaxBandGen)
 
-          forAll(gen) { taxBands =>
+          forAll(gen) { taxBands: Seq[TaxBand] =>
             DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
           }
         }

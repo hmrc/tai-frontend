@@ -23,13 +23,12 @@ import controllers.auth.{AuthAction, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
-import uk.gov.hmrc.tai.service.{FifteenDays, NoTimeToProcess, ThreeWeeks, TrackingService}
+import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
@@ -61,8 +60,7 @@ class RemoveCompanyBenefitController @Inject() (
   removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
   canWeContactByPhone: CanWeContactByPhoneView,
-  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
-  implicit val templateRenderer: TemplateRenderer
+  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -117,7 +115,7 @@ class RemoveCompanyBenefitController @Inject() (
             for {
               current <- journeyCacheService.currentCache
               _       <- journeyCacheService.flush()
-              filtered = current.filterKeys(_ != EndCompanyBenefitConstants.BenefitValueKey)
+              filtered = current.filter(_ != EndCompanyBenefitConstants.BenefitValueKey)
               _ <-
                 journeyCacheService.cache(filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))
             } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber)

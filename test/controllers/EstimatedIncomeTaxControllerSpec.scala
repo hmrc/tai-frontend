@@ -19,8 +19,7 @@ package controllers
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthenticatedRequest
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -128,7 +127,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             pounds(47835),
             link(
               id = Some("taxFreeAmountLink"),
-              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              url = routes.TaxFreeAmountController.taxFreeAmount.url,
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),
             pounds(11500)
@@ -443,7 +442,6 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         complexEstimatedIncomeTaxView,
         simpleEstimatedIncomeTaxView,
         zeroTaxEstimatedIncomeTaxView,
-        templateRenderer,
         mcc,
         inject[ErrorPagesHandler]
       )

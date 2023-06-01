@@ -22,7 +22,6 @@ import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -49,7 +48,7 @@ class IncomeTaxComparisonController @Inject() (
   mcc: MessagesControllerComponents,
   mainView: MainView,
   errorPagesHandler: ErrorPagesHandler
-)(implicit val ec: ExecutionContext, templateRenderer: TemplateRenderer)
+)(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>

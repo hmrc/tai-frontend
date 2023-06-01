@@ -27,7 +27,7 @@
 
 @this(main: MainTemplate)
 
-@(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+@(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages, ec: ExecutionContext)
 
 @mainHeading = @{
     if(model.isPension){

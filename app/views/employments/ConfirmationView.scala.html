@@ -19,7 +19,7 @@
 
 @this(main: MainTemplate)
 
-@()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 @main(
     title = Messages("tai.employmentConfirmation.heading"),

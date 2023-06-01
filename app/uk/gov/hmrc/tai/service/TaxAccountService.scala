@@ -28,8 +28,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
 
@@ -47,7 +46,8 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
     taxAccountConnector.taxCodeIncomes(nino, year)
 
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
   ): Future[Either[String, Option[TaxCodeIncome]]] =
     EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
 
@@ -66,7 +66,8 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
     taxAccountConnector.totalTax(nino, year)
 
   def scottishBandRates(nino: Nino, year: TaxYear, taxCodes: Seq[String])(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
   ): Future[Map[String, BigDecimal]] = {
     def isScottishStandAloneTaxcode(taxCode: String) = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r.findFirstIn(taxCode).isDefined
 

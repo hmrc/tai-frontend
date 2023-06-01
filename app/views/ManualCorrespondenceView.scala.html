@@ -20,7 +20,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(contactUrl: String)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: ExecutionContext)
+@(contactUrl: String)(implicit request: Request[_], messages: Messages, ec: ExecutionContext)
 
     @header = @{
         ptaHeader(

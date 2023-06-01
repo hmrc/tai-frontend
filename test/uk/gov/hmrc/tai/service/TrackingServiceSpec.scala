@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import uk.gov.hmrc.tai.connectors.TrackingConnector
@@ -27,6 +27,7 @@ import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 class TrackingServiceSpec extends BaseSpec {
 

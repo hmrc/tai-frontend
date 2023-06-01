@@ -23,8 +23,6 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.EmploymentService
@@ -39,8 +37,7 @@ class NoCYIncomeTaxErrorController @Inject() (
   authenticate: AuthAction,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView,
-  implicit val templateRenderer: TemplateRenderer
+  noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 

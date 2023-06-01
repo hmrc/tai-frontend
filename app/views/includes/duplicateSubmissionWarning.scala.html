@@ -28,7 +28,7 @@
 @this(form: FormWithCSRF)
 
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], preHeading: String, heading: String, yesChoiceText: String, noChoiceText: String, actionRoute: Call, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, ec: scala.concurrent.ExecutionContext)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], preHeading: String, heading: String, yesChoiceText: String, noChoiceText: String, actionRoute: Call, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)(implicit request: Request[_], messages: Messages, ec: scala.concurrent.ExecutionContext)
 
 @hint = {
 <div>
