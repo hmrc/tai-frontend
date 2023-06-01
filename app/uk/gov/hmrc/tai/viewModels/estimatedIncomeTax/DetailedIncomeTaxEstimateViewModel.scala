@@ -22,14 +22,12 @@ import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
-import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
+import uk.gov.hmrc.tai.model.domain.{MaintenancePayments, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.{IncomeTaxEstimateHelper, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import views.html.includes.link
-
-import scala.math.BigDecimal
 
 case class DetailedIncomeTaxEstimateViewModel(
   nonSavings: List[TaxBand],
@@ -81,13 +79,6 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       .filter(_.income > 0)
       .toList
 
-    val filteredCategories = totalTax.incomeCategories.filter { category =>
-      category.incomeCategoryType == UkDividendsIncomeCategory ||
-      category.incomeCategoryType == ForeignDividendsIncomeCategory
-    }
-    val taxbandsNonzeroIncome = filteredCategories.flatMap(_.taxBands).filter(_.income > 0)
-    val taxbandsNonzeroRate = taxbandsNonzeroIncome.filterNot(_.rate == 0)
-
     val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
@@ -130,7 +121,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
         Some(
           HelpLink(
             Messages("what.is.underpayment"),
-            controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+            controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url.toString,
             "underPaymentFromPreviousYear"
           )
         )
@@ -143,7 +134,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
         Some(
           HelpLink(
             Messages("what.is.tax.estimation"),
-            controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+            controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url.toString,
             "estimatedTaxOwedLink"
           )
         )
@@ -274,9 +265,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
     ).flatten
   }
 
-  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String)(implicit
-    messages: Messages
-  ) =
+  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String) =
     row.map(amount => ReductionTaxRow(description, amount, title))
 
   private def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit
@@ -297,13 +286,12 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       .map(_.amount)
       .getOrElse(BigDecimal(0))
 
-    val tabIndexLink = {
-      val links = link(
-        url = routes.YourTaxCodeController.taxCodes.url,
-        copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
-        tabindexMinusOne = true
-      )
-    }
+    val tabIndexLink = link(
+      url = routes.YourTaxCodeController.taxCodes().url,
+      copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
+      tabindexMinusOne = true
+    )
+
     createReductionTaxRow(
       marriageAllowance,
       Messages(

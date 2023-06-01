@@ -38,7 +38,7 @@ import scala.language.postfixOps
 
 class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(auditService)
 
   "potentialUnderpaymentPage method" must {
@@ -91,7 +91,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
   val codingComponentService = mock[CodingComponentService]
   val auditService = mock[AuditService]
   val taxAccountService = mock[TaxAccountService]
-  val referralMap = Map("Referer" -> "http://somelocation/somePageResource")
+  val referralMap = "Referer" -> "http://somelocation/somePageResource"
 
   private class SUT()
       extends PotentialUnderpaymentController(

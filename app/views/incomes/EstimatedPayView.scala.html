@@ -25,13 +25,12 @@
 
 @this(main: MainTemplate)
 
-@(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.AuthedUser,
-ec: scala.concurrent.ExecutionContext)
+@(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.AuthedUser)
 
 @grossAnnualPay = @{MoneyPounds(viewModel.grossAnnualPay.getOrElse(0),0)}
 @netAnnualPay = @{MoneyPounds(viewModel.netAnnualPay.getOrElse(0),0)}
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employer.name)
@@ -49,7 +48,7 @@ ec: scala.concurrent.ExecutionContext)
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 
@@ -98,7 +97,7 @@ ec: scala.concurrent.ExecutionContext)
 
         @includes.link(
             copy=messages("tai.estimatedPay.checkTaxEstimate"),
-            url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
+            url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
             isButton=true,
             id=Some("confirmAndSend"),
             linkClasses=Seq("govuk-button")

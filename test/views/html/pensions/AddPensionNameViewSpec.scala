@@ -33,9 +33,9 @@ class AddPensionNameViewSpec extends TaiViewSpec {
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
-    behave like haveLinkWithUrlWithID("backLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+    behave like haveLinkWithUrlWithID("backLink", controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/name")
-    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {

@@ -38,7 +38,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.estimatedIncome.detailedEstimate.title"))
     behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     behave like pageWithCombinedHeaderNewFormat(
       Messages(
@@ -471,7 +471,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           Some(
             HelpLink(
               Messages("what.is.underpayment"),
-              controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+              controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url.toString,
               "underPaymentFromPreviousYear"
             )
           )
@@ -484,7 +484,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           Some(
             HelpLink(
               Messages("what.is.tax.estimation"),
-              controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+              controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url.toString,
               "estimatedTaxOwedLink"
             )
           )
@@ -521,13 +521,13 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       .select("#underPaymentFromPreviousYear")
       .attr(
         "href"
-      ) mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+      ) mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url.toString
     doc(additionalDetailView) must haveTdWithText(
       s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.is.tax.estimation")}"
     )
     doc(additionalDetailView)
       .select("#estimatedTaxOwedLink")
-      .attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+      .attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url.toString
   }
 
   "have reduction tax table" in {
@@ -642,17 +642,17 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
     doc must haveLinkElement(
       "taxCodesSideLink",
-      routes.YourTaxCodeController.taxCodes.url,
+      routes.YourTaxCodeController.taxCodes().url,
       messages("check.your.tax.codes")
     )
     doc must haveLinkElement(
       "taxFreeAmountSideLink",
-      routes.TaxFreeAmountController.taxFreeAmount.url,
+      routes.TaxFreeAmountController.taxFreeAmount().url,
       messages("check.your.tax.free.amount")
     )
     doc must haveLinkElement(
       "taxSummarySideLink",
-      controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+      controllers.routes.TaxAccountSummaryController.onPageLoad().url,
       messages("return.to.your.income.tax.summary")
     )
   }

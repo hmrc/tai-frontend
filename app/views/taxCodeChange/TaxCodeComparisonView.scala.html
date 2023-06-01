@@ -30,11 +30,10 @@
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel,appConfig: ApplicationConfig)(
     implicit request: Request[_],
     user: controllers.auth.AuthedUser,
-    messages: Messages,
-    ec:  scala.concurrent.ExecutionContext)
+    messages: Messages)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         formForErrorSummary = None,
         mainHeadingText = messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
@@ -47,16 +46,14 @@
     title = messages("taxCode.change.journey.preHeading"),
     authedUser = Some(user),
     backLinkContent=Some(messages("your.paye.income.tax.overview")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     pagePrintable = true
 ) {
 
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
-
-
+        @header()
     <div>
         <div>
             @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeChangeReasons)
@@ -67,7 +64,7 @@
         <div class="govuk-!-margin-bottom-5">
             @includes.link(
             id=Some("check-your-tax-button"),
-            url=routes.TaxCodeChangeController.yourTaxFreeAmount.url,
+            url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
             copy=messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"),
             linkClasses=Seq("govuk-button"))
         </div>

@@ -41,7 +41,7 @@ import scala.concurrent.Future
 
 class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(journeyCacheService)
 
   val pensionName = "Pension 1"
@@ -58,7 +58,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
           any()
         )
       )
-        .thenReturn(Future.successful(Right(Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey)))))
+        .thenReturn(Future.successful(Right((Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey))))))
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
@@ -68,8 +68,6 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
     }
 
     "redirect to the tax summary page if a value is missing from the cache " in {
-
-      val PensionQuestionKey = "yes"
 
       when(
         journeyCacheService.collectedJourneyValues(Seq(any()), Seq(any()))(
@@ -82,7 +80,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
 
@@ -137,7 +135,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs.url
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
       }
     }
 
@@ -153,7 +151,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
             meq(Seq(UpdatePensionProviderConstants.DetailsKey))
           )(any(), any())
         )
-          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId), Seq(None))))
+          .thenReturn(Future.successful(Right((Seq(pensionName, pensionId), Seq(None)))))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -171,7 +169,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
             meq(Seq(UpdatePensionProviderConstants.DetailsKey))
           )(any(), any())
         )
-          .thenReturn(Future.successful(Right(cache, optionalCache)))
+          .thenReturn(Future.successful(Right((cache, optionalCache))))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -193,7 +191,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
   }
@@ -212,7 +210,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber.url
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
       }
     }
 
@@ -272,7 +270,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
       }
     }
@@ -298,7 +296,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers.url
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers().url
       }
 
     }
@@ -323,7 +321,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       status(result) mustBe SEE_OTHER
       redirectLocation(
         result
-      ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers.url
+      ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers().url
     }
 
     "return BadRequest" when {
@@ -381,8 +379,10 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -408,7 +408,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
       val result = createController.checkYourAnswers()(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
 
@@ -423,8 +423,10 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](empId.toString, "some random info", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String](empId.toString, "some random info", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -442,7 +444,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val result = createController.submitYourAnswers()(fakePostRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.confirmation.url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .confirmation()
+          .url
         verify(journeyCacheService, times(1)).flush()(any())
       }
 
@@ -453,8 +457,10 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](empId.toString, "some random info", "No"),
-              Seq[Option[String]](None)
+              (
+                Seq[String](empId.toString, "some random info", "No"),
+                Seq[Option[String]](None)
+              )
             )
           )
         )
@@ -472,7 +478,9 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val result = createController.submitYourAnswers()(fakePostRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.confirmation.url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
+          .confirmation()
+          .url
         verify(journeyCacheService, times(1)).flush()(any())
       }
     }
@@ -515,7 +523,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension.url
+      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension().url
 
     }
 
@@ -532,7 +540,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning.url
+      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning().url
     }
 
     "return Internal Server error" when {
@@ -577,7 +585,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
   }
@@ -600,7 +608,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension.url
+        ).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
       }
     }
 

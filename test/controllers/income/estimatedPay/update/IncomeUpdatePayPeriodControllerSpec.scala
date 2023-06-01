@@ -21,16 +21,13 @@ import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
-import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
 import views.html.incomes.PayPeriodView
 
@@ -94,7 +91,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val result = controller.payPeriodPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -122,7 +119,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
         )
       }
     }
@@ -151,7 +148,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val result = controller.handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }

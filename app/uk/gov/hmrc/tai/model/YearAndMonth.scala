@@ -21,7 +21,7 @@ import java.time.YearMonth
 import play.api.i18n.Lang
 import play.api.libs.json._
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.YearAndMonth.{MonthNamesInWelsh, dateFormatter, formattedDate}
+import uk.gov.hmrc.tai.model.YearAndMonth.formattedDate
 
 import java.time.format.DateTimeParseException
 
@@ -53,7 +53,7 @@ object YearAndMonth {
   def apply(yearAndMonth: String): YearAndMonth = YearAndMonth(YearMonth.parse(yearAndMonth))
 
   implicit val yearMonthFormat: Format[YearMonth] = new Format[YearMonth] {
-    override def writes(o: YearMonth): JsValue = JsString(o.toString())
+    override def writes(o: YearMonth): JsValue = JsString(o.toString)
 
     override def reads(json: JsValue): JsResult[YearMonth] = json match {
       case JsString(s) =>
@@ -62,6 +62,7 @@ object YearAndMonth {
         catch {
           case _: DateTimeParseException => JsError("Invalid date parsed")
         }
+      case _ => JsError("Invalid json value")
     }
   }
 

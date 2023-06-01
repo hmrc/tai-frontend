@@ -19,13 +19,11 @@ package controllers
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import uk.gov.hmrc.domain.Nino
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class ServiceController @Inject() (
   authenticate: AuthAction,
@@ -35,14 +33,13 @@ class ServiceController @Inject() (
   timeout: TimeoutView,
   sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView
-)(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+) extends TaiBaseController(mcc) {
 
   def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(timeout()))
   }
 
-  def serviceSignout: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def serviceSignout(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
   }
 

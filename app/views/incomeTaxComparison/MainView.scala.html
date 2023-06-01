@@ -20,25 +20,14 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 @import uk.gov.hmrc.tai.model.TaxYear
-@import scala.concurrent.ExecutionContext
+
 @import includes.link
 @import controllers.auth.AuthenticatedRequest
 
 @this(main: MainTemplate)
 
 
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages, ec: ExecutionContext)
-
-@backLinkToChooseTaxYear = {
-    <p class="flush--bottom">
-        @includes.link(
-            id=Some("returnToChooseTaxYearLink"),
-            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            copy=messages("your.paye.income.tax.overview"),
-            linkClasses=Seq("link-back")
-        )
-    </p>
-}
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages)
 
 @headingText = @{
     incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(
@@ -48,7 +37,7 @@
     )
 }
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = headingText,
         preHeadingText = incomeTaxComparisonViewModel.username,
@@ -60,14 +49,14 @@
 @main(title = headingText,
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 
@@ -155,7 +144,7 @@
             <p class="flush--top govuk-body">
                 @link(
                 id=Some("returnToPAYEIncomeOverviewLink"),
-                url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+                url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url,
                 copy=messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
             </p>
 

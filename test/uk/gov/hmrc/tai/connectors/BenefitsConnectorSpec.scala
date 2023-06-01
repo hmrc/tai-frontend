@@ -63,7 +63,7 @@ class BenefitsConnectorSpec extends BaseSpec {
             s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
           ),
           meq(endedCompanyBenefit)
-        )(any(), any(), any(), any())
+        )(any(), any(), any())
       ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)

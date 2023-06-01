@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain.tracking.formatter
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsError, JsResultException, Json}
+import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.tai.model.domain.tracking._
 
 class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {

@@ -23,10 +23,10 @@
 
 @this(main: MainTemplate)
 
-@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = viewModel.header,
         preHeadingText = Messages("tai.taxCode.preHeader"),
@@ -46,7 +46,7 @@
     <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
 
         <div class="govuk-grid-column-two-thirds">
@@ -117,13 +117,13 @@
                         <li>
                         @link(
                             id=Some("taxCodesLink"),
-                            url=routes.YourTaxCodeController.taxCodes.url,
+                            url=routes.YourTaxCodeController.taxCodes().url,
                             copy=Messages("check.your.tax.codes"))</li>
 
                         <li>
                         @link(
                             id=Some("incomeTaxEstimateLink"),
-                            url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                            url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
                             copy=Messages("check.your.income.tax.estimate"),
                             linkClasses=Seq("link-list__item"))
                         </li>
@@ -131,7 +131,7 @@
                         <li>
                         @link(
                             id=Some("taxableIncomeLink"),
-                            url=routes.TaxAccountSummaryController.onPageLoad.url,
+                            url=routes.TaxAccountSummaryController.onPageLoad().url,
                             copy=Messages("return.to.your.income.tax.summary"),
                             linkClasses=Seq("link-list__item"))
                         </li>

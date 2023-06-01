@@ -23,8 +23,6 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.constants.TaiConstants.ScottishTaxCodePrefix
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
-import scala.collection.immutable.ListMap
-
 case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pensionTaxCodes: Seq[TaxCodeDetail])
     extends ViewModelHelper {
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak

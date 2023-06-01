@@ -74,9 +74,7 @@ class TrackingService @Inject() (
       _ == TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true"
     }
 
-  private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String)(implicit
-    hc: HeaderCarrier
-  ): Boolean =
+  private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String): Boolean =
     trackedForms
       .filter(_.id.matches(regex))
       .filter(form => form.status != TrackedFormDone)

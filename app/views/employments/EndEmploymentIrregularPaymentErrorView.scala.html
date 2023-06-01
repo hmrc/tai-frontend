@@ -14,12 +14,9 @@
  * limitations under the License.
  *@
 
-@import includes.backLink
-@import includes.forms.submit
-@import includes.{cancelLink, ptaHeader}
+@import includes.{backLink, cancelLink, ptaHeader, submit}
 @import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
-@import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
@@ -27,7 +24,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 
-@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
+@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @hint = {
     <p class="govuk-body-l">@Messages("tai.irregular.para1", model.employerName)</p>
@@ -40,7 +37,7 @@
     title = Messages("tai.irregular.preHeadingText"),
     authedUser = Some(user),
     backLinkContent= Some(Messages("tai.back-link.upper")),
-    backLinkUrl=Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url)) {
+    backLinkUrl=Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url)) {
 
 @if(irregularPayForm.errors.nonEmpty){
     @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
@@ -50,7 +47,7 @@
 <div class="govuk-grid-row grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError) {
+        @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError()) {
 
         @govukRadios(Radios(
             fieldset =  Some(Fieldset(

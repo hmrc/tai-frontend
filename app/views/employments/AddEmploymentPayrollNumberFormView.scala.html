@@ -14,27 +14,20 @@
  * limitations under the License.
  *@
 
-@import includes.{cancelLink, ptaHeader}
+@import includes.cancelLink
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
 @import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import scala.concurrent.ExecutionContext
+
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
-
-
-@header = @{
-    ptaHeader(
-        mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
-        preHeadingText = Messages("add.missing.employment")
-    )}
+@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @hint = {
 <p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
@@ -62,7 +55,8 @@
 
             <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading"): </span>@messages("add.missing.employment")</h2>
 
-            @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber) {
+            @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber()) {
+
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
@@ -106,7 +100,7 @@
                 @govukButton(Button(content = Text(messages("tai.continue"))))
             }
             <div class="govuk-link govuk-body-m">
-                @cancelLink(controllers.employments.routes.AddEmploymentController.cancel)
+                @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
             </div>
         </div>
         <div class = "govuk-grid-column-one-third"></div>

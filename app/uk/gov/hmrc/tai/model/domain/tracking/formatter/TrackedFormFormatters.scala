@@ -36,7 +36,7 @@ trait TrackedFormFormatters extends Logging {
         logger.warn(s"no milestones for the form with reference: $submissionReference")
         JsError("milestones list is empty")
       } else {
-        milestones.filter(_._2 == "current").headOption match {
+        milestones.find(_._2 == "current") match {
           case Some(("Received", _))   => JsSuccess(TrackedForm(id, name, TrackedFormReceived))
           case Some(("InProgress", _)) => JsSuccess(TrackedForm(id, name, TrackedFormInProgress))
           case Some(("Acquired", _))   => JsSuccess(TrackedForm(id, name, TrackedFormAcquired))

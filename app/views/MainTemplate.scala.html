@@ -117,7 +117,7 @@
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
 @if(!disableSessionExpired) {
     @hmrcTimeoutDialogHelper(
-        signOutUrl = routes.ServiceController.serviceSignout.url,
+        signOutUrl = routes.ServiceController.serviceSignout().url,
         keepAliveUrl = Some("/keep-alive")
     )
 }
@@ -165,13 +165,13 @@
         @hmrcAccountMenu(AccountMenu(
             businessTaxAccount = Some(BusinessTaxAccount()),
             language = if(messages.lang.code == "cy") Cy else En,
-            signOut = SignOut(href = routes.ServiceController.serviceSignout.url)
+            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
         ).withUrlsFromConfig())
 
     } else {
         @hmrcAccountMenu(AccountMenu(
             language = if(messages.lang.code == "cy") Cy else En,
-            signOut = SignOut(href = routes.ServiceController.serviceSignout.url)
+            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
         ).withUrlsFromConfig())
     }
 }

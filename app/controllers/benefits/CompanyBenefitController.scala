@@ -56,7 +56,7 @@ class CompanyBenefitController @Inject() (
       )
 
       journeyCacheService.cache(cacheValues) map { _ =>
-        Redirect(controllers.benefits.routes.CompanyBenefitController.decision)
+        Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
       }
 
     }
@@ -74,7 +74,7 @@ class CompanyBenefitController @Inject() (
         val referer = currentCache.get(EndCompanyBenefitConstants.RefererKey) match {
           case Some(value) => value
           case None =>
-            request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+            request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
         }
 
         val form =
@@ -106,7 +106,7 @@ class CompanyBenefitController @Inject() (
   def submitDecisionRedirect(decision: String, failureRoute: Result): Result =
     decision match {
       case UpdateOrRemoveCompanyBenefitDecisionConstants.NoIDontGetThisBenefit =>
-        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate)
+        Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
       case UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit =>
         Redirect(
           controllers.routes.ExternalServiceRedirectController
@@ -120,18 +120,20 @@ class CompanyBenefitController @Inject() (
   def submitDecision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
-      formWithErrors =>
-        journeyCacheService.currentCache.map { currentCache =>
-          val viewModel = CompanyBenefitDecisionViewModel(
-            currentCache(EndCompanyBenefitConstants.BenefitTypeKey),
-            currentCache(EndCompanyBenefitConstants.EmploymentNameKey),
-            formWithErrors,
-            currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt
-          )
-          BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
-        },
-      success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect)
-    )
+    UpdateOrRemoveCompanyBenefitDecisionForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          journeyCacheService.currentCache.map { currentCache =>
+            val viewModel = CompanyBenefitDecisionViewModel(
+              currentCache(EndCompanyBenefitConstants.BenefitTypeKey),
+              currentCache(EndCompanyBenefitConstants.EmploymentNameKey),
+              formWithErrors,
+              currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt
+            )
+            BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
+          },
+        success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect)
+      )
   }
 }

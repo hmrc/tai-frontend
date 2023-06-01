@@ -15,17 +15,16 @@
  *@
 
 @import includes.ptaHeader
-@import scala.concurrent.ExecutionContext
+
 
 @this(main: MainTemplate)
 
 @()(implicit request: Request[_],
     user: controllers.auth.AuthedUser,
-    messages: Messages,
-    ec: ExecutionContext)
+    messages: Messages)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         formForErrorSummary = None,
         mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
@@ -42,7 +41,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
     </div>
     <div class="govuk-grid-column-two-thirds">
                 <h2 id="lede-message" class="govuk-caption-l">
@@ -53,7 +52,7 @@
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
                     includes.link(
                     id=Some("income-tax-estimate-link"),
-                    url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                    url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
                     copy=Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))))
                  </p>
 
@@ -65,7 +64,7 @@
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh3",
                     includes.link(
                     id=Some("update-current-income-or-benefits-link"),
-                    url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
+                    url=routes.TaxAccountSummaryController.onPageLoad().url.toString,
                     copy=Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))))
                 </p>
     </div>

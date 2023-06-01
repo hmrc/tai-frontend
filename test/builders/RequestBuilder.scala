@@ -31,7 +31,7 @@ object RequestBuilder {
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
   }
 
-  def buildFakeRequestWithAuth(method: String, headers: Map[String, String]) =
+  def buildFakeRequestWithAuth(method: String, headers: (String, String)*) =
     FakeRequest(method = method, path = "")
       .withFormUrlEncodedBody(
         "name"                  -> "test1",
@@ -47,7 +47,7 @@ object RequestBuilder {
         "hasMultipleIncomes"    -> "true"
       )
       .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
-      .withHeaders(headers.toArray: _*)
+      .withHeaders(headers: _*)
 
   def buildFakeRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "/")

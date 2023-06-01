@@ -21,14 +21,13 @@
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.model.TaxYear
-@import scala.concurrent.ExecutionContext
+
 
 @this(mainTemplate: MainTemplate)
 
 @()(implicit request: Request[_],
 messages: Messages,
-user: controllers.auth.AuthedUser,
-ec: ExecutionContext)
+user: controllers.auth.AuthedUser)
 
 
 @taxYearRangeString = @{
@@ -37,7 +36,7 @@ ec: ExecutionContext)
     htmlNonBroken( Dates.formatDate(TaxYear().end) ))
 }
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
@@ -54,7 +53,7 @@ ec: ExecutionContext)
 ){
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">
-        @header
+        @header()
         <p class="govuk-body" id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
     </div>
 </div>

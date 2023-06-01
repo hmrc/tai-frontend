@@ -90,7 +90,7 @@ class AuthActionSpec extends BaseSpec {
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.toString)
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
         }
       }
     }
@@ -131,7 +131,7 @@ class AuthActionSpec extends BaseSpec {
       }
 
       "redirect a user to uplift if the confidence level is below 200" in {
-        val authProviderGG = Some(TaiConstants.AuthProviderGG)
+
         val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
         val saUtr = Some("000111222")
         val nino = new Generator().nextNino.nino
@@ -142,7 +142,7 @@ class AuthActionSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.UnauthorisedController.upliftFailedUrl.url
+        redirectLocation(result).get mustBe routes.UnauthorisedController.upliftFailedUrl().url
       }
     }
   }
@@ -164,7 +164,7 @@ class AuthActionSpec extends BaseSpec {
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG.toString)
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().url)
         }
       }
     }

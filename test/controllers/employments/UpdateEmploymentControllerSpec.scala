@@ -23,7 +23,6 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
@@ -32,7 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
@@ -41,12 +40,11 @@ import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, What
 
 import java.time.LocalDate
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
-    Mockito.reset(journeyCacheService, successfulJourneyCacheService, personService)
+  override def beforeEach(): Unit =
+    reset(journeyCacheService, successfulJourneyCacheService, personService)
 
   "employmentDetailsUpdate" must {
     "show the 'What Do You Want To Tell Us' Page" when {
@@ -133,7 +131,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber.url
+        ).get mustBe controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
       }
     }
 
@@ -248,7 +246,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
       val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
   }
@@ -276,7 +274,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers.url
+        ).get mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers().url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -302,7 +300,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers.url
+        ).get mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers().url
       }
     }
 
@@ -371,8 +369,10 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         ).thenReturn(
           Future.successful(
             Right(
-              Seq[String]("1", "emp-name", "whatYouToldUs", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String]("1", "emp-name", "whatYouToldUs", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -399,7 +399,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
       val result = sut.updateEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
   }
@@ -413,8 +413,10 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](empId.toString, "whatYouToldUs", "Yes"),
-              Seq[Option[String]](Some("123456789"))
+              (
+                Seq[String](empId.toString, "whatYouToldUs", "Yes"),
+                Seq[Option[String]](Some("123456789"))
+              )
             )
           )
         )
@@ -432,7 +434,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation.url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
         verify(journeyCacheService, times(1)).flush()(any())
       }
 
@@ -443,8 +445,10 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](empId.toString, "whatYouToldUs", "No"),
-              Seq[Option[String]](None)
+              (
+                Seq[String](empId.toString, "whatYouToldUs", "No"),
+                Seq[Option[String]](None)
+              )
             )
           )
         )
@@ -462,7 +466,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation.url
+        redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
         verify(journeyCacheService, times(1)).flush()(any())
       }
     }

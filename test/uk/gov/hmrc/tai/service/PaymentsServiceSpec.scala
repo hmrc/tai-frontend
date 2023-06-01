@@ -53,9 +53,6 @@ class PaymentsServiceSpec extends PlaySpec {
   "filterDuplicates" should {
 
     "convert empty annualAccounts to an empty PaymentDetailsViewModel" in {
-      val payments = Seq(
-        Payment(testDate, 123, 456, 7890, taxableIncome, taxAmount, nationalInsuranceAmount, Weekly, Some(false))
-      )
 
       val emptyAnnualAccounts = Seq.empty[AnnualAccount]
       val employment = Employment(

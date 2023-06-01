@@ -22,10 +22,9 @@
 
 @this(main: MainTemplate)
 
-@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-
-@header = @{
+@header() = @{
     ptaHeader(
     mainHeadingText = taxCodeViewModel.mainHeading,
     preHeadingText = taxCodeViewModel.preHeader,
@@ -43,7 +42,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 
@@ -51,7 +50,7 @@
         <div class="govuk-grid-column-two-thirds">
             <div class="inner-block">
 
-                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
+                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (LazyList.from(1))) {
 
                 <div class="section govuk-!-margin-bottom-9">
 
@@ -59,7 +58,7 @@
 
                     <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
 
-                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (LazyList.from(1))) {
                         <li>
                             <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
                                 <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>

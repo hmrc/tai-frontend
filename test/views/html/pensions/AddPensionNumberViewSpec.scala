@@ -38,13 +38,13 @@ class AddPensionNumberViewSpec extends TaiViewSpec {
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(
       AddPensionNumberConstants.PayrollNumberChoice + "-yes",
       AddPensionNumberConstants.PayrollNumberChoice + "-no"
     )
-    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have gone back to firstPayChoice page" in {
       def view: Html = addPensionNumber(pensionNumberForm, pensionNumberViewModel)

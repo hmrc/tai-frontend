@@ -36,12 +36,11 @@
     payDate: Option[java.time.LocalDate] = None
 )(implicit request: Request[_],
     messages: Messages,
-    user: controllers.auth.AuthedUser,
-    ec: scala.concurrent.ExecutionContext
+    user: controllers.auth.AuthedUser
 )
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         formForErrorSummary = Some(income),
  		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
@@ -69,7 +68,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = income.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @header
+            @header()
         </div>
     </div>
 

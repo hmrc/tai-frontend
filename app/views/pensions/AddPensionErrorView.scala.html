@@ -18,10 +18,10 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.addPensionProvider.errorPage.title"),
         preHeadingText = Messages("add.missing.pension")
@@ -34,13 +34,13 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url)
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay().url)
 ) {
 
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
 
-    @header
+    @header()
 
     <div class="subsection flush--top">
         <p class="govuk-body">@Messages("tai.addPensionProvider.errorPage.para1", pensionProviderName)</p>
@@ -51,7 +51,7 @@
         @includes.link(
             id=Some("returnToYourIncomeDetails"),
             copy=Messages("return.to.your.income.tax.summary"),
-            url = routes.TaxAccountSummaryController.onPageLoad.url,
+            url = routes.TaxAccountSummaryController.onPageLoad().url,
             linkClasses=Seq("govuk-button")
         )
     </div>

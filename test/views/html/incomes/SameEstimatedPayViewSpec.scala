@@ -38,7 +38,7 @@ class SameEstimatedPayViewSpec extends TaiViewSpec {
     SameEstimatedPayViewModel(employerName, employerId, amount = amountAsInt, isPension = false, url)
 
   "Same estimated pay page" must {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithTitle(
       messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )

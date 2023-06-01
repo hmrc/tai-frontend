@@ -25,7 +25,7 @@ case class IncomeSelectorForm(incomeId: Int)
 
 object IncomeSelectorForm {
   def create(preFillData: IncomeSelectorForm): Form[IncomeSelectorForm] =
-    createForm.fill(preFillData)
+    createForm().fill(preFillData)
 
   def incomeSelectorForm: Form[IncomeSelectorForm] = Form[IncomeSelectorForm](
     mapping(

@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.metrics
 import java.util.concurrent.atomic.AtomicBoolean
 
 import com.codahale.metrics.{MetricRegistry, Timer}
-import com.kenshoo.play.metrics.Metrics
 import play.api.mvc.{Action, BaseController, Result}
 
 import scala.concurrent.{ExecutionContext, Future}

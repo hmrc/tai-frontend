@@ -15,18 +15,16 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
-@import includes.ptaHeader
-@import includes.cancelLink
-@import includes.forms._
+@import includes.{cancelLink, ptaHeader, submit}
 @import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 @import play.api.mvc.Call
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.pensions.CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(viewModel: uk.gov.hmrc.tai.viewModels.pensions.CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.checkYourAnswers.title"),
         preHeadingText = viewModel.preHeading
@@ -39,11 +37,11 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber.url)
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url)
 ) {
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
         @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
 
             @includes.checkYourAnswers(

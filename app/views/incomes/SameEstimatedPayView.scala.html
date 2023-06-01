@@ -33,10 +33,9 @@
 
 @(model: SameEstimatedPayViewModel)(implicit
 request: Request[_],
-messages: Messages,
-ec: scala.concurrent.ExecutionContext)
+messages: Messages)
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.updateEmployment.incomeSame.preHeading",model.employerName)
@@ -51,7 +50,7 @@ ec: scala.concurrent.ExecutionContext)
 ) {
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
         <div class="section flush--bottom soft--ends">
             <p class="govuk-body">@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.amountWithPounds</span></p>
             <div class="govuk-details__text">

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain.tax
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.Json
 
 class TotalTaxSpec extends PlaySpec {
 

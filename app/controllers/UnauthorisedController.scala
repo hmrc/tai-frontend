@@ -41,11 +41,11 @@ class UnauthorisedController @Inject() (
     Ok(unauthorisedView()).withNewSession
   }
 
-  def loginGG: Action[AnyContent] = Action.async { implicit request =>
+  def loginGG: Action[AnyContent] = Action.async {
     ggRedirect
   }
 
-  def upliftFailedUrl: Action[AnyContent] = Action.async { implicit request =>
+  def upliftFailedUrl: Action[AnyContent] = Action.async {
     Future.successful(
       Redirect(
         upliftUrl,
@@ -59,11 +59,11 @@ class UnauthorisedController @Inject() (
     )
   }
 
-  private def ggRedirect(implicit request: Request[_]): Future[Result] = {
+  private def ggRedirect: Future[Result] = {
     val postSignInUpliftUrl =
       s"${ViewModelHelper.urlEncode(applicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.urlEncode(
           applicationConfig.postSignInRedirectUrl
-            .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url)
+            .getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
         )}"
 
     lazy val ggSignIn =

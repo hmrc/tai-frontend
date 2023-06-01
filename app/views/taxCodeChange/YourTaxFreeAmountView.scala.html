@@ -21,10 +21,10 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: AuthenticatedRequest[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: AuthenticatedRequest[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 
-@header = @{
+@header() = @{
     ptaHeader(
         formForErrorSummary = None,
         mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
@@ -43,7 +43,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
         </div>
     </div>
 
@@ -68,7 +68,7 @@
             @includes.link(
                 id = Some("seeWhatHappensNext"),
                 copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
-                url = routes.TaxCodeChangeController.whatHappensNext.url,
+                url = routes.TaxCodeChangeController.whatHappensNext().url,
                 linkClasses = Seq("govuk-button")
             )
             </div>

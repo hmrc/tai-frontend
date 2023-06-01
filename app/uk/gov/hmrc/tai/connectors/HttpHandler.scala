@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
@@ -29,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
 
   def getFromApiV2(url: String)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[JsValue] = {
-    implicit val httpRds = new HttpReads[HttpResponse] {
+    implicit val httpRds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
           case UNAUTHORIZED => response
@@ -76,7 +75,6 @@ class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunct
 
   def putToApi[I](url: String, data: I)(implicit
     hc: HeaderCarrier,
-    rds: HttpReads[I],
     writes: Writes[I],
     executionContext: ExecutionContext
   ): Future[HttpResponse] =
@@ -106,7 +104,6 @@ class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunct
 
   def postToApi[I](url: String, data: I)(implicit
     hc: HeaderCarrier,
-    rds: HttpReads[I],
     writes: Writes[I],
     executionContext: ExecutionContext
   ): Future[HttpResponse] =

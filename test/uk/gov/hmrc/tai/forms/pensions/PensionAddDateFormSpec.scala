@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.forms.pensions
 
 import play.api.data.FormError
-import play.api.libs.json.Json
 import utils.BaseSpec
 
 import java.time.LocalDate
@@ -96,17 +95,17 @@ class PensionAddDateFormSpec extends BaseSpec {
   private val MonthTag: String = PensionAddDateForm.PensionFormMonth
   private val YearTag: String = PensionAddDateForm.PensionFormYear
 
-  private val validDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> 2015)
-  private val validFutureDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
-  private val validLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2016)
+  private val validDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> "2015")
+  private val validFutureDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> s"${LocalDate.now().getYear + 1}")
+  private val validLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2016")
 
-  private val invalidDay = Json.obj(DayTag -> "Bar", MonthTag -> 4, YearTag -> 2015)
-  private val invalidMonth = Json.obj(DayTag -> 1, MonthTag -> "Foo", YearTag -> 2015)
-  private val invalidYear = Json.obj(DayTag -> 1, MonthTag -> 4, YearTag -> "Baz")
-  private val invalidLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2015)
+  private val invalidDay = Map(DayTag -> "Bar", MonthTag -> "4", YearTag -> "2015")
+  private val invalidMonth = Map(DayTag -> "1", MonthTag -> "Foo", YearTag -> "2015")
+  private val invalidYear = Map(DayTag -> "1", MonthTag -> "4", YearTag -> "Baz")
+  private val invalidLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2015")
 
-  private val invalidNoDayValue = Json.obj(DayTag -> "", MonthTag -> 4, YearTag -> 2015)
-  private val invalidNoMonthValue = Json.obj(DayTag -> 4, MonthTag -> "", YearTag -> 2015)
-  private val invalidNoYearValue = Json.obj(DayTag -> 4, MonthTag -> 12, YearTag -> "")
-  private val invalidNoDayNoYearValue = Json.obj(DayTag -> "", MonthTag -> 12, YearTag -> "")
+  private val invalidNoDayValue = Map(DayTag -> "", MonthTag -> "4", YearTag -> "2015")
+  private val invalidNoMonthValue = Map(DayTag -> "4", MonthTag -> "", YearTag -> "2015")
+  private val invalidNoYearValue = Map(DayTag -> "4", MonthTag -> "12", YearTag -> "")
+  private val invalidNoDayNoYearValue = Map(DayTag -> "", MonthTag -> "12", YearTag -> "")
 }

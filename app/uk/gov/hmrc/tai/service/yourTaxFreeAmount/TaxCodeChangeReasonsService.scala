@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 import javax.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, IabdTaxCodeChangeReasons, TaxCodeChangeReasons}
 
 class TaxCodeChangeReasonsService @Inject() (employmentTaxCodeChangeReasons: TaxCodeChangeReasons) {

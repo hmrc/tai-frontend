@@ -72,7 +72,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(1, monthlyPaymentFrequency)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         1,
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage.url
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(
@@ -82,7 +82,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(2, totalPay)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage.url
+        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
       )
 
     }

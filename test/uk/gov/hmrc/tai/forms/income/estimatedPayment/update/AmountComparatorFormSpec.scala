@@ -17,8 +17,6 @@
 package uk.gov.hmrc.tai.forms.income.estimatedPayment.update
 
 import java.time.LocalDate
-import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import utils.BaseSpec
 
@@ -27,7 +25,7 @@ class AmountComparatorFormSpec extends BaseSpec {
   "AmountComparatorForm" must {
 
     "return no errors when a valid monetary amount is entered" in {
-      val validMonetaryAmount = Json.obj("income" -> "11000")
+      val validMonetaryAmount = Map("income" -> "11000")
       val validatedForm = form.bind(validMonetaryAmount)
 
       validatedForm.errors mustBe empty
@@ -35,14 +33,14 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return no errors when a valid monetary amount is entered with non numeric characters" in {
-      val validMonetaryAmount = Json.obj("income" -> "£11,000")
+      val validMonetaryAmount = Map("income" -> "£11,000")
       val validatedForm = form.bind(validMonetaryAmount)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(AmountComparatorForm(Some("11000")))
     }
     "return an error for an invalid monetary amount" in {
-      val invalidChoice = Json.obj("income" -> "11,00")
+      val invalidChoice = Map("income" -> "11,00")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -52,7 +50,7 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return an error for no input value" in {
-      val invalidChoice = Json.obj("income" -> "")
+      val invalidChoice = Map("income" -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(messagesApi("tai.irregular.error.blankValue"))
@@ -60,7 +58,7 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return an error when new amount is less than current amount" in {
-      val newAmount = Json.obj("income" -> "9000")
+      val newAmount = Map("income" -> "9000")
       val invalidatedForm = form.bind(newAmount)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -71,7 +69,7 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return an error when new amount is greater than max length" in {
-      val newAmount = Json.obj("income" -> "1000000000")
+      val newAmount = Map("income" -> "1000000000")
       val invalidatedForm = form.bind(newAmount)
 
       invalidatedForm.errors.head.messages mustBe List(messagesApi("error.tai.updateDataEmployment.maxLength"))

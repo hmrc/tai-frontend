@@ -21,7 +21,7 @@
 @if(title.isDefined) { <h2 class="govuk-heading-m">@title.get.replace("&nbsp;", "\u00A0")</h2> }
 
 <dl class="govuk-summary-list" id="check-answers-summary">
-    @for((line, idx) <- confirmationLines zip (Stream from 1)) {
+    @for((line, idx) <- confirmationLines zip (LazyList.from(1))) {
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key" id="confirmation-line-@{idx.toString}-question">
                 @line.question

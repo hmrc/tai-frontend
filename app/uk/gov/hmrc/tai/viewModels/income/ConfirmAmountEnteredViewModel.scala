@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 sealed trait PayType
@@ -35,8 +34,6 @@ case class ConfirmAmountEnteredViewModel(
 )
 
 object ConfirmAmountEnteredViewModel {
-
-  private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
   def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType, backUrl: String)(
     implicit messages: Messages
@@ -60,7 +57,7 @@ object ConfirmAmountEnteredViewModel {
         yearRange = TaxYearRangeUtil.futureTaxYearRange(1),
         employerName = empName,
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
-        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad.url,
+        onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad().url,
         estimatedIncome = estIncome,
         backUrl = backUrl
       )
@@ -80,7 +77,7 @@ object ConfirmAmountEnteredViewModel {
       employerName = empName,
       mainText = Some(messages("tai.incomes.confirm.save.message")),
       onConfirm = controllers.routes.IncomeController.updateEstimatedIncome(empId).url,
-      onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+      onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
       estimatedIncome = estIncome,
       backUrl = backUrl
     )

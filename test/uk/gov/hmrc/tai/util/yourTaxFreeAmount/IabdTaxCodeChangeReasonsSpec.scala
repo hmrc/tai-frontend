@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import utils.BaseSpec
 
 class IabdTaxCodeChangeReasonsSpec extends BaseSpec {

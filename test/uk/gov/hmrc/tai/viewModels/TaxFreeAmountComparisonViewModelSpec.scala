@@ -130,8 +130,6 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
 
       "not displayed if personal allowance is present for cy and cy +1" when {
         "there is no increase" in {
-          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11500, 0))
-          val startOfNextTaxYear = HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
           val expectedMessage = None
           val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
           val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component))

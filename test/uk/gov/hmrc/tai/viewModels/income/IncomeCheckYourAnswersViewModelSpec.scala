@@ -44,22 +44,22 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q1"),
         "income source",
-        controllers.employments.routes.AddEmploymentController.addEmploymentName.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentName().url
       )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
-        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q3"),
         "ref-123",
-        controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
       )
       res(3) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "No",
-        controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       )
     }
 
@@ -80,27 +80,27 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q1"),
         "income source",
-        controllers.employments.routes.AddEmploymentController.addEmploymentName.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentName().url
       )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
-        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q3"),
         "ref-123",
-        controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url
+        controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
       )
       res(3) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q4"),
         "Yes",
-        controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       )
       res(4) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.phoneNumber"),
         "123456789",
-        controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       )
     }
   }
@@ -126,12 +126,12 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.dateEmploymentEnded"),
         "13 June 2017",
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.contactByPhone"),
         "No",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
     }
 
@@ -155,17 +155,17 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       res(0) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.dateEmploymentEnded"),
         "13 June 2017",
-        controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       )
       res(1) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.contactByPhone"),
         "Yes",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
       res(2) mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.phoneNumber"),
         "123456789",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
     }
   }

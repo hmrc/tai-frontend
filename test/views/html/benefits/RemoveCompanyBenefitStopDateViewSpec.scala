@@ -39,8 +39,8 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
       messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
-    behave like haveLinkWithUrlWithID("backLink", controllers.benefits.routes.CompanyBenefitController.decision.url)
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
+    behave like haveLinkWithUrlWithID("backLink", controllers.benefits.routes.CompanyBenefitController.decision().url)
     behave like pageWithContinueButtonFormNew("/check-income-tax/remove-company-benefit/stop-date")
 
     "have a hint" in {
@@ -57,7 +57,6 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
     }
 
     "display error message" when {
-      val taxYearStart = Dates.formatDate(TaxYear().start)
 
       "form has error" in {
         val errorView = removeCompanyBenefitStopDate(formWithErrors, benefitType, empName)

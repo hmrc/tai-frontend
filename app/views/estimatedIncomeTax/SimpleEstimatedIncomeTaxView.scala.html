@@ -20,20 +20,20 @@
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView,SimpleTaxView, ZeroTaxView,TaxViewType}
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
-@import scala.concurrent.ExecutionContext
+
 @import controllers.auth.AuthenticatedRequest
 
 @this(main: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser, ec: ExecutionContext)
+request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
 }
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
@@ -46,14 +46,14 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     title = Messages("tai.estimatedIncome.title"),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.estimatedIncome.title")),
-    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad.url),
+    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad().url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     pagePrintable = true,
 ){
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @header
+            @header()
         </div>
     </div>
 

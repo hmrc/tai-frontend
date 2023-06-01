@@ -31,6 +31,7 @@ class PersonServiceSpec extends BaseSpec {
     "return a Person model instance" when {
       "connector returns successfully" in {
         val sut = createSut
+
         val person = fakePerson(nino)
         when(personConnector.person(meq(nino))(any()))
           .thenReturn(Future.successful(person))
@@ -42,6 +43,7 @@ class PersonServiceSpec extends BaseSpec {
     "throw a runtime exception" when {
       "connector did not return successfully" in {
         val sut = createSut
+
         when(personConnector.person(meq(nino))(any()))
           .thenReturn(Future.failed(new NotFoundException("downstream not found")))
 

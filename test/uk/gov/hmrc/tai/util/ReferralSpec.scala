@@ -26,7 +26,7 @@ class ReferralSpec extends BaseSpec with FakeTaiPlayApplication {
   "referer" must {
     "return a string containing the referral path" in {
 
-      val request = RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> referralPath))
+      val request = RequestBuilder.buildFakeRequestWithAuth("GET", "Referer" -> referralPath)
 
       referral.referer(request) mustBe referralPath
     }
@@ -35,7 +35,7 @@ class ReferralSpec extends BaseSpec with FakeTaiPlayApplication {
   "resourceName" must {
     "return a string containing the resource name" in {
 
-      val request = RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> referralPath))
+      val request = RequestBuilder.buildFakeRequestWithAuth("GET", "Referer" -> referralPath)
 
       referral.resourceName(request) mustBe "somePageResource"
     }

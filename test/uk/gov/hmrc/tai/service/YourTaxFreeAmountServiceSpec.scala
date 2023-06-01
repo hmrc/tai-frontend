@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.tai.service
 
-import builders.RequestBuilder
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
@@ -26,6 +24,9 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import utils.BaseSpec
+
+import java.time.LocalDate
+import scala.annotation.nowarn
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -50,7 +51,6 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = service.taxFreeAmountComparison(nino)
 
       Await.result(result, 5.seconds) mustBe expectedModel
@@ -59,12 +59,12 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
+    @nowarn
     override def buildTaxFreeAmount(
       unused1: LocalDate,
       previous: Option[Seq[CodingComponent]],
       unused3: Seq[CodingComponent]
     )(implicit messages: Messages): YourTaxFreeAmountComparison = {
-
       val previousTaxFreeInfo = previous.map(_ => TaxFreeInfo("previousTaxDate", 0, 0))
 
       YourTaxFreeAmountComparison(

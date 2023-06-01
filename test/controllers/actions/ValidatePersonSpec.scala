@@ -34,7 +34,7 @@ package controllers.actions
 
 import controllers.{FakeAuthAction, routes}
 import org.mockito.ArgumentMatchers.any
-import play.api.mvc.AbstractController
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
@@ -44,13 +44,13 @@ import scala.concurrent.Future
 
 class ValidatePersonSpec extends BaseSpec {
 
-  val personService = mock[PersonService]
+  val personService: PersonService = mock[PersonService]
   val personDeceased = true
-  val personAlive = !personDeceased
-  val cc = stubControllerComponents()
+  val personAlive: Boolean = !personDeceased
+  val cc: ControllerComponents = stubControllerComponents()
 
   class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
-    def onPageLoad() = (FakeAuthAction andThen deceased) { request =>
+    def onPageLoad(): Action[AnyContent] = (FakeAuthAction andThen deceased) { request =>
       Ok
     }
   }
@@ -72,7 +72,7 @@ class ValidatePersonSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased.toString)
+        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().url)
 
       }
     }
@@ -110,7 +110,7 @@ class ValidatePersonSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.ServiceController.mciErrorPage.toString)
+        redirectLocation(result) mustBe Some(routes.ServiceController.mciErrorPage().url)
       }
     }
   }

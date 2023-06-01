@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
-
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 

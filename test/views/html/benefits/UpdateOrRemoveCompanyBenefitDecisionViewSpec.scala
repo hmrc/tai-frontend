@@ -38,7 +38,7 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
       "backLink",
       controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url
     )
-    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithContinueButtonFormNew(s"/check-income-tax/company-benefit/decision")
 
     "have two radio buttons with relevant text" in {

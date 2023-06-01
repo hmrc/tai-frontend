@@ -135,8 +135,8 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       val newValuesToCache = Map("key1" -> "value1", "key2" -> "value2")
       val updatedCacheJson = """{"key1":"value1","key2":"value2","key7":"value7"}"""
       val updatedCacheMap = Map("key1" -> "value1", "key2" -> "value2", "key7" -> "value7")
-      when(httpHandler.postToApi(any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.parse(updatedCacheJson)))))
+      when(httpHandler.postToApi(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, updatedCacheJson)))
 
       val result = Await.result(sut.cache(journeyName, newValuesToCache), 5 seconds)
       result mustBe updatedCacheMap
@@ -147,7 +147,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(journeyName)}"
       when(httpHandler.deleteFromApi(meq(url))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result = Await.result(sut.flush(journeyName), 5 seconds)
       result mustBe Done
@@ -158,7 +158,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(s"$journeyName/1")}"
       when(httpHandler.deleteFromApi(meq(url))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       val result = Await.result(sut.flushWithEmpId(journeyName, 1), 5 seconds)
       result mustBe Done

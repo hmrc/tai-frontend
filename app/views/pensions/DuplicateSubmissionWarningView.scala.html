@@ -21,16 +21,8 @@
 
 @this(mainTemplate: MainTemplate, duplicateSubmissionWarning: includes.duplicateSubmissionWarning, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(duplicateSubmissionWarningForm),
-        mainHeadingText = messages("tai.pension.warning.heading", pensionName),
-        preHeadingText = messages("tai.pension.warning.preHeading")
-    )
-}
 
 @mainTemplate(
     title = messages("tai.pension.warning.customGaTitle"),
@@ -49,7 +41,7 @@
             messages("tai.pension.warning.heading", pensionName),
             messages("tai.pension.warning.radio1", pensionName),
             messages("tai.pension.warning.radio2"),
-            controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning,
+            controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning(),
             govukRadios,
             govukErrorSummary
         )

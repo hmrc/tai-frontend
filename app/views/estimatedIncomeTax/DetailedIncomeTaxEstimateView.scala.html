@@ -21,18 +21,18 @@
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 @import includes.ptaHeader
 
-@import scala.concurrent.ExecutionContext
+
 
 @this(mainTemplate: MainTemplate)
 
-@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: ExecutionContext)
+@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @taxYearRangeString = @{
     viewModel.currentTaxYearRangeHtmlNonBreak
 }
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.estimatedIncome.detailedEstimate.heading"),
         preHeadingText = taxYearRangeString,
@@ -49,7 +49,7 @@
 ){
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
     </div>
 </div>
 

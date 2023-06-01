@@ -38,7 +38,7 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport with Befor
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(journeyCacheService)
 
   val employerId = 14

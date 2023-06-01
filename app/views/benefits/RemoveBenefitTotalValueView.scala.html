@@ -25,14 +25,12 @@
 @import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 @import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-@import scala.concurrent.ExecutionContext
+
 
 @this(main: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukDetails : GovukDetails, govukErrorSummary: GovukErrorSummary)
 
-@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages,ec: ExecutionContext)
+@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
-
-@totalValueField = @{companyBenefitTotalValueForm("totalValue")}
 
 @hint = {
     <p class="govuk-body">@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
@@ -59,7 +57,7 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkId = "backLink",
-    backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url),
+    backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(companyBenefitTotalValueForm)
 ) {
@@ -69,7 +67,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = companyBenefitTotalValueForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue) {
+            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
                 @govukInput(Input(
                     id = "totalValue",
                     name = "totalValue",
@@ -91,7 +89,7 @@
                 @govukButton(Button(content = Text(messages("tai.continue"))))
             }
             
-            @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
+            @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url)))
         </div>
     </div>
 

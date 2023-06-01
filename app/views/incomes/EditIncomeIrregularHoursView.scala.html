@@ -30,10 +30,9 @@
 @(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm],
   viewModel: EditIncomeIrregularHoursViewModel)(
     implicit request: Request[_],
-    messages: Messages,
-    ec: scala.concurrent.ExecutionContext)
+    messages: Messages)
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = viewModel.heading,
         preHeadingText = viewModel.preHeading,
@@ -46,7 +45,7 @@
     title = messages("tai.irregular.heading"),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage.url),
+    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url),
     formForErrorSummary = Some(incomeUpdateForm)
 
 ){
@@ -56,7 +55,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = incomeUpdateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @header
+            @header()
 
             <h2 class="govuk-heading-m">@Html(messages("tai.irregular.introduction", <span class="carry-over">{viewModel.employerName}</span>))</h2>
             <p class="govuk-body">@messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange)</p>

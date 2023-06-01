@@ -33,7 +33,7 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))
     )
 
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
 
     "have a heading for the Total estimated Income" in {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £9,000")
@@ -61,7 +61,7 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           "tai.estimatedIncome.howYouPay.desc",
           link(
             id = Some("taxCodesLink"),
-            url = routes.YourTaxCodeController.taxCodes.url.toString,
+            url = routes.YourTaxCodeController.taxCodes().url.toString,
             copy = Messages("tai.estimatedIncome.taxCodes.link")
           )
         )
@@ -79,7 +79,7 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
             "tai.estimatedIncomeLow.desc",
             link(
               id = Some("taxFreeAmountLink"),
-              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              url = routes.TaxFreeAmountController.taxFreeAmount().url.toString,
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),
             "£11,500"
@@ -96,17 +96,17 @@ class ZeroTaxEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
       doc must haveLinkElement(
         "taxCodesSideLink",
-        routes.YourTaxCodeController.taxCodes.url,
+        routes.YourTaxCodeController.taxCodes().url,
         messages("check.your.tax.codes")
       )
       doc must haveLinkElement(
         "taxFreeAmountSideLink",
-        routes.TaxFreeAmountController.taxFreeAmount.url,
+        routes.TaxFreeAmountController.taxFreeAmount().url,
         messages("check.your.tax.free.amount")
       )
       doc must haveLinkElement(
         "taxSummarySideLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary")
       )
     }
