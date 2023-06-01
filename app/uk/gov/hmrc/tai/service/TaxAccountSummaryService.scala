@@ -46,7 +46,7 @@ class TaxAccountSummaryService @Inject() (
       taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live),
       taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, Live),
       taxAccountService.incomeSources(nino, TaxYear(), EmploymentIncome, NotLive),
-      employmentService.ceasedEmployments(nino, TaxYear()),
+      employmentService.ceasedEmployments(nino, TaxYear()).getOrElse(Seq.empty[Employment]),
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       trackingService.isAnyIFormInProgress(nino.nino)
     ).mapN {

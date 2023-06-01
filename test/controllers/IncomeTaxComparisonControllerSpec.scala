@@ -17,12 +17,15 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -47,7 +50,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.incomeTaxComparison.heading.more"))
 
-      verify(employmentService).employments(any(), meq(TaxYear()))(any())
+      verify(employmentService).employments(any(), meq(TaxYear()))(any(), any())
     }
 
     "throw an error page" when {
@@ -84,9 +87,12 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
         .thenReturn(Future.successful(Right(taxCodeIncomesMultiple)))
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOneMultiple)))
-      when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2)))
-
+      when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Right(Seq(employment, employment2)))
+          )
+        )
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
@@ -103,9 +109,12 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
         .thenReturn(Future.successful(Right(taxCodeIncomesMultiple)))
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOneMultiple)))
-      when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
-
+      when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Right(Seq(employment, employment2, pension, pension2)))
+          )
+        )
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
@@ -120,9 +129,12 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOne2)))
-      when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2)))
-
+      when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Right(Seq(employment, employment2)))
+          )
+        )
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
 
@@ -135,8 +147,12 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesNoEmpId)))
-      when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2)))
+      when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Right(Seq(employment, employment2)))
+          )
+        )
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
@@ -211,8 +227,12 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(taxAccountSummary))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
       .thenReturn(Future.successful(Seq.empty[CodingComponent]))
-    when(employmentService.employments(any(), meq(TaxYear()))(any()))
-      .thenReturn(Future.successful(Seq(employment)))
+    when(employmentService.employments(any(), meq(TaxYear()))(any(), any()))
+      .thenReturn(
+        EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+          Future.successful(Right(Seq(employment)))
+        )
+      )
     when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
   }
 }

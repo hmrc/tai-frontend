@@ -16,230 +16,344 @@
 
 package uk.gov.hmrc.tai.service
 
-import java.time.LocalDateTime
-import java.time.LocalDate
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import cats.data.EitherT
+import org.mockito.ArgumentMatchers.any
+import play.api.http.Status._
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 import utils.BaseSpec
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+
+import java.time.{LocalDate, LocalDateTime}
+import scala.concurrent.Future
 import scala.language.postfixOps
 
-class EmploymentServiceSpec extends BaseSpec {
+class EmploymentServiceSpec extends BaseSpec { // TODO - Needs error scenarios
 
-  "Employment Service" must {
-    "return employments" in {
-      val sut = createSUT
-      when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+  lazy val connector: EmploymentsConnector = mock[EmploymentsConnector]
+  lazy val service: EmploymentService = new EmploymentService(connector)
 
-      val data = Await.result(sut.employments(nino, year), 5.seconds)
+  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-      data mustBe employments
-    }
-  }
-
-  "CeasedEmployments Service" must {
-    "return employments" in {
-      val sut = createSUT
-      when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(employments))
-
-      val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
-
-      data mustBe employments
-    }
-  }
-
-  "Employment Names" must {
-    "return a map of employment id and employment name" when {
-      "connector returns one employment" in {
-        val sut = createSUT
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employmentDetails))
-
-        val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
-
-        employmentNames mustBe Map(2 -> "company name")
+  "EmploymentService" when {
+    val employment1 = Employment(
+      "company name 1",
+      Live,
+      Some("123"),
+      LocalDate.parse("2016-05-26"),
+      Some(LocalDate.parse("2016-05-26")),
+      Nil,
+      "",
+      "",
+      1,
+      None,
+      false,
+      false
+    )
+    val employment2 = Employment(
+      "company name 2",
+      Live,
+      Some("123"),
+      LocalDate.parse("2016-05-26"),
+      Some(LocalDate.parse("2016-05-26")),
+      Nil,
+      "",
+      "",
+      2,
+      None,
+      false,
+      false
+    )
+    "employments is called" must {
+      "return employments if retrieved with an OK response by the connector" in {
+        when(connector.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(Seq(employment1, employment2)).toString)))
+            )
+          )
+        service.employments(nino, year).value.futureValue.map(_ mustBe Seq(employment1, employment2))
       }
-
-      "connector returns multiple employment" in {
-        val sut = createSUT
-        val employment1 = Employment(
-          "company name 1",
-          Live,
-          Some("123"),
-          LocalDate.parse("2016-05-26"),
-          Some(LocalDate.parse("2016-05-26")),
-          Nil,
-          "",
-          "",
-          1,
-          None,
-          false,
-          false
-        )
-        val employment2 = Employment(
-          "company name 2",
-          Live,
-          Some("123"),
-          LocalDate.parse("2016-05-26"),
-          Some(LocalDate.parse("2016-05-26")),
-          Nil,
-          "",
-          "",
-          2,
-          None,
-          false,
-          false
-        )
-
-        when(employmentsConnector.employments(any(), any())(any()))
-          .thenReturn(Future.successful(List(employment1, employment2)))
-
-        val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
-
-        employmentNames mustBe Map(1 -> "company name 1", 2 -> "company name 2")
+      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+        when(connector.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(NO_CONTENT, "[]")))
+            )
+          )
+        service.employments(nino, year).value.futureValue.map(_ mustBe Seq.empty[Employment])
       }
-
-      "connector does not return any employment" in {
-        val sut = createSUT
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
-
-        val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
-
-        data mustBe Map()
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.employments(any(), any())(any(), any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service.employments(nino, year).value.futureValue.swap.map(_.statusCode mustBe errorStatus)
+        }
       }
     }
-  }
-
-  "employment" must {
-    "return an employment" when {
-      "the connector returns one" in {
-        val sut = createSUT
-
-        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val data = Await.result(sut.employment(nino, 8), 5 seconds)
-
-        data mustBe Some(employment)
+    "ceasedEmployments is called" must {
+      "return employments if retrieved with an OK response by the connector" in {
+        when(connector.ceasedEmployments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(Seq(employment1, employment2)).toString)))
+            )
+          )
+        service.ceasedEmployments(nino, year).value.futureValue.map(_ mustBe Seq(employment1, employment2))
+      }
+      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+        when(connector.ceasedEmployments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(NO_CONTENT, "[]")))
+            )
+          )
+        service.ceasedEmployments(nino, year).value.futureValue.map(_ mustBe Seq.empty[Employment])
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.ceasedEmployments(any(), any())(any(), any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service.ceasedEmployments(nino, year).value.futureValue.swap.map(_.statusCode mustBe errorStatus)
+        }
       }
     }
-    "return none" when {
-      "the connector does not return an employment" in {
-        val sut = createSUT
-
-        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(None))
-
-        val data = Await.result(sut.employment(nino, 8), 5 seconds)
-
-        data mustBe None
+    "employment is called" must {
+      "return employments if retrieved with an OK response by the connector" in {
+        when(connector.employment(any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(employment1).toString)))
+            )
+          )
+        service.employment(nino, 8).value.futureValue.map(_ mustBe Some(employment1))
+      }
+      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+        when(connector.employment(any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(NO_CONTENT, Json.toJson("test" -> "").toString)))
+            )
+          )
+        service.employment(nino, 8).value.futureValue.map(_ mustBe None)
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.employment(any(), any())(any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service.employment(nino, 8).value.futureValue.swap.map(_.statusCode mustBe errorStatus)
+        }
       }
     }
-  }
-
-  "end employment" must {
-    "return envelope id" in {
-      val sut = createSUT
-      when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-
+    "endEmployment is called" must {
       val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
-
-      val data = Await.result(sut.endEmployment(nino, 1, endEmploymentData), 5.seconds)
-
-      data mustBe "123-456-789"
+      "return String data if retrieved with an OK response by the connector" in {
+        when(connector.endEmployment(any(), any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(CREATED, Json.toJson("123-456-789").toString)))
+            )
+          )
+        service.endEmployment(nino, 8, endEmploymentData).value.futureValue.map(_ mustBe "123-456-789")
+      }
+      "return BAD_GATEWAY if no data is returned" in {
+        when(connector.endEmployment(any(), any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(CREATED, "[]")))
+            )
+          )
+        service.endEmployment(nino, 8, endEmploymentData).value.futureValue.swap.map(_.statusCode mustBe BAD_GATEWAY)
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.endEmployment(any(), any(), any())(any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service.endEmployment(nino, 8, endEmploymentData).value.futureValue.swap.map(_.statusCode mustBe errorStatus)
+        }
+      }
     }
-  }
-
-  "add employment" must {
-    "return an envelope id" in {
-      val sut = createSUT
-      val model = AddEmployment(
+    "addEmployment is called" must {
+      val addEmployment = AddEmployment(
         employerName = "testEmployment",
         payrollNumber = "12345",
         startDate = LocalDate.of(2017, 6, 6),
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789")
       )
-      when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
-        .thenReturn(Future.successful(Some("123-456-789")))
-
-      val envId = Await.result(sut.addEmployment(nino, model), 5.seconds)
-
-      envId mustBe "123-456-789"
-    }
-    "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
-        val sut = createSUT
-        val model = AddEmployment(
-          employerName = "testEmployment",
-          payrollNumber = "12345",
-          startDate = LocalDate.of(2017, 6, 6),
-          telephoneContactAllowed = "Yes",
-          telephoneNumber = Some("123456789")
-        )
-        when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
-          .thenReturn(Future.successful(None))
-
-        val rte = the[RuntimeException] thrownBy Await.result(sut.addEmployment(nino, model), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
+      "return String data if retrieved with an OK response by the connector" in {
+        when(connector.addEmployment(any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(CREATED, Json.toJson("123-456-789").toString)))
+            )
+          )
+        service.addEmployment(nino, addEmployment).value.futureValue.map(_ mustBe "123-456-789")
+      }
+      "return BAD_GATEWAY if no data is returned" in {
+        when(connector.addEmployment(any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(CREATED, "[]")))
+            )
+          )
+        service.addEmployment(nino, addEmployment).value.futureValue.swap.map(_.statusCode mustBe BAD_GATEWAY)
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.addEmployment(any(), any())(any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service.addEmployment(nino, addEmployment).value.futureValue.swap.map(_.statusCode mustBe errorStatus)
+        }
       }
     }
-  }
-
-  "incorrect employment" must {
-    "return an envelope id" in {
-      val sut = createSUT
-      val model =
+    "incorrectEmployment is called" must {
+      val incorrectIncome =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
-        .thenReturn(Future.successful(Some("123-456-789")))
-
-      val envId = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
-
-      envId mustBe "123-456-789"
+      "return String data if retrieved with an OK response by the connector" in {
+        when(connector.incorrectEmployment(any(), any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(CREATED, Json.toJson("123-456-789").toString)))
+            )
+          )
+        service.incorrectEmployment(nino, 1, incorrectIncome).value.futureValue.map(_ mustBe "123-456-789")
+      }
+      "return BAD_GATEWAY if no data is returned" in {
+        when(connector.incorrectEmployment(any(), any(), any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(CREATED, "[]")))
+            )
+          )
+        service
+          .incorrectEmployment(nino, 1, incorrectIncome)
+          .value
+          .futureValue
+          .swap
+          .map(_.statusCode mustBe BAD_GATEWAY)
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.incorrectEmployment(any(), any(), any())(any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service
+            .incorrectEmployment(nino, 1, incorrectIncome)
+            .value
+            .futureValue
+            .swap
+            .map(_.statusCode mustBe errorStatus)
+        }
+      }
     }
-
-    "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
-        val sut = createSUT
-        val model =
-          IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
-          .thenReturn(Future.successful(None))
-
-        val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
+    "employmentNames is called" must {
+      "return String data if retrieved with an OK response by the connector" in {
+        when(connector.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(List(employment1, employment2)).toString)))
+            )
+          )
+        val result = service.employmentNames(nino, year).futureValue
+        result mustBe Map(1 -> "company name 1", 2 -> "company name 2")
+      }
+      "return an empty sequence if NO_CONTENT is returned from the connector" in {
+        when(connector.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(NO_CONTENT, "[]")))
+            )
+          )
+        val result = service.employmentNames(nino, year).futureValue
+        result mustBe Map.empty[Int, String]
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse containing $errorStatus is retrieved from the connector" in {
+          when(connector.employments(any(), any())(any(), any()))
+            .thenReturn(
+              EitherT[Future, UpstreamErrorResponse, HttpResponse](
+                Future.successful(Left(UpstreamErrorResponse("", errorStatus)))
+              )
+            )
+          service.employmentNames(nino, year).futureValue.map(_ mustBe Map.empty[Int, String])
+        }
       }
     }
   }
-
-  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
-
-  private val employment = Employment(
-    "company name",
-    Live,
-    Some("123"),
-    LocalDate.parse("2016-05-26"),
-    Some(LocalDate.parse("2016-05-26")),
-    Nil,
-    "",
-    "",
-    2,
-    None,
-    false,
-    false
-  )
-  private val employmentDetails = List(employment)
-  private val employments = employmentDetails.head :: employmentDetails.head :: Nil
-
-  private def createSUT = new EmploymentServiceTest
-
-  val employmentsConnector = mock[EmploymentsConnector]
-
-  private class EmploymentServiceTest
-      extends EmploymentService(
-        employmentsConnector
-      )
-
 }

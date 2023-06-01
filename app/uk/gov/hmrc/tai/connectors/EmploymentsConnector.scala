@@ -16,72 +16,98 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Inject
+import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
+import uk.gov.hmrc.tai.model.domain.{AddEmployment, EndEmployment, IncorrectIncome}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class EmploymentsConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
+  def employments(nino: Nino, year: TaxYear)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentsUrl(nino, year))
+    )
+//    httpClientResponse
+//      .getFromApiV2(employmentServiceUrl(nino, year))
+//      .map { json =>
+//        if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
+//          (json \ "data" \ "employments").as[Seq[Employment]]
+//        } else {
+//          throw new RuntimeException("Invalid employment json")
+//        }
+//      }
+//      .getOrElse(Seq.empty) // TODO - To remove one at a time to avoid an overextended change
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
-      if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
-        (json \ "data" \ "employments").as[Seq[Employment]]
-      } else {
-        throw new RuntimeException("Invalid employment json")
-      }
-    }
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](ceasedEmploymentServiceUrl(nino, year))
+    )
 
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
-      (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
-    }
+  def employment(nino: Nino, id: String)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = // TODO - Merge this with employments()
+    httpClientResponse.read(httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](employmentUrl(nino, id)))
 
-  def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler
-      .getFromApiV2(employmentUrl(nino, id))
-      .map(json => (json \ "data").asOpt[Employment])
+  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.PUT[EndEmployment, Either[UpstreamErrorResponse, HttpResponse]](
+        endEmploymentServiceUrl(nino, id),
+        endEmploymentData
+      )
+    )
 
-  def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
-    httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>
-      if ((response.json \ "data").validate[String].isSuccess) {
-        (response.json \ "data").as[String]
-      } else {
-        throw new RuntimeException("Invalid json")
-      }
-    }
-
-  def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    httpHandler.postToApi[AddEmployment](addEmploymentServiceUrl(nino), employment).map { response =>
-      (response.json \ "data").asOpt[String]
-    }
+  def addEmployment(nino: Nino, employment: AddEmployment)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient
+        .POST[AddEmployment, Either[UpstreamErrorResponse, HttpResponse]](addEmploymentServiceUrl(nino), employment)
+    )
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier
-  ): Future[Option[String]] =
-    httpHandler.postToApi[IncorrectIncome](incorrectEmploymentServiceUrl(nino, id), incorrectEmployment).map {
-      response =>
-        (response.json \ "data").asOpt[String]
-    }
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.POST[IncorrectIncome, Either[UpstreamErrorResponse, HttpResponse]](
+        incorrectEmploymentServiceUrl(nino, id),
+        incorrectEmployment
+      )
+    )
 
-  def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
+  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
-  def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
+  private def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 
-  def employmentServiceUrl(nino: Nino, year: TaxYear): String = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+  private def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
 
-  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
+  private def employmentsUrl(nino: Nino, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+
+  private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
-  def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/reason"
+  private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

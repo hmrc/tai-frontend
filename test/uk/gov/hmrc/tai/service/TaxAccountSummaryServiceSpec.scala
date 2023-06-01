@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
+import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
@@ -38,12 +40,15 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
   }
 
   "TaxAccountSummaryServiceSpec" should {
-    "return a RuntimeException if ceasedEmployments fails" in {
+    "return a RuntimeException if ceasedEmployments fails" in { // TODO - Add more error scenarios
       val sut = createSUT
 
-      when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any[HeaderCarrier])).thenReturn(
-        Future.failed(new BadRequestException("Failed to fetch income details"))
-      )
+      when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Left(UpstreamErrorResponse("", BAD_REQUEST)))
+          )
+        )
 
       val caught = the[RuntimeException] thrownBy Await
         .result(sut.taxAccountSummaryViewModel(nino, taxAccountSummary), 5.seconds)
@@ -212,9 +217,8 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with
         mcc = mcc
       ) {
 
-    when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any[HeaderCarrier])).thenReturn(
-      Future.successful(Seq(employment))
-    )
+    when(employmentService.ceasedEmployments(any[Nino], any[TaxYear])(any(), any()))
+      .thenReturn(EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(Seq(employment)))))
 
     when(taxAccountService.incomeSources(any[Nino], any[TaxYear], meq(PensionIncome), meq(Live))(any[HeaderCarrier]))
       .thenReturn(

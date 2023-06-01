@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import play.api.http.Status.IM_A_TEAPOT
+
 import javax.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class SessionConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) {
 
@@ -31,5 +33,5 @@ class SessionConnector @Inject() (httpHandler: HttpHandler, servicesConfig: Serv
   def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val url = s"$serviceUrl/tai/session-cache"
     httpHandler.deleteFromApi(url)
-  }
+  }.getOrElse(HttpResponse(IM_A_TEAPOT, "")) // TODO - Fix
 }

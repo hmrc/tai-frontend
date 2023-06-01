@@ -18,6 +18,7 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
@@ -28,6 +29,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
@@ -120,7 +122,10 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          ) // TODO - Before each block with all shared mocks
 
         val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
@@ -150,8 +155,10 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
 
         val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
@@ -183,7 +190,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
+
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
         val request = fakePostRequest.withFormUrlEncodedBody(
@@ -211,8 +222,10 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-        when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
         when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
           .thenReturn(Future.successful(Success))
 
@@ -286,7 +299,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
       when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
         .thenReturn(Future.successful(dataFromCache))
-      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+      when(employmentService.endEmployment(any(), any(), any())(any(), any()))
+        .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("123-456-789"))))
       when(trackSuccessJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
@@ -441,7 +455,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(dataFromCache))
-        when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+        when(employmentService.endEmployment(any(), any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, String](Future.successful(Right("123-456-789"))))
         when(
           trackSuccessJourneyCacheService
             .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
@@ -887,23 +902,27 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")
 
-    when(employmentService.employment(any(), any())(any()))
+    when(employmentService.employment(any(), any())(any(), any()))
       .thenReturn(
-        Future.successful(
-          Some(
-            Employment(
-              employerName,
-              Live,
-              None,
-              LocalDate.now,
-              None,
-              Nil,
-              "",
-              "",
-              1,
-              None,
-              hasPayrolledBenefit = false,
-              receivingOccupationalPension = false
+        EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+          Future.successful(
+            Right(
+              Some(
+                Employment(
+                  employerName,
+                  Live,
+                  None,
+                  LocalDate.now,
+                  None,
+                  Nil,
+                  "",
+                  "",
+                  1,
+                  None,
+                  hasPayrolledBenefit = false,
+                  receivingOccupationalPension = false
+                )
+              )
             )
           )
         )

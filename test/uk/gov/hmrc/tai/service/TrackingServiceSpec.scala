@@ -84,7 +84,7 @@ class TrackingServiceSpec extends BaseSpec {
         s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
           val controller = sut
           when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-          when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
+          when(successfulJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(entry))
 
           val result = controller.isAnyIFormInProgress(nino.nino)
           Await.result(result, 5 seconds) mustBe FifteenDays
@@ -97,7 +97,7 @@ class TrackingServiceSpec extends BaseSpec {
         s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
           val controller = sut
           when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-          when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
+          when(successfulJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(entry))
 
           val result = controller.isAnyIFormInProgress(nino.nino)
           Await.result(result, 5 seconds) mustBe ThreeWeeks
@@ -108,7 +108,7 @@ class TrackingServiceSpec extends BaseSpec {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any()))
+        when(successfulJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
@@ -142,7 +142,7 @@ class TrackingServiceSpec extends BaseSpec {
         val controller = sut
         val incomeId = 1
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any()))
+        when(successfulJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId" -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
@@ -152,7 +152,7 @@ class TrackingServiceSpec extends BaseSpec {
       "An Update Estimated key for CY+1 exists in the success journey cache" in {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any()))
+        when(successfulJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
 
         val result = controller.isAnyIFormInProgress(nino.nino)
@@ -162,7 +162,7 @@ class TrackingServiceSpec extends BaseSpec {
       "An Update Estimated key for CY-1 exists in the success journey cache" in {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any()))
+        when(successfulJourneyCacheService.currentCache(any(), any()))
           .thenReturn(
             Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> true.toString))
           )
@@ -183,7 +183,8 @@ class TrackingServiceSpec extends BaseSpec {
         trackingConnector,
         successfulJourneyCacheService
       ) {
-    when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+    when(successfulJourneyCacheService.currentCache(any(), any()))
+      .thenReturn(Future.successful(Map.empty[String, String]))
   }
 
 }

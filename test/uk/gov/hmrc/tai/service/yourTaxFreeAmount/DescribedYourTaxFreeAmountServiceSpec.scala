@@ -17,8 +17,11 @@
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -26,6 +29,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFre
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -44,7 +48,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
       when(companyCarService.companyCars(meq(nino))(any(), any()))
-        .thenReturn(Future.successful(Seq.empty))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]](
+            Future.successful(Right(Seq.empty[CompanyCarBenefit]))
+          )
+        )
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
 
@@ -75,7 +83,11 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
       when(companyCarService.companyCars(meq(nino))(any(), any()))
-        .thenReturn(Future.successful(Seq.empty))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]](
+            Future.successful(Right(Seq.empty[CompanyCarBenefit]))
+          )
+        )
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
 

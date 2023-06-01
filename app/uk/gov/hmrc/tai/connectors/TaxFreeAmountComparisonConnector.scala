@@ -21,14 +21,15 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 @Singleton
-class TaxFreeAmountComparisonConnector @Inject() (val httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
-  ec: ExecutionContext
+class TaxFreeAmountComparisonConnector @Inject() (val httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(
+  implicit ec: ExecutionContext
 ) extends Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
@@ -36,10 +37,17 @@ class TaxFreeAmountComparisonConnector @Inject() (val httpHandler: HttpHandler, 
   def taxFreeAmountComparisonUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
   def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
-    httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)).map { json =>
-      (json \ "data").as[TaxFreeAmountComparison]
-    } recover { case NonFatal(e) =>
-      logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception: ${e.getMessage}")
-      throw e
-    }
+    httpHandler
+      .getFromApiV2(taxFreeAmountComparisonUrl(nino.nino))
+      .map { json =>
+        (json \ "data").as[TaxFreeAmountComparison]
+      }
+      .recover { case NonFatal(e) =>
+        logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception: ${e.getMessage}")
+        throw e
+      }
+      .getOrElse(
+        TaxFreeAmountComparison(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
+      ) // TODO - To remove one at a time to avoid an overextended change
+
 }

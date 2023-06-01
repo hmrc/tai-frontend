@@ -53,17 +53,23 @@ class DescribedYourTaxFreeAmountService @Inject() (
     (
       employmentService.employmentNames(nino, TaxYear()),
       getTaxFreeAmount(nino),
-      companyCarService.companyCars(nino),
+      companyCarService.companyCars(nino).getOrElse(Seq.empty[CompanyCarBenefit]),
       taxAccountService.totalTax(nino, TaxYear())
-    ).mapN { (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>
-      val describedPairs =
-        describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
-      YourTaxFreeAmountViewModel(
-        taxFreeAmountComparison.previousTaxFreeInfo,
-        taxFreeAmountComparison.currentTaxFreeInfo,
-        describedPairs.allowances,
-        describedPairs.deductions
-      )
+    ).mapN {
+      (
+        employmentNames,
+        taxFreeAmountComparison,
+        companyCarBenefit,
+        totalTax
+      ) => // TODO - Consider changing to for/yield
+        val describedPairs =
+          describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
+        YourTaxFreeAmountViewModel(
+          taxFreeAmountComparison.previousTaxFreeInfo,
+          taxFreeAmountComparison.currentTaxFreeInfo,
+          describedPairs.allowances,
+          describedPairs.deductions
+        )
     }
 
   case class describedIabdPairs(allowances: Seq[CodingComponentPairModel], deductions: Seq[CodingComponentPairModel])

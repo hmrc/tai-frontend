@@ -17,10 +17,13 @@
 package uk.gov.hmrc.tai.service.journeyCache
 
 import akka.Done
+import cats.data.EitherT
+import cats.implicits.catsStdInstancesForFuture
 import play.api.Logging
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.http.Status.NO_CONTENT
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import java.time.LocalDate
@@ -30,46 +33,62 @@ import scala.concurrent.{ExecutionContext, Future}
 class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
     extends Logging {
 
-  def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+  def currentValue(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[String]] =
     currentValueAs[String](key, identity)
 
-  def currentValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Option[Int]] =
+  def currentValueAsInt(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[Int]] =
     currentValueAs[Int](key, string => string.toInt)
 
-  def currentValueAsBoolean(key: String)(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
+  def currentValueAsBoolean(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[Boolean]] =
     currentValueAs[Boolean](key, string => string.toBoolean)
 
-  def currentValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
+  def currentValueAsDate(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[LocalDate]] =
     currentValueAs[LocalDate](key, string => LocalDate.parse(string))
 
-  def mandatoryJourneyValue(key: String)(implicit hc: HeaderCarrier): Future[Either[String, String]] =
+  def mandatoryJourneyValue(key: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, String] =
     mandatoryJourneyValueAs[String](key, identity)
 
-  def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
+  def mandatoryJourneyValueAsInt(key: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Int] =
     mandatoryJourneyValueAs[Int](key, string => string.toInt)
 
-  def mandatoryValueAsBoolean(key: String)(implicit hc: HeaderCarrier): Future[Either[String, Boolean]] =
+  def mandatoryValueAsBoolean(key: String)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Boolean] =
     mandatoryJourneyValueAs[Boolean](key, string => string.toBoolean)
 
-  def mandatoryValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[Either[String, LocalDate]] =
+  def mandatoryValueAsDate(key: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, LocalDate] =
     mandatoryJourneyValueAs[LocalDate](key, string => LocalDate.parse(string))
 
   def mandatoryJourneyValues(
     keys: String*
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, Seq[String]]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, Seq[String]] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, keys)
 
   def optionalValues(
     keys: String*
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[Option[String]]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, Seq[Option[String]]] =
     currentCache.map(cache => mappedOptional(cache, keys).toList)
 
   def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
+  ): EitherT[Future, UpstreamErrorResponse, (Seq[String], Seq[Option[String]])] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
@@ -103,29 +122,67 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
       }
     }
 
-  def currentCache(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    journeyCacheConnector.currentCache(journeyName)
+  def currentCache(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
+    journeyCacheConnector
+      .currentCache(journeyName)
+      .map(result =>
+        if (result.status == NO_CONTENT) {
+          Map.empty[String, String]
+        } else {
+          result.json.as[Map[String, String]]
+        }
+      )
 
-  def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] =
+  def currentValueAs[T](key: String, convert: String => T)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Option[T]] =
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
 
   def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, T]] =
+  ): EitherT[Future, UpstreamErrorResponse, T] =
     journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
 
-  def cache(key: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    journeyCacheConnector.cache(journeyName, Map(key -> value))
+  def cache(key: String, value: String)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
+    journeyCacheConnector
+      .cache(journeyName, Map(key -> value))
 
-  def cache(data: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    journeyCacheConnector.cache(journeyName, data)
+  def cache(
+    data: Map[String, String]
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
+    journeyCacheConnector
+      .cache(
+        journeyName,
+        data
+      ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
 
-  def flush()(implicit hc: HeaderCarrier): Future[Done] =
-    journeyCacheConnector.flush(journeyName)
+  def flush()(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Done] =
+    journeyCacheConnector
+      .flush(
+        journeyName
+      ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
 
-  def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
-    journeyCacheConnector.flushWithEmpId(journeyName, empId)
+  def flushWithEmpId(
+    empId: Int
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Done] =
+    journeyCacheConnector
+      .flushWithEmpId(
+        journeyName,
+        empId
+      ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
 
-  def delete()(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    journeyCacheConnector.delete(UpdateIncomeConstants.DeleteJourneyKey)
+  def delete()(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[TaiResponse] =
+    journeyCacheConnector
+      .delete(UpdateIncomeConstants.DeleteJourneyKey)
+      .fold(
+        error => TaiCacheError(error.message),
+        _ => TaiSuccessResponse
+      ) // TODO - Investigate the need for custom error trait
 }

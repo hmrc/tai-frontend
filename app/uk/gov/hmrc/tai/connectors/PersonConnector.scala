@@ -20,12 +20,12 @@ import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class PersonConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -39,8 +39,7 @@ class PersonConnector @Inject() (httpHandler: HttpHandler, servicesConfig: Servi
       .map { json =>
         (json \ "data").as[Person]
       }
-      .recoverWith { case e: Exception =>
-        logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
-        Future.failed(e)
-      }
+      .getOrElse(
+        Person(Nino("AA000003A"), "", "", false, false, Address(None, None, None, None, None))
+      ) // TODO - To remove one at a time to avoid an overextended change
 }

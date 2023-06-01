@@ -17,16 +17,20 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.Done
+import cats.data.EitherT
 import play.api.Logging
-import play.api.http.Status.NO_CONTENT
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyCacheConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class JourneyCacheConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -34,49 +38,69 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpHandler, servicesConfig:
 
   def cacheUrl(journeyName: String): String = s"$serviceUrl/tai/journey-cache/$journeyName"
 
-  def currentCache(journeyName: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    httpHandler.getFromApiV2(cacheUrl(journeyName)).map(_.as[Map[String, String]]) recover {
-      case e: HttpException if e.responseCode == NO_CONTENT => Map.empty[String, String]
-    }
+  def currentCache(journeyName: String)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](cacheUrl(journeyName))
+    )
 
   def currentValueAs[T](journeyName: String, key: String, convert: String => T)(implicit
     hc: HeaderCarrier
-  ): Future[Option[T]] = {
+  ): EitherT[Future, UpstreamErrorResponse, Option[T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
-    httpHandler.getFromApiV2(url).map(value => Some(convert(value.as[String]))) recover {
-      case e: HttpException if e.responseCode == NO_CONTENT => None
-    }
+    httpClientResponse
+      .read(
+        httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](url)
+      )
+      .map { result =>
+        result.json.asOpt[String].map(data => convert(data))
+      } /// TODO - Investigate why type T is needed here if the result is parsed from String
   }
 
   def mandatoryJourneyValueAs[T](journeyName: String, key: String, convert: String => T)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, T]] = {
+  ): EitherT[Future, UpstreamErrorResponse, T] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
-
-    httpHandler.getFromApiV2(url).map(value => Right(convert(value.as[String]))) recover {
-      case e: HttpException if e.responseCode == NO_CONTENT =>
-        val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
-        logger.warn(errorMessage)
-        Left(errorMessage)
-    }
+    httpClientResponse
+      .read(
+        httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](url)
+      )
+      .map { result =>
+        convert(result.json.as[String])
+      } /// TODO - Investigate why type T is needed here if the result is parsed from String
   }
 
-  def cache(journeyName: String, data: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    httpHandler
-      .postToApi(
-        cacheUrl(journeyName),
-        data
+  def cache(journeyName: String, data: Map[String, String])(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
+    httpClientResponse
+      .read(
+        httpClient.POST[Map[String, String], Either[UpstreamErrorResponse, HttpResponse]](cacheUrl(journeyName), data)
       )
       .map(_.json.as[Map[String, String]])
 
-  def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[Done] =
-    httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => Done)
+  def flush(journeyName: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Done] =
+    httpClientResponse
+      .read(
+        httpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](cacheUrl(journeyName))
+      )
+      .map(_ => Done)
 
-  def flushWithEmpId(journeyName: String, empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
-    httpHandler.deleteFromApi(cacheUrl(s"$journeyName/$empId")).map(_ => Done)
+  def flushWithEmpId(journeyName: String, empId: Int)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Done] =
+    httpClientResponse
+      .read(
+        httpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](cacheUrl(s"$journeyName/$empId"))
+      )
+      .map(_ => Done)
 
   def testOnlyCacheUrl(journeyName: String): String = s"$serviceUrl/tai/test-only/journey-cache/$journeyName"
 
-  def delete(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] =
-    httpHandler.deleteFromApi(testOnlyCacheUrl(journeyName)).map(_ => TaiSuccessResponse)
+  def delete(journeyName: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](testOnlyCacheUrl(journeyName))
+    )
+
 }

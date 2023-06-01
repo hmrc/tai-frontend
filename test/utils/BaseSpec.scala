@@ -20,6 +20,8 @@ import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.mvc.MessagesControllerComponents
@@ -28,10 +30,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
+
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
-trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+trait BaseSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach
+    with ScalaFutures {
 
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 

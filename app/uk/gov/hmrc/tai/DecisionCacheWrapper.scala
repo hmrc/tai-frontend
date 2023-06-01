@@ -36,40 +36,48 @@ class DecisionCacheWrapper @Inject() (
 
   def getDecision()(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
-    benefitType.flatMap[Option[String]] {
-      case Right(bt) =>
-        getBenefitDecisionKey(Some(bt)) match {
+    benefitType.foldF(
+      _ => {
+        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
+        Future.successful(None)
+      },
+      data =>
+        getBenefitDecisionKey(Some(data)) match {
           case Some(bdk) =>
-            journeyCacheService.currentValue(bdk)
+            journeyCacheService.currentValue(bdk).getOrElse {
+              logger.error("Call to journey cache using .currentValue() failed")
+              None
+            } // TODO - Needs testing
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(None)
         }
-      case Left(_) =>
-        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
-        Future.successful(None)
-    }
+    )
   }
 
   def cacheDecision(decision: String, f: (String, Result) => Result)(implicit
     hc: HeaderCarrier
   ): Future[Result] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
-    benefitType.flatMap[Result] {
-      case Right(bt) =>
-        getBenefitDecisionKey(Some(bt)) match {
+    benefitType.foldF(
+      _ => {
+        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
+        Future.successful(journeyStartRedirection)
+      },
+      data =>
+        getBenefitDecisionKey(Some(data)) match {
           case Some(bdk) =>
             journeyCacheService.cache(bdk, decision).map { _ =>
               f(decision, journeyStartRedirection)
-            }
+            }.getOrElse {
+              logger.error("Call to journey cache using .currentValue() failed")
+              None
+            } // TODO - Needs testing
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(journeyStartRedirection)
         }
-      case Left(_) =>
-        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
-        Future.successful(journeyStartRedirection)
-    }
+    )
   }
 
   private def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =

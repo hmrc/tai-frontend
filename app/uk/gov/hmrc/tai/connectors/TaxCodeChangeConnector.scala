@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeReco
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class TaxCodeChangeConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -38,11 +38,16 @@ class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler, servicesConfig
   def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
-    httpHandler.getFromApiV2(taxCodeChangeUrl(nino.nino)) map (json => (json \ "data").as[TaxCodeChange]) recover {
-      case e: Exception =>
+    httpHandler
+      .getFromApiV2(taxCodeChangeUrl(nino.nino))
+      .map(json => (json \ "data").as[TaxCodeChange])
+      .recover { case e: Exception =>
         logger.warn(s"${e.getMessage}")
         throw new RuntimeException(e.getMessage)
-    }
+      }
+      .getOrElse(
+        TaxCodeChange(List.empty[TaxCodeRecord], List.empty[TaxCodeRecord])
+      ) // TODO - To remove one at a time to avoid an overextended change
 
   def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
 
@@ -54,19 +59,30 @@ class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler, servicesConfig
         logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
         throw e
       }
+      .getOrElse(false) // TODO - To remove one at a time to avoid an overextended change
 
   def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
 
   def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeMismatch] =
-    httpHandler.getFromApiV2(taxCodeMismatchUrl(nino.nino)) map (json => (json \ "data").as[TaxCodeMismatch])
+    httpHandler
+      .getFromApiV2(taxCodeMismatchUrl(nino.nino))
+      .map(json => (json \ "data").as[TaxCodeMismatch])
+      .getOrElse(
+        TaxCodeMismatch(false, Seq.empty[String], Seq.empty[String])
+      ) // TODO - To remove one at a time to avoid an overextended change
 
   def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"$year/tax-code/latest"
 
   def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[List[TaxCodeRecord]] =
-    httpHandler.getFromApiV2(lastTaxCodeRecordsUrl(nino.nino, year.year)).map { json =>
-      (json \ "data").as[List[TaxCodeRecord]]
-    } recover { case e: Exception =>
-      logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception: ${e.getMessage}")
-      throw e
-    }
+    httpHandler
+      .getFromApiV2(lastTaxCodeRecordsUrl(nino.nino, year.year))
+      .map { json =>
+        (json \ "data").as[List[TaxCodeRecord]]
+      }
+      .recover { case e: Exception =>
+        logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception: ${e.getMessage}")
+        throw e
+      }
+      .getOrElse(List.empty[TaxCodeRecord]) // TODO - To remove one at a time to avoid an overextended change
+
 }

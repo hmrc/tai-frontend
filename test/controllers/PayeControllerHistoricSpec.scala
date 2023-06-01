@@ -17,7 +17,9 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
+
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -27,7 +29,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Monthly, Payment, TemporarilyUnavailable}
@@ -64,9 +66,10 @@ class PayeControllerHistoricSpec
       val testController = createTestController()
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-      when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmployment))
-
+      when(employmentService.employments(any(), any())(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(sampleEmployment)))
+        )
       val result = testController.payePage(TaxYear().prev)(request)
 
       status(result) mustBe OK
@@ -77,9 +80,12 @@ class PayeControllerHistoricSpec
     "display the last year paye page successfully when RTI is down" in {
 
       val testController = createTestController()
-      when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
-
+      when(employmentService.employments(any(), any())(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Right(sampleEmploymentForRtiUnavailable))
+          )
+        )
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
@@ -114,9 +120,12 @@ class PayeControllerHistoricSpec
       val testController = createTestController()
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-      when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmploymentWithSameDatFpsSubmissions))
-
+      when(employmentService.employments(any(), any())(any(), any()))
+        .thenReturn(
+          EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+            Future.successful(Right(sampleEmploymentWithSameDatFpsSubmissions))
+          )
+        )
       val result = testController.payePage(TaxYear().prev)(request)
 
       status(result) mustBe OK
@@ -127,16 +136,19 @@ class PayeControllerHistoricSpec
     }
 
     "display an error page" when {
-      "employment service call results in a NotFoundException from NPS" in {
+      "employment service call results in a NotFoundException from NPS" in { // TODO - Same as below
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
-
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Left(UpstreamErrorResponse("", NOT_FOUND)))
+            )
+          )
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe NOT_FOUND
-        verify(employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employments(any(), any())(any(), any())
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading.nps"))
@@ -147,25 +159,32 @@ class PayeControllerHistoricSpec
       "employment service call results in a NotFoundException from RTI" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new NotFoundException("not found")))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Left(UpstreamErrorResponse("", NOT_FOUND)))
+            )
+          )
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe NOT_FOUND
-        verify(employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employments(any(), any())(any(), any())
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
       }
 
-      "employment service call results in a bad request" in {
+      "employment service call results in a bad request" in { // TODO - Compress error scenarios
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new BadRequestException("Bad request")))
-
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Left(UpstreamErrorResponse("", BAD_REQUEST)))
+            )
+          )
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_REQUEST
@@ -178,9 +197,12 @@ class PayeControllerHistoricSpec
       "employment service call results in a internal server error" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new InternalServerException("Internal server error")))
-
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Left(UpstreamErrorResponse("", INTERNAL_SERVER_ERROR)))
+            )
+          )
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -190,11 +212,15 @@ class PayeControllerHistoricSpec
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
 
-      "employment service call results in an exception" in {
+      "employment service call results in an exception" in { // TODO - Add more error scenarios
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new HttpException("error", 502)))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](
+              Future.successful(Left(UpstreamErrorResponse("", INTERNAL_SERVER_ERROR)))
+            )
+          )
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -208,8 +234,10 @@ class PayeControllerHistoricSpec
       "payePage call when employee sequence is empty " in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmptyEmployment))
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(sampleEmptyEmployment)))
+          )
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -237,7 +265,10 @@ class PayeControllerHistoricSpec
         inject[ErrorPagesHandler]
       ) {
 
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+    when(employmentService.employments(any(), any())(any(), any()))
+      .thenReturn(
+        EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(employments)))
+      )
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }

@@ -32,7 +32,7 @@ import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
 class TrackingConnector @Inject() (
-  httpHandler: HttpHandler,
+  httpHandler: HttpClientResponse,
   servicesConfig: ServicesConfig,
   applicationConfig: ApplicationConfig,
   override val system: ActorSystem
@@ -48,13 +48,17 @@ class TrackingConnector @Inject() (
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
     if (applicationConfig.trackingEnabled) {
       withTimeout(5.seconds) {
-        (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
-          case NonFatal(x) =>
+        httpHandler
+          .getFromApiV2(trackingUrl(nino))
+          .map(_.as[Seq[TrackedForm]](trackedFormSeqReads))
+          .recover { case NonFatal(x) =>
             logger.warn(
               s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}"
             )
             Seq.empty[TrackedForm]
-        }
+          }
+          .getOrElse(Seq.empty[TrackedForm]) // TODO - To remove one at a time to avoid an overextended change
+
       }.recover { case FutureEarlyTimeout =>
         Seq.empty[TrackedForm]
       }

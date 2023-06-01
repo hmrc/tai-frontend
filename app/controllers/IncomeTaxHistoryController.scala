@@ -57,7 +57,8 @@ class IncomeTaxHistoryController @Inject() (
       maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
                                      None
                                    }
-      employmentDetails <- employmentService.employments(nino, taxYear)
+      employmentDetails <-
+        employmentService.employments(nino, taxYear).getOrElse(Seq.empty[Employment]) // TODO - Check .getOrElse()
     } yield {
       val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
       val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { employment: Employment =>

@@ -17,13 +17,14 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
+import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.model.IncomeSources
 import uk.gov.hmrc.tai.model.domain._
@@ -179,8 +180,10 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach w
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(taxAccountSummary)
         )
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-
+        when(employmentService.employments(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Seq[Employment]](Future.successful(Right(Seq(employment))))
+          )
         when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))
         )

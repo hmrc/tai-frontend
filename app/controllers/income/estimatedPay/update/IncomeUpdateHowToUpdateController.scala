@@ -76,11 +76,12 @@ class IncomeUpdateHowToUpdateController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
-    (employmentService.employment(nino, id) flatMap {
+    (employmentService.employment(nino, id).getOrElse(None) flatMap { // TODO - Check .getOrElse(None)
       case Some(employment: Employment) =>
         val incomeToEditFuture = incomeService.employmentAmount(nino, id)
         val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-        val cacheEmploymentDetailsFuture = cacheEmploymentDetails(id, employmentService.employment(nino, id))
+        val cacheEmploymentDetailsFuture =
+          cacheEmploymentDetails(id, employmentService.employment(nino, id).getOrElse(None)) // TODO - Makes call twice
 
         for {
           incomeToEdit: EmploymentAmount <- incomeToEditFuture

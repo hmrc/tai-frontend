@@ -17,22 +17,28 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.Done
+import cats.data.EitherT
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
-import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
-import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class TaxAccountConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends CodingComponentFormatters with Logging {
 
@@ -64,48 +70,65 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
     incomeType: TaxCodeIncomeComponentType,
     status: TaxCodeIncomeSourceStatus
   )(implicit hc: HeaderCarrier): Future[Seq[TaxedIncome]] =
-    httpHandler
+    httpClientResponse
       .getFromApiV2(
         incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)
       )
       .map(json => (json \ "data").as[Seq[TaxedIncome]])
+      .getOrElse(Seq.empty) // TODO - To remove one at a time to avoid an overextended change
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, Seq[TaxCodeIncome]]] =
-    httpHandler.getFromApiV2(taxAccountUrl(nino.nino, year)) map (json =>
-      Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
-    ) recover { case e: Exception =>
-      logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
-      Left(e.getMessage)
-    }
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](taxAccountUrl(nino.nino, year))
+    )
+  }
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
-    httpHandler.getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year)).map { json =>
-      (json \ "data").as[Incomes].nonTaxCodeIncomes
-    } recover { case e: Exception =>
-      logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
-      throw e
-    }
+    httpClientResponse
+      .getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year))
+      .map { json =>
+        (json \ "data").as[Incomes].nonTaxCodeIncomes
+      }
+      .getOrElse(
+        NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+      ) // TODO - To remove one at a time to avoid an overextended change
 
   def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
-    httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (json =>
-      (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads))
-    ) recover { case e: NotFoundException =>
-      logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
-      Seq.empty[CodingComponent]
-    }
+    httpClientResponse
+      .getFromApiV2(codingComponentsUrl(nino.nino, year))
+      .map(json => (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
+      .recover { case e: NotFoundException =>
+        logger.warn(s"Coding Components - No tax account information found: ${e.getMessage}")
+        Seq.empty[CodingComponent]
+      }
+      .getOrElse(Seq.empty[CodingComponent]) // TODO - To remove one at a time to avoid an overextended change
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
-    httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (json => (json \ "data").as[TaxAccountSummary])
+    httpClientResponse
+      .getFromApiV2(taxAccountSummaryUrl(nino.nino, year))
+      .map(json => (json \ "data").as[TaxAccountSummary])
+      .getOrElse(
+        TaxAccountSummary(BigDecimal(10), BigDecimal(10), BigDecimal(10), BigDecimal(10), BigDecimal(10))
+      ) // TODO - To remove one at a time to avoid an overextended change
 
   def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(implicit
     hc: HeaderCarrier
-  ): Future[Done] =
-    httpHandler
-      .putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount))
-      .map(_ => Done)
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.PUT[UpdateTaxCodeIncomeRequest, Either[UpstreamErrorResponse, HttpResponse]](
+        updateTaxCodeIncome(nino.nino, year, id),
+        UpdateTaxCodeIncomeRequest(newAmount)
+      )
+    )
 
   def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
-    httpHandler.getFromApiV2(totalTaxUrl(nino.nino, year)) map (json => (json \ "data").as[TotalTax])
+    httpClientResponse
+      .getFromApiV2(totalTaxUrl(nino.nino, year))
+      .map(json => (json \ "data").as[TotalTax])
+      .getOrElse(
+        TotalTax(BigDecimal(10), Seq.empty[IncomeCategory], None, None, None)
+      ) // TODO - To remove one at a time to avoid an overextended change
+
 }

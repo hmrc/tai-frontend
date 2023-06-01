@@ -380,7 +380,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
         when(journeyCacheService.flush()(any()))

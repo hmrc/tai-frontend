@@ -64,7 +64,10 @@ class IncomeUpdateCalculatorController @Inject() (
   def onPageLoad(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     (
       estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString),
-      employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id))
+      employmentService
+        .employment(request.taiUser.nino, id)
+        .getOrElse(None)
+        .flatMap(cacheEmploymentDetails(id)) // TODO - Check .getOrElse(None)
     ).mapN {
       case (true, _) =>
         Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))

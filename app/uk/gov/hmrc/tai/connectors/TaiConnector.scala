@@ -33,9 +33,6 @@ class TaiConnector @Inject() (http: DefaultHttpClient, servicesConfig: ServicesC
 
   def responseTo[T](uri: String)(response: HttpResponse)(implicit rds: Reads[T]): T = response.json.as[T]
 
-  val STATUS_OK = 200
-  val STATUS_EMAIL_RESPONSE = 201
-
   def calculateEstimatedPay(payDetails: PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
     val postUrl = url(s"/tai/calculator/calculate-estimated-pay")
     http.POST[PayDetails, HttpResponse](postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))

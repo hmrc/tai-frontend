@@ -17,6 +17,7 @@
 package controllers.benefits
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
@@ -28,6 +29,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -85,8 +87,11 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefitConstants.RefererKey      -> referer
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          ) // TODO - Before each block with all shared mocks
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
@@ -96,8 +101,8 @@ class CompanyBenefitControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
-        verify(employmentService, times(1)).employment(any(), any())(any())
-        verify(journeyCacheService, times(1)).currentCache(any())
+        verify(employmentService, times(1)).employment(any(), any())(any(), any())
+        verify(journeyCacheService, times(1)).currentCache(any(), any())
         verify(journeyCacheService, times(1)).cache(
           meq(
             Map(
@@ -122,8 +127,11 @@ class CompanyBenefitControllerSpec
           s"$benefitType $DecisionChoice"            -> YesIGetThisBenefit
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Right(benefitType)))
         when(journeyCacheService.currentValue(any())(any()))
@@ -149,8 +157,11 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefitConstants.RefererKey      -> "referrer"
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(None)))
+          ) // TODO - Before each block with all shared mocks
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -275,14 +286,14 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefitConstants.EmploymentIdKey   -> "1"
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> "")
         )
 
         status(result) mustBe BAD_REQUEST
 
-        verify(journeyCacheService, times(1)).currentCache(any())
+        verify(journeyCacheService, times(1)).currentCache(any(), any())
 
       }
     }

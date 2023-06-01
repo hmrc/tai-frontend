@@ -143,7 +143,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))

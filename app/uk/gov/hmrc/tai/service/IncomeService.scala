@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
+
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.i18n.Messages
 import cats.implicits._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.{TaxYear, _}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
@@ -45,7 +47,7 @@ class IncomeService @Inject() (
   ): Future[EmploymentAmount] =
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employment(nino, id)
+      employmentService.employment(nino, id).getOrElse(None)
     ) mapN {
       case (Right(taxCodeIncomes), Some(employment)) =>
         taxCodeIncomes.find(_.employmentId.contains(id)) match {
@@ -58,14 +60,13 @@ class IncomeService @Inject() (
   def latestPayment(nino: Nino, id: Int)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[Option[Payment]] =
+  ): EitherT[Future, UpstreamErrorResponse, Option[Payment]] =
     employmentService.employment(nino, id) map {
       case Some(employment) =>
         for {
           latestAnnualAccount <- employment.latestAnnualAccount
           latestPayment       <- latestAnnualAccount.latestPayment
         } yield latestPayment
-
       case _ => None
     }
 

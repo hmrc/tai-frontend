@@ -17,12 +17,14 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.actor.ActorSystem
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.LockedException
+import play.api.http.Status.LOCKED
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.{LockedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormAcquired, TrackedFormReceived}
 import utils.BaseSpec
 
@@ -44,8 +46,10 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
   "getUserTracking" should {
     "fetch the user tracking details" when {
       "provided with id and idType" in {
-        when(httpHandler.getFromApiV2(any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse(trackedFormSeqJson))))
+          )
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe trackedFormSeq
@@ -54,14 +58,18 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
 
     "return an empty response" when {
       "json is not valid" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(Json.parse("""{}""")))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Right(Json.parse("""{}""")))))
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe Seq.empty[TrackedForm]
       }
 
       "getFromApiV2 throws" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.failed(new LockedException("locked")))
+        when(httpHandler.getFromApiV2(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, JsValue](Future.successful(Left(UpstreamErrorResponse("", LOCKED))))
+          )
 
         val result = sut.getUserTracking(nino.nino)
         result.futureValue mustBe Seq.empty[TrackedForm]
@@ -91,7 +99,7 @@ class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaF
   val trackedFormSeq =
     Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived), TrackedForm("R38_EN", "TES2", TrackedFormAcquired))
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
   def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig, appConfig, inject[ActorSystem]) {
     override lazy val serviceUrl: String = "mockUrl"

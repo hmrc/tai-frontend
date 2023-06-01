@@ -68,6 +68,7 @@ class CompanyBenefitController @Inject() (
       currentCache <- journeyCacheService.currentCache
       employment <- employmentService
                       .employment(user.nino, currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt)
+                      .getOrElse(None) // TODO - Check .getOrElse(None)
       decision <- decisionCacheWrapper.getDecision()
     } yield employment match {
       case Some(employment) =>

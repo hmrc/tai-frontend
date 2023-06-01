@@ -79,7 +79,7 @@ class UpdateEmploymentController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       (for {
         userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmploymentConstants.EmploymentDetailsKey)
-        employment          <- employmentService.employment(user.nino, empId)
+        employment          <- employmentService.employment(user.nino, empId).getOrElse(None)
         futureResult <- employment match {
                           case Some(emp) =>
                             val cache = Map(
@@ -232,7 +232,9 @@ class UpdateEmploymentController @Inject() (
                                                  )
                                                  .getOrFail
       model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
-      _ <- employmentService.incorrectEmployment(user.nino, mandatoryCacheSeq.head.toInt, model)
+      _ <- employmentService
+             .incorrectEmployment(user.nino, mandatoryCacheSeq.head.toInt, model)
+             .getOrElse(None) // TODO - Check .getOrElse(None)
       _ <-
         successfulJourneyCacheService
           .cache(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}", true.toString)

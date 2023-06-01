@@ -115,7 +115,9 @@ class IncomeUpdateEstimatedPayController @Inject() (
         income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
         cache         <- OptionT.liftF(journeyCacheService.currentCache)
         calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
-        payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
+        payment <- OptionT.liftF(
+                     incomeService.latestPayment(nino, incomeSource.id).getOrElse(None)
+                   ) // TODO - Check .getOrElse(None)
       } yield {
 
         val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))

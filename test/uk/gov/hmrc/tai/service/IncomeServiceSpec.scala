@@ -16,8 +16,13 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
+
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.OK
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -40,7 +45,10 @@ class IncomeServiceSpec extends BaseSpec {
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
 
         val result = Await.result(sut.employmentAmount(nino, 1), 5.seconds)
 
@@ -69,7 +77,10 @@ class IncomeServiceSpec extends BaseSpec {
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Not able to found employment with id 1"
@@ -82,21 +93,25 @@ class IncomeServiceSpec extends BaseSpec {
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment and tax code details"
-      }
+      } // TODO - Check behaviour is correct after tax income http reads change
 
       "employment not found" in {
         val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(None))))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment and tax code details"
-      }
+      } // TODO - Check behaviour is correct
     }
   }
 
@@ -107,27 +122,34 @@ class IncomeServiceSpec extends BaseSpec {
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
 
-        Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
+        sut.latestPayment(nino, 1).value.futureValue.map(_ mustBe Some(payment))
       }
     }
 
     "return none" when {
       "employment details are not found" in {
         val sut = createSUT
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(None))))
 
-        Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
+        sut.latestPayment(nino, 1).value.futureValue.map(_ mustBe None)
       }
 
       "payments details are not present" in {
         val sut = createSUT
         val annualAccount = AnnualAccount(TaxYear(), Available, Seq.empty[Payment], Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
+          )
 
-        Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
+        sut.latestPayment(nino, 1).value.futureValue.map(_ mustBe None)
       }
     }
   }

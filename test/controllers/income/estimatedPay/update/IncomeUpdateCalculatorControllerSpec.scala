@@ -17,6 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
@@ -25,6 +26,7 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
@@ -37,6 +39,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
+
 import java.time.LocalDate
 import scala.concurrent.Future
 
@@ -87,8 +90,10 @@ class IncomeUpdateCalculatorControllerSpec
   "onPageLoad" must {
     object OnPageLoadHarness {
       sealed class OnPageLoadHarness(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]) {
-        when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(returnedEmployment))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(returnedEmployment)))
+          )
 
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 

@@ -115,7 +115,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val SUT = createSUT
         val taxYear = TaxYear().prev.year.toString
         val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -169,7 +169,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
         val SUT = createSUT
         val employmentDetailsFormData = ("employmentDetails", "")
 
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -191,7 +191,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
 
         val taxYear = TaxYear().prev.year.toString
         val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -257,7 +257,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
       "there is a form validation error (standard form validation)" in {
         val sut = createSUT
         val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
@@ -275,7 +275,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
         val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = sut.submitTelephoneNumber()(
           RequestBuilder

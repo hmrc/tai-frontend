@@ -18,6 +18,7 @@ package controllers
 
 import akka.Done
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -25,6 +26,7 @@ import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
@@ -56,8 +58,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "asked for employment details" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(Some(employment)))
+            )
+          )
+        when(benefitsService.benefits(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Benefits](Future.successful(Right(benefits))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(meq(cacheKeyEmployment))(any())) thenReturn Future
@@ -79,8 +87,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "asked for pension details" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(Some(employment)))
+            )
+          )
+        when(benefitsService.benefits(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Benefits](Future.successful(Right(benefits))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(meq(cacheKeyPension))(any())) thenReturn Future
@@ -104,8 +118,12 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "failed to read tax code incomes" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(Some(employment)))
+            )
+          )
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -114,8 +132,12 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "failed to read employment details" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(None))
+            )
+          )
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -126,8 +148,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "cache update amount is the same as the HOD amount" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(Some(employment)))
+            )
+          )
+        when(benefitsService.benefits(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Benefits](Future.successful(Right(benefits))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(meq(cacheKeyEmployment))(any())) thenReturn Future
@@ -149,8 +177,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "update is in progress for employment as cache update amount is different to the HOD amount" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(Some(employment)))
+            )
+          )
+        when(benefitsService.benefits(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Benefits](Future.successful(Right(benefits))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(meq(cacheKeyEmployment))(any())) thenReturn Future
@@ -169,8 +203,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach
       "update is in progress for pension as cache update amount is different to the HOD amount" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, Option[Employment]](
+              Future.successful(Right(Some(employment)))
+            )
+          )
+        when(benefitsService.benefits(any(), any())(any(), any()))
+          .thenReturn(EitherT[Future, UpstreamErrorResponse, Benefits](Future.successful(Right(benefits))))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
         when(journeyCacheService.currentValueAsInt(meq(cacheKeyPension))(any())) thenReturn Future

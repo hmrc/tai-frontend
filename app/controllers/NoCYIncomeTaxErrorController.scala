@@ -51,7 +51,7 @@ class NoCYIncomeTaxErrorController @Inject() (
   }
 
   private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentService.employments(nino, TaxYear().prev) recover { case _ =>
+    employmentService.employments(nino, TaxYear().prev).getOrElse(Seq.empty[Employment]) recover { case _ => // TODO
       Nil
     }
 
