@@ -57,16 +57,20 @@
             @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading"): </span>@viewModel.preHeading</h2>
+
         @form(action = Call("POST", viewModel.continueUrl)) {
 
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
                         legend = Some(
-                        HmrcPageHeadingLegend(
+                        Legend(
                             content = Text(viewModel.mainHeading),
-                            caption = HmrcSectionCaption(Text(viewModel.preHeading)))
-                    )
+                            classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                            isPageHeading = true
+                           )
+                        )
                     )
                 ),
                 hint = Some(Hint(content = HtmlContent(hint))),

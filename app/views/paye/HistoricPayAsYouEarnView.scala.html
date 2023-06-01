@@ -46,8 +46,8 @@ messages: Messages, ec: scala.concurrent.ExecutionContext)
 @header = @{
     ptaHeader(
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-        preHeadingText = request.fullName,
-        showGdsVersion = true)
+        preHeadingText = request.fullName
+    )
 }
 
 @main(

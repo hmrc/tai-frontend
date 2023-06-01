@@ -41,9 +41,8 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
-        showGdsVersion = true,
         maybeUserName=Some(request.fullName)
-)
+    )
 }
 
 @main(

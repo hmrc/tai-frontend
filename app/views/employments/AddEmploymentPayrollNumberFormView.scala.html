@@ -33,8 +33,7 @@
 @header = @{
     ptaHeader(
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
-        preHeadingText = Messages("add.missing.employment"),
-        showGdsVersion = true
+        preHeadingText = Messages("add.missing.employment")
     )}
 
 @hint = {
@@ -60,15 +59,18 @@
             @if(payrollNumberForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading"): </span>@messages("add.missing.employment")</h2>
+
             @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber) {
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                                HmrcPageHeadingLegend(
+                                Legend(
                                     content = Text(Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)),
                                     classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
-                                    caption = HmrcSectionCaption(Text(messages("add.missing.employment"))))
+                                    isPageHeading = true)
                             )
                         )
                     ),

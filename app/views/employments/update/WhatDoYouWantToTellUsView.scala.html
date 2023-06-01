@@ -42,14 +42,6 @@
     ec: ExecutionContext
 )
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(updateEmploymentDetailsForm),
-        mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName),
-        preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
-    )
-}
-
 @main(
     title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"),
     pageTitle = Some(messages("tai.service.navTitle")),

@@ -31,14 +31,6 @@
 
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(updateOrRemoveForm),
-        mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
-        preHeadingText = Messages("tai.updatePension.preHeading")
-    )
-}
-
 @main(
     title = Messages("tai.updatePension.decision.pagetitle"),
     authedUser = Some(user),

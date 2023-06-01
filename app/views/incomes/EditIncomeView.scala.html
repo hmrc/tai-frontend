@@ -45,8 +45,7 @@
     ptaHeader(
         formForErrorSummary = Some(income),
  		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
-        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
-        showGdsVersion = true,
+        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse(""))
     )
 }
 

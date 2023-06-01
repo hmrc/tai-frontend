@@ -94,8 +94,6 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
             <span id="@{typeLabel}@{idx}EndDate" class="govuk-!-display-block display-block govuk-body">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</span>
         }
 
-        </p>
-
         @if(incomeSource.displayDetailsLink){
         <p class="govuk-body flush--top">
             @link(
