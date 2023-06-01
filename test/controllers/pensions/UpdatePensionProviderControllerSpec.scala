@@ -513,7 +513,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         .thenReturn(Future.successful(None))
       journeyCacheCall
 
-      val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
+      val result = createController.updatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension.url
 
@@ -530,7 +530,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         .thenReturn(Future.successful(Some("true")))
       journeyCacheCall
 
-      val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
+      val result = createController.updatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning.url
     }
@@ -541,7 +541,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
 
-        val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
+        val result = createController.updatePension(pensionId.toInt)(fakeGetRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -550,7 +550,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-        val result = createController.UpdatePension(4)(fakeGetRequest)
+        val result = createController.updatePension(4)(fakeGetRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

@@ -19,11 +19,9 @@ package uk.gov.hmrc.tai.connectors
 import akka.Done
 import cats.data.EitherT
 import play.api.Logging
-import play.api.http.Status.NO_CONTENT
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

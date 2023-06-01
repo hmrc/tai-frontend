@@ -17,10 +17,11 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.Done
+import cats.data.EitherT
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -28,11 +29,16 @@ import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
 import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
+class TaxAccountConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends CodingComponentFormatters with Logging {
 
@@ -64,7 +70,7 @@ class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesCo
     incomeType: TaxCodeIncomeComponentType,
     status: TaxCodeIncomeSourceStatus
   )(implicit hc: HeaderCarrier): Future[Seq[TaxedIncome]] =
-    httpHandler
+    httpClientResponse
       .getFromApiV2(
         incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)
       )
@@ -73,14 +79,14 @@ class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesCo
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, Seq[TaxCodeIncome]]] =
-    httpHandler
-      .getFromApiV2(taxAccountUrl(nino.nino, year))
-      .map(json => Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads))))
-      .getOrElse(Left("")) // TODO - To remove one at a time to avoid an overextended change
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
+    httpClientResponse.read(
+      httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](taxAccountUrl(nino.nino, year))
+    )
+  }
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
-    httpHandler
+    httpClientResponse
       .getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year))
       .map { json =>
         (json \ "data").as[Incomes].nonTaxCodeIncomes
@@ -90,7 +96,7 @@ class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesCo
       ) // TODO - To remove one at a time to avoid an overextended change
 
   def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
-    httpHandler
+    httpClientResponse
       .getFromApiV2(codingComponentsUrl(nino.nino, year))
       .map(json => (json \ "data").as[Seq[CodingComponent]](Reads.seq(codingComponentReads)))
       .recover { case e: NotFoundException =>
@@ -100,7 +106,7 @@ class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesCo
       .getOrElse(Seq.empty[CodingComponent]) // TODO - To remove one at a time to avoid an overextended change
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
-    httpHandler
+    httpClientResponse
       .getFromApiV2(taxAccountSummaryUrl(nino.nino, year))
       .map(json => (json \ "data").as[TaxAccountSummary])
       .getOrElse(
@@ -109,14 +115,16 @@ class TaxAccountConnector @Inject() (httpHandler: HttpClientResponse, servicesCo
 
   def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(implicit
     hc: HeaderCarrier
-  ): Future[Done] =
-    httpHandler
-      .putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount))
-      .map(_ => Done)
-      .getOrElse(Done) // TODO - To remove one at a time to avoid an overextended change
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.PUT[UpdateTaxCodeIncomeRequest, Either[UpstreamErrorResponse, HttpResponse]](
+        updateTaxCodeIncome(nino.nino, year, id),
+        UpdateTaxCodeIncomeRequest(newAmount)
+      )
+    )
 
   def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
-    httpHandler
+    httpClientResponse
       .getFromApiV2(totalTaxUrl(nino.nino, year))
       .map(json => (json \ "data").as[TotalTax])
       .getOrElse(

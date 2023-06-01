@@ -20,7 +20,7 @@ import akka.Done
 import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.PensionIncome
@@ -38,53 +38,51 @@ class UpdateNextYearsIncomeService @Inject() (
   taxAccountService: TaxAccountService
 )(implicit ec: ExecutionContext) {
 
-  def isEstimatedPayJourneyCompleteForEmployer(id: Int)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def isEstimatedPayJourneyCompleteForEmployer(
+    id: Int
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] = {
     val key = s"${UpdateNextYearsIncomeConstants.Successful}-$id"
     successfulJourneyCacheService.currentCache.map(_ contains key)
   }
 
-  def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
+  def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] =
     successfulJourneyCacheService.currentCache.map(_ contains UpdateNextYearsIncomeConstants.Successful)
 
   private def setup(employmentId: Int, nino: Nino)(implicit
     hc: HeaderCarrier
-  ): Future[UpdateNextYearsIncomeCacheModel] =
-    (
-      taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId),
-      employmentService.employment(nino, employmentId).getOrElse(None) // TODO - Check if correct behaviour
-    ).mapN {
-      case (Right(Some(taxCodeIncome)), Some(employment)) =>
-        val isPension = taxCodeIncome.componentType == PensionIncome
-        UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
-      case _ =>
-        throw new RuntimeException(
-          "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
-        )
+  ): EitherT[Future, UpstreamErrorResponse, UpdateNextYearsIncomeCacheModel] = { ///// TODO - POC for MapN to for/yield
+    for {
+      taxCodeIncome <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
+      employment <- employmentService.employment(nino, employmentId) // TODO - Check if correct behaviour
+    } yield {
+      (taxCodeIncome, employment) match {
+        case (Some(taxCodeIncome), Some(employment)) =>
+          val isPension = taxCodeIncome.componentType == PensionIncome
+          UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
+      }
     }
+  }
 
-  def get(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheService.currentCache flatMap { _ =>
-      setup(employmentId, nino)
-    }
+  def get(employmentId: Int, nino: Nino)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, UpdateNextYearsIncomeCacheModel] =
+    journeyCacheService.currentCache.map(_ => setup(employmentId, nino)).flatten
 
   def amountKey(employmentId: Int): String =
     s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
   def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(implicit
     hc: HeaderCarrier
-  ): Future[Map[String, String]] =
+  ): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
     journeyCacheService.cache(amountKey(employmentId), convertCurrencyToInt(Some(newValue)).toString)
 
   def getNewAmount(employmentId: Int)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Int] =
     journeyCacheService.mandatoryJourneyValueAsInt(amountKey(employmentId))
 
-  def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[Done] =
+  def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Done] =
     for {
-      _ <- get(employmentId, nino)
-      newAmount <- getNewAmount(employmentId).fold(
-                     _ => 0,
-                     data => data
-                   ) // TODO - Hard set value until taxAccountService.updateEstimatedIncome() is refactored
+      _         <- get(employmentId, nino)
+      newAmount <- getNewAmount(employmentId)
       _ <- successfulJourneyCacheService
              .cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
       _ <- successfulJourneyCacheService

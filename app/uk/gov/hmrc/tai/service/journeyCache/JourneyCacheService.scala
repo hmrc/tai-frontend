@@ -33,16 +33,24 @@ import scala.concurrent.{ExecutionContext, Future}
 class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
     extends Logging {
 
-  def currentValue(key: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[String]] =
+  def currentValue(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[String]] =
     currentValueAs[String](key, identity)
 
-  def currentValueAsInt(key: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[Int]] =
+  def currentValueAsInt(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[Int]] =
     currentValueAs[Int](key, string => string.toInt)
 
-  def currentValueAsBoolean(key: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[Boolean]] =
+  def currentValueAsBoolean(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[Boolean]] =
     currentValueAs[Boolean](key, string => string.toBoolean)
 
-  def currentValueAsDate(key: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[LocalDate]] =
+  def currentValueAsDate(
+    key: String
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[LocalDate]] =
     currentValueAs[LocalDate](key, string => LocalDate.parse(string))
 
   def mandatoryJourneyValue(key: String)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, String] =
@@ -61,20 +69,26 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
 
   def mandatoryJourneyValues(
     keys: String*
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, Seq[String]]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, Seq[String]] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, keys)
 
   def optionalValues(
     keys: String*
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[Option[String]]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, Seq[Option[String]]] =
     currentCache.map(cache => mappedOptional(cache, keys).toList)
 
   def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
+  ): EitherT[Future, UpstreamErrorResponse, (Seq[String], Seq[Option[String]])] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
@@ -108,56 +122,60 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
       }
     }
 
-  def currentCache(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Map[String, String]] =
+  def currentCache(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
     journeyCacheConnector
       .currentCache(journeyName)
-      .fold(
-        _ => Map.empty[String, String],
-        result =>
-          if (result.status == NO_CONTENT) {
-            Map.empty[String, String]
-          } else {
-            result.json.as[Map[String, String]]
-          }
+      .map(result =>
+        if (result.status == NO_CONTENT) {
+          Map.empty[String, String]
+        } else {
+          result.json.as[Map[String, String]]
+        }
       )
 
   def currentValueAs[T](key: String, convert: String => T)(implicit
     ec: ExecutionContext,
     hc: HeaderCarrier
-  ): Future[Option[T]] =
-    journeyCacheConnector.currentValueAs[T](journeyName, key, convert).getOrElse(None)
+  ): EitherT[Future, UpstreamErrorResponse, Option[T]] =
+    journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
 
   def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, T] =
     journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
 
-  def cache(key: String, value: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Map[String, String]] =
+  def cache(key: String, value: String)(implicit
+    ec: ExecutionContext,
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
     journeyCacheConnector
       .cache(journeyName, Map(key -> value))
-      .getOrElse(
-        Map.empty[String, String]
+
+  def cache(
+    data: Map[String, String]
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Map[String, String]] =
+    journeyCacheConnector
+      .cache(
+        journeyName,
+        data
       ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
 
-  def cache(data: Map[String, String])(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Map[String, String]] =
+  def flush()(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Done] =
     journeyCacheConnector
-      .cache(journeyName, data)
-      .getOrElse(
-        Map.empty[String, String]
+      .flush(
+        journeyName
       ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
 
-  def flush()(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Done] =
+  def flushWithEmpId(
+    empId: Int
+  )(implicit ec: ExecutionContext, hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Done] =
     journeyCacheConnector
-      .flush(journeyName)
-      .getOrElse(
-        Done
-      ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
-
-  def flushWithEmpId(empId: Int)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Done] =
-    journeyCacheConnector
-      .flushWithEmpId(journeyName, empId)
-      .getOrElse(
-        Done
+      .flushWithEmpId(
+        journeyName,
+        empId
       ) // TODO - Consult other devs to establish correct behaviour. This method of caching is very flawed
 
   def delete()(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[TaiResponse] =

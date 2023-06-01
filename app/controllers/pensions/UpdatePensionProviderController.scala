@@ -172,25 +172,26 @@ class UpdatePensionProviderController @Inject() (
       )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request => {
-    for {
-      pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProviderConstants.IdKey)
-      telephoneCache <- journeyCacheService.optionalValues(
-        UpdatePensionProviderConstants.TelephoneQuestionKey,
-        UpdatePensionProviderConstants.TelephoneNumberKey
-      )
-    } yield {
-      val user = Some(request.taiUser)
-      Ok(
-        canWeContactByPhone(
-          user,
-          telephoneNumberViewModel(pensionId),
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
+  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson)
+    .async { implicit request =>
+      for {
+        pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProviderConstants.IdKey)
+        telephoneCache <- journeyCacheService.optionalValues(
+                            UpdatePensionProviderConstants.TelephoneQuestionKey,
+                            UpdatePensionProviderConstants.TelephoneNumberKey
+                          )
+      } yield {
+        val user = Some(request.taiUser)
+        Ok(
+          canWeContactByPhone(
+            user,
+            telephoneNumberViewModel(pensionId),
+            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
+          )
         )
-      )
       }
     }
-  }.getOrElse(Redirect(taxAccountSummaryRedirect))
+    .getOrElse(Redirect(taxAccountSummaryRedirect))
 
   def submitTelephoneNumber: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     YesNoTextEntryForm
@@ -268,23 +269,28 @@ class UpdatePensionProviderController @Inject() (
   def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     val nino = request.taiUser.nino
 
-    for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
-                                                 .collectedJourneyValues(
-                                                   Seq(
-                                                     UpdatePensionProviderConstants.IdKey,
-                                                     UpdatePensionProviderConstants.DetailsKey,
-                                                     UpdatePensionProviderConstants.TelephoneQuestionKey
-                                                   ),
-                                                   Seq(UpdatePensionProviderConstants.TelephoneNumberKey)
-                                                 )
-                                                 .getOrFail
-      model = IncorrectPensionProvider(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
-      _ <- pensionProviderService.incorrectPensionProvider(nino, mandatoryCacheSeq.head.toInt, model)
-      _ <- successfulJourneyCacheService
-             .cache(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-${mandatoryCacheSeq.head}", true.toString)
-      _ <- journeyCacheService.flush
-    } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation)
+    {
+      journeyCacheService.collectedJourneyValues(
+        Seq(
+          UpdatePensionProviderConstants.IdKey,
+          UpdatePensionProviderConstants.DetailsKey,
+          UpdatePensionProviderConstants.TelephoneQuestionKey
+        ),
+        Seq(UpdatePensionProviderConstants.TelephoneNumberKey)
+      )
+        .map { cacheSeq => val model = IncorrectPensionProvider(cacheSeq._1(1), cacheSeq._1(2), cacheSeq._2.head); (cacheSeq, model) }
+        .flatMap { case (cacheSeq, model) =>
+          pensionProviderService.incorrectPensionProvider(nino, cacheSeq._1.head.toInt, model)
+            .flatMap(_ =>
+              successfulJourneyCacheService
+                .cache(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-${cacheSeq._1.head}", true.toString)
+                .flatMap(_ =>
+                  journeyCacheService.flush
+                    .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation))
+                )
+            )
+        }
+    }.getOrElse(errorPagesHandler.internalServerError("Submission of answers failed"))
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -296,7 +302,7 @@ class UpdatePensionProviderController @Inject() (
   private def redirectToWarningOrDecisionPage(
     journeyCacheFuture: Future[Map[String, String]],
     successfulJourneyCacheFuture: Future[Option[String]]
-  )(implicit hc: HeaderCarrier): Future[Result] =
+  ): Future[Result] =
     for {
       _                      <- journeyCacheFuture
       successfulJourneyCache <- successfulJourneyCacheFuture
@@ -305,43 +311,39 @@ class UpdatePensionProviderController @Inject() (
       case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension)
     }
 
-  def UpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def updatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
+    def cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
       val successfulJourneyCacheFuture =
-        successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$id")
+        successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$id").getOrElse(None)  // TODO - Check if correct behaviour
       val journeyCacheFuture = journeyCacheService.cache(
         Map(
           UpdatePensionProviderConstants.IdKey   -> id.toString,
           UpdatePensionProviderConstants.NameKey -> taxCodeIncome.name
         )
-      )
-
+      ).getOrElse(Map.empty[String, String]) // TODO - Check if correct behaviour
       redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
     }
 
-    (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
-      case Right(incomes) =>
-        incomes.find(income =>
-          income.employmentId.contains(id) &&
-            income.componentType == PensionIncome
+    taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()).foldF(
+      error => Future.successful(errorPagesHandler.internalServerError(error.message)),
+      result =>
+        result.find(income =>
+          income.employmentId.contains(id) && income.componentType == PensionIncome
         ) match {
           case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
-          case _                   => throw new RuntimeException(s"Tax code income source is not available for id $id")
+          case _ => Future.successful(errorPagesHandler.internalServerError(s"Tax code income source is not available for id $id")) // TODO - Check correct behaviour
         }
-      case _ => throw new RuntimeException("Tax code income source is not available")
-    }).recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError(e.getMessage)
-    }
-
+    )
   }
 
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
-      .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey) map {
-      case Right(mandatoryValues) =>
+      .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey).fold(
+      _ => Redirect(taxAccountSummaryRedirect),
+      mandatoryValues =>
         Ok(
           duplicateSubmissionWarningView(
             DuplicateSubmissionWarningForm.createForm,
@@ -349,8 +351,7 @@ class UpdatePensionProviderController @Inject() (
             mandatoryValues(1).toInt
           )
         )
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
-    }
+    )
   }
 
   def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -358,24 +359,20 @@ class UpdatePensionProviderController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService
         .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)
-        .getOrFail flatMap { mandatoryValues =>
-        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(duplicateSubmissionWarningView(formWithErrors, mandatoryValues.head, mandatoryValues(1).toInt))
-            ),
-          success =>
-            success.yesNoChoice match {
-              case Some(FormValuesConstants.YesValue) =>
-                Future.successful(
-                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension)
-                )
-              case Some(FormValuesConstants.NoValue) =>
-                Future.successful(
-                  Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt))
-                )
-            }
+        .fold(
+          error => errorPagesHandler.internalServerError(error.message),
+          mandatoryValues =>
+            DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+              formWithErrors =>
+                BadRequest(duplicateSubmissionWarningView(formWithErrors, mandatoryValues.head, mandatoryValues(1).toInt)),
+              success =>
+                success.yesNoChoice match {
+                  case Some(FormValuesConstants.YesValue) =>
+                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension)
+                  case Some(FormValuesConstants.NoValue) =>
+                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt))
+                }
+            )
         )
-      }
   }
 }

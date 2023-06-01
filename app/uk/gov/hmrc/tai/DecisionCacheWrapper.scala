@@ -44,7 +44,10 @@ class DecisionCacheWrapper @Inject() (
       data =>
         getBenefitDecisionKey(Some(data)) match {
           case Some(bdk) =>
-            journeyCacheService.currentValue(bdk)
+            journeyCacheService.currentValue(bdk).getOrElse {
+              logger.error("Call to journey cache using .currentValue() failed")
+              None
+            } // TODO - Needs testing
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(None)
@@ -66,7 +69,10 @@ class DecisionCacheWrapper @Inject() (
           case Some(bdk) =>
             journeyCacheService.cache(bdk, decision).map { _ =>
               f(decision, journeyStartRedirection)
-            }
+            }.getOrElse {
+              logger.error("Call to journey cache using .currentValue() failed")
+              None
+            } // TODO - Needs testing
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(journeyStartRedirection)

@@ -16,16 +16,19 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PensionProviderConnector @Inject() (httpHandler: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
-  ec: ExecutionContext
+class PensionProviderConnector @Inject()(httpClient: HttpClient, httpClientResponse: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
+                                                                                                                 ec: ExecutionContext
 ) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
@@ -33,7 +36,7 @@ class PensionProviderConnector @Inject() (httpHandler: HttpClientResponse, servi
   def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit
     hc: HeaderCarrier
   ): Future[Option[String]] =
-    httpHandler
+    httpClientResponse
       .postToApi[AddPensionProvider](addPensionProviderServiceUrl(nino), pensionProvider)
       .map { response =>
         (response.json \ "data").asOpt[String]
@@ -44,13 +47,10 @@ class PensionProviderConnector @Inject() (httpHandler: HttpClientResponse, servi
 
   def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit
     hc: HeaderCarrier
-  ): Future[Option[String]] =
-    httpHandler
-      .postToApi[IncorrectPensionProvider](incorrectPensionProviderServiceUrl(nino, id), pensionProvider)
-      .map { response =>
-        (response.json \ "data").asOpt[String]
-      }
-      .getOrElse(None) // TODO - To remove one at a time to avoid an overextended change
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    httpClientResponse.read(
+      httpClient.POST[IncorrectPensionProvider, Either[UpstreamErrorResponse, HttpResponse]](incorrectPensionProviderServiceUrl(nino, id), pensionProvider)
+    )
 
   def incorrectPensionProviderServiceUrl(nino: Nino, id: Int): String =
     s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"

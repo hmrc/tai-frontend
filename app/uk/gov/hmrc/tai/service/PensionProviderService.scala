@@ -16,15 +16,19 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
+import play.api.Logging
+import play.api.http.Status.BAD_GATEWAY
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PensionProviderService @Inject() (pensionProviderConnector: PensionProviderConnector) {
+class PensionProviderService @Inject() (pensionProviderConnector: PensionProviderConnector) extends Logging {
 
   def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit
     hc: HeaderCarrier,
@@ -41,10 +45,21 @@ class PensionProviderService @Inject() (pensionProviderConnector: PensionProvide
   def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[String] =
-    pensionProviderConnector.incorrectPensionProvider(nino, id, pensionProvider) map {
-      case Some(envId) => envId
-      case _ =>
-        throw new RuntimeException(s"No envelope id was generated when submitting incorrect pension for ${nino.nino}")
+  ): EitherT[Future, UpstreamErrorResponse, String] =
+    pensionProviderConnector.incorrectPensionProvider(nino, id, pensionProvider).transform {
+      case Left(error) => Left(error)
+      case Right(response) =>
+        val data = (response.json \ "data").asOpt[String]
+        data match {
+          case Some(data) => Right(data)
+          case None =>
+            val exception = new RuntimeException(
+              s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+            )
+            logger.error(exception.getMessage, exception)
+            Left(
+              UpstreamErrorResponse(exception.getMessage, BAD_GATEWAY, BAD_GATEWAY)
+            ) // TODO - Correct error status? May delete later
+        }
     }
 }
