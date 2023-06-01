@@ -330,7 +330,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
       "there is a form validation error (standard form validation)" in {
 
         val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -348,7 +348,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEa
         val controller = createController
 
         val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = controller.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(

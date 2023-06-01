@@ -192,7 +192,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "form is valid and start date is over 6 weeks ago" in {
         val sut = createSUT
 
-        when(addEmploymentJourneyCacheService.currentCache(any()))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
@@ -216,7 +216,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
         val date = LocalDate.now.minusDays(4)
 
-        when(addEmploymentJourneyCacheService.currentCache(any()))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
@@ -239,7 +239,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "form is invalid" in {
         val sut = createSUT
 
-        when(addEmploymentJourneyCacheService.currentCache(any()))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
@@ -260,7 +260,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       "form is valid and start date is over 6 weeks ago" in {
         val sut = createSUT
 
-        when(addEmploymentJourneyCacheService.currentCache(any()))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         val result =
           sut.submitEmploymentStartDate()(
@@ -289,7 +289,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         val sut = createSUT
         val date = LocalDate.now.minusDays(4)
 
-        when(addEmploymentJourneyCacheService.currentCache(any()))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         val result =
           sut.submitEmploymentStartDate()(
@@ -461,7 +461,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.NameKey                 -> employerName,
           AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
         )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -482,7 +482,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
           AddEmploymentConstants.PayrollNumberKey         -> "should be ignored"
         )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -503,7 +503,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
           AddEmploymentConstants.PayrollNumberKey         -> "should be displayed"
         )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -628,7 +628,7 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
           AddEmploymentConstants.NameKey                 -> employerName,
           AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
         )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder

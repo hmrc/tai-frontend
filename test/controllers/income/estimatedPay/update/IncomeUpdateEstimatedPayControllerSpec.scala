@@ -161,7 +161,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
               Future.successful(Right(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
             )
           )
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(currentCache))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))

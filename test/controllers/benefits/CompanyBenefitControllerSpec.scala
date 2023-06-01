@@ -87,7 +87,7 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefitConstants.RefererKey      -> referer
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any(), any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
@@ -102,7 +102,7 @@ class CompanyBenefitControllerSpec
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
         verify(employmentService, times(1)).employment(any(), any())(any(), any())
-        verify(journeyCacheService, times(1)).currentCache(any())
+        verify(journeyCacheService, times(1)).currentCache(any(), any())
         verify(journeyCacheService, times(1)).cache(
           meq(
             Map(
@@ -127,7 +127,7 @@ class CompanyBenefitControllerSpec
           s"$benefitType $DecisionChoice"            -> YesIGetThisBenefit
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any(), any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(Some(employment))))
@@ -157,7 +157,7 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefitConstants.RefererKey      -> "referrer"
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any(), any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, Option[Employment]](Future.successful(Right(None)))
@@ -286,14 +286,14 @@ class CompanyBenefitControllerSpec
           EndCompanyBenefitConstants.EmploymentIdKey   -> "1"
         )
 
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> "")
         )
 
         status(result) mustBe BAD_REQUEST
 
-        verify(journeyCacheService, times(1)).currentCache(any())
+        verify(journeyCacheService, times(1)).currentCache(any(), any())
 
       }
     }

@@ -172,28 +172,25 @@ class UpdatePensionProviderController @Inject() (
       )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request => {
     for {
       pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProviderConstants.IdKey)
       telephoneCache <- journeyCacheService.optionalValues(
-                          UpdatePensionProviderConstants.TelephoneQuestionKey,
-                          UpdatePensionProviderConstants.TelephoneNumberKey
-                        )
-    } yield pensionId match {
-      case Right(mandatoryPensionId) =>
-        val user = Some(request.taiUser)
-
-        Ok(
-          canWeContactByPhone(
-            user,
-            telephoneNumberViewModel(mandatoryPensionId),
-            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
-          )
+        UpdatePensionProviderConstants.TelephoneQuestionKey,
+        UpdatePensionProviderConstants.TelephoneNumberKey
+      )
+    } yield {
+      val user = Some(request.taiUser)
+      Ok(
+        canWeContactByPhone(
+          user,
+          telephoneNumberViewModel(pensionId),
+          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
         )
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
+      )
+      }
     }
-
-  }
+  }.getOrElse(Redirect(taxAccountSummaryRedirect))
 
   def submitTelephoneNumber: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     YesNoTextEntryForm

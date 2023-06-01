@@ -36,28 +36,33 @@ class DecisionCacheWrapper @Inject() (
 
   def getDecision()(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
-    benefitType.flatMap[Option[String]] {
-      case Right(bt) =>
-        getBenefitDecisionKey(Some(bt)) match {
+    benefitType.foldF(
+      _ => {
+        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
+        Future.successful(None)
+      },
+      data =>
+        getBenefitDecisionKey(Some(data)) match {
           case Some(bdk) =>
             journeyCacheService.currentValue(bdk)
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(None)
         }
-      case Left(_) =>
-        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
-        Future.successful(None)
-    }
+    )
   }
 
   def cacheDecision(decision: String, f: (String, Result) => Result)(implicit
     hc: HeaderCarrier
   ): Future[Result] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
-    benefitType.flatMap[Result] {
-      case Right(bt) =>
-        getBenefitDecisionKey(Some(bt)) match {
+    benefitType.foldF(
+      _ => {
+        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
+        Future.successful(journeyStartRedirection)
+      },
+      data =>
+        getBenefitDecisionKey(Some(data)) match {
           case Some(bdk) =>
             journeyCacheService.cache(bdk, decision).map { _ =>
               f(decision, journeyStartRedirection)
@@ -66,10 +71,7 @@ class DecisionCacheWrapper @Inject() (
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(journeyStartRedirection)
         }
-      case Left(_) =>
-        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
-        Future.successful(journeyStartRedirection)
-    }
+    )
   }
 
   private def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =

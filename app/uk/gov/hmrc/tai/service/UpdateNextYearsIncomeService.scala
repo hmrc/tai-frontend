@@ -17,15 +17,15 @@
 package uk.gov.hmrc.tai.service
 
 import akka.Done
+import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
-import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 import javax.inject.{Inject, Named}
@@ -75,13 +75,16 @@ class UpdateNextYearsIncomeService @Inject() (
   ): Future[Map[String, String]] =
     journeyCacheService.cache(amountKey(employmentId), convertCurrencyToInt(Some(newValue)).toString)
 
-  def getNewAmount(employmentId: Int)(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
+  def getNewAmount(employmentId: Int)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Int] =
     journeyCacheService.mandatoryJourneyValueAsInt(amountKey(employmentId))
 
   def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[Done] =
     for {
-      _         <- get(employmentId, nino)
-      newAmount <- getNewAmount(employmentId).getOrFail
+      _ <- get(employmentId, nino)
+      newAmount <- getNewAmount(employmentId).fold(
+                     _ => 0,
+                     data => data
+                   ) // TODO - Hard set value until taxAccountService.updateEstimatedIncome() is refactored
       _ <- successfulJourneyCacheService
              .cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
       _ <- successfulJourneyCacheService

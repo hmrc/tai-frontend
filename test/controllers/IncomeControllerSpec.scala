@@ -196,7 +196,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         )
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
@@ -227,7 +227,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         )
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
@@ -270,7 +270,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(
             Future.successful(
               Map(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-${employment.sequenceNumber}" -> sameAmount)
@@ -810,7 +810,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         val sameAmount = "987"
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(
             Future.successful(Map(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId" -> sameAmount))
           )
@@ -1145,7 +1145,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         inject[ErrorPagesHandler]
       ) {
 
-    when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+    when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(Map.empty[String, String]))
     when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
     def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {

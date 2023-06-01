@@ -160,7 +160,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         when(journeyCacheService.cache(meq(UpdateIncomeConstants.IrregularAnnualPayKey), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(cacheMap))
 
         def handleIncomeIrregularHours(

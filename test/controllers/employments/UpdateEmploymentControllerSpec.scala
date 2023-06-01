@@ -177,7 +177,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
 
         val employmentDetailsFormData = ("employmentDetails", "")
 
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -199,7 +199,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
         val employmentDetailsFormData = ("employmentDetails", "")
         val employmentDetails = Map("employmentDetails" -> "")
 
-        when(journeyCacheService.currentCache(any()))
+        when(journeyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -321,7 +321,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
       "there is a form validation error (standard form validation)" in {
         val sut = createSUT
         val cache = Map(UpdateEmploymentConstants.EmploymentIdKey -> "1")
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
@@ -340,7 +340,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with B
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
         val cache = Map(UpdateEmploymentConstants.EmploymentIdKey -> "1")
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = sut.submitTelephoneNumber()(
           RequestBuilder

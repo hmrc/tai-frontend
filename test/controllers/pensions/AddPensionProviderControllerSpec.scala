@@ -403,7 +403,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "form is valid" in {
         val sut = createSUT
 
-        when(addPensionProviderJourneyCacheService.currentCache(any()))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
         when(addPensionProviderJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
@@ -430,7 +430,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "form is invalid" in {
         val sut = createSUT
 
-        when(addPensionProviderJourneyCacheService.currentCache(any()))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
 
         val result =
@@ -452,7 +452,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
       "form is valid" in {
         val sut = createSUT
 
-        when(addPensionProviderJourneyCacheService.currentCache(any()))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
         when(addPensionProviderJourneyCacheService.cache(any(), any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
@@ -481,7 +481,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
         val sut = createSUT
         val pensionProviderName = "TEST"
         val cache = Map(AddPensionProviderConstants.NameKey -> pensionProviderName)
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -499,7 +499,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             AddPensionProviderConstants.NameKey             -> pensionProviderName,
             AddPensionProviderConstants.PayrollNumberChoice -> FormValuesConstants.NoValue
           )
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -520,7 +520,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           AddPensionProviderConstants.PayrollNumberChoice -> FormValuesConstants.NoValue,
           AddPensionProviderConstants.PayrollNumberKey    -> Messages("123456789")
         )
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -541,7 +541,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             AddPensionProviderConstants.NameKey             -> pensionProviderName,
             AddPensionProviderConstants.PayrollNumberChoice -> FormValuesConstants.YesValue
           )
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -561,7 +561,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
           AddPensionProviderConstants.PayrollNumberChoice -> FormValuesConstants.YesValue,
           AddPensionProviderConstants.PayrollNumberKey    -> Messages("123456789")
         )
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -686,7 +686,7 @@ class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach 
             AddPensionProviderConstants.NameKey                 -> pensionName,
             AddPensionProviderConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
           )
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addPensionProviderJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitPensionNumber()(
           RequestBuilder

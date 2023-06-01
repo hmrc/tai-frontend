@@ -68,14 +68,14 @@ class RemoveCompanyBenefitControllerSpec
         EndCompanyBenefitConstants.RefererKey        -> "Test"
       )
 
-      when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+      when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
       val result = SUT.stopDate()(fakeRequest)
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.benefits.ended.stopDate.heading", "Test", "Test"))
 
-      verify(removeCompanyBenefitJourneyCacheService, times(1)).currentCache(any())
+      verify(removeCompanyBenefitJourneyCacheService, times(1)).currentCache(any(), any())
     }
 
     "show the prepopulated fields when an EndCompanyBenefitConstants.BenefitStopDateKey has been cached" in {
@@ -88,7 +88,7 @@ class RemoveCompanyBenefitControllerSpec
         EndCompanyBenefitConstants.BenefitStopDateKey -> stopDate.toString
       )
 
-      when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+      when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = SUT.stopDate()(request)
@@ -114,7 +114,7 @@ class RemoveCompanyBenefitControllerSpec
         val SUT = createSUT
         val year = TaxYear().year.toString
 
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any()))
           .thenReturn(
             Future.successful(
               Map(
@@ -161,7 +161,7 @@ class RemoveCompanyBenefitControllerSpec
         val year = taxYear.year.toString
 
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any()))
           .thenReturn(
             Future.successful(
               Map(
@@ -202,7 +202,7 @@ class RemoveCompanyBenefitControllerSpec
         )
 
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any()))
           .thenReturn(
             Future.successful(
               Map(
@@ -396,7 +396,7 @@ class RemoveCompanyBenefitControllerSpec
           EndCompanyBenefitConstants.BenefitStopDateKey -> "before6April2017",
           EndCompanyBenefitConstants.RefererKey         -> "Test"
         )
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -424,7 +424,7 @@ class RemoveCompanyBenefitControllerSpec
           EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
         )
 
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
 
         val result = SUT.telephoneNumber()(fakeRequest)
         status(result) mustBe OK
@@ -447,7 +447,7 @@ class RemoveCompanyBenefitControllerSpec
           EndCompanyBenefitConstants.BenefitValueKey    -> "12345",
           EndCompanyBenefitConstants.RefererKey         -> "Test"
         )
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -515,7 +515,7 @@ class RemoveCompanyBenefitControllerSpec
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(EndCompanyBenefitConstants.RefererKey -> "Test")))
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
@@ -533,7 +533,7 @@ class RemoveCompanyBenefitControllerSpec
 
       "there is a form validation error (additional, controller specific constraint)" in {
         val SUT = createSUT
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
+        when(removeCompanyBenefitJourneyCacheService.currentCache(any(), any()))
           .thenReturn(Future.successful(Map(EndCompanyBenefitConstants.RefererKey -> "Test")))
 
         val tooFewCharsResult = SUT.submitTelephoneNumber()(

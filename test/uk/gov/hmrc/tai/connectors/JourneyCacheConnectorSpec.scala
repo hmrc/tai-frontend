@@ -18,56 +18,85 @@ package uk.gov.hmrc.tai.connectors
 
 import akka.Done
 import cats.data.EitherT
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, okJson, urlPathMatching}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import play.api.Application
 import play.api.http.Status._
-import play.api.libs.json.{JsString, _}
-import uk.gov.hmrc.http.{HttpException, HttpResponse, InternalServerException, UpstreamErrorResponse}
-import utils.BaseSpec
+import play.api.i18n.MessagesApi
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json._
+import uk.gov.hmrc.http.{HttpClient, HttpResponse, InternalServerException, UpstreamErrorResponse}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.webchat.client.WebChatClient
+import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 
 import java.time.LocalDate
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.language.postfixOps
 
-class JourneyCacheConnectorSpec extends BaseSpec {
+class JourneyCacheConnectorSpec extends ConnectorSpec {
 
-  "currentCache" must {
+  override def fakeApplication(): Application = GuiceApplicationBuilder()
+    .configure(
+      "microservice.services.tai.port"                      -> server.port(),
+      "microservice.services.tai-frontend.port"             -> server.port(),
+      "microservice.services.contact-frontend.port"         -> "6666",
+      "microservice.services.pertax-frontend.port"          -> "1111",
+      "microservice.services.personal-tax-summary.port"     -> "2222",
+      "microservice.services.activity-logger.port"          -> "5555",
+      "tai.cy3.enabled"                                     -> true,
+      "microservice.services.feedback-survey-frontend.port" -> "3333",
+      "microservice.services.company-auth.port"             -> "4444",
+      "microservice.services.citizen-auth.port"             -> "9999"
+    ) // TODO - Trim down on configs
+    .overrides(
+      play.api.inject.bind[WebChatClient].toInstance(new WebChatClientStub)
+    )
+    .build()
 
-    "return the map of current cached values [String, String], as returned from the api call" in {
-      val cacheString = """{"key1":"value1","key2":"value2"}"""
-      when(httpHandler.getFromApiV2(any())(any()))
-        .thenReturn(
-          EitherT[Future, UpstreamErrorResponse, JsValue](
-            Future.successful(Right(Json.parse(cacheString)))
-          )
+  override def messagesApi: MessagesApi = inject[MessagesApi]
+
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
+
+  def connector: JourneyCacheConnector = inject[JourneyCacheConnector]
+
+  "JourneyCacheConnector" when {
+    val cacheString = """{"key1":"value1","key2":"value2"}"""
+    "currentCache is run" must {
+      val url = s"/tai/journey-cache/$journeyName"
+      "return an OK response if successful" in {
+        server.stubFor(
+          get(urlPathMatching(url))
+            .willReturn(okJson(Json.toJson(cacheString).toString))
         )
-
-      val expectedResult = Map("key1" -> "value1", "key2" -> "value2")
-      val result = Await.result(sut.currentCache(journeyName), 5 seconds)
-      result mustBe expectedResult
-    }
-//    "trap a NO CONTENT exception (a valid business scenario), and return an empty map in its place" in {
-//      when(httpHandler.getFromApiV2(any())(any()))
-//        .thenReturn(Future.failed(new HttpException("no cache was found", NO_CONTENT)))
-//
-//      val result = Await.result(sut.currentCache(journeyName), 5 seconds)
-//      result mustBe Map.empty[String, String]
-//    } /// TODO - Check if correct
-    "expose any exception that is not a NOT FOUND type" in {
-      when(httpHandler.getFromApiV2(any())(any()))
-        .thenReturn(
-          EitherT[Future, UpstreamErrorResponse, JsValue](
-            Future.successful(Left(UpstreamErrorResponse("something terminal", INTERNAL_SERVER_ERROR)))
+        connector.currentCache(cacheString).value.futureValue.map { result =>
+          result.status mustBe OK
+          result.json mustBe Json.toJson(cacheString)
+        }
+      }
+      List(
+        NOT_FOUND,
+        BAD_REQUEST,
+        IM_A_TEAPOT,
+        UNPROCESSABLE_ENTITY,
+        TOO_MANY_REQUESTS,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE
+      ).foreach { errorStatus =>
+        s"return an UpstreamErrorResponse with the status $errorStatus" in {
+          server.stubFor(
+            get(urlPathMatching(url))
+              .willReturn(aResponse().withStatus(errorStatus))
           )
-        )
-
-      val thrown = the[InternalServerException] thrownBy Await.result(sut.currentCache(journeyName), 5 seconds)
-      thrown.getMessage mustBe "something terminal"
+          connector.currentCache(cacheString).value.futureValue.swap.map(_.statusCode mustBe errorStatus)
+        }
+      }
     }
   }
 
   "currentValueAs" must {
-
     "return the cached value transformed by the supplied function" in {
       when(httpHandler.getFromApiV2(any())(any()))
         .thenReturn(
@@ -209,7 +238,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpClientResponse = mock[HttpClientResponse]
 
-  def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler, servicesConfig) {
+  def sut: JourneyCacheConnector = new JourneyCacheConnector(inject[HttpClient], httpHandler, inject[ServicesConfig]) {
     override val serviceUrl: String = "mockUrl"
   }
 

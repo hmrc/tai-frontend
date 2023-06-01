@@ -60,7 +60,7 @@ class UpdateNextYearsIncomeServiceSpec
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
-        when(journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(
           Future.successful(Map.empty[String, String])
         )
 
@@ -134,7 +134,7 @@ class UpdateNextYearsIncomeServiceSpec
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
-        when(journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(
           Future.successful(Map[String, String]())
         )
 
@@ -164,7 +164,7 @@ class UpdateNextYearsIncomeServiceSpec
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
 
-        when(journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any(), any())).thenReturn(
           Future.successful(fullMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -254,8 +254,7 @@ class UpdateNextYearsIncomeServiceSpec
   "isEstimatedPayJourneyComplete" must {
     "be true when a journey is successful" in {
       val service = new UpdateNextYearsIncomeServiceTest
-
-      when(successfulJourneyCacheService.currentCache(any()))
+      when(successfulJourneyCacheService.currentCache(any(), any()))
         .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
 
       service.isEstimatedPayJourneyComplete.futureValue mustBe true
@@ -264,7 +263,8 @@ class UpdateNextYearsIncomeServiceSpec
     "be false when a journey is incomplete" in {
       val service = new UpdateNextYearsIncomeServiceTest
 
-      when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(successfulJourneyCacheService.currentCache(any(), any()))
+        .thenReturn(Future.successful(Map.empty[String, String]))
 
       service.isEstimatedPayJourneyComplete.futureValue mustBe false
     }
