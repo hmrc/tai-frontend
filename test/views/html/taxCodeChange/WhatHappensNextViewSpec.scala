@@ -26,7 +26,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
     behave like pageWithBackLink()
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("taxCode.change.journey.preHeading"),
       messages("taxCode.change.whatHappensNext.title")
     )

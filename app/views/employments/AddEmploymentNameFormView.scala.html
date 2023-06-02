@@ -35,7 +35,7 @@
                     @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
                 }
 
-                <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading"): </span>@messages("add.missing.employment")</h2>
+                <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("add.missing.employment")</h2>
 
                 @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
 

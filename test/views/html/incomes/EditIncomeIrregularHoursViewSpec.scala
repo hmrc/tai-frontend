@@ -34,7 +34,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink()
     behave like pageWithTitle(messages("tai.irregular.heading"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak)
     )

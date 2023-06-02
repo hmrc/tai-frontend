@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryV
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   "Income details spec" must {
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       model.displayName,
       messages(
         "tai.employment.income.details.mainHeading",
@@ -42,7 +42,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display headings" when {
       "income source is pension" in {
-        pensionDoc must havePreHeadingWithTextGds(pensionModel.displayName)
+        pensionDoc must havePreHeadingWithTextGdsNew(pensionModel.displayName)
 
         pensionDoc must haveHeadingWithText(
           messages(

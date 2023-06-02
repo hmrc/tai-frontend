@@ -24,7 +24,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
 
   "check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       messages("tai.checkYourAnswers.title")
     )

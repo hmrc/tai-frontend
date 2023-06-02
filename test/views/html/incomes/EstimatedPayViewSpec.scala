@@ -48,7 +48,7 @@ class EstimatedPayViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(
       Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     )
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.estimatedPay.preHeading", employer.name),
       messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )

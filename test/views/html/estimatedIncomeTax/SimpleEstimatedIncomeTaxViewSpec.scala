@@ -32,7 +32,7 @@ import views.html.includes.link
 class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
 
   "Estimated Income Tax Page" must {
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.taxYear", Dates.formatDate(TaxYear().start), Dates.formatDate(TaxYear().end)),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))

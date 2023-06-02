@@ -25,7 +25,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
   "Tax free amount view page" must {
 
     behave like pageWithTitle("main heading")
-    behave like pageWithCombinedHeaderNewFormat(messages("tai.taxCode.preHeader"), "main heading")
+    behave like pageWithCombinedHeaderNewFormatNew(messages("tai.taxCode.preHeader"), "main heading")
     behave like pageWithBackLink()
 
     "display a summary section" which {

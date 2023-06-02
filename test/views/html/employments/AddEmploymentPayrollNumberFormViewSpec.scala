@@ -33,7 +33,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
 
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("add.missing.employment"),
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

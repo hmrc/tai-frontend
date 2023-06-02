@@ -29,7 +29,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.benefits.ended.journey.preHeader"),
       messages("tai.checkYourAnswers.title")
     )

@@ -52,7 +52,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
     behave like pageWithBackLink()
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       preHeaderText = messages("tai.incomes.warning.preHeading"),
       mainHeaderText = messages("tai.incomes.warning.employment.heading", employmentName)
     )

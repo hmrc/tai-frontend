@@ -54,7 +54,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
   "Potential Underpayment" must {
     behave like pageWithBackLinkNew()
     behave like pageWithTitle(viewModel.pageTitle)
-    behave like pageWithCombinedHeaderNewFormat(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
+    behave like pageWithCombinedHeaderNewFormatNew(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
 
     "display text indicating tax is owed " in {
       document() must haveParagraphWithText(messages("tai.iya.paidTooLittle.cy.text"))

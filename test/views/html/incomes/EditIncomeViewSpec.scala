@@ -28,7 +28,7 @@ class EditIncomeViewSpec extends TaiViewSpec {
   val employerName = "fakeFieldValue"
   "Edit income view" should {
     behave like pageWithBackLink()
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.incomes.edit.preHeading", employerName),
       messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )

@@ -404,7 +404,9 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("hmrc-caption").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
+        doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
+          Messages("tai.benefits.ended.journey.preHeader")
+        )
         doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
@@ -454,7 +456,9 @@ class RemoveCompanyBenefitControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("hmrc-caption").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
+        doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
+          Messages("tai.benefits.ended.journey.preHeader")
+        )
         doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
