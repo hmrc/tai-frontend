@@ -50,18 +50,15 @@ class UpdateNextYearsIncomeService @Inject() (
 
   private def setup(employmentId: Int, nino: Nino)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, UpstreamErrorResponse, UpdateNextYearsIncomeCacheModel] = { ///// TODO - POC for MapN to for/yield
+  ): EitherT[Future, UpstreamErrorResponse, UpdateNextYearsIncomeCacheModel] = ///// TODO - POC for MapN to for/yield
     for {
       taxCodeIncome <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
-      employment <- employmentService.employment(nino, employmentId) // TODO - Check if correct behaviour
-    } yield {
-      (taxCodeIncome, employment) match {
-        case (Some(taxCodeIncome), Some(employment)) =>
-          val isPension = taxCodeIncome.componentType == PensionIncome
-          UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
-      }
+      employment    <- employmentService.employment(nino, employmentId) // TODO - Check if correct behaviour
+    } yield (taxCodeIncome, employment) match {
+      case (Some(taxCodeIncome), Some(employment)) =>
+        val isPension = taxCodeIncome.componentType == PensionIncome
+        UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
     }
-  }
 
   def get(employmentId: Int, nino: Nino)(implicit
     hc: HeaderCarrier

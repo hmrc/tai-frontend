@@ -27,8 +27,12 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PensionProviderConnector @Inject()(httpClient: HttpClient, httpClientResponse: HttpClientResponse, servicesConfig: ServicesConfig)(implicit
-                                                                                                                 ec: ExecutionContext
+class PensionProviderConnector @Inject() (
+  httpClient: HttpClient,
+  httpClientResponse: HttpClientResponse,
+  servicesConfig: ServicesConfig
+)(implicit
+  ec: ExecutionContext
 ) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
@@ -49,7 +53,10 @@ class PensionProviderConnector @Inject()(httpClient: HttpClient, httpClientRespo
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     httpClientResponse.read(
-      httpClient.POST[IncorrectPensionProvider, Either[UpstreamErrorResponse, HttpResponse]](incorrectPensionProviderServiceUrl(nino, id), pensionProvider)
+      httpClient.POST[IncorrectPensionProvider, Either[UpstreamErrorResponse, HttpResponse]](
+        incorrectPensionProviderServiceUrl(nino, id),
+        pensionProvider
+      )
     )
 
   def incorrectPensionProviderServiceUrl(nino: Nino, id: Int): String =

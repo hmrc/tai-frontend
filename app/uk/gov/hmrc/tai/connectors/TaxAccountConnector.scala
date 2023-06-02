@@ -79,11 +79,10 @@ class TaxAccountConnector @Inject() (
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
+  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     httpClientResponse.read(
       httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](taxAccountUrl(nino.nino, year))
     )
-  }
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
     httpClientResponse

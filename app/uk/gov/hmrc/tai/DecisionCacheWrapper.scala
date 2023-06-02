@@ -32,7 +32,7 @@ class DecisionCacheWrapper @Inject() (
   implicit val ec: ExecutionContext
 ) extends Results with Logging {
 
-  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
   def getDecision()(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
@@ -67,12 +67,15 @@ class DecisionCacheWrapper @Inject() (
       data =>
         getBenefitDecisionKey(Some(data)) match {
           case Some(bdk) =>
-            journeyCacheService.cache(bdk, decision).map { _ =>
-              f(decision, journeyStartRedirection)
-            }.getOrElse {
-              logger.error("Call to journey cache using .currentValue() failed")
-              None
-            } // TODO - Needs testing
+            journeyCacheService
+              .cache(bdk, decision)
+              .map { _ =>
+                f(decision, journeyStartRedirection)
+              }
+              .getOrElse {
+                logger.error("Call to journey cache using .currentValue() failed")
+                journeyStartRedirection
+              } // TODO - Needs testing
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(journeyStartRedirection)

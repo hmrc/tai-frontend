@@ -40,7 +40,7 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
     taxAccountConnector.incomeSources(nino, year, incomeType, status)
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
-                    ec: ExecutionContext,
+    ec: ExecutionContext,
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
     taxAccountConnector.taxCodeIncomes(nino, year).map(result => (result.json \ "data").as[Seq[TaxCodeIncome]])
@@ -49,7 +49,8 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, Option[TaxCodeIncome]] =
-    taxAccountConnector.taxCodeIncomes(nino, year)
+    taxAccountConnector
+      .taxCodeIncomes(nino, year)
       .map(result => (result.json \ "data").as[Seq[TaxCodeIncome]])
       .map(_.find(_.employmentId.contains(employmentId)))
 

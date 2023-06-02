@@ -20,7 +20,7 @@ import akka.Done
 import cats.data.EitherT
 import cats.implicits.catsStdInstancesForFuture
 import play.api.Logging
-import play.api.http.Status.NO_CONTENT
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiCacheError, TaiResponse, TaiSuccessResponse}
@@ -74,8 +74,9 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, Seq[String]] =
     for {
-      cache <- currentCache
-    } yield mappedMandatory(cache, keys)
+      cache          <- currentCache
+      mandatoryCache <- mappedMandatory(cache, keys)
+    } yield mandatoryCache
 
   def optionalValues(
     keys: String*
@@ -90,8 +91,9 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     executionContext: ExecutionContext
   ): EitherT[Future, UpstreamErrorResponse, (Seq[String], Seq[Option[String]])] =
     for {
-      cache <- currentCache
-    } yield mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
+      cache           <- currentCache
+      mandatoryResult <- mappedMandatory(cache, mandatoryJourneyValues)
+    } yield {
       val optionalResult = mappedOptional(cache, optionalValues)
       (mandatoryResult, optionalResult)
     }
@@ -99,7 +101,7 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
   private def mappedMandatory(
     cache: Map[String, String],
     mandatoryJourneyValues: Seq[String]
-  ): Either[String, Seq[String]] = {
+  ): EitherT[Future, UpstreamErrorResponse, Seq[String]] = {
 
     val allPresentValues = mandatoryJourneyValues flatMap { key =>
       cache.get(key) match {
@@ -109,9 +111,14 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
           None
       }
     }
-
-    if (allPresentValues.size == mandatoryJourneyValues.size) Right(allPresentValues)
-    else Left("Mandatory values missing from cache")
+    EitherT(
+      if (allPresentValues.size == mandatoryJourneyValues.size) {
+        Future.successful(Right(allPresentValues))
+      } else {
+        logger.warn("Mandatory values missing from cache")
+        Future.successful(Left(UpstreamErrorResponse("Mandatory values missing from cache", NOT_FOUND, NOT_FOUND)))
+      }
+    )
   }
 
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
