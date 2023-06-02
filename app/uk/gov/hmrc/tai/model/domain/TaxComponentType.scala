@@ -29,10 +29,10 @@ sealed trait BenefitComponentType extends TaxComponentType
 sealed trait DeductionComponentType extends TaxComponentType
 sealed trait IncomeComponentType extends TaxComponentType
 
-sealed trait EmploymentPensions
-sealed trait TaxableStateBenefits
-sealed trait OtherIncomes
-sealed trait SavingAndInvestments
+sealed trait EmploymentPensions extends NonTaxCodeIncomeComponentType
+sealed trait TaxableStateBenefits extends NonTaxCodeIncomeComponentType
+sealed trait OtherIncomes extends NonTaxCodeIncomeComponentType
+sealed trait SavingAndInvestments extends NonTaxCodeIncomeComponentType
 
 sealed trait TaxCodeIncomeComponentType extends IncomeComponentType
 sealed trait NonTaxCodeIncomeComponentType extends IncomeComponentType
@@ -155,35 +155,35 @@ object BenefitComponentType {
   }
 }
 
-case object NonCodedIncome extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object Commission extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object OtherIncomeEarned extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object OtherIncomeNotEarned extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object PartTimeEarnings extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object Tips extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object OtherEarnings extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object CasualEarnings extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object PersonalPensionAnnuity extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object ForeignPropertyIncome extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object Profit extends NonTaxCodeIncomeComponentType with OtherIncomes
-case object OccupationalPension extends NonTaxCodeIncomeComponentType with EmploymentPensions
-case object PublicServicesPension extends NonTaxCodeIncomeComponentType with EmploymentPensions
-case object ForcesPension extends NonTaxCodeIncomeComponentType with EmploymentPensions
+case object NonCodedIncome extends OtherIncomes
+case object Commission extends OtherIncomes
+case object OtherIncomeEarned extends OtherIncomes
+case object OtherIncomeNotEarned extends OtherIncomes
+case object PartTimeEarnings extends OtherIncomes
+case object Tips extends OtherIncomes
+case object OtherEarnings extends OtherIncomes
+case object CasualEarnings extends OtherIncomes
+case object PersonalPensionAnnuity extends OtherIncomes
+case object ForeignPropertyIncome extends OtherIncomes
+case object Profit extends OtherIncomes
+case object OccupationalPension extends EmploymentPensions
+case object PublicServicesPension extends EmploymentPensions
+case object ForcesPension extends EmploymentPensions
 case object UntaxedInterestIncome extends NonTaxCodeIncomeComponentType
-case object ForeignDividendIncome extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object ForeignInterestAndOtherSavings extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object ForeignPensionsAndOtherIncome extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object BankOrBuildingSocietyInterest extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object UkDividend extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object UnitTrust extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object StockDividend extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object NationalSavings extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object SavingsBond extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object PurchasedLifeAnnuities extends NonTaxCodeIncomeComponentType with SavingAndInvestments
-case object StatePension extends NonTaxCodeIncomeComponentType with TaxableStateBenefits
-case object EmploymentAndSupportAllowance extends NonTaxCodeIncomeComponentType with TaxableStateBenefits
-case object JobSeekersAllowance extends NonTaxCodeIncomeComponentType with TaxableStateBenefits
-case object IncapacityBenefit extends NonTaxCodeIncomeComponentType with TaxableStateBenefits
+case object ForeignDividendIncome extends SavingAndInvestments
+case object ForeignInterestAndOtherSavings extends SavingAndInvestments
+case object ForeignPensionsAndOtherIncome extends SavingAndInvestments
+case object BankOrBuildingSocietyInterest extends SavingAndInvestments
+case object UkDividend extends SavingAndInvestments
+case object UnitTrust extends SavingAndInvestments
+case object StockDividend extends SavingAndInvestments
+case object NationalSavings extends SavingAndInvestments
+case object SavingsBond extends SavingAndInvestments
+case object PurchasedLifeAnnuities extends SavingAndInvestments
+case object StatePension extends TaxableStateBenefits
+case object EmploymentAndSupportAllowance extends TaxableStateBenefits
+case object JobSeekersAllowance extends TaxableStateBenefits
+case object IncapacityBenefit extends TaxableStateBenefits
 
 //Tax-code Incomes
 case object EmploymentIncome extends TaxCodeIncomeComponentType
