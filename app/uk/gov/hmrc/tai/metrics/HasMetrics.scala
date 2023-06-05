@@ -21,11 +21,24 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.codahale.metrics.{MetricRegistry, Timer}
 import play.api.mvc.{Action, BaseController, Result}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 trait HasActionMetrics extends HasMetrics { self: BaseController =>
 
+  /** Execute a [[play#api#mvc#Action]] with a metrics timer. Intended for use in controllers that return HTTP
+    * responses.
+    *
+    * @param metric
+    *   The id of the metric to be collected
+    * @param action
+    *   The action to wrap with metrics collection
+    * @param ec
+    *   The [[scala#concurrent#ExecutionContext]] on which the block of code should run
+    * @return
+    *   an action which captures metrics about the wrapped action
+    */
   def withMetricsTimerAction[A](metric: Metric)(action: Action[A])(implicit ec: ExecutionContext): Action[A] =
     Action(action.parser).async(request => withMetricsTimerResult(metric)(action(request)))
 }
@@ -63,6 +76,17 @@ trait HasMetrics {
       }
   }
 
+  /** Execute a block of code with a metrics timer. Intended for use in controllers that return HTTP responses.
+    *
+    * @param metric
+    *   The id of the metric to be collected
+    * @param block
+    *   The block of code to execute asynchronously
+    * @param ec
+    *   The [[scala.concurrent.ExecutionContext]] on which the block of code should run
+    * @return
+    *   The result of the block of code
+    */
   def withMetricsTimerResult(metric: Metric)(block: => Future[Result])(implicit ec: ExecutionContext): Future[Result] =
     withMetricsTimer(metric) { timer =>
       try {
