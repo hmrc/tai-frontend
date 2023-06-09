@@ -350,4 +350,7 @@ trait JsoupMatchers {
 
   def havePanelWithHeaderText(expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, ".govuk-panel__title")
+
+  def haveNavMenuItem(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, ".hmrc-account-menu__link")
 }
