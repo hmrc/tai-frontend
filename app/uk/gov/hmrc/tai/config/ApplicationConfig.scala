@@ -122,4 +122,6 @@ class ApplicationConfig @Inject() (
   lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
   lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
+  lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
+
 }

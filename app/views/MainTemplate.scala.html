@@ -286,8 +286,10 @@
                 htmlElem.setAttribute("lang", lang);
             }
     </script>
-    @{webChatClient.loadRequiredElements()}
-    @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
+    @if(appConfig.webChatIsEnabled) {
+      @{webChatClient.loadRequiredElements()}
+      @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
+    }
 }
 
 
