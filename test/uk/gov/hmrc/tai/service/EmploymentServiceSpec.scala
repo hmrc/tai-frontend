@@ -33,6 +33,7 @@ class EmploymentServiceSpec extends BaseSpec {
   "Employment Service" must {
     "return employments" in {
       val sut = createSUT
+
       when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
 
       val data = Await.result(sut.employments(nino, year), 5.seconds)
@@ -44,6 +45,7 @@ class EmploymentServiceSpec extends BaseSpec {
   "CeasedEmployments Service" must {
     "return employments" in {
       val sut = createSUT
+
       when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(employments))
 
       val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
@@ -56,6 +58,7 @@ class EmploymentServiceSpec extends BaseSpec {
     "return a map of employment id and employment name" when {
       "connector returns one employment" in {
         val sut = createSUT
+
         when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employmentDetails))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
@@ -65,6 +68,7 @@ class EmploymentServiceSpec extends BaseSpec {
 
       "connector returns multiple employment" in {
         val sut = createSUT
+
         val employment1 = Employment(
           "company name 1",
           Live,
@@ -104,6 +108,7 @@ class EmploymentServiceSpec extends BaseSpec {
 
       "connector does not return any employment" in {
         val sut = createSUT
+
         when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
         val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
@@ -141,6 +146,7 @@ class EmploymentServiceSpec extends BaseSpec {
   "end employment" must {
     "return envelope id" in {
       val sut = createSUT
+
       when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
       val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
@@ -154,6 +160,7 @@ class EmploymentServiceSpec extends BaseSpec {
   "add employment" must {
     "return an envelope id" in {
       val sut = createSUT
+
       val model = AddEmployment(
         employerName = "testEmployment",
         payrollNumber = "12345",
@@ -171,6 +178,7 @@ class EmploymentServiceSpec extends BaseSpec {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
+
         val model = AddEmployment(
           employerName = "testEmployment",
           payrollNumber = "12345",
@@ -190,6 +198,7 @@ class EmploymentServiceSpec extends BaseSpec {
   "incorrect employment" must {
     "return an envelope id" in {
       val sut = createSUT
+
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
@@ -203,6 +212,7 @@ class EmploymentServiceSpec extends BaseSpec {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
+
         val model =
           IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
         when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))

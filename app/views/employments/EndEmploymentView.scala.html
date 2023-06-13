@@ -14,13 +14,12 @@
  * limitations under the License.
  *@
 
-@import includes.forms._
 @import includes.{cancelLink}
 @import java.time.LocalDate
 
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
-@import scala.concurrent.ExecutionContext
+
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -30,7 +29,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser,  ec: ExecutionContext)
+@(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @hint = {
@@ -43,7 +42,7 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkId = "backLink",
-    backLinkUrl = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.toString),
+    backLinkUrl = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(dateForm),
 ) {

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
@@ -97,8 +96,7 @@ class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: Execution
 
   def putToApi[I](url: String, data: I)(implicit
     hc: HeaderCarrier,
-    rds: HttpReads[I],
-    writes: Writes[I]
+    writes: Writes[I],
   ): Future[HttpResponse] =
     http.PUT[I, HttpResponse](url, data).flatMap { httpResponse =>
       httpResponse.status match {
@@ -126,8 +124,7 @@ class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: Execution
 
   def postToApi[I](url: String, data: I)(implicit
     hc: HeaderCarrier,
-    rds: HttpReads[I],
-    writes: Writes[I]
+    writes: Writes[I],
   ): Future[HttpResponse] =
     http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
       httpResponse.status match {

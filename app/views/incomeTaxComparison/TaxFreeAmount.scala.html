@@ -56,7 +56,7 @@
             <td  class="govuk-table__header tax-free-amount-table-heading">
                 @messages("tai.income.personalAllowance")
             </td>
-            @for((personalAllowance, itemIndex) <- model.personalAllowance.values zip (Stream from 1)) {
+            @for((personalAllowance, itemIndex) <- model.personalAllowance.values zip (LazyList.from(1))) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
                     @if(itemIndex == 1){
                         <span class="table-heading" aria-hidden="true">
@@ -97,7 +97,7 @@
         @for(row <- model.additions.additions) {
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
-                @for((addition, itemIndex) <- row.values zip (Stream from 1)) {
+                @for((addition, itemIndex) <- row.values zip (LazyList.from(1))) {
                     @{itemIndex match {
                         case 1 =>
                             <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -170,7 +170,7 @@
         @for(row <- model.deductions.deductions) {
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
-                @for((deduction, itemIndex) <- row.values zip (Stream from 1)) {
+                @for((deduction, itemIndex) <- row.values zip (LazyList.from(1))) {
                     @{itemIndex match {
                         case 1 =>
                             <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -242,7 +242,7 @@
     <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
             <td class="govuk-table__cell govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</td>
-            @for((total, itemIndex) <- model.footer.values zip (Stream from 1)) {
+            @for((total, itemIndex) <- model.footer.values zip (LazyList.from(1))) {
                 @if(itemIndex ==1){
                     <td class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="table-heading" aria-hidden="true">

@@ -14,11 +14,9 @@
  * limitations under the License.
  *@
 
-@import includes.forms._
 @import includes.{cancelLink, ptaHeaderNoH1}
 @import java.time.LocalDate
 
-@import includes.ptaHeader
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
 
 
@@ -32,17 +30,8 @@
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 
-@(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(dateForm),
-        mainHeadingText = Messages("tai.addEmployment.startDateForm.title", employmentName),
-        preHeadingText = Messages("add.missing.employment"),
-        showGdsVersion = true
-    )
-}
 @hint = {
     <p class="govuk-body carry-over">@messages("tai.addEmployment.startDateForm.subHeading")</p>
     <p>@messages("tai.label.date.example")</p>
@@ -53,12 +42,12 @@
     backLinkId = "backLink",
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName.url),
+    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName().url),
     formForErrorSummary = Some(dateForm)
    )  {
 
 
-    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate) {
+    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate()) {
 
 
         <div class = "govuk-grid-row">
@@ -107,7 +96,7 @@
     }      
 
     <div class="govuk-link govuk-body-m">
-    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel)
+    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel())
     </div>
 
 

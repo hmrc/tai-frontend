@@ -22,13 +22,10 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
 
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -72,8 +69,10 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
           .thenReturn(
             Future.successful(
               Right(
-                Seq[String](employer.id.toString, employer.name),
-                Seq[Option[String]](payPeriod, None, cachedAmount)
+                (
+                  Seq[String](employer.id.toString, employer.name),
+                  Seq[Option[String]](payPeriod, None, cachedAmount)
+                )
               )
             )
           )
@@ -143,7 +142,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         val result = controller.payslipAmountPage(request)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -181,7 +180,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage.url
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
         )
       }
     }
@@ -218,8 +217,10 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
           .thenReturn(
             Future.successful(
               Right(
-                Seq[String](employer.id.toString, employer.name),
-                Seq[Option[String]](payPeriod, None, cachedAmount)
+                (
+                  Seq[String](employer.id.toString, employer.name),
+                  Seq[Option[String]](payPeriod, None, cachedAmount)
+                )
               )
             )
           )
@@ -257,9 +258,6 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val cachedAmount = None
-        val payPeriod = None
-
         val controller = new TestIncomeUpdatePayslipAmountController
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
@@ -268,7 +266,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val result = controller.taxablePayslipAmountPage(request)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -288,7 +286,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
-            Right(Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None))
+            Right((Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None)))
           )
         )
 
@@ -310,7 +308,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
+          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
         )
       }
     }
@@ -339,7 +337,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
@@ -404,7 +402,9 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage.url
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .taxablePayslipAmountPage()
+            .url
         )
       }
     }
@@ -417,7 +417,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage.url
+          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
         )
       }
     }

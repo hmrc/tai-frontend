@@ -19,13 +19,9 @@ package uk.gov.hmrc.tai.service
 import akka.Done
 import controllers.FakeTaiPlayApplication
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{times, verify, when}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
@@ -40,7 +36,7 @@ import scala.concurrent.Future
 class UpdateNextYearsIncomeServiceSpec
     extends BaseSpec with FakeTaiPlayApplication with BeforeAndAfterEach with ScalaFutures {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(successfulJourneyCacheService)
 
   "get" must {

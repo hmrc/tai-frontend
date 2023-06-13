@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{DividendTax, EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import utils.BaseSpec

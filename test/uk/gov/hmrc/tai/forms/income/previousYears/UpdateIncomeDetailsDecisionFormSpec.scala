@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.forms.income.previousYears
 
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateHistoricIncomeChoiceConstants}
 import utils.BaseSpec
 
@@ -25,7 +24,7 @@ class UpdateIncomeDetailsDecisionFormSpec extends BaseSpec {
 
   "UpdateIncomeDetailsDecisionFormSpec" must {
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue)
+      val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -33,7 +32,7 @@ class UpdateIncomeDetailsDecisionFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue)
+      val validNoChoice = Map(choice -> FormValuesConstants.NoValue)
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -41,7 +40,7 @@ class UpdateIncomeDetailsDecisionFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Json.obj(choice -> "")
+      val invalidChoice = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(Messages("tai.income.previousYears.decision.error"))

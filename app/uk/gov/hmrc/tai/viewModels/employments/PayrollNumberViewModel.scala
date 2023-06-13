@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.AddEmploymentConstants
 
@@ -24,15 +23,15 @@ case class PayrollNumberViewModel(employmentName: String, firstPayChoice: Boolea
 
 object PayrollNumberViewModel {
 
-  def apply(cache: Map[String, String])(implicit messages: Messages): PayrollNumberViewModel = {
+  def apply(cache: Map[String, String]): PayrollNumberViewModel = {
     val employerName = cache.getOrElse(AddEmploymentConstants.NameKey, "")
     val firstPayChoice = cache.get(AddEmploymentConstants.StartDateWithinSixWeeks) match {
       case Some(FormValuesConstants.YesValue) => true
       case _                                  => false
     }
     val backUrl = cache.get(AddEmploymentConstants.ReceivedFirstPayKey) match {
-      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url
-      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay.url
+      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
     }
     PayrollNumberViewModel(employerName, firstPayChoice, backUrl)
   }

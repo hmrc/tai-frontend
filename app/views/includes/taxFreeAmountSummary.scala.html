@@ -20,7 +20,7 @@
     items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
 }
 
-@for((item, itemIdx) <- items zip (Stream from 1);
+@for((item, itemIdx) <- items zip (LazyList.from(1));
       isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption") ) {
 
     @if(item.rows.nonEmpty) {
@@ -34,7 +34,7 @@
                 @if(item.rows.length>1) {
                 <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection} else {flush}">
 
-                    @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
+                    @for((row, rowIdx) <- item.rows zip (LazyList.from(1))) {
                         <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}" class="govuk-summary-list__row">
 
                             <dt id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="govuk-summary-list__key cya-question break-word">

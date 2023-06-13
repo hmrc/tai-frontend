@@ -20,11 +20,8 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import utils.BaseSpec
-
-import scala.collection.immutable.Seq
-import scala.language.postfixOps
 
 class EstimatedIncomeViewModelSpec extends BaseSpec {
 
@@ -514,7 +511,13 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
   "merge Tax bands" must {
 
     "return None when an empty list is supplied." in {
-      val result = BandedGraph.mergedBands(Nil, totalTaxBandIncome = 10000, taxViewType = SimpleTaxView)
+      val result = BandedGraph.mergedBands(
+        Nil,
+        totalTaxBandIncome = 10000,
+        taxViewType = SimpleTaxView,
+        personalAllowance = None,
+        taxFreeAllowanceBandSum = 0
+      )
       result mustBe None
     }
 
@@ -526,7 +529,13 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         TaxBand("", "", income = 2000, tax = 20, lowerBand = None, upperBand = Some(4000), rate = 40)
       )
 
-      val dataF = BandedGraph.mergedBands(taxBand, totalTaxBandIncome = 6500, taxViewType = SimpleTaxView)
+      val dataF = BandedGraph.mergedBands(
+        taxBand,
+        totalTaxBandIncome = 6500,
+        taxViewType = SimpleTaxView,
+        personalAllowance = None,
+        taxFreeAllowanceBandSum = 0
+      )
       dataF.get mustBe Band("Band", 100, 6500, 100, BandTypesConstants.NonZeroBand)
     }
 
@@ -538,7 +547,13 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         TaxBand("", "", income = 2000, tax = 20, lowerBand = None, upperBand = Some(4000), rate = 40)
       )
 
-      val dataF = BandedGraph.mergedBands(taxBand, totalTaxBandIncome = 6500, taxViewType = SimpleTaxView)
+      val dataF = BandedGraph.mergedBands(
+        taxBand,
+        totalTaxBandIncome = 6500,
+        taxViewType = SimpleTaxView,
+        personalAllowance = None,
+        taxFreeAllowanceBandSum = 0
+      )
       dataF.get mustBe Band("Band", 100, 6500, 100, BandTypesConstants.NonZeroBand)
     }
   }
@@ -594,14 +609,14 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
 
     "return 0 when empty list" in {
       val taxBands = Nil
-      val upperBand = BandedGraph.getUpperBand(taxBands)
+      val upperBand = BandedGraph.getUpperBand(taxBands, personalAllowance = None, taxFreeAllowanceBandSum = 0)
       upperBand mustBe 0
     }
 
     "return default value when only pa band has been passed" in {
       val taxBands: List[TaxBand] =
         List(TaxBand("pa", "", income = 11500, tax = 0, lowerBand = None, upperBand = None, rate = 0))
-      val upperBand = BandedGraph.getUpperBand(taxBands)
+      val upperBand = BandedGraph.getUpperBand(taxBands, personalAllowance = None, taxFreeAllowanceBandSum = 0)
       upperBand mustBe 11500
     }
 
@@ -611,7 +626,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         TaxBand("B", "", income = 16000, tax = 5000, lowerBand = Some(11000), upperBand = Some(28800), rate = 20)
       )
 
-      val upperBand = BandedGraph.getUpperBand(taxBands, taxFreeAllowanceBandSum = 3200)
+      val upperBand = BandedGraph.getUpperBand(taxBands, taxFreeAllowanceBandSum = 3200, personalAllowance = None)
 
       upperBand mustBe 32000
     }
@@ -624,7 +639,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
       )
 
-      val upperBand = BandedGraph.getUpperBand(taxBands, taxFreeAllowanceBandSum = 5000)
+      val upperBand = BandedGraph.getUpperBand(taxBands, taxFreeAllowanceBandSum = 5000, personalAllowance = None)
 
       upperBand mustBe 200000
     }

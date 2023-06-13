@@ -132,9 +132,12 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.toString mustNot include(Messages("next.year"))
       cards.toString mustNot include(Messages("check.estimated.income"))
 
-      doc(jrsClaimView) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad}")
+      doc(jrsClaimView) must haveLinkWithUrlWithID(
+        "jrs-link",
+        s"${controllers.routes.JrsClaimsController.onPageLoad()}"
+      )
       assertThrows[NullPointerException](
-        doc(view) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad}")
+        doc(view) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad()}")
       )
     }
 

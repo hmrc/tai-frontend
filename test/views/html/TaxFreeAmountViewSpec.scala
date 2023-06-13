@@ -26,7 +26,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeaderNewFormat(messages("tai.taxCode.preHeader"), "main heading")
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     "display a summary section" which {
       "contains a tax free amount explanation" in {
@@ -132,12 +132,12 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       )
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
         messages("check.your.income.tax.estimate")
       )
       doc must haveLinkElement(
         "taxableIncomeLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary")
       )
     }

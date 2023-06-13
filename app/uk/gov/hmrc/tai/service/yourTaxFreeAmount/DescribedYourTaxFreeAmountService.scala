@@ -73,7 +73,7 @@ class DescribedYourTaxFreeAmountService @Inject() (
     companyCarBenefit: Seq[CompanyCarBenefit],
     employmentIds: Map[Int, String],
     totalTax: TotalTax
-  )(implicit hc: HeaderCarrier, messages: Messages) = {
+  )(implicit messages: Messages) = {
 
     val allowancesDescription =
       for (allowance <- allowancesAndDeductions.allowances)

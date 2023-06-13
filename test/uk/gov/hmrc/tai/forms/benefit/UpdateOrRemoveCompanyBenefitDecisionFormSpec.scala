@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.forms.benefit
 
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{NoIDontGetThisBenefit, YesIGetThisBenefit}
@@ -30,7 +29,7 @@ class UpdateOrRemoveCompanyBenefitDecisionFormSpec extends BaseSpec {
 
   "UpdateOrRemoveCompanyBenefitDecisionFormSpec" must {
     "return no errors with valid 'yes' choice" in {
-      val validYesChoice = Json.obj(choice -> YesIGetThisBenefit)
+      val validYesChoice = Map(choice -> YesIGetThisBenefit)
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -38,7 +37,7 @@ class UpdateOrRemoveCompanyBenefitDecisionFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice" in {
-      val validNoChoice = Json.obj(choice -> NoIDontGetThisBenefit)
+      val validNoChoice = Map(choice -> NoIDontGetThisBenefit)
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -46,7 +45,7 @@ class UpdateOrRemoveCompanyBenefitDecisionFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Json.obj(choice -> "")
+      val invalidChoice = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(Messages("tai.benefits.updateOrRemove.decision.radio.error"))

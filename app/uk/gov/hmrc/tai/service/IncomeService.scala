@@ -109,7 +109,7 @@ class IncomeService @Inject() (
     }
   }
 
-  def cachePaymentForRegularIncome(latestPayment: Option[Payment])(implicit hc: HeaderCarrier): Map[String, String] =
+  def cachePaymentForRegularIncome(latestPayment: Option[Payment]): Map[String, String] =
     latestPayment match {
       case Some(payment) =>
         Map(

@@ -31,7 +31,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
 
   "YourIncomeCalculationView" must {
 
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
 
     behave like pageWithTitle(s"${messages("tai.yourIncome.heading")} - ${messages("tai.service.navTitle")} - GOV.UK")
 

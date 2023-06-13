@@ -35,7 +35,7 @@ import scala.util.Random
 
 class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(carConnector)
 
   "companyCarBenefits" must {

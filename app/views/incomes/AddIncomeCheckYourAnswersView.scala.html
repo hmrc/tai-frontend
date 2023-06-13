@@ -14,20 +14,18 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
-@import includes.cancelLink
-@import includes.checkYourAnswers
-@import includes.forms._
+@import includes.{ptaHeader, cancelLink, checkYourAnswers, submit}
 @import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 @import play.api.mvc.Call
-@import scala.concurrent.ExecutionContext
+
+
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
 @this(main: MainTemplate, form: FormWithCSRF)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None, ec: ExecutionContext)
+@(viewModel: uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, authedUser: Option[controllers.auth.AuthedUser] = None)
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.checkYourAnswers.heading"),
         showGdsVersion = true,
@@ -45,7 +43,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
     </div>
 </div>
 

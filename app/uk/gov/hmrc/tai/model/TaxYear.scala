@@ -17,11 +17,9 @@
 package uk.gov.hmrc.tai.model
 
 import play.api.libs.json._
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.constants.TaiConstants.LondonEuropeTimezone
 
 import java.time.{LocalDate, ZoneId}
-import javax.inject.Inject
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {
   require(year.toString.length == 4, "Invalid year")

@@ -19,9 +19,9 @@ package uk.gov.hmrc.tai.viewModels
 import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.{Ceased, PotentiallyCeased}
-import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, OtherIncome, PensionIncome, TaxedIncome}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, NonTaxCodeIncome, OtherNonTaxCodeIncome, PotentiallyCeased}
+import uk.gov.hmrc.tai.model.domain.{ForeignDividendIncome, JobSeekerAllowanceIncome, NonCodedIncome, OccupationalPension, OtherIncome, PensionIncome, StatePension, TaxedIncome, UntaxedInterestIncome}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, EncodedMinusSign, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
 class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData {
@@ -150,6 +150,37 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
           val pension = taxCodeIncome.copy(componentType = JobSeekerAllowanceIncome)
           val sut = IncomeSourceViewModel(pension, employment)
           sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.income.link")
+        }
+      }
+      "has correct details link" when {
+        val otherIncomesType = OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "OtherIncomes")
+        val employmentPensionsType = OtherNonTaxCodeIncome(OccupationalPension, None, 0, "EmploymentPensions")
+        val taxableStateBenefitsType = OtherNonTaxCodeIncome(StatePension, None, 0, "TaxableStateBenefits")
+        val savingAndInvestmentsType = OtherNonTaxCodeIncome(ForeignDividendIncome, None, 0, "SavingAndInvestments")
+        val genericType = OtherNonTaxCodeIncome(UntaxedInterestIncome, None, 0, "Generic")
+
+        List(
+          (otherIncomesType, OtherIncomeIform),
+          (employmentPensionsType, EmployeePensionIForm),
+          (taxableStateBenefitsType, StateBenefitsIform),
+          (savingAndInvestmentsType, InvestIncomeIform)
+        ) foreach { item =>
+          s"non tax code income source type is ${item._1.description}" in {
+
+            val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(item._1))
+
+            val sut = IncomeSourceViewModel(nonTaxCodeIncome)
+
+            sut.head.detailsLinkUrl mustBe controllers.routes.AuditController.auditLinksToIForm(item._2).url
+          }
+        }
+        s"non tax code income source type is generic" in {
+
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(genericType))
+
+          val sut = IncomeSourceViewModel(nonTaxCodeIncome)
+
+          sut.head.displayDetailsLink mustBe false
         }
       }
     }

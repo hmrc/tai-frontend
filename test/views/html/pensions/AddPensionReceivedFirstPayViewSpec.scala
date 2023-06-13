@@ -35,14 +35,14 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
     )
     behave like haveLinkWithUrlWithID(
       "backLink",
-      controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url
+      controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url
     )
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
     behave like pageWithYesNoRadioButton(
       AddPensionFirstPayChoiceConstants.FirstPayChoice,
       AddPensionFirstPayChoiceConstants.FirstPayChoice + "-2"
     )
-    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "display an error notification" when {
       "no user choice is made" in {

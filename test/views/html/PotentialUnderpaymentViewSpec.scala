@@ -52,7 +52,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
   override def view: HtmlFormat.Appendable = potentialUnderpayment(viewModel)
 
   "Potential Underpayment" must {
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
     behave like pageWithTitle(viewModel.pageTitle)
     behave like pageWithCombinedHeaderNewFormat(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
 
@@ -69,7 +69,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     "display get help link" in {
       document() must haveLinkElement(
         "getHelpLink",
-        controllers.routes.HelpController.helpPage.url,
+        controllers.routes.HelpController.helpPage().url,
         messages("tai.iya.paidTooLittle.get.help.linkText")
       )
     }

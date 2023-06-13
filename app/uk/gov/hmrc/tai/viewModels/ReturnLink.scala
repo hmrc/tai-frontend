@@ -33,7 +33,7 @@ trait ReturnLink {
       case "detailed-income-tax-estimate" => createLink(messages("tai.iya.detailed.paye.return.link"), referer)
       case "your-tax-free-amount"         => createLink(messages("tai.iya.tax.code.change.return.link"), referer)
       case _ =>
-        createLink(messages("return.to.your.income.tax.summary"), routes.TaxAccountSummaryController.onPageLoad.url)
+        createLink(messages("return.to.your.income.tax.summary"), routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
 }

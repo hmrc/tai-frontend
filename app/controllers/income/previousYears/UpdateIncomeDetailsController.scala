@@ -30,10 +30,8 @@ import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
-import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
@@ -63,8 +61,8 @@ class UpdateIncomeDetailsController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url,
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber.url,
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url,
+      controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
 
@@ -78,14 +76,16 @@ class UpdateIncomeDetailsController @Inject() (
   def submitDecision(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev))),
-      {
-        case Some(FormValuesConstants.NoValue) =>
-          Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details))
-        case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
-      }
-    )
+    UpdateIncomeDetailsDecisionForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev))),
+        {
+          case Some(FormValuesConstants.NoValue) =>
+            Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
+          case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
+        }
+      )
   }
 
   def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -105,21 +105,23 @@ class UpdateIncomeDetailsController @Inject() (
 
   def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    UpdateIncomeDetailsForm.form.bindFromRequest.fold(
-      formWithErrors =>
-        journeyCacheService.currentCache map { currentCache =>
-          BadRequest(
-            UpdateIncomeDetails(
-              UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncomeConstants.TaxYearKey).toInt),
-              formWithErrors
+    UpdateIncomeDetailsForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          journeyCacheService.currentCache map { currentCache =>
+            BadRequest(
+              UpdateIncomeDetails(
+                UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncomeConstants.TaxYearKey).toInt),
+                formWithErrors
+              )
             )
-          )
-        },
-      incomeDetails =>
-        journeyCacheService
-          .cache(Map(UpdatePreviousYearsIncomeConstants.IncomeDetailsKey -> incomeDetails.replace("\r", "")))
-          .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber))
-    )
+          },
+        incomeDetails =>
+          journeyCacheService
+            .cache(Map(UpdatePreviousYearsIncomeConstants.IncomeDetailsKey -> incomeDetails.replace("\r", "")))
+            .map(_ => Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()))
+      )
   }
 
   def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -174,7 +176,7 @@ class UpdateIncomeDetailsController @Inject() (
             case _ => mandatoryData ++ Map(UpdatePreviousYearsIncomeConstants.TelephoneNumberKey -> "")
           }
           journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers)
+            Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers())
           }
         }
       )
@@ -207,7 +209,7 @@ class UpdateIncomeDetailsController @Inject() (
             )
           )
 
-        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
   }
 
@@ -230,13 +232,11 @@ class UpdateIncomeDetailsController @Inject() (
       _ <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
       _ <- trackingJourneyCacheService
              .cache(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey, true.toString)
-      _ <- journeyCacheService.flush
-    } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation)
+      _ <- journeyCacheService.flush()
+    } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
   }
 
   def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
     Future.successful(Ok(UpdateIncomeDetailsConfirmation()))
   }
 

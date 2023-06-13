@@ -86,10 +86,6 @@ class EstimatedPayViewSpec extends TaiViewSpec {
 
       "the grossAnnualPay equals the netAnnualPay" in {
 
-        val grossAnnualPay = 20000
-        val netAnnualPay = 20000
-        val grossEqualsNet = true
-
         val grossEqualsNetView = estimatedPay(createViewModel())
 
         doc(grossEqualsNetView) must haveSummaryWithText(messages("tai.estimatedPay.whySame.title"))
@@ -105,7 +101,7 @@ class EstimatedPayViewSpec extends TaiViewSpec {
     "confirm and send" in {
       doc must haveLinkElement(
         "confirmAndSend",
-        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult.url,
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
         messages("tai.estimatedPay.checkTaxEstimate")
       )
     }

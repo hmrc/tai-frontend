@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.forms.constraints
 
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
@@ -27,7 +26,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
 
   "YesNoTextEntryFormSpec" must {
     "return no errors with valid 'yes' choice and text field content" in {
-      val validYesChoice = Json.obj(
+      val validYesChoice = Map(
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> "123456789"
       )
@@ -39,7 +38,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
 
     "return errors" when {
       "phone number is less than 8 digits" in {
-        val invalidPhoneNumberChoice = Json.obj(
+        val invalidPhoneNumberChoice = Map(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "123456"
         )
@@ -50,7 +49,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       }
 
       "phone number contains special characters" in {
-        val invalidPhoneNumberChoice = Json.obj(
+        val invalidPhoneNumberChoice = Map(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "@£-12344556"
         )
@@ -61,7 +60,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       }
 
       "phone number is less than contains alphabets" in {
-        val invalidPhoneNumberChoice = Json.obj(
+        val invalidPhoneNumberChoice = Map(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "abc-abc-abc"
         )
@@ -72,7 +71,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
       }
 
       "phone number is less than contains alphanumeric" in {
-        val invalidPhoneNumberChoice = Json.obj(
+        val invalidPhoneNumberChoice = Map(
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "123-abc-456"
         )
@@ -84,7 +83,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
 
       "phone number is less than more than 30 digits" in {
         val invalidPhoneNumberChoice =
-          Json.obj(
+          Map(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
             FormValuesConstants.YesNoTextEntry -> "123456123456123456123456123456123456"
           )

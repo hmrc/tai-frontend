@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._

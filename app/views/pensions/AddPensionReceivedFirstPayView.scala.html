@@ -14,8 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.cancelLink
-@import includes.forms.submit
+@import includes.{cancelLink, submit}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
@@ -25,7 +24,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+@(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -33,7 +32,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.url),
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url),
     formForErrorSummary = Some(firstPayForm)
 
 ) {
@@ -43,7 +42,7 @@
             @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay, Symbol("data-dynamic-form") -> "true") {
+        @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
@@ -77,7 +76,7 @@
             @submit()
         }
 
-        @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel)
+        @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
     </div>
 </div>
 }

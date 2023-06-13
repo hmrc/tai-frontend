@@ -14,14 +14,11 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{input, inputRadioGroupStyling, submit}
-@import includes.{cancelLink, ptaHeader}
+@import includes.{cancelLink, ptaHeader, submit}
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
 @import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
-
-
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
@@ -30,7 +27,7 @@
 @this(mainTemplate:  MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(payrollNumberForm: Form[AddPensionProviderNumberForm], pensionNumberViewModel: PensionNumberViewModel)(implicit request: Request[_],
-        messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+        messages: Messages, user: controllers.auth.AuthedUser)
 
 @hint = {
 <div>
@@ -45,7 +42,7 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate.url),
+    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url),
     formForErrorSummary = Some(payrollNumberForm)
 
 ) {
@@ -53,7 +50,7 @@
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
 
-            @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber, Symbol("data-dynamic-form") -> "true") {
+            @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true") {
 
                 @if(payrollNumberForm.errors.nonEmpty) {
                     @govukErrorSummary(ErrorSummary(errorList =  payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
@@ -106,7 +103,7 @@
                 @submit()
             }
 
-            @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel)
+            @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel())
 
         </div>
     </div>

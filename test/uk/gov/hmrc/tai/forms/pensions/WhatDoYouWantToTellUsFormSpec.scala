@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.forms.pensions
 
 import play.api.data.FormError
-import play.api.i18n.{I18nSupport, Messages}
-import play.api.libs.json.Json
+import play.api.i18n.Messages
 import utils.BaseSpec
 
 class WhatDoYouWantToTellUsFormSpec extends BaseSpec {
@@ -69,7 +68,7 @@ class WhatDoYouWantToTellUsFormSpec extends BaseSpec {
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Json.obj("pensionDetails" -> "test")
-  private val exceededCharDetails = Json.obj("pensionDetails" -> exceedingCharacters)
-  private val emptyDetails = Json.obj("pensionDetails" -> "")
+  private val validDetails = Map("pensionDetails" -> "test")
+  private val exceededCharDetails = Map("pensionDetails" -> exceedingCharacters)
+  private val emptyDetails = Map("pensionDetails" -> "")
 }

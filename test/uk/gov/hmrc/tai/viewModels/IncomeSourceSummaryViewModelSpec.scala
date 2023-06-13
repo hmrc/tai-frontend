@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import java.time.LocalDate
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}

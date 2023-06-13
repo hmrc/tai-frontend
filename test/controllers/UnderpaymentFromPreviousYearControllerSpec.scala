@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
 
-  private val referralMap = Map("Referer" -> "http://somelocation/somePageResource")
+  private val referralMap = "Referer" -> "http://somelocation/somePageResource"
 
   "UnderPaymentFromPreviousYearController" should {
     "respond with OK" when {

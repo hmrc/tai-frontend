@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.forms.employments
 
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import uk.gov.hmrc.tai.util.constants.{AddEmploymentPayrollNumberConstants, FormValuesConstants}
 import utils.BaseSpec
 
@@ -25,7 +24,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
 
   "AddEmploymentPayrollNumberFormSpec" must {
     "return no errors with valid 'yes' choice and payroll number" in {
-      val validYesChoice = Json.obj(choice -> FormValuesConstants.YesValue, payroll -> "123456")
+      val validYesChoice = Map(choice -> FormValuesConstants.YesValue, payroll -> "123456")
       val validatedForm = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
@@ -35,7 +34,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice and no payroll number" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue, payroll -> "")
+      val validNoChoice = Map(choice -> FormValuesConstants.NoValue, payroll -> "")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -43,7 +42,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice and payroll number as space" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue, payroll -> " ")
+      val validNoChoice = Map(choice -> FormValuesConstants.NoValue, payroll -> " ")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -51,7 +50,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return no errors with valid 'no' choice and payroll number" in {
-      val validNoChoice = Json.obj(choice -> FormValuesConstants.NoValue, payroll -> "123456")
+      val validNoChoice = Map(choice -> FormValuesConstants.NoValue, payroll -> "123456")
       val validatedForm = form.bind(validNoChoice)
 
       validatedForm.errors mustBe empty
@@ -59,7 +58,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Json.obj(choice -> "", payroll -> "")
+      val invalidChoice = Map(choice -> "", payroll -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -69,7 +68,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice with empty values" in {
-      val invalidChoice = Json.obj(payroll -> "")
+      val invalidChoice = Map(payroll -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -79,8 +78,8 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return errors with valid 'yes' choice and no payroll number" in {
-      val invalidYesChoice = Json.obj(choice -> Some(FormValuesConstants.YesValue), payroll -> "")
-      val invalidatedForm = form.bind(invalidYesChoice)
+
+      val invalidatedForm = form.bind(data = Map[String, String](choice -> FormValuesConstants.YesValue, payroll -> ""))
 
       invalidatedForm.errors.head.messages mustBe List(
         Messages("tai.addEmployment.employmentPayrollNumber.error.blank")

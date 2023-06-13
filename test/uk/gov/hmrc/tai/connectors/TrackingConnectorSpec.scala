@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaFutures {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(httpHandler)
 
   "Tracking Url" should {

@@ -296,8 +296,10 @@ class IncomeUpdateCalculatorControllerSpec
             .thenReturn(
               Future.successful(
                 Right(
-                  Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-                  Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+                  (
+                    Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
+                    Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
+                  )
                 )
               )
             )
@@ -396,7 +398,7 @@ class IncomeUpdateCalculatorControllerSpec
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay.url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
 

@@ -16,15 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.FakeTaiPlayApplication
-
 import java.time.LocalDate
-import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
-import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.constants.TaiConstants.EyuDateFormat
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.tai.config.ApplicationConfig
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import utils.BaseSpec

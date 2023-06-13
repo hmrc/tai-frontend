@@ -27,7 +27,7 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
   private val estimatedPayLandingPage = inject[EstimatedPayLandingPageView]
 
   "Estimated Pay Landing Page" should {
-    behave like pageWithBackLink
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
   }
 

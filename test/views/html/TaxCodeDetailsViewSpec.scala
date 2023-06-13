@@ -28,7 +28,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeaderNewFormat(messages("tai.taxCode.preHeader"), "main heading")
-    behave like pageWithBackLinkNew
+    behave like pageWithBackLinkNew()
 
     "display the provided lede message" in {
       doc must haveParagraphWithText("lede message")
@@ -37,17 +37,17 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     "display navigational links to other pages in the service" in {
       doc must haveLinkElement(
         "taxFreeAmountLink",
-        controllers.routes.TaxFreeAmountController.taxFreeAmount.url,
+        controllers.routes.TaxFreeAmountController.taxFreeAmount().url,
         messages("check.your.tax.free.amount")
       )
       doc must haveLinkElement(
         "incomeTaxEstimateLink",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
         messages("check.your.income.tax.estimate")
       )
       doc must haveLinkElement(
         "taxableIncomeLink",
-        controllers.routes.TaxAccountSummaryController.onPageLoad.url,
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         messages("return.to.your.income.tax.summary")
       )
     }

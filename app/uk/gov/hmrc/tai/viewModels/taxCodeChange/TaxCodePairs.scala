@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 class NoMatchPossibleException extends Exception
@@ -56,7 +55,7 @@ object TaxCodePairs {
       def innerCreateAllPairs(
         previous: List[TaxCodeRecord],
         current: List[TaxCodeRecord],
-        acc: List[TaxCodePair] = List.empty
+        acc: List[TaxCodePair]
       ): List[TaxCodePair] =
         (previous, current) match {
           case (Nil, Nil) => acc

@@ -20,7 +20,7 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{MatchResult, Matcher}
 
-import scala.collection.convert.ImplicitConversions.`list asScalaBuffer`
+import scala.jdk.CollectionConverters._
 
 trait JsoupMatchers {
 
@@ -30,6 +30,7 @@ trait JsoupMatchers {
         left
           .getElementsByTag(tag)
           .eachText()
+          .asScala
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -47,6 +48,7 @@ trait JsoupMatchers {
         left
           .select(selector)
           .eachText()
+          .asScala
 
       lazy val elementContents = elements.mkString("\t", "\n\t", "")
 
@@ -63,6 +65,7 @@ trait JsoupMatchers {
       val elements =
         left
           .select(selector)
+          .asScala
 
       MatchResult(
         elements.length == expectedCount,
@@ -82,6 +85,7 @@ trait JsoupMatchers {
         left
           .select(selector)
           .eachAttr(attributeName)
+          .asScala
 
       lazy val attributeContents = attributes.mkString("\t", "\n\t", "")
 
@@ -96,7 +100,7 @@ trait JsoupMatchers {
   class CssSelectorWithClassMatcher(className: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val classes =
-        left.select(selector)
+        left.select(selector).asScala
 
       lazy val classContents = classes.mkString("\t", "\n\t", "")
 
@@ -193,7 +197,7 @@ trait JsoupMatchers {
   class ElementWithAttributeValueMatcher(expectedContent: String, attribute: String) extends Matcher[Element] {
     def apply(left: Element): MatchResult = {
       val attribVal = left.attr(attribute)
-      val attributes = left.attributes().asList().mkString("\t", "\n\t", "")
+      val attributes = left.attributes().asList().asScala.mkString("\t", "\n\t", "")
 
       MatchResult(
         attribVal == expectedContent,
@@ -346,4 +350,7 @@ trait JsoupMatchers {
 
   def havePanelWithHeaderText(expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, ".govuk-panel__title")
+
+  def haveNavMenuItem(expectedText: String) =
+    new CssSelectorWithTextMatcher(expectedText, ".hmrc-account-menu__link")
 }

@@ -27,7 +27,7 @@ import scala.concurrent.{Await, Future}
 
 class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(httpHandler)
 
   "Session Connector" must {
@@ -52,6 +52,7 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
 
     when(httpHandler.deleteFromApi(any())(any(), any()))
       .thenReturn(Future.successful(HttpResponse(200)))
+
   }
 
 }

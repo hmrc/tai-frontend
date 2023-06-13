@@ -14,8 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.forms.submit
-@import includes.cancelLink
+@import includes.{cancelLink, submit}
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
@@ -33,7 +32,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount : GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 
-@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: scala.concurrent.ExecutionContext)
+@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 
 @mainTemplate(
@@ -42,7 +41,7 @@
     authedUser = Some(user),
     backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension.url),
+    backLinkUrl = Some(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url),
     formForErrorSummary = Some(whatDoYouWantToTellUsForm)
 ) {
 
@@ -52,7 +51,7 @@
             @govukErrorSummary(ErrorSummary(errorList = whatDoYouWantToTellUsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs, args=(Symbol("class"), "subsection")) {
+        @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
             @govukCharacterCount(CharacterCount(
                 id = "pensionDetails",
                 name = "pensionDetails",

@@ -19,11 +19,11 @@
 @import uk.gov.hmrc.tai.util.constants.EmploymentDecisionConstants
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import scala.concurrent.ExecutionContext
+
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, ec: ExecutionContext)
+@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
 @main(
@@ -41,7 +41,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = updateRemoveForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove) {
+            @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove()) {
                 <span class="govuk-caption-xl">
                     <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
                     @messages("tai.employment.decision.preHeading")

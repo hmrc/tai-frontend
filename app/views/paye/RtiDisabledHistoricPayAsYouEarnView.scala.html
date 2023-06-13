@@ -26,13 +26,13 @@
 @this(mainTemplate: MainTemplate)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-messages: Messages, ec: scala.concurrent.ExecutionContext)
+messages: Messages)
 
 
 @employmentPairsList = @{viewModel.employments.sliding(2, 2).toList}
 @pensionPairsList = @{viewModel.pensions.sliding(2, 2).toList}
 
-@header = @{
+@header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
@@ -43,13 +43,13 @@ messages: Messages, ec: scala.concurrent.ExecutionContext)
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
-    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url),
+    backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     backLinkId = "returnToChooseTaxYearLink"
 ){
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @header
+        @header()
     </div>
 </div>
 
@@ -118,11 +118,11 @@ messages: Messages, ec: scala.concurrent.ExecutionContext)
 }
 
 @incomeList(incomeSourcePairs: List[Seq[EmploymentViewModel]], incomeType: String) = {
-    @for((pair, pidx) <- incomeSourcePairs zip (Stream from (1,2))) {
+    @for((pair, pidx) <- incomeSourcePairs zip (LazyList.from(1,2))) {
 
         <div class="govuk-grid-row">
 
-            @for((employment, idx) <- pair zip (Stream from pidx)) {
+            @for((employment, idx) <- pair zip (LazyList.from(pidx))) {
 
                 <div id="@incomeType@idx" class="govuk-!-padding-bottom-5 flush--top @if(pair.length==1){govuk-grid-column-full}else{govuk-grid-column-one-half}">
                     <h3 class="govuk-heading-l flush break-word-only">@employment.name</h3>

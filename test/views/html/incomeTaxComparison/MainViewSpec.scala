@@ -118,7 +118,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID(
         "backLinkId",
-        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
       )
       doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
@@ -190,7 +190,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "display a link to return to PAYE Income Tax overview" in {
-      val incomeTaxOverviewURL = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+      val incomeTaxOverviewURL = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
       doc must haveLinkWithUrlWithID("returnToPAYEIncomeOverviewLink", incomeTaxOverviewURL)
       doc must haveLinkWithText(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
     }
@@ -236,10 +236,10 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
   def viewWithMore(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages, ec)
+    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages)
   def viewWithLess(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages, ec)
+    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages)
   def viewWithSame(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages, ec)
+    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages)
   override def view: Html = viewWithSame
 }

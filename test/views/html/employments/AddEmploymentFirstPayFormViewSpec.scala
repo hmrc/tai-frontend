@@ -32,13 +32,13 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
       messages("tai.addEmployment.employmentFirstPay.title", employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like haveBackLinkWithUrl(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url)
+    behave like haveBackLinkWithUrl(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url)
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
     behave like pageWithYesNoRadioButton(
       AddEmploymentFirstPayChoiceConstants.FirstPayChoice,
       AddEmploymentFirstPayChoiceConstants.FirstPayChoice + "-2"
     )
-    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel)
+    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error message with the form inputs" when {
       "no first number choice is selected" in {

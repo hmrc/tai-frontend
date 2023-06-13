@@ -120,7 +120,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
           }
 
         }
-      case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad))
+      case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
       case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome(id)))
     }
 
@@ -137,14 +137,14 @@ class IncomeUpdateHowToUpdateController @Inject() (
           } yield incomeSourceEither match {
             case Right(incomeSource) =>
               BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad)
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         formData =>
           journeyCacheService.cache(UpdateIncomeConstants.HowToUpdateKey, formData.howToUpdate.getOrElse("")).map { _ =>
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
-                Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage)
-              case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit)
+                Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())
+              case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
             }
           }
       )

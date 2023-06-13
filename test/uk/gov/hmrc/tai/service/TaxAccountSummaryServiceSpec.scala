@@ -32,7 +32,7 @@ import scala.concurrent.{Await, Future}
 
 class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     Mockito.reset(taxAccountService)
     Mockito.reset(employmentService)
   }

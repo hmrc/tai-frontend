@@ -21,9 +21,7 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
@@ -109,7 +107,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         DuplicateSubmissionWarningForm.createForm,
         vm,
         employmentID
-      )(request, authedUser, messages, ec)
+      )(request, authedUser, messages)
     }
 
     "redirect to the landing page if there is no new amount entered" in {
@@ -123,7 +121,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       val result = testController.duplicateWarning(employmentID)(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
   }
 
@@ -153,7 +151,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
 
     "redirect to the landing page if there is no new amount entered" in {
@@ -171,7 +169,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       )
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
   }
 
@@ -190,8 +188,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         result rendersTheSameViewAs updateIncomeCYPlus1StartView(employerName, employmentID, isPension)(
           request,
           messages,
-          authedUser,
-          ec
+          authedUser
         )
       }
     }
@@ -345,7 +342,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           AmountComparatorForm
             .createForm()
             .bindFromRequest()
-        )(request, messages, authedUser, ec)
+        )(request, messages, authedUser)
       }
     }
 
@@ -377,8 +374,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, employmentID, currentEstPay)(
             request,
             messages,
-            authedUser,
-            ec
+            authedUser
           )
         }
       }
@@ -412,8 +408,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           result rendersTheSameViewAs updateIncomeCYPlus1SuccessView(employerName, isPension)(
             request,
             messages,
-            authedUser,
-            ec
+            authedUser
           )
         }
       }
@@ -461,8 +456,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,
             messages,
-            authedUser,
-            ec
+            authedUser
           )
 
           val result = controller.confirm(employmentID)(request)
@@ -487,7 +481,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result = controller.confirm(employmentID)(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad.url)
+          redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
         }
       }
     }

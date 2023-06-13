@@ -58,7 +58,7 @@ class ReturnLinkSpec extends BaseSpec {
         val result = returnLink.createReturnLink(referalPath, resourceName = "anything else")
 
         result mustBe link(
-          url = routes.TaxAccountSummaryController.onPageLoad.url,
+          url = routes.TaxAccountSummaryController.onPageLoad().url,
           copy = messagesApi("return.to.your.income.tax.summary")
         )
       }

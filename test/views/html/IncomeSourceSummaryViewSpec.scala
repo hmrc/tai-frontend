@@ -324,7 +324,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     }
 
     "display a link to return to income tax summary" in {
-      doc must haveLinkWithUrlWithID("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+      doc must haveLinkWithUrlWithID(
+        "taxableIncomeLink",
+        controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      )
     }
 
     "display an estimated pay update confirmation banner when the journey has been successfully completed" in {

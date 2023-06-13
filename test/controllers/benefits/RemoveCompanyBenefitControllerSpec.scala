@@ -54,7 +54,7 @@ import scala.concurrent.Future
 class RemoveCompanyBenefitControllerSpec
     extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
 
-  override def beforeEach: Unit =
+  override def beforeEach(): Unit =
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
 
   "stopDate" must {
@@ -137,7 +137,7 @@ class RemoveCompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(
@@ -184,7 +184,7 @@ class RemoveCompanyBenefitControllerSpec
 
         val redirectUrl = redirectLocation(result).getOrElse("")
 
-        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
 
         verify(removeCompanyBenefitJourneyCacheService, times(1))
           .cache(meq(EndCompanyBenefitConstants.BenefitStopDateKey), meq(s"$year-04-06"))(any())
@@ -236,8 +236,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq(employmentName, benefitName, referer),
-              Seq[Option[String]](None)
+              (
+                Seq(employmentName, benefitName, referer),
+                Seq[Option[String]](None)
+              )
             )
           )
         )
@@ -259,8 +261,10 @@ class RemoveCompanyBenefitControllerSpec
       when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
         Future.successful(
           Right(
-            Seq(employmentName, benefitName, referer),
-            Seq[Option[String]](valueOfBenefit)
+            (
+              Seq(employmentName, benefitName, referer),
+              Seq[Option[String]](valueOfBenefit)
+            )
           )
         )
       )
@@ -290,7 +294,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber.url
+        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
       }
     }
 
@@ -403,7 +407,7 @@ class RemoveCompanyBenefitControllerSpec
         doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
       }
 
       "has the yes field and telephone number prepopulated from the cache" in {
@@ -453,7 +457,7 @@ class RemoveCompanyBenefitControllerSpec
         doc must haveBackLinkNew
         doc
           .getElementById("cancelLink")
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
       }
     }
   }
@@ -481,7 +485,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers.url
+        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers().url
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
@@ -505,7 +509,7 @@ class RemoveCompanyBenefitControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers.url
+        ).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers().url
       }
     }
 
@@ -577,8 +581,10 @@ class RemoveCompanyBenefitControllerSpec
       ).thenReturn(
         Future.successful(
           Right(
-            Seq[String]("AwesomeType", "TestCompany", stopDate.toString, "Yes", "Url"),
-            Seq[Option[String]](Some("10000"), Some("123456789"))
+            (
+              Seq[String]("AwesomeType", "TestCompany", stopDate.toString, "Yes", "Url"),
+              Seq[Option[String]](Some("10000"), Some("123456789"))
+            )
           )
         )
       )
@@ -613,7 +619,7 @@ class RemoveCompanyBenefitControllerSpec
 
       val result = sut.checkYourAnswers()(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad.url
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 
     }
 
@@ -630,8 +636,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
-              Seq[Option[String]](Some("1000000"), Some("0123456789"))
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
+                Seq[Option[String]](Some("1000000"), Some("0123456789"))
+              )
             )
           )
         )
@@ -649,7 +657,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -662,8 +672,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
-              Seq[Option[String]](None, None)
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
+                Seq[Option[String]](None, None)
+              )
             )
           )
         )
@@ -681,7 +693,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -693,8 +707,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
-              Seq[Option[String]](Some("1000000"), None)
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "No"),
+                Seq[Option[String]](Some("1000000"), None)
+              )
             )
           )
         )
@@ -712,7 +728,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
 
@@ -725,8 +743,10 @@ class RemoveCompanyBenefitControllerSpec
         when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
           Future.successful(
             Right(
-              Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
-              Seq[Option[String]](None, Some("0123456789"))
+              (
+                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
+                Seq[Option[String]](None, Some("0123456789"))
+              )
             )
           )
         )
@@ -744,7 +764,9 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation.url
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
         verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
     }

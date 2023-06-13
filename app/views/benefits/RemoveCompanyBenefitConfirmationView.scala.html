@@ -16,7 +16,7 @@
 
 @import includes.confirmationSummary
 @import uk.gov.hmrc.tai.model.TaxYear
-@import scala.concurrent.ExecutionContext
+
 
 @import includes.confirmationSummary
 @import views.html.includes.confirmationSuccessBanner
@@ -24,7 +24,7 @@
 
 @this(main: MainTemplate)
 
-@(title: String, summary: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, ec: ExecutionContext)
+@(title: String, summary: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @main(
     title = Messages("tai.income.previousYears.confirmation.heading"),
@@ -43,7 +43,7 @@
         @includes.link(
             id=Some("returnToSummary"),
             copy=Messages("return.to.your.income.tax.summary"),
-            url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
+            url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
             isButton=true,
             linkClasses=Seq("govuk-button", "govuk-!-margin-top-4")
         )

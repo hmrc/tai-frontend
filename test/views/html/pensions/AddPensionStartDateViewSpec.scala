@@ -48,10 +48,10 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
     )
     behave like haveLinkWithUrlWithID(
       "backLink",
-      controllers.pensions.routes.AddPensionProviderController.receivedFirstPay.url
+      controllers.pensions.routes.AddPensionProviderController.receivedFirstPay().url
     )
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/first-payment-date")
-    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel)
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {

@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.forms
 import cats.implicits._
 import play.api.data.FormError
 import play.api.data.format.Formatter
-import play.api.i18n.Messages
 
 import java.time.LocalDate
 
@@ -28,8 +27,7 @@ case class LocalDateFormatter(
   formMonth: String,
   formYear: String,
   errorMsgs: LocalDateFormatter.ErrorMessages
-)(implicit messages: Messages)
-    extends Formatter[LocalDate] {
+) extends Formatter[LocalDate] {
   import errorMsgs._
 
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
@@ -80,9 +78,7 @@ case class LocalDateFormatter(
       }.get)
       .leftMap(_ => List(FormError(key = formDay, message = mustBeValidDay)))
 
-  private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String])(implicit
-    messages: Messages
-  ) = {
+  private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String]) = {
     val dayOrError = extractDay(maybeDay)
     val monthOrError = extractMonth(maybeMonth)
     val yearOrError = extractYear(maybeYear)

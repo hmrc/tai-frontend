@@ -24,7 +24,7 @@
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
 @(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm], id: Int, employerName: String)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.ExecutionContext)
+messages: Messages, user: controllers.auth.AuthedUser)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -41,7 +41,7 @@ messages: Messages, user: controllers.auth.AuthedUser, ec: scala.concurrent.Exec
             @if(howToUpdateForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = howToUpdateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
-            @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate){
+            @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate()){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
