@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Writes}
@@ -25,12 +26,11 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: ExecutionContext)
-    extends HttpErrorFunctions with Logging {
+class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
 
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
-  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+  )(implicit executionContext: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
     EitherT(response.map {
       case Right(response) =>
         Right(response)
@@ -48,7 +48,7 @@ class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: Execution
       Left(UpstreamErrorResponse(exception.message, 502, 502))
     })
 
-  def getFromApiV2(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+  def getFromApiV2(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] = {
     implicit val httpRds = new HttpReads[HttpResponse] {
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
@@ -97,6 +97,7 @@ class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: Execution
   def putToApi[I](url: String, data: I)(implicit
     hc: HeaderCarrier,
     writes: Writes[I],
+    executionContext: ExecutionContext
   ): Future[HttpResponse] =
     http.PUT[I, HttpResponse](url, data).flatMap { httpResponse =>
       httpResponse.status match {
@@ -125,6 +126,7 @@ class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: Execution
   def postToApi[I](url: String, data: I)(implicit
     hc: HeaderCarrier,
     writes: Writes[I],
+    executionContext: ExecutionContext
   ): Future[HttpResponse] =
     http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
       httpResponse.status match {
@@ -141,7 +143,8 @@ class HttpHandler @Inject() (val http: DefaultHttpClient)(implicit ec: Execution
 
   def deleteFromApi(url: String)(implicit
     hc: HeaderCarrier,
-    rds: HttpReads[HttpResponse]
+    rds: HttpReads[HttpResponse],
+    executionContext: ExecutionContext
   ): Future[HttpResponse] =
     http.DELETE[HttpResponse](url) flatMap { httpResponse =>
       httpResponse.status match {

@@ -189,12 +189,14 @@
                 @hmrcAccountMenu(AccountMenu(
                     businessTaxAccount = Some(BusinessTaxAccount()),
                     language = if(messages.lang.code == "cy") Cy else En,
-                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url),
+                    messages = AccountMessages(messageCount = unreadMessageCount)
                 ).withUrlsFromConfig())
             } else {
                 @hmrcAccountMenu(AccountMenu(
                     language = if(messages.lang.code == "cy") Cy else En,
-                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url),
+                    messages = AccountMessages(messageCount = unreadMessageCount)
                 ).withUrlsFromConfig())
             }
         }
