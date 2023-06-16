@@ -74,7 +74,8 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
                 TrustedHelper("Principal", "Attorney", "/", ""),
                 Some("1130492359"),
                 Some("GovernmentGateway"),
-                L250
+                L250,
+                None
               )
             ),
             backLinkContent = None
@@ -100,7 +101,8 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
               TrustedHelper("Principal", "Attorney", "/", ""),
               Some("1130492359"),
               Some("GovernmentGateway"),
-              L250
+              L250,
+              None
             )
           ),
           backLinkContent = None
@@ -121,7 +123,8 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
               None,
               Some("1130492359"),
               Some("GovernmentGateway"),
-              L250
+              L250,
+              None
             )
           ),
           backLinkContent = None

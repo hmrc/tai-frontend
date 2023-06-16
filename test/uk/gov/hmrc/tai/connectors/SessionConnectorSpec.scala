@@ -51,7 +51,8 @@ class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
     override val serviceUrl: String = "localhost"
 
     when(httpHandler.deleteFromApi(any())(any(), any(), any()))
-      .thenReturn(Future.successful(HttpResponse(200, "")))
+      .thenReturn(Future.successful(HttpResponse.apply(200, "")))
+
   }
 
 }

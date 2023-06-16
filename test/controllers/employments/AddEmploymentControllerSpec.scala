@@ -202,7 +202,6 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
                 EmploymentAddDateForm.EmploymentFormYear  -> "2017"
               )
           )
-
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result

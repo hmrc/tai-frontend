@@ -128,6 +128,13 @@
     } yield banner(helper)
 }
 
+@unreadMessageCount = @{
+    authedUser match {
+        case Some(x) => x.messageCount
+        case None => None
+    }
+}
+
 
 @additionalHeadBlock = {
     <meta name="format-detection" content="telephone=no"/>
@@ -159,19 +166,19 @@
 }
 
 @headerBlock = {
-@hmrcHeader(Header(
-    homepageUrl = "http://www.gov.uk",
-    serviceName = pageTitle,
-    serviceUrl = "",
-    language = En,
-    assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
-    displayHmrcBanner = false,
-    inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
-))
+    @hmrcHeader(Header(
+        homepageUrl = "http://www.gov.uk",
+        serviceName = pageTitle,
+        serviceUrl = "",
+        language = En,
+        assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
+        displayHmrcBanner = false,
+        inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
+    ))
 
-@if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
-    @urBanner
-}
+    @if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
+        @urBanner
+    }
 }
 
 
@@ -182,15 +189,18 @@
                 @hmrcAccountMenu(AccountMenu(
                     businessTaxAccount = Some(BusinessTaxAccount()),
                     language = if(messages.lang.code == "cy") Cy else En,
-                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url),
+                    messages = AccountMessages(messageCount = unreadMessageCount)
                 ).withUrlsFromConfig())
             } else {
                 @hmrcAccountMenu(AccountMenu(
                     language = if(messages.lang.code == "cy") Cy else En,
-                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
+                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url),
+                    messages = AccountMessages(messageCount = unreadMessageCount)
                 ).withUrlsFromConfig())
             }
         }
+
     }
 
 @if(beforeContentBlock.isDefined) {

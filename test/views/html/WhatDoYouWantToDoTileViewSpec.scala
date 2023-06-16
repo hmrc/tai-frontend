@@ -16,8 +16,12 @@
 
 package views.html
 
+import builders.UserBuilder
+import controllers.auth.AuthedUser
+import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
+import play.api.test.Helpers.contentAsString
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
@@ -26,6 +30,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 
 import java.time.LocalDate
+import scala.util.Random
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
@@ -164,6 +169,17 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       cards.toString mustNot include(
         Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory)
       )
+    }
+
+    "show the unread messages indicator when user has unread messages" in {
+
+      val messageCount = Random.nextInt(100) + 1
+
+      implicit val authedUser: AuthedUser = UserBuilder().copy(messageCount = Some(messageCount))
+
+      val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
+
+      view.body must include(s"""<span class="hmrc-notification-badge">$messageCount</span>""")
     }
   }
 

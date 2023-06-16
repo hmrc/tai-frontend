@@ -432,7 +432,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     "for valid user" must {
       "that has entered an estimated amount" must {
         "respond with and ok and the view" in {
-          val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+          val request = RequestBuilder.buildFakeGetRequestWithAuth()
           val controller = createTestIncomeController()
 
           val newAmount = newEstPay
@@ -469,7 +469,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       "that did not enter an estimated amount" must {
         "redirect to the start of the journey" in {
-          val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+          val request = RequestBuilder.buildFakeGetRequestWithAuth()
           val controller = createTestIncomeController()
 
           when(
@@ -490,7 +490,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   "handleConfirm" must {
     "for valid user" must {
       "for successful submit, redirect user to success page" in {
-        val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        val request = RequestBuilder.buildFakeGetRequestWithAuth()
         val controller = createTestIncomeController()
 
         when(
@@ -506,7 +506,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       }
 
       "for unsuccessful submit, return an Internal Server error Response" in {
-        val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+        val request = RequestBuilder.buildFakeGetRequestWithAuth()
         val controller = createTestIncomeController()
 
         when(
