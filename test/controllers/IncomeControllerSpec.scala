@@ -174,15 +174,14 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
-        val formData = Json.toJson(editIncomeForm)
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
           testController.editRegularIncome(empId = employment.sequenceNumber)(
-            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)
+            RequestBuilder
+              .buildFakeRequestWithAuth("POST")
           )
 
         status(result) mustBe SEE_OTHER
@@ -190,7 +189,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
           .confirmRegularIncome(empId = employment.sequenceNumber)
           .url
 
-        verify(journeyCacheService).cache(meq(UpdateIncomeConstants.NewAmountKey), meq("200"))(any())
+        verify(journeyCacheService).cache(meq(UpdateIncomeConstants.NewAmountKey), meq("1675"))(any())
       }
     }
 

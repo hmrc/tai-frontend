@@ -86,27 +86,6 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     }
   }
 
-//  "mandatoryValueAs" must {
-//
-//    "return the requested values where present" in {
-//      when(httpHandler.getFromApiV2(any())(any())).thenReturn(Future.successful(JsString("true")))
-//      Await
-//        .result(
-//          sut.mandatoryJourneyValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean),
-//          5 seconds) mustBe Right(true)
-//    }
-//
-//    "throw a runtime exception when the requested value is not found" in {
-//      when(httpHandler.getFromApiV2(any())(any()))
-//        .thenReturn(Future.failed(new NotFoundException("key wasn't found in cache")))
-//
-//      val expectedMsg = "The mandatory value under key 'key1' was not found in the journey cache for 'journey1'"
-//      val thrown2 = the[RuntimeException] thrownBy Await
-//        .result(sut.mandatoryJourneyValueAs[Int](journeyName, "key1", string => string.toInt), 5 seconds)
-//      thrown2.getMessage mustBe expectedMsg
-//    }
-//  }
-
   "mandatoryJourneyValueAs" must {
 
     "return the requested values where present" in {
@@ -146,8 +125,9 @@ class JourneyCacheConnectorSpec extends BaseSpec {
   "flush" must {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(journeyName)}"
+
       when(httpHandler.deleteFromApi(meq(url))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+        .thenReturn(Future.successful(HttpResponse.apply(NO_CONTENT, "")))
 
       val result = Await.result(sut.flush(journeyName), 5 seconds)
       result mustBe Done
@@ -157,8 +137,9 @@ class JourneyCacheConnectorSpec extends BaseSpec {
   "flushWithEmpId" must {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(s"$journeyName/1")}"
+
       when(httpHandler.deleteFromApi(meq(url))(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+        .thenReturn(Future.successful(HttpResponse.apply(NO_CONTENT, "")))
 
       val result = Await.result(sut.flushWithEmpId(journeyName, 1), 5 seconds)
       result mustBe Done

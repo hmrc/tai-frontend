@@ -120,9 +120,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
+        val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> "No")
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 

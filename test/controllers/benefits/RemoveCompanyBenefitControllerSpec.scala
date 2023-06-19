@@ -25,7 +25,6 @@ import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -193,11 +192,6 @@ class RemoveCompanyBenefitControllerSpec
 
     "return Bad Request" when {
       "the form submission is having blank value" in {
-        val formData = Json.obj(
-          RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
-          RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
-          RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
-        )
 
         val SUT = createSUT
         when(removeCompanyBenefitJourneyCacheService.currentCache(any()))
@@ -214,7 +208,11 @@ class RemoveCompanyBenefitControllerSpec
         val result = SUT.submitStopDate(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
-            .withJsonBody(formData)
+            .withFormUrlEncodedBody(
+              RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
+              RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
+              RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""
+            )
         )
 
         status(result) mustBe BAD_REQUEST

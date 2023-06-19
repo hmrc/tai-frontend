@@ -39,6 +39,7 @@
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import views.html.includes.attorneyBanner
 @import controllers.auth.AuthenticatedRequest
+@import uk.gov.hmrc.webchat.client.WebChatClient
 
 @this(
         govukTemplate: GovukTemplate,
@@ -62,7 +63,8 @@
         appConfig: ApplicationConfig,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
-        banner: attorneyBanner
+        banner: attorneyBanner,
+        webChatClient: WebChatClient
 )(implicit accountMenuConfig: AccountMenuConfig)
 
 
@@ -111,6 +113,13 @@
     } yield banner(helper)
 }
 
+@unreadMessageCount = @{
+    authedUser match {
+        case Some(x) => x.messageCount
+        case None => None
+    }
+}
+
 
 @additionalHeadBlock = {
     <meta name="format-detection" content="telephone=no"/>
@@ -142,39 +151,42 @@
 }
 
 @headerBlock = {
-@hmrcHeader(Header(
-    homepageUrl = "http://www.gov.uk",
-    serviceName = pageTitle,
-    serviceUrl = "",
-    language = En,
-    assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
-    displayHmrcBanner = false,
-    inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
-))
+    @hmrcHeader(Header(
+        homepageUrl = "http://www.gov.uk",
+        serviceName = pageTitle,
+        serviceUrl = "",
+        language = En,
+        assetsPath = uk.gov.hmrc.hmrcfrontend.controllers.routes.Assets.at("govuk/images").url,
+        displayHmrcBanner = false,
+        inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
+    ))
 
-@if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
-    @urBanner
-}
+    @if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
+        @urBanner
+    }
 }
 
 
 @beforeContent = {
+    @authedUser.map { auth =>
+        @if(showPtaAccountNav) {
+            @if(isGG && isSa && !auth.trustedHelper.isDefined) {
+                @hmrcAccountMenu(AccountMenu(
+                    businessTaxAccount = Some(BusinessTaxAccount()),
+                    language = if(messages.lang.code == "cy") Cy else En,
+                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url),
+                    messages = AccountMessages(messageCount = unreadMessageCount)
+                ).withUrlsFromConfig())
+            } else {
+                @hmrcAccountMenu(AccountMenu(
+                    language = if(messages.lang.code == "cy") Cy else En,
+                    signOut = SignOut(href = routes.ServiceController.serviceSignout().url),
+                    messages = AccountMessages(messageCount = unreadMessageCount)
+                ).withUrlsFromConfig())
+            }
+        }
 
-@if(showPtaAccountNav) {
-    @if(isGG && isSa) {
-        @hmrcAccountMenu(AccountMenu(
-            businessTaxAccount = Some(BusinessTaxAccount()),
-            language = if(messages.lang.code == "cy") Cy else En,
-            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-        ).withUrlsFromConfig())
-
-    } else {
-        @hmrcAccountMenu(AccountMenu(
-            language = if(messages.lang.code == "cy") Cy else En,
-            signOut = SignOut(href = routes.ServiceController.serviceSignout().url)
-        ).withUrlsFromConfig())
     }
-}
 
 @if(beforeContentBlock.isDefined) {
     @beforeContentBlock
@@ -269,6 +281,10 @@
                 htmlElem.setAttribute("lang", lang);
             }
     </script>
+    @if(appConfig.webChatIsEnabled) {
+      @{webChatClient.loadRequiredElements()}
+      @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")}
+    }
 }
 
 
