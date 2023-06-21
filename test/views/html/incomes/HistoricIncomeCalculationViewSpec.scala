@@ -38,7 +38,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
   "The income calculation previous year page" should {
     behave like pageWithTitle(messages("tai.yourIncome.heading"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.yourIncome.preHeading"),
       messages("tai.income.calculation.TaxableIncomeDetails", "Foo")
     )

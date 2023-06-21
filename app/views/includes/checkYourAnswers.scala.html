@@ -20,16 +20,16 @@
 
 @if(title.isDefined) { <h2 class="govuk-heading-m">@title.get.replace("&nbsp;", "\u00A0")</h2> }
 
-<dl class="govuk-summary-list govuk-check-your-answers @if(longQuestions) {cya-questions-long} else {cya-questions-short}" id="check-answers-summary">
+<dl class="govuk-summary-list" id="check-answers-summary">
     @for((line, idx) <- confirmationLines zip (LazyList.from(1))) {
         <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key cya-question" id="confirmation-line-@{idx.toString}-question">
+            <dt class="govuk-summary-list__key" id="confirmation-line-@{idx.toString}-question">
                 @line.question
             </dt>
-            <dd class="govuk-summary-list__value cya-answer" id="confirmation-line-@{idx.toString}-answer">
+            <dd class="govuk-summary-list__value" id="confirmation-line-@{idx.toString}-answer">
                 @line.answer
             </dd>
-            <dd class="govuk-summary-list__actions cya-change">
+            <dd class="govuk-summary-list__actions">
                 @includes.link(
                     id = Some("confirmation-line-" + idx.toString + "-change-link"),
                     url = line.changeUrl + "?edit=true",

@@ -16,7 +16,6 @@
 
 package views.html
 
-import com.sun.tools.javac.api.ClientCodeWrapper.Trusted
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

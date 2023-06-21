@@ -37,7 +37,6 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     ptaHeader(
         mainHeadingText = Messages("tai.estimatedIncome.title"),
         preHeadingText = taxYearRangeString,
-        showGdsVersion = true,
         preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading"),
         maybeUserName=Some(request.fullName)
     )

@@ -29,7 +29,6 @@
 
 @header() = @{
   ptaHeader(
-    showGdsVersion = true,
     mainHeadingText = Messages("tai.checkYourAnswers.title"),
     preHeadingText = Messages("tai.benefits.ended.journey.preHeader"))
 }
@@ -72,7 +71,7 @@
             @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
         }
 
-        @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url)))
+        @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
     </div>
 </div>
 }

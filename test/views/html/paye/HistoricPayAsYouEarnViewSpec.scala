@@ -47,7 +47,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "historicPayAsYouEarn view" should {
 
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       authRequest.fullName,
       messages(
         "tai.paye.heading",

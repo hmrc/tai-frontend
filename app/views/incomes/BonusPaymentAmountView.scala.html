@@ -29,8 +29,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
-@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages,
-        user: controllers.auth.AuthedUser)
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @hint = {
     <p>@messages("tai.bonusPaymentsAmount.hint")</p>

@@ -35,7 +35,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
     behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
 
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRange(1)).replaceU00A0
     )

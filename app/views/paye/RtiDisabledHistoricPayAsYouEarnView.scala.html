@@ -35,8 +35,8 @@ messages: Messages)
 @header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-        preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
-        showGdsVersion = true)
+        preHeadingText = messages("tai.paye.lastTaxYear.preHeading")
+    )
 }
 
 @mainTemplate(

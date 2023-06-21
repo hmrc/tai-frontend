@@ -87,7 +87,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(Messages("taxCode.change.journey.preHeading"))
 
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
       mainHeaderText = Messages(
         "taxCode.change.yourTaxCodeChanged.h1",

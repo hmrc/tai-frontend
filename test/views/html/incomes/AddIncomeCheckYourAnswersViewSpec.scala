@@ -30,7 +30,7 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
 
-    behave like pageWithCombinedHeaderNewFormat(preHeading, messages("tai.checkYourAnswers.heading"))
+    behave like pageWithCombinedHeaderNewFormatNew(preHeading, messages("tai.checkYourAnswers.heading"))
 
     behave like pageWithButtonForm("/fake/submission/url", messages("tai.confirmAndSend"))
 

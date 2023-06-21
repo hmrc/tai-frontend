@@ -33,7 +33,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("main heading"))
 
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       "pre heading",
       "main heading",
       Some(messages("tai.ptaHeader.accessible.preHeading"))

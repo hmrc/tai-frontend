@@ -40,7 +40,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
     behave like pageWithBackLink()
 
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       Messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start),

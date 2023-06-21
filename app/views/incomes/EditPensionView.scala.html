@@ -32,8 +32,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
     ptaHeader(
         formForErrorSummary = Some(income),
         mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
-        preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse("")),
-        showGdsVersion = true,
+        preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse(""))
     )
 }
 

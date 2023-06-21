@@ -31,7 +31,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle("title")
 
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       preHeaderAnnouncementText = Some("This section is the income tax summary for"),
       preHeaderText = "Firstname Surname",
       mainHeaderText = "main heading"

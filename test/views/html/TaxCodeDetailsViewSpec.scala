@@ -27,7 +27,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
 
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
-    behave like pageWithCombinedHeaderNewFormat(messages("tai.taxCode.preHeader"), "main heading")
+    behave like pageWithCombinedHeaderNewFormatNew(messages("tai.taxCode.preHeader"), "main heading")
     behave like pageWithBackLinkNew()
 
     "display the provided lede message" in {

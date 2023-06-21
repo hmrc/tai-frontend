@@ -34,7 +34,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(Messages("taxCode.change.yourTaxFreeAmount.title"))
 
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       Messages("taxCode.change.journey.preHeading"),
       Messages("taxCode.change.yourTaxFreeAmount.title")
     )

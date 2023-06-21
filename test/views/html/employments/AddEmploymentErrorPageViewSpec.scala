@@ -23,7 +23,7 @@ import controllers.routes
 class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
   "Display error page when employment cannot be added" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentErrorPage.title"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("add.missing.employment"),
       messages("tai.addEmployment.employmentErrorPage.title")
     )

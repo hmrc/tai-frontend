@@ -53,7 +53,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.incomes.edit.preHeading", employer.name),
       messages("tai.checkYourAnswers.heading")
     )

@@ -47,7 +47,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "RtiDisabledHistoricPayAsYouEarn view" should {
 
-    behave like pageWithCombinedHeaderNewFormat(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.paye.lastTaxYear.preHeading"),
       messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)).replaceU00A0
     )

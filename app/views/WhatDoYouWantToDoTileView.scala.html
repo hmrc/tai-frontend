@@ -65,9 +65,12 @@
         </div>
     }
 
-    <header class="page-header">
-        <span class="govuk-caption-xl carry-over">@request.fullName</span>
-        <h1 class="govuk-heading-xl" id="whatDoYouWantToDoTitle">@messages("your.paye.income.tax.overview")</h1>
+    <header class="page-header" id="whatDoYouWantToDoTitle">
+        <h2 class="govuk-caption-l hmrc-caption-l carry-over">
+            @request.fullName
+        </h2>
+        <h1 class="govuk-heading-xl">@messages("your.paye.income.tax.overview")
+        </h1>
     </header>
 
     <div class="govuk-grid-row">

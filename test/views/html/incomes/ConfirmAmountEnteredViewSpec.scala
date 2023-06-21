@@ -36,7 +36,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income Irregular Hours view" should {
     behave like haveBackLinkWithUrl("backUrl")
     behave like pageWithTitle(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.payPeriod.preHeading", employerName),
       messages("tai.incomes.confirm.save.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
     )
