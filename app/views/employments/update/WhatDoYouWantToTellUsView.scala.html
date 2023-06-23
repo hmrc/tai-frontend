@@ -56,16 +56,16 @@
                 @govukErrorSummary(ErrorSummary(errorList = updateEmploymentDetailsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")</h2>
+
             @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
                 @govukCharacterCount(uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount(
                     id = "employmentDetails",
                     name = "employmentDetails",
-                    label = (
-                        HmrcPageHeadingLabel(
-                            content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName)),
-                            caption = HmrcSectionCaption(Text(messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"))),
-                            classes = "govuk-label--xl carry-over"
-                        )
+                    label = Label(
+                        isPageHeading = true,
+                        classes = "govuk-label--xl carry-over",
+                        content = Text(Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName))
                     ),
                     value = updateEmploymentDetailsForm.data.get("employmentDetails"),
                     maxLength = Some(UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),

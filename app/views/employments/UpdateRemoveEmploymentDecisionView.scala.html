@@ -41,12 +41,9 @@
                 @govukErrorSummary(ErrorSummary(errorList = updateRemoveForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove()) {
-                <span class="govuk-caption-xl">
-                    <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading")</span>
-                    @messages("tai.employment.decision.preHeading")
-                </span>
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.employment.decision.preHeading")</h2>
 
+            @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove()) {
                 @govukRadios(Radios(
                     fieldset = Some(Fieldset(
                         legend = Some(Legend(
@@ -61,10 +58,12 @@
                     items = Seq(
                         RadioItem(
                             content = Text(messages("tai.employment.decision.radio1")),
+                            checked = updateRemoveForm(EmploymentDecisionConstants.EmploymentDecision).value.contains("Yes"),
                             value = Some("Yes")
                         ),
                         RadioItem(
                             content = Text(messages("tai.employment.decision.radio2")),
+                            checked = updateRemoveForm.data.get(EmploymentDecisionConstants.EmploymentDecision).exists(_ == "No"),
                             value = Some("No")
                         )
                     )
