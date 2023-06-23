@@ -58,7 +58,7 @@
                     items = Seq(
                         RadioItem(
                             content = Text(messages("tai.employment.decision.radio1")),
-                            checked = updateRemoveForm(EmploymentDecisionConstants.EmploymentDecision).value.contains("Yes"),
+                            checked = updateRemoveForm.data.get(EmploymentDecisionConstants.EmploymentDecision).exists(_ == "Yes"),
                             value = Some("Yes")
                         ),
                         RadioItem(
