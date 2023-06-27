@@ -55,14 +55,15 @@
                @govukErrorSummary(ErrorSummary(errorList = workingHoursForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.workingHours.preHeading", employerName)</h2>
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.handleWorkingHours()){
                 @govukRadios(Radios(
                     fieldset = Some(
                         Fieldset(
                             legend = Some(
-                                HmrcPageHeadingLegend(
+                                Legend(
                                     content = Text(Messages("tai.workingHours.heading", employerName)),
-                                    caption = HmrcSectionCaption(Text(Messages("tai.workingHours.preHeading", employerName))),
+                                    isPageHeading = true,
                                     classes = "govuk-fieldset__legend--xl carry-over"
                                 )
                             )

@@ -45,14 +45,15 @@ messages: Messages, user: controllers.auth.AuthedUser)
                 @govukErrorSummary(ErrorSummary(errorList = payslipDeductionsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.payslipDeductions.preHeading", employer.name)</h2>
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions()){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                                HmrcPageHeadingLegend(
+                                Legend(
                                     content = Text(messages("tai.payslipDeductions.heading")),
-                                    caption = HmrcSectionCaption(Text(messages("tai.payslipDeductions.preHeading", employer.name))),
+                                    isPageHeading = true,
                                     classes = "govuk-fieldset__legend--xl carry-over")
                         )
                         )

@@ -32,7 +32,7 @@ class HowToUpdateViewSpec extends TaiViewSpec {
         .url
     )
     behave like pageWithTitle(messages("tai.howToUpdate.title"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.howToUpdate.preHeading", employerName),
       messages("tai.howToUpdate.heading", employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
