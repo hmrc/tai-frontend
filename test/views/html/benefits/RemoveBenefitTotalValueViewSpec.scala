@@ -29,7 +29,7 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
 
   "removeBenefitTotalValue" must {
     behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       Messages("tai.benefits.ended.journey.preHeader"),
       Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

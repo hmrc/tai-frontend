@@ -67,14 +67,17 @@
                 @govukErrorSummary(ErrorSummary(errorList = companyBenefitTotalValueForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
+
             @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
                 @govukInput(Input(
                     id = "totalValue",
                     name = "totalValue",
                     value = companyBenefitTotalValueForm.data.get("totalValue"),
-                    label = HmrcPageHeadingLabel(
+                    label = Label(
                         content = Text(Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName)),
-                        caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader")))
+                        classes = "govuk-label--xl",
+                        isPageHeading = true
                         ),
                     hint = Some(
                         Hint(content = HtmlContent(hint))

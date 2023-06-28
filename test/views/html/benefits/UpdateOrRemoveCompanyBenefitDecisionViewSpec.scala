@@ -29,7 +29,7 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
 
   "decision" should {
     behave like pageWithTitle(messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.benefits.updateOrRemove.journey.preHeader"),
       messages("tai.benefits.updateOrRemove.decision.heading", benefitType, employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

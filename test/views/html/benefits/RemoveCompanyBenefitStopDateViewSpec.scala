@@ -34,7 +34,7 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
   "stop date" should {
 
     behave like pageWithTitle(messages("tai.benefits.ended.stopDate.heading", benefitType, empName))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.benefits.ended.journey.preHeader"),
       messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
