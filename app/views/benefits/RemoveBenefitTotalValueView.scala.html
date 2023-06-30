@@ -45,7 +45,7 @@
         content = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.getYear.toString,TaxYear().end.getYear.toString, Dates.formatDate(TaxYear().end)))
     ))
 
-    <div id="valueOfBenefit">
+    <div id="valueOfBenefit" class="govuk-!-margin-top-3">
         <p class="govuk-body govuk-!-font-weight-bold">@Messages("tai.remove.company.benefit.total.value.value")</p>
         <span class="govuk-visually-hidden">@Messages("tai.inPounds")</span>
         <p>@Messages("tai.remove.company.benefit.total.value.hint")</p>
