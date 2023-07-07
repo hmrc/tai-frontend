@@ -27,12 +27,6 @@ messages: Messages, user: controllers.auth.AuthedUser)
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.link
 
-@header() = @{
-    ptaHeader(
-        mainHeadingText = messages("tai.incomes.landing.Heading", incomeName),
-        preHeadingText = ""
-    )
-}
 
 @main(
     title = messages("tai.incomes.landing.title", incomeName),
@@ -44,7 +38,8 @@ messages: Messages, user: controllers.auth.AuthedUser)
 ){
     <div class="govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
-            @header()
+            <h1 class="govuk-heading-xl carry-over">@messages("tai.incomes.landing.Heading", incomeName)
+            </h1>
         </div>
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">@messages("tai.incomes.landing.intro")</p>

@@ -43,14 +43,15 @@
                 @govukErrorSummary(ErrorSummary(errorList = payPeriodForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.payPeriod.preHeading", employerName)</h2>
             @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod(), Symbol("data-dynamic-form") -> "true"){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                            HmrcPageHeadingLegend(
+                            Legend(
                                 content = Text(Messages("tai.payPeriod.heading", employerName)),
-                                caption = HmrcSectionCaption(Text(Messages("tai.payPeriod.preHeading", employerName))),
+                                isPageHeading = true,
                                 classes = "govuk-fieldset__legend--xl carry-over")
                             )
                         )

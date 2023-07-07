@@ -140,7 +140,6 @@
             </p>
             } else {
                 <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.estimatedTaxableIncome)</span>
-                <span class="govuk-visually-hidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.with.amount", pounds(model.estimatedTaxableIncome)))</span>
             }
 
                 <p>
@@ -157,7 +156,6 @@
                 @if(model.rtiAvailable) {
                         <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                         <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@pounds(model.incomeReceivedToDate)</span>
-                        <span class="govuk-visually-hidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
 
                          <p>
                              @link(
@@ -179,7 +177,6 @@
         <div class="govuk-grid-column-one-half">
             <h2 class="govuk-heading-m flush--top">@messages("tai.taxCode")</h2>
             <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.taxCode</span>
-            <span class="govuk-visually-hidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
             <p>
                 @link(
                     id=Some("understandTaxCode"),
@@ -203,11 +200,9 @@
             @if(model.isPension){
             <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
-            <p class="govuk-visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
             } else {
             <h2 class="govuk-heading-m flush--top">@messages("tai.payRollNumber")</h2>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">@model.pensionOrPayrollNumber</p>
-            <p class="govuk-visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
             }
         </div>
     </div>
@@ -229,13 +224,11 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell  xgovuk-!-width-one-half ">
                                 <div id="companyBenefitTerm@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
-                                    <span class="govuk-visually-hidden">@messages("tai.income.details.benefit.name.announce") </span>
                                     @benefit.name
                                 </div>
                             </td>
                             <td class="govuk-table__cell govuk-table__cell--numeric" >
                                 <div id="companyBenefitDescription@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
-                                    <span class="govuk-visually-hidden">@Html(messages("tai.income.details.benefit.amount.announce", withPoundPrefixAndSign(MoneyPounds(benefit.amount, 0))))</span>
                                     <span aria-hidden="true">@pounds(benefit.amount)</span>
                                 </div>
                             </td>

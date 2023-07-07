@@ -42,11 +42,8 @@
             @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        <span class="govuk-caption-xl carry-over">
-            <span class="visuallyhidden govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>
-        @Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</span>
-
-        <h1 class="govuk-heading-xl">@Messages(viewModel.title)</h1>
+        <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</h2>
+        <h1 class="govuk-heading-xl carry-over">@Messages(viewModel.title)</h1>
 
         <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
         <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>
@@ -64,7 +61,7 @@
                     content = Text("£")
                     )),
                     label = Label(
-                    isPageHeading = true,
+                    isPageHeading = false,
                     classes = "govuk-visually-hidden",
                     content = Text(Messages(viewModel.title))
                     )

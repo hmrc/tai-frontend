@@ -39,7 +39,7 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec {
 
   "Taxable Pay slip amount view" should {
     behave like pageWithTitle(messages("tai.taxablePayslip.title.month", Monthly))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.howToUpdate.preHeading", employerName),
       messages("tai.taxablePayslip.title.month", Monthly)
     )

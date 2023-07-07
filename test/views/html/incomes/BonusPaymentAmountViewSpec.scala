@@ -35,12 +35,13 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
   "Bonus payments amount view" should {
     behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.bonusPaymentsAmount.preHeading", employer.name),
       messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited).replaceAll(
         "\u00A0",
         " "
-      ) + " " + "This section is " + messages("tai.bonusPaymentsAmount.preHeading", employer.name)
+      ),
+      Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
     behave like pageWithTitle(
