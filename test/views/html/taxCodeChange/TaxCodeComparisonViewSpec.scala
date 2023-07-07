@@ -66,19 +66,20 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     )
     doc(view).toString must include(record.taxCode)
 
-    doc must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
+    doc must haveClassWithText(
+      Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode),
+      "govuk-details__summary"
+    )
 
     for (
       explanation <- TaxCodeChangeViewModel
                        .getTaxCodeExplanations(record, Map[String, BigDecimal](), "current", appConfig)
                        .descriptionItems
     ) {
-      doc must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
+
       doc must haveClassWithText(explanation._1, "tax-code-change__part")
 
       doc must haveClassWithText(explanation._2, "tax-code-change__part-definition")
-      doc must haveClassWithText(Messages("tai.taxCode.part.announce", explanation._1), "govuk-visually-hidden")
-      doc must haveClassWithText(Messages("tai.taxCode.definition.announce"), "govuk-visually-hidden")
     }
   }
 
@@ -122,21 +123,15 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     "display the pension number" when {
       "a pension" in {
-        val expectedText = Messages("tai.pensionNumber") + ": 1234 " + Messages(
-          "tai.pension.income.details.pensionNumber.screenReader",
-          "1234"
-        )
-        doc must haveClassWithText(expectedText, "tax-code-change__payroll")
+        val expectedText = Messages("tai.pensionNumber") + ": 1234"
+        doc must haveClassWithText(expectedText, "tax-code-change__payroll-number")
       }
     }
 
     "display the employment number" when {
       "a employment" in {
-        val expectedText = Messages("tai.payRollNumber") + ": Payroll Number " + Messages(
-          "tai.employment.income.details.payrollNumber.screenReader",
-          "Payroll Number"
-        )
-        doc must haveClassWithText(expectedText, "tax-code-change__payroll")
+        val expectedText = Messages("tai.payRollNumber") + ": " + "Payroll Number"
+        doc must haveClassWithText(expectedText, "tax-code-change__payroll-number")
       }
     }
 
