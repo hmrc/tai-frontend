@@ -44,14 +44,17 @@
             @govukErrorSummary(ErrorSummary(errorList = viewModel.decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.updateOrRemove.journey.preHeader")</h2>
+
         @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
                         legend = Some(
-                        HmrcPageHeadingLegend(
+                        Legend(
                             content = Text(Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName, viewModel.employerName)),
-                            caption = HmrcSectionCaption(Text(Messages("tai.benefits.updateOrRemove.journey.preHeader"))))
+                            classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                            isPageHeading = true)
                         )
                     )
                 ),

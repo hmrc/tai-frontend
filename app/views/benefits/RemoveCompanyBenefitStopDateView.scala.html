@@ -44,10 +44,13 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
-        @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
             @if(stopDateForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
+
+            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
 
             @govukDateInput(DateInput(
                 id = "benefitEndDateForm",
@@ -75,9 +78,9 @@
                 ),
                 errorMessage = stopDateForm.errors.asTextErrorMessages.headOption,
                 fieldset =  Some(Fieldset(
-                    legend = Some(HmrcPageHeadingLegend(
+                    legend = Some(Legend(
                         content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
-                        caption = HmrcSectionCaption(Text(Messages("tai.benefits.ended.journey.preHeader"))),
+                        isPageHeading = true,
                         classes = "govuk-fieldset__legend--xl carry-over")
                     )))),
             )
