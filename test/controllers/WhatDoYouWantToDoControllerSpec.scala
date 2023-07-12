@@ -54,7 +54,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeNotChanged: HasTaxCodeChanged =
     HasTaxCodeChanged(changed = false, Some(TaxCodeMismatchFactory.matchedTaxCode))
   val taxCodeChanged: HasTaxCodeChanged =
-    HasTaxCodeChanged(changed = true, Some(TaxCodeMismatchFactory.mismatchedTaxCode))
+    HasTaxCodeChanged(changed = true, Some(TaxCodeMismatchFactory.mismatchedTaxCodeComplex))
   val taxCodeIncomes = Seq(
     TaxCodeIncome(
       EmploymentIncome,
@@ -562,19 +562,31 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
           HasTaxCodeChanged(changed = true, Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq.empty)))
         ) mustEqual false
       }
+
+      "the backend has flagged a TaxCodeMismatch but there is only 1 confirmed tax code" in {
+        controller.retrieveTaxCodeChange(
+          HasTaxCodeChanged(changed = true, Some(TaxCodeMismatch(mismatch = true, Seq("taxcode"), Seq("taxcode"))))
+        ) mustEqual false
+      }
     }
 
     "return true" when {
 
       "there has been a tax code change and there is a mismatch" in {
         controller.retrieveTaxCodeChange(
-          HasTaxCodeChanged(changed = true, Some(TaxCodeMismatch(mismatch = true, Seq("taxCode"), Seq("taxCode"))))
+          HasTaxCodeChanged(
+            changed = true,
+            Some(TaxCodeMismatch(mismatch = true, Seq("taxCode"), Seq("taxCode", "taxcode2")))
+          )
         ) mustEqual true
       }
 
       "there has been a tax code change and there is a mismatch and unconfirmed tax codes is empty" in {
         controller.retrieveTaxCodeChange(
-          HasTaxCodeChanged(changed = true, Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq("taxCode"))))
+          HasTaxCodeChanged(
+            changed = true,
+            Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq("taxCode", "taxcode2")))
+          )
         ) mustEqual true
       }
     }
