@@ -50,20 +50,21 @@
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">
 
+            @if(payrollNumberForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(errorList =  payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+            }
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
+
             @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true") {
-
-                @if(payrollNumberForm.errors.nonEmpty) {
-                    @govukErrorSummary(ErrorSummary(errorList =  payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-                }
-
 
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                                HmrcPageHeadingLegend(
+                                Legend(
                                     content = Text( Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName)),
-                                    caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                                    isPageHeading = true,
                                     classes = "govuk-fieldset__legend--xl carry-over")
                             )
                         )
@@ -74,7 +75,7 @@
                     name = "payrollNumberChoice",
                     items = Seq(
                         RadioItem(
-                            id =Some("payrollNumberChoice-yes"),
+                            id =Some("payrollNumberChoice"),
                             content = Text(messages("tai.label.yes")),
                             value = Some("Yes"),
                             checked = payrollNumberForm.data.get(AddPensionNumberConstants.PayrollNumberChoice).exists(_ == "Yes"),
@@ -92,7 +93,7 @@
                             )
                         ),
                         RadioItem(
-                            id =Some("payrollNumberChoice-no"),
+                            id =Some("payrollNumberChoice-2"),
                             content = Text(messages("tai.label.no")),
                             value = Some("No"),
                             checked = payrollNumberForm.data.get(AddPensionNumberConstants.PayrollNumberChoice).exists(_ == "No")

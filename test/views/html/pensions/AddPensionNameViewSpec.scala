@@ -27,7 +27,7 @@ class AddPensionNameViewSpec extends TaiViewSpec {
 
   "Add Pension Provider name form page" should {
 
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.addNameForm.title"),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

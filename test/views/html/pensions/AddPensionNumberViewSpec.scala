@@ -33,7 +33,7 @@ class AddPensionNumberViewSpec extends TaiViewSpec {
 
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.pensionNumber.pagetitle"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
@@ -41,8 +41,8 @@ class AddPensionNumberViewSpec extends TaiViewSpec {
     behave like pageWithBackLink()
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(
-      AddPensionNumberConstants.PayrollNumberChoice + "-yes",
-      AddPensionNumberConstants.PayrollNumberChoice + "-no"
+      AddPensionNumberConstants.PayrollNumberChoice,
+      AddPensionNumberConstants.PayrollNumberChoice + "-2"
     )
     behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
