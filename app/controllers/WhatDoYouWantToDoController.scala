@@ -90,12 +90,11 @@ class WhatDoYouWantToDoController @Inject() (
     }
   }
 
-  private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean = {
+  private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean =
     (hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch) match {
       case (true, Some(mismatch)) if mismatch.confirmedTaxCodes.size > 1 => true
       case _                                                             => false
     }
-  }
 
   private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(implicit
     request: Request[AnyContent]
