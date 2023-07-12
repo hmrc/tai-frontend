@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukCharacterCount
 @import uk.gov.hmrc.govukfrontend.views.html.components.Text
+@import uk.gov.hmrc.govukfrontend.views.html.components.Label
 @import uk.gov.hmrc.govukfrontend.views.html.components.Hint
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.html.components.ErrorSummary
@@ -28,6 +29,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
 
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount : GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
@@ -51,13 +53,16 @@
             @govukErrorSummary(ErrorSummary(errorList = whatDoYouWantToTellUsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.updatePension.preHeading")</h2>
+
         @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
             @govukCharacterCount(CharacterCount(
                 id = "pensionDetails",
                 name = "pensionDetails",
-                label = HmrcPageHeadingLabel(
+                label = Label(
                     content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name)),
-                    caption = HmrcSectionCaption(Text(Messages("tai.updatePension.preHeading")))
+                    classes = "govuk-label--xl",
+                    isPageHeading = true
                 ),
                 value = whatDoYouWantToTellUsForm.data.get("pensionDetails"),
                 maxLength = Some(WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit),
