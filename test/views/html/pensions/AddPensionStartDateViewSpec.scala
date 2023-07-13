@@ -41,7 +41,7 @@ class AddPensionStartDateViewSpec extends TaiViewSpec {
 
   "Add pension start date form" should {
     behave like pageWithTitle(messages("tai.addPensionProvider.startDateForm.pagetitle"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.startDateForm.title", pensionName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

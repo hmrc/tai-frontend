@@ -48,6 +48,8 @@
                 @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
+
             @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderStartDate(), args=(Symbol("class"), "subsection")) {
                 @govukDateInput(DateInput(
                     id = "tellUsStartDateForm",
@@ -74,9 +76,9 @@
                         )
                     ),
                     fieldset = Some(Fieldset(
-                      legend = Some(HmrcPageHeadingLegend(
+                      legend = Some(Legend(
                         content = Text(Messages("tai.addPensionProvider.startDateForm.title",pensionProviderName)),
-                        caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                        isPageHeading = true,
                         classes = "govuk-fieldset__legend--xl carry-over"
                       ))
                     )),

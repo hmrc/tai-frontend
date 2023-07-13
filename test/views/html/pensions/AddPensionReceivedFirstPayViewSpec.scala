@@ -28,7 +28,7 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.firstPay.pagetitle"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("add.missing.pension"),
       messages("tai.addPensionProvider.firstPay.title", pensionProviderName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
