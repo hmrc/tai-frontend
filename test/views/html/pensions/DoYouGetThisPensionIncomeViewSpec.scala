@@ -32,7 +32,7 @@ class DoYouGetThisPensionIncomeViewSpec extends TaiViewSpec {
   "IncorrectPension page" must {
     behave like pageWithTitle(messages("tai.updatePension.decision.pagetitle"))
     behave like pageWithBackLink()
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.updatePension.preHeading"),
       messages("tai.updatePension.decision.heading", model.pensionName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

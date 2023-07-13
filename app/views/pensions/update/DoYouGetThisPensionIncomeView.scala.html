@@ -44,14 +44,18 @@
             @if(updateOrRemoveForm.errors.nonEmpty){
                 @govukErrorSummary(ErrorSummary(errorList = updateOrRemoveForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.updatePension.preHeading")</h2>
+
             @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension()) {
                 @govukRadios(Radios(
                     fieldset = Some(
                         Fieldset(
                             legend = Some(
-                                HmrcPageHeadingLegend(
+                                Legend(
                                     content = Text(Messages("tai.updatePension.decision.heading", model.pensionName)),
-                                    caption = HmrcSectionCaption(Text(Messages("tai.updatePension.preHeading")))
+                                    classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                                    isPageHeading = true
                                 )
                             )
                         )
