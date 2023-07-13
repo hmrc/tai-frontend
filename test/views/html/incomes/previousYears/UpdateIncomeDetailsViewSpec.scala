@@ -35,7 +35,7 @@ class UpdateIncomeDetailsViewSpec extends TaiViewSpec {
 
   "UpdateIncomeDetails" must {
     behave like pageWithTitle(Messages("tai.income.previousYears.details.title"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       Messages("tai.income.previousYears.details.preHeading"),
       Messages("tai.income.previousYears.details.heading", formattedTaxYear),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
