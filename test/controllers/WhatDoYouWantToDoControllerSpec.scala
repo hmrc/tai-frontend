@@ -541,7 +541,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         ) mustEqual false
       }
 
-      "there has been a tax code change and mismatch is None" in {
+      "there has been a tax code change but mismatch is None" in {
         controller.retrieveTaxCodeChange(HasTaxCodeChanged(changed = true, None)) mustEqual false
       }
 
@@ -572,11 +572,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
     "return true" when {
 
-      "there has been a tax code change and there is a mismatch" in {
+      "there are at least 2 confirmed tax codes with a returned mismatch" in {
         controller.retrieveTaxCodeChange(
           HasTaxCodeChanged(
             changed = true,
-            Some(TaxCodeMismatch(mismatch = true, Seq("taxCode"), Seq("taxCode", "taxcode2")))
+            Some(TaxCodeMismatch(mismatch = true, Seq.empty, Seq("taxCode", "taxcode2")))
           )
         ) mustEqual true
       }
