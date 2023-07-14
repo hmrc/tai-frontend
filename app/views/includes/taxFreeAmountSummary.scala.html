@@ -90,9 +90,6 @@
                         </dt>
 
                         <dd id="summaryTable@{itemIdx.toString}Row1ValueCell" class=" govuk-summary-list__value cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
-                            @if(isAllowanceOrTotalItem){
-                            <span class="govuk-visually-hidden visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
-                            }
                             @item.rows.head.value
                         </dd>
 

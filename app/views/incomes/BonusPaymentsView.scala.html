@@ -47,14 +47,15 @@
                 @govukErrorSummary(ErrorSummary(errorList = yesNoForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
+            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.bonusPayments.preHeading", employer.name)</h2>
             @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusPayments(employer.id), Symbol("data-dynamic-form") -> "true") {
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                                HmrcPageHeadingLegend(
+                                Legend(
                                     content = Text(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
-                                    caption = HmrcSectionCaption(Text(Messages("tai.bonusPayments.preHeading", employer.name))),
+                                    isPageHeading = true,
                                     classes = "govuk-fieldset__legend--xl carry-over"
                                    )
                             )

@@ -283,11 +283,11 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
       testDoc must haveElementAtPathWithText(
         "#companyBenefitTerm1",
-        s"${messages("tai.income.details.benefit.name.announce")} ben1"
+        s"ben1"
       )
       testDoc must haveElementAtPathWithText(
         "#companyBenefitDescription1 span",
-        s"${messages("tai.income.details.benefit.amount.announce", "£100")}"
+        "£100"
       )
       testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", "£100")
       testDoc must haveElementAtPathWithText(

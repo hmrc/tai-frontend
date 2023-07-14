@@ -33,7 +33,7 @@ class PayslipAmountViewSpec extends TaiViewSpec {
       controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
     )
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.payslip.preHeading", employer.name),
       messages("tai.payslip.title.month"),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

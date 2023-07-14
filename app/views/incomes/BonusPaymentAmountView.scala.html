@@ -54,6 +54,9 @@
             }
 
             <div class="section flush--bottom soft--top">
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.bonusPaymentsAmount.preHeading", employer.name)</h2>
+
             @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount(employer.id)) {
 
 
@@ -67,9 +70,9 @@
                         content = Text("£")
                     )),
                     errorMessage = bonusOvertimeAmountForm.errors.asTextErrorMessages.headOption,
-                    label = HmrcPageHeadingLabel(
+                    label = Label(
                         content = Text(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
-                        caption = HmrcSectionCaption(Text(messages("tai.bonusPaymentsAmount.preHeading", employer.name))),
+                        isPageHeading = true,
                         classes = "govuk-label--xl carry-over")
                 ),
                 )

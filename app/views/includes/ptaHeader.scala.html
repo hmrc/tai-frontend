@@ -43,7 +43,7 @@
 @if(formForErrorSummary.exists(_.errors.nonEmpty) && govukErrorSummary.isDefined) {
     @govukErrorSummary.get(ErrorSummary(errorList = formForErrorSummary.get.errors.asTextErrorLinks, title = Text(Messages("tai.income.error.form.summary"))))
 }
-<h2 class="govuk-caption-l hmrc-caption-l carry-over">
+<h2 class="govuk-caption-xl hmrc-caption-xl carry-over">
     <span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)
 </h2>
 <h1 class="govuk-heading-xl carry-over">@Html(mainHeadingText)

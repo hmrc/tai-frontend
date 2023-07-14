@@ -31,7 +31,7 @@ class PayPeriodViewSpec extends TaiViewSpec {
       controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url
     )
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.payPeriod.preHeading", employerName),
       messages("tai.payPeriod.heading"),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

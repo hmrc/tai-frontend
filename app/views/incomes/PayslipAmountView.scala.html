@@ -46,15 +46,15 @@
             @if(viewModel.payslipForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = viewModel.payslipForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
-
+            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.payslip.preHeading", viewModel.employer.name)</h2>
             @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipAmount()) {
                 @govukInput(Input(
                     id = "totalSalary",
                     name = "totalSalary",
                     value = viewModel.payslipForm.data.get("totalSalary"),
-                    label = HmrcPageHeadingLabel(
+                    label = Label(
                         content = Text(viewModel.payPeriodTitle),
-                        caption = HmrcSectionCaption(Text(messages("tai.payslip.preHeading", viewModel.employer.name))),
+                        isPageHeading = true,
                         classes = "govuk-label--xl carry-over"
                     ),
                     hint = Some(Hint(
