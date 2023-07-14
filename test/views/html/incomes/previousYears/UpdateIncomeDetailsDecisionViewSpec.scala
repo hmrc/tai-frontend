@@ -37,7 +37,7 @@ class UpdateIncomeDetailsDecisionViewSpec extends TaiViewSpec {
         TaxPeriodLabelService.taxPeriodLabel(taxYear.year)
       ).replaceU00A0
     )
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.income.previousYears.journey.preHeader"),
       messages(
         "tai.income.previousYears.decision.header",

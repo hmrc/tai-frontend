@@ -53,15 +53,18 @@
         @govukErrorSummary(ErrorSummary(errorList = decisionForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
     }
 
-    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision()) {
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.income.previousYears.journey.preHeader")</h2>
+
+        @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision()) {
 
         @govukRadios(Radios(
             fieldset =  Some(
                 Fieldset(
                     legend = Some(
-                    HmrcPageHeadingLegend(
+                    Legend(
                         content = Text(messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year))),
-                        caption = HmrcSectionCaption(Text(messages("tai.income.previousYears.journey.preHeader"))))
+                        isPageHeading = true,
+                        classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word")
                 )
                 )
             ),
