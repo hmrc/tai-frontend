@@ -28,13 +28,11 @@
     backLinkContent = None
 ){
 <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
+
         <header class="page-header">
             <h1 class="govuk-heading-xl">@Html(s"${messages("tai.deceased.heading.part1")} ${HtmlFormatter.htmlNonBroken(messages("tai.deceased.heading.part2"))}") </h1>
         </header>
-    </div>
-    <div class="govuk-grid-column-two-thirds">
-
         <h2 class="govuk-heading-l">@messages("tai.deceased.question")</h2>
         <p class="govuk-body">@messages("tai.deceased.callHmrc.paragraph")</p>
 
