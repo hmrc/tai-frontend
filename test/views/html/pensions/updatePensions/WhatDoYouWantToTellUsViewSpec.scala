@@ -33,7 +33,7 @@ class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       Messages("tai.updatePension.preHeading"),
       Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
