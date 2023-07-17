@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlEqua
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.Messages
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.test.Injecting
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.TaxYear
@@ -33,7 +33,9 @@ class IntegrationSpec
 
   val generatedSaUtr = new Generator().nextAtedUtr
 
-  lazy val messages = inject[Messages]
+  lazy val messagesApi = inject[MessagesApi]
+
+  implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
   val taxYear = TaxYear().year
 
