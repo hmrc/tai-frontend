@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.ErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
@@ -48,13 +49,16 @@
             @govukErrorSummary(ErrorSummary(errorList = updateIncomeDetailsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.income.previousYears.details.preHeading")</h2>
+
         @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
             @govukCharacterCount(CharacterCount(
                 id = "employmentDetails",
                 name = "employmentDetails",
-                label = HmrcPageHeadingLabel(
+                label = Label(
                     content = Text(Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear)),
-                    caption = HmrcSectionCaption(Text(Messages("tai.income.previousYears.details.preHeading")))
+                    classes = "govuk-label--xl",
+                    isPageHeading = true
                 ),
                 value = updateIncomeDetailsForm.data.get("employmentDetails"),
                 maxLength = Some(UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
