@@ -126,7 +126,7 @@
     <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
 @if(!disableSessionExpired) {
     @hmrcTimeoutDialogHelper(
-        signOutUrl = routes.ServiceController.serviceSignout().url,
+        signOutUrl = routes.ServiceController.sessionExpiredPage().url,
         keepAliveUrl = Some("/keep-alive")
     )
 }
