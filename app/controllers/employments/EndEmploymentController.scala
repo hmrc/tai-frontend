@@ -47,25 +47,25 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject() (
-                                          auditService: AuditService,
-                                          employmentService: EmploymentService,
-                                          authenticate: AuthAction,
-                                          validatePerson: ValidatePerson,
-                                          val auditConnector: AuditConnector,
-                                          mcc: MessagesControllerComponents,
-                                          errorPagesHandler: ErrorPagesHandler,
-                                          updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
-                                          endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
-                                          endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
-                                          endEmploymentView: EndEmploymentView,
-                                          canWeContactByPhone: CanWeContactByPhoneView,
-                                          duplicateSubmissionWarning: DuplicateSubmissionWarningView,
-                                          confirmation: ConfirmationView,
-                                          addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
-                                          @Named("End Employment") journeyCacheService: JourneyCacheService,
-                                          @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
-                                        )(implicit ec: ExecutionContext)
-  extends TaiBaseController(mcc) with EmptyCacheRedirect {
+  auditService: AuditService,
+  employmentService: EmploymentService,
+  authenticate: AuthAction,
+  validatePerson: ValidatePerson,
+  val auditConnector: AuditConnector,
+  mcc: MessagesControllerComponents,
+  errorPagesHandler: ErrorPagesHandler,
+  updateRemoveEmploymentDecision: UpdateRemoveEmploymentDecisionView,
+  endEmploymentWithinSixWeeksError: EndEmploymentWithinSixWeeksErrorView,
+  endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
+  endEmploymentView: EndEmploymentView,
+  canWeContactByPhone: CanWeContactByPhoneView,
+  duplicateSubmissionWarning: DuplicateSubmissionWarningView,
+  confirmation: ConfirmationView,
+  addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
+  @Named("End Employment") journeyCacheService: JourneyCacheService,
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+)(implicit ec: ExecutionContext)
+    extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     journeyCacheService.flush() map { _ =>
@@ -101,23 +101,15 @@ class EndEmploymentController @Inject() (
                     mandatorySequence(1).toInt
                   )
                 )
-              case _ =>
-                Ok(
-                  updateRemoveEmploymentDecision(
-                    UpdateRemoveEmploymentForm.form(mandatorySequence.head),
-                    mandatorySequence.head,
-                    mandatorySequence(1).toInt
-                  )
-                )
             }
           case Left(_) => Redirect(taxAccountSummaryRedirect)
         }
   }
 
   private def redirectToWarningOrDecisionPage(
-                                               journeyCacheFuture: Future[Map[String, String]],
-                                               successfulJourneyCacheFuture: Future[Option[String]]
-                                             ): Future[Result] =
+    journeyCacheFuture: Future[Map[String, String]],
+    successfulJourneyCacheFuture: Future[Option[String]]
+  ): Future[Result] =
     for {
       _                      <- journeyCacheFuture
       successfulJourneyCache <- successfulJourneyCacheFuture
@@ -436,20 +428,20 @@ class EndEmploymentController @Inject() (
       val nino = user.nino
       for {
         (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
-          .collectedJourneyValues(
-            Seq(
-              EndEmploymentConstants.EmploymentIdKey,
-              EndEmploymentConstants.EndDateKey,
-              EndEmploymentConstants.TelephoneQuestionKey
-            ),
-            Seq(EndEmploymentConstants.TelephoneNumberKey)
-          )
-          .getOrFail
+                                                   .collectedJourneyValues(
+                                                     Seq(
+                                                       EndEmploymentConstants.EmploymentIdKey,
+                                                       EndEmploymentConstants.EndDateKey,
+                                                       EndEmploymentConstants.TelephoneQuestionKey
+                                                     ),
+                                                     Seq(EndEmploymentConstants.TelephoneNumberKey)
+                                                   )
+                                                   .getOrFail
         model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)), mandatoryCacheSeq(2), optionalCacheSeq.head)
         _ <- employmentService.endEmployment(nino, mandatoryCacheSeq.head.toInt, model)
         _ <- successfulJourneyCacheService.cache(
-          Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
-        )
+               Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
+             )
         _ <- journeyCacheService.flush()
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
   }
