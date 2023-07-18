@@ -27,7 +27,7 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
 
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentFirstPay.title", employerName))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("add.missing.employment"),
       messages("tai.addEmployment.employmentFirstPay.title", employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
