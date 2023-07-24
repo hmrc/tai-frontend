@@ -42,14 +42,17 @@
             @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
+
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
+
         @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
             @govukRadios(Radios(
                 fieldset =  Some(
                     Fieldset(
                         legend = Some(
-                        HmrcPageHeadingLegend(
+                        Legend(
                             content = Text(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName)),
-                            caption = HmrcSectionCaption(Text(Messages("add.missing.pension"))),
+                            isPageHeading = true,
                             classes = "govuk-fieldset__legend--xl carry-over")
                         )
                     )
