@@ -19,7 +19,6 @@
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
@@ -49,11 +48,14 @@
 
         @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError()) {
 
+        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.irregular.preHeadingText")</h2>
+
         @govukRadios(Radios(
             fieldset =  Some(Fieldset(
-                                legend = Some(HmrcPageHeadingLegend(
+                                legend = Some(Legend(
                                     content = Text(Messages("tai.irregular.heading", model.employerName)),
-                                    caption = HmrcSectionCaption(Text(Messages("tai.irregular.preHeadingText" ))))
+                                    classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                                    isPageHeading = true)
                             )
                         )
                     ),

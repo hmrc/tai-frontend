@@ -21,7 +21,6 @@
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionEstimatedPay
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLegend
 @import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 
@@ -51,16 +50,19 @@
             @if(duplicateSubmissionWarningForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = duplicateSubmissionWarningForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
-    
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.incomes.warning.preHeading")</h2>
+
             @form(action = controllers.income.routes.UpdateIncomeNextYearController.submitDuplicateWarning(empId)) {
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(
                             legend = Some(
-                            HmrcPageHeadingLegend(
+                                Legend(
                                 content = Text(viewModel.heading),
-                                caption = HmrcSectionCaption(Text(messages("tai.incomes.warning.preHeading"))))
-                        )
+                                classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                                isPageHeading = true)
+                            )
                         )
                     ),
                     hint = Some(Hint(content = HtmlContent(hint))),

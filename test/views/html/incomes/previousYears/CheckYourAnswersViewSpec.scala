@@ -26,7 +26,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.checkYourAnswers.heading")
     )

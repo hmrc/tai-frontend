@@ -25,6 +25,7 @@
 title = messages("session_expired.title"),
 pageTitle = Some(Messages("tai.service.navTitle")),
 backLinkContent = None,
+disableSessionExpired = true,
 showPtaAccountNav = false) {
 
     <div class="govuk-grid-row">
@@ -34,11 +35,13 @@ showPtaAccountNav = false) {
 
             <p class="govuk-body">@messages("session_expired.guidance")</p>
 
-            @includes.link(
-                url=routes.TaxAccountSummaryController.onPageLoad().url,
-                copy=messages("tai.unauthorised.button-text"),
-                linkClasses=Seq("button margin-bottom-large")
-            )
+            <p class="govuk-body">
+                @includes.link(
+                    url=routes.TaxAccountSummaryController.onPageLoad().url,
+                    copy=messages("tai.unauthorised.button-text"),
+                    linkClasses=Seq("govuk-link button margin-bottom-large")
+                )
+            </p>
         </div>
     </div>
 }

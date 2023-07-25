@@ -52,7 +52,7 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
     behave like pageWithBackLink()
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       preHeaderText = messages("tai.incomes.warning.preHeading"),
       mainHeaderText = messages("tai.incomes.warning.cyPlus1.heading", employmentName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))

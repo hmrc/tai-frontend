@@ -52,9 +52,6 @@
                 <span>@taxCodeViewModel.ledeMessage</span>
             </p>
 
-
-
-
             <div class="govuk-!-padding-bottom-3">
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (LazyList.from(1))) {
                     <h2 class="govuk-heading-m under-line break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>

@@ -26,7 +26,7 @@ class NoCYIncomeTaxErrorViewSpec extends TaiViewSpec {
 
   "noCYIncomeTaxErrorPage" should {
     behave like pageWithTitle(messages("tai.noCYIncomeError.heading"))
-    behave like pageWithCombinedHeaderNewTemplate(
+    behave like pageWithCombinedHeaderNewTemplateNew(
       preHeaderText = "Current tax year",
       mainHeaderText = "Your PAYE Income Tax"
     )
