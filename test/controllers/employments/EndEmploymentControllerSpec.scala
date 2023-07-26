@@ -52,25 +52,34 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
   override def beforeEach(): Unit =
     reset(employmentService, endEmploymentJourneyCacheService)
 
+  private val employerName = "employer name"
+
   "employmentUpdateRemove" must {
-    "call updateRemoveEmployer page successfully with an authorised session" in {
-      val endEmploymentTest = createEndEmploymentTest
-      val employmentId = 1
+    List(
+      None,
+      Some(FormValuesConstants.YesValue),
+      Some(FormValuesConstants.NoValue)
+    ).foreach { yesOrNo =>
+      s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is $yesOrNo" in {
+        val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
+        val dataFromCache = (Seq(employerName, employmentId.toString), Seq(yesOrNo))
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
+        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Right(dataFromCache)))
 
-      val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
+        val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
+        val doc = Jsoup.parse(contentAsString(result))
 
-      status(result) mustBe OK
-      doc.title() must include(messages("tai.employment.decision.legend", employerName))
+        status(result) mustBe OK
+        doc.title() must include(messages("tai.employment.decision.legend", employerName))
+      }
     }
 
-    "redirect to the tax summary page if a value is missing from the cache " in {
+    "redirect to the tax summary page if a value is missing from the cache" in {
       val endEmploymentTest = createEndEmploymentTest
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
 
       val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
@@ -78,7 +87,6 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
-
   }
 
   "handleEmploymentUpdateRemove" must {
@@ -855,6 +863,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
   private def createEndEmploymentTest = new EndEmploymentTest
 
   private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val auditService: AuditService = mock[AuditService]
@@ -914,6 +923,4 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
-
-  private val employerName = "employer name"
 }

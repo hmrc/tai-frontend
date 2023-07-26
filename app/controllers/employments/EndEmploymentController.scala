@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -86,17 +86,24 @@ class EndEmploymentController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey) map {
-        case Right(mandatoryValues) =>
-          Ok(
-            updateRemoveEmploymentDecision(
-              UpdateRemoveEmploymentForm.form(mandatoryValues.head),
-              mandatoryValues.head,
-              mandatoryValues(1).toInt
-            )
-          )
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+        .collectedJourneyValues(
+          Seq(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey),
+          Seq(EmploymentDecisionConstants.EmploymentDecision)
+        )
+        .map {
+          case Right((mandatorySequence, optionalSeq)) =>
+            optionalSeq match {
+              case Seq(yesOrNo) =>
+                Ok(
+                  updateRemoveEmploymentDecision(
+                    UpdateRemoveEmploymentForm.form(mandatorySequence.head).fill(yesOrNo),
+                    mandatorySequence.head,
+                    mandatorySequence(1).toInt
+                  )
+                )
+            }
+          case Left(_) => Redirect(taxAccountSummaryRedirect)
+        }
   }
 
   private def redirectToWarningOrDecisionPage(
@@ -113,17 +120,13 @@ class EndEmploymentController @Inject() (
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
     val nino = user.nino
-
     employmentService.employment(nino, empId) flatMap { case Some(employment) =>
       val journeyCacheFuture = journeyCacheService.cache(
         Map(EndEmploymentConstants.EmploymentIdKey -> empId.toString, EndEmploymentConstants.NameKey -> employment.name)
       )
-
       val successfulJourneyCacheFuture =
         successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
-
       redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
     } recover { case _ =>
       NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
@@ -153,47 +156,64 @@ class EndEmploymentController @Inject() (
                 ),
               {
                 case Some(FormValuesConstants.YesValue) =>
-                  Future(
-                    Redirect(
-                      controllers.employments.routes.UpdateEmploymentController
-                        .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)
+                  journeyCacheService
+                    .cache(
+                      Map(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
                     )
-                  )
-                case _ =>
-                  val nino = user.nino
-                  employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap { case Some(employment) =>
-                    val today = LocalDate.now
-                    val latestPaymentDate: Option[LocalDate] = for {
-                      latestAnnualAccount <- employment.latestAnnualAccount
-                      latestPayment       <- latestAnnualAccount.latestPayment
-                    } yield latestPayment.date
-
-                    val hasIrregularPayment = employment.latestAnnualAccount.exists(_.isIrregularPayment)
-                    if (
-                      latestPaymentDate.isDefined && latestPaymentDate.get
-                        .isAfter(today.minusWeeks(6).minusDays(1))
-                    ) {
-
-                      val errorPageCache =
-                        Map(EndEmploymentConstants.LatestPaymentDateKey -> latestPaymentDate.get.toString)
-                      journeyCacheService.cache(errorPageCache) map { _ =>
-                        auditService
-                          .createAndSendAuditEvent(
-                            AuditConstants.EndEmploymentWithinSixWeeksError,
-                            Map("nino" -> nino.nino)
-                          )
-                        Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
-                      }
-                    } else if (hasIrregularPayment) {
-                      auditService
-                        .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino.nino))
-                      Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError()))
-                    } else {
-                      Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+                    .map { _ =>
+                      Redirect(
+                        controllers.employments.routes.UpdateEmploymentController
+                          .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)
+                      )
                     }
-                  } recover { case _ =>
-                    NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
-                  }
+                case _ =>
+                  journeyCacheService
+                    .cache(
+                      Map(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
+                    )
+                    .map { _ =>
+                      val nino = user.nino
+                      employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap {
+                        case Some(employment) =>
+                          val today = LocalDate.now
+                          val latestPaymentDate: Option[LocalDate] = for {
+                            latestAnnualAccount <- employment.latestAnnualAccount
+                            latestPayment       <- latestAnnualAccount.latestPayment
+                          } yield latestPayment.date
+
+                          val hasIrregularPayment = employment.latestAnnualAccount.exists(_.isIrregularPayment)
+                          if (
+                            latestPaymentDate.isDefined && latestPaymentDate.get
+                              .isAfter(today.minusWeeks(6).minusDays(1))
+                          ) {
+
+                            val errorPageCache =
+                              Map(EndEmploymentConstants.LatestPaymentDateKey -> latestPaymentDate.get.toString)
+                            journeyCacheService.cache(errorPageCache) map { _ =>
+                              auditService
+                                .createAndSendAuditEvent(
+                                  AuditConstants.EndEmploymentWithinSixWeeksError,
+                                  Map("nino" -> nino.nino)
+                                )
+                              Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
+                            }
+                          } else if (hasIrregularPayment) {
+                            auditService
+                              .createAndSendAuditEvent(
+                                AuditConstants.EndEmploymentIrregularPayment,
+                                Map("nino" -> nino.nino)
+                              )
+                            Future(
+                              Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
+                            )
+                          } else {
+                            Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+                          }
+                      } recover { case _ =>
+                        NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
+                      }
+                    }
+                    .flatten
               }
             )
         }
@@ -450,7 +470,6 @@ class EndEmploymentController @Inject() (
         .getOrFail
         .flatMap { mandatoryValues =>
           val empId = mandatoryValues(1).toInt
-
           DuplicateSubmissionWarningForm.createForm
             .bindFromRequest()
             .fold(
