@@ -17,7 +17,8 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"7.7.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion"
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"               % "1.3.0"
   )
 
   val test: Seq[ModuleID] = Seq(
