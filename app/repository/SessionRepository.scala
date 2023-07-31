@@ -36,7 +36,7 @@ class SessionRepository @Inject() (
   clock: Clock
 )(implicit ec: ExecutionContext)
     extends PlayMongoRepository[UserAnswers](
-      collectionName = "sessions-new",
+      collectionName = "sessions",
       mongoComponent = mongoComponent,
       domainFormat = UserAnswers.format,
       indexes = Seq(
