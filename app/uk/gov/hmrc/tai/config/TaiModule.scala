@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.config
 
+import controllers.actions.{DataRequiredAction, DataRequiredActionImpl, DataRetrievalAction, DataRetrievalActionImpl, IdentifierAction, SessionIdentifierAction}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.tai.service.journeyCache._
@@ -23,6 +24,10 @@ import uk.gov.hmrc.tai.service.journeyCache._
 class TaiModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
+    bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]),
+    bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]),
+    bind[IdentifierAction].to(classOf[SessionIdentifierAction]),
+
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Add Pension Provider").to(classOf[AddPensionProviderJourneyCacheService]),

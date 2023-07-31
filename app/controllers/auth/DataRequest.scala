@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package queries
+package controllers.auth
 
-import play.api.libs.json.JsPath
+import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.tai.model.UserAnswers
 
-import scala.util.{Success, Try}
+case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers])
+    extends WrappedRequest[A](request)
 
-sealed trait Query {
-
-  def path: JsPath
-}
-
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
-    Success(userAnswers)
-}
+case class DataRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers)
+    extends WrappedRequest[A](request)

@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package queries
+package pages
 
-import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.model.UserAnswers
+import scala.language.implicitConversions
 
-import scala.util.{Success, Try}
+trait Page
 
-sealed trait Query {
+object Page {
 
-  def path: JsPath
-}
-
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
-    Success(userAnswers)
+  implicit def toString(page: Page): String =
+    page.toString
 }

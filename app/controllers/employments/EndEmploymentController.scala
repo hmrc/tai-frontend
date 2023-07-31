@@ -20,10 +20,11 @@ import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers._
-import controllers.actions.ValidatePerson
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repository.SessionRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -63,7 +64,11 @@ class EndEmploymentController @Inject() (
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+  sessionRepository: SessionRepository,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
@@ -82,21 +87,31 @@ class EndEmploymentController @Inject() (
       controllers.employments.routes.EndEmploymentController.cancel(employmentId).url
     )
 
+  // TODO - Need Journey Action to shorten this
   def employmentUpdateRemoveDecision: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey) map {
-        case Right(mandatoryValues) =>
-          Ok(
-            updateRemoveEmploymentDecision(
-              UpdateRemoveEmploymentForm.form(mandatoryValues.head),
-              mandatoryValues.head,
-              mandatoryValues(1).toInt
-            )
-          )
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+      (identify andThen getData andThen requireData)
+        .async { implicit dataRequest =>
+          sessionRepository.get(dataRequest.userId)
+
+          journeyCacheService
+            .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)(
+              hc(request),
+              implicitly
+            ) map {
+            case Right(mandatoryValues) =>
+              Ok(
+                updateRemoveEmploymentDecision(
+                  UpdateRemoveEmploymentForm.form(mandatoryValues.head)(request2Messages(request)),
+                  mandatoryValues.head,
+                  mandatoryValues(1).toInt
+                )(request, request2Messages(request), user)
+              )
+            case Left(_) => Redirect(taxAccountSummaryRedirect)
+          }
+        }
+        .apply(request)
   }
 
   private def redirectToWarningOrDecisionPage(

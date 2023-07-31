@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package queries
+package pages
 
+import play.api.Mode
 import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.model.UserAnswers
+import play.api.mvc.Call
 
-import scala.util.{Success, Try}
+case object UpdateRemoveEmploymentDecisionPage extends QuestionPage[Boolean] {
 
-sealed trait Query {
+  override def path: JsPath = JsPath \ toString
 
-  def path: JsPath
-}
+  override def toString: String = "" // TODO - Find
 
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
-    Success(userAnswers)
+  override def route(mode: Mode): Call =
+    controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
 }

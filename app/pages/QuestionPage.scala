@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package queries
+package pages
 
-import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.model.UserAnswers
+import play.api.Mode
+import play.api.mvc.Call
+import queries.{Gettable, Settable}
 
-import scala.util.{Success, Try}
+trait QuestionPage[A] extends Page with Gettable[A] with Settable[A] {
 
-sealed trait Query {
-
-  def path: JsPath
-}
-
-trait Gettable[A] extends Query
-
-trait Settable[A] extends Query {
-
-  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
-    Success(userAnswers)
+  def route(mode: Mode): Call
 }
