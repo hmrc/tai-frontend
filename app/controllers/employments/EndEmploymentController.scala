@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -88,7 +88,7 @@ class EndEmploymentController @Inject() (
 
   // TODO - Need Journey Action to shorten this
   def employmentUpdateRemoveDecision: Action[AnyContent] = (authAction andThen validatePerson).async {
-    implicit request =>
+    implicit request =>EmploymentDecisionConstants.EmploymentDecision
       implicit val user: AuthedUser = request.taiUser
       actionJourney.setJourneyCache
         .async { implicit dataRequest =>
@@ -125,17 +125,13 @@ class EndEmploymentController @Inject() (
 
   def onPageLoad(empId: Int): Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
     val nino = user.nino
-
     employmentService.employment(nino, empId) flatMap { case Some(employment) =>
       val journeyCacheFuture = journeyCacheService.cache(
         Map(EndEmploymentConstants.EmploymentIdKey -> empId.toString, EndEmploymentConstants.NameKey -> employment.name)
       )
-
       val successfulJourneyCacheFuture =
         successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
-
       redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
     } recover { case _ =>
       NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
@@ -460,7 +456,6 @@ class EndEmploymentController @Inject() (
         .getOrFail
         .flatMap { mandatoryValues =>
           val empId = mandatoryValues(1).toInt
-
           DuplicateSubmissionWarningForm.createForm
             .bindFromRequest()
             .fold(

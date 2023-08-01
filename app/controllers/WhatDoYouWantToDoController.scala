@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged, TaxCodeMismatch}
+import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -92,9 +92,8 @@ class WhatDoYouWantToDoController @Inject() (
 
   private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean =
     (hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch) match {
-      case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
-      case (true, Some(TaxCodeMismatch(true, _, _)))                 => true
-      case _                                                         => false
+      case (true, Some(mismatch)) if mismatch.confirmedTaxCodes.size > 1 => true
+      case _                                                             => false
     }
 
   private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(implicit
