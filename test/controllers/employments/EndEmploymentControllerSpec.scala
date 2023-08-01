@@ -23,7 +23,9 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.BeforeAndAfterEach
+import pages.{EmploymentIdKeyPage, EmploymentNameKeyPage}
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.SessionRepository
@@ -54,18 +56,33 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     reset(employmentService, endEmploymentJourneyCacheService)
 
   "employmentUpdateRemove" must {
+    lazy val route = controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url
+
+    def getRequest(): FakeRequest[AnyContentAsEmpty.type] =
+      FakeRequest(GET, route)
     "call updateRemoveEmployer page successfully with an authorised session" in {
       val endEmploymentTest = createEndEmploymentTest
       val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
+//      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
+//        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
 
-      val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
+      val answerEmployerName = emptyUserAnswers
+        .set(EmploymentNameKeyPage, "testEmployer")
+        .get
 
-      status(result) mustBe OK
-      doc.title() must include(messages("tai.employment.decision.legend", employerName))
+      emptyUserAnswers
+        .set(EmploymentIdKeyPage, "testId")
+//        .get
+      val application = applicationBuilder(userAnswers = Some(answerEmployerName)).build()
+
+      running(application) {
+        val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+        doc.title() must include(messages("tai.employment.decision.legend", employerName))
+      }
     }
 
     "redirect to the tax summary page if a value is missing from the cache " in {
@@ -880,7 +897,9 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
-        inject[ActionJourney]
+        inject[ActionJourney],
+        FakeAuthAction, // TODO - Create FakeActionJourney
+        FakeValidatePerson
       ) {
 
     when(employmentService.employment(any(), any())(any()))

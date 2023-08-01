@@ -49,6 +49,10 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
 
   override lazy val app: Application = applicationBuilder().build()
 
+  val userAnswersId: String = "id"
+
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]

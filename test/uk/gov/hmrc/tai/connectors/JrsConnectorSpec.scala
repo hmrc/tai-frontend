@@ -31,12 +31,13 @@ import utils.{BaseSpec, WireMockHelper}
 
 class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
-  override lazy val app: Application = GuiceApplicationBuilder()
-    .configure("microservice.services.coronavirus-jrs-published-employees.port" -> server.port)
-    .overrides(
-      bind[WebChatClient].toInstance(new WebChatClientStub)
-    )
-    .build()
+  override lazy val app: Application =
+    applicationBuilder()
+      .configure("microservice.services.coronavirus-jrs-published-employees.port" -> server.port)
+      .overrides(
+        bind[WebChatClient].toInstance(new WebChatClientStub)
+      )
+      .build()
 
   lazy val httpClient = inject[HttpClient]
 

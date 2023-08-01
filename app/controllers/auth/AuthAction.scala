@@ -96,18 +96,24 @@ class AuthActionImpl @Inject() (
           result <- block(InternalAuthenticatedRequest(request, user))
         } yield result
       case _ =>
+        println("4" * 100)
         Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
 
   private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = handleGGFailure
 
-  private def handleGGFailure: PartialFunction[Throwable, Result] =
+  private def handleGGFailure: PartialFunction[Throwable, Result] = {
+    println("2" * 100)
     handleFailure(routes.UnauthorisedController.loginGG())
+  }
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
-    case _: NoActiveSession => Redirect(redirect)
+    case _: NoActiveSession =>
+      println("3" * 100)
+      Redirect(redirect)
     case ex: AuthorisationException =>
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
+      println("1" * 100)
       Redirect(routes.UnauthorisedController.onPageLoad())
   }
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser

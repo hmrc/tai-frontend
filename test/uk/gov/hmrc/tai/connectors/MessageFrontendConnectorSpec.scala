@@ -27,15 +27,17 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_GATEWAY, BAD_REQUEST, GET, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE}
 import uk.gov.hmrc.http.{HttpResponse, SessionKeys, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.MessageCount
-import utils.{BaseSpec, WireMockHelper}
+import utils.{BaseSpec, FakeDataRetrievalAction, FakeIdentifierAction, WireMockHelper}
 
 import java.util.UUID
 import scala.util.Random
+import play.api.inject.bind
+import controllers.actions.{DataRequiredAction, DataRequiredActionImpl, DataRetrievalAction, IdentifierAction}
 
 class MessageFrontendConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures {
 
   override implicit lazy val app: Application =
-    new GuiceApplicationBuilder()
+    applicationBuilder()
       .configure(
         "microservice.services.message-frontend.port" -> server.port()
       )
