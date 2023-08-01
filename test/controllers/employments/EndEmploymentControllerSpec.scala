@@ -18,7 +18,7 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, FakeValidatePerson, IdentifierAction}
+import controllers.actions.{ActionJourney, DataRequiredAction, DataRetrievalAction, FakeValidatePerson, IdentifierAction}
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -867,8 +867,6 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       extends EndEmploymentController(
         auditService,
         employmentService,
-        FakeAuthAction,
-        FakeValidatePerson,
         mock[AuditConnector],
         mcc,
         inject[ErrorPagesHandler],
@@ -882,13 +880,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
-        inject[SessionRepository],
-        inject[IdentifierAction],
-        inject[DataRetrievalAction],
-        inject[DataRequiredAction]
+        inject[ActionJourney]
       ) {
-
-    val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")
 
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(

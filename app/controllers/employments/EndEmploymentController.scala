@@ -20,7 +20,7 @@ import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers._
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidatePerson}
+import controllers.actions.{ActionJourney, DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser}
 import pages.{EmploymentIdKeyPage, EmploymentNameKeyPage}
 import play.api.i18n.Messages
@@ -51,8 +51,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class EndEmploymentController @Inject() (
   auditService: AuditService,
   employmentService: EmploymentService,
-  authenticate: AuthAction,
-  validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler,
@@ -66,14 +64,12 @@ class EndEmploymentController @Inject() (
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  sessionRepository: SessionRepository,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction
+//  sessionRepository: SessionRepository,
+  actionJourney: ActionJourney
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
-  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cancel(empId: Int): Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     journeyCacheService.flush() map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
@@ -89,20 +85,21 @@ class EndEmploymentController @Inject() (
     )
 
   // TODO - Need Journey Action to shorten this
-  def employmentUpdateRemoveDecision: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def employmentUpdateRemoveDecision: Action[AnyContent] = actionJourney.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      (identify andThen getData andThen requireData)
+      actionJourney.setJourneyCache
         .async { implicit dataRequest =>
           (dataRequest.userAnswers.get(EmploymentNameKeyPage), dataRequest.userAnswers.get(EmploymentIdKeyPage)) match {
             case (Some(name), Some(id)) =>
               Future.successful(
-              Ok(
-                updateRemoveEmploymentDecision(
-                  UpdateRemoveEmploymentForm.form(name)(request2Messages(request)).fill(Some(name)),
-                  name,
-                  id.toInt
-                )(request, request2Messages(request), user))
+                Ok(
+                  updateRemoveEmploymentDecision(
+                    UpdateRemoveEmploymentForm.form(name)(request2Messages(request)).fill(Some(name)),
+                    name,
+                    id.toInt
+                  )(request, request2Messages(request), user)
+                )
               )
             case (_, _) => Future.successful(Redirect(taxAccountSummaryRedirect))
           }
@@ -122,7 +119,7 @@ class EndEmploymentController @Inject() (
       case _       => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
     }
 
-  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(empId: Int): Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val nino = user.nino
@@ -141,7 +138,7 @@ class EndEmploymentController @Inject() (
     }
   }
 
-  def handleEmploymentUpdateRemove: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def handleEmploymentUpdateRemove: Action[AnyContent] = actionJourney.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService
@@ -210,7 +207,7 @@ class EndEmploymentController @Inject() (
         }
   }
 
-  def endEmploymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def endEmploymentError: Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
       .mandatoryJourneyValues(
@@ -229,7 +226,7 @@ class EndEmploymentController @Inject() (
       }
   }
 
-  def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def irregularPaymentError: Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     EitherT(
       journeyCacheService
@@ -248,35 +245,34 @@ class EndEmploymentController @Inject() (
       }
   }
 
-  def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-        .getOrFail
-        .map { mandatoryJourneyValues =>
-          IrregularPayForm.createForm
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                BadRequest(
-                  endEmploymentIrregularPaymentError(
-                    formWithErrors,
-                    EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
-                  )
-                ),
-              formData =>
-                formData.irregularPayDecision match {
-                  case Some(IrregularPayConstants.ContactEmployer) =>
-                    Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-                  case _ =>
-                    Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
-                }
-            )
-        }
+  def handleIrregularPaymentError: Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+    journeyCacheService
+      .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
+      .getOrFail
+      .map { mandatoryJourneyValues =>
+        IrregularPayForm.createForm
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              BadRequest(
+                endEmploymentIrregularPaymentError(
+                  formWithErrors,
+                  EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
+                )
+              ),
+            formData =>
+              formData.irregularPayDecision match {
+                case Some(IrregularPayConstants.ContactEmployer) =>
+                  Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+                case _ =>
+                  Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+              }
+          )
+      }
   }
 
-  def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def endEmploymentPage: Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService
@@ -307,7 +303,7 @@ class EndEmploymentController @Inject() (
       }
   }
 
-  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = actionJourney.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -331,7 +327,7 @@ class EndEmploymentController @Inject() (
       }
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (
@@ -351,7 +347,7 @@ class EndEmploymentController @Inject() (
     }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     YesNoTextEntryForm
@@ -385,7 +381,7 @@ class EndEmploymentController @Inject() (
       )
   }
 
-  def endEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def endEmploymentCheckYourAnswers: Action[AnyContent] = actionJourney.authWithValidatePerson.async {
     implicit request =>
       journeyCacheService
         .collectedJourneyValues(
@@ -413,7 +409,7 @@ class EndEmploymentController @Inject() (
         }
   }
 
-  def confirmAndSendEndEmployment(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def confirmAndSendEndEmployment(): Action[AnyContent] = actionJourney.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -437,7 +433,7 @@ class EndEmploymentController @Inject() (
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
   }
 
-  def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def duplicateSubmissionWarning: Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
       .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey) map {
@@ -453,7 +449,7 @@ class EndEmploymentController @Inject() (
     }
   }
 
-  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = actionJourney.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService
@@ -480,7 +476,7 @@ class EndEmploymentController @Inject() (
         }
   }
 
-  def showConfirmationPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def showConfirmationPage: Action[AnyContent] = actionJourney.authWithValidatePerson.async { implicit request =>
     Future.successful(Ok(confirmation()))
   }
 }
