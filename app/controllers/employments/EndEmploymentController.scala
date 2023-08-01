@@ -22,6 +22,7 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser}
+import pages.{EmploymentIdKeyPage, EmploymentNameKeyPage}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.SessionRepository
@@ -93,22 +94,17 @@ class EndEmploymentController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       (identify andThen getData andThen requireData)
         .async { implicit dataRequest =>
-          sessionRepository.get(dataRequest.userId)
-
-          journeyCacheService
-            .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)(
-              hc(request),
-              implicitly
-            ) map {
-            case Right(mandatoryValues) =>
+          (dataRequest.userAnswers.get(EmploymentNameKeyPage), dataRequest.userAnswers.get(EmploymentIdKeyPage)) match {
+            case (Some(name), Some(id)) =>
+              Future.successful(
               Ok(
                 updateRemoveEmploymentDecision(
-                  UpdateRemoveEmploymentForm.form(mandatoryValues.head)(request2Messages(request)),
-                  mandatoryValues.head,
-                  mandatoryValues(1).toInt
-                )(request, request2Messages(request), user)
+                  UpdateRemoveEmploymentForm.form(name)(request2Messages(request)).fill(Some(name)),
+                  name,
+                  id.toInt
+                )(request, request2Messages(request), user))
               )
-            case Left(_) => Redirect(taxAccountSummaryRedirect)
+            case (_, _) => Future.successful(Redirect(taxAccountSummaryRedirect))
           }
         }
         .apply(request)

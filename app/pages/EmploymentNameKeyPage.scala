@@ -19,12 +19,13 @@ package pages
 import play.api.Mode
 import play.api.libs.json.JsPath
 import play.api.mvc.Call
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-case object UpdateRemoveEmploymentDecisionPage extends QuestionPage[Boolean] {
+case object EmploymentNameKeyPage extends QuestionPage[String] { // TODO - Note really a page anymore
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "" // TODO - Find
+  override def toString: String = EndEmploymentConstants.NameKey // TODO - Check
 
   override def route(mode: Mode): Call =
     controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()

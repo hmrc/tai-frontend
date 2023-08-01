@@ -16,11 +16,13 @@
 
 package utils
 import builders.UserBuilder
+import controllers.actions.{DataRequiredAction, DataRequiredActionImpl, DataRetrievalAction, IdentifierAction}
 import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.Application
 import play.api.i18n._
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
@@ -28,10 +30,24 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.tai.model.UserAnswers
+
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+
+  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(
+        bind[IdentifierAction].to[FakeIdentifierAction],
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
+        bind[DataRequiredAction].to[DataRequiredActionImpl]
+      )
+
+  override lazy val app: Application = applicationBuilder().build()
 
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 

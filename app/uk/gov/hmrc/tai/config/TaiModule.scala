@@ -21,12 +21,15 @@ import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.tai.service.journeyCache._
 
+import java.time.{Clock, ZoneOffset}
+
 class TaiModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]),
-    bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]),
-    bind[IdentifierAction].to(classOf[SessionIdentifierAction]),
+    bind[DataRetrievalAction].to(classOf[DataRetrievalActionImpl]).eagerly(),
+    bind[DataRequiredAction].to(classOf[DataRequiredActionImpl]).eagerly(),
+    bind[IdentifierAction].to(classOf[SessionIdentifierAction]).eagerly(),
+    bind[Clock].toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC)),
 
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),

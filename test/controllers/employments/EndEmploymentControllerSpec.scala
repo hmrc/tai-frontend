@@ -18,7 +18,7 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, FakeValidatePerson, IdentifierAction}
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -26,6 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repository.SessionRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
@@ -880,7 +881,11 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         inject[ConfirmationView],
         inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
-        trackSuccessJourneyCacheService
+        trackSuccessJourneyCacheService,
+        inject[SessionRepository],
+        inject[IdentifierAction],
+        inject[DataRetrievalAction],
+        inject[DataRequiredAction]
       ) {
 
     val employmentEndDateForm: EmploymentEndDateForm = EmploymentEndDateForm("employer")
