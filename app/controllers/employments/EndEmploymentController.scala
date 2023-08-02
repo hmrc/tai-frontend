@@ -20,10 +20,11 @@ import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers._
-import controllers.actions.{ActionJourney, DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidatePerson}
+import controllers.actions.{ActionJourney, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser}
-import pages.{EmploymentIdKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentIdKeyPage, EmploymentNameKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.SessionRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -36,7 +37,7 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -65,7 +66,6 @@ class EndEmploymentController @Inject() (
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  sessionRepository: SessionRepository,
   actionJourney: ActionJourney,
   authAction: AuthAction, // TODO - Use journey
   validatePerson: ValidatePerson
@@ -93,38 +93,50 @@ class EndEmploymentController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       actionJourney.setJourneyCache
         .async { implicit dataRequest =>
-          val employerName: Future[Option[UserAnswers]] = sessionRepository.get(EndCompanyBenefitConstants.EmploymentNameKey)
-          val employerId: Future[Option[UserAnswers]] = sessionRepository.get(EndCompanyBenefitConstants.EmploymentNameKey)
-          val userAnswer: Future[Option[UserAnswers]] = sessionRepository.get(EmploymentUpdateRemovePage)
+          val userAnwsers = UserAnswers(
+            "1",
+            Json.obj(
+              EndCompanyBenefitConstants.EmploymentNameKey -> "testEmployerName",
+              EndCompanyBenefitConstants.EmploymentIdKey   -> "testEmployerId",
+              EmploymentUpdateRemovePage.toString          -> "yes"
+            )
+          )
 
+//          val employerName = userAnwsers.get(EmploymentNameKeyPage)
+          val employerName = dataRequest.userAnswers.flatMap(_.get(EmploymentNameKeyPage))
 
-          //          val dataRequestMod = dataRequest.copy() // TODO - Temp to test mandatory value acquisition
+//          val employerId =
+//            userAnwsers.get(EmploymentIdKeyPage)
+          val employerId =
+            dataRequest.userAnswers.flatMap(_.get(EmploymentIdKeyPage))
 
-          Seq(employerName, employerId, userAnswer).map {
-            case (employerName, employerId, userAnswer) =>
+//          val userAnswer = userAnwsers.get(EmploymentUpdateRemovePage)
+          val userAnswer = dataRequest.userAnswers.flatMap(_.get(EmploymentUpdateRemovePage))
+
+          println("-" * 100)
+          println("name" + employerName)
+          println("-" * 100)
+          println("id" + employerId)
+          println("-" * 100)
+          println("answer" + userAnswer)
+          println("-" * 100)
+
+          (employerName, employerId, userAnswer) match {
+            case (Some(employerName), Some(employerId), userAnswer) =>
+              println("1" * 100)
               Future.successful(
                 Ok(
                   updateRemoveEmploymentDecision(
                     UpdateRemoveEmploymentForm.form(employerName)(request2Messages(request)).fill(userAnswer),
                     employerName,
-                    employerId
+                    employerId.toInt
                   )(request, request2Messages(request), user)
                 )
               )
-            case (_, _, _) => Future.successful(Redirect(taxAccountSummaryRedirect))
+            case (_, _, _) =>
+              println("2" * 100)
+              Future.successful(Redirect(taxAccountSummaryRedirect))
           }
-
-//          (dataRequest.userAnswers.get(EmploymentUpdateRemovePage), dataRequest.userAnswers.get(EmploymentIdKeyPage)) match {
-//            case (Some(name), Some(id)) =>
-//              Future.successful(
-//                Ok(
-//                  updateRemoveEmploymentDecision(
-//                    UpdateRemoveEmploymentForm.form(name)(request2Messages(request)).fill(userAnswer),
-//                    name,
-//                    id.toInt
-//                  )(request, request2Messages(request), user)
-//                )
-//              )
         }
         .apply(request)
   }

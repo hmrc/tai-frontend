@@ -19,8 +19,5 @@ package controllers.auth
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.tai.model.UserAnswers
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers])
-    extends WrappedRequest[A](request)
-
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers)
+case class DataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers])
     extends WrappedRequest[A](request)

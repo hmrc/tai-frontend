@@ -21,18 +21,15 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 import play.api.Application
 import play.api.http.Status.{IM_A_TEAPOT, OK}
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_GATEWAY, BAD_REQUEST, GET, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE}
 import uk.gov.hmrc.http.{HttpResponse, SessionKeys, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.MessageCount
-import utils.{BaseSpec, FakeDataRetrievalAction, FakeIdentifierAction, WireMockHelper}
+import utils.{BaseSpec, WireMockHelper}
 
 import java.util.UUID
 import scala.util.Random
-import play.api.inject.bind
-import controllers.actions.{DataRequiredAction, DataRequiredActionImpl, DataRetrievalAction, IdentifierAction}
 
 class MessageFrontendConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures {
 

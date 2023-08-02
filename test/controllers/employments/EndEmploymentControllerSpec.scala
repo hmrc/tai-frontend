@@ -18,21 +18,22 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.{ActionJourney, DataRequiredAction, DataRetrievalAction, FakeValidatePerson, IdentifierAction}
+import controllers.actions.{ActionJourney, FakeValidatePerson}
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import pages.{EmploymentIdKeyPage, EmploymentUpdateRemovePage}
+import pages.EmploymentUpdateRemovePage
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.SessionRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -64,16 +65,26 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
       FakeRequest(GET, route)
     "call updateRemoveEmployer page successfully with an authorised session" in {
       val endEmploymentTest = createEndEmploymentTest
-      val employmentId = 1
+      val userAnwsers = UserAnswers(
+        "1",
+        Json.obj(
+          EndCompanyBenefitConstants.EmploymentNameKey -> "testEmployerName",
+          EndCompanyBenefitConstants.EmploymentIdKey   -> "testEmployerId",
+          EmploymentUpdateRemovePage.toString          -> "yes"
+        )
+      )
+      mockSessionRepository.set(userAnwsers)
+      when(mockSessionRepository.set(userAnwsers)) thenReturn Future.successful(true)
+      when(mockSessionRepository.get(any()))
+        .thenReturn(
+          Future.successful(
+            Some(
+              userAnwsers
+            )
+          )
+        )
 
-      //      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      //        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-      val answerEmployerName = emptyUserAnswers
-        .set(EmploymentUpdateRemovePage, "testEmployer")
-        .get
-
-      val application = applicationBuilder(userAnswers = Some(answerEmployerName)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnwsers)).build()
 
       running(application) {
         val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest)
@@ -896,7 +907,6 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
   val employmentService: EmploymentService = mock[EmploymentService]
   val endEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val repository: SessionRepository = mock[SessionRepository]
 
   private class EndEmploymentTest
       extends EndEmploymentController(
@@ -915,7 +925,6 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         inject[AddIncomeCheckYourAnswersView],
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
-        repository,
         inject[ActionJourney],
         FakeAuthAction, // TODO - Create FakeActionJourney
         FakeValidatePerson
