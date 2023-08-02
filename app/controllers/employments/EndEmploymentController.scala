@@ -22,7 +22,7 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.{ActionJourney, DataRequiredAction, DataRetrievalAction, IdentifierAction, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser}
-import pages.{EmploymentIdKeyPage, EmploymentNameKeyPage}
+import pages.{EmploymentIdKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.SessionRepository
@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.EndEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
@@ -64,7 +65,7 @@ class EndEmploymentController @Inject() (
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   @Named("End Employment") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-//  sessionRepository: SessionRepository,
+  sessionRepository: SessionRepository,
   actionJourney: ActionJourney,
   authAction: AuthAction, // TODO - Use journey
   validatePerson: ValidatePerson
@@ -88,25 +89,42 @@ class EndEmploymentController @Inject() (
 
   // TODO - Need Journey Action to shorten this
   def employmentUpdateRemoveDecision: Action[AnyContent] = (authAction andThen validatePerson).async {
-    implicit request =>EmploymentDecisionConstants.EmploymentDecision
+    implicit request =>
       implicit val user: AuthedUser = request.taiUser
       actionJourney.setJourneyCache
         .async { implicit dataRequest =>
-          (dataRequest.userAnswers.get(EmploymentNameKeyPage), dataRequest.userAnswers.get(EmploymentIdKeyPage)) match {
-            case (Some(name), Some(id)) =>
+          val employerName: Future[Option[UserAnswers]] = sessionRepository.get(EndCompanyBenefitConstants.EmploymentNameKey)
+          val employerId: Future[Option[UserAnswers]] = sessionRepository.get(EndCompanyBenefitConstants.EmploymentNameKey)
+          val userAnswer: Future[Option[UserAnswers]] = sessionRepository.get(EmploymentUpdateRemovePage)
+
+
+          //          val dataRequestMod = dataRequest.copy() // TODO - Temp to test mandatory value acquisition
+
+          Seq(employerName, employerId, userAnswer).map {
+            case (employerName, employerId, userAnswer) =>
               Future.successful(
                 Ok(
                   updateRemoveEmploymentDecision(
-                    UpdateRemoveEmploymentForm.form(name)(request2Messages(request)).fill(Some(name)),
-                    name,
-                    id.toInt
+                    UpdateRemoveEmploymentForm.form(employerName)(request2Messages(request)).fill(userAnswer),
+                    employerName,
+                    employerId
                   )(request, request2Messages(request), user)
                 )
               )
-            case (_, _) =>
-              println("4" * 100)
-              Future.successful(Redirect(taxAccountSummaryRedirect))
+            case (_, _, _) => Future.successful(Redirect(taxAccountSummaryRedirect))
           }
+
+//          (dataRequest.userAnswers.get(EmploymentUpdateRemovePage), dataRequest.userAnswers.get(EmploymentIdKeyPage)) match {
+//            case (Some(name), Some(id)) =>
+//              Future.successful(
+//                Ok(
+//                  updateRemoveEmploymentDecision(
+//                    UpdateRemoveEmploymentForm.form(name)(request2Messages(request)).fill(userAnswer),
+//                    name,
+//                    id.toInt
+//                  )(request, request2Messages(request), user)
+//                )
+//              )
         }
         .apply(request)
   }

@@ -21,7 +21,7 @@ import play.api.libs.json.JsPath
 import play.api.mvc.Call
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-case object EmploymentIdKeyPage extends QuestionPage[String] { // TODO - Note really a page anymore
+case object EmploymentIdKeyPage extends QuestionPage[String] { // TODO - DELETE
 
   override def path: JsPath = JsPath \ toString
 
