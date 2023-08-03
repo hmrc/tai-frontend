@@ -22,7 +22,7 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.{ActionJourney, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser, DataRequest}
-import pages.{EmploymentIdKeyPage, EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentIdKeyPage, EmploymentIrregularPaymentKeyPage, EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -93,7 +93,7 @@ class EndEmploymentController @Inject() (
   def employmentUpdateRemoveDecision: Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async {
     implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage)match {
+      request.userAnswers.get(EmploymentIdKeyPage) match {
         case Some(empId) =>
           employmentService.employment(request.taiUser.nino, empId).map {
             case Some(employerName) =>
@@ -199,68 +199,69 @@ class EndEmploymentController @Inject() (
     }
   }.getOrElse(Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())))
 
-  def endEmploymentError: Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
+  def endEmploymentError: Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    journeyCacheService
-      .mandatoryJourneyValues(
-        EndEmploymentConstants.LatestPaymentDateKey,
-        EndEmploymentConstants.NameKey,
-        EndEmploymentConstants.EmploymentIdKey
-      )
-      .getOrFail
-      .map { data =>
-        val date = LocalDate.parse(data.head)
-        Ok(
-          endEmploymentWithinSixWeeksError(
-            WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)
-          )
-        )
-      }
+    (request.userAnswers.get(EmploymentIdKeyPage), request.userAnswers.get(EmploymentLatestPaymentKeyPage)) match {
+      case (Some(empId), Some(latestPayment)) =>
+        employmentService.employment(user.nino, empId).map {
+          case Some(employment) =>
+            Ok(
+              endEmploymentWithinSixWeeksError(
+                WithinSixWeeksViewModel(latestPayment.plusWeeks(6).plusDays(1), employment.name, latestPayment, empId)
+              )
+            )
+          case None => InternalServerError(errorPagesHandler.error5xx("Service failed")) // TODO - Fix incorrect arg
+        }
+      case _ => Future.successful(InternalServerError(errorPagesHandler.error5xx("Cache failed"))) // TODO - Fix incorrect arg
+    }
   }
 
-  def irregularPaymentError: Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    EitherT(
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-    )
-      .map { mandatoryJourneyValues =>
-        Ok(
-          endEmploymentIrregularPaymentError(
-            IrregularPayForm.createForm,
-            EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
-          )
-        )
-      }
-      .getOrElse {
-        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
-      }
-  }
-
-  def handleIrregularPaymentError: Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    journeyCacheService
-      .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-      .getOrFail
-      .map { mandatoryJourneyValues =>
-        IrregularPayForm.createForm
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              BadRequest(
+  def irregularPaymentError: Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async {
+    implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers.get(EmploymentIdKeyPage) match {
+        case Some(empId) =>
+          employmentService.employment(request.taiUser.nino, empId).map {
+            case Some(employment) =>
+              Ok(
                 endEmploymentIrregularPaymentError(
-                  formWithErrors,
-                  EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
+                  IrregularPayForm.createForm, // TODO - Option or not?
+                  EmploymentViewModel(employment.name, empId)
                 )
-              ),
-            formData =>
-              formData.irregularPayDecision match {
-                case Some(IrregularPayConstants.ContactEmployer) =>
-                  Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+              )
+            case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
+          }
+      case None => Future.successful(InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment id")))
+      }
+  }
+
+  def handleIrregularPaymentError: Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async {
+    implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers.get(EmploymentIdKeyPage) match {
+        case Some(empId) =>
+          IrregularPayForm.createForm
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                employmentService.employment(request.taiUser.nino, empId).map {
+                  case Some(employment) =>
+                    BadRequest(
+                      endEmploymentIrregularPaymentError(
+                        formWithErrors,
+                        EmploymentViewModel(employment.name, empId)
+                      )
+                    )
+                  case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
+                },
+              formData => formData match {
+                case Some(data) =>
+                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, data)
+                  Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
                 case _ =>
-                  Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+                  Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
               }
-          )
+            )
       }
   }
 

@@ -15,7 +15,6 @@
  *@
 
 @import includes.{backLink, cancelLink, ptaHeader, submit}
-@import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -23,7 +22,7 @@
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 
-@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
+@(irregularPayForm: Form[Option[String]], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @hint = {
     <p class="govuk-body-l">@Messages("tai.irregular.para1", model.employerName)</p>
