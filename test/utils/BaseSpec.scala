@@ -27,7 +27,7 @@ import play.api.i18n._
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
-import repository.SessionRepository
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -45,7 +45,7 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
       .overrides(
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-        bind[SessionRepository].toInstance(mockSessionRepository)
+        bind[JourneyCacheNewRepository].toInstance(mockSessionRepository)
       )
 
   override lazy val app: Application = applicationBuilder().build()
@@ -60,7 +60,7 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
   lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
   lazy val langUtils: LanguageUtils = inject[LanguageUtils]
-  lazy val mockSessionRepository: SessionRepository = mock[SessionRepository]
+  lazy val mockSessionRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]

@@ -30,13 +30,13 @@ import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionRepository @Inject() (
+class JourneyCacheNewRepository @Inject() (
   mongoComponent: MongoComponent,
   appConfig: ApplicationConfig,
   clock: Clock
 )(implicit ec: ExecutionContext)
     extends PlayMongoRepository[UserAnswers](
-      collectionName = "sessions",
+      collectionName = "journey-cache",
       mongoComponent = mongoComponent,
       domainFormat = UserAnswers.format,
       indexes = Seq(

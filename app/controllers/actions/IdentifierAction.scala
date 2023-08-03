@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait IdentifierAction
     extends ActionBuilder[IdentifierRequest, AnyContent] with ActionFunction[Request, IdentifierRequest]
 
-class AuthenticatedIdentifierAction @Inject() (
+class AuthenticatedIdentifierAction @Inject() ( // TODO - Delete
   override val authConnector: AuthConnector,
 //                                                config: ApplicationConfig,
   val parser: BodyParsers.Default

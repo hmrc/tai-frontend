@@ -19,5 +19,11 @@ package controllers.auth
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.tai.model.UserAnswers
 
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers])
+case class DataRequest[A](request: Request[A], taiUser: AuthedUser, fullName: String, userAnswers: UserAnswers)
     extends WrappedRequest[A](request)
+
+object DataRequest {
+  def apply(request: AuthenticatedRequest[_], userAnswers: UserAnswers): DataRequest[_] = {
+    DataRequest(request.request, request.taiUser, request.fullName, userAnswers)
+  }
+}
