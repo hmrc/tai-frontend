@@ -22,7 +22,7 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.{ActionJourney, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser, DataRequest}
-import pages.{EmploymentIdKeyPage, EmploymentIrregularPaymentKeyPage, EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentEndDateKeyPage, EmploymentIdKeyPage, EmploymentIrregularPaymentKeyPage, EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -254,7 +254,7 @@ class EndEmploymentController @Inject() (
                     )
                   case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
                 },
-              formData => formData match {
+              {
                 case Some(data) =>
                   request.userAnswers.set(EmploymentIrregularPaymentKeyPage, data)
                   Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
@@ -265,34 +265,22 @@ class EndEmploymentController @Inject() (
       }
   }
 
-  def endEmploymentPage: Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey),
-        Seq(EndEmploymentConstants.EndDateKey)
-      )
-      .map {
-        case Right((mandatorySequence, optionalSeq)) =>
-          optionalSeq match {
-            case Seq(Some(date)) =>
+  def endEmploymentPage: Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async {
+    implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      (request.userAnswers.get(EmploymentIdKeyPage), request.userAnswers.get(EmploymentEndDateKeyPage)) match {
+        case (Some(empId), endDate) =>
+          employmentService.employment(authUser.nino, empId).map {
+            case Some(employment) =>
               Ok(
                 endEmploymentView(
-                  EmploymentEndDateForm(mandatorySequence.head).form.fill(LocalDate.parse(date)),
-                  EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)
+                  endDate.map(date => EmploymentEndDateForm(employment.name).form.fill(date)).getOrElse(EmploymentEndDateForm(employment.name).form),
+                  EmploymentViewModel(employment.name, empId)
                 )
               )
-            case _ =>
-              Ok(
-                endEmploymentView(
-                  EmploymentEndDateForm(mandatorySequence.head).form,
-                  EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)
-                )
-              )
+            case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
           }
-        case Left(_) =>
-          Redirect(taxAccountSummaryRedirect)
+        case _ => Future.successful(InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment id")))
       }
   }
 
