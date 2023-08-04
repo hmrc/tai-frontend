@@ -33,7 +33,7 @@ class DataRetrievalActionImpl @Inject() (
       .get(request.userId)
       .map { // TODO - or "End Employment", need to find a way to work with backend caching
         _.fold(
-          DataRequest(request.request, request.userId, , _)
+          DataRequest(request.request, _)
         )
       }
 }

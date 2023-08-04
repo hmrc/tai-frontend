@@ -14,12 +14,17 @@
  * limitations under the License.
  *@
 
-@import includes.cancelLink
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import includes.confirmationSummary
 @import uk.gov.hmrc.tai.model.TaxYear
-@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+@import includes.{cancelLink, detailsSummary}
+
 @import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
+@import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 
 @this(main: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukDetails : GovukDetails, govukErrorSummary: GovukErrorSummary)

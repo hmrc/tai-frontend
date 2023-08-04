@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.config
 
 import com.google.inject.AbstractModule
-import controllers.actions.{DataRetrievalAction, DataRetrievalActionImpl, IdentifierAction, SessionIdentifierAction}
+import controllers.actions.{DataRetrievalAction, DataRetrievalActionImpl, IdentifierAction, IdentifierActionImpl}
 
 import java.time.{Clock, ZoneOffset}
 
@@ -27,7 +27,7 @@ class SessionModule extends AbstractModule {
     bind(classOf[DataRetrievalAction]).to(classOf[DataRetrievalActionImpl]).asEagerSingleton()
 
     // For session based storage instead of cred based, change to SessionIdentifierAction
-    bind(classOf[IdentifierAction]).to(classOf[SessionIdentifierAction]).asEagerSingleton()
+    bind(classOf[IdentifierAction]).to(classOf[IdentifierActionImpl]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
   }

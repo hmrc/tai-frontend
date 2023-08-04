@@ -14,10 +14,15 @@
  * limitations under the License.
  *@
 
+@import includes.ptaHeader
+@import includes.detailsSummary
+@import controllers.routes
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-@import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
+@import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
+@import java.time.LocalDate
 
 @(taxCodeRecord: TaxCodeRecord, identifier: String, scottishTaxRateBands: Map[String, BigDecimal], appConfig: ApplicationConfig)(implicit messages: Messages)
 

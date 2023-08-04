@@ -15,9 +15,20 @@
  *@
 
 @import includes.{cancelLink, submit}
-@import uk.gov.hmrc.govukfrontend.views.html.components.{CharacterCount, ErrorSummary, FormWithCSRF, GovukCharacterCount, GovukErrorSummary, Hint, Label, Text}
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukCharacterCount
+@import uk.gov.hmrc.govukfrontend.views.html.components.Text
+@import uk.gov.hmrc.govukfrontend.views.html.components.Label
+@import uk.gov.hmrc.govukfrontend.views.html.components.Hint
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components.ErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 
 

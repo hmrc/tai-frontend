@@ -25,19 +25,21 @@
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.backlink.BackLink
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.phasebanner.PhaseBanner
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.pagelayout.PageLayout
 @import uk.gov.hmrc.govukfrontend.views.html.components.FixedWidthPageLayout
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.Header
 @import uk.gov.hmrc.hmrcfrontend.controllers.routes.LanguageController.switchToLanguage
 @import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsOneThirdMainContent
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import help.Link
-@import uk.gov.hmrc.hmrcfrontend.config.AccountMenuConfig
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.hmrcfrontend.config.AccountMenuConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichAccountMenu
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import views.html.includes.attorneyBanner
+@import controllers.auth.AuthenticatedRequest
 @import uk.gov.hmrc.webchat.client.WebChatClient
-@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichAccountMenu
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accountmenu.BusinessTaxAccount
 
 @this(
         govukTemplate: GovukTemplate,
@@ -64,6 +66,7 @@
         banner: attorneyBanner,
         webChatClient: WebChatClient
 )(implicit accountMenuConfig: AccountMenuConfig)
+
 
 @(
         title: String,

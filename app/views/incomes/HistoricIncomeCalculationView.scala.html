@@ -14,12 +14,15 @@
  * limitations under the License.
  *@
 
-@import controllers.auth.AuthenticatedRequest
 @import includes.ptaHeader
+@import includes.link
+
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.model.domain.{Available, TemporarilyUnavailable}
 @import uk.gov.hmrc.tai.model.TaxYear
-@import uk.gov.hmrc.tai.model.domain.Available
-@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+@import controllers.auth.AuthenticatedRequest
 
 @this(main: MainTemplate)
 

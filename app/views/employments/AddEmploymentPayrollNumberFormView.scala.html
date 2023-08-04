@@ -15,11 +15,13 @@
  *@
 
 @import includes.cancelLink
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
 @import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 

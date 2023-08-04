@@ -14,13 +14,15 @@
  * limitations under the License.
  *@
 
-@import controllers.auth.AuthenticatedRequest
-@import includes.{link, ptaHeader}
+@import includes.ptaHeader
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import incomeTaxComparison._
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 @import uk.gov.hmrc.tai.model.TaxYear
-@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-@import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.IncomeTaxComparisonViewModel
+
+@import includes.link
+@import controllers.auth.AuthenticatedRequest
 
 @this(main: MainTemplate)
 

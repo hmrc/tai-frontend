@@ -15,10 +15,16 @@
  *@
 
 @import includes.cancelLink
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-
 @import java.time.LocalDate
+@import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import includes.cancelLink
+
+@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 @this(main: MainTemplate, form: FormWithCSRF, govukDateInput: GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 

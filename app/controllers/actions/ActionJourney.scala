@@ -37,5 +37,5 @@ class ActionJourneyImpl @Inject() (
   override val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent] =
     authAction andThen validatePerson
   override val setJourneyCache: ActionBuilder[DataRequest, AnyContent] =
-    identifierAction andThen dataRetrievalAction
+    authAction andThen validatePerson andThen identifierAction andThen dataRetrievalAction
 }
