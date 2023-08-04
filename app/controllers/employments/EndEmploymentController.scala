@@ -22,7 +22,7 @@ import com.google.inject.name.Named
 import controllers._
 import controllers.actions.{ActionJourney, ValidatePerson}
 import controllers.auth.{AuthAction, AuthedUser, DataRequest}
-import pages.{EmploymentEndDateKeyPage, EmploymentIdKeyPage, EmploymentIrregularPaymentKeyPage, EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentEndDateKeyPage, EmploymentIdKeyPage, EmploymentIrregularPaymentKeyPage, EmploymentLatestPaymentKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -271,10 +271,11 @@ class EndEmploymentController @Inject() (
       (request.userAnswers.get(EmploymentIdKeyPage), request.userAnswers.get(EmploymentEndDateKeyPage)) match {
         case (Some(empId), endDate) =>
           employmentService.employment(authUser.nino, empId).map {
-            case Some(employment) =>
+            case Some(employment) => // TODO - Make form take optional
+              val formData = endDate.map(date => EmploymentEndDateForm(employment.name).form.fill(date)).getOrElse(EmploymentEndDateForm(employment.name).form)
               Ok(
                 endEmploymentView(
-                  endDate.map(date => EmploymentEndDateForm(employment.name).form.fill(date)).getOrElse(EmploymentEndDateForm(employment.name).form),
+                  formData,
                   EmploymentViewModel(employment.name, empId)
                 )
               )
@@ -308,58 +309,61 @@ class EndEmploymentController @Inject() (
       }
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    (
-      journeyCacheService.mandatoryJourneyValueAsInt(EndEmploymentConstants.EmploymentIdKey),
-      journeyCacheService
-        .optionalValues(EndEmploymentConstants.TelephoneQuestionKey, EndEmploymentConstants.TelephoneNumberKey)
-    ).mapN {
-      case (Right(mandatoryEmploymentId), telephoneCache) =>
-        Ok(
-          canWeContactByPhone(
-            Some(user),
-            telephoneNumberViewModel(mandatoryEmploymentId),
-            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
-          )
-        )
-      case _ => Redirect(taxAccountSummaryRedirect)
-    }
-  }
-
-  def submitTelephoneNumber(): Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    YesNoTextEntryForm
-      .form(
-        Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
-        Messages("tai.canWeContactByPhone.telephone.empty"),
-        Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)
-      )
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          journeyCacheService.mandatoryJourneyValueAsInt(EndEmploymentConstants.EmploymentIdKey) map {
-            case Right(employmentId) =>
-              BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
-          },
-        form => {
-          val mandatoryData = Map(
-            EndEmploymentConstants.TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
+  def addTelephoneNumber(): Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async {
+    implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      (
+        request.userAnswers.get(EmploymentIdKeyPage),
+        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage), // TODO - Why is the question cached?
+        request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
+      ) match {
+        case (Some(empId), telephoneQuestion, telephoneNumber) =>
+          Future.successful(
+            Ok(
+              canWeContactByPhone(
+                Some(authUser),
+                telephoneNumberViewModel(empId),
+                YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneQuestion, telephoneNumber))
+              )
             )
           )
-          val dataForCache = form.yesNoChoice match {
-            case Some(FormValuesConstants.YesValue) =>
-              mandatoryData ++ Map(EndEmploymentConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-            case _ => mandatoryData ++ Map(EndEmploymentConstants.TelephoneNumberKey -> "")
-          }
-          journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
-          }
-        }
-      )
+        case _ => Future.successful(Redirect(taxAccountSummaryRedirect)) // TODO - This doesn't seem right as a failure case
+      }
+  }
+
+  def submitTelephoneNumber(): Action[AnyContent] = (authAction andThen validatePerson andThen actionJourney.setJourneyCache).async {
+    implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers.get(EmploymentIdKeyPage) match {
+        case (Some(empId)) =>
+          YesNoTextEntryForm
+            .form(
+              Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
+              Messages("tai.canWeContactByPhone.telephone.empty"),
+              Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)
+            )
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(BadRequest(canWeContactByPhone(Some(authUser), telephoneNumberViewModel(empId), formWithErrors))),
+              form => {
+                val cache = form.yesNoChoice match {
+                  case Some(yes) if yes == FormValuesConstants.YesValue =>
+                    val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
+                    request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
+                    request.userAnswers.set(EmploymentTelephoneNumberKeyPage, form.yesNoTextEntry.getOrElse(""))
+                  case _ =>
+                    val questionCached = Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
+                    request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
+                    request.userAnswers.set(EmploymentTelephoneNumberKeyPage, form.yesNoTextEntry.getOrElse(""))
+                }
+                cache
+                  .map(_ => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())))
+                  .getOrElse(Future.successful(Redirect(taxAccountSummaryRedirect))) // TODO - Another strange choice of error handling
+              }
+            )
+        case _ => Future.successful(Redirect(taxAccountSummaryRedirect))  // TODO - Another strange choice of error handling
+      }
   }
 
   def endEmploymentCheckYourAnswers: Action[AnyContent] = (authAction andThen validatePerson).async {
