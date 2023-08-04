@@ -17,10 +17,9 @@
 package controllers.actions
 
 import controllers.auth.{DataRequest, IdentifierRequest}
-import controllers.routes
-import play.api.mvc.{ActionTransformer, Result}
-import play.api.mvc.Results.Redirect
+import play.api.mvc.ActionTransformer
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.tai.model.UserAnswers
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,11 +32,16 @@ class DataRetrievalActionImpl @Inject() (
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
     journeyCacheNewRepository
       .get(request.userId)
-      .map { // TODO - or "End Employment", need to find a way to work with backend caching
+      .map {
         _.fold(
-          throw new Exception
+          DataRequest(
+            request.request,
+            request.request.taiUser,
+            request.request.fullName,
+            UserAnswers(request.userId)
+          ) // TODO - Is this right?
         )(
-          DataRequest(request.request, _)
+          DataRequest(request.request, request.request.taiUser, request.request.fullName, _)
         )
       }
 }

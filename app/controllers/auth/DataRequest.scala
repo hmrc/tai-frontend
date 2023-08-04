@@ -22,7 +22,4 @@ import uk.gov.hmrc.tai.model.UserAnswers
 case class DataRequest[A](request: Request[A], taiUser: AuthedUser, fullName: String, userAnswers: UserAnswers)
     extends WrappedRequest[A](request)
 
-object DataRequest {
-  def apply(request: AuthenticatedRequest[_], userAnswers: UserAnswers): DataRequest[_] =
-    DataRequest(request.request, request.taiUser, request.fullName, userAnswers)
-}
+// TODO - Bring back apply method

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.util
 
 import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class MonetaryUtilSpec extends PlaySpec {
 
@@ -35,7 +36,7 @@ class MonetaryUtilSpec extends PlaySpec {
 
     "return the string representation of the provided MoneyPounds with a pound symbol prefix, negative sign and no decimal places" when {
       "the value is negative with no pence" in {
-        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$EncodedMinusSign£1,000"
+        MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${TaiConstants.EncodedMinusSign}£1,000"
       }
     }
 

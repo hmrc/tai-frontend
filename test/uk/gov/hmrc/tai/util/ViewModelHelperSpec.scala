@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.util
 
 import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 
 import java.time.LocalDate
@@ -40,7 +41,7 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
 
     "return the string representation of the provided MoneyPounds with a pound symbol prefix, negative sign and no decimal places" when {
       "the value is negative with no pence" in {
-        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"$EncodedMinusSign£1,000"
+        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${TaiConstants.EncodedMinusSign}£1,000"
       }
     }
 

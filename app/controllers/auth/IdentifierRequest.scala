@@ -18,5 +18,6 @@ package controllers.auth
 
 import play.api.mvc.WrappedRequest
 
-case class IdentifierRequest[A](request: AuthenticatedRequest[A], userId: String)
-    extends WrappedRequest[A](request)
+case class IdentifierRequest[A](request: AuthenticatedRequest[A], userId: String) extends WrappedRequest[A](request)
+
+// TODO - Apply method

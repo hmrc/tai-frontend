@@ -61,13 +61,13 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
     }
   }
 
-  private lazy val formWithErrors: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
+  private lazy val formWithErrors: Form[Option[String]] = IrregularPayForm.createForm.bind(
     Map(
       IrregularPayConstants.IrregularPayDecision -> ""
     )
   )
 
-  private lazy val validForm: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
+  private lazy val validForm: Form[Option[String]] = IrregularPayForm.createForm.bind(
     Map(
       IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer
     )

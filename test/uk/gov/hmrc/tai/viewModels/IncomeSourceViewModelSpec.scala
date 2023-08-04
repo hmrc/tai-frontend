@@ -20,6 +20,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, NonTaxCodeIncome, OtherNonTaxCodeIncome, PotentiallyCeased}
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
@@ -40,7 +41,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has the amount field as negative formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeNegative = taxCodeIncome.copy(amount = -1111)
         val sut = IncomeSourceViewModel(taxCodeIncomeNegative, employment)
-        sut.amount mustBe s"$EncodedMinusSign£1,111"
+        sut.amount mustBe s"${TaiConstants.EncodedMinusSign}£1,111"
       }
       "has the amount field as zero formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeZero = taxCodeIncome.copy(amount = 0)
