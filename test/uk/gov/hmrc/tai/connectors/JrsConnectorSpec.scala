@@ -20,7 +20,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}

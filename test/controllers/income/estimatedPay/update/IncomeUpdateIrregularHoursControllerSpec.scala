@@ -20,7 +20,6 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -32,11 +31,12 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 

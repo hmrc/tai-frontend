@@ -25,7 +25,6 @@ import uk.gov.hmrc.auth.core.ConfidenceLevel.L250
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-import views.html.MainTemplate
 
 class MainTemplateSpec extends BaseSpec with JsoupMatchers {
 

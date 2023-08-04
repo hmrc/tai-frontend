@@ -17,7 +17,7 @@
 package controllers.actions
 
 import com.google.inject.ImplementedBy
-import controllers.auth.{AuthAction, AuthenticatedRequest, DataRequest, IdentifierRequest}
+import controllers.auth.{AuthAction, AuthenticatedRequest, DataRequest}
 import play.api.mvc.{ActionBuilder, AnyContent}
 
 import javax.inject.Inject

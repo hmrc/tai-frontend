@@ -24,8 +24,6 @@ import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util._
 
-import scala.math.BigDecimal
-
 case class SimpleEstimatedIncomeTaxViewModel(
   incomeTaxEstimate: BigDecimal,
   incomeEstimate: BigDecimal,

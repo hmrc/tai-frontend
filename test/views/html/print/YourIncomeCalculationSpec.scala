@@ -16,15 +16,15 @@
 
 package views.html.print
 
-import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class YourIncomeCalculationSpec extends TaiViewSpec {

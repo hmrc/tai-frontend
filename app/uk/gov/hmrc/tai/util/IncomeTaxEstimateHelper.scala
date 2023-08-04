@@ -18,9 +18,9 @@ package uk.gov.hmrc.tai.util
 
 import controllers.routes
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.Money.pounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.util.Money.pounds
 import views.html.includes.link
 
 trait IncomeTaxEstimateHelper {

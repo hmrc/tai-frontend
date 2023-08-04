@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import java.time.LocalDate
 import play.api.libs.json.{Format, Json}
+
+import java.time.LocalDate
 
 case class EndOfTaxYearUpdate(date: LocalDate, adjustments: Seq[Adjustment])
 

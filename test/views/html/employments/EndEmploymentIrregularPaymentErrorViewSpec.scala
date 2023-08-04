@@ -18,7 +18,7 @@ package views.html.employments
 
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.employments.{IrregularPayForm, IrregularPayFormData}
+import uk.gov.hmrc.tai.forms.employments.IrregularPayForm
 import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel

@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
+
+import java.time.LocalDate
 
 class IncomeSourceSummaryViewModelSpec extends BaseSpec {
 

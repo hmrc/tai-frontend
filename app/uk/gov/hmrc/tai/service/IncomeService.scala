@@ -16,20 +16,19 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
-import java.time.LocalDate
-import play.api.i18n.Messages
 import cats.implicits._
+import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.model.{TaxYear, _}
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.{TaxYear, _}
 import uk.gov.hmrc.tai.util.FormHelper
-import uk.gov.hmrc.tai.model.domain.income.Ceased
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeService @Inject() (

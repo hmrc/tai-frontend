@@ -21,8 +21,7 @@ import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants
+import uk.gov.hmrc.tai.util.constants.{AddPensionNumberConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
 

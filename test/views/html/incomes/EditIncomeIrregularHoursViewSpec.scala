@@ -17,9 +17,8 @@
 package views.html.incomes
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel

@@ -22,7 +22,6 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}

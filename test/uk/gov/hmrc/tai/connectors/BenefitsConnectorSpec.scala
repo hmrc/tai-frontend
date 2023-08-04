@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
@@ -24,6 +23,7 @@ import uk.gov.hmrc.tai.model.domain.MedicalInsurance
 import uk.gov.hmrc.tai.model.domain.benefits._
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps

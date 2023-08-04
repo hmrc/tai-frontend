@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+
+import java.time.LocalDate
 
 case class EmploymentViewModel(employerName: String, empId: Int)
 

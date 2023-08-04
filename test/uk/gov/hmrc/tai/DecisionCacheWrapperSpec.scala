@@ -23,8 +23,8 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.tai.model.domain.Telephone
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 import scala.concurrent.Future

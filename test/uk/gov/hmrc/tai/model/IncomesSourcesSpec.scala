@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain._
 import utils.BaseSpec
+
+import java.time.LocalDate
 
 class IncomesSourcesSpec extends BaseSpec with ScalaCheckDrivenPropertyChecks with TableDrivenPropertyChecks {
 

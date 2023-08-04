@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.tai.forms
 
-import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.data.Forms._
-import play.api.libs.json.Json
-
+import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Request
+import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.model.EmploymentAmount
-import play.api.libs.json.OFormat
+
+import java.time.LocalDate
 
 case class CalculateIncomeForm(
   name: String,

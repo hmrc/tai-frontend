@@ -17,13 +17,11 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.util.MoneyPounds
-import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.service.TimeToProcess
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHelper}
 
 case class TaxAccountSummaryViewModel(
   header: String,
@@ -51,8 +49,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     nonMatchingCeasedEmployments: Seq[Employment]
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
-    val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
+    val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+    val title = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))

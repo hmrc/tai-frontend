@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.tai.config
 
-import com.google.inject.AbstractModule
-import controllers.actions.{DataRetrievalAction, DataRetrievalActionImpl, IdentifierAction, SessionIdentifierAction}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.tai.service.journeyCache._

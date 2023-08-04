@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFre
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import utils.BaseSpec
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 

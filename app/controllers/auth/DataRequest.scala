@@ -23,7 +23,6 @@ case class DataRequest[A](request: Request[A], taiUser: AuthedUser, fullName: St
     extends WrappedRequest[A](request)
 
 object DataRequest {
-  def apply(request: AuthenticatedRequest[_], userAnswers: UserAnswers): DataRequest[_] = {
+  def apply(request: AuthenticatedRequest[_], userAnswers: UserAnswers): DataRequest[_] =
     DataRequest(request.request, request.taiUser, request.fullName, userAnswers)
-  }
 }

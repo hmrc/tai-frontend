@@ -17,9 +17,9 @@
 package views.html.estimatedIncomeTax
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 class whyThisIsAnEstimateDescSpec extends TaiViewSpec {
 

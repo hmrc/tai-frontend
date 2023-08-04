@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.tai.model
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import play.api.libs.json.OFormat
 
 final case class Employers(name: String, employerReference: String, claims: List[YearAndMonth]) {
 

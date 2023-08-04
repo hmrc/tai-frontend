@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.tai.metrics
 
-import java.util.concurrent.atomic.AtomicBoolean
-
 import com.codahale.metrics.{MetricRegistry, Timer}
 import play.api.mvc.{Action, BaseController, Result}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import java.util.concurrent.atomic.AtomicBoolean
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 trait HasActionMetrics extends HasMetrics { self: BaseController =>

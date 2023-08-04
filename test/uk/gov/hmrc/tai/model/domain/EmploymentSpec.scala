@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
+
+import java.time.LocalDate
 
 class EmploymentSpec extends PlaySpec {
 

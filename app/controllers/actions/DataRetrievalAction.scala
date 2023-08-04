@@ -17,11 +17,10 @@
 package controllers.actions
 
 import controllers.auth.{DataRequest, IdentifierRequest}
-
-import javax.inject.Inject
 import play.api.mvc.ActionTransformer
 import repository.JourneyCacheNewRepository
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject() (
@@ -34,8 +33,7 @@ class DataRetrievalActionImpl @Inject() (
       .get(request.userId)
       .map { // TODO - or "End Employment", need to find a way to work with backend caching
         _.fold(
-          DataRequest(request.request, request.userId, _)
-
+          DataRequest(request.request, request.userId, , _)
         )
       }
 }

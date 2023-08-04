@@ -19,8 +19,6 @@ package controllers
 import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.BeforeAndAfterEach
@@ -43,6 +41,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes._
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 

@@ -15,13 +15,11 @@
  *@
 
 @import includes.{cancelLink, submit}
-@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-@import uk.gov.hmrc.tai.model.TaxYear
-@import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
-@import uk.gov.hmrc.tai.util.constants.UpdateHistoricIncomeChoiceConstants
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+@import uk.gov.hmrc.tai.util.constants.UpdateHistoricIncomeChoiceConstants
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput : GovukInput, govukErrorSummary: GovukErrorSummary)
 

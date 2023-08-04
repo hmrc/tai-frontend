@@ -17,11 +17,9 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
-import java.time.format.DateTimeFormatter
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel}
 
 class IncomeTaxSpec extends TaiViewSpec {

@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.tai.service
 
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 import utils.BaseSpec
+
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps

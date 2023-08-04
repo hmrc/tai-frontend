@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.tai.forms.income.estimatedPayment.update
 
-import java.time.LocalDate
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import utils.BaseSpec
+
+import java.time.LocalDate
 
 class AmountComparatorFormSpec extends BaseSpec {
 

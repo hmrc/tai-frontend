@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.tai.model.{CalculatedPay, PayDetails}
 import utils.{BaseSpec, WireMockHelper}
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 

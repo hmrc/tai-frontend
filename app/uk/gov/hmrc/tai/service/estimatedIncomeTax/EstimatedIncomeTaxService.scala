@@ -23,8 +23,6 @@ import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
-import scala.math.BigDecimal
-
 object EstimatedIncomeTaxService {
 
   def taxViewType(

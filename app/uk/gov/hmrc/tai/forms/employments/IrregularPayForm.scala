@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 object IrregularPayForm {
   def createForm(implicit messages: Messages): Form[Option[String]] =
     Form[Option[String]](
-    single(
+      single(
         IrregularPayConstants.IrregularPayDecision -> optional(text).verifying(irregularPayDecisionValidation)
       )
     )

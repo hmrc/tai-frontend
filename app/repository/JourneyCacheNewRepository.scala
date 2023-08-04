@@ -18,12 +18,12 @@ package repository
 
 import com.google.inject.Inject
 import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes, ReplaceOptions, Updates}
-import uk.gov.hmrc.tai.config.ApplicationConfig
+import org.mongodb.scala.model._
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.UserAnswers
 
 import java.time.{Clock, Instant}
