@@ -17,22 +17,26 @@
 package controllers.actions
 
 import controllers.auth.{DataRequest, IdentifierRequest}
-import play.api.mvc.ActionTransformer
+import controllers.routes
+import play.api.mvc.{ActionTransformer, Result}
+import play.api.mvc.Results.Redirect
 import repository.JourneyCacheNewRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject() (
-  val sessionRepository: JourneyCacheNewRepository
+  val journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
-    sessionRepository
+    journeyCacheNewRepository
       .get(request.userId)
       .map { // TODO - or "End Employment", need to find a way to work with backend caching
         _.fold(
+          throw new Exception
+        )(
           DataRequest(request.request, _)
         )
       }

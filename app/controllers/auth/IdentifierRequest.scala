@@ -16,7 +16,7 @@
 
 package controllers.auth
 
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.mvc.WrappedRequest
 
-case class IdentifierRequest[A](request: Request[A], fullName: String, taiUser: AuthedUser, userId: String)
+case class IdentifierRequest[A](request: AuthenticatedRequest[A], userId: String)
     extends WrappedRequest[A](request)

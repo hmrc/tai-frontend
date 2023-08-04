@@ -31,7 +31,7 @@ class IdentifierActionImpl @Inject() ()(implicit val executionContext: Execution
       HeaderCarrierConverter.fromRequestAndSession(request.request, request.request.session)
     hc.sessionId match {
       case Some(session) =>
-        Future.successful(IdentifierRequest(request, request.fullName, request.taiUser, session.value))
+        Future.successful(IdentifierRequest(request, session.value))
       case None =>
         //        Future.successful(Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))) // TODO - Consider journey recovery controller or alternative
         throw new Exception("Missing identifier")
