@@ -24,7 +24,6 @@ import javax.inject.Inject
 
 @ImplementedBy(classOf[ActionJourneyImpl])
 trait ActionJourney { // TODO - Needs a better name
-  val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent]
   val setJourneyCache: ActionBuilder[DataRequest, AnyContent]
 }
 
@@ -34,8 +33,6 @@ class ActionJourneyImpl @Inject() (
   identifierAction: IdentifierAction,
   dataRetrievalAction: DataRetrievalAction
 ) extends ActionJourney {
-  override val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent] =
-    authAction andThen validatePerson
   override val setJourneyCache: ActionBuilder[DataRequest, AnyContent] =
     authAction andThen validatePerson andThen identifierAction andThen dataRetrievalAction
 }

@@ -62,34 +62,27 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 
     def getRequest(): FakeRequest[AnyContentAsEmpty.type] =
       FakeRequest(GET, route)
-    "call updateRemoveEmployer page successfully with an authorised session" in {
-      val endEmploymentTest = createEndEmploymentTest
-      val userAnwsers = UserAnswers(
-        "1",
-        Json.obj(
-          EndCompanyBenefitConstants.EmploymentNameKey -> "testEmployerName",
-          EndCompanyBenefitConstants.EmploymentIdKey   -> "testEmployerId",
-          EmploymentUpdateRemovePage.toString          -> "yes"
-        )
-      )
-      mockSessionRepository.set(userAnwsers)
-      when(mockSessionRepository.set(userAnwsers)) thenReturn Future.successful(true)
-      when(mockSessionRepository.get(any()))
-        .thenReturn(
-          Future.successful(
-            Some(
-              userAnwsers
-            )
-          )
-        )
-
-      val application = applicationBuilder(userAnswers = Some(userAnwsers)).build()
-
-      running(application) {
-        val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest)
-        val doc = Jsoup.parse(contentAsString(result))
-      }
-    }
+//    "call updateRemoveEmployer page successfully with an authorised session" in {
+//      val endEmploymentTest = createEndEmploymentTest
+//      val userAnwsers = UserAnswers(
+//        "1",
+//        Json.obj(
+//          EndCompanyBenefitConstants.EmploymentNameKey -> "testEmployerName",
+//          EndCompanyBenefitConstants.EmploymentIdKey   -> "testEmployerId",
+//          EmploymentUpdateRemovePage.toString          -> "yes"
+//        )
+//      )
+//
+//      val application = applicationBuilder(userAnswers = Some(userAnwsers)).build()
+//
+//      running(application) {
+//        val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest)
+//        val doc = Jsoup.parse(contentAsString(result))
+//
+//        status(result) mustBe OK
+//        doc.title() must include(messages("tai.employment.decision.legend", employerName))
+//      }
+//    } // TODO - Should be same as below yes case, but is passing while the other is failing for some reason
 
     List(
       None,
@@ -98,17 +91,24 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
     ).foreach { yesOrNo =>
       s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is $yesOrNo" in {
         val endEmploymentTest = createEndEmploymentTest
-        val employmentId = 1
-        val dataFromCache = (Seq(employerName, employmentId.toString), Seq(yesOrNo))
+        val userAnwsers = UserAnswers(
+          "1",
+          Json.obj(
+            EndCompanyBenefitConstants.EmploymentNameKey -> "testEmployerName",
+            EndCompanyBenefitConstants.EmploymentIdKey   -> "testEmployerId",
+            EmploymentUpdateRemovePage.toString          -> yesOrNo
+          )
+        )
 
-        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Right(dataFromCache)))
+        val application = applicationBuilder(userAnswers = Some(userAnwsers)).build()
 
-        val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
-        val doc = Jsoup.parse(contentAsString(result))
+        running(application) {
+          val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest)
+          val doc = Jsoup.parse(contentAsString(result))
 
-        status(result) mustBe OK
-        doc.title() must include(messages("tai.employment.decision.legend", employerName))
+          status(result) mustBe OK
+          doc.title() must include(messages("tai.employment.decision.legend", employerName))
+        }
       }
     }
 

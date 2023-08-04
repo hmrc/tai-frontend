@@ -84,7 +84,6 @@ class EndEmploymentController @Inject() (
       controllers.employments.routes.EndEmploymentController.cancel(employmentId).url
     )
 
-  // TODO - Need Journey Action to shorten this
   def employmentUpdateRemoveDecision: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
@@ -101,9 +100,13 @@ class EndEmploymentController @Inject() (
                   empId
                 )
               )
-            case None => Redirect(taxAccountSummaryRedirect)
+            case None =>
+              println("1" * 100)
+              Redirect(taxAccountSummaryRedirect)
           }
-        case None => Future.successful(Redirect(taxAccountSummaryRedirect))
+        case None =>
+          println("2" * 100)
+          Future.successful(Redirect(taxAccountSummaryRedirect))
       }
     }
 
