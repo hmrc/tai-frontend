@@ -16,8 +16,8 @@
 
 package utils
 import builders.UserBuilder
-import controllers.actions.{DataRetrievalAction, IdentifierAction}
-import controllers.auth.AuthedUser
+import controllers.actions.{ActionJourney, DataRetrievalAction, IdentifierAction}
+import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
@@ -26,6 +26,7 @@ import play.api.Application
 import play.api.i18n._
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
 import play.api.mvc.MessagesControllerComponents
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.Nino
@@ -34,16 +35,30 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndCompanyBenefitConstants
 
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
 
+  val userAnwsers: UserAnswers = UserAnswers(
+    "1",
+    Json.obj(
+      EndCompanyBenefitConstants.EmploymentNameKey -> employerName,
+      EndCompanyBenefitConstants.EmploymentIdKey   -> "1"
+    )
+  )
+
+  val authenticatedRequest = AuthenticatedRequest(fakeRequest, authedUser, fakePerson(nino).firstName)
+
+  lazy val fakeActionJourney = new FakeActionJourney(userAnwsers, authenticatedRequest)
+
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
         bind[IdentifierAction].to[FakeIdentifierAction],
+        bind[ActionJourney].toInstance(fakeActionJourney),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
         bind[JourneyCacheNewRepository].toInstance(mockSessionRepository)
       )

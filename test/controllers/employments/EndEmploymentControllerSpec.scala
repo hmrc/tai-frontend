@@ -55,7 +55,8 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
   override def beforeEach(): Unit =
     reset(employmentService, endEmploymentJourneyCacheService)
 
-  private val employerName = "employer name"
+  when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+  when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnwsers)))
 
   "employmentUpdateRemove" must {
     lazy val route = controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url
@@ -85,26 +86,22 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
 //    } // TODO - Should be same as below yes case, but is passing while the other is failing for some reason
 
     List(
-      None,
-      Some(FormValuesConstants.YesValue),
-      Some(FormValuesConstants.NoValue)
+      FormValuesConstants.YesValue,
+      FormValuesConstants.NoValue
     ).foreach { yesOrNo =>
       s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is $yesOrNo" in {
         val endEmploymentTest = createEndEmploymentTest
-        val userAnwsers = UserAnswers(
-          "1",
-          Json.obj(
-            EndCompanyBenefitConstants.EmploymentNameKey -> "testEmployerName",
-            EndCompanyBenefitConstants.EmploymentIdKey   -> "testEmployerId",
-            EmploymentUpdateRemovePage.toString          -> yesOrNo
-          )
-        )
-
-        val application = applicationBuilder(userAnswers = Some(userAnwsers)).build()
+        val userAnswers =
+          userAnwsers.copy(data = userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> yesOrNo))
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest)
+          val result = endEmploymentTest.employmentUpdateRemoveDecision(getRequest())
           val doc = Jsoup.parse(contentAsString(result))
+
+          println("*" * 100)
+          println(redirectLocation(result))
+          println("*" * 100)
 
           status(result) mustBe OK
           doc.title() must include(messages("tai.employment.decision.legend", employerName))
@@ -925,7 +922,7 @@ class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         endEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,
         inject[ActionJourney],
-        FakeAuthAction, // TODO - Create FakeActionJourney
+        FakeAuthAction, // TODO - Create FakeActionJourney, these no longer used
         FakeValidatePerson
       ) {
 

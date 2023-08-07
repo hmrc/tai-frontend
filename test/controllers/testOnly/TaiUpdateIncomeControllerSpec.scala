@@ -42,7 +42,6 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport with Befor
     Mockito.reset(journeyCacheService)
 
   val employerId = 14
-  val employerName = "Employer Name"
   val cacheKey = s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId"
 
   private def sut = new TaiUpdateIncomeController(

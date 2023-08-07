@@ -55,7 +55,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val employmentID = 1
   val currentEstPay = 1234
   val newEstPay = 9999
-  val employerName = "EmployerName"
   val isPension = false
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]

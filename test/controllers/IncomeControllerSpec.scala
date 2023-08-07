@@ -59,7 +59,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
 
   val payToDate = "100"
   val employerId = 1
-  val employerName = "Employer Name"
   val cachePayToDate = Future.successful(Right(100))
 
   val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))

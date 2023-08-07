@@ -57,6 +57,7 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     .asInstanceOf[ch.qos.logback.classic.Logger]
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
+  val employerName = "employer name"
   val address = Address("line1", "line2", "line3", "postcode", "country")
   val partialAddress = Address(Some("line1"), None, None, Some("postcode"), Some("country"))
   val emptyAddress = Address(None, None, None, None, None)

@@ -46,9 +46,13 @@ class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: E
     val person = personService.personDetails(personNino)
 
     person map {
-      case p if p.isDeceased              => Left(Redirect(routes.DeceasedController.deceased()))
-      case p if p.manualCorrespondenceInd => Left(Redirect(routes.ServiceController.mciErrorPage()))
-      case p                              => Right(AuthenticatedRequest(request, request.taiUser, p.name))
+      case p if p.isDeceased =>
+        println("6" * 100)
+        Left(Redirect(routes.DeceasedController.deceased()))
+      case p if p.manualCorrespondenceInd =>
+        println("7" * 100)
+        Left(Redirect(routes.ServiceController.mciErrorPage()))
+      case p => Right(AuthenticatedRequest(request, request.taiUser, p.name))
     }
   }
   override protected def executionContext: ExecutionContext = ec

@@ -18,7 +18,6 @@ package utils
 
 import controllers.actions.IdentifierAction
 import controllers.auth.{AuthenticatedRequest, IdentifierRequest}
-import play.api.mvc._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -25,7 +25,6 @@ import java.time.LocalDate
 
 class SameEstimatedPayViewSpec extends TaiViewSpec {
 
-  val employerName = "Employer"
   val amount = "£20,000"
   val amountAsInt = 20000
   val employerId = 1
