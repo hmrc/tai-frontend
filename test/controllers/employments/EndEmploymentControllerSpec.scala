@@ -63,8 +63,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
     Json.obj(
-      EndCompanyBenefitConstants.EmploymentNameKey -> employerName,
-      EndCompanyBenefitConstants.EmploymentIdKey   -> 1
+      EndCompanyBenefitConstants.EmploymentIdKey -> 1
     )
   )
 
@@ -209,7 +208,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-      val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
+      val request =
+        fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue) // TODO - Needed?
       val userAnswersWithNo =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
@@ -338,7 +338,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
         userAnswers.copy(data =
-          userAnswers.data ++ Json.obj(EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7)) // TODO - Change to page instead of constant?
+          userAnswers.data ++ Json.obj(
+            EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7)
+          ) // TODO - Change to page instead of constant?
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
@@ -389,12 +391,15 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
   "confirmAndSendEndEmployment is run" must {
-    "redirect to showConfirmationPage if all user answers are present" in {
+    "redirect to showConfirmationPage if all user answers are present and end employment call is successful" in {
+      when(employmentService.endEmployment(any(), any(), any())(any()))
+        .thenReturn(Future.successful("Why we need up-to-date HttpReads why is this a Future[String]"))
+
       val userAnswersFull = userAnswers.copy(
-        data = Json.obj(
-          EmploymentEndDateKeyPage.toString -> LocalDate.now(),
+        data = userAnswers.data ++ Json.obj(
+          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
           EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
-          EmploymentTelephoneNumberKeyPage.toString -> "123456789"
+          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
         )
       )
       val application = applicationBuilder(userAnswersFull).build()
@@ -414,8 +419,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-
-
 
   "tell us about employment error page" must {
     "submit the details to backend" in {
