@@ -110,29 +110,15 @@ class EndEmploymentController @Inject() (
       }
     }
 
-//  private def redirectToWarningOrDecisionPage(
-//    successfulJourneyCacheFuture: Future[Option[String]]
-//  ): Future[Result] =
-//    for {
-//      successfulJourneyCache <- successfulJourneyCacheFuture
-//    } yield successfulJourneyCache match {
-//      case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
-//      case _       => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
-//    }
-
   def onPageLoad(empId: Int): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
-      request.userAnswers.set(EmploymentIdKeyPage, empId) match {
-        case Failure(exception) => throw exception
-        case Success(_) =>
-          successfulJourneyCacheService
-            .currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
-            .map {
-              case Some(_) =>
-                Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
-              case None =>
-                Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
-            }
+      request.userAnswers.get(EmploymentIdKeyPage) match {
+        case Some(_) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning()))
+        case None =>
+          request.userAnswers.set(EmploymentIdKeyPage, empId) match {
+            case Failure(exception) => throw exception
+            case Success(_) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()))
+          }
       }
     }
 

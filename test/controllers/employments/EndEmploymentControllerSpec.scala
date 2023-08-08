@@ -186,6 +186,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   }
 
   "handleEmploymentUpdateRemove" must {
+
+  }
+
+  "handleEmploymentUpdateRemove" must {
     "redirect to the update employment url" when {
       "the form has the value Yes in EmploymentDecision" in {
 
