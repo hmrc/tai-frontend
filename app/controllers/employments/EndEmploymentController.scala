@@ -183,10 +183,10 @@ class EndEmploymentController @Inject() (
 
     latestPaymentDate.map { latestPaymentDate =>
       request.userAnswers
-        .set(EmploymentLatestPaymentKeyPage, latestPaymentDate)
+        .set(EmploymentLatestPaymentKeyPage, latestPaymentDate) // TODO - Needs test
         .map { _ =>
           if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
-            auditService
+            auditService // TODO - Verify
               .createAndSendAuditEvent(
                 AuditConstants.EndEmploymentWithinSixWeeksError,
                 Map("nino" -> nino)
@@ -224,11 +224,12 @@ class EndEmploymentController @Inject() (
           employmentService.employment(user.nino, empId).map {
             case Some(employment) =>
               Ok(
-                endEmploymentWithinSixWeeksError(
+                endEmploymentWithinSixWeeksError( // TODO - OK and Error?
                   WithinSixWeeksViewModel(latestPayment.plusWeeks(6).plusDays(1), employment.name, latestPayment, empId)
                 )
               )
-            case None => InternalServerError(errorPagesHandler.error5xx("Service failed")) // TODO - Fix incorrect arg
+            case None =>
+              InternalServerError(errorPagesHandler.error5xx("Service failed")) // TODO - Fix incorrect arg
           }
         case _ =>
           Future.successful(InternalServerError(errorPagesHandler.error5xx("Cache failed"))) // TODO - Fix incorrect arg

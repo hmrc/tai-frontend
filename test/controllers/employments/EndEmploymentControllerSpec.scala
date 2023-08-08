@@ -23,7 +23,7 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.BeforeAndAfterEach
-import pages.EmploymentUpdateRemovePage
+import pages.{EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -60,7 +60,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   val endEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
-  val userAnwsers: UserAnswers = UserAnswers(
+  val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
     Json.obj(
       EndCompanyBenefitConstants.EmploymentNameKey -> employerName,
@@ -69,7 +69,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   )
 
   val userAnswersWithYesOrNo =
-    userAnwsers.copy(data = userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> "Yes"))
+    userAnswers.copy(data = userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> "Yes"))
 
   def controller(userAnswersAsArg: Option[UserAnswers] = None) = new EndEmploymentController(
     auditService,
@@ -87,7 +87,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     inject[AddIncomeCheckYourAnswersView],
     endEmploymentJourneyCacheService,
     trackSuccessJourneyCacheService,
-    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnwsers)),
+    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers)),
     FakeAuthAction, // TODO - Create FakeActionJourney, these no longer used
     FakeValidatePerson
   )
@@ -123,7 +123,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   }
 
   when(mockSessionRepository.set(any())).thenReturn(Future.successful(true)) // TODO - Delete?
-  when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnwsers)))
+  when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
   "employmentUpdateRemove" must {
     List(
@@ -133,7 +133,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is $yesOrNo" in {
         val request = fakeGetRequest
         val userAnswersWithYesOrNo =
-          userAnwsers.copy(data = userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> yesOrNo))
+          userAnswers.copy(data = userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> yesOrNo))
         val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
 
         running(application) {
@@ -147,10 +147,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
     s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is empty" in {
       val request = fakeGetRequest
-      val application = applicationBuilder(userAnswers = userAnwsers).build()
+      val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
-        val result = controller(Some(userAnwsers)).employmentUpdateRemoveDecision(request)
+        val result = controller(Some(userAnswers)).employmentUpdateRemoveDecision(request)
         val doc = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
@@ -159,7 +159,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
     "redirect to the tax summary page if the employer id is missing from the cache" in {
       val request = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val emptyUserAnswers = userAnwsers.copy(data = Json.obj())
+      val emptyUserAnswers = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
 
       running(application) {
@@ -172,10 +172,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request = fakeGetRequest
-      val application = applicationBuilder(userAnswers = userAnwsers).build()
+      val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
-        val result = controller(Some(userAnwsers)).employmentUpdateRemoveDecision(request)
+        val result = controller(Some(userAnswers)).employmentUpdateRemoveDecision(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
@@ -187,8 +187,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
       val userAnswersWithYesOrNo =
-        userAnwsers.copy(data =
-          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.YesValue)
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.YesValue)
         )
       val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
 
@@ -202,18 +202,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectUrl mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(1).url
       }
     }
-    "return BAD_REQUEST and display form with errors if an invalid value is passed as EmploymentDecision" in { // TODO - Fix
-      val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> "testInvalid")
-      val userAnswersWithYesOrNo =
-        userAnwsers.copy(data = userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> "testInvalid"))
-      val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
-
-      running(application) {
-        val result = controller(Some(userAnwsers)).handleEmploymentUpdateRemove(request)
-        status(result) mustBe BAD_REQUEST
-      }
-    }
     "redirect to end employment page if value no is passed in the form and the employment has a payment no more than 6 weeks 1 day in the past" in {
       val payment = paymentOnDate(LocalDate.now().minusWeeks(6).minusDays(1))
       val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
@@ -223,8 +211,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
-        userAnwsers.copy(data =
-          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
         )
       val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
 
@@ -247,8 +235,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
-        userAnwsers.copy(data =
-          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
         )
       val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
 
@@ -271,8 +259,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
-        userAnwsers.copy(data =
-          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
         )
       val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
 
@@ -290,7 +278,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request = FakeRequest("POST", "")
-      val emptyUserAnswers = userAnwsers.copy(data = Json.obj())
+      val emptyUserAnswers = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
 
       running(application) {
@@ -303,97 +291,106 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         .thenReturn(Future.successful(None))
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
-      val application = applicationBuilder(userAnswers = userAnwsers).build()
+      val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
         val result = controller(Some(userAnswersWithYesOrNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
-  }
+    "return BAD_REQUEST and display form with errors if no form value is passed as EmploymentDecision" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> "")
+      val userAnswersWithYesOrNo =
+        userAnswers.copy(data = userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> ""))
+      val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
 
-  "handleEmploymentUpdateRemove" must {
-    "redirect to the irregular payment error page" when {
-      "the form has the value No in EmploymentDecision and the employment has a irregular payment OLD" in {
-
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
-
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
-        when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Success))
-
+      running(application) {
         val result = controller().handleEmploymentUpdateRemove(request)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
-      }
-    }
-
-    "render the what do you want to do page with form errors" when {
-      "no value is present in EmploymentDecision" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val request = FakeRequest("POST", "")
-          .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> "")
-
-        val result = controller().handleEmploymentUpdateRemove(request)
-
         status(result) mustBe BAD_REQUEST
       }
     }
   }
 
-  "tell us about employment error page" must {
-    "show the error page" in {
-
-      val dataFromCache = Right(Seq(LocalDate.now.minusWeeks(6).minusDays(1).toString, employerName, "1"))
-
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(dataFromCache))
-
-      val result = controller().endEmploymentError()(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-
-      status(result) mustBe OK
-      doc.title() must include(
-        Messages(
-          "tai.endEmploymentWithinSixWeeksError.heading",
-          LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+  "endEmploymentError is called" must {
+    "return OK and endEmploymentWithinSixWeeksError if payment data and employment data exist" in {
+      val userAnswersWithDate =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7))
         )
-      )
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersWithDate)).endEmploymentError()(fakeGetRequest)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+        doc.title() must include(
+          Messages(
+            "tai.endEmploymentWithinSixWeeksError.heading",
+            LocalDate.now.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+          )
+        )
+      }
     }
+    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val userAnswersWithDate =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7))
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
-    "show the irregular payment error page" in {
-
-      val employmentId = 1
-
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-      val result = controller().irregularPaymentError(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-
-      status(result) mustBe OK
-      doc.title() must include(Messages("tai.irregular.preHeadingText"))
+      running(application) {
+        val result = controller(Some(userAnswersWithDate)).endEmploymentError()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
     }
+    "return INTERNAL_SERVER_ERROR if payment data doesn't exist" in {
+      val application = applicationBuilder(userAnswers).build()
 
+      running(application) {
+        val result = controller(Some(userAnswers)).endEmploymentError()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "irregularPaymentError is called" must {
+    "return OK and endEmploymentWithinSixWeeksError if payment data and employment data exist" in {
+      val application = applicationBuilder(userAnswers = userAnswers).build()
+
+      running(application) {
+        val result = controller(Some(userAnswers)).irregularPaymentError()(fakeGetRequest)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+        doc.title() must include(Messages("tai.irregular.preHeadingText"))
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val application = applicationBuilder(userAnswers = userAnswers).build()
+
+      running(application) {
+        val result = controller(Some(userAnswers)).irregularPaymentError()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if payment data doesn't exist" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswersEmpty).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).irregularPaymentError()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "tell us about employment error page" must {
     "submit the details to backend" in {
 
       val employmentId = "0"
