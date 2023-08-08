@@ -314,29 +314,31 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authAction andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
-      employmentService.employment(nino, employmentId).flatMap {
-        case Some(employment) =>
-          EmploymentEndDateForm(employment.name).form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
-                ),
-              date => {
-                val employmentJourneyCacheData = Map(EndEmploymentConstants.EndDateKey -> date.toString)
-                journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
-                  Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] =
+    (authAction andThen validatePerson).async { // TODO - Missed one
+      implicit request =>
+        implicit val user: AuthedUser = request.taiUser
+        val nino = user.nino
+        employmentService.employment(nino, employmentId).flatMap {
+          case Some(employment) =>
+            EmploymentEndDateForm(employment.name).form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
+                  ),
+                date => {
+                  val employmentJourneyCacheData = Map(EndEmploymentConstants.EndDateKey -> date.toString)
+                  journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
+                    Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+                  }
                 }
-              }
-            )
-        case _ => Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found")))
-      }
-  }
+              )
+          case _ =>
+            Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found")))
+        }
+    }
 
   def addTelephoneNumber(): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>

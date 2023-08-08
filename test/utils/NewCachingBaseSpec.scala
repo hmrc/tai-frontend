@@ -15,23 +15,44 @@
  */
 
 package utils
+
 import builders.UserBuilder
+import controllers.actions.{ActionJourney, DataRetrievalAction, IdentifierAction}
 import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.UserAnswers
+
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
-trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
+  protected def applicationBuilder(userAnswers: UserAnswers = emptyUserAnswers): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(
+        bind[IdentifierAction].to[FakeIdentifierAction],
+        bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)), // TODO - Not overwriting each test
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
+        bind[JourneyCacheNewRepository].toInstance(mockSessionRepository)
+      )
+      .configure(additionalConfiguration)
+
+  val userAnswersId: String = "id"
 
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
@@ -39,6 +60,7 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
   lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
   lazy val langUtils: LanguageUtils = inject[LanguageUtils]
+  lazy val mockSessionRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]

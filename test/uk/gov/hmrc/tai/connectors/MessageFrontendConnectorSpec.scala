@@ -21,6 +21,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 import play.api.Application
 import play.api.http.Status.{IM_A_TEAPOT, OK}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_GATEWAY, BAD_REQUEST, GET, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE}
@@ -34,7 +35,7 @@ import scala.util.Random
 class MessageFrontendConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures {
 
   override implicit lazy val app: Application =
-    applicationBuilder()
+    new GuiceApplicationBuilder()
       .configure(
         "microservice.services.message-frontend.port" -> server.port()
       )

@@ -22,6 +22,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
@@ -40,13 +41,12 @@ import scala.concurrent.duration._
 
 class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
-  override lazy val app: Application =
-    applicationBuilder()
-      .configure("microservice.services.tai.port" -> server.port)
-      .overrides(
-        bind[WebChatClient].toInstance(new WebChatClientStub)
-      )
-      .build()
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .configure("microservice.services.tai.port" -> server.port)
+    .overrides(
+      bind[WebChatClient].toInstance(new WebChatClientStub)
+    )
+    .build()
 
   lazy val taxAccountUrl = s"/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
   lazy val codingComponentsUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/tax-components"
