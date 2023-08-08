@@ -527,145 +527,77 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
 
-  "Calling the handleTellUsAboutEmploymentPage method" must {
-    "call processTellUsAboutEmploymentPage successfully with an authorised session" in {
-
-      val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
+  "endEmploymentCheckYourAnswers is run" must {
+    "return OK and addIncomeCheckYourAnswers if users answers data exists" in {
+      val userAnswersFull = userAnswers.copy(
+        data = userAnswers.data ++ Json.obj(
+          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
+          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
         )
-
-      val result = controller().handleEndEmploymentPage()(request)
-
-      status(result) mustBe SEE_OTHER
-    }
-
-    "reload the page when there are form errors" in {
-
-      val request = FakeRequest("POST", "/")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "abc"
-        )
-
-      val result = controller().handleEndEmploymentPage()(request)
-
-      status(result) mustBe BAD_REQUEST
-    }
-
-    "redirect to telephone page" in {
-
-      val dataToCache = Map(
-        EndEmploymentConstants.EmploymentIdKey -> "0",
-        EndEmploymentConstants.NameKey         -> employerName,
-        EndEmploymentConstants.EndDateKey      -> LocalDate.of(2017, 2, 1).toString
       )
+      val application = applicationBuilder(userAnswersFull).build()
 
-      when(endEmploymentJourneyCacheService.cache(meq(dataToCache))(any()))
-        .thenReturn(Future.successful(dataToCache))
-
-      val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-        )
-
-      val result = controller().handleEndEmploymentPage()(request)
-
-      status(result) mustBe SEE_OTHER
-    }
-
-    "save data into journey cache" in {
-
-      val dataToCache = Map(EndEmploymentConstants.EndDateKey -> LocalDate.of(2017, 2, 1).toString)
-
-      when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
-
-      val request = FakeRequest("POST", "")
-        .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> "01",
-          EmploymentEndDateForm.EmploymentFormMonth -> "02",
-          EmploymentEndDateForm.EmploymentFormYear  -> "2017"
-        )
-
-      Await.result(controller().handleEndEmploymentPage()(request), 5 seconds)
-      verify(endEmploymentJourneyCacheService, times(1)).cache(any())(any())
-    }
-
-    "check your answers page" must {
-      "show the check your answers page" in {
-
-        val dataFromCache = Right((Seq("0", LocalDate.of(2017, 2, 1).toString, "No"), Seq(Some("EXT-TEST"))))
-
-        when(
-          endEmploymentJourneyCacheService.collectedJourneyValues(
-            any(classOf[scala.collection.immutable.List[String]]),
-            any(classOf[scala.collection.immutable.List[String]])
-          )(any(), any())
-        ).thenReturn(Future.successful(dataFromCache))
-
-        val result = controller().endEmploymentCheckYourAnswers()(fakeGetRequest)
+      running(application) {
+        val result = controller(Some(userAnswersFull)).endEmploymentCheckYourAnswers()(fakePostRequest)
         val doc = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
         doc.title() must include(Messages("tai.endEmploymentConfirmAndSend.heading"))
       }
-
-      "redirect to the summary page if a value is missing from the cache " in {
-
-        when(
-          endEmploymentJourneyCacheService.collectedJourneyValues(
-            any(classOf[scala.collection.immutable.List[String]]),
-            any(classOf[scala.collection.immutable.List[String]])
-          )(any(), any())
+    }
+    "redirect to tax summaries page if missing user answers data" in {
+      val userAnswersFull = userAnswers.copy(
+        data = userAnswers.data ++ Json.obj(
+          EmploymentEndDateKeyPage.toString           -> "",
+          EmploymentTelephoneQuestionKeyPage.toString -> "",
+          EmploymentTelephoneNumberKeyPage.toString   -> ""
         )
-          .thenReturn(Future.successful(Left("An error has occurred")))
+      )
+      val application = applicationBuilder(userAnswersFull).build()
 
-        val result = controller().endEmploymentCheckYourAnswers()(fakePostRequest)
+      running(application) {
+        val result = controller(Some(userAnswersFull)).endEmploymentCheckYourAnswers()(fakePostRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-
-      }
-
-      "submit the details to backend" in {
-
-        val empId = 0
-        val dataFromCache =
-          Right((Seq(empId.toString, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
-
-        when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-          .thenReturn(Future.successful(dataFromCache))
-        when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-        when(
-          trackSuccessJourneyCacheService
-            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
-        )
-          .thenReturn(
-            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
-          )
-        when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
-
-        val result = controller().confirmAndSendEndEmployment()(fakeGetRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
-        verify(endEmploymentJourneyCacheService, times(1)).flush()(any())
       }
     }
 
-    "showConfirmationPage" must {
-      "show confirmation view" in {
 
-        val result = controller().showConfirmationPage()(fakeGetRequest)
-        val doc = Jsoup.parse(contentAsString(result))
+    "submit the details to backend" in {
 
-        status(result) mustBe OK
-        doc.title() must include(Messages("tai.employmentConfirmation.heading"))
-      }
+      val empId = 0
+      val dataFromCache =
+        Right((Seq(empId.toString, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
+
+      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
+        .thenReturn(Future.successful(dataFromCache))
+      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+      when(
+        trackSuccessJourneyCacheService
+          .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
+      )
+        .thenReturn(
+          Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
+        )
+      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+
+      val result = controller().confirmAndSendEndEmployment()(fakeGetRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
+      verify(endEmploymentJourneyCacheService, times(1)).flush()(any())
+    }
+  }
+
+  "showConfirmationPage" must {
+    "show confirmation view" in {
+
+      val result = controller().showConfirmationPage()(fakeGetRequest)
+      val doc = Jsoup.parse(contentAsString(result))
+
+      status(result) mustBe OK
+      doc.title() must include(Messages("tai.employmentConfirmation.heading"))
     }
   }
 
@@ -722,55 +654,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       }
     }
-  }
 
-  "submit telephone number" must {
-    "redirect to the check your answers page" when {
-      "the request has an authorised session, and a telephone number has been provided" in {
-
-        val expectedCache =
-          Map(
-            EndEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            EndEmploymentConstants.TelephoneNumberKey   -> "12345678"
-          )
-        when(endEmploymentJourneyCacheService.cache(meq(expectedCache))(any()))
-          .thenReturn(Future.successful(expectedCache))
-        val result = controller().submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(
-            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "12345678"
-          )
-        )
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url
-      }
-
-      "the request has an authorised session, and telephone number contact has not been approved" in {
-
-        val expectedCacheWithErasingNumber =
-          Map(
-            EndEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-            EndEmploymentConstants.TelephoneNumberKey   -> ""
-          )
-        when(endEmploymentJourneyCacheService.cache(meq(expectedCacheWithErasingNumber))(any()))
-          .thenReturn(Future.successful(expectedCacheWithErasingNumber))
-        val result = controller().submitTelephoneNumber()(
-          fakePostRequest
-            .withFormUrlEncodedBody(
-              FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
-              FormValuesConstants.YesNoTextEntry -> "this value must not be cached"
-            )
-        )
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url
-      }
-    }
 
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {

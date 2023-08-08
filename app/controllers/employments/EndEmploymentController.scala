@@ -334,7 +334,9 @@ class EndEmploymentController @Inject() (
                   }
                 )
             case _ =>
-              Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found"))) // TODO - 5xx
+              Future.successful(
+                InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found"))
+              ) // TODO - 5xx
           }
         case _ =>
           Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No cache data found")))
@@ -421,7 +423,7 @@ class EndEmploymentController @Inject() (
           val model = IncomeCheckYourAnswersViewModel(
             employmentId = empId,
             preHeading = Messages("tai.endEmployment.preHeadingText"),
-            incomeSourceEnd = endDate.format(DateTimeFormatter.ofPattern("dd MM yyyy")), // TODO - Check pattern
+            incomeSourceEnd = endDate.toString, // TODO - Check pattern
             contactableByPhone = telephoneQuestion,
             phoneNumber = telephoneNumber,
             backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
