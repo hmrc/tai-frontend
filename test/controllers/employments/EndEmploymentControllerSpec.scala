@@ -168,7 +168,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
-    "redirect to the tax summary page if the call to retrieve employments fails" in {
+    "redirect to the tax summary page if the call to retrieve employment data fails" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request = fakeGetRequest
@@ -262,7 +262,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
       }
     }
-    "redirect to irregular payment page if value No is passed in the form and the employment has a irregular payment" in { // TODO - Less confusing name
+    "redirect to irregular payment page if value No is passed in the form and the employment has an irregular payment frequency" in {
       val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
       val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
       val employment = employmentWithAccounts(List(annualAccount))
@@ -284,6 +284,30 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           case _               => ""
         }
         redirectUrl mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if the employer id is missing from the cache" in {
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest("POST", "")
+      val emptyUserAnswers = userAnwsers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
+
+      running(application) {
+        val result = controller(Some(emptyUserAnswers)).handleEmploymentUpdateRemove(request)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
+      val application = applicationBuilder(userAnswers = userAnwsers).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersWithYesOrNo)).handleEmploymentUpdateRemove(request)
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }
