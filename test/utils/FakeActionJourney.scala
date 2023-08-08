@@ -32,10 +32,6 @@ class FakeActionJourney(
       request: Request[A],
       block: DataRequest[A] => Future[Result]
     ): Future[Result] = {
-      println("-" * 100)
-      println(request.body)
-      println(userAnswers)
-      println("-" * 100)
       val authRequest = AuthenticatedRequestFixture.buildUserRequest(request)
       block(
         DataRequest(
@@ -43,7 +39,7 @@ class FakeActionJourney(
           authRequest.taiUser,
           authRequest.fullName,
           userAnswers
-        ) // TODO - Needs cleaning
+        )
       )
     }
   }

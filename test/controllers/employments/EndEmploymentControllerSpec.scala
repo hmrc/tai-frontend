@@ -26,10 +26,8 @@ import org.scalatest.BeforeAndAfterEach
 import pages.EmploymentUpdateRemovePage
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.http.SessionKeys
+import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
@@ -47,7 +45,6 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
@@ -67,7 +64,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     RequestBuilder.uuid,
     Json.obj(
       EndCompanyBenefitConstants.EmploymentNameKey -> employerName,
-      EndCompanyBenefitConstants.EmploymentIdKey   -> 14
+      EndCompanyBenefitConstants.EmploymentIdKey   -> 1
     )
   )
 
@@ -186,25 +183,18 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   }
 
   "handleEmploymentUpdateRemove" must {
+    "redirect to the update employment url if the form has the value Yes in EmploymentDecision" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
+      val userAnswersWithYesOrNo =
+        userAnwsers.copy(data =
+          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.YesValue)
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
 
-  }
-
-  "handleEmploymentUpdateRemove" must {
-    "redirect to the update employment url" when {
-      "the form has the value Yes in EmploymentDecision" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val request = FakeRequest("POST", "")
-          .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
-
-        val result = controller().handleEmploymentUpdateRemove(request)
-
+      running(application) {
+        val result = controller(Some(userAnswersWithYesOrNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe SEE_OTHER
-
         val redirectUrl = redirectLocation(result) match {
           case Some(s: String) => s
           case _               => ""
@@ -212,89 +202,95 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectUrl mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(1).url
       }
     }
+    "return BAD_REQUEST and display form with errors if an invalid value is passed as EmploymentDecision" in { // TODO - Fix
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> "testInvalid")
+      val userAnswersWithYesOrNo =
+        userAnwsers.copy(data = userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> "testInvalid"))
+      val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
 
-    "redirect to the update within 6 week error page" when {
-      "the form has the value No in EmploymentDecision and the employment has a payment within 6 weeks of todays date" in {
+      running(application) {
+        val result = controller(Some(userAnwsers)).handleEmploymentUpdateRemove(request)
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+    "redirect to end employment page if value no is passed in the form and the employment has a payment no more than 6 weeks 1 day in the past" in {
+      val payment = paymentOnDate(LocalDate.now().minusWeeks(6).minusDays(1))
+      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      val employment = employmentWithAccounts(List(annualAccount))
 
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        val employmentId = 1
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
+      val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
+      val userAnswersWithNo =
+        userAnwsers.copy(data =
+          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> "No")
-
-        val result = controller().handleEmploymentUpdateRemove(request)
-
+      running(application) {
+        val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe SEE_OTHER
-
         val redirectUrl = redirectLocation(result) match {
           case Some(s: String) => s
           case _               => ""
         }
-
-        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
-      }
-
-      "the form has the value No in EmploymentDecision and the employment has a payment 6 weeks of todays date" in {
-
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(6))
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
-
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
-
-        val result = controller().handleEmploymentUpdateRemove(request)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(
-          result
-        ).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
-      }
-
-      "cache the employment details for error page" in {
-
-        val date = LocalDate.now().minusWeeks(6)
-
-        val payment = paymentOnDate(date)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-
-        val dataToCache = Map(
-          EndEmploymentConstants.LatestPaymentDateKey -> date.toString,
-          EndEmploymentConstants.NameKey              -> "employer name"
-        )
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
-
-        val request = fakePostRequest.withFormUrlEncodedBody(
-          EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue
-        )
-
-        Await.result(controller().handleEmploymentUpdateRemove(request), 5 seconds)
+        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
       }
     }
+    "redirect to error page if value no is passed in the form and the employment has a payment is less than 6 weeks 1 day from today in the past" in {
+      val payment = paymentOnDate(LocalDate.now().minusWeeks(6))
+      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      val employment = employmentWithAccounts(List(annualAccount))
 
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+
+      val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
+      val userAnswersWithNo =
+        userAnwsers.copy(data =
+          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
+        status(result) mustBe SEE_OTHER
+        val redirectUrl = redirectLocation(result) match {
+          case Some(s: String) => s
+          case _               => ""
+        }
+        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
+      }
+    }
+    "redirect to irregular payment page if value No is passed in the form and the employment has a irregular payment" in { // TODO - Less confusing name
+      val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
+      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      val employment = employmentWithAccounts(List(annualAccount))
+
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+
+      val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
+      val userAnswersWithNo =
+        userAnwsers.copy(data =
+          userAnwsers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
+        status(result) mustBe SEE_OTHER
+        val redirectUrl = redirectLocation(result) match {
+          case Some(s: String) => s
+          case _               => ""
+        }
+        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
+      }
+    }
+  }
+
+  "handleEmploymentUpdateRemove" must {
     "redirect to the irregular payment error page" when {
-      "the form has the value No in EmploymentDecision and the employment has a irregular payment" in {
+      "the form has the value No in EmploymentDecision and the employment has a irregular payment OLD" in {
 
         val request = fakePostRequest.withFormUrlEncodedBody(
           EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue

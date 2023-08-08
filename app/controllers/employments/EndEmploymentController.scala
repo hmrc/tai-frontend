@@ -101,11 +101,9 @@ class EndEmploymentController @Inject() (
                 )
               )
             case None =>
-              println("1" * 100)
               Redirect(taxAccountSummaryRedirect)
           }
         case None =>
-          println("2" * 100)
           Future.successful(Redirect(taxAccountSummaryRedirect))
       }
     }
@@ -113,11 +111,17 @@ class EndEmploymentController @Inject() (
   def onPageLoad(empId: Int): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       request.userAnswers.get(EmploymentIdKeyPage) match {
-        case Some(_) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning()))
+        case Some(_) =>
+          Future.successful(
+            Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
+          )
         case None =>
           request.userAnswers.set(EmploymentIdKeyPage, empId) match {
             case Failure(exception) => throw exception
-            case Success(_) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()))
+            case Success(_) =>
+              Future.successful(
+                Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+              )
           }
       }
     }
@@ -158,12 +162,12 @@ class EndEmploymentController @Inject() (
                 )
             case None =>
               Future.successful(
-                NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
+                InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found"))
               ) // TODO - Employment request failed case
           }
         case None =>
           Future.successful(
-            NotFound(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment id"))
           ) // TODO - No EmpId case, correct response?
       }
     }
@@ -202,11 +206,15 @@ class EndEmploymentController @Inject() (
             }
           }
         }
-        .getOrElse(
-          Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
-        ) // TODO - Caching failed
+        .getOrElse {
+          Future.successful(
+            InternalServerError(errorPagesHandler.error4xxPageWithLink("Caching failed"))
+          ) // TODO - Failed, correct response?
+        }
     }
-  }.getOrElse(Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())))
+  }.getOrElse(
+    Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+  ) // TODO - No latest payment date, what to do?
 
   def endEmploymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
