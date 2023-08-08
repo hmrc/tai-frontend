@@ -118,21 +118,20 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           )
         )
       )
-    when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
+    when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any())) // TODO - Delete
       .thenReturn(Future.successful(Some(LocalDate.parse("2017-09-09"))))
     when(endEmploymentJourneyCacheService.currentValue(any())(any()))
       .thenReturn(Future.successful(Some("Test Value")))
     when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
 
-  when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+  when(mockSessionRepository.set(any())).thenReturn(Future.successful(true)) // TODO - Delete?
   when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnwsers)))
 
   "employmentUpdateRemove" must {
-
     List(
       FormValuesConstants.YesValue,
-      FormValuesConstants.NoValue // TODO - Add back empty case
+      FormValuesConstants.NoValue
     ).foreach { yesOrNo =>
       s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is $yesOrNo" in {
         val request = fakeGetRequest
@@ -149,13 +148,37 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         }
       }
     }
+    s"call updateRemoveEmployer page successfully with an authorised session regardless of if optional cache is empty" in {
+      val request = fakeGetRequest
+      val application = applicationBuilder(userAnswers = userAnwsers).build()
 
-    "redirect to the tax summary page if a value is missing from the cache" in {
+      running(application) {
+        val result = controller(Some(userAnwsers)).employmentUpdateRemoveDecision(request)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+        doc.title() must include(messages("tai.employment.decision.legend", employerName))
+      }
+    }
+    "redirect to the tax summary page if the employer id is missing from the cache" in {
       val request = RequestBuilder.buildFakeRequestWithOnlySession("GET")
       val emptyUserAnswers = userAnwsers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
+
       running(application) {
         val result = controller(Some(emptyUserAnswers)).employmentUpdateRemoveDecision(request)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      }
+    }
+    "redirect to the tax summary page if the call to retrieve employments fails" in {
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val request = fakeGetRequest
+      val application = applicationBuilder(userAnswers = userAnwsers).build()
+
+      running(application) {
+        val result = controller(Some(userAnwsers)).employmentUpdateRemoveDecision(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
