@@ -464,21 +464,19 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
   "handleEndEmploymentPage is run" must {
     "redirect to addTelephoneNumber if call to retrieve employment data was successful" in {
-      val date = LocalDate.now.minusWeeks(7)
+      val date = LocalDate.now
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(
           EmploymentEndDateForm.EmploymentFormDay   -> date.getDayOfWeek.getValue.toString,
           EmploymentEndDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
           EmploymentEndDateForm.EmploymentFormYear  -> date.getYear.toString
         )
-
       val userAnswersWithDate =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(
             EmploymentEndDateKeyPage.toString -> date
-          ) // TODO - Change to page instead of constant?
+          )
         )
-
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
       running(application) {
@@ -487,6 +485,44 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
           .addTelephoneNumber()
           .url
+      }
+    }
+    "redirect to addTelephoneNumber if call to retrieve employment data was successful but form data is invalid" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(
+          EmploymentEndDateForm.EmploymentFormDay   -> "",
+          EmploymentEndDateForm.EmploymentFormMonth -> "",
+          EmploymentEndDateForm.EmploymentFormYear  -> ""
+        )
+      val application = applicationBuilder(userAnswers = userAnswers).build()
+
+      running(application) {
+        val result = controller(Some(userAnswers)).handleEndEmploymentPage()(request)
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val userAnswersWithDate =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(
+            EmploymentEndDateKeyPage.toString -> LocalDate.now
+          )
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage()(fakePostRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not" in {
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswers = userAnswersEmpty).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage()(fakePostRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }
