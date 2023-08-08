@@ -55,7 +55,7 @@
                 }
 
                 <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.endEmployment.preHeadingText")</h2>
-                @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
+                @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage) {
 
                 @govukDateInput(DateInput(
                     id = "tellUsAboutEmploymentForm",

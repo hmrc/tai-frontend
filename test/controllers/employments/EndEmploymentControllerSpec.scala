@@ -390,10 +390,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-  "confirmAndSendEndEmployment is run" must {
+  "confirmAndSendEndEmployment is run" must { // TODO - Can't test service failure as long as it's Future[String]
     "redirect to showConfirmationPage if all user answers are present and end employment call is successful" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
-        .thenReturn(Future.successful("Why we need up-to-date HttpReads why is this a Future[String]"))
+        .thenReturn(Future.successful(""))
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -419,50 +419,75 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
+  "endEmploymentPage is run" must {
+    "return OK and endEmploymentView if users answers data and employment data exist" in {
+      val userAnswersWithDate =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EmploymentEndDateKeyPage.toString -> LocalDate.now().minusWeeks(7))
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
-  "tell us about employment error page" must {
-    "submit the details to backend" in {
+      running(application) {
+        val result = controller(Some(userAnswersWithDate)).endEmploymentPage()(fakeGetRequest)
+        val doc = Jsoup.parse(contentAsString(result))
 
-      val employmentId = "0"
-      val dataFromCache = Right((Seq(employmentId, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
-      val cacheMap = Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId" -> "true")
+        status(result) mustBe OK
+        doc.title() must include(Messages("tai.endEmployment.endDateForm.pagetitle"))
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val userAnswersWithDate =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(
+            EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7)
+          ) // TODO - Change to page instead of constant?
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-        .thenReturn(Future.successful(dataFromCache))
-      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-      when(trackSuccessJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+      running(application) {
+        val result = controller(Some(userAnswersWithDate)).endEmploymentPage()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if payment data doesn't exist" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswersEmpty).build()
 
-      val result = controller().confirmAndSendEndEmployment()(fakeGetRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).endEmploymentPage()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 
-  "tellUsAboutEmploymentPage" must {
-    "call tellUsAboutEmploymentPage() successfully with an authorised session" in {
+  "handleEndEmploymentPage is run" must {
+    "redirect to addTelephoneNumber if call to retrieve employment data was successful" in {
+      val date = LocalDate.now.minusWeeks(7)
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(
+          EmploymentEndDateForm.EmploymentFormDay   -> date.getDayOfWeek.getValue.toString,
+          EmploymentEndDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
+          EmploymentEndDateForm.EmploymentFormYear  -> date.getYear.toString
+        )
 
-      val employmentId = 1
+      val userAnswersWithDate =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(
+            EmploymentEndDateKeyPage.toString -> date
+          ) // TODO - Change to page instead of constant?
+        )
 
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Right((Seq(employerName, employmentId.toString), Seq()))))
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
-      val result = controller().endEmploymentPage(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-
-      status(result) mustBe OK
-      doc.title() must include(Messages("tai.endEmployment.endDateForm.pagetitle"))
-    }
-
-    "redirect to the tax summary page if a value is missing from the cache " in {
-
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
-
-      val result = controller().endEmploymentPage(fakeGetRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      running(application) {
+        val result = controller(Some(userAnswersWithDate)).handleEndEmploymentPage()(request)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
+          .addTelephoneNumber()
+          .url
+      }
     }
   }
 
@@ -476,7 +501,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           EmploymentEndDateForm.EmploymentFormYear  -> "2017"
         )
 
-      val result = controller().handleEndEmploymentPage(0)(request)
+      val result = controller().handleEndEmploymentPage()(request)
 
       status(result) mustBe SEE_OTHER
     }
@@ -490,7 +515,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           EmploymentEndDateForm.EmploymentFormYear  -> "abc"
         )
 
-      val result = controller().handleEndEmploymentPage(0)(request)
+      val result = controller().handleEndEmploymentPage()(request)
 
       status(result) mustBe BAD_REQUEST
     }
@@ -513,7 +538,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           EmploymentEndDateForm.EmploymentFormYear  -> "2017"
         )
 
-      val result = controller().handleEndEmploymentPage(0)(request)
+      val result = controller().handleEndEmploymentPage()(request)
 
       status(result) mustBe SEE_OTHER
     }
@@ -531,7 +556,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           EmploymentEndDateForm.EmploymentFormYear  -> "2017"
         )
 
-      Await.result(controller().handleEndEmploymentPage(0)(request), 5 seconds)
+      Await.result(controller().handleEndEmploymentPage()(request), 5 seconds)
       verify(endEmploymentJourneyCacheService, times(1)).cache(any())(any())
     }
 

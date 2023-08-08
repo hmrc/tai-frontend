@@ -305,34 +305,40 @@ class EndEmploymentController @Inject() (
               )
             case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
           }
-        case _ => Future.successful(InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment id")))
+        case _ =>
+          Future.successful(
+            InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment id"))
+          ) // TODO - Originally returned to beginning of journey. Is this better?
       }
     }
 
-  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] =
-    (authAction andThen validatePerson).async { // TODO - Missed one
-      implicit request =>
-        implicit val user: AuthedUser = request.taiUser
-        val nino = user.nino
-        employmentService.employment(nino, employmentId).flatMap {
-          case Some(employment) =>
-            EmploymentEndDateForm(employment.name).form
-              .bindFromRequest()
-              .fold(
-                formWithErrors =>
-                  Future.successful(
-                    BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
-                  ),
-                date => {
-                  val employmentJourneyCacheData = Map(EndEmploymentConstants.EndDateKey -> date.toString)
-                  journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
-                    Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+  def handleEndEmploymentPage(): Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
+      request.userAnswers.get(EmploymentIdKeyPage) match {
+        case Some(empId) =>
+          employmentService.employment(nino, empId).flatMap {
+            case Some(employment) =>
+              EmploymentEndDateForm(employment.name).form
+                .bindFromRequest()
+                .fold(
+                  formWithErrors =>
+                    Future.successful(
+                      BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
+                    ),
+                  date => {
+                    request.userAnswers.set(EmploymentEndDateKeyPage, date)
+                    Future
+                      .successful(Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber()))
                   }
-                }
-              )
-          case _ =>
-            Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found")))
-        }
+                )
+            case _ =>
+              Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found")))
+          }
+        case _ =>
+          Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No cache data found")))
+      }
     }
 
   def addTelephoneNumber(): Action[AnyContent] =
