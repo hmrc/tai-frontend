@@ -23,7 +23,7 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.BeforeAndAfterEach
-import pages.{EmploymentLatestPaymentKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentEndDateKeyPage, EmploymentLatestPaymentKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -338,7 +338,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
         userAnswers.copy(data =
-          userAnswers.data ++ Json.obj(EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7))
+          userAnswers.data ++ Json.obj(EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7)) // TODO - Change to page instead of constant?
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
@@ -356,7 +356,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-
   "irregularPaymentError is called" must {
     "return OK and endEmploymentWithinSixWeeksError if payment data and employment data exist" in {
       val application = applicationBuilder(userAnswers = userAnswers).build()
@@ -389,6 +388,34 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
+  "confirmAndSendEndEmployment is run" must {
+    "redirect to showConfirmationPage if all user answers are present" in {
+      val userAnswersFull = userAnswers.copy(
+        data = Json.obj(
+          EmploymentEndDateKeyPage.toString -> LocalDate.now(),
+          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
+          EmploymentTelephoneNumberKeyPage.toString -> "123456789"
+        )
+      )
+      val application = applicationBuilder(userAnswersFull).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersFull)).confirmAndSendEndEmployment()(fakePostRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if values are missing from user answers" in {
+      val application = applicationBuilder(userAnswers).build()
+
+      running(application) {
+        val result = controller(Some(userAnswers)).confirmAndSendEndEmployment()(fakePostRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+
 
   "tell us about employment error page" must {
     "submit the details to backend" in {
