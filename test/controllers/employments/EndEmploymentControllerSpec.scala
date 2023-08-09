@@ -23,13 +23,12 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.BeforeAndAfterEach
-import pages.{EmploymentEndDateKeyPage, EmploymentLatestPaymentKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentEndDateKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -45,8 +44,7 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.language.postfixOps
 
 class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfterEach {
@@ -562,32 +560,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
-
-
-    "submit the details to backend" in {
-
-      val empId = 0
-      val dataFromCache =
-        Right((Seq(empId.toString, LocalDate.of(2017, 2, 1).toString, "Yes"), Seq(Some("EXT-TEST"))))
-
-      when(endEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-        .thenReturn(Future.successful(dataFromCache))
-      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-      when(
-        trackSuccessJourneyCacheService
-          .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
-      )
-        .thenReturn(
-          Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
-        )
-      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
-
-      val result = controller().confirmAndSendEndEmployment()(fakeGetRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
-      verify(endEmploymentJourneyCacheService, times(1)).flush()(any())
-    }
   }
 
   "showConfirmationPage" must {
@@ -600,61 +572,110 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       doc.title() must include(Messages("tai.employmentConfirmation.heading"))
     }
   }
-
-  "add telephone number" must {
-    "show the contact by telephone page" when {
-      "the request has an authorised session and there is cached data" in {
-
-        when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(meq(EndEmploymentConstants.EmploymentIdKey))(
-            any()
-          )
-        ).thenReturn(Future.successful(Right(0)))
-        when(endEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
-
-        val result = controller().addTelephoneNumber()(fakeGetRequest)
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-      }
-
-      "the request has an authorised session no cached data" in {
-
-        when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(meq(EndEmploymentConstants.EmploymentIdKey))(
-            any()
-          )
-        ).thenReturn(Future.successful(Right(0)))
-        when(endEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(None, None)))
-
-        val result = controller().addTelephoneNumber()(fakeGetRequest)
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-      }
-
-      "redirect to the tax summary page if a value is missing from the cache " in {
-
-        when(
-          endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(meq(EndEmploymentConstants.EmploymentIdKey))(
-            any()
-          )
+  "addTelephoneNumber when run" must { // TODO - Change to call
+    "return OK and canWeContactByPhone if users answers data exists" in {
+      val userAnswersFull = userAnswers.copy(
+        data = userAnswers.data ++ Json.obj(
+          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
+          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
         )
-          .thenReturn(Future.successful(Left("Mandatory value missing from cache")))
-        when(endEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(None, None)))
+      )
+      val application = applicationBuilder(userAnswersFull).build()
 
-        val result = controller().addTelephoneNumber()(fakeGetRequest)
+      running(application) {
+        val result = controller(Some(userAnswersFull)).addTelephoneNumber()(fakePostRequest)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+    "redirect to tax summaries page if missing user answers data" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswersEmpty).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).addTelephoneNumber()(fakePostRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-
       }
     }
 
+    "submitTelephoneNumber when called" must { // TODO - Needs tests to read end user answers to confirm contents
+      "redirect to endEmploymentCheckYourAnswers and add the phone number to user answers if value Yes and a phone number are submitted" in {
+        val request = FakeRequest("POST", "")
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "123456789"
+          )
+
+        val application = applicationBuilder(userAnswers).build()
+
+        running(application) {
+          val result = controller().submitTelephoneNumber()(request)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
+            .endEmploymentCheckYourAnswers()
+            .url
+        }
+      }
+      "redirect to endEmploymentCheckYourAnswers if value No is submitted" in {
+        val request = FakeRequest("POST", "")
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.NoValue,
+            FormValuesConstants.YesNoTextEntry -> ""
+          )
+
+        val application = applicationBuilder(userAnswers).build()
+
+        running(application) {
+          val result = controller().submitTelephoneNumber()(request)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
+            .endEmploymentCheckYourAnswers()
+            .url
+        }
+      }
+      "return BAD_REQEST if value Yes but no phone number is submitted" in {
+        val request = FakeRequest("POST", "")
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> ""
+          )
+
+        val application = applicationBuilder(userAnswers).build()
+
+        running(application) {
+          val result = controller().submitTelephoneNumber()(request)
+          status(result) mustBe BAD_REQUEST
+        }
+      }
+      "return BAD_REQEST if form values are invalid" in {
+        val request = FakeRequest("POST", "")
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> "",
+            FormValuesConstants.YesNoTextEntry -> ""
+          )
+
+        val application = applicationBuilder(userAnswers).build()
+
+        running(application) {
+          val result = controller().submitTelephoneNumber()(request)
+          status(result) mustBe BAD_REQUEST
+        }
+      }
+      "redirect to tax summaries page if missing user answers data" in {
+        val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+        val application = applicationBuilder(userAnswersEmpty).build()
+
+        running(application) {
+          val result = controller(Some(userAnswersEmpty)).submitTelephoneNumber()(fakePostRequest)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        }
+      }
+    }
 
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {

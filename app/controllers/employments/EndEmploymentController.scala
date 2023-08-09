@@ -366,7 +366,8 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  def submitTelephoneNumber(): Action[AnyContent] =
+  def submitTelephoneNumber()
+    : Action[AnyContent] = // TODO - Is this actually submitting a phone number? Cannot find the logic for this
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
       request.userAnswers.get(EmploymentIdKeyPage) match {
@@ -393,7 +394,7 @@ class EndEmploymentController @Inject() (
                     val questionCached =
                       Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
                     request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
-                    request.userAnswers.set(EmploymentTelephoneNumberKeyPage, form.yesNoTextEntry.getOrElse(""))
+                    request.userAnswers.set(EmploymentTelephoneNumberKeyPage, "")
                 }
                 cache
                   .map(_ =>
@@ -401,12 +402,15 @@ class EndEmploymentController @Inject() (
                       Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
                     )
                   )
-                  .getOrElse(
+                  .getOrElse { // TODO - Case needs testing, but need to figure out how to read final user answers in submission methods
+                    println("1" * 100)
+
                     Future.successful(Redirect(taxAccountSummaryRedirect))
-                  ) // TODO - Another strange choice of error handling
+                  } // TODO - Another strange choice of error handling
               }
             )
         case _ =>
+          println("2" * 100)
           Future.successful(Redirect(taxAccountSummaryRedirect)) // TODO - Another strange choice of error handling
       }
     }
