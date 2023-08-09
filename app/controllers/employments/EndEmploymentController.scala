@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -198,7 +198,7 @@ class EndEmploymentController @Inject() (
                 .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino))
               Future.successful(
                 Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
-              ) // TODO - Does this need to be a route
+              )
             } else {
               Future.successful(
                 Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
@@ -276,14 +276,20 @@ class EndEmploymentController @Inject() (
                   case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
                 },
               {
-                case Some(data) =>
-                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, data)
+                case Some(IrregularPayConstants.ContactEmployer) =>
+                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer)
                   Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-                case _ =>
+                case Some(value) =>
+                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value)
+                  Future
+                    .successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+                case _ => // TODO - Not possible but needed if to prevent non-exhaustive match error?
                   Future
                     .successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
               }
             )
+        case None =>
+          Future.successful(InternalServerError(errorPagesHandler.error5xx("Could not retrieve employer id")))
       }
     }
 
@@ -403,14 +409,11 @@ class EndEmploymentController @Inject() (
                     )
                   )
                   .getOrElse { // TODO - Case needs testing, but need to figure out how to read final user answers in submission methods
-                    println("1" * 100)
-
                     Future.successful(Redirect(taxAccountSummaryRedirect))
                   } // TODO - Another strange choice of error handling
               }
             )
         case _ =>
-          println("2" * 100)
           Future.successful(Redirect(taxAccountSummaryRedirect)) // TODO - Another strange choice of error handling
       }
     }

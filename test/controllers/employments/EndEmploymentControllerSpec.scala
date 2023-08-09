@@ -651,11 +651,25 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           status(result) mustBe BAD_REQUEST
         }
       }
-      "return BAD_REQEST if value Yes but phone number is invalid" in {
+      "return BAD_REQEST if value Yes but phone number is too short" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
             FormValuesConstants.YesNoTextEntry -> "1243"
+          )
+
+        val application = applicationBuilder(userAnswers).build()
+
+        running(application) {
+          val result = controller().submitTelephoneNumber()(request)
+          status(result) mustBe BAD_REQUEST
+        }
+      }
+      "return BAD_REQEST if value Yes but phone number is too long" in {
+        val request = FakeRequest("POST", "")
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "1243124312431243124312431243124312431243"
           )
 
         val application = applicationBuilder(userAnswers).build()
@@ -690,36 +704,60 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         }
       }
     }
+  }
+  "handleIrregularPaymentError is called" must {
+    s"redirect to tax summaries if emp id exists and user inputted ${IrregularPayConstants.ContactEmployer}" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer)
+      val application = applicationBuilder(userAnswers).build()
 
-    "return BadRequest" when {
+      running(application) {
+        val result = controller().handleIrregularPaymentError(request)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      }
+    }
+    s"redirect to updateEmploymentDetails if emp id exists and user inputted anything besides ${IrregularPayConstants.ContactEmployer}" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails)
+      val application = applicationBuilder(userAnswers).build()
 
-      "there is a form validation error (additional, controller() specific constraint)" in {
+      running(application) {
+        val result = controller().handleIrregularPaymentError(request)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
+          .endEmploymentPage()
+          .url
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswersEmpty).build()
 
-        val empId = 1
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).handleIrregularPaymentError(fakePostRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not and there are form errors" in {
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> "")
+      val application = applicationBuilder(userAnswers).build()
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(any())(any()))
-          .thenReturn(Future.successful(Right(empId)))
+      running(application) {
+        val result = controller(Some(userAnswers)).handleIrregularPaymentError(request)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return BAD_REQUEST if user answers and employment data exists but there are form errors" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> "")
+      val application = applicationBuilder(userAnswers).build()
 
-        val tooFewCharsResult = controller().submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(
-            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> "1234"
-          )
-        )
-        status(tooFewCharsResult) mustBe BAD_REQUEST
-        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
-
-        val tooManyCharsResult = controller().submitTelephoneNumber()(
-          fakePostRequest
-            .withFormUrlEncodedBody(
-              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-              FormValuesConstants.YesNoTextEntry -> "1234123412341234123412341234123"
-            )
-        )
-        status(tooManyCharsResult) mustBe BAD_REQUEST
-        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      running(application) {
+        val result = controller(Some(userAnswers)).handleIrregularPaymentError(request)
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -736,46 +774,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val result = controller().handleIrregularPaymentError(fakePostRequest.withFormUrlEncodedBody())
 
         status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "redirect to income summary view" when {
-      "user selected an option to contact the employer" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val result = controller().handleIrregularPaymentError(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer)
-        )
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-      }
-    }
-
-    "redirect to end employment journey" when {
-      "user selected an option to update the details" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val result = controller().handleIrregularPaymentError(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails)
-        )
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
-          .endEmploymentPage()
-          .url
       }
     }
   }
