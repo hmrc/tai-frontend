@@ -18,10 +18,9 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
-import controllers.{ErrorPagesHandler, FakeAuthAction}
+import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.any
 import org.scalatest.BeforeAndAfterEach
 import pages.{EmploymentEndDateKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
@@ -869,7 +868,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-
 
   "cancel" must {
     "redirect to the the IncomeSourceSummarycontroller()" in {

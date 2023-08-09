@@ -517,7 +517,7 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  def showConfirmationPage: Action[AnyContent] = (actionJourney.authAndValidate).async { implicit request =>
+  def showConfirmationPage: Action[AnyContent] = actionJourney.authAndValidate.async { implicit request =>
     Future.successful(Ok(confirmation()))
   }
 }

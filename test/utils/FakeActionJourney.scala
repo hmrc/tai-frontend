@@ -17,7 +17,7 @@
 package utils
 
 import controllers.actions.ActionJourney
-import controllers.auth.DataRequest
+import controllers.auth.{AuthenticatedRequest, DataRequest}
 import play.api.mvc._
 import play.api.test.Helpers
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FakeActionJourney(
   userAnswers: UserAnswers
 ) extends ActionJourney {
-  private val actionBuilderFixture = new ActionBuilderFixture {
+  private val cacheAndAuthActionBuilder = new CacheAndAuthActionBuilderFixture {
     override def invokeBlock[A](
       request: Request[A],
       block: DataRequest[A] => Future[Result]
@@ -44,13 +44,33 @@ class FakeActionJourney(
     }
   }
 
-  override val setJourneyCache: ActionBuilder[DataRequest, AnyContent] = actionBuilderFixture
+  private val authActionBuilder = new AuthActionBuilderFixture {
+    override def invokeBlock[A](
+      request: Request[A],
+      block: AuthenticatedRequest[A] => Future[Result]
+    ): Future[Result] =
+      block(
+        AuthenticatedRequestFixture.buildUserRequest(request)
+      )
+  }
+
+  override val setJourneyCache: ActionBuilder[DataRequest, AnyContent] = cacheAndAuthActionBuilder
+  override val authAndValidate: ActionBuilder[AuthenticatedRequest, AnyContent] = authActionBuilder
 }
 
-trait ActionBuilderFixture extends ActionBuilder[DataRequest, AnyContent] {
+trait CacheAndAuthActionBuilderFixture extends ActionBuilder[DataRequest, AnyContent] {
   override def invokeBlock[A](
     a: Request[A],
     block: DataRequest[A] => Future[Result]
+  ): Future[Result]
+  override def parser: BodyParser[AnyContent] = Helpers.stubBodyParser()
+  override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+}
+
+trait AuthActionBuilderFixture extends ActionBuilder[AuthenticatedRequest, AnyContent] {
+  override def invokeBlock[A](
+    a: Request[A],
+    block: AuthenticatedRequest[A] => Future[Result]
   ): Future[Result]
   override def parser: BodyParser[AnyContent] = Helpers.stubBodyParser()
   override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global

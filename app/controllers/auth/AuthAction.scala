@@ -96,7 +96,6 @@ class AuthActionImpl @Inject() (
           result <- block(InternalAuthenticatedRequest(request, user))
         } yield result
       case _ =>
-        println("4" * 100)
         Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
 
@@ -107,10 +106,8 @@ class AuthActionImpl @Inject() (
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession =>
-      println("3" * 100)
       Redirect(redirect)
     case ex: AuthorisationException =>
-      println("5" * 100)
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())
   }

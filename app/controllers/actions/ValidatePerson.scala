@@ -47,10 +47,8 @@ class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: E
 
     person map {
       case p if p.isDeceased =>
-        println("6" * 100)
         Left(Redirect(routes.DeceasedController.deceased()))
       case p if p.manualCorrespondenceInd =>
-        println("7" * 100)
         Left(Redirect(routes.ServiceController.mciErrorPage()))
       case p => Right(AuthenticatedRequest(request, request.taiUser, p.name))
     }
