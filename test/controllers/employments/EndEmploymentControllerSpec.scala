@@ -651,6 +651,20 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           status(result) mustBe BAD_REQUEST
         }
       }
+      "return BAD_REQEST if value Yes but phone number is invalid" in {
+        val request = FakeRequest("POST", "")
+          .withFormUrlEncodedBody(
+            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+            FormValuesConstants.YesNoTextEntry -> "1243"
+          )
+
+        val application = applicationBuilder(userAnswers).build()
+
+        running(application) {
+          val result = controller().submitTelephoneNumber()(request)
+          status(result) mustBe BAD_REQUEST
+        }
+      }
       "return BAD_REQEST if form values are invalid" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
@@ -678,24 +692,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
 
     "return BadRequest" when {
-      "there is a form validation error (standard form validation)" in {
-
-        val empId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValueAsInt(any())(any()))
-          .thenReturn(Future.successful(Right(empId)))
-
-        val result = controller().submitTelephoneNumber()(
-          fakePostRequest.withFormUrlEncodedBody(
-            FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
-            FormValuesConstants.YesNoTextEntry -> ""
-          )
-        )
-        status(result) mustBe BAD_REQUEST
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-      }
 
       "there is a form validation error (additional, controller() specific constraint)" in {
 
