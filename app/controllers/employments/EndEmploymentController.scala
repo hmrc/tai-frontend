@@ -31,7 +31,6 @@ import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, Employ
 import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -42,7 +41,6 @@ import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -61,17 +59,22 @@ class EndEmploymentController @Inject() (
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
-  @Named("End Employment") journeyCacheService: JourneyCacheService,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  actionJourney: ActionJourney,
-  authAction: AuthAction, // TODO - Use journey
-  validatePerson: ValidatePerson
+  actionJourney: ActionJourney
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
-  def cancel(empId: Int): Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
-    journeyCacheService.flush() map { _ =>
-      Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request =>
+    (
+      request.userAnswers.remove(EmploymentIdKeyPage),
+      request.userAnswers.remove(EmploymentUpdateRemovePage),
+      request.userAnswers.remove(EmploymentNameKeyPage),
+      request.userAnswers.remove(EmploymentIrregularPaymentKeyPage),
+      request.userAnswers.remove(EmploymentEndDateKeyPage),
+      request.userAnswers.remove(EmploymentTelephoneNumberKeyPage),
+      request.userAnswers.remove(EmploymentTelephoneQuestionKeyPage),
+      request.userAnswers.remove(EmploymentLatestPaymentKeyPage)
+    ) match {
+      case _ => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
     }
   }
 
@@ -514,7 +517,7 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  def showConfirmationPage: Action[AnyContent] = (authAction andThen validatePerson).async { implicit request =>
+  def showConfirmationPage: Action[AnyContent] = (actionJourney.authAndValidate).async { implicit request =>
     Future.successful(Ok(confirmation()))
   }
 }

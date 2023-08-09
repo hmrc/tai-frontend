@@ -82,11 +82,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     inject[DuplicateSubmissionWarningView],
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
-    endEmploymentJourneyCacheService,
-    trackSuccessJourneyCacheService,
-    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers)),
-    FakeAuthAction, // TODO - Create FakeActionJourney, these no longer used
-    FakeValidatePerson
+    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers))
   )
 
   override def beforeEach(): Unit = {
@@ -806,7 +802,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
-    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not" in {
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
@@ -816,65 +812,64 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
+  "submitDuplicateSubmissionWarning is called" must {
+    "redirect to employmentUpdateRemoveDecision if value Yes was submitted, and emp id and employment data exist" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
+      val application = applicationBuilder(userAnswers).build()
 
-  "submitDuplicateSubmissionWarning" must {
-    "redirect to the update remove employment decision page" when {
-      "I want to update my employment is selected" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val result = controller().submitDuplicateSubmissionWarning(
-          fakePostRequest
-            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
-        )
-
+      running(application) {
+        val result = controller().submitDuplicateSubmissionWarning()(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
         ).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url
       }
     }
+    "redirect to onPageLoad if value No was submitted, and emp id and employment data exist" in {
+      val empId = 1
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
+      val application = applicationBuilder(userAnswers).build()
 
-    "redirect to the income source summary page" when {
-      "I want to return to my employment details is selected" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val result = controller().submitDuplicateSubmissionWarning(
-          fakePostRequest
-            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
-        )
-
+      running(application) {
+        val result = controller().submitDuplicateSubmissionWarning()(request)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
-          .onPageLoad(employmentId)
-          .url
+        redirectLocation(
+          result
+        ).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)
       }
     }
+    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswersEmpty).build()
 
-    "return BadRequest" when {
-      "there is a form validation error (standard form validation)" in {
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).submitDuplicateSubmissionWarning()(fakePostRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not" in {
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      val application = applicationBuilder(userAnswers).build()
 
-        val employmentId = 1
+      running(application) {
+        val result = controller().submitDuplicateSubmissionWarning()(fakePostRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return BAD_REQUEST if user answers and employment data exists but there are form errors" in {
+      val request = FakeRequest("POST", "")
+        .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> "")
+      val application = applicationBuilder(userAnswers).build()
 
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val result = controller().submitDuplicateSubmissionWarning(
-          fakePostRequest
-            .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> "")
-        )
-
+      running(application) {
+        val result = controller().submitDuplicateSubmissionWarning()(request)
         status(result) mustBe BAD_REQUEST
       }
     }
   }
+
 
   "cancel" must {
     "redirect to the the IncomeSourceSummarycontroller()" in {
