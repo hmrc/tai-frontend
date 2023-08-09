@@ -761,62 +761,27 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
+  "onPageLoad is called" must {
+    "redirect to employmentUpdateRemove when there is no employment id in the user answers" in {
+      val empId = 1
+      val emptyUserAnswers = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(emptyUserAnswers).build()
 
-  "handleIrregularPay" must {
-    "return bad request" when {
-      "there are errors in form" in {
-
-        val employmentId = 1
-
-        when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-        val result = controller().handleIrregularPaymentError(fakePostRequest.withFormUrlEncodedBody())
-
-        status(result) mustBe BAD_REQUEST
+      running(application) {
+        val result = controller().onPageLoad(empId)(fakeGetRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
       }
     }
-  }
+    "redirect to duplicateSubmissionWarning when there is an employment id in the user answers" in {
+      val empId = 1
+      val application = applicationBuilder(userAnswers).build()
 
-  "onPageLoad" must {
-    "redirect to employmentUpdateRemove when there is no end employment ID cache value present" in {
-      val employmentId = 1
-
-      val cacheMap = Map(
-        EndEmploymentConstants.EmploymentIdKey -> employmentId.toString,
-        EndEmploymentConstants.NameKey         -> employerName
-      )
-      when(endEmploymentJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-      when(
-        trackSuccessJourneyCacheService.currentValue(
-          meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId")
-        )(any())
-      )
-        .thenReturn(Future.successful(None))
-
-      val result = controller().onPageLoad(employmentId)(fakeGetRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
-    }
-
-    "redirect to warning page when there is an end employment ID cache value present" in {
-      val employmentId = 1
-
-      val cacheMap = Map(
-        EndEmploymentConstants.EmploymentIdKey -> employmentId.toString,
-        EndEmploymentConstants.NameKey         -> employerName
-      )
-      when(endEmploymentJourneyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-      when(
-        trackSuccessJourneyCacheService.currentValue(
-          meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$employmentId")
-        )(any())
-      )
-        .thenReturn(Future.successful(Some("true")))
-
-      val result = controller().onPageLoad(employmentId)(fakeGetRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
+      running(application) {
+        val result = controller().onPageLoad(empId)(fakeGetRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
+      }
     }
   }
 
