@@ -785,30 +785,35 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
 
-  "duplicateSubmissionWarning" must {
-    "show duplicateSubmissionWarning view" in {
+  "duplicateSubmissionWarning is called" must {
+    "show duplicateSubmissionWarning if emp id and employment data exist" in {
+      val application = applicationBuilder(userAnswers).build()
 
-      val employmentId = 1
+      running(application) {
+        val result = controller().duplicateSubmissionWarning()(fakeGetRequest)
+        val doc = Jsoup.parse(contentAsString(result))
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, employmentId.toString))))
-
-      val result = controller().duplicateSubmissionWarning(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-
-      status(result) mustBe OK
-      doc.title() must include(Messages("tai.employment.warning.customGaTitle"))
+        status(result) mustBe OK
+        doc.title() must include(Messages("tai.employment.warning.customGaTitle"))
+      }
     }
+    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilder(userAnswersEmpty).build()
 
-    "redirect to the tax summary page if a value is missing from the cache " in {
+      running(application) {
+        val result = controller(Some(userAnswersEmpty)).duplicateSubmissionWarning()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      val application = applicationBuilder(userAnswers).build()
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Left("Mandatory values missing from cache")))
-
-      val result = controller().duplicateSubmissionWarning(fakeGetRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      running(application) {
+        val result = controller().duplicateSubmissionWarning()(fakeGetRequest)
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 
