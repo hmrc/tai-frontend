@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.routes
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{DividendTax, EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
@@ -40,16 +41,16 @@ class PotentialUnderpaymentViewModelSpec extends BaseSpec {
       PotentialUnderpaymentViewModel(tasZero, Nil, "", "").iyaTotalAmount mustBe BigDecimal(0)
     }
 
-    "return an instance with a iyaTaxCodeChangeAmount drawn from the 'EstimatedTaxYouOweThisYear' coding componenet where present" in {
+    "return an instance with a iyaTaxCodeChangeAmount drawn from the 'EstimatedTaxYouOweThisYear' coding component where present" in {
       PotentialUnderpaymentViewModel(tas, ccs, "", "").iyaTaxCodeChangeAmount mustBe BigDecimal(33.44)
     }
 
-    "return an instance with a iyaTaxCodeChangeAmount drawn from the first 'EstimatedTaxYouOweThisYear' coding componenet where more than one is present" in {
+    "return an instance with a iyaTaxCodeChangeAmount drawn from the first 'EstimatedTaxYouOweThisYear' coding component where more than one is present" in {
       val twoMatchCCs = ccs :+ CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 66.66, "EstimatedTaxYouOweThisYear")
       PotentialUnderpaymentViewModel(tas, twoMatchCCs, "", "").iyaTaxCodeChangeAmount mustBe BigDecimal(33.44)
     }
 
-    "return an instance with a iyaTaxCodeChangeAmount of zero where no 'EstimatedTaxYouOweThisYear' coding componenet is present" in {
+    "return an instance with a iyaTaxCodeChangeAmount of zero where no 'EstimatedTaxYouOweThisYear' coding component is present" in {
       val noneMatchCCs = Seq(
         CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
         CodingComponent(DividendTax, Some(1), 33.44, "DividendTax")
@@ -84,6 +85,34 @@ class PotentialUnderpaymentViewModelSpec extends BaseSpec {
       }
       "is set to None if neither CY nor CY+1 values are present" in {
         PotentialUnderpaymentViewModel(tasZero, Nil, "", "").gaDimensions mustBe None
+      }
+    }
+
+    "return an instance with a return link" which {
+      "includes tax-free-allowance link and link text" in {
+        val returnLink =
+          PotentialUnderpaymentViewModel(tas, Nil, "referrer", "tax-free-allowance").returnLink.toString()
+        returnLink must include("href=\"referrer\"")
+        returnLink must include(messages("tai.iya.tax.free.amount.return.link"))
+      }
+      "includes detailed-income-tax-estimate and link text" in {
+        val returnLink =
+          PotentialUnderpaymentViewModel(tas, Nil, "referrer", "detailed-income-tax-estimate").returnLink.toString()
+        returnLink must include("href=\"referrer\"")
+        returnLink must include(messages("tai.iya.detailed.paye.return.link"))
+      }
+      "includes your-tax-free-amount link and link text" in {
+        val returnLink =
+          PotentialUnderpaymentViewModel(tas, Nil, "referrer", "your-tax-free-amount").returnLink.toString()
+        returnLink must include("href=\"referrer\"")
+        returnLink must include(messages("tai.iya.tax.free.amount.return.link"))
+      }
+      "includes default link to tax account summary and link text" in {
+
+        val returnLink = PotentialUnderpaymentViewModel(tas, Nil, "referrer", "NA").returnLink.toString()
+        returnLink must include(s"href=\"${routes.TaxAccountSummaryController.onPageLoad().url}\"")
+        returnLink must include(messages("return.to.your.income.tax.summary"))
+
       }
     }
 
