@@ -105,7 +105,7 @@ class PotentialUnderpaymentViewModelSpec extends BaseSpec {
         val returnLink =
           PotentialUnderpaymentViewModel(tas, Nil, "referrer", "your-tax-free-amount").returnLink.toString()
         returnLink must include("href=\"referrer\"")
-        returnLink must include(messages("tai.iya.tax.free.amount.return.link"))
+        returnLink must include(messages("tai.iya.tax.code.change.return.link"))
       }
       "includes default link to tax account summary and link text" in {
 
