@@ -763,7 +763,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilder(emptyUserAnswers).build()
 
       running(application) {
-        val result = controller().onPageLoad(empId)(fakeGetRequest)
+        val result = controller(Some(emptyUserAnswers)).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
       }
