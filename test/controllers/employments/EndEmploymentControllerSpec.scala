@@ -149,18 +149,17 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         doc.title() must include(messages("tai.employment.decision.legend", employerName))
       }
     }
-    "redirect to the tax summary page if the employer id is missing from the cache" in {
+    "return BAD_REQUEST if the employer id is missing from the cache" in {
       val request = RequestBuilder.buildFakeRequestWithOnlySession("GET")
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswers = emptyUserAnswers).build()
 
       running(application) {
         val result = controller(Some(emptyUserAnswers)).employmentUpdateRemoveDecision(request)
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "redirect to the tax summary page if the call to retrieve employment data fails" in {
+    "return BAD_REQUEST if the call to retrieve employment data fails" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request = fakeGetRequest
@@ -168,8 +167,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(userAnswers)).employmentUpdateRemoveDecision(request)
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -267,7 +265,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectUrl mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
       }
     }
-    "return INTERNAL_SERVER_ERROR if the employer id is missing from the cache" in {
+    "return BAD_REQUEST if the employer id is missing from the cache" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request = FakeRequest("POST", "")
@@ -276,10 +274,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(emptyUserAnswers)).handleEmploymentUpdateRemove(request)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+    "return BAD_REQUEST if the request for employment data fails" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request = FakeRequest("POST", "")
@@ -288,7 +286,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(userAnswersWithYesOrNo)).handleEmploymentUpdateRemove(request)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
     "return BAD_REQUEST and display form with errors if no form value is passed as EmploymentDecision" in {
@@ -326,7 +324,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         )
       }
     }
-    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+    "return BAD_REQUEST if the request for employment data fails" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
@@ -339,15 +337,15 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(userAnswersWithDate)).endEmploymentError()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if payment data doesn't exist" in {
+    "return BAD_REQUEST if payment data doesn't exist" in {
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
         val result = controller(Some(userAnswers)).endEmploymentError()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -363,23 +361,23 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         doc.title() must include(Messages("tai.irregular.preHeadingText"))
       }
     }
-    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+    "return BAD_REQUEST if the request for employment data fails" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
         val result = controller(Some(userAnswers)).irregularPaymentError()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if payment data doesn't exist" in {
+    "return BAD_REQUEST if payment data doesn't exist" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).irregularPaymentError()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -403,12 +401,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
       }
     }
-    "return INTERNAL_SERVER_ERROR if values are missing from user answers" in {
+    "return BAD_REQUEST if values are missing from user answers" in {
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
         val result = controller(Some(userAnswers)).confirmAndSendEndEmployment()(fakePostRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -428,7 +426,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         doc.title() must include(Messages("tai.endEmployment.endDateForm.pagetitle"))
       }
     }
-    "return INTERNAL_SERVER_ERROR if the request for employment data fails" in {
+    "return BAD_REQUEST if the request for employment data fails" in {
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
@@ -441,16 +439,16 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(userAnswersWithDate)).endEmploymentPage()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if payment data doesn't exist" in {
+    "return BAD_REQUEST if payment data doesn't exist" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).endEmploymentPage()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -494,7 +492,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+    "return BAD_REQUEST if no user answers data exists" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val userAnswersWithDate =
         userAnswers.copy(data =
@@ -505,17 +503,17 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
       running(application) {
         val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage()(fakePostRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not" in {
+    "return BAD_REQUEST if user answers data exists but employment data does not" in {
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswers = userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage()(fakePostRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -539,7 +537,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         doc.title() must include(Messages("tai.endEmploymentConfirmAndSend.heading"))
       }
     }
-    "redirect to tax summaries page if missing user answers data" in {
+    "return BAD_REQUEST if missing user answers data" in {
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
           EmploymentEndDateKeyPage.toString           -> "",
@@ -551,8 +549,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(userAnswersFull)).endEmploymentCheckYourAnswers()(fakePostRequest)
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -586,14 +583,13 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
-    "redirect to tax summaries page if missing user answers data" in {
+    "return BAD_REQUEST if missing user answers data" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).addTelephoneNumber()(fakePostRequest)
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        status(result) mustBe BAD_REQUEST
       }
     }
 
@@ -688,14 +684,13 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           status(result) mustBe BAD_REQUEST
         }
       }
-      "redirect to tax summaries page if missing user answers data" in {
+      "return BAD_REQUEST if missing user answers data" in {
         val userAnswersEmpty = userAnswers.copy(data = Json.obj())
         val application = applicationBuilder(userAnswersEmpty).build()
 
         running(application) {
           val result = controller(Some(userAnswersEmpty)).submitTelephoneNumber()(fakePostRequest)
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+          status(result) mustBe BAD_REQUEST
         }
       }
     }
@@ -725,16 +720,16 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           .url
       }
     }
-    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+    "return BAD_REQUEST if no user answers data exists" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).handleIrregularPaymentError(fakePostRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not and there are form errors" in {
+    "return BAD_REQUEST if user answers data exists but employment data does not and there are form errors" in {
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> "")
@@ -742,7 +737,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       running(application) {
         val result = controller(Some(userAnswers)).handleIrregularPaymentError(request)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
     "return BAD_REQUEST if user answers and employment data exists but there are form errors" in {
@@ -792,22 +787,22 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         doc.title() must include(Messages("tai.employment.warning.customGaTitle"))
       }
     }
-    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+    "return BAD_REQUEST if no user answers data exists" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).duplicateSubmissionWarning()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not" in {
+    "return BAD_REQUEST if user answers data exists but employment data does not" in {
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
         val result = controller().duplicateSubmissionWarning()(fakeGetRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
@@ -839,22 +834,22 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         ).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url
       }
     }
-    "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
+    "return BAD_REQUEST if no user answers data exists" in {
       val userAnswersEmpty = userAnswers.copy(data = Json.obj())
       val application = applicationBuilder(userAnswersEmpty).build()
 
       running(application) {
         val result = controller(Some(userAnswersEmpty)).submitDuplicateSubmissionWarning()(fakePostRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return INTERNAL_SERVER_ERROR if user answers data exists but employment data does not" in {
+    "return BAD_REQUEST if user answers data exists but employment data does not" in {
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
         val result = controller().submitDuplicateSubmissionWarning()(fakePostRequest)
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe BAD_REQUEST
       }
     }
     "return BAD_REQUEST if user answers and employment data exists but there are form errors" in {

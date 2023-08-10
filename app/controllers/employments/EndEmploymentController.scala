@@ -62,7 +62,7 @@ class EndEmploymentController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
-  private def flushJourney(userAnswers: UserAnswers): Try[Unit] = { // TODO - Test and get second opinion
+  private def flushJourney(userAnswers: UserAnswers): Try[Unit] = // TODO - Test and get second opinion
     for {
       _ <- userAnswers.remove(EmploymentIdKeyPage)
       _ <- userAnswers.remove(EmploymentUpdateRemovePage)
@@ -72,19 +72,18 @@ class EndEmploymentController @Inject() (
       _ <- userAnswers.remove(EmploymentTelephoneNumberKeyPage)
       _ <- userAnswers.remove(EmploymentTelephoneQuestionKeyPage)
       _ <- userAnswers.remove(EmploymentLatestPaymentKeyPage)
-    } yield {
-      ()
-    }
-  }
+    } yield ()
 
-  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request => // TODO - Needs live test
-    flushJourney(request.userAnswers) match {
-      case Failure(e) =>
-        Future.successful(
-          BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
-        )
-      case Success(_) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-    }
+  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async {
+    implicit request => // TODO - Needs live test
+      flushJourney(request.userAnswers) match {
+        case Failure(e) =>
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
+          )
+        case Success(_) =>
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      }
   }
 
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) =
@@ -133,7 +132,11 @@ class EndEmploymentController @Inject() (
           request.userAnswers.set(EmploymentIdKeyPage, empId) match {
             case Failure(e) =>
               Future.successful(
-                BadRequest(errorPagesHandler.error4xxPageWithLink(s"Caching $empId to ${EmploymentIdKeyPage.toString} failed with exception: $e"))
+                BadRequest(
+                  errorPagesHandler.error4xxPageWithLink(
+                    s"Caching $empId to ${EmploymentIdKeyPage.toString} failed with exception: $e"
+                  )
+                )
               )
             case Success(_) =>
               Future.successful(
@@ -251,7 +254,9 @@ class EndEmploymentController @Inject() (
         case (empId, latestPayment) =>
           Future.successful(
             BadRequest(
-              errorPagesHandler.error5xx(s"Cache failed, values retrieved are: $empId for employer id and $latestPayment for latest payment")
+              errorPagesHandler.error5xx(
+                s"Cache failed, values retrieved are: $empId for employer id and $latestPayment for latest payment"
+              )
             )
           )
       }
@@ -340,7 +345,9 @@ class EndEmploymentController @Inject() (
         case (empId, endDate) =>
           Future.successful(
             BadRequest(
-              errorPagesHandler.error5xx(s"Cache failed, values retrieved are: $empId for employer id and $endDate for end date")
+              errorPagesHandler.error5xx(
+                s"Cache failed, values retrieved are: $empId for employer id and $endDate for end date"
+              )
             )
           )
       }
@@ -361,16 +368,21 @@ class EndEmploymentController @Inject() (
                     Future.successful(
                       BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
                     ),
-                  date => {
+                  date =>
                     request.userAnswers.set(EmploymentEndDateKeyPage, date) match {
                       case Failure(e) =>
                         Future.successful(
-                          BadRequest(errorPagesHandler.error4xxPageWithLink(s"Caching $date to ${EmploymentEndDateKeyPage.toString} failed with exception: $e"))
+                          BadRequest(
+                            errorPagesHandler.error4xxPageWithLink(
+                              s"Caching $date to ${EmploymentEndDateKeyPage.toString} failed with exception: $e"
+                            )
+                          )
                         )
                       case Success(_) =>
-                        Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber()))
+                        Future.successful(
+                          Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+                        )
                     }
-                  }
                 )
             case _ =>
               Future.successful(
@@ -447,8 +459,12 @@ class EndEmploymentController @Inject() (
                 cache match {
                   case Failure(e) =>
                     Future.successful(
-                      BadRequest(errorPagesHandler.error4xxPageWithLink(s"Caching ${form.yesNoChoice} to ${EmploymentTelephoneNumberKeyPage.toString}" +
-                        s" and ${EmploymentTelephoneQuestionKeyPage.toString} value failed with exception: $e"))
+                      BadRequest(
+                        errorPagesHandler.error4xxPageWithLink(
+                          s"Caching ${form.yesNoChoice} to ${EmploymentTelephoneNumberKeyPage.toString}" +
+                            s" and ${EmploymentTelephoneQuestionKeyPage.toString} value failed with exception: $e"
+                        )
+                      )
                     )
                   case Success(_) =>
                     Future.successful(
@@ -505,17 +521,15 @@ class EndEmploymentController @Inject() (
         telephoneQuestion <- request.userAnswers.get(EmploymentTelephoneQuestionKeyPage)
         telephoneNumber   <- request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
-      } yield {
-        flushJourney(request.userAnswers) match {
-          case Failure(e) =>
-            Future.successful(
-              BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
-            )
-          case Success(_) =>
-            employmentService.endEmployment(authUser.nino, empId, model).map { _ =>
-              Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
-            }
-        }
+      } yield flushJourney(request.userAnswers) match {
+        case Failure(e) =>
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
+          )
+        case Success(_) =>
+          employmentService.endEmployment(authUser.nino, empId, model).map { _ =>
+            Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
+          }
       }
       result.getOrElse(
         Future.successful(
