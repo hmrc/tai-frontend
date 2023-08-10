@@ -524,7 +524,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController =
     new TestUpdateIncomeNextYearController() {
       val model: UpdateNextYearsIncomeCacheModel =
-        UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
+        UpdateNextYearsIncomeCacheModel("employer name", employmentID, isPension, currentEstPay)
 
       when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
 

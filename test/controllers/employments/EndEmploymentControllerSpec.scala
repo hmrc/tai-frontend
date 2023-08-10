@@ -836,7 +836,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)
+        ).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url
       }
     }
     "return INTERNAL_SERVER_ERROR if no user answers data exists" in {
