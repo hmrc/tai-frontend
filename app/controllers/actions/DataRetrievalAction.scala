@@ -38,10 +38,11 @@ class DataRetrievalActionImpl @Inject() (
             request.request,
             request.request.taiUser,
             request.request.fullName,
-            UserAnswers(request.userId)
+            UserAnswers(request.userId),
+            request.userId
           ) // TODO - Is this right?
         )(
-          DataRequest(request.request, request.request.taiUser, request.request.fullName, _)
+          DataRequest(request.request, request.request.taiUser, request.request.fullName, _, request.userId)
         )
       }
 }

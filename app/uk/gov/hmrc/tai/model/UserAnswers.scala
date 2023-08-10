@@ -47,6 +47,8 @@ final case class UserAnswers(
     }
   }
 
+  // TODO - clear() by id instead
+
   def remove[A](page: Settable[A]): Try[UserAnswers] = {
 
     val updatedData = data.removeObject(page.path) match {

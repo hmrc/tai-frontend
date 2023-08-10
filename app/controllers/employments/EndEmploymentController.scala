@@ -23,7 +23,10 @@ import pages._
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
@@ -58,31 +61,15 @@ class EndEmploymentController @Inject() (
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
-  actionJourney: ActionJourney
+  actionJourney: ActionJourney,
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
-  private def flushJourney(userAnswers: UserAnswers): Try[Unit] = // TODO - Test and get second opinion
-    for {
-      _ <- userAnswers.remove(EmploymentIdKeyPage)
-      _ <- userAnswers.remove(EmploymentUpdateRemovePage)
-      _ <- userAnswers.remove(EmploymentNameKeyPage)
-      _ <- userAnswers.remove(EmploymentIrregularPaymentKeyPage)
-      _ <- userAnswers.remove(EmploymentEndDateKeyPage)
-      _ <- userAnswers.remove(EmploymentTelephoneNumberKeyPage)
-      _ <- userAnswers.remove(EmploymentTelephoneQuestionKeyPage)
-      _ <- userAnswers.remove(EmploymentLatestPaymentKeyPage)
-    } yield ()
-
   def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async {
     implicit request => // TODO - Needs live test
-      flushJourney(request.userAnswers) match {
-        case Failure(e) =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
-          )
-        case Success(_) =>
-          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      journeyCacheNewRepository.clear(request.userId).map { _ =>
+        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
       }
   }
 
@@ -138,7 +125,8 @@ class EndEmploymentController @Inject() (
                   )
                 )
               )
-            case Success(_) =>
+            case Success(userAnswers) =>
+              journeyCacheNewRepository.set(userAnswers)
               Future.successful(
                 Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
               )
@@ -306,12 +294,36 @@ class EndEmploymentController @Inject() (
                 },
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
-                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer)
-                  Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+                  request.userAnswers
+                    .set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer) match {
+                    case Failure(e) =>
+                      Future.successful(
+                        BadRequest(
+                          errorPagesHandler.error4xxPageWithLink(
+                            s"Caching ${IrregularPayConstants.ContactEmployer} to ${EmploymentIrregularPaymentKeyPage.toString} failed with exception: $e"
+                          )
+                        )
+                      )
+                    case Success(userAnswers) =>
+                      journeyCacheNewRepository.set(userAnswers)
+                      Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+                  }
                 case Some(value) =>
-                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value)
-                  Future
-                    .successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value) match {
+                    case Failure(e) =>
+                      Future.successful(
+                        BadRequest(
+                          errorPagesHandler.error4xxPageWithLink(
+                            s"Caching $value to ${EmploymentIrregularPaymentKeyPage.toString} failed with exception: $e"
+                          )
+                        )
+                      )
+                    case Success(userAnswers) =>
+                      journeyCacheNewRepository.set(userAnswers)
+                      Future.successful(
+                        Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+                      )
+                  }
                 case _ => // TODO - Not possible but needed if to prevent non-exhaustive match error?
                   Future
                     .successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
@@ -378,7 +390,8 @@ class EndEmploymentController @Inject() (
                             )
                           )
                         )
-                      case Success(_) =>
+                      case Success(userAnswers) =>
+                        journeyCacheNewRepository.set(userAnswers)
                         Future.successful(
                           Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
                         )
@@ -445,17 +458,7 @@ class EndEmploymentController @Inject() (
                   BadRequest(canWeContactByPhone(Some(authUser), telephoneNumberViewModel(empId), formWithErrors))
                 ),
               form => {
-                val cache = form.yesNoChoice match {
-                  case Some(yes) if yes == FormValuesConstants.YesValue =>
-                    val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
-                    request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
-                    request.userAnswers.set(EmploymentTelephoneNumberKeyPage, form.yesNoTextEntry.getOrElse(""))
-                  case _ =>
-                    val questionCached =
-                      Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
-                    request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
-                    request.userAnswers.set(EmploymentTelephoneNumberKeyPage, "")
-                }
+                val cache = submitTelephoneCacheHandler(form)
                 cache match {
                   case Failure(e) =>
                     Future.successful(
@@ -478,6 +481,34 @@ class EndEmploymentController @Inject() (
             BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
           )
       }
+    }
+
+  private def submitTelephoneCacheHandler(
+    form: YesNoTextEntryForm
+  )(implicit request: DataRequest[_]): Try[UserAnswers] =
+    form.yesNoChoice match {
+      case Some(yes) if yes == FormValuesConstants.YesValue =>
+        val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
+        for {
+          question <- request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
+          number   <- request.userAnswers.set(EmploymentTelephoneNumberKeyPage, form.yesNoTextEntry.getOrElse(""))
+          mergedAnswers = request.userAnswers.copy(data = question.data ++ number.data)
+        } yield {
+          journeyCacheNewRepository.set(mergedAnswers)
+          mergedAnswers
+        }
+      case _ =>
+        val questionCached = Messages(
+          s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
+        )
+        for {
+          question <- request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
+          number   <- request.userAnswers.set(EmploymentTelephoneNumberKeyPage, "")
+          mergedAnswers = request.userAnswers.copy(data = question.data ++ number.data)
+        } yield {
+          journeyCacheNewRepository.set(mergedAnswers)
+          mergedAnswers
+        }
     }
 
   def endEmploymentCheckYourAnswers: Action[AnyContent] =
@@ -521,15 +552,10 @@ class EndEmploymentController @Inject() (
         telephoneQuestion <- request.userAnswers.get(EmploymentTelephoneQuestionKeyPage)
         telephoneNumber   <- request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
-      } yield flushJourney(request.userAnswers) match {
-        case Failure(e) =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
-          )
-        case Success(_) =>
-          employmentService.endEmployment(authUser.nino, empId, model).map { _ =>
-            Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
-          }
+      } yield journeyCacheNewRepository.clear(request.userId).flatMap { _ =>
+        employmentService.endEmployment(authUser.nino, empId, model).flatMap { _ =>
+          Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage()))
+        }
       }
       result.getOrElse(
         Future.successful(

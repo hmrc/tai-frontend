@@ -19,7 +19,12 @@ package controllers.auth
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.tai.model.UserAnswers
 
-case class DataRequest[A](request: Request[A], taiUser: AuthedUser, fullName: String, userAnswers: UserAnswers)
-    extends WrappedRequest[A](request)
+case class DataRequest[A](
+  request: Request[A],
+  taiUser: AuthedUser,
+  fullName: String,
+  userAnswers: UserAnswers,
+  userId: String
+) extends WrappedRequest[A](request)
 
 // TODO - Bring back apply method

@@ -36,7 +36,7 @@ class JourneyCacheNewRepository @Inject() (
   clock: Clock
 )(implicit ec: ExecutionContext)
     extends PlayMongoRepository[UserAnswers](
-      collectionName = "journey-cache",
+      collectionName = "user-answers",
       mongoComponent = mongoComponent,
       domainFormat = UserAnswers.format,
       indexes = Seq(
