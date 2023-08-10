@@ -16,10 +16,9 @@
 
 package controllers.employments
 
-import com.google.inject.name.Named
 import controllers._
-import controllers.actions.{ActionJourney, ValidatePerson}
-import controllers.auth.{AuthAction, AuthedUser, DataRequest}
+import controllers.actions.ActionJourney
+import controllers.auth.{AuthedUser, DataRequest}
 import pages._
 import play.api.Logging
 import play.api.i18n.Messages
@@ -28,8 +27,8 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
@@ -43,7 +42,7 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 class EndEmploymentController @Inject() (
   auditService: AuditService,
@@ -63,18 +62,28 @@ class EndEmploymentController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
-  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request =>
-    (
-      request.userAnswers.remove(EmploymentIdKeyPage),
-      request.userAnswers.remove(EmploymentUpdateRemovePage),
-      request.userAnswers.remove(EmploymentNameKeyPage),
-      request.userAnswers.remove(EmploymentIrregularPaymentKeyPage),
-      request.userAnswers.remove(EmploymentEndDateKeyPage),
-      request.userAnswers.remove(EmploymentTelephoneNumberKeyPage),
-      request.userAnswers.remove(EmploymentTelephoneQuestionKeyPage),
-      request.userAnswers.remove(EmploymentLatestPaymentKeyPage)
-    ) match {
-      case _ => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+  private def flushJourney(userAnswers: UserAnswers): Try[Unit] = { // TODO - Test and get second opinion
+    for {
+      _ <- userAnswers.remove(EmploymentIdKeyPage)
+      _ <- userAnswers.remove(EmploymentUpdateRemovePage)
+      _ <- userAnswers.remove(EmploymentNameKeyPage)
+      _ <- userAnswers.remove(EmploymentIrregularPaymentKeyPage)
+      _ <- userAnswers.remove(EmploymentEndDateKeyPage)
+      _ <- userAnswers.remove(EmploymentTelephoneNumberKeyPage)
+      _ <- userAnswers.remove(EmploymentTelephoneQuestionKeyPage)
+      _ <- userAnswers.remove(EmploymentLatestPaymentKeyPage)
+    } yield {
+      ()
+    }
+  }
+
+  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request => // TODO - Needs live test
+    flushJourney(request.userAnswers) match {
+      case Failure(e) =>
+        Future.successful(
+          BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
+        )
+      case Success(_) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
     }
   }
 
@@ -104,10 +113,12 @@ class EndEmploymentController @Inject() (
                 )
               )
             case None =>
-              Redirect(taxAccountSummaryRedirect)
+              BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
           }
         case None =>
-          Future.successful(Redirect(taxAccountSummaryRedirect))
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
       }
     }
 
@@ -120,7 +131,10 @@ class EndEmploymentController @Inject() (
           )
         case None =>
           request.userAnswers.set(EmploymentIdKeyPage, empId) match {
-            case Failure(exception) => throw exception
+            case Failure(e) =>
+              Future.successful(
+                BadRequest(errorPagesHandler.error4xxPageWithLink(s"Caching $empId to ${EmploymentIdKeyPage.toString} failed with exception: $e"))
+              )
             case Success(_) =>
               Future.successful(
                 Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
@@ -165,13 +179,13 @@ class EndEmploymentController @Inject() (
                 )
             case None =>
               Future.successful(
-                InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found"))
-              ) // TODO - Employment request failed case
+                BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+              )
           }
         case None =>
           Future.successful(
-            InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment id"))
-          ) // TODO - No EmpId case, correct response?
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
       }
     }
 
@@ -211,8 +225,8 @@ class EndEmploymentController @Inject() (
         }
         .getOrElse {
           Future.successful(
-            InternalServerError(errorPagesHandler.error4xxPageWithLink("Caching failed"))
-          ) // TODO - Failed, correct response?
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
         }
     }
   }.getOrElse(
@@ -232,10 +246,14 @@ class EndEmploymentController @Inject() (
                 )
               )
             case None =>
-              InternalServerError(errorPagesHandler.error5xx("Service failed")) // TODO - Fix incorrect arg
+              BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
           }
-        case _ =>
-          Future.successful(InternalServerError(errorPagesHandler.error5xx("Cache failed"))) // TODO - Fix incorrect arg
+        case (empId, latestPayment) =>
+          Future.successful(
+            BadRequest(
+              errorPagesHandler.error5xx(s"Cache failed, values retrieved are: $empId for employer id and $latestPayment for latest payment")
+            )
+          )
       }
     }
 
@@ -252,10 +270,13 @@ class EndEmploymentController @Inject() (
                   EmploymentViewModel(employment.name, empId)
                 )
               )
-            case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
+            case None =>
+              BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
           }
         case None =>
-          Future.successful(InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment id")))
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
       }
     }
 
@@ -276,7 +297,7 @@ class EndEmploymentController @Inject() (
                         EmploymentViewModel(employment.name, empId)
                       )
                     )
-                  case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
+                  case None => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
                 },
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
@@ -292,7 +313,9 @@ class EndEmploymentController @Inject() (
               }
             )
         case None =>
-          Future.successful(InternalServerError(errorPagesHandler.error5xx("Could not retrieve employer id")))
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
       }
     }
 
@@ -312,12 +335,14 @@ class EndEmploymentController @Inject() (
                   EmploymentViewModel(employment.name, empId)
                 )
               )
-            case None => InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment data"))
+            case None => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
           }
-        case _ =>
+        case (empId, endDate) =>
           Future.successful(
-            InternalServerError(errorPagesHandler.error5xx("Could not retrieve employment id"))
-          ) // TODO - Originally returned to beginning of journey. Is this better?
+            BadRequest(
+              errorPagesHandler.error5xx(s"Cache failed, values retrieved are: $empId for employer id and $endDate for end date")
+            )
+          )
       }
     }
 
@@ -337,18 +362,25 @@ class EndEmploymentController @Inject() (
                       BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
                     ),
                   date => {
-                    request.userAnswers.set(EmploymentEndDateKeyPage, date)
-                    Future
-                      .successful(Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber()))
+                    request.userAnswers.set(EmploymentEndDateKeyPage, date) match {
+                      case Failure(e) =>
+                        Future.successful(
+                          BadRequest(errorPagesHandler.error4xxPageWithLink(s"Caching $date to ${EmploymentEndDateKeyPage.toString} failed with exception: $e"))
+                        )
+                      case Success(_) =>
+                        Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber()))
+                    }
                   }
                 )
             case _ =>
               Future.successful(
-                InternalServerError(errorPagesHandler.error4xxPageWithLink("No employment found"))
-              ) // TODO - 5xx
+                BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+              )
           }
         case _ =>
-          Future.successful(InternalServerError(errorPagesHandler.error4xxPageWithLink("No cache data found")))
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
       }
     }
 
@@ -370,8 +402,15 @@ class EndEmploymentController @Inject() (
               )
             )
           )
-        case _ =>
-          Future.successful(Redirect(taxAccountSummaryRedirect)) // TODO - This doesn't seem right as a failure case
+        case (empId, telephoneQuestion, telephoneNumber) =>
+          Future.successful(
+            BadRequest(
+              errorPagesHandler.error5xx(
+                s"Cache failed, values retrieved are: $empId for employer id, " +
+                  s"$telephoneQuestion for telephone questions, and $telephoneNumber for telephone number"
+              )
+            )
+          )
       }
     }
 
@@ -405,19 +444,23 @@ class EndEmploymentController @Inject() (
                     request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
                     request.userAnswers.set(EmploymentTelephoneNumberKeyPage, "")
                 }
-                cache
-                  .map(_ =>
+                cache match {
+                  case Failure(e) =>
+                    Future.successful(
+                      BadRequest(errorPagesHandler.error4xxPageWithLink(s"Caching ${form.yesNoChoice} to ${EmploymentTelephoneNumberKeyPage.toString}" +
+                        s" and ${EmploymentTelephoneQuestionKeyPage.toString} value failed with exception: $e"))
+                    )
+                  case Success(_) =>
                     Future.successful(
                       Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
                     )
-                  )
-                  .getOrElse { // TODO - Case needs testing, but need to figure out how to read final user answers in submission methods
-                    Future.successful(Redirect(taxAccountSummaryRedirect))
-                  } // TODO - Another strange choice of error handling
+                }
               }
             )
         case _ =>
-          Future.successful(Redirect(taxAccountSummaryRedirect)) // TODO - Another strange choice of error handling
+          Future.successful(
+            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+          )
       }
     }
 
@@ -441,8 +484,15 @@ class EndEmploymentController @Inject() (
             cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(empId).url
           )
           Future.successful(Ok(addIncomeCheckYourAnswers(model)))
-        case _ =>
-          Future.successful(Redirect(taxAccountSummaryRedirect)) // TODO - Another strange choice of error handling
+        case (empId, endDate, telephoneQuestion, telephoneNumber) =>
+          Future.successful(
+            BadRequest(
+              errorPagesHandler.error5xx(
+                s"Cache failed, values retrieved are: $empId for employer id, $endDate for end date, " +
+                  s"$telephoneQuestion for telephone questions, and $telephoneNumber for telephone number"
+              )
+            )
+          )
       }
     }
 
@@ -455,16 +505,23 @@ class EndEmploymentController @Inject() (
         telephoneQuestion <- request.userAnswers.get(EmploymentTelephoneQuestionKeyPage)
         telephoneNumber   <- request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
-//        _ <- successfulJourneyCacheService.cache(
-//          Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
-//        )   // TODO - What was this for?
-//        _ <- request.userAnswers.  FLUSH   // TODO - Do we actually need to clear journey cache if it times out anyway?
-      } yield employmentService.endEmployment(authUser.nino, empId, model).map { _ =>
-        Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
+      } yield {
+        flushJourney(request.userAnswers) match {
+          case Failure(e) =>
+            Future.successful(
+              BadRequest(errorPagesHandler.error4xxPageWithLink(s"Cache flush failed with exception: $e"))
+            )
+          case Success(_) =>
+            employmentService.endEmployment(authUser.nino, empId, model).map { _ =>
+              Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
+            }
+        }
       }
       result.getOrElse(
-        Future.successful(InternalServerError(errorPagesHandler.error5xx("End employment failed")))
-      ) // TODO - Might need expanding upon
+        Future.successful(
+          BadRequest(errorPagesHandler.error4xxPageWithLink("End employment failed"))
+        )
+      )
     }
 
   def duplicateSubmissionWarning: Action[AnyContent] =
@@ -481,9 +538,9 @@ class EndEmploymentController @Inject() (
                   empId
                 )
               )
-            case None => InternalServerError(errorPagesHandler.error5xx("Get employment failed"))
+            case None => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
           }
-        case None => Future.successful(InternalServerError(errorPagesHandler.error5xx("No employment id found")))
+        case None => Future.successful(BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id")))
       }
     }
 
@@ -508,12 +565,9 @@ class EndEmploymentController @Inject() (
                         Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
                     }
                 )
-            case _ =>
-              InternalServerError(
-                errorPagesHandler.error5xx("Get employment failed")
-              ) // TODO - Might need expanding upon
+            case _ => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
           }
-        case None => Future.successful(InternalServerError(errorPagesHandler.error5xx("No employment id found")))
+        case None => Future.successful(BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id")))
       }
     }
 
