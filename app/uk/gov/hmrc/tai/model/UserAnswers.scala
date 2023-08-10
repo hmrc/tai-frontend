@@ -33,7 +33,6 @@ final case class UserAnswers(
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
 
   def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
-
     val updatedData = data.setObject(page.path, Json.toJson(value)) match {
       case JsSuccess(jsValue, _) =>
         Success(jsValue)
@@ -44,23 +43,6 @@ final case class UserAnswers(
     updatedData.flatMap { d =>
       val updatedAnswers: UserAnswers = copy(data = d)
       page.cleanup(Some(value), updatedAnswers)
-    }
-  }
-
-  // TODO - clear() by id instead
-
-  def remove[A](page: Settable[A]): Try[UserAnswers] = {
-
-    val updatedData = data.removeObject(page.path) match {
-      case JsSuccess(jsValue, _) =>
-        Success(jsValue)
-      case JsError(_) =>
-        Success(data)
-    }
-
-    updatedData.flatMap { d =>
-      val updatedAnswers = copy(data = d)
-      page.cleanup(None, updatedAnswers)
     }
   }
 }

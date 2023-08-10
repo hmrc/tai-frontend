@@ -67,7 +67,7 @@ class EndEmploymentController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async {
-    implicit request => // TODO - Needs live test
+    implicit request =>
       journeyCacheNewRepository.clear(request.userId).map { _ =>
         Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
       }

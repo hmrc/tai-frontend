@@ -26,7 +26,13 @@ class FakeDataRetrievalAction(dataToReturn: UserAnswers) extends DataRetrievalAc
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
     Future(
-      DataRequest(request.request.request, request.request.taiUser, request.request.fullName, dataToReturn)
+      DataRequest(
+        request.request.request,
+        request.request.taiUser,
+        request.request.fullName,
+        dataToReturn,
+        request.userId
+      )
     )
 
   override protected implicit val executionContext: ExecutionContext =

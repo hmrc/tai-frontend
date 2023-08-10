@@ -16,7 +16,6 @@
 
 package controllers.employments
 
-import akka.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
@@ -64,7 +63,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     )
   )
 
-  val userAnswersWithYesOrNo =
+  val userAnswersWithYesOrNo: UserAnswers =
     userAnswers.copy(data = userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> "Yes"))
 
   def controller(userAnswersAsArg: Option[UserAnswers] = None) = new EndEmploymentController(
@@ -81,7 +80,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     inject[DuplicateSubmissionWarningView],
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
-    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers))
+    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers)),
+    mockSessionRepository
   )
 
   override def beforeEach(): Unit = {
@@ -200,7 +200,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
       val request =
-        fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue) // TODO - Needed?
+        fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
@@ -382,9 +382,32 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
   "confirmAndSendEndEmployment is run" must { // TODO - Can't test service failure as long as it's Future[String]
-    "redirect to showConfirmationPage if all user answers are present and end employment call is successful" in {
+    "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, and cache succeeds" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
+      when(mockSessionRepository.clear(any()))
+        .thenReturn(Future.successful(true))
+
+      val userAnswersFull = userAnswers.copy(
+        data = userAnswers.data ++ Json.obj(
+          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
+          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
+        )
+      )
+      val application = applicationBuilder(userAnswersFull).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersFull)).confirmAndSendEndEmployment()(fakePostRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
+      }
+    }
+    "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in { // TODO - Cache clear fail case
+      when(employmentService.endEmployment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(""))
+      when(mockSessionRepository.clear(any()))
+        .thenReturn(Future.successful(false))
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -865,9 +888,17 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   }
 
   "cancel" must {
-    "redirect to the the IncomeSourceSummarycontroller()" in {
+    "redirect to the the IncomeSourceSummarycontroller() if cache successfully clears" in {
       val employmentId = 1
-      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+      when(mockSessionRepository.clear(any())).thenReturn(Future.successful(true))
+
+      val result = controller().cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+    }
+    "redirect to the the IncomeSourceSummarycontroller() if cache fails to clear" in {
+      val employmentId = 1
+      when(mockSessionRepository.clear(any())).thenReturn(Future.successful(false))
 
       val result = controller().cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
