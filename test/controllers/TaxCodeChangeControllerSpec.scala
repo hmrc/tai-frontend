@@ -19,8 +19,6 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthenticatedRequest
-
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -36,6 +34,7 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTax
 import utils.BaseSpec
 import views.html.taxCodeChange.{TaxCodeComparisonView, WhatHappensNextView, YourTaxFreeAmountView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper {

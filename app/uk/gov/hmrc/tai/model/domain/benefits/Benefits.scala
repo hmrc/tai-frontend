@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain.benefits
 
-import play.api.libs.json.Json
-import play.api.libs.json.OFormat
+import play.api.libs.json.{Json, OFormat}
 
 case class Benefits(companyCarBenefits: Seq[CompanyCarBenefit], otherBenefits: Seq[GenericBenefit])
 

@@ -16,11 +16,11 @@
 
 package controllers.income.estimatedPay.update
 
+import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import cats.implicits._
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService

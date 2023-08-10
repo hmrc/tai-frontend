@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@import play.api.i18n.Messages
 @import includes.ptaHeader
-@import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
-@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import play.api.i18n.Messages
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+@import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
 @this(main: MainTemplate)
 
@@ -66,7 +65,7 @@
 
             <h2 class="govuk-heading-m govuk-!-margin-top-6">@messages("tai.previous.year.underpayment.h2")</h2>
 
-            <p class="govuk-body">@messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRange)</p>
+            <p class="govuk-body">@messages("tai.previous.year.underpayment.p4", Dates.currentTaxYearRange)</p>
             <p class="govuk-body">@messages("tai.previous.year.underpayment.p5")</p>
 
             <p class="govuk-link">@viewModel.returnLink</p>

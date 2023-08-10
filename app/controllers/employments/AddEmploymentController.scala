@@ -30,8 +30,8 @@ import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.FutureOps._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel

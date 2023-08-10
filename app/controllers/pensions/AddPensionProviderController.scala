@@ -29,8 +29,8 @@ import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
 import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}

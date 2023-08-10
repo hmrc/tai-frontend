@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil}
+import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, MoneyPounds, TaxYearRangeUtil => Dates}
 import utils.BaseSpec
 
 class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {

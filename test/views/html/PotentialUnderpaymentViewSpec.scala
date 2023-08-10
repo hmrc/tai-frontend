@@ -19,14 +19,12 @@ package views.html
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.util.MonetaryUtil.withPoundPrefix
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
 class PotentialUnderpaymentViewSpec extends TaiViewSpec {
@@ -62,7 +60,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
     "display a section on what happens next" in {
       document() must haveParagraphWithText(
-        messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " "))
+        messages("tai.iya.what.next.text1", Dates.currentTaxYearRangeBreak.replaceAll("\u00A0", " "))
       )
     }
 

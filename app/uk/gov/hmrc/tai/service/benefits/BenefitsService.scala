@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) {

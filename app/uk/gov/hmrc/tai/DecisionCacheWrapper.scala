@@ -20,8 +20,8 @@ import play.api.Logging
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
+import uk.gov.hmrc.tai.util.constants.journeyCache._
 
 import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

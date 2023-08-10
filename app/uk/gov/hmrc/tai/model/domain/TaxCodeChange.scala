@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import java.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.tai.util.DateHelper
-import play.api.libs.json.OFormat
+
+import java.time.LocalDate
 
 case class TaxCodeChange(previous: List[TaxCodeRecord], current: List[TaxCodeRecord]) {
 

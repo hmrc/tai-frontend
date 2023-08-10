@@ -16,7 +16,6 @@
 
 package views.html.incomes
 
-import java.time.LocalDate
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
@@ -24,6 +23,8 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+
+import java.time.LocalDate
 
 class EstimatedPayViewSpec extends TaiViewSpec {
 

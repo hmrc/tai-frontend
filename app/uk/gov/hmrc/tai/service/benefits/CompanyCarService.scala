@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.CompanyCarConnector
+import uk.gov.hmrc.tai.model.domain.CarBenefit
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.CarBenefit
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarService @Inject() (carConnector: CompanyCarConnector) {

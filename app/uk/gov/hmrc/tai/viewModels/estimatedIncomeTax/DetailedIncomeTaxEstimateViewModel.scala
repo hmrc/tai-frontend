@@ -18,14 +18,13 @@ package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import controllers.routes
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
-import uk.gov.hmrc.tai.util.{IncomeTaxEstimateHelper, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{IncomeTaxEstimateHelper, MoneyPounds, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import views.html.includes.link
 

@@ -16,16 +16,15 @@
 
 package views.html.incomes
 
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class HistoricIncomeCalculationViewSpec extends TaiViewSpec {

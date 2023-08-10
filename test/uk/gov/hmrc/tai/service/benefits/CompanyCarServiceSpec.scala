@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.scalatest.BeforeAndAfterEach
@@ -28,6 +27,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.Live
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps

@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.util
 
-import java.time.LocalDate
 import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign
 import utils.BaseSpec
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {

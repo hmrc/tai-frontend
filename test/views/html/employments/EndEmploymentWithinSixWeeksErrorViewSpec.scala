@@ -17,10 +17,11 @@
 package views.html.employments
 
 import controllers.routes
-import java.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.WithinSixWeeksViewModel
+
+import java.time.LocalDate
 
 class EndEmploymentWithinSixWeeksErrorViewSpec extends TaiViewSpec {
 

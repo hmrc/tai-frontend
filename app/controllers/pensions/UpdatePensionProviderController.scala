@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService, TaxAccountService}
+import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
@@ -44,7 +45,6 @@ import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeVi
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
-import uk.gov.hmrc.tai.util.FutureOps._
 
 class UpdatePensionProviderController @Inject() (
   taxAccountService: TaxAccountService,

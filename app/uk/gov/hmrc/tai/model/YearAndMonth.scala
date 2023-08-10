@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.format.DateTimeFormatter
-import java.time.YearMonth
 import play.api.i18n.Lang
 import play.api.libs.json._
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.YearAndMonth.formattedDate
 
-import java.time.format.DateTimeParseException
+import java.time.YearMonth
+import java.time.format.{DateTimeFormatter, DateTimeParseException}
 
 final case class YearAndMonth(yearAndMonth: YearMonth) {
 

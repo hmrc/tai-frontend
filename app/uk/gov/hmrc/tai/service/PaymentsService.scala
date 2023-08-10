@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment}
 import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
+
+import javax.inject.Inject
 
 class PaymentsService @Inject() () {
   def filterDuplicates(employment: Employment): Seq[PaymentDetailsViewModel] = {

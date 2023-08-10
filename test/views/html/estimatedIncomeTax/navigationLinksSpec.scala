@@ -17,8 +17,8 @@
 package views.html.estimatedIncomeTax
 
 import controllers.routes
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class NavigationLinksSpec extends TaiViewSpec {
 

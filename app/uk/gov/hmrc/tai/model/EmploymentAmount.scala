@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.LocalDate
-import play.api.libs.json.Json
-
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import play.api.i18n.Messages
-import play.api.libs.json.OFormat
+import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
+
+import java.time.LocalDate
 
 case class EmploymentAmount(
   name: String,

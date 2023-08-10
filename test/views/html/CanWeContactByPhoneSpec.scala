@@ -16,14 +16,14 @@
 
 package views.html
 
-import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 
 class CanWeContactByPhoneSpec extends TaiViewSpec {
   private val template = inject[CanWeContactByPhoneView]
