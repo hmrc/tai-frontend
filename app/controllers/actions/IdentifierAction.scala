@@ -33,8 +33,7 @@ class IdentifierActionImpl @Inject() ()(implicit val executionContext: Execution
       case Some(session) =>
         Future.successful(IdentifierRequest(request, session.value))
       case None =>
-        //        Future.successful(Left(Redirect(routes.JourneyRecoveryController.onPageLoad()))) // TODO - Consider journey recovery controller or alternative
-        throw new Exception("Missing identifier")
+        throw new RuntimeException("Missing Session Id in request")
     }
   }
 }

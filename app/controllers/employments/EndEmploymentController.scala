@@ -66,11 +66,10 @@ class EndEmploymentController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
-  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async {
-    implicit request =>
-      journeyCacheNewRepository.clear(request.userId).map { _ =>
-        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-      }
+  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request =>
+    journeyCacheNewRepository.clear(request.userId).map { _ =>
+      Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+    }
   }
 
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) =
@@ -99,11 +98,11 @@ class EndEmploymentController @Inject() (
                 )
               )
             case None =>
-              BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           }
         case None =>
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
       }
     }
@@ -120,9 +119,7 @@ class EndEmploymentController @Inject() (
             case Failure(e) =>
               Future.successful(
                 BadRequest(
-                  errorPagesHandler.error4xxPageWithLink(
-                    s"Caching $empId to ${EmploymentIdKeyPage.toString} failed with exception: $e"
-                  )
+                  errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
                 )
               )
             case Success(userAnswers) =>
@@ -170,12 +167,14 @@ class EndEmploymentController @Inject() (
                 )
             case None =>
               Future.successful(
-                BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+                BadRequest(
+                  errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
+                )
               )
           }
         case None =>
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
       }
     }
@@ -216,7 +215,7 @@ class EndEmploymentController @Inject() (
         }
         .getOrElse {
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
         }
     }
@@ -232,19 +231,17 @@ class EndEmploymentController @Inject() (
           employmentService.employment(user.nino, empId).map {
             case Some(employment) =>
               Ok(
-                endEmploymentWithinSixWeeksError( // TODO - OK and Error?
+                endEmploymentWithinSixWeeksError(
                   WithinSixWeeksViewModel(latestPayment.plusWeeks(6).plusDays(1), employment.name, latestPayment, empId)
                 )
               )
             case None =>
-              BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           }
-        case (empId, latestPayment) =>
+        case _ =>
           Future.successful(
             BadRequest(
-              errorPagesHandler.error5xx(
-                s"Cache failed, values retrieved are: $empId for employer id and $latestPayment for latest payment"
-              )
+              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
             )
           )
       }
@@ -264,11 +261,11 @@ class EndEmploymentController @Inject() (
                 )
               )
             case None =>
-              BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           }
         case None =>
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
       }
     }
@@ -290,7 +287,10 @@ class EndEmploymentController @Inject() (
                         EmploymentViewModel(employment.name, empId)
                       )
                     )
-                  case None => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+                  case None =>
+                    BadRequest(
+                      errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
+                    )
                 },
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
@@ -299,9 +299,7 @@ class EndEmploymentController @Inject() (
                     case Failure(e) =>
                       Future.successful(
                         BadRequest(
-                          errorPagesHandler.error4xxPageWithLink(
-                            s"Caching ${IrregularPayConstants.ContactEmployer} to ${EmploymentIrregularPaymentKeyPage.toString} failed with exception: $e"
-                          )
+                          errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
                         )
                       )
                     case Success(userAnswers) =>
@@ -313,9 +311,7 @@ class EndEmploymentController @Inject() (
                     case Failure(e) =>
                       Future.successful(
                         BadRequest(
-                          errorPagesHandler.error4xxPageWithLink(
-                            s"Caching $value to ${EmploymentIrregularPaymentKeyPage.toString} failed with exception: $e"
-                          )
+                          errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
                         )
                       )
                     case Success(userAnswers) =>
@@ -331,7 +327,7 @@ class EndEmploymentController @Inject() (
             )
         case None =>
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
       }
     }
@@ -352,14 +348,13 @@ class EndEmploymentController @Inject() (
                   EmploymentViewModel(employment.name, empId)
                 )
               )
-            case None => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+            case None =>
+              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           }
-        case (empId, endDate) =>
+        case _ =>
           Future.successful(
             BadRequest(
-              errorPagesHandler.error5xx(
-                s"Cache failed, values retrieved are: $empId for employer id and $endDate for end date"
-              )
+              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
             )
           )
       }
@@ -382,12 +377,10 @@ class EndEmploymentController @Inject() (
                     ),
                   date =>
                     request.userAnswers.set(EmploymentEndDateKeyPage, date) match {
-                      case Failure(e) =>
+                      case Failure(_) =>
                         Future.successful(
                           BadRequest(
-                            errorPagesHandler.error4xxPageWithLink(
-                              s"Caching $date to ${EmploymentEndDateKeyPage.toString} failed with exception: $e"
-                            )
+                            errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
                           )
                         )
                       case Success(userAnswers) =>
@@ -399,12 +392,14 @@ class EndEmploymentController @Inject() (
                 )
             case _ =>
               Future.successful(
-                BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+                BadRequest(
+                  errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
+                )
               )
           }
         case _ =>
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
       }
     }
@@ -430,10 +425,7 @@ class EndEmploymentController @Inject() (
         case (empId, telephoneQuestion, telephoneNumber) =>
           Future.successful(
             BadRequest(
-              errorPagesHandler.error5xx(
-                s"Cache failed, values retrieved are: $empId for employer id, " +
-                  s"$telephoneQuestion for telephone questions, and $telephoneNumber for telephone number"
-              )
+              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
             )
           )
       }
@@ -463,10 +455,7 @@ class EndEmploymentController @Inject() (
                   case Failure(e) =>
                     Future.successful(
                       BadRequest(
-                        errorPagesHandler.error4xxPageWithLink(
-                          s"Caching ${form.yesNoChoice} to ${EmploymentTelephoneNumberKeyPage.toString}" +
-                            s" and ${EmploymentTelephoneQuestionKeyPage.toString} value failed with exception: $e"
-                        )
+                        errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
                       )
                     )
                   case Success(_) =>
@@ -478,7 +467,7 @@ class EndEmploymentController @Inject() (
             )
         case _ =>
           Future.successful(
-            BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id"))
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           )
       }
     }
@@ -531,13 +520,10 @@ class EndEmploymentController @Inject() (
             cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(empId).url
           )
           Future.successful(Ok(addIncomeCheckYourAnswers(model)))
-        case (empId, endDate, telephoneQuestion, telephoneNumber) =>
+        case _ =>
           Future.successful(
             BadRequest(
-              errorPagesHandler.error5xx(
-                s"Cache failed, values retrieved are: $empId for employer id, $endDate for end date, " +
-                  s"$telephoneQuestion for telephone questions, and $telephoneNumber for telephone number"
-              )
+              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
             )
           )
       }
@@ -559,7 +545,7 @@ class EndEmploymentController @Inject() (
       }
       result.getOrElse(
         Future.successful(
-          BadRequest(errorPagesHandler.error4xxPageWithLink("End employment failed"))
+          BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
         )
       )
     }
@@ -578,9 +564,13 @@ class EndEmploymentController @Inject() (
                   empId
                 )
               )
-            case None => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+            case None =>
+              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           }
-        case None => Future.successful(BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id")))
+        case None =>
+          Future.successful(
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
+          )
       }
     }
 
@@ -605,9 +595,13 @@ class EndEmploymentController @Inject() (
                         Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
                     }
                 )
-            case _ => BadRequest(errorPagesHandler.error4xxPageWithLink("No employment found"))
+            case _ =>
+              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
           }
-        case None => Future.successful(BadRequest(errorPagesHandler.error4xxPageWithLink("No employment id")))
+        case None =>
+          Future.successful(
+            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
+          )
       }
     }
 
