@@ -47,7 +47,7 @@ class JourneyCacheNewRepository @Inject() (
             .expireAfter(
               appConfig.sessionTimeoutInSeconds,
               TimeUnit.SECONDS
-            ) // TODO - Check if `.sessionTimeoutInSeconds` is the correct time in seconds
+            )
         )
       )
     ) {
