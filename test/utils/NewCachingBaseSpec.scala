@@ -46,9 +46,20 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
     new GuiceApplicationBuilder()
       .overrides(
         bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)), // TODO - Not overwriting each test
+        bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
         bind[JourneyCacheNewRepository].toInstance(mockSessionRepository)
+      )
+      .configure(additionalConfiguration)
+
+  protected def applicationBuilderWithoutRepository(
+    userAnswers: UserAnswers = emptyUserAnswers
+  ): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(
+        bind[IdentifierAction].to[FakeIdentifierAction],
+        bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
       .configure(additionalConfiguration)
 

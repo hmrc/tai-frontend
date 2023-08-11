@@ -25,7 +25,7 @@ case object EmploymentIrregularPaymentKeyPage extends QuestionPage[String] { // 
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = IrregularPayConstants.ContactEmployer
+  override def toString: String = IrregularPayConstants.IrregularPayDecision
 
   override def route(mode: Mode): Call =
     controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()

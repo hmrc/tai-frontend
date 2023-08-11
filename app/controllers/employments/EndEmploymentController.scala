@@ -115,8 +115,8 @@ class EndEmploymentController @Inject() (
             Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
           )
         case None =>
-          request.userAnswers.set(EmploymentIdKeyPage, empId) match {
-            case Failure(e) =>
+          request.userAnswers.set(EmploymentIdKeyPage, empId) match { // TODO - Don't know how to test
+            case Failure(_) =>
               Future.successful(
                 BadRequest(
                   errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
@@ -131,7 +131,6 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  // TODO - Rename
   def handleEmploymentUpdateRemove: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
@@ -158,7 +157,7 @@ class EndEmploymentController @Inject() (
                       Future.successful(
                         Redirect(
                           controllers.employments.routes.UpdateEmploymentController
-                            .updateEmploymentDetails(empId) // TODO - Does this need to be a route
+                            .updateEmploymentDetails(empId)
                         )
                       )
                     case _ =>
@@ -296,7 +295,7 @@ class EndEmploymentController @Inject() (
                 case Some(IrregularPayConstants.ContactEmployer) =>
                   request.userAnswers
                     .set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer) match {
-                    case Failure(e) =>
+                    case Failure(_) => // TODO - Don't know how to test, also consider moving to private def
                       Future.successful(
                         BadRequest(
                           errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
@@ -308,7 +307,7 @@ class EndEmploymentController @Inject() (
                   }
                 case Some(value) =>
                   request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value) match {
-                    case Failure(e) =>
+                    case Failure(_) => // TODO - Don't know how to test
                       Future.successful(
                         BadRequest(
                           errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
@@ -319,10 +318,7 @@ class EndEmploymentController @Inject() (
                       Future.successful(
                         Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
                       )
-                  }
-                case _ => // TODO - Not possible but needed if to prevent non-exhaustive match error?
-                  Future
-                    .successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+                  } // TODO - Deleted None case as it's not possible, though may fail on comp with warnings
               }
             )
         case None =>
@@ -377,7 +373,7 @@ class EndEmploymentController @Inject() (
                     ),
                   date =>
                     request.userAnswers.set(EmploymentEndDateKeyPage, date) match {
-                      case Failure(_) =>
+                      case Failure(_) => // TODO - Don't know how to test
                         Future.successful(
                           BadRequest(
                             errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
@@ -422,7 +418,7 @@ class EndEmploymentController @Inject() (
               )
             )
           )
-        case (empId, telephoneQuestion, telephoneNumber) =>
+        case _ =>
           Future.successful(
             BadRequest(
               errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
@@ -452,7 +448,7 @@ class EndEmploymentController @Inject() (
               form => {
                 val cache = submitTelephoneCacheHandler(form)
                 cache match {
-                  case Failure(e) =>
+                  case Failure(_) => // TODO - Don't know how to test
                     Future.successful(
                       BadRequest(
                         errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))

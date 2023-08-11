@@ -20,12 +20,15 @@ import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchersSugar.eqTo
 import org.scalatest.BeforeAndAfterEach
-import pages.{EmploymentEndDateKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
+import pages.{EmploymentEndDateKeyPage, EmploymentIdKeyPage, EmploymentTelephoneNumberKeyPage, EmploymentTelephoneQuestionKeyPage, EmploymentUpdateRemovePage}
 import play.api.i18n.Messages
+import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.domain._
@@ -66,7 +69,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   val userAnswersWithYesOrNo: UserAnswers =
     userAnswers.copy(data = userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> "Yes"))
 
-  def controller(userAnswersAsArg: Option[UserAnswers] = None) = new EndEmploymentController(
+  def controller(
+    userAnswersAsArg: Option[UserAnswers] = None,
+    repository: JourneyCacheNewRepository = mockSessionRepository
+  ) = new EndEmploymentController(
     auditService,
     employmentService,
     mock[AuditConnector],
@@ -81,7 +87,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
     new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers)),
-    mockSessionRepository
+    repository
   )
 
   override def beforeEach(): Unit = {
@@ -107,15 +113,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           )
         )
       )
-    when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any())) // TODO - Delete
-      .thenReturn(Future.successful(Some(LocalDate.parse("2017-09-09"))))
-    when(endEmploymentJourneyCacheService.currentValue(any())(any()))
-      .thenReturn(Future.successful(Some("Test Value")))
-    when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-  }
 
-  when(mockSessionRepository.set(any())).thenReturn(Future.successful(true)) // TODO - Delete?
-  when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockSessionRepository.set(any())).thenReturn(Future.successful(true)) // TODO - Delete?
+    when(mockSessionRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
+  }
 
   "employmentUpdateRemove" must {
     List(
@@ -235,7 +236,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe SEE_OTHER
         val redirectUrl = redirectLocation(result) match {
-          case Some(s: String) => s
+          case Some(s: String) => s /// TODO - Change
           case _               => ""
         }
         redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
@@ -302,7 +303,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-
   "endEmploymentError is called" must {
     "return OK and endEmploymentWithinSixWeeksError if payment data and employment data exist" in {
       val userAnswersWithDate =
@@ -381,7 +381,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-  "confirmAndSendEndEmployment is run" must { // TODO - Can't test service failure as long as it's Future[String]
+  "confirmAndSendEndEmployment is called" must { // TODO - Can't test service failure as long as it's Future[String]
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, and cache succeeds" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
@@ -433,7 +433,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-  "endEmploymentPage is run" must {
+  "endEmploymentPage is called" must {
     "return OK and endEmploymentView if users answers data and employment data exist" in {
       val userAnswersWithDate =
         userAnswers.copy(data =
@@ -476,12 +476,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
 
-  "handleEndEmploymentPage is run" must {
+  "handleEndEmploymentPage is called" must {
     "redirect to addTelephoneNumber if call to retrieve employment data was successful" in {
       val date = LocalDate.now
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(
-          EmploymentEndDateForm.EmploymentFormDay   -> date.getDayOfWeek.getValue.toString,
+          EmploymentEndDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
           EmploymentEndDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
           EmploymentEndDateForm.EmploymentFormYear  -> date.getYear.toString
         )
@@ -491,17 +491,21 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
             EmploymentEndDateKeyPage.toString -> date
           )
         )
-      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val application = applicationBuilderWithoutRepository(userAnswers = userAnswersWithDate)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
 
       running(application) {
-        val result = controller(Some(userAnswersWithDate)).handleEndEmploymentPage()(request)
+        val result = controller(Some(userAnswersWithDate), mockRepository).handleEndEmploymentPage()(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
           .addTelephoneNumber()
           .url
+        verify(mockRepository, times(1)).set(userAnswersWithDate)
       }
     }
-    "redirect to addTelephoneNumber if call to retrieve employment data was successful but form data is invalid" in {
+    "return BAD_REQUEST if call to retrieve employment data was successful but form data is invalid" in {
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(
           EmploymentEndDateForm.EmploymentFormDay   -> "",
@@ -541,7 +545,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
 
-  "endEmploymentCheckYourAnswers is run" must {
+  "endEmploymentCheckYourAnswers is called" must {
     "return OK and addIncomeCheckYourAnswers if users answers data exists" in {
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -576,7 +580,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       }
     }
   }
-
   "showConfirmationPage" must {
     "show confirmation view" in {
 
@@ -587,7 +590,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       doc.title() must include(Messages("tai.employmentConfirmation.heading"))
     }
   }
-  "addTelephoneNumber when run" must { // TODO - Change to call
+  "addTelephoneNumber is called" must {
     "return OK and canWeContactByPhone if users answers data exists" in {
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -615,7 +618,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         status(result) mustBe BAD_REQUEST
       }
     }
-
     "submitTelephoneNumber when called" must { // TODO - Needs tests to read end user answers to confirm contents
       "redirect to endEmploymentCheckYourAnswers and add the phone number to user answers if value Yes and a phone number are submitted" in {
         val request = FakeRequest("POST", "")
@@ -722,25 +724,47 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     s"redirect to tax summaries if emp id exists and user inputted ${IrregularPayConstants.ContactEmployer}" in {
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer)
-      val application = applicationBuilder(userAnswers).build()
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val application = applicationBuilderWithoutRepository(userAnswers)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
 
       running(application) {
-        val result = controller().handleIrregularPaymentError(request)
+        val result = controller(repository = mockRepository).handleIrregularPaymentError(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        verify(mockRepository, times(1))
+          .set(
+            userAnswers.copy(data =
+              userAnswers.data ++ Json.obj(
+                IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer
+              )
+            )
+          )
       }
     }
     s"redirect to updateEmploymentDetails if emp id exists and user inputted anything besides ${IrregularPayConstants.ContactEmployer}" in {
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails)
-      val application = applicationBuilder(userAnswers).build()
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val application = applicationBuilderWithoutRepository(userAnswers)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
 
       running(application) {
-        val result = controller().handleIrregularPaymentError(request)
+        val result = controller(repository = mockRepository).handleIrregularPaymentError(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
           .endEmploymentPage()
           .url
+        verify(mockRepository, times(1))
+          .set(
+            userAnswers.copy(data =
+              userAnswers.data ++ Json.obj(
+                IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails
+              )
+            )
+          )
       }
     }
     "return BAD_REQUEST if no user answers data exists" in {
@@ -778,22 +802,32 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "redirect to employmentUpdateRemove when there is no employment id in the user answers" in {
       val empId = 1
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
-      val application = applicationBuilder(emptyUserAnswers).build()
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val application = applicationBuilderWithoutRepository(emptyUserAnswers)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
 
       running(application) {
-        val result = controller(Some(emptyUserAnswers)).onPageLoad(empId)(fakeGetRequest)
+        val result = controller(Some(emptyUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
+        verify(mockRepository, times(1)).set(
+          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdKeyPage.toString -> empId)))
+        )
       }
     }
     "redirect to duplicateSubmissionWarning when there is an employment id in the user answers" in {
       val empId = 1
-      val application = applicationBuilder(userAnswers).build()
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val application = applicationBuilderWithoutRepository(userAnswers)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
 
       running(application) {
-        val result = controller().onPageLoad(empId)(fakeGetRequest)
+        val result = controller(repository = mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
+        verify(mockRepository, times(0)).set(any())
       }
     }
   }
@@ -906,7 +940,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
 
-  def employmentWithAccounts(accounts: List[AnnualAccount]) =
+  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
     Employment(
       "employer",
       Live,
