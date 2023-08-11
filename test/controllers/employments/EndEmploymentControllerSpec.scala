@@ -17,7 +17,6 @@
 package controllers.employments
 
 import builders.RequestBuilder
-import builders.RequestBuilder.uuid
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -31,6 +30,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -114,7 +114,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           )
         )
       )
-
+    when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
+      .thenReturn(Future.successful(Success))
     when(mockRepository.set(any())).thenReturn(Future.successful(true)) // TODO - Delete?
     when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
   }
@@ -236,11 +237,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       running(application) {
         val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe SEE_OTHER
-        val redirectUrl = redirectLocation(result) match {
-          case Some(s: String) => s /// TODO - Change
-          case _               => ""
-        }
-        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
+        redirectLocation(result).map(
+          _ mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
+        )
       }
     }
     "redirect to irregular payment page if value No is passed in the form and the employment has an irregular payment frequency" in {
@@ -496,6 +495,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilderWithoutRepository(userAnswers = userAnswersWithDate)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
+      when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
       running(application) {
         val result = controller(Some(userAnswersWithDate), mockRepository).handleEndEmploymentPage()(request)
@@ -752,6 +752,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilderWithoutRepository(userAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
+      when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
       running(application) {
         val result = controller(repository = mockRepository).handleIrregularPaymentError(request)
@@ -774,6 +775,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilderWithoutRepository(userAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
+      when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
       running(application) {
         val result = controller(repository = mockRepository).handleIrregularPaymentError(request)
@@ -830,6 +832,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilderWithoutRepository(emptyUserAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
+      when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
       running(application) {
         val result = controller(Some(emptyUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)

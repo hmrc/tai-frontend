@@ -24,9 +24,7 @@ import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
@@ -44,8 +42,9 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
 import javax.inject.Inject
+import scala.concurrent.Future.fromTry
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 class EndEmploymentController @Inject() (
   auditService: AuditService,
@@ -115,19 +114,10 @@ class EndEmploymentController @Inject() (
             Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
           )
         case None =>
-          request.userAnswers.set(EmploymentIdKeyPage, empId) match { // TODO - Don't know how to test
-            case Failure(_) =>
-              Future.successful(
-                BadRequest(
-                  errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                )
-              )
-            case Success(userAnswers) =>
-              journeyCacheNewRepository.set(userAnswers)
-              Future.successful(
-                Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
-              )
-          }
+          for {
+            userAnswers <- fromTry(request.userAnswers.set(EmploymentIdKeyPage, empId))
+            _           <- journeyCacheNewRepository.set(userAnswers)
+          } yield Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
       }
     }
 
@@ -188,34 +178,25 @@ class EndEmploymentController @Inject() (
     } yield latestPayment.date
 
     latestPaymentDate.map { latestPaymentDate =>
-      request.userAnswers
-        .set(EmploymentLatestPaymentKeyPage, latestPaymentDate) // TODO - Needs test
-        .map { _ =>
-          if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
-            auditService // TODO - Verify
-              .createAndSendAuditEvent(
-                AuditConstants.EndEmploymentWithinSixWeeksError,
-                Map("nino" -> nino)
-              )
-            Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError()))
+      for {
+        userAnswers <- fromTry(request.userAnswers.set(EmploymentLatestPaymentKeyPage, latestPaymentDate))
+        _           <- journeyCacheNewRepository.set(userAnswers)
+      } yield
+        if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
+          auditService // TODO - Verify
+            .createAndSendAuditEvent(
+              AuditConstants.EndEmploymentWithinSixWeeksError,
+              Map("nino" -> nino)
+            )
+          Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
+        } else {
+          if (employment.latestAnnualAccount.exists(_.isIrregularPayment)) {
+            auditService
+              .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino))
+            Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
           } else {
-            if (employment.latestAnnualAccount.exists(_.isIrregularPayment)) {
-              auditService
-                .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino))
-              Future.successful(
-                Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
-              )
-            } else {
-              Future.successful(
-                Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
-              ) // TODO - Does this need to be a route
-            }
+            Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
           }
-        }
-        .getOrElse {
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
         }
     }
   }.getOrElse(
@@ -293,32 +274,19 @@ class EndEmploymentController @Inject() (
                 },
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
-                  request.userAnswers
-                    .set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer) match {
-                    case Failure(_) => // TODO - Don't know how to test, also consider moving to private def
-                      Future.successful(
-                        BadRequest(
-                          errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                        )
-                      )
-                    case Success(userAnswers) =>
-                      journeyCacheNewRepository.set(userAnswers)
-                      Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-                  }
+                  for {
+                    userAnswers <- fromTry(
+                                     request.userAnswers
+                                       .set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer)
+                                   )
+                    _ <- journeyCacheNewRepository.set(userAnswers)
+                  } yield Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
                 case Some(value) =>
-                  request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value) match {
-                    case Failure(_) => // TODO - Don't know how to test
-                      Future.successful(
-                        BadRequest(
-                          errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                        )
-                      )
-                    case Success(userAnswers) =>
-                      journeyCacheNewRepository.set(userAnswers)
-                      Future.successful(
-                        Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
-                      )
-                  } // TODO - Deleted None case as it's not possible, though may fail on comp with warnings
+                  for {
+                    userAnswers <- fromTry(request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value))
+                    _           <- journeyCacheNewRepository.set(userAnswers)
+                  } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+                // TODO - Deleted None case as it's not possible, though may fail on comp with warnings
               }
             )
         case None =>
@@ -372,19 +340,10 @@ class EndEmploymentController @Inject() (
                       BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
                     ),
                   date =>
-                    request.userAnswers.set(EmploymentEndDateKeyPage, date) match {
-                      case Failure(_) => // TODO - Don't know how to test
-                        Future.successful(
-                          BadRequest(
-                            errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                          )
-                        )
-                      case Success(userAnswers) =>
-                        journeyCacheNewRepository.set(userAnswers)
-                        Future.successful(
-                          Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
-                        )
-                    }
+                    for {
+                      userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDateKeyPage, date))
+                      _           <- journeyCacheNewRepository.set(userAnswers)
+                    } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
                 )
             case _ =>
               Future.successful(
@@ -447,17 +406,8 @@ class EndEmploymentController @Inject() (
                 ),
               form => {
                 val cache = submitTelephoneCacheHandler(form)
-                cache match {
-                  case Failure(_) => // TODO - Don't know how to test
-                    Future.successful(
-                      BadRequest(
-                        errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                      )
-                    )
-                  case Success(_) =>
-                    Future.successful(
-                      Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
-                    )
+                fromTry(cache).map { _ =>
+                  Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
                 }
               }
             )
