@@ -48,7 +48,7 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-        bind[JourneyCacheNewRepository].toInstance(mockSessionRepository)
+        bind[JourneyCacheNewRepository].toInstance(mockRepository)
       )
       .configure(additionalConfiguration)
 
@@ -71,7 +71,7 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
   lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
   lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
   lazy val langUtils: LanguageUtils = inject[LanguageUtils]
-  lazy val mockSessionRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  lazy val mockRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]

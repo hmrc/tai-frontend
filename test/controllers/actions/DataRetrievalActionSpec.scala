@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutures {
 
-  class Harness(sessionRepository: JourneyCacheNewRepository) extends DataRetrievalActionImpl(sessionRepository) {
+  class Harness(repository: JourneyCacheNewRepository) extends DataRetrievalActionImpl(repository) {
     def callTransform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = transform(request)
   }
 
@@ -43,9 +43,9 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val userId = s"session-$uuid"
         val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
 
-        val sessionRepository = mock[JourneyCacheNewRepository]
-        when(sessionRepository.get(any)).thenReturn(Future.successful(None))
-        val action = new Harness(sessionRepository)
+        val repository = mock[JourneyCacheNewRepository]
+        when(repository.get(any)).thenReturn(Future.successful(None))
+        val action = new Harness(repository)
 
         val result = action
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
@@ -63,11 +63,11 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val instant = Instant.now()
         val data = Json.obj("testKey" -> "testValue")
 
-        val sessionRepository = mock[JourneyCacheNewRepository]
-        when(sessionRepository.get(any)).thenReturn(
+        val repository = mock[JourneyCacheNewRepository]
+        when(repository.get(any)).thenReturn(
           Future(Some(UserAnswers(userId, Json.obj("testKey" -> "testValue"), instant)))
         )
-        val action = new Harness(sessionRepository)
+        val action = new Harness(repository)
 
         val result = action
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
