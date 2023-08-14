@@ -47,7 +47,6 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfterEach {
 

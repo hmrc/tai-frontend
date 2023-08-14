@@ -183,7 +183,7 @@ class EndEmploymentController @Inject() (
         _           <- journeyCacheNewRepository.set(userAnswers)
       } yield
         if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
-          auditService // TODO - Verify
+          auditService
             .createAndSendAuditEvent(
               AuditConstants.EndEmploymentWithinSixWeeksError,
               Map("nino" -> nino)
@@ -236,7 +236,7 @@ class EndEmploymentController @Inject() (
             case Some(employment) =>
               Ok(
                 endEmploymentIrregularPaymentError(
-                  IrregularPayForm.createForm, // TODO - Option or not?
+                  IrregularPayForm.createForm,
                   EmploymentViewModel(employment.name, empId)
                 )
               )
@@ -286,7 +286,6 @@ class EndEmploymentController @Inject() (
                     userAnswers <- fromTry(request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value))
                     _           <- journeyCacheNewRepository.set(userAnswers)
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
-                // TODO - Deleted None case as it's not possible, though may fail on comp with warnings
               }
             )
         case None =>
@@ -302,7 +301,7 @@ class EndEmploymentController @Inject() (
       (request.userAnswers.get(EmploymentIdKeyPage), request.userAnswers.get(EmploymentEndDateKeyPage)) match {
         case (Some(empId), endDate) =>
           employmentService.employment(authUser.nino, empId).map {
-            case Some(employment) => // TODO - Make form take optional
+            case Some(employment) =>
               val formData = endDate
                 .map(date => EmploymentEndDateForm(employment.name).form.fill(date))
                 .getOrElse(EmploymentEndDateForm(employment.name).form)
@@ -364,7 +363,7 @@ class EndEmploymentController @Inject() (
       implicit val authUser: AuthedUser = request.taiUser
       (
         request.userAnswers.get(EmploymentIdKeyPage),
-        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage), // TODO - Why is the question cached?
+        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage),
         request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
       ) match {
         case (Some(empId), telephoneQuestion, telephoneNumber) =>
@@ -386,8 +385,7 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  def submitTelephoneNumber()
-    : Action[AnyContent] = // TODO - Is this actually submitting a phone number? Cannot find the logic for this
+  def submitTelephoneNumber(): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
       request.userAnswers.get(EmploymentIdKeyPage) match {
@@ -451,7 +449,7 @@ class EndEmploymentController @Inject() (
       (
         request.userAnswers.get(EmploymentIdKeyPage),
         request.userAnswers.get(EmploymentEndDateKeyPage),
-        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage), // TODO - Still need looking into
+        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage),
         request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
       ) match {
         case (Some(empId), Some(endDate), Some(telephoneQuestion), telephoneNumber) =>
