@@ -115,7 +115,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       )
     when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
       .thenReturn(Future.successful(Success))
-    when(mockRepository.set(any())).thenReturn(Future.successful(true)) // TODO - Delete?
+    when(mockRepository.set(any())).thenReturn(Future.successful(true))
     when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
   }
 
@@ -343,8 +343,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val userAnswersWithDate =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(
-            EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7)
-          ) // TODO - Change to page instead of constant?
+            EmploymentLatestPaymentPage.toString -> LocalDate.now().minusWeeks(7)
+          )
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
@@ -422,7 +422,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe routes.EndEmploymentController.showConfirmationPage().url
       }
     }
-    "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in { // TODO - Cache clear fail case
+    "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
       when(mockRepository.clear(any()))
@@ -492,8 +492,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val userAnswersWithDate =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(
-            EndEmploymentConstants.LatestPaymentDateKey -> LocalDate.now().minusWeeks(7)
-          ) // TODO - Change to page instead of constant?
+            EmploymentLatestPaymentPage.toString -> LocalDate.now().minusWeeks(7)
+          )
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
@@ -655,7 +655,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         status(result) mustBe BAD_REQUEST
       }
     }
-    "submitTelephoneNumber when called" must { // TODO - Needs tests to read end user answers to confirm contents
+    "submitTelephoneNumber when called" must {
       "redirect to endEmploymentCheckYourAnswers and add the phone number to user answers if value Yes and a phone number are submitted" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
