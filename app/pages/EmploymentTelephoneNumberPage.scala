@@ -19,12 +19,9 @@ package pages
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-import java.time.LocalDate
-
-case object EmploymentEndDateKeyPage extends QuestionPage[LocalDate] { // TODO - Does LocalDate work correctly here
+case object EmploymentTelephoneNumberPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = EndEmploymentConstants.EndDateKey
-
+  override def toString: String = EndEmploymentConstants.TelephoneNumberKey
 }

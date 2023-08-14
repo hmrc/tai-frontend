@@ -83,7 +83,7 @@ class EndEmploymentController @Inject() (
   def employmentUpdateRemoveDecision: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           employmentService.employment(request.taiUser.nino, empId).map {
             case Some(employment) =>
@@ -108,14 +108,14 @@ class EndEmploymentController @Inject() (
 
   def onPageLoad(empId: Int): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(_) =>
           Future.successful(
             Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
           )
         case None =>
           for {
-            userAnswers <- fromTry(request.userAnswers.set(EmploymentIdKeyPage, empId))
+            userAnswers <- fromTry(request.userAnswers.set(EmploymentIdPage, empId))
             _           <- journeyCacheNewRepository.set(userAnswers)
           } yield Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
       }
@@ -124,7 +124,7 @@ class EndEmploymentController @Inject() (
   def handleEmploymentUpdateRemove: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           employmentService.employment(user.nino, empId).flatMap {
             case Some(employment) =>
@@ -179,7 +179,7 @@ class EndEmploymentController @Inject() (
 
     latestPaymentDate.map { latestPaymentDate =>
       for {
-        userAnswers <- fromTry(request.userAnswers.set(EmploymentLatestPaymentKeyPage, latestPaymentDate))
+        userAnswers <- fromTry(request.userAnswers.set(EmploymentLatestPaymentPage, latestPaymentDate))
         _           <- journeyCacheNewRepository.set(userAnswers)
       } yield
         if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
@@ -206,7 +206,7 @@ class EndEmploymentController @Inject() (
   def endEmploymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      (request.userAnswers.get(EmploymentIdKeyPage), request.userAnswers.get(EmploymentLatestPaymentKeyPage)) match {
+      (request.userAnswers.get(EmploymentIdPage), request.userAnswers.get(EmploymentLatestPaymentPage)) match {
         case (Some(empId), Some(latestPayment)) =>
           employmentService.employment(user.nino, empId).map {
             case Some(employment) =>
@@ -230,7 +230,7 @@ class EndEmploymentController @Inject() (
   def irregularPaymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           employmentService.employment(request.taiUser.nino, empId).map {
             case Some(employment) =>
@@ -253,7 +253,7 @@ class EndEmploymentController @Inject() (
   def handleIrregularPaymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           IrregularPayForm.createForm
             .bindFromRequest()
@@ -277,13 +277,13 @@ class EndEmploymentController @Inject() (
                   for {
                     userAnswers <- fromTry(
                                      request.userAnswers
-                                       .set(EmploymentIrregularPaymentKeyPage, IrregularPayConstants.ContactEmployer)
+                                       .set(EmploymentIrregularPaymentPage, IrregularPayConstants.ContactEmployer)
                                    )
                     _ <- journeyCacheNewRepository.set(userAnswers)
                   } yield Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
                 case Some(value) =>
                   for {
-                    userAnswers <- fromTry(request.userAnswers.set(EmploymentIrregularPaymentKeyPage, value))
+                    userAnswers <- fromTry(request.userAnswers.set(EmploymentIrregularPaymentPage, value))
                     _           <- journeyCacheNewRepository.set(userAnswers)
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
               }
@@ -298,7 +298,7 @@ class EndEmploymentController @Inject() (
   def endEmploymentPage: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      (request.userAnswers.get(EmploymentIdKeyPage), request.userAnswers.get(EmploymentEndDateKeyPage)) match {
+      (request.userAnswers.get(EmploymentIdPage), request.userAnswers.get(EmploymentEndDatePage)) match {
         case (Some(empId), endDate) =>
           employmentService.employment(authUser.nino, empId).map {
             case Some(employment) =>
@@ -327,7 +327,7 @@ class EndEmploymentController @Inject() (
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           employmentService.employment(nino, empId).flatMap {
             case Some(employment) =>
@@ -340,7 +340,7 @@ class EndEmploymentController @Inject() (
                     ),
                   date =>
                     for {
-                      userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDateKeyPage, date))
+                      userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDatePage, date))
                       _           <- journeyCacheNewRepository.set(userAnswers)
                     } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
                 )
@@ -362,9 +362,9 @@ class EndEmploymentController @Inject() (
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
       (
-        request.userAnswers.get(EmploymentIdKeyPage),
-        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage),
-        request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
+        request.userAnswers.get(EmploymentIdPage),
+        request.userAnswers.get(EmploymentTelephoneQuestionPage),
+        request.userAnswers.get(EmploymentTelephoneNumberPage)
       ) match {
         case (Some(empId), telephoneQuestion, telephoneNumber) =>
           Future.successful(
@@ -388,7 +388,7 @@ class EndEmploymentController @Inject() (
   def submitTelephoneNumber(): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           YesNoTextEntryForm
             .form(
@@ -423,8 +423,8 @@ class EndEmploymentController @Inject() (
       case Some(yes) if yes == FormValuesConstants.YesValue =>
         val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
         for {
-          question <- request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
-          number   <- request.userAnswers.set(EmploymentTelephoneNumberKeyPage, form.yesNoTextEntry.getOrElse(""))
+          question <- request.userAnswers.set(EmploymentTelephoneQuestionPage, questionCached)
+          number   <- request.userAnswers.set(EmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
           mergedAnswers = request.userAnswers.copy(data = question.data ++ number.data)
         } yield {
           journeyCacheNewRepository.set(mergedAnswers)
@@ -435,8 +435,8 @@ class EndEmploymentController @Inject() (
           s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
         )
         for {
-          question <- request.userAnswers.set(EmploymentTelephoneQuestionKeyPage, questionCached)
-          number   <- request.userAnswers.set(EmploymentTelephoneNumberKeyPage, "")
+          question <- request.userAnswers.set(EmploymentTelephoneQuestionPage, questionCached)
+          number   <- request.userAnswers.set(EmploymentTelephoneNumberPage, "")
           mergedAnswers = request.userAnswers.copy(data = question.data ++ number.data)
         } yield {
           journeyCacheNewRepository.set(mergedAnswers)
@@ -447,10 +447,10 @@ class EndEmploymentController @Inject() (
   def endEmploymentCheckYourAnswers: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       (
-        request.userAnswers.get(EmploymentIdKeyPage),
-        request.userAnswers.get(EmploymentEndDateKeyPage),
-        request.userAnswers.get(EmploymentTelephoneQuestionKeyPage),
-        request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
+        request.userAnswers.get(EmploymentIdPage),
+        request.userAnswers.get(EmploymentEndDatePage),
+        request.userAnswers.get(EmploymentTelephoneQuestionPage),
+        request.userAnswers.get(EmploymentTelephoneNumberPage)
       ) match {
         case (Some(empId), Some(endDate), Some(telephoneQuestion), telephoneNumber) =>
           val model = IncomeCheckYourAnswersViewModel(
@@ -477,10 +477,10 @@ class EndEmploymentController @Inject() (
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
       val result = for {
-        empId             <- request.userAnswers.get(EmploymentIdKeyPage)
-        endDate           <- request.userAnswers.get(EmploymentEndDateKeyPage)
-        telephoneQuestion <- request.userAnswers.get(EmploymentTelephoneQuestionKeyPage)
-        telephoneNumber   <- request.userAnswers.get(EmploymentTelephoneNumberKeyPage)
+        empId             <- request.userAnswers.get(EmploymentIdPage)
+        endDate           <- request.userAnswers.get(EmploymentEndDatePage)
+        telephoneQuestion <- request.userAnswers.get(EmploymentTelephoneQuestionPage)
+        telephoneNumber   <- request.userAnswers.get(EmploymentTelephoneNumberPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
       } yield journeyCacheNewRepository.clear(request.userId).flatMap { _ =>
         employmentService.endEmployment(authUser.nino, empId, model).flatMap { _ =>
@@ -497,7 +497,7 @@ class EndEmploymentController @Inject() (
   def duplicateSubmissionWarning: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           employmentService.employment(authUser.nino, empId).map {
             case Some(employment) =>
@@ -521,7 +521,7 @@ class EndEmploymentController @Inject() (
   def submitDuplicateSubmissionWarning: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdKeyPage) match {
+      request.userAnswers.get(EmploymentIdPage) match {
         case Some(empId) =>
           employmentService.employment(authUser.nino, empId).map {
             case Some(employment) =>

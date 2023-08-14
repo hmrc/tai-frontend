@@ -16,12 +16,12 @@
 
 package pages
 
-class EmploymentIdKeyPageSpec extends PageBehaviours {
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-  "EmploymentIdKeyPage" must {
+case object EmploymentIdPage extends QuestionPage[Int] {
 
-    beRetrievable[Int](EmploymentIdKeyPage)
+  override def path: JsPath = JsPath \ toString
 
-    beSettable[Int](EmploymentIdKeyPage)
-  }
+  override def toString: String = EndEmploymentConstants.EmploymentIdKey
 }

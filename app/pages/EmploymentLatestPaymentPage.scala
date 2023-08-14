@@ -16,14 +16,14 @@
 
 package pages
 
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
+
 import java.time.LocalDate
 
-class EmploymentEndDateKeyPageSpec extends PageBehaviours {
+case object EmploymentLatestPaymentPage extends QuestionPage[LocalDate] {
 
-  "EmploymentEndDateKeyPage" must {
+  override def path: JsPath = JsPath \ toString
 
-    beRetrievable[LocalDate](EmploymentEndDateKeyPage)
-
-    beSettable[LocalDate](EmploymentEndDateKeyPage)
-  }
+  override def toString: String = EndEmploymentConstants.LatestPaymentDateKey
 }

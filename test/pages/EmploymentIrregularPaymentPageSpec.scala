@@ -16,12 +16,12 @@
 
 package pages
 
-class EmploymentIrregularPaymentKeyPageSpec extends PageBehaviours {
+class EmploymentIrregularPaymentPageSpec extends PageBehaviours {
 
-  "EmploymentIrregularPaymentKeyPage" must {
+  "EmploymentIrregularPaymentPage" must {
 
-    beRetrievable[String](EmploymentIrregularPaymentKeyPage)
+    beRetrievable[String](EmploymentIrregularPaymentPage)
 
-    beSettable[String](EmploymentIrregularPaymentKeyPage)
+    beSettable[String](EmploymentIrregularPaymentPage)
   }
 }

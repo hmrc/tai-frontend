@@ -16,12 +16,12 @@
 
 package pages
 
-class EmploymentTelephoneNumberKeyPageSpec extends PageBehaviours {
+class EmploymentTelephoneQuestionPageSpec extends PageBehaviours {
 
-  "EmploymentTelephoneNumberKeyPage" must {
+  "EmploymentTelephoneQuestionPage" must {
 
-    beRetrievable[String](EmploymentTelephoneNumberKeyPage)
+    beRetrievable[String](EmploymentTelephoneQuestionPage)
 
-    beSettable[String](EmploymentTelephoneNumberKeyPage)
+    beSettable[String](EmploymentTelephoneQuestionPage)
   }
 }

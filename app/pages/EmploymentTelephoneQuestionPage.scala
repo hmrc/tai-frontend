@@ -17,11 +17,11 @@
 package pages
 
 import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-case object EmploymentIrregularPaymentKeyPage extends QuestionPage[String] {
+case object EmploymentTelephoneQuestionPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = IrregularPayConstants.IrregularPayDecision
+  override def toString: String = EndEmploymentConstants.TelephoneQuestionKey
 }

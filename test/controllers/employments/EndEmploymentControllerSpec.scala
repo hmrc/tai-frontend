@@ -403,9 +403,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
-          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
-          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
-          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
+          EmploymentEndDatePage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionPage.toString -> "Yes",
+          EmploymentTelephoneNumberPage.toString   -> "123456789"
         )
       )
       val application = applicationBuilder(userAnswersFull).build()
@@ -424,9 +424,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
-          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
-          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
-          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
+          EmploymentEndDatePage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionPage.toString -> "Yes",
+          EmploymentTelephoneNumberPage.toString   -> "123456789"
         )
       )
       val application = applicationBuilder(userAnswersFull).build()
@@ -450,7 +450,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "return OK and endEmploymentView if users answers data, employment data and end date exist" in {
       val userAnswersWithDate =
         userAnswers.copy(data =
-          userAnswers.data ++ Json.obj(EmploymentEndDateKeyPage.toString -> LocalDate.now().minusWeeks(7))
+          userAnswers.data ++ Json.obj(EmploymentEndDatePage.toString -> LocalDate.now().minusWeeks(7))
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
@@ -513,7 +513,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val userAnswersWithDate =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(
-            EmploymentEndDateKeyPage.toString -> date
+            EmploymentEndDatePage.toString -> date
           )
         )
       val mockRepository = mock[JourneyCacheNewRepository]
@@ -550,7 +550,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val userAnswersWithDate =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(
-            EmploymentEndDateKeyPage.toString -> LocalDate.now
+            EmploymentEndDatePage.toString -> LocalDate.now
           )
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
@@ -574,9 +574,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "return OK and addIncomeCheckYourAnswers if users answers data exists" in {
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
-          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
-          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
-          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
+          EmploymentEndDatePage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionPage.toString -> "Yes",
+          EmploymentTelephoneNumberPage.toString   -> "123456789"
         )
       )
       val application = applicationBuilder(userAnswersFull).build()
@@ -592,9 +592,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "return BAD_REQUEST if missing user answers data" in {
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
-          EmploymentEndDateKeyPage.toString           -> "",
-          EmploymentTelephoneQuestionKeyPage.toString -> "",
-          EmploymentTelephoneNumberKeyPage.toString   -> ""
+          EmploymentEndDatePage.toString           -> "",
+          EmploymentTelephoneQuestionPage.toString -> "",
+          EmploymentTelephoneNumberPage.toString   -> ""
         )
       )
       val application = applicationBuilder(userAnswersFull).build()
@@ -619,9 +619,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "return OK and canWeContactByPhone if users answers data exists" in {
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
-          EmploymentEndDateKeyPage.toString           -> LocalDate.now(),
-          EmploymentTelephoneQuestionKeyPage.toString -> "Yes",
-          EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
+          EmploymentEndDatePage.toString           -> LocalDate.now(),
+          EmploymentTelephoneQuestionPage.toString -> "Yes",
+          EmploymentTelephoneNumberPage.toString   -> "123456789"
         )
       )
       val application = applicationBuilder(userAnswersFull).build()
@@ -665,8 +665,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
             .set(
               userAnswers.copy(data =
                 userAnswers.data ++ Json.obj(
-                  EmploymentTelephoneQuestionKeyPage.toString -> FormValuesConstants.YesValue,
-                  EmploymentTelephoneNumberKeyPage.toString   -> "123456789"
+                  EmploymentTelephoneQuestionPage.toString -> FormValuesConstants.YesValue,
+                  EmploymentTelephoneNumberPage.toString   -> "123456789"
                 )
               )
             )
@@ -694,8 +694,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
             .set(
               userAnswers.copy(data =
                 userAnswers.data ++ Json.obj(
-                  EmploymentTelephoneQuestionKeyPage.toString -> FormValuesConstants.NoValue,
-                  EmploymentTelephoneNumberKeyPage.toString   -> ""
+                  EmploymentTelephoneQuestionPage.toString -> FormValuesConstants.NoValue,
+                  EmploymentTelephoneNumberPage.toString   -> ""
                 )
               )
             )
@@ -863,7 +863,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
         verify(mockRepository, times(1)).set(
-          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdKeyPage.toString -> empId)))
+          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdPage.toString -> empId)))
         )
       }
     }
