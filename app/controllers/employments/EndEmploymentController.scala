@@ -30,7 +30,9 @@ import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
+import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -41,7 +43,7 @@ import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import scala.concurrent.Future.fromTry
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -61,7 +63,8 @@ class EndEmploymentController @Inject() (
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   actionJourney: ActionJourney,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheNewRepository: JourneyCacheNewRepository,
+  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
@@ -482,11 +485,13 @@ class EndEmploymentController @Inject() (
         telephoneQuestion <- request.userAnswers.get(EmploymentTelephoneQuestionPage)
         telephoneNumber   <- request.userAnswers.get(EmploymentTelephoneNumberPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
-      } yield journeyCacheNewRepository.clear(request.userId).flatMap { _ =>
-        employmentService.endEmployment(authUser.nino, empId, model).flatMap { _ =>
-          Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage()))
-        }
-      }
+      } yield for {
+        _ <- successfulJourneyCacheService.cache(
+               Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")
+             )
+        _ <- journeyCacheNewRepository.clear(request.userId)
+        _ <- employmentService.endEmployment(authUser.nino, empId, model)
+      } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
       result.getOrElse(
         Future.successful(
           BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))

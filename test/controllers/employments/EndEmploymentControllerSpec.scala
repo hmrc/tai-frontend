@@ -87,7 +87,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
     new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers)),
-    repository
+    repository,
+    trackSuccessJourneyCacheService
   )
 
   override def beforeEach(): Unit = {
@@ -400,6 +401,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         .thenReturn(Future.successful(""))
       when(mockRepository.clear(any()))
         .thenReturn(Future.successful(true))
+      when(trackSuccessJourneyCacheService.cache(any())(any()))
+        .thenReturn(
+          Future.successful(
+            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
+          )
+        )
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -421,6 +428,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         .thenReturn(Future.successful(""))
       when(mockRepository.clear(any()))
         .thenReturn(Future.successful(false))
+      when(trackSuccessJourneyCacheService.cache(any())(any()))
+        .thenReturn(
+          Future.successful(
+            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
+          )
+        )
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
