@@ -16,6 +16,12 @@
 
 package pages
 
-import queries.{Gettable, Settable}
+class EmploymentUpdateRemovePageSpec extends PageBehaviours {
 
-trait QuestionPage[A] extends Page with Gettable[A] with Settable[A]
+  "EmploymentUpdateRemovePage" must {
+
+    beRetrievable[String](EmploymentUpdateRemovePage)
+
+    beSettable[String](EmploymentUpdateRemovePage)
+  }
+}

@@ -258,11 +258,25 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       running(application) {
         val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe SEE_OTHER
-        val redirectUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _               => ""
-        }
-        redirectUrl mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
+        redirectLocation(result).map(
+          _ mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
+        )
+      }
+    }
+    "redirect to endEmploymentPage if there is no latest payment data" in {
+      val request = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
+      val userAnswersWithNo =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(EmploymentUpdateRemovePage.toString -> FormValuesConstants.NoValue)
+        )
+      val application = applicationBuilder(userAnswers = userAnswersWithNo).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersWithNo)).handleEmploymentUpdateRemove(request)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).map(
+          _ mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+        )
       }
     }
     "return BAD_REQUEST if the employer id is missing from the cache" in {
@@ -433,11 +447,23 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
   "endEmploymentPage is called" must {
-    "return OK and endEmploymentView if users answers data and employment data exist" in {
+    "return OK and endEmploymentView if users answers data, employment data and end date exist" in {
       val userAnswersWithDate =
         userAnswers.copy(data =
           userAnswers.data ++ Json.obj(EmploymentEndDateKeyPage.toString -> LocalDate.now().minusWeeks(7))
         )
+      val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
+
+      running(application) {
+        val result = controller(Some(userAnswersWithDate)).endEmploymentPage()(fakeGetRequest)
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+        doc.title() must include(Messages("tai.endEmployment.endDateForm.pagetitle"))
+      }
+    }
+    "return OK and endEmploymentView if users answers data and employment data exist but no end date in user answers" in {
+      val userAnswersWithDate = userAnswers
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
 
       running(application) {
@@ -535,11 +561,10 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-      val userAnswersEmpty = userAnswers.copy(data = Json.obj())
-      val application = applicationBuilder(userAnswers = userAnswersEmpty).build()
+      val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
-        val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage()(fakePostRequest)
+        val result = controller(Some(userAnswers)).handleEndEmploymentPage()(fakePostRequest)
         status(result) mustBe BAD_REQUEST
       }
     }

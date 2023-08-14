@@ -201,7 +201,7 @@ class EndEmploymentController @Inject() (
     }
   }.getOrElse(
     Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
-  ) // TODO - No latest payment date, what to do?
+  )
 
   def endEmploymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
@@ -456,7 +456,7 @@ class EndEmploymentController @Inject() (
           val model = IncomeCheckYourAnswersViewModel(
             employmentId = empId,
             preHeading = Messages("tai.endEmployment.preHeadingText"),
-            incomeSourceEnd = endDate.toString, // TODO - Check pattern
+            incomeSourceEnd = endDate.toString,
             contactableByPhone = telephoneQuestion,
             phoneNumber = telephoneNumber,
             backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,

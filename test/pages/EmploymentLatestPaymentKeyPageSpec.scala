@@ -16,6 +16,14 @@
 
 package pages
 
-import queries.{Gettable, Settable}
+import java.time.LocalDate
 
-trait QuestionPage[A] extends Page with Gettable[A] with Settable[A]
+class EmploymentLatestPaymentKeyPageSpec extends PageBehaviours {
+
+  "EmploymentLatestPaymentKeyPage" must {
+
+    beRetrievable[LocalDate](EmploymentLatestPaymentKeyPage)
+
+    beSettable[LocalDate](EmploymentLatestPaymentKeyPage)
+  }
+}

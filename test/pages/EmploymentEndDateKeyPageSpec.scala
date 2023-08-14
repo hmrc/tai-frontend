@@ -16,17 +16,14 @@
 
 package pages
 
-import play.api.Mode
-import play.api.libs.json.JsPath
-import play.api.mvc.Call
-import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
+import java.time.LocalDate
 
-case object EmploymentNameKeyPage extends QuestionPage[String] { // TODO - DELETE
+class EmploymentEndDateKeyPageSpec extends PageBehaviours {
 
-  override def path: JsPath = JsPath \ toString
+  "EmploymentEndDateKeyPage" must {
 
-  override def toString: String = EndEmploymentConstants.NameKey // TODO - Check
+    beRetrievable[LocalDate](EmploymentEndDateKeyPage)
 
-  override def route(mode: Mode): Call =
-    controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
+    beSettable[LocalDate](EmploymentEndDateKeyPage)
+  }
 }

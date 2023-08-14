@@ -16,6 +16,12 @@
 
 package pages
 
-import queries.{Gettable, Settable}
+class EmploymentIdKeyPageSpec extends PageBehaviours {
 
-trait QuestionPage[A] extends Page with Gettable[A] with Settable[A]
+  "EmploymentIdKeyPage" must {
+
+    beRetrievable[Int](EmploymentIdKeyPage)
+
+    beSettable[Int](EmploymentIdKeyPage)
+  }
+}

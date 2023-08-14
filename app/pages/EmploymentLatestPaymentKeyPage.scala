@@ -16,9 +16,7 @@
 
 package pages
 
-import play.api.Mode
 import play.api.libs.json.JsPath
-import play.api.mvc.Call
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
 import java.time.LocalDate
@@ -28,7 +26,4 @@ case object EmploymentLatestPaymentKeyPage extends QuestionPage[LocalDate] { // 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = EndEmploymentConstants.LatestPaymentDateKey
-
-  override def route(mode: Mode): Call =
-    controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
 }

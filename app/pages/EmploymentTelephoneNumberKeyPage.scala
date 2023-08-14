@@ -16,9 +16,7 @@
 
 package pages
 
-import play.api.Mode
 import play.api.libs.json.JsPath
-import play.api.mvc.Call
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
 case object EmploymentTelephoneNumberKeyPage extends QuestionPage[String] {
@@ -26,7 +24,4 @@ case object EmploymentTelephoneNumberKeyPage extends QuestionPage[String] {
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = EndEmploymentConstants.TelephoneNumberKey
-
-  override def route(mode: Mode): Call =
-    controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision() // TODO - Remove
 }

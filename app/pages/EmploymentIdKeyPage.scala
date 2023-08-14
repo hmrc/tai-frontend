@@ -16,17 +16,12 @@
 
 package pages
 
-import play.api.Mode
 import play.api.libs.json.JsPath
-import play.api.mvc.Call
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-case object EmploymentIdKeyPage extends QuestionPage[Int] { // TODO - DELETE
+case object EmploymentIdKeyPage extends QuestionPage[Int] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = EndEmploymentConstants.EmploymentIdKey // TODO - Check
-
-  override def route(mode: Mode): Call =
-    controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
+  override def toString: String = EndEmploymentConstants.EmploymentIdKey
 }
