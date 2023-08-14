@@ -56,7 +56,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val endEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   val userAnswers: UserAnswers = UserAnswers(
@@ -92,7 +91,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   )
 
   override def beforeEach(): Unit = {
-    reset(employmentService, endEmploymentJourneyCacheService)
+    reset(employmentService, trackSuccessJourneyCacheService)
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(
         Future.successful(
@@ -862,7 +861,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
   }
   "onPageLoad is called" must {
-    "redirect to employmentUpdateRemove when there is no employment id in the user answers" in {
+    "redirect to employmentUpdateRemove when there is no employment id in the user answers and no tracked successful journey in cache" in {
+      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+        .thenReturn(Future.successful(None))
       val empId = 1
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
       val mockRepository = mock[JourneyCacheNewRepository]
@@ -880,22 +881,63 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         )
       }
     }
-    "redirect to duplicateSubmissionWarning when there is an employment id in the user answers" in {
+    "redirect to employmentUpdateRemove when there is an employment id in the user answers and no tracked successful journey in cache" in {
+      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+        .thenReturn(Future.successful(None))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
       val application = applicationBuilderWithoutRepository(userAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
+      when(mockRepository.set(any)).thenReturn(Future.successful(true))
+
+      running(application) {
+        val result = controller(repository = mockRepository).onPageLoad(empId)(fakeGetRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
+        verify(mockRepository, never).set(
+          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdPage.toString -> empId)))
+        )
+      }
+    }
+    "redirect to duplicateSubmissionWarning when there is no employment id in the user answers and a tracked successful journey in cache" in {
+      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+        .thenReturn(Future.successful(Some("test")))
+      val empId = 1
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val emptyUserAnswers = userAnswers.copy(data = Json.obj())
+      val application = applicationBuilderWithoutRepository(emptyUserAnswers)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
+      when(mockRepository.set(any)).thenReturn(Future.successful(true))
+
+      running(application) {
+        val result = controller(Some(emptyUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
+        verify(mockRepository, times(1)).set(
+          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdPage.toString -> empId)))
+        )
+      }
+    }
+    "redirect to duplicateSubmissionWarning when there is an employment id in the user answers and a tracked successful journey in cache" in {
+      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+        .thenReturn(Future.successful(Some("test")))
+      val empId = 1
+      val mockRepository = mock[JourneyCacheNewRepository]
+      val application = applicationBuilderWithoutRepository(userAnswers)
+        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .build()
+      when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
       running(application) {
         val result = controller(repository = mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
-        verify(mockRepository, times(0)).set(any())
+        verify(mockRepository, never).set(any())
       }
     }
   }
-
   "duplicateSubmissionWarning is called" must {
     "show duplicateSubmissionWarning if emp id and employment data exist" in {
       val application = applicationBuilder(userAnswers).build()

@@ -24,6 +24,7 @@ import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -113,16 +114,23 @@ class EndEmploymentController @Inject() (
     actionJourney.setJourneyCache.async { implicit request =>
       request.userAnswers.get(EmploymentIdPage) match {
         case Some(_) =>
-          Future.successful(
-            Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
-          )
+          checkDuplicateSubmission(empId)
         case None =>
           for {
             userAnswers <- fromTry(request.userAnswers.set(EmploymentIdPage, empId))
             _           <- journeyCacheNewRepository.set(userAnswers)
-          } yield Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+            result      <- checkDuplicateSubmission(empId)
+          } yield result
       }
     }
+
+  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier) =
+    successfulJourneyCacheService
+      .currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
+      .map {
+        case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
+        case None => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+      }
 
   def handleEmploymentUpdateRemove: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
