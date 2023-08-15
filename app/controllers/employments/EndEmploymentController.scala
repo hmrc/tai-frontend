@@ -22,7 +22,7 @@ import controllers.auth.{AuthedUser, DataRequest}
 import pages._
 import play.api.Logging
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -75,6 +75,9 @@ class EndEmploymentController @Inject() (
     }
   }
 
+  private def error5xxInBadRequest()(implicit request: Request[_]): Result =
+    BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
+
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) =
     CanWeContactByPhoneViewModel(
       messages("tai.endEmployment.preHeadingText"),
@@ -87,41 +90,42 @@ class EndEmploymentController @Inject() (
   def employmentUpdateRemoveDecision: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
-          employmentService.employment(request.taiUser.nino, empId).map {
-            case Some(employment) =>
-              Ok(
-                updateRemoveEmploymentDecision(
-                  UpdateRemoveEmploymentForm
-                    .form(employment.name)
-                    .fill(request.userAnswers.get(EmploymentUpdateRemovePage)),
-                  employment.name,
-                  empId
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(request.taiUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  updateRemoveEmploymentDecision(
+                    UpdateRemoveEmploymentForm
+                      .form(employment.name)
+                      .fill(request.userAnswers.get(EmploymentUpdateRemovePage)),
+                    employment.name,
+                    empId
+                  )
                 )
               )
-            case None =>
-              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          }
-        case None =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+            )
+        )
     }
 
   def onPageLoad(empId: Int): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(_) =>
-          checkDuplicateSubmission(empId)
-        case None =>
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
           for {
             userAnswers <- fromTry(request.userAnswers.set(EmploymentIdPage, empId))
             _           <- journeyCacheNewRepository.set(userAnswers)
             result      <- checkDuplicateSubmission(empId)
           } yield result
-      }
+        )(_ => checkDuplicateSubmission(empId))
     }
 
   private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier) =
@@ -135,48 +139,46 @@ class EndEmploymentController @Inject() (
   def handleEmploymentUpdateRemove: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
-          employmentService.employment(user.nino, empId).flatMap {
-            case Some(employment) =>
-              UpdateRemoveEmploymentForm
-                .form(employment.name)
-                .bindFromRequest()
-                .fold(
-                  formWithErrors =>
-                    Future.successful(
-                      BadRequest(
-                        updateRemoveEmploymentDecision(
-                          formWithErrors,
-                          employment.name,
-                          empId
-                        )
-                      )
-                    ),
-                  {
-                    case Some(FormValuesConstants.YesValue) =>
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(user.nino, empId)
+            .flatMap(
+              _.fold(
+                Future.successful(error5xxInBadRequest())
+              )(employment =>
+                UpdateRemoveEmploymentForm
+                  .form(employment.name)
+                  .bindFromRequest()
+                  .fold(
+                    formWithErrors =>
                       Future.successful(
-                        Redirect(
-                          controllers.employments.routes.UpdateEmploymentController
-                            .updateEmploymentDetails(empId)
+                        BadRequest(
+                          updateRemoveEmploymentDecision(
+                            formWithErrors,
+                            employment.name,
+                            empId
+                          )
                         )
-                      )
-                    case _ =>
-                      hasIrregularPayment(employment, user.nino.nino)
-                  }
-                )
-            case None =>
-              Future.successful(
-                BadRequest(
-                  errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                )
+                      ),
+                    {
+                      case Some(FormValuesConstants.YesValue) =>
+                        Future.successful(
+                          Redirect(
+                            controllers.employments.routes.UpdateEmploymentController
+                              .updateEmploymentDetails(empId)
+                          )
+                        )
+                      case _ =>
+                        hasIrregularPayment(employment, user.nino.nino)
+                    }
+                  )
               )
-          }
-        case None =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+            )
+        )
     }
 
   private def hasIrregularPayment(employment: Employment, nino: String)(implicit
@@ -219,46 +221,52 @@ class EndEmploymentController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       (request.userAnswers.get(EmploymentIdPage), request.userAnswers.get(EmploymentLatestPaymentPage)) match {
         case (Some(empId), Some(latestPayment)) =>
-          employmentService.employment(user.nino, empId).map {
-            case Some(employment) =>
-              Ok(
-                endEmploymentWithinSixWeeksError(
-                  WithinSixWeeksViewModel(latestPayment.plusWeeks(6).plusDays(1), employment.name, latestPayment, empId)
+          employmentService
+            .employment(user.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  endEmploymentWithinSixWeeksError(
+                    WithinSixWeeksViewModel(
+                      latestPayment.plusWeeks(6).plusDays(1),
+                      employment.name,
+                      latestPayment,
+                      empId
+                    )
+                  )
                 )
               )
-            case None =>
-              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          }
-        case _ =>
-          Future.successful(
-            BadRequest(
-              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
             )
-          )
+        case _ =>
+          Future.successful(error5xxInBadRequest())
       }
     }
 
   def irregularPaymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
-          employmentService.employment(request.taiUser.nino, empId).map {
-            case Some(employment) =>
-              Ok(
-                endEmploymentIrregularPaymentError(
-                  IrregularPayForm.createForm,
-                  EmploymentViewModel(employment.name, empId)
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(request.taiUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  endEmploymentIrregularPaymentError(
+                    IrregularPayForm.createForm,
+                    EmploymentViewModel(employment.name, empId)
+                  )
                 )
               )
-            case None =>
-              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          }
-        case None =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+            )
+        )
     }
 
   def handleIrregularPaymentError: Action[AnyContent] =
@@ -270,19 +278,20 @@ class EndEmploymentController @Inject() (
             .bindFromRequest()
             .fold(
               formWithErrors =>
-                employmentService.employment(request.taiUser.nino, empId).map {
-                  case Some(employment) =>
-                    BadRequest(
-                      endEmploymentIrregularPaymentError(
-                        formWithErrors,
-                        EmploymentViewModel(employment.name, empId)
+                employmentService
+                  .employment(request.taiUser.nino, empId)
+                  .map(
+                    _.fold(
+                      error5xxInBadRequest()
+                    )(employment =>
+                      BadRequest(
+                        endEmploymentIrregularPaymentError(
+                          formWithErrors,
+                          EmploymentViewModel(employment.name, empId)
+                        )
                       )
                     )
-                  case None =>
-                    BadRequest(
-                      errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                    )
-                },
+                  ),
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
                   for {
@@ -300,9 +309,7 @@ class EndEmploymentController @Inject() (
               }
             )
         case None =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
+          Future.successful(error5xxInBadRequest())
       }
     }
 
@@ -311,26 +318,25 @@ class EndEmploymentController @Inject() (
       implicit val authUser: AuthedUser = request.taiUser
       (request.userAnswers.get(EmploymentIdPage), request.userAnswers.get(EmploymentEndDatePage)) match {
         case (Some(empId), endDate) =>
-          employmentService.employment(authUser.nino, empId).map {
-            case Some(employment) =>
-              val formData = endDate
-                .map(date => EmploymentEndDateForm(employment.name).form.fill(date))
-                .getOrElse(EmploymentEndDateForm(employment.name).form)
-              Ok(
-                endEmploymentView(
-                  formData,
-                  EmploymentViewModel(employment.name, empId)
+          employmentService
+            .employment(authUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              ) { employment =>
+                val formData = endDate
+                  .map(date => EmploymentEndDateForm(employment.name).form.fill(date))
+                  .getOrElse(EmploymentEndDateForm(employment.name).form)
+                Ok(
+                  endEmploymentView(
+                    formData,
+                    EmploymentViewModel(employment.name, empId)
+                  )
                 )
-              )
-            case None =>
-              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          }
-        case _ =>
-          Future.successful(
-            BadRequest(
-              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
+              }
             )
-          )
+        case _ =>
+          Future.successful(error5xxInBadRequest())
       }
     }
 
@@ -338,35 +344,33 @@ class EndEmploymentController @Inject() (
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
-          employmentService.employment(nino, empId).flatMap {
-            case Some(employment) =>
-              EmploymentEndDateForm(employment.name).form
-                .bindFromRequest()
-                .fold(
-                  formWithErrors =>
-                    Future.successful(
-                      BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
-                    ),
-                  date =>
-                    for {
-                      userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDatePage, date))
-                      _           <- journeyCacheNewRepository.set(userAnswers)
-                    } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
-                )
-            case _ =>
-              Future.successful(
-                BadRequest(
-                  errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-                )
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(nino, empId)
+            .flatMap(
+              _.fold(
+                Future.successful(error5xxInBadRequest())
+              )(employment =>
+                EmploymentEndDateForm(employment.name).form
+                  .bindFromRequest()
+                  .fold(
+                    formWithErrors =>
+                      Future.successful(
+                        BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
+                      ),
+                    date =>
+                      for {
+                        userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDatePage, date))
+                        _           <- journeyCacheNewRepository.set(userAnswers)
+                      } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+                  )
               )
-          }
-        case _ =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+            )
+        )
     }
 
   def addTelephoneNumber(): Action[AnyContent] =
@@ -388,19 +392,18 @@ class EndEmploymentController @Inject() (
             )
           )
         case _ =>
-          Future.successful(
-            BadRequest(
-              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-            )
-          )
+          Future.successful(error5xxInBadRequest())
       }
     }
 
   def submitTelephoneNumber(): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
           YesNoTextEntryForm
             .form(
               Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -420,11 +423,7 @@ class EndEmploymentController @Inject() (
                 }
               }
             )
-        case _ =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+        )
     }
 
   private def submitTelephoneCacheHandler(
@@ -476,11 +475,7 @@ class EndEmploymentController @Inject() (
           )
           Future.successful(Ok(addIncomeCheckYourAnswers(model)))
         case _ =>
-          Future.successful(
-            BadRequest(
-              errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message"))
-            )
-          )
+          Future.successful(error5xxInBadRequest())
       }
     }
 
@@ -501,65 +496,67 @@ class EndEmploymentController @Inject() (
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
       result.getOrElse(
-        Future.successful(
-          BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-        )
+        Future.successful(error5xxInBadRequest())
       )
     }
 
   def duplicateSubmissionWarning: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
-          employmentService.employment(authUser.nino, empId).map {
-            case Some(employment) =>
-              Ok(
-                duplicateSubmissionWarning(
-                  DuplicateSubmissionWarningForm.createForm,
-                  employment.name,
-                  empId
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(authUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  duplicateSubmissionWarning(
+                    DuplicateSubmissionWarningForm.createForm,
+                    employment.name,
+                    empId
+                  )
                 )
               )
-            case None =>
-              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          }
-        case None =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+            )
+        )
     }
 
   def submitDuplicateSubmissionWarning: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      request.userAnswers.get(EmploymentIdPage) match {
-        case Some(empId) =>
-          employmentService.employment(authUser.nino, empId).map {
-            case Some(employment) =>
-              DuplicateSubmissionWarningForm.createForm
-                .bindFromRequest()
-                .fold(
-                  formWithErrors => BadRequest(duplicateSubmissionWarning(formWithErrors, employment.name, empId)),
-                  success =>
-                    success.yesNoChoice match {
-                      case Some(FormValuesConstants.YesValue) =>
-                        Redirect(
-                          controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
-                        )
-                      case Some(FormValuesConstants.NoValue) =>
-                        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-                    }
-                )
-            case _ =>
-              BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          }
-        case None =>
-          Future.successful(
-            BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
-          )
-      }
+      request.userAnswers
+        .get(EmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(authUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                DuplicateSubmissionWarningForm.createForm
+                  .bindFromRequest()
+                  .fold(
+                    formWithErrors => BadRequest(duplicateSubmissionWarning(formWithErrors, employment.name, empId)),
+                    success =>
+                      success.yesNoChoice match {
+                        case Some(FormValuesConstants.YesValue) =>
+                          Redirect(
+                            controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
+                          )
+                        case Some(FormValuesConstants.NoValue) =>
+                          Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+                      }
+                  )
+              )
+            )
+        )
     }
 
   def showConfirmationPage: Action[AnyContent] = actionJourney.authAndValidate.async { implicit request =>
