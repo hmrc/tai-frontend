@@ -18,9 +18,8 @@ package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.{Ceased, NonTaxCodeIncome, OtherNonTaxCodeIncome, PotentiallyCeased}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.model.domain.income.{Ceased, NonTaxCodeIncome, OtherNonTaxCodeIncome, PotentiallyCeased}
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
