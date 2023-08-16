@@ -23,7 +23,7 @@ import play.api.mvc.{ActionBuilder, AnyContent}
 import javax.inject.Inject
 
 @ImplementedBy(classOf[ActionJourneyImpl])
-trait ActionJourney { // TODO - Needs a better name
+trait ActionJourney {
   val setJourneyCache: ActionBuilder[DataRequest, AnyContent]
   val authAndValidate: ActionBuilder[AuthenticatedRequest, AnyContent]
 }
