@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.model.CodingComponentPairModel
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{MoneyPounds, ViewModelHelper}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 
 case class YourTaxFreeAmountViewModel(

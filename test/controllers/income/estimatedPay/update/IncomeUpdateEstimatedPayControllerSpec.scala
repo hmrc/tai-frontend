@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -37,6 +36,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateIncomeConstants
 import utils.BaseSpec
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {

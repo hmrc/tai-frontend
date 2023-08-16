@@ -17,7 +17,6 @@
 package views.html.incomes
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.HtmlFormatter.htmlNonBroken
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EditSuccessViewSpec extends TaiViewSpec {

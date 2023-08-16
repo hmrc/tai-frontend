@@ -21,9 +21,7 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm._
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 
 import java.time.LocalDate
 

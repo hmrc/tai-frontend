@@ -18,10 +18,9 @@ package views.html
 
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
 class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
@@ -40,7 +39,7 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
     "display paragraphs" in {
 
       doc must haveParagraphWithText(
-        Messages("tai.previous.year.underpayment.p1", TaxYearRangeUtil.futureTaxYearRange(-1))
+        Messages("tai.previous.year.underpayment.p1", Dates.futureTaxYearRange(-1))
       )
       doc must haveSpanWithText(poundedAmountDue)
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h1"))
@@ -59,7 +58,7 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
       doc must haveH2HeadingWithText(Messages("tai.previous.year.underpayment.h2"))
 
       doc must haveParagraphWithText(
-        Messages("tai.previous.year.underpayment.p4", TaxYearRangeUtil.currentTaxYearRangeBreak)
+        Messages("tai.previous.year.underpayment.p4", Dates.currentTaxYearRangeBreak)
       )
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.p5"))
     }

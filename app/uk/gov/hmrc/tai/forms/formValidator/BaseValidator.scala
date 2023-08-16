@@ -20,8 +20,7 @@ import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.MoneyPounds
-import uk.gov.hmrc.tai.util.{FormHelper, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{FormHelper, MoneyPounds, ViewModelHelper}
 
 import scala.util.{Success, Try}
 

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain.income
 
-import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
+import play.api.libs.json._
 
 sealed trait TaxCodeIncomeSourceStatus
 case object Live extends TaxCodeIncomeSourceStatus

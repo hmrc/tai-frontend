@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.LocalDate
 import play.api.libs.json.{Format, Json}
+
+import java.time.LocalDate
 
 case class CloseAccountRequest(date: LocalDate, interestEarnedThisTaxYear: Option[BigDecimal])
 

@@ -18,7 +18,6 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
@@ -26,6 +25,7 @@ import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.PreviousYearUnderpaymentView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class UnderpaymentFromPreviousYearController @Inject() (

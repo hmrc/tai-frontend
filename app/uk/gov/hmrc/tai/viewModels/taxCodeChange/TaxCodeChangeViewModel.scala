@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
+
+import java.time.LocalDate
 
 case class TaxCodeChangeViewModel(
   pairs: TaxCodePairs,

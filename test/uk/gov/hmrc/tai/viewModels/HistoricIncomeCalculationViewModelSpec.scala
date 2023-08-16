@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.time.LocalDate
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.util.constants.TaiConstants.EyuDateFormat
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EyuDateFormat
 import utils.BaseSpec
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class HistoricIncomeCalculationViewModelSpec extends BaseSpec {

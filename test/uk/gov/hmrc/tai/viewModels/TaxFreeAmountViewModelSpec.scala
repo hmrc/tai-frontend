@@ -24,7 +24,6 @@ import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategor
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign
 import utils.BaseSpec
 
 import java.time.format.DateTimeFormatter
@@ -89,7 +88,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
           )
           val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
-          sut.annualTaxFreeAmount mustBe s"$EncodedMinusSign£1,200"
+          sut.annualTaxFreeAmount mustBe s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£1,200"
         }
       }
 
@@ -245,7 +244,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
           sut mustBe TaxFreeAmountViewModel(
             expectedHeader,
             expectedTitle,
-            s"$EncodedMinusSign£6,200",
+            s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£6,200",
             TaxFreeAmountSummaryViewModel(
               Seq(
                 emptyPersonalAllowanceItem,
@@ -285,7 +284,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
                     )
                   )
                 ),
-                totalsItem(s"$EncodedMinusSign£6,200")
+                totalsItem(s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£6,200")
               )
             )
           )
@@ -344,7 +343,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
               Seq(
                 TaxFreeAmountSummaryRowViewModel(
                   Messages("tai.taxFreeAmount.table.totals.label"),
-                  s"$EncodedMinusSign£1,988",
+                  s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£1,988",
                   ChangeLinkViewModel(isDisplayed = false)
                 )
               )

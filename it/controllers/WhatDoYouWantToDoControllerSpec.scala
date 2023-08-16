@@ -25,10 +25,10 @@ import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, 
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
-import uk.gov.hmrc.tai.model.domain.{Address, Person, TaxAccountSummary, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
-import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson, taxCodeMismatchJson}
 import utils.IntegrationSpec
+import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson, taxCodeMismatchJson}
 
 import java.time.LocalDate
 import scala.util.Random

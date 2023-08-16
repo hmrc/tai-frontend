@@ -16,9 +16,9 @@
 
 package views.html.employments
 
+import controllers.routes
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import controllers.routes
 
 class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
   "Display error page when employment cannot be added" must {

@@ -20,7 +20,6 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, FakeAuthAction}
-
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}

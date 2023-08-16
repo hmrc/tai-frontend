@@ -34,8 +34,8 @@ import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{DecisionChoice, NoIDontGetThisBenefit, YesIGetThisBenefit}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{DecisionChoice, NoIDontGetThisBenefit, YesIGetThisBenefit}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel

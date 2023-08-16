@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
-
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}

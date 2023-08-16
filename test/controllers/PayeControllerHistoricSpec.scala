@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -30,12 +29,13 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Monthly, Payment, TemporarilyUnavailable}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarnView}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class PayeControllerHistoricSpec

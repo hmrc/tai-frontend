@@ -17,14 +17,13 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-
-import java.time.LocalDate
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, _}
+import play.api.http.Status._
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.http._
 import utils.{BaseSpec, WireMockHelper}
 
+import java.time.LocalDate
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
