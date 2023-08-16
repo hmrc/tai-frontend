@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@import includes.{cancelLink, ptaHeaderNoH1}
-@import java.time.LocalDate
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukDateInput
-@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import includes.cancelLink
+@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukDateInput, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+
+@import java.time.LocalDate
 
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
