@@ -23,7 +23,6 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import utils.BaseSpec
-import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -235,36 +234,6 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
         sut.hasTaxCodeChangedUrl(
           nino.nino
         ) mustBe s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
-      }
-    }
-  }
-
-  "taxCodeMismatch" should {
-    "return if the is a tax code is umatched" when {
-      "provided with a valid nino" in {
-
-        val expectedResult = TaxCodeMismatchFactory.matchedTaxCode
-        val json = Future.successful(TaxCodeMismatchFactory.matchedTaxCodeJson)
-
-        val url = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
-        when(httpHandler.getFromApiV2(meq(url))(any(), any())).thenReturn(json)
-
-        val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
-        result mustEqual expectedResult
-      }
-    }
-
-    "return if the is a tax code matched" when {
-      "provided with a valid nino" in {
-
-        val expectedResult = TaxCodeMismatchFactory.mismatchedTaxCode
-        val json = Future.successful(TaxCodeMismatchFactory.mismatchedTaxCodeJson)
-
-        val url = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-mismatch"
-        when(httpHandler.getFromApiV2(meq(url))(any(), any())).thenReturn(json)
-
-        val result = Await.result(sut.taxCodeMismatch(nino), 5 seconds)
-        result mustEqual expectedResult
       }
     }
   }

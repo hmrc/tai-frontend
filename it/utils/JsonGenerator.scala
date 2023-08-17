@@ -16,8 +16,7 @@
 
 package utils
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch}
+import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 
 object JsonGenerator {
 
@@ -52,9 +51,6 @@ object JsonGenerator {
         }
         .mkString(",")}
     ]},"links":[]}""".stripMargin
-
-  def taxCodeMismatchJson(taxCodeMismatch: TaxCodeMismatch) =
-    s"""{"data":${Json.toJson(taxCodeMismatch)},"links":[]}"""
 
   val taxCodeIncomesJson: String = """{"data":[
                                      |{"componentType":"EmploymentIncome",
