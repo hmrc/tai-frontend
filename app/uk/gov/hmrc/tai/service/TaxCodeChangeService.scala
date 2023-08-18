@@ -23,9 +23,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -40,25 +39,16 @@ class TaxCodeChangeService @Inject() (
 
   def hasTaxCodeChanged(
     nino: Nino
-  )(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, HasTaxCodeChanged]] = {
-
-    lazy val hasTaxCodeChangedFuture: EitherT[Future, TaxCodeError, Boolean] = EitherT(taxCodeChanged(nino))
-    lazy val taxCodeMismatchFuture: EitherT[Future, TaxCodeError, TaxCodeMismatch] =
-      EitherT.right[TaxCodeError](taxCodeMismatch(nino))
-
-    (for {
-      hasTaxCodeChanged <- hasTaxCodeChangedFuture
-      taxCodeMismatch   <- taxCodeMismatchFuture
-    } yield {
-      logger.debug(s"TCMismatch $taxCodeMismatch")
-      HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
-
-    }).value
-
-  }.recover { case NonFatal(e) =>
-    logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
-    Right(HasTaxCodeChanged(changed = false, None))
-  }
+  )(implicit hc: HeaderCarrier): EitherT[Future, TaxCodeError, Boolean] =
+    EitherT(
+      taxCodeChangeConnector
+        .hasTaxCodeChanged(nino)
+        .map(_.asRight)
+        .recover { case NonFatal(_) =>
+          logger.error("Could not fetch the changed tax code")
+          TaxCodeError(nino, Some("Could not fetch tax code change")).asLeft
+        }
+    )
 
   def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
@@ -70,22 +60,4 @@ class TaxCodeChangeService @Inject() (
   ): Future[Boolean] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year).attemptT.map(_.nonEmpty).getOrElse(false)
 
-  def latestTaxCodeChangeDate(
-    nino: Nino
-  )(implicit hc: HeaderCarrier): Future[LocalDate] =
-    taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
-
-  private def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeMismatch] =
-    taxCodeChangeConnector.taxCodeMismatch(nino)
-
-  private def taxCodeChanged(
-    nino: Nino
-  )(implicit hc: HeaderCarrier): Future[Either[TaxCodeError, Boolean]] =
-    taxCodeChangeConnector
-      .hasTaxCodeChanged(nino)
-      .map(_.asRight)
-      .recover { case _ =>
-        logger.error("Could not fetch the changed tax code")
-        TaxCodeError(nino, Some("Could not fetch tax code change")).asLeft
-      }
 }
