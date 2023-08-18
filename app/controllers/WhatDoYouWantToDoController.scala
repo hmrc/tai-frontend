@@ -74,7 +74,15 @@ class WhatDoYouWantToDoController @Inject() (
                 errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => none }
             handler(ex)
           }
-        }).getOrElseF(allowWhatDoYouWantToDo.fold(_ => InternalServerError(""), x => x))
+        }).getOrElseF(
+          allowWhatDoYouWantToDo
+            .leftMap(error =>
+              errorPagesHandler.internalServerError(
+                error.errorMessage.getOrElse("Unknown error on what do you want to do page")
+              )
+            )
+            .merge
+        )
 
       for {
         _        <- employmentsFuture

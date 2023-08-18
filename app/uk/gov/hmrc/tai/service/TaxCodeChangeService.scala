@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -61,8 +60,4 @@ class TaxCodeChangeService @Inject() (
   ): Future[Boolean] =
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year).attemptT.map(_.nonEmpty).getOrElse(false)
 
-  def latestTaxCodeChangeDate(
-    nino: Nino
-  )(implicit hc: HeaderCarrier): Future[LocalDate] =
-    taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
 }

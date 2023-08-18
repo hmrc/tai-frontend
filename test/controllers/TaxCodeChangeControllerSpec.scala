@@ -161,10 +161,6 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxCodeComparisonView,
         yourTaxFreeAmountView,
         whatHappensNextView
-      ) {
-
-    when(taxCodeChangeService.latestTaxCodeChangeDate(meq(nino))(any()))
-      .thenReturn(Future.successful(LocalDate.of(2018, 6, 11)))
-  }
+      ) {}
 
 }
