@@ -14,14 +14,9 @@
  * limitations under the License.
  *@
 
-@import java.time.LocalDateTime
 @import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
-@import uk.gov.hmrc.tai.util.MoneyPounds
-
+@import uk.gov.hmrc.tai.util.{MonetaryUtil, MoneyPounds, TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
-@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@import uk.gov.hmrc.tai.util.MonetaryUtil
 
 @this(main: MainTemplate)
 
@@ -32,14 +27,14 @@
 
 @header() = @{
     ptaHeader(
-        mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRange),
+        mainHeadingText = messages("tai.estimatedPay.heading", Dates.currentTaxYearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employer.name)
     )
 }
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRange),
+    title = messages("tai.estimatedPay.title", Dates.currentTaxYearRange),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage(viewModel.employer.id).url)
@@ -65,7 +60,7 @@
         @if(viewModel.isGrossPayApportioned){
             @includes.detailsSummary(messages("tai.estimatedPay.whyLower.title")) {
                 @Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(viewModel.incomeStartDate.get),
-                    TaxYearRangeUtil.currentTaxYearRange,
+                    Dates.currentTaxYearRange,
                     MoneyPounds(viewModel.annualAmount.get,0).quantity))
             }
         }

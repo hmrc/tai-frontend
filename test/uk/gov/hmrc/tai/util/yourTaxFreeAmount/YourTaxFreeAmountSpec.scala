@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import java.time.LocalDate
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.YourTaxFreeAmountComparison
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import utils.BaseSpec
+
+import java.time.LocalDate
 
 class YourTaxFreeAmountSpec extends BaseSpec with YourTaxFreeAmount {
 
@@ -42,7 +42,7 @@ class YourTaxFreeAmountSpec extends BaseSpec with YourTaxFreeAmount {
   }
 
   def createFormattedDate(date: LocalDate): String =
-    TaxYearRangeUtil.dynamicDateRange(date, TaxYear().end)
+    Dates.dynamicDateRange(date, TaxYear().end)
 
   "buildTaxFreeAmount" should {
     "have the correct date formatting" in {

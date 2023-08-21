@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
 import uk.gov.hmrc.tai.model.TaxYear
-
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService

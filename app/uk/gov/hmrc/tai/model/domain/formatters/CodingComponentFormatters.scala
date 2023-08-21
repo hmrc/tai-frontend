@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.model.domain.formatters
 
-import java.time.LocalDate
 import play.api.libs.json.{JsResult, JsSuccess, JsValue, Reads}
-
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
+
+import java.time.LocalDate
 
 trait CodingComponentFormatters {
 

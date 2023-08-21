@@ -17,18 +17,17 @@
 package uk.gov.hmrc.tai.connectors
 
 import akka.actor.ActorSystem
-
-import javax.inject.Inject
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
 import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.{FutureEarlyTimeout, Timeout}
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class TrackingConnector @Inject() (

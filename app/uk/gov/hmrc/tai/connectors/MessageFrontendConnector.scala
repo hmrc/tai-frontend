@@ -19,11 +19,11 @@ package uk.gov.hmrc.tai.connectors
 import cats.data.EitherT
 import play.api.Logging
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HttpResponse, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HttpReadsInstances._
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.http.HttpReadsInstances._
 
 import javax.inject.Inject
 import scala.concurrent.duration.DurationInt

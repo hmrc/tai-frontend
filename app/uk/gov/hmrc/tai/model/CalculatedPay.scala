@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.tai.model
 
-import java.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
-import play.api.libs.json.OFormat
+import java.time.LocalDate
 
 case class CalculatedPay(
   grossAnnualPay: Option[BigDecimal],

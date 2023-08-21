@@ -16,11 +16,10 @@
 
 package controllers
 
+import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import cats.implicits._
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -34,6 +33,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKe
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 

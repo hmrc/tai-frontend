@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PensionProviderService @Inject() (pensionProviderConnector: PensionProviderConnector) {

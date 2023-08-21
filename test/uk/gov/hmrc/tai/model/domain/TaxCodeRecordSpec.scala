@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import java.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
+
+import java.time.LocalDate
 
 class TaxCodeRecordSpec extends PlaySpec {
 
