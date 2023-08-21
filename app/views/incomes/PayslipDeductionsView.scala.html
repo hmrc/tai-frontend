@@ -32,7 +32,6 @@ messages: Messages, user: controllers.auth.AuthedUser)
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.payslipDeductions.heading"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url),
     formForErrorSummary = Some(payslipDeductionsForm)

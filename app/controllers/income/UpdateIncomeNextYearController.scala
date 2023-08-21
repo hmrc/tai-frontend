@@ -201,7 +201,7 @@ class UpdateIncomeNextYearController @Inject() (
                   currentValue,
                   newAmount,
                   NextYearPay,
-                  "javascript:history.go(-1)"
+                  "#"
                 ) // TODO this is temporary
               Ok(updateIncomeCYPlus1Confirm(vm))
             }

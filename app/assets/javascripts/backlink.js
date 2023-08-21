@@ -1,40 +1,31 @@
-// prevent resubmit warning
-// replace history with corrected url
-
-
+/* global $ */
+// =====================================================
+// Back link mimics browser back functionality
+// =====================================================
+// store referrer value to cater for IE - https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10474810/  */
 var docReferrer = document.referrer;
-
+// prevent resubmit warning
 if (
     window.history &&
     window.history.replaceState &&
     typeof window.history.replaceState === 'function'
 ) {
-
-    const filter = (value, x) => {
-        let segments = value.split('/');
-        return segments[ segments.length -x];
-    }
-
-    var url = window.location.href;
-    var  urlSegment = filter(url,2) +'/' + filter(url,1)
-
-    switch(urlSegment) {
-        case 'update-remove-employment/decision':
-            window.history.replaceState(null, null, docReferrer);
-            break;
-
-        case 'update-income/how-to-update-income':
-            window.history.replaceState(null, null, docReferrer);
-            break;
-
-        case 'update-income-details/decision':
-           window.history.replaceState(null, null, docReferrer);
-            break;
-
-        default:
-            window.history.replaceState(null, null, window.location.href);
-    }
-
+    window.history.replaceState(null, null, window.location.href);
 }
+// back click handle, dependent upon presence of referrer & no host change
+const backlink = document.getElementById('back-link');
 
-
+if(backlink != null && backlink != 'undefined' ) {
+    backlink.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (
+            window.history &&
+            window.history.back &&
+            typeof window.history.back === 'function' &&
+            docReferrer !== '' &&
+            docReferrer.indexOf(window.location.host) !== -1
+        ) {
+            window.history.back();
+        }
+    });
+}

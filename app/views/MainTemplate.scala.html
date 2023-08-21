@@ -77,9 +77,9 @@
         isWelshTranslationAvailable: Boolean = false,
         signOutUrl: Option[String] = None,
         serviceUrl: Option[String] = None,
-        backLinkUrl: Option[String] = Some("javascript:history.go(-1)"),
+        backLinkUrl: Option[String] = Some("#"),
         backLinkContent: Option[String],
-        backLinkId: String = "backLinkId",
+        backLinkId: String = "back-link",
         disableSessionExpired: Boolean = false,
         additionalScriptsBlock: Option[Html] = None,
         beforeContentBlock: Option[Html] = None,
@@ -200,9 +200,12 @@
 
 @if(backLinkContent){
     @backLinkUrl.map(url =>
-        govukBackLink(BackLink(classes = "js-visible-back",
-        attributes = Map("id" -> backLinkId), href = url, content = Text(backLinkContent.get)))
-    )
+        govukBackLink(
+            BackLink(classes = "js-visible-back",
+            attributes = Map("id" -> backLinkId),
+            href = url,
+            content = Text(backLinkContent.get)))
+        )
         }
     }
 }

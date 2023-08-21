@@ -49,13 +49,13 @@
                     <div class="print-grid-row">
                         <div class="column-half back-link">
                             @includes.link(
-                                id=Some("backLink"),
+                                id=Some("back-link"),
                                 copy=Messages("tai.back-link.upper"),
                                 url = "#",
                                 linkClasses=Seq("displayIfJsEnabled link-back"))
                         </div>
                         <div class="column-half print-button">
-                            <a href="javascript:window.print();">@Messages("tai.label.print")</a>
+                            <a href="#" id="printLink">@Messages("tai.label.print")</a>
                         </div>
                     </div>
                 </div>
@@ -76,6 +76,7 @@
         </div>
 
         <script @CSPNonce.attr src="@controllers.routes.AssetsController.versioned("javascripts/tai-backlink.js")"></script>
+        <script @CSPNonce.attr src="@controllers.routes.AssetsController.versioned("javascripts/print.js")"></script>
         <script @CSPNonce.attr>
             document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('main-nav').style.display = "block";
