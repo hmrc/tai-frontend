@@ -1,9 +1,10 @@
-document.getElementById("printLink").addEventListener("click", function(e) {
-    e.preventDefault();
-    window.print();
-});
+const printlink = document.getElementById('printLink');
 
-document.getElementById("backLink").addEventListener("click", function(e) {
-    e.preventDefault();
-    window.history.back();
-});
+if(printlink != null && printlink != 'undefined' ) {
+
+    printlink.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.print();
+    });
+};
+

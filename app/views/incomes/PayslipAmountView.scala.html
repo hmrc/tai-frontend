@@ -33,6 +33,7 @@
     title = viewModel.payPeriodTitle,
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url),
     formForErrorSummary = Some(viewModel.payslipForm)
 

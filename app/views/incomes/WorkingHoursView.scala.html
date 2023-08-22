@@ -30,6 +30,7 @@
     title = messages("tai.workingHours.title"),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).url),
     formForErrorSummary = Some(workingHoursForm)
 

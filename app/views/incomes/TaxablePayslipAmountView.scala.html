@@ -27,6 +27,7 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages(viewModel.title),
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url),
     formForErrorSummary = Some(viewModel.form)
 
