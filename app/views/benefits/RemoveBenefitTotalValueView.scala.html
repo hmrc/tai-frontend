@@ -52,6 +52,7 @@
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url),
+    backLinkId = "back-link-custom-url",
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(companyBenefitTotalValueForm)
 ) {
