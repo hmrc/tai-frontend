@@ -24,12 +24,14 @@ import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -49,6 +51,7 @@ class WhatDoYouWantToDoController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,
+  featureFlagService: FeatureFlagService,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
@@ -107,28 +110,27 @@ class WhatDoYouWantToDoController @Inject() (
     }
     taxCodeChangeDate.flatMap { maybeMostRecentTaxCodeChangeDate =>
       lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
-        isCyPlusOneEnabled = applicationConfig.cyPlusOneEnabled,
         showJrsLink = showJrsLink,
         maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
       )
 
       lazy val unsuccessfulResponseModel =
         WhatDoYouWantToDoViewModel(
-          isCyPlusOneEnabled = false,
           showJrsLink = showJrsLink,
           maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
         )
-
-      if (applicationConfig.cyPlusOneEnabled) {
-        taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
-          case _: NotFoundException =>
-            logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-            unsuccessfulResponseModel
-          case _ =>
-            unsuccessfulResponseModel
+      featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
+        if (toggle.isEnabled) {
+          taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
+            case _: NotFoundException =>
+              logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+              unsuccessfulResponseModel
+            case _ =>
+              unsuccessfulResponseModel
+          }
+        } else {
+          Future.successful(successfulResponseModel)
         }
-      } else {
-        Future.successful(successfulResponseModel)
       }
     }
   }

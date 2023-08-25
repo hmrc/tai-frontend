@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels
+package uk.gov.hmrc.tai.config
 
-import java.time.LocalDate
+import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
 
-case class WhatDoYouWantToDoViewModel(
-  showJrsLink: Boolean,
-  maybeMostRecentTaxCodeChangeDate: Option[LocalDate]
-)
+class HmrcModule extends Module {
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
+    val defaultBindings: Seq[Binding[_]] = Seq(
+      bind[ApplicationStartUp].toSelf.eagerly()
+    )
+    defaultBindings
+  }
+}

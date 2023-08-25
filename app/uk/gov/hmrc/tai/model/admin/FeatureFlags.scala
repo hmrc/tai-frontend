@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels
+package uk.gov.hmrc.tai.model.admin
 
-import java.time.LocalDate
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagName
 
-case class WhatDoYouWantToDoViewModel(
-  showJrsLink: Boolean,
-  maybeMostRecentTaxCodeChangeDate: Option[LocalDate]
-)
+case object CyPlusOneToggle extends FeatureFlagName {
+  override val name: String = "cy-plus-one-toggle"
+  override val description: Option[String] = Some(
+    "Enable/disable cy plus one"
+  )
+}
+
+case object IncomeTaxHistoryToggle extends FeatureFlagName {
+  override val name: String = "income-tax-history-toggle"
+  override val description: Option[String] = Some(
+    "Enable/disable the income ta history"
+  )
+}

@@ -10,14 +10,15 @@ private object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     filters,
     jodaForms,
-    "org.typelevel"     %% "cats-core"                        % "2.9.0",
+    "org.typelevel"     %% "cats-core"                        % "2.10.0",
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.13.0-$playVersion",
     "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % bootstrapVersion,
     "uk.gov.hmrc"       %% "domain"                           % s"8.3.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"7.7.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion"
+    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
+    "uk.gov.hmrc"       %% "mongo-feature-toggles-client"     % "0.3.0"
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -26,8 +27,8 @@ private object AppDependencies {
     "com.github.tomakehurst" % "wiremock-jre8"                  % "2.35.0",
     "com.typesafe.play"      %% "play-test"                     % PlayVersion.current,
     "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
-    "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.15.0",
-    "com.vladsch.flexmark"   %  "flexmark-all"                  % "0.62.2"
+    "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.16.0",
+    "com.vladsch.flexmark"   %  "flexmark-all"                  % "0.64.8"
   ).map(_ % "test,it")
 
   val jacksonVersion         = "2.13.2"

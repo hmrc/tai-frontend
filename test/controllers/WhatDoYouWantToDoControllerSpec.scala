@@ -26,9 +26,12 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
@@ -51,7 +54,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val jrsService: JrsService = mock[JrsService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val taxCodeIncomes = Seq(
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
     TaxCodeIncome(
       EmploymentIncome,
       Some(1),
@@ -69,20 +72,20 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeNotChanged = false
   val taxCodeChanged = true
 
-  val startDate = LocalDate.now()
-  val taxCodeRecord1 = TaxCodeRecord(
+  val startDate: LocalDate = LocalDate.now()
+  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
     "D0",
     startDate,
     startDate.plusDays(1),
     OtherBasisOfOperation,
     "Employer 1",
-    false,
+    pensionIndicator = false,
     Some("1234"),
-    true
+    primary = true
   )
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
-  val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
-  val mostRecentTaxCodeChangeDate =
+  val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
+  val taxCodeChange: TaxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
+  val mostRecentTaxCodeChangeDate: String =
     TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate).replace("\u00A0", " ")
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
@@ -117,6 +120,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       receivingOccupationalPension = false
     )
   )
+  val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
 
   override def beforeEach(): Unit =
     reset(auditService, employmentService)
@@ -544,11 +548,15 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         mockAppConfig,
         mcc,
         inject[WhatDoYouWantToDoTileView],
+        mockFeatureFlagService,
         inject[ErrorPagesHandler]
       ) {
 
-    when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
-    when(mockAppConfig.incomeTaxHistoryEnabled) thenReturn true
+    reset(mockFeatureFlagService)
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+      Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+      Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))
