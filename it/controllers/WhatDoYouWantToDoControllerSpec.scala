@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
 import utils.IntegrationSpec
-import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson, taxCodeMismatchJson}
+import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 
 import java.time.LocalDate
 import scala.util.Random
@@ -193,11 +193,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             .willReturn(ok("false"))
         )
 
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-mismatch"))
-            .willReturn(ok(Json.toJson(TaxCodeMismatch(false, Seq.empty, Seq("TaxCode1"))).toString))
-        )
-
         val request =
           FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
@@ -221,11 +216,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             .willReturn(ok("false"))
         )
 
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-mismatch"))
-            .willReturn(ok(Json.toJson(TaxCodeMismatch(true, Seq.empty, Seq("TaxCode1"))).toString))
-        )
-
         val request =
           FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
@@ -233,34 +223,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         contentAsString(result) mustNot include("We changed your tax code on")
       }
 
-      "the user has a tax code mismatch but only 1 confirmed tax code" in {
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/person"))
-            .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
-            .willReturn(ok(Json.toJson(employments).toString))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
-            .willReturn(ok("true"))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-mismatch"))
-            .willReturn(ok(Json.toJson(TaxCodeMismatch(true, Seq.empty, Seq("TaxCode1"))).toString))
-        )
-
-        val request =
-          FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
-
-        val result = route(app, request).get
-        contentAsString(result) mustNot include("We changed your tax code on")
-
-      }
     }
     "see the tax code change banner with the latest tax code change date" when {
 
@@ -283,9 +245,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         val currentYears = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
         TaxCodeChange(previousYears, currentYears)
       }
-
-      val taxCodeMismatch =
-        TaxCodeMismatch(true, taxCodeChange.previous.map(_.taxCode).distinct, taxCodeChange.uniqueTaxCodes)
 
       "the user has a tax code change and mismatch with more than 1 confirmed tax code" in {
         server.stubFor(
@@ -311,13 +270,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         server.stubFor(
           get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
             .willReturn(ok("true"))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-mismatch"))
-            .willReturn(
-              ok(taxCodeMismatchJson(taxCodeMismatch))
-            )
         )
 
         server.stubFor(

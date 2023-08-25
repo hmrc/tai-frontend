@@ -21,9 +21,8 @@ import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
-import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import utils.BaseSpec
-import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -50,16 +49,11 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       "success response from the connectors" in {
         val testService = createTestService
 
-        val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
-        val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = true, Some(taxCodeMismatch)))
-
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(true))
-        when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
-          .thenReturn(Future.successful(taxCodeMismatch))
 
-        val result = testService.hasTaxCodeChanged(nino)
-        Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
+        val result = testService.hasTaxCodeChanged(nino).value
+        Await.result(result, 5.seconds) mustBe Right(true)
       }
     }
 
@@ -67,15 +61,11 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       "invalid response is returned from taxCodeChangeConnector.taxCodeMismatch" in {
         val testService = createTestService
 
-        val hasTaxCodeChanged = Right(HasTaxCodeChanged(changed = false, None))
-
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.successful(true))
-        when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("ERROR")))
 
-        val result = testService.hasTaxCodeChanged(nino)
-        Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
+        val result = testService.hasTaxCodeChanged(nino).value
+        Await.result(result, 5.seconds) mustBe Right(true)
       }
     }
 
@@ -83,15 +73,12 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       "returns a valid error response from taxCodeChangeConnector.hasTaxCodeChanged" in {
         val testService = createTestService
 
-        val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
         val taxCodeError = Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
           .thenReturn(Future.failed(new Exception("ERROR")))
-        when(taxCodeChangeConnector.taxCodeMismatch(any())(any()))
-          .thenReturn(Future.successful(taxCodeMismatch))
 
-        Await.result(testService.hasTaxCodeChanged(nino), 5 seconds) mustBe taxCodeError
+        Await.result(testService.hasTaxCodeChanged(nino).value, 5 seconds) mustBe taxCodeError
       }
     }
   }
