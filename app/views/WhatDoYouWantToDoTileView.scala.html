@@ -106,17 +106,17 @@
 
             </div>
 
-            <div class="govuk-!-margin-bottom-3">
-                <a href=@{appConfig.taxReliefExpenseClaimLink} class="govuk-body-m link-style" id="other-expense-link">
+            <p class="govuk-body-m govuk-!-margin-bottom-3">
+                <a href=@{appConfig.taxReliefExpenseClaimLink} class="govuk-link" id="other-expense-link">
                     @messages("claim.tax.relief.claimOtherExpense")
                 </a>
-            </div>
+            </p>
             @if(model.showJrsLink) {
-                <div class="govuk-!-margin-bottom-3">
-                    <a href=@{controllers.routes.JrsClaimsController.onPageLoad()} class="govuk-body-m link-style" id="jrs-link">
+                <p class="govuk-body-m govuk-!-margin-bottom-3">
+                    <a href=@{controllers.routes.JrsClaimsController.onPageLoad()} class="govuk-link" id="jrs-link">
                         @messages("check.jrs.claims")
                     </a>
-                </div>
+                </p>
             }
 
         </div>
