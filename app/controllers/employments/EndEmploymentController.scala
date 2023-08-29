@@ -434,11 +434,10 @@ class EndEmploymentController @Inject() (
         val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
         for {
           question <- request.userAnswers.set(EmploymentTelephoneQuestionPage, questionCached)
-          number   <- request.userAnswers.set(EmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
-          mergedAnswers = request.userAnswers.copy(data = question.data ++ number.data)
+          number   <- question.set(EmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
         } yield {
-          journeyCacheNewRepository.set(mergedAnswers)
-          mergedAnswers
+          journeyCacheNewRepository.set(number)
+          number
         }
       case _ =>
         val questionCached = Messages(
@@ -446,11 +445,10 @@ class EndEmploymentController @Inject() (
         )
         for {
           question <- request.userAnswers.set(EmploymentTelephoneQuestionPage, questionCached)
-          number   <- request.userAnswers.set(EmploymentTelephoneNumberPage, "")
-          mergedAnswers = request.userAnswers.copy(data = question.data ++ number.data)
+          number   <- question.set(EmploymentTelephoneNumberPage, "")
         } yield {
-          journeyCacheNewRepository.set(mergedAnswers)
-          mergedAnswers
+          journeyCacheNewRepository.set(number)
+          number
         }
     }
 
