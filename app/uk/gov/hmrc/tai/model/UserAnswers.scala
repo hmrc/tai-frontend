@@ -29,8 +29,6 @@ final case class UserAnswers(
   lastUpdated: Instant = Instant.now
 ) {
 
-  def copy = throw new RuntimeException("Don't use copy")
-
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
 
@@ -43,7 +41,7 @@ final case class UserAnswers(
     }
 
     updatedData.flatMap { d =>
-      val updatedAnswers: UserAnswers = copy(data = d)
+      val updatedAnswers: UserAnswers = UserAnswers(id, d)
       page.cleanup(Some(value), updatedAnswers)
     }
   }
