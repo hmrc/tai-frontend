@@ -29,7 +29,6 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
-import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
@@ -63,7 +62,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
 
   override def beforeEach(): Unit = reset(mockAppConfig)
 

@@ -22,7 +22,6 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
-import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -35,13 +34,16 @@ import scala.util.Random
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
-  val modelWithiFormNoCyPlus1: WhatDoYouWantToDoViewModel = createViewModel(isCyPlusOneEnabled = false)
-
-  implicit lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
+  val modelWithiFormNoCyPlus1: WhatDoYouWantToDoViewModel = createViewModel()
 
   private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
 
   "whatDoYouWantTodo Page" should {
+    reset(mockFeatureFlagService)
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+      Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+      Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = false))
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
     behave like haveInternalLink(
@@ -53,6 +55,10 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     "display cards correctly" when {
       "CY+1 is not enabled" in {
         reset(mockFeatureFlagService)
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+          Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
 
         val cards = doc.getElementsByClass("card")
 
@@ -72,7 +78,11 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       "CY+1 is enabled" in {
 
         reset(mockFeatureFlagService)
-        val modelNoiFormWithCyPlus1 = createViewModel(isCyPlusOneEnabled = true)
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+          Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+        val modelNoiFormWithCyPlus1 = createViewModel()
 
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -91,7 +101,12 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       "Tax Code Change is disabled" in {
 
         reset(mockFeatureFlagService)
-        val modelNoiFormWithCyPlus1 = createViewModel(isCyPlusOneEnabled = true)
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+          Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+
+        val modelNoiFormWithCyPlus1 = createViewModel()
 
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1, appConfig)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -106,10 +121,15 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       "Tax Code Change is enabled" in {
 
         reset(mockFeatureFlagService)
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+          Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+
         val localDate = LocalDate.now()
 
         val modeWithCyPlus1TaxCodeChange =
-          createViewModel(isCyPlusOneEnabled = true, maybeMostRecentTaxCodeChangeDate = Some(localDate))
+          createViewModel(maybeMostRecentTaxCodeChangeDate = Some(localDate))
 
         val nextYearView: Html = whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange, appConfig)
 
@@ -128,7 +148,11 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "JrsClaimTile is enabled" in {
       reset(mockFeatureFlagService)
-      val modelJrsTileEnabled = createViewModel(isCyPlusOneEnabled = false, showJrsLink = true)
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+        Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+      val modelJrsTileEnabled = createViewModel(showJrsLink = true)
 
       val jrsClaimView: Html = whatDoYouWantToDoTileView(form, modelJrsTileEnabled, appConfig)
       val cards = doc(jrsClaimView).getElementsByClass("card")
@@ -151,6 +175,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "IncomeTaxHistory enabled" in {
       reset(mockFeatureFlagService)
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
         Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
 
@@ -167,8 +193,10 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "IncomeTaxHistory disabled" in {
       reset(mockFeatureFlagService)
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
-        Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+        Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = false))
 
       val view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
 
@@ -183,6 +211,11 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "show the unread messages indicator when user has unread messages" in {
       reset(mockFeatureFlagService)
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+        Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+
       val messageCount = Random.nextInt(100) + 1
 
       implicit val authedUser: AuthedUser = UserBuilder().copy(messageCount = Some(messageCount))
@@ -194,18 +227,14 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   }
 
   def createViewModel(
-    isCyPlusOneEnabled: Boolean,
     showJrsLink: Boolean = false,
     maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = None
-  ): WhatDoYouWantToDoViewModel = {
-    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-      Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
+  ): WhatDoYouWantToDoViewModel =
     WhatDoYouWantToDoViewModel(showJrsLink, maybeMostRecentTaxCodeChangeDate)
-  }
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
-  private lazy val modelNoiFormNoCyPlus1 = createViewModel(isCyPlusOneEnabled = false)
+  private lazy val modelNoiFormNoCyPlus1 = createViewModel()
 
   override def view: Html = whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1, appConfig)
 }
