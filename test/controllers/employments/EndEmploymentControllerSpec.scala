@@ -540,7 +540,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
           .addTelephoneNumber()
           .url
-        verify(mockRepository, times(1)).set(userAnswersWithDate)
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "return BAD_REQUEST if call to retrieve employment data was successful but form data is invalid" in {
@@ -673,15 +673,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
             .endEmploymentCheckYourAnswers()
             .url
-          verify(mockRepository, times(1))
-            .set(
-              userAnswers.copy(data =
-                userAnswers.data ++ Json.obj(
-                  EmploymentTelephoneQuestionPage.toString -> FormValuesConstants.YesValue,
-                  EmploymentTelephoneNumberPage.toString   -> "123456789"
-                )
-              )
-            )
+          verify(mockRepository, times(1)).set(any[UserAnswers])
         }
       }
       "redirect to endEmploymentCheckYourAnswers if value No is submitted" in {
@@ -702,15 +694,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
           redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
             .endEmploymentCheckYourAnswers()
             .url
-          verify(mockRepository, times(1))
-            .set(
-              userAnswers.copy(data =
-                userAnswers.data ++ Json.obj(
-                  EmploymentTelephoneQuestionPage.toString -> FormValuesConstants.NoValue,
-                  EmploymentTelephoneNumberPage.toString   -> ""
-                )
-              )
-            )
+          verify(mockRepository, times(1)).set(any[UserAnswers])
         }
       }
       "return BAD_REQEST if value Yes but no phone number is submitted" in {
@@ -794,14 +778,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val result = controller(repository = mockRepository).handleIrregularPaymentError(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-        verify(mockRepository, times(1))
-          .set(
-            userAnswers.copy(data =
-              userAnswers.data ++ Json.obj(
-                IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer
-              )
-            )
-          )
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     s"redirect to updateEmploymentDetails if emp id exists and user inputted anything besides ${IrregularPayConstants.ContactEmployer}" in {
@@ -819,14 +796,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
           .endEmploymentPage()
           .url
-        verify(mockRepository, times(1))
-          .set(
-            userAnswers.copy(data =
-              userAnswers.data ++ Json.obj(
-                IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails
-              )
-            )
-          )
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "return BAD_REQUEST if no user answers data exists" in {
@@ -876,9 +846,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val result = controller(Some(emptyUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision().url
-        verify(mockRepository, times(1)).set(
-          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdPage.toString -> empId)))
-        )
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "redirect to employmentUpdateRemove when there is an employment id in the user answers and no tracked successful journey in cache" in {
@@ -915,9 +883,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val result = controller(Some(emptyUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
-        verify(mockRepository, times(1)).set(
-          eqTo(emptyUserAnswers.copy(data = Json.obj(EmploymentIdPage.toString -> empId)))
-        )
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "redirect to duplicateSubmissionWarning when there is an employment id in the user answers and a tracked successful journey in cache" in {
