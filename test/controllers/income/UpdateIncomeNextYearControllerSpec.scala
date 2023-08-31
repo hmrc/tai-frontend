@@ -63,7 +63,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  override def beforeEach(): Unit = reset(mockAppConfig)
+  override def beforeEach(): Unit = reset(mockAppConfig, mockFeatureFlagService)
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -529,7 +529,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val model: UpdateNextYearsIncomeCacheModel =
         UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
 
-      reset(mockFeatureFlagService)
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
 

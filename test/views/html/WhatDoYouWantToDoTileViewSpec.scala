@@ -39,7 +39,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
 
   "whatDoYouWantTodo Page" should {
-    reset(mockFeatureFlagService)
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
       Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -54,7 +53,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "display cards correctly" when {
       "CY+1 is not enabled" in {
-        reset(mockFeatureFlagService)
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -77,7 +75,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       "CY+1 is enabled" in {
 
-        reset(mockFeatureFlagService)
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -100,7 +97,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       "Tax Code Change is disabled" in {
 
-        reset(mockFeatureFlagService)
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -120,7 +116,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     "display tax code change banner correctly" when {
       "Tax Code Change is enabled" in {
 
-        reset(mockFeatureFlagService)
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
         when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -147,7 +142,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     }
 
     "JrsClaimTile is enabled" in {
-      reset(mockFeatureFlagService)
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -174,7 +168,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     }
 
     "IncomeTaxHistory enabled" in {
-      reset(mockFeatureFlagService)
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -192,7 +185,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     }
 
     "IncomeTaxHistory disabled" in {
-      reset(mockFeatureFlagService)
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -210,7 +202,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     }
 
     "show the unread messages indicator when user has unread messages" in {
-      reset(mockFeatureFlagService)
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
