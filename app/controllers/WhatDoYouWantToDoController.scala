@@ -24,12 +24,13 @@ import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
@@ -138,7 +139,7 @@ class WhatDoYouWantToDoController @Inject() (
   private def allowWhatDoYouWantToDo(implicit
     request: AuthenticatedRequest[AnyContent],
     user: AuthedUser
-  ): EitherT[Future, TaxCodeError, Result] = {
+  ) = {
     val nino = user.nino
     for {
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
@@ -146,8 +147,20 @@ class WhatDoYouWantToDoController @Inject() (
       model <- EitherT[Future, TaxCodeError, WhatDoYouWantToDoViewModel](
                  whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
                )
+      incomeTaxHistoryToggle <-
+        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight))
+      cyPlusOneToggle <-
+        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
       _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
-    } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+    } yield Ok(
+      whatDoYouWantToDoTileView(
+        WhatDoYouWantToDoForm.createForm,
+        model,
+        applicationConfig,
+        incomeTaxHistoryToggle.isEnabled,
+        cyPlusOneToggle.isEnabled
+      )
+    )
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit

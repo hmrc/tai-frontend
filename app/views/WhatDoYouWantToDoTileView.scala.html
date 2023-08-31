@@ -22,20 +22,16 @@
 @import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 
-@import scala.concurrent.Await
-@import scala.concurrent.duration.{Duration, SECONDS}
-
-@this(mainTemplate: MainTemplate,
-        featureFlagService: FeatureFlagService)
+@this(mainTemplate: MainTemplate)
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
         model: WhatDoYouWantToDoViewModel,
-        appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_],
-        messages: Messages,
-        user: controllers.auth.AuthedUser)
+        appConfig: ApplicationConfig,
+        incomeTaxHistoryEnabled: Boolean,
+        cyPlusOneEnabled: Boolean)(implicit request: AuthenticatedRequest[_],
+messages: Messages,
+user: controllers.auth.AuthedUser)
 
-@cyPlusOneToggle = @{Await.result(featureFlagService.get(CyPlusOneToggle), Duration(appConfig.SCAWrapperFutureTimeout, SECONDS))}
-@incomeTaxHistoryToggle = @{Await.result(featureFlagService.get(IncomeTaxHistoryToggle), Duration(appConfig.SCAWrapperFutureTimeout, SECONDS))}
 
 @mainTemplate(
     title = messages("your.paye.income.tax.overview"),
@@ -89,7 +85,7 @@
                     headingTag = "h2"
                 )
 
-                @if(incomeTaxHistoryToggle.isEnabled) {
+                @if(incomeTaxHistoryEnabled) {
                     @card(
                         url = Some(s"/check-income-tax/income-tax-history"),
                         id = "incomeTaxHistory",
@@ -99,7 +95,7 @@
                     )
                 }
 
-                @if(cyPlusOneToggle.isEnabled) {
+                @if(cyPlusOneEnabled) {
                     @card(
                         url = Some("/check-income-tax/income-tax-comparison"),
                         id = "nextTaxYear",
