@@ -12,7 +12,6 @@ private object AppDependencies {
     jodaForms,
     "org.typelevel"     %% "cats-core"                        % "2.10.0",
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.13.0-$playVersion",
-    "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % bootstrapVersion,
     "uk.gov.hmrc"       %% "domain"                           % s"8.3.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"7.7.0-$playVersion",
