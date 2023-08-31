@@ -27,26 +27,6 @@
 @(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 
-@hint = {
-    <p class="govuk-body">@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li id="totalValueAsk">@Messages("tai.remove.company.benefit.total.value.ask")</li>
-        <li id="totalValueEnter">@Messages("tai.remove.company.benefit.total.value.enter")</li>
-    </ul>
-
-
-    @govukDetails(Details(
-        summary = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.link")),
-        content = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.getYear.toString,TaxYear().end.getYear.toString, Dates.formatDate(TaxYear().end)))
-    ))
-
-    <div id="valueOfBenefit" class="govuk-!-margin-top-3">
-        <p class="govuk-body govuk-!-font-weight-bold">@Messages("tai.remove.company.benefit.total.value.value")</p>
-        <span class="govuk-visually-hidden">@Messages("tai.inPounds")</span>
-        <p>@Messages("tai.remove.company.benefit.total.value.hint")</p>
-    </div>
-}
-
 @main(
     title = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
     pageTitle = Some(messages("tai.service.navTitle")),
@@ -63,20 +43,34 @@
             }
 
             <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
+            <h1 class="govuk-heading-xl break-word">@Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName)</h1>
 
-            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
+
+            <p class="govuk-body">@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
+
+            <ul class="govuk-list govuk-list--bullet">
+                <li id="totalValueAsk">@Messages("tai.remove.company.benefit.total.value.ask")</li>
+                <li id="totalValueEnter">@Messages("tai.remove.company.benefit.total.value.enter")</li>
+            </ul>
+
+            <p class="govuk-body" id="valueOfBenefit" >@Messages("tai.remove.company.benefit.total.value.hint")</p>
+
+            @govukDetails(Details(
+                summary = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.link")),
+                content = Text(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.getYear.toString,TaxYear().end.getYear.toString, Dates.formatDate(TaxYear().end)))
+            ))
+
+
+            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue(), Symbol("class") -> "govuk-!-margin-top-3") {
                 @govukInput(Input(
                     id = "totalValue",
                     name = "totalValue",
                     value = companyBenefitTotalValueForm.data.get("totalValue"),
                     label = Label(
                         content = Text(Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName)),
-                        classes = "govuk-label--xl",
-                        isPageHeading = true
+                        classes = "govuk-visually-hidden",
+                        isPageHeading = false
                         ),
-                    hint = Some(
-                        Hint(content = HtmlContent(hint))
-                    ),
                     classes = "govuk-!-width-one-quarter",
                     prefix = Some(PrefixOrSuffix(
                         content = Text("£")

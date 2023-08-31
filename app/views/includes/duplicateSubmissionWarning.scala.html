@@ -26,19 +26,16 @@
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], preHeading: String, heading: String, yesChoiceText: String, noChoiceText: String, actionRoute: Call, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)(implicit request: Request[_], messages: Messages)
 
-@hint = {
-<div>
-    <p>@messages("tai.employment.warning.text1")</p>
-    <p>@messages("tai.employment.warning.text2")</p>
-    <p>@messages("tai.employment.warning.text3")</p>
-</div>
-}
-
 @if(duplicateSubmissionWarningForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary(errorList = duplicateSubmissionWarningForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
 }
 
 <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@preHeading</h2>
+<h1 class="govuk-heading-xl break-word">@heading</h1>
+
+<p class="govuk-body">@messages("tai.employment.warning.text1")</p>
+<p class="govuk-body">@messages("tai.employment.warning.text2")</p>
+<p class="govuk-body">@messages("tai.employment.warning.text3")</p>
 
 @form(action = actionRoute) {
     @govukRadios(Radios(
@@ -47,15 +44,14 @@
                 legend = Some(
                     Legend(
                         content = Text(heading),
-                        isPageHeading = true,
-                        classes = "govuk-fieldset__legend--xl carry-over")
+                        isPageHeading = false,
+                        classes = "govuk-visually-hidden")
                 )
             )
         ),
         errorMessage = duplicateSubmissionWarningForm.errors.filter(_.key == FormValuesConstants.YesNoChoice).asTextErrorMessages.headOption,
         idPrefix = Some("yesNoChoice"),
         name = "yesNoChoice",
-        hint = Some(Hint(content = HtmlContent(hint))),
         items = Seq(
             RadioItem(
                 content = Text(yesChoiceText),

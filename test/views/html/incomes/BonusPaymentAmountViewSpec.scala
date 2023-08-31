@@ -49,8 +49,8 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
     )
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount/" + employer.id)
 
-    "contain a paragraph with static text" in {
-      doc must haveParagraphWithText(messages("tai.bonusPaymentsAmount.hint"))
+    "contain a hint with text" in {
+      doc must haveHintWithText("amount-hint", messages("tai.bonusPaymentsAmount.hint"))
     }
 
     "contain an input field with pound symbol appended" in {
