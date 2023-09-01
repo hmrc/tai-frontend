@@ -122,12 +122,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
 
   override def beforeEach(): Unit = {
 
-    reset(auditService, employmentService, mockFeatureFlagService)
+    reset(auditService, employmentService, mockFeatureFlagService, mockAppConfig)
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
       Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
       Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
-    when(mockAppConfig.SCAWrapperFutureTimeout).thenReturn(5)
 
   }
 
