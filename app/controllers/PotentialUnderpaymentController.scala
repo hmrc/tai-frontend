@@ -20,7 +20,6 @@ import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import cats.implicits._
 import play.api.Logging
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccountService}
