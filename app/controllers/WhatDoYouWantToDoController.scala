@@ -16,7 +16,7 @@
 
 package controllers
 
-import cats.data.OptionT
+import cats.data.{EitherT, OptionT}
 import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
@@ -29,12 +29,11 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged}
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -75,7 +74,15 @@ class WhatDoYouWantToDoController @Inject() (
                 errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => none }
             handler(ex)
           }
-        }).getOrElseF(allowWhatDoYouWantToDo)
+        }).getOrElseF(
+          allowWhatDoYouWantToDo
+            .leftMap(error =>
+              errorPagesHandler.internalServerError(
+                error.errorMessage.getOrElse("Unknown error on what do you want to do page")
+              )
+            )
+            .merge
+        )
 
       for {
         _        <- employmentsFuture
@@ -90,25 +97,15 @@ class WhatDoYouWantToDoController @Inject() (
     }
   }
 
-  private[controllers] def retrieveTaxCodeChange(hasTaxCodeChanged: HasTaxCodeChanged): Boolean =
-    (hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch) match {
-      case (true, Some(mismatch)) if mismatch.confirmedTaxCodes.size > 1 => true
-      case _                                                             => false
-    }
-
-  private def mostRecentTaxCodeChangeDate(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged)(implicit
+  private def whatToDoView(nino: Nino, hasTaxCodeChanged: Boolean, showJrsLink: Boolean)(implicit
     request: Request[AnyContent]
-  ): Future[Option[LocalDate]] =
-    if (retrieveTaxCodeChange(hasTaxCodeChanged)) {
+  ): Future[WhatDoYouWantToDoViewModel] = {
+    val taxCodeChangeDate = if (hasTaxCodeChanged) {
       taxCodeChangeService.taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate.some)
     } else {
-      Future.successful(none)
+      Future.successful(None)
     }
-
-  private def whatToDoView(nino: Nino, hasTaxCodeChanged: HasTaxCodeChanged, showJrsLink: Boolean)(implicit
-    request: Request[AnyContent]
-  ): Future[WhatDoYouWantToDoViewModel] =
-    mostRecentTaxCodeChangeDate(nino, hasTaxCodeChanged).flatMap { maybeMostRecentTaxCodeChangeDate =>
+    taxCodeChangeDate.flatMap { maybeMostRecentTaxCodeChangeDate =>
       lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
         isCyPlusOneEnabled = applicationConfig.cyPlusOneEnabled,
         showJrsLink = showJrsLink,
@@ -134,22 +131,21 @@ class WhatDoYouWantToDoController @Inject() (
         Future.successful(successfulResponseModel)
       }
     }
+  }
 
-  private def allowWhatDoYouWantToDo(implicit request: AuthenticatedRequest[AnyContent], user: AuthedUser) = {
+  private def allowWhatDoYouWantToDo(implicit
+    request: AuthenticatedRequest[AnyContent],
+    user: AuthedUser
+  ): EitherT[Future, TaxCodeError, Result] = {
     val nino = user.nino
-
-    taxCodeChangeService.hasTaxCodeChanged(nino) flatMap {
-      case Right(taxCodeChanged: HasTaxCodeChanged) =>
-        for {
-          showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino)
-          (model, _) <-
-            (whatToDoView(nino, taxCodeChanged, showJrsLink), auditNumberOfTaxCodesReturned(nino, showJrsLink)).tupled
-        } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
-      case Left(taxCodeError) =>
-        Future.successful(
-          BadRequest(errorPagesHandler.error4xxPageWithLink(taxCodeError.errorMessage.getOrElse("Tax Code not Found")))
-        )
-    }
+    for {
+      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
+      showJrsLink <- EitherT[Future, TaxCodeError, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
+      model <- EitherT[Future, TaxCodeError, WhatDoYouWantToDoViewModel](
+                 whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
+               )
+      _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
+    } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit

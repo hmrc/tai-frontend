@@ -16,9 +16,9 @@
 
 package views.html.employments.update
 
-import uk.gov.hmrc.tai.viewModels.employments.UpdateEmploymentCheckYourAnswersViewModel
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.employments.UpdateEmploymentCheckYourAnswersViewModel
 
 class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
 

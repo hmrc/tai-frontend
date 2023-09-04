@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.tai.service.journeyCompletion
 
-import javax.inject.{Inject, Named}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 

@@ -20,7 +20,6 @@ import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
-
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}

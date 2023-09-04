@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@import includes.{backLink, cancelLink, ptaHeader, submit}
-@import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
-@import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
+@import includes.{cancelLink, submit}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
+@import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 
@@ -36,16 +35,16 @@
     title = Messages("tai.irregular.preHeadingText"),
     authedUser = Some(user),
     backLinkContent= Some(Messages("tai.back-link.upper")),
+    formForErrorSummary = Some(irregularPayForm),
     backLinkUrl=Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url)) {
-
-@if(irregularPayForm.errors.nonEmpty){
-    @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-}
-
 
 <div class="govuk-grid-row grid-row">
     <div class="govuk-grid-column-two-thirds">
 
+        @if(irregularPayForm.errors.nonEmpty){
+            @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
+        
         @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError()) {
 
         <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.irregular.preHeadingText")</h2>

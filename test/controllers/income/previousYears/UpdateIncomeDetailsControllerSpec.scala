@@ -18,8 +18,8 @@ package controllers.income.previousYears
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import controllers.actions.FakeValidatePerson
+import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -30,8 +30,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateHistoricIncomeChoiceConstants}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateHistoricIncomeChoiceConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetailsConfirmationView, UpdateIncomeDetailsDecisionView, UpdateIncomeDetailsView}

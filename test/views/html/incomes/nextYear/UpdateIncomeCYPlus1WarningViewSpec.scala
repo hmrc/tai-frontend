@@ -33,7 +33,6 @@
 package views.html.incomes.nextYear
 
 import play.api.data.Form
-import play.api.libs.json.Json
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm

@@ -18,11 +18,11 @@ package controllers
 
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class ServiceController @Inject() (

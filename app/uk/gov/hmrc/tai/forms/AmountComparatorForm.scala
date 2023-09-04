@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.tai.forms
 
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.i18n.Messages
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import play.api.libs.json.OFormat
 
 case class AmountComparatorForm(income: Option[String])
 

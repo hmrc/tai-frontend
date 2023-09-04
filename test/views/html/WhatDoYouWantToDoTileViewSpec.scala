@@ -18,10 +18,8 @@ package views.html
 
 import builders.UserBuilder
 import controllers.auth.AuthedUser
-import org.mockito.Mockito.when
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.test.Helpers.contentAsString
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}

@@ -17,9 +17,9 @@
 package uk.gov.hmrc.tai.util
 
 import cats.data.{EitherT, NonEmptyList}
-import play.api.mvc.{Call, Result}
-import play.api.mvc.Results.Redirect
 import cats.implicits._
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{Call, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 

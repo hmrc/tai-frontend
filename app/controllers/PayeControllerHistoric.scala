@@ -16,10 +16,9 @@
 
 package controllers
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthenticatedRequest}
-import javax.inject.Inject
-import cats.implicits._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -28,6 +27,7 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarnView}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PayeControllerHistoric @Inject() (

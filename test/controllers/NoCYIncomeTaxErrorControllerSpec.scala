@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -34,6 +33,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.NoCYIncomeTaxErrorView
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps

@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
-import java.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.service.YourTaxFreeAmountComparison
-import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, TaxYearRangeUtil => Dates}
+
+import java.time.LocalDate
 
 trait YourTaxFreeAmount {
 
@@ -38,7 +38,7 @@ trait YourTaxFreeAmount {
     }
 
     val currentTaxFreeInfo = {
-      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(changeDate, TaxYear().end)
+      val currentTaxCodeDateRange = Dates.dynamicDateRange(changeDate, TaxYear().end)
       TaxFreeInfo(currentTaxCodeDateRange, current, taxAccountCalculator)
     }
 

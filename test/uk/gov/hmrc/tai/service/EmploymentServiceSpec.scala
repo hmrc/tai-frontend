@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
-import java.time.LocalDateTime
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 import utils.BaseSpec
+
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps

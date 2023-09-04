@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service
 
-import java.time.LocalDate
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain._
@@ -25,6 +24,7 @@ import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYe
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 

@@ -17,12 +17,11 @@
 package uk.gov.hmrc.tai.util
 
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
-import HtmlPartial._
 import uk.gov.hmrc.http.HttpGet
+import uk.gov.hmrc.play.partials.HtmlPartial._
+import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /*
  * This is a PartialRetriever with a HeaderCarrierForPartialsConverter to forward request headers on

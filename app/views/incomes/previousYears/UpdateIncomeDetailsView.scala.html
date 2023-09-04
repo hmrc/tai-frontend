@@ -14,20 +14,11 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 @import includes.{cancelLink, submit}
-@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
-@import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukCharacterCount
-@import uk.gov.hmrc.govukfrontend.views.html.components.Text
-@import uk.gov.hmrc.govukfrontend.views.html.components.Hint
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
-@import uk.gov.hmrc.govukfrontend.views.html.components.ErrorSummary
-@import uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount
+@import uk.gov.hmrc.govukfrontend.views.html.components.{CharacterCount, ErrorSummary, FormWithCSRF, GovukCharacterCount, GovukErrorSummary, Hint, Text, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcPageHeadingLabel
-@import uk.gov.hmrc.hmrcfrontend.views.config.HmrcSectionCaption
+@import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
+@import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukCharacterCount: GovukCharacterCount, govukErrorSummary: GovukErrorSummary)
 

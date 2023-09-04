@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.i18n.Messages
@@ -31,6 +30,7 @@ import utils.BaseSpec
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
 import views.html.print.HistoricIncomePrintView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class YourIncomeCalculationControllerSpec extends BaseSpec {

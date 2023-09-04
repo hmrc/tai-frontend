@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.util.{MoneyPounds, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class IncomeSourceComparisonViewModel(
   employmentIncomeSourceDetail: Seq[IncomeSourceComparisonDetail],

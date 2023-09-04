@@ -17,12 +17,12 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxCodeDetail}
 import views.html.includes.link
+
 import scala.language.postfixOps
 
 class TaxCodesSpec extends TaiViewSpec {

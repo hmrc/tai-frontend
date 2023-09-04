@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+
+import java.time.LocalDate
 
 case class EndIncomeCheckYourAnswersViewModel(
   preHeading: String,

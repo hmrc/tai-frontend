@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
-import javax.inject.Inject
-import play.api.i18n.Messages
 import cats.implicits._
+import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DescribedYourTaxFreeAmountService @Inject() (

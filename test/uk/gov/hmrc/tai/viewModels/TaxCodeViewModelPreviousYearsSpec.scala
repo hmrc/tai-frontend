@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -24,6 +23,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import utils.BaseSpec
 import views.html.includes.link
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.collection.immutable.ListMap
 

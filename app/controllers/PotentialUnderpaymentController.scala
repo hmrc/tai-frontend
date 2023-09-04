@@ -16,10 +16,9 @@
 
 package controllers
 
+import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
-
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import cats.implicits._
 import play.api.Logging
@@ -30,6 +29,7 @@ import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 import views.html.PotentialUnderpaymentView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class PotentialUnderpaymentController @Inject() (

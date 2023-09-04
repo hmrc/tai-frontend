@@ -17,9 +17,8 @@
 package uk.gov.hmrc.tai.viewModels.benefit
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.Money
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{Money, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 

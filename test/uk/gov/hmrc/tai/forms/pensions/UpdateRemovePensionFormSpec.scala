@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.forms.pensions
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants}
 import utils.BaseSpec
 
 class UpdateRemovePensionFormSpec extends BaseSpec {

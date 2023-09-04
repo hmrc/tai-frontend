@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import java.time.LocalDate
 import play.api.libs.json.{Format, Json}
-
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncomeSourceStatus
+
+import java.time.LocalDate
 
 case class Employment(
   name: String,

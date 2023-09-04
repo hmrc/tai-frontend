@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
+import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import views.html.includes.link
 

@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain._
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
