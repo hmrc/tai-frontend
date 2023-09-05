@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels
+package uk.gov.hmrc.tai.config
 
-import java.time.LocalDate
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagNamesLibrary
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 
-case class WhatDoYouWantToDoViewModel(
-  cyPlusOneDataAvailable: Boolean,
-  showJrsLink: Boolean,
-  maybeMostRecentTaxCodeChangeDate: Option[LocalDate]
-)
+class ApplicationStartUp {
+  FeatureFlagNamesLibrary.addFlags(
+    List(
+      CyPlusOneToggle,
+      IncomeTaxHistoryToggle
+    )
+  )
+}
