@@ -232,7 +232,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     showJrsLink: Boolean = false,
     maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = None
   ): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(showJrsLink, maybeMostRecentTaxCodeChangeDate)
+    WhatDoYouWantToDoViewModel(cyPlusOneDataAvailable = true, showJrsLink, maybeMostRecentTaxCodeChangeDate)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 

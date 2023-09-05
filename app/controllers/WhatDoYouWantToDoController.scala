@@ -111,12 +111,14 @@ class WhatDoYouWantToDoController @Inject() (
     }
     taxCodeChangeDate.flatMap { maybeMostRecentTaxCodeChangeDate =>
       lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
+        cyPlusOneDataAvailable = true,
         showJrsLink = showJrsLink,
         maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
       )
 
       lazy val unsuccessfulResponseModel =
         WhatDoYouWantToDoViewModel(
+          cyPlusOneDataAvailable = false,
           showJrsLink = showJrsLink,
           maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
         )

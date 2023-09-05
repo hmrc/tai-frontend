@@ -95,7 +95,7 @@ user: controllers.auth.AuthedUser)
                     )
                 }
 
-                @if(cyPlusOneEnabled) {
+                @if(model.cyPlusOneDataAvailable && cyPlusOneEnabled) {
                     @card(
                         url = Some("/check-income-tax/income-tax-comparison"),
                         id = "nextTaxYear",
