@@ -28,10 +28,12 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
+import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
@@ -61,7 +63,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  override def beforeEach(): Unit = reset(mockAppConfig)
+  override def beforeEach(): Unit = reset(mockAppConfig, mockFeatureFlagService)
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -527,7 +529,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val model: UpdateNextYearsIncomeCacheModel =
         UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
 
-      when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
 
       when(updateNextYearsIncomeService.get(meq(employmentID), any())(any()))
         .thenReturn(Future.successful(model))
@@ -551,6 +554,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[SameEstimatedPayView],
+        mockFeatureFlagService,
         inject[ErrorPagesHandler]
       )
 }
