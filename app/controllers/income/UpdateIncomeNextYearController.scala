@@ -24,10 +24,12 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
+import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
@@ -55,6 +57,7 @@ class UpdateIncomeNextYearController @Inject() (
   updateIncomeCYPlus1Edit: UpdateIncomeCYPlus1EditView,
   updateIncomeCYPlus1Same: UpdateIncomeCYPlus1SameView,
   sameEstimatedPay: SameEstimatedPayView,
+  featureFlagService: FeatureFlagService,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with I18nSupport with Logging {
@@ -215,20 +218,20 @@ class UpdateIncomeNextYearController @Inject() (
   def handleConfirm(employmentId: Int): Action[AnyContent] =
     (authenticate andThen validatePerson).async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
-      if (applicationConfig.cyPlusOneEnabled) {
-        updateNextYearsIncomeService
-          .submit(employmentId, user.nino)
-          .map(_ => Redirect(routes.UpdateIncomeNextYearController.success(employmentId)))
-          .recover { case NonFatal(e) =>
-            errorPagesHandler.internalServerError(e.getMessage)
-          }
-      } else {
-        Future.successful(
-          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
-        )
+      featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
+        if (toggle.isEnabled) {
+          updateNextYearsIncomeService
+            .submit(employmentId, user.nino)
+            .map(_ => Redirect(routes.UpdateIncomeNextYearController.success(employmentId)))
+            .recover { case NonFatal(e) =>
+              errorPagesHandler.internalServerError(e.getMessage)
+            }
+        } else {
+          Future.successful(
+            NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
+          )
+        }
       }
-
     }
 
   def update(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
@@ -256,10 +259,10 @@ class UpdateIncomeNextYearController @Inject() (
               ),
             validForm =>
               validForm.income.fold(throw new RuntimeException) { newIncome =>
-                if (model.currentValue.toString == newIncome)
+                if (model.currentValue.toString == newIncome) {
                   Future
                     .successful(Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
-                else {
+                } else {
                   updateNextYearsIncomeService.getNewAmount(employmentId) flatMap {
                     case Right(newAmount) if newAmount == newIncome.toInt =>
                       val samePayViewModel = SameEstimatedPayViewModel(
@@ -284,11 +287,13 @@ class UpdateIncomeNextYearController @Inject() (
   }
 
   private def preAction(action: => Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
-    if (applicationConfig.cyPlusOneEnabled) {
-      action
-    } else {
-      Future.successful(
-        NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
-      )
+    featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
+      if (toggle.isEnabled) {
+        action
+      } else {
+        Future.successful(
+          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
+        )
+      }
     }
 }

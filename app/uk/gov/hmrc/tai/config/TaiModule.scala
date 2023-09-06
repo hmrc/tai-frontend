@@ -42,6 +42,7 @@ class TaiModule extends Module {
       .to(classOf[UpdatePensionProviderJourneyCacheService]),
     bind[JourneyCacheService]
       .qualifiedWith("Update Previous Years Income")
-      .to(classOf[UpdatePreviousYearsIncomeJourneyCacheService])
+      .to(classOf[UpdatePreviousYearsIncomeJourneyCacheService]),
+    bind[ApplicationStartUp].toSelf.eagerly()
   )
 }
