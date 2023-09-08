@@ -37,17 +37,17 @@ import views.html.includes.{AdditionalJavascript, HeadBlock}
 @ImplementedBy(classOf[MainTemplateImpl])
 trait MainTemplate {
   def apply(
-             title: String,
-             authedUser: Option[controllers.auth.AuthedUser] = None,
-             pageTitle: Option[String] = None,
-             backLinkUrl: Option[String] = Some("#"),
-             backLinkContent: Option[String],
-             backLinkId: String = "backLinkId",
-             disableSessionExpired: Boolean = false,
-             pagePrintable: Boolean = false,
-             pagePrintName: Option[String] = None,
-             showPtaAccountNav: Boolean = true,
-             formForErrorSummary: Option[Form[_]] = None
+    title: String,
+    authedUser: Option[controllers.auth.AuthedUser] = None,
+    pageTitle: Option[String] = None,
+    backLinkUrl: Option[String] = Some("#"),
+    backLinkContent: Option[String],
+    backLinkId: String = "backLinkId",
+    disableSessionExpired: Boolean = false,
+    pagePrintable: Boolean = false,
+    pagePrintName: Option[String] = None,
+    showPtaAccountNav: Boolean = true,
+    formForErrorSummary: Option[Form[_]] = None
   )(content: Html)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable
 }
 
@@ -58,39 +58,38 @@ class MainTemplateImpl @Inject() (
   oldLayout: oldMainTemplate,
   scripts: AdditionalJavascript,
   headBlock: HeadBlock
-) extends MainTemplate
-    with Logging {
+) extends MainTemplate with Logging {
   override def apply(
-                      title: String,
-                      authedUser: Option[controllers.auth.AuthedUser] = None,
-                      pageTitle: Option[String] = None,
-                      backLinkUrl: Option[String] = Some("#"),
-                      backLinkContent: Option[String],
-                      backLinkId: String = "backLinkId",
-                      disableSessionExpired: Boolean = false,
-                      pagePrintable: Boolean = false,
-                      pagePrintName: Option[String] = None,
-                      showPtaAccountNav: Boolean = true,
-                      formForErrorSummary: Option[Form[_]] = None
+    title: String,
+    authedUser: Option[controllers.auth.AuthedUser] = None,
+    pageTitle: Option[String] = None,
+    backLinkUrl: Option[String] = Some("#"),
+    backLinkContent: Option[String],
+    backLinkId: String = "backLinkId",
+    disableSessionExpired: Boolean = false,
+    pagePrintable: Boolean = false,
+    pagePrintName: Option[String] = None,
+    showPtaAccountNav: Boolean = true,
+    formForErrorSummary: Option[Form[_]] = None
   )(content: Html)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable = {
     val scaWrapperToggle =
       Await.result(featureFlagService.get(SCAWrapperToggle), Duration(appConfig.SCAWrapperFutureTimeout, SECONDS))
 
     val prefix =
-      if(formForErrorSummary.exists(_.errors.nonEmpty)) {
+      if (formForErrorSummary.exists(_.errors.nonEmpty)) {
         s"${Messages("tai.page.title.error")} "
       } else {
         ""
       }
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
-    val fullContent = if(pagePrintable) {
+    val fullContent = if (pagePrintable) {
       Html(s"""<div class="page-printable">
          $content
       </div>""")
     } else content
 
-    if (!scaWrapperToggle.isEnabled) {
+    if (scaWrapperToggle.isEnabled) {
       logger.debug(s"SCA Wrapper layout used for request `${request.uri}``")
       wrapperService.layout(
         content = fullContent,
@@ -103,11 +102,11 @@ class MainTemplateImpl @Inject() (
         keepAliveUrl = controllers.routes.ServiceController.keepAlive().url,
         showBackLinkJS = backLinkUrl.contains("#"),
         backLinkUrl = backLinkUrl,
-        //showSignOutInHeader: Boolean = false,
+        // showSignOutInHeader: Boolean = false,
         styleSheets = Seq(headBlock()),
         scripts = Seq(scripts()),
         bannerConfig = BannerConfig(false, true, true),
-        //optTrustedHelper: Option[TrustedHelper] = None,
+        // optTrustedHelper: Option[TrustedHelper] = None,
         fullWidth = true,
         hideMenuBar = !showPtaAccountNav,
         disableSessionExpired = disableSessionExpired
@@ -117,15 +116,15 @@ class MainTemplateImpl @Inject() (
       oldLayout(
         title,
         authedUser,
-      pageTitle,
-      backLinkUrl,
-      backLinkContent,
-      backLinkId,
-      disableSessionExpired,
-      pagePrintable,
-      pagePrintName,
-      showPtaAccountNav,
-      formForErrorSummary
+        pageTitle,
+        backLinkUrl,
+        backLinkContent,
+        backLinkId,
+        disableSessionExpired,
+        pagePrintable,
+        pagePrintName,
+        showPtaAccountNav,
+        formForErrorSummary
       )(content)(request, messages)
     }
   }

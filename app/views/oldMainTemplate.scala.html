@@ -30,6 +30,7 @@
 @import uk.gov.hmrc.webchat.client.WebChatClient
 @import views.html.helper.CSPNonce
 @import views.html.includes.attorneyBanner
+@import uk.gov.hmrc.ptafrontend.views.html._
 
 @this(
         govukTemplate: GovukTemplate,
@@ -54,7 +55,9 @@
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
         banner: attorneyBanner,
-        webChatClient: WebChatClient
+        webChatClient: WebChatClient,
+        ptaHead: PtaHead,
+        ptaScripts: PtaScripts
 )(implicit accountMenuConfig: AccountMenuConfig)
 
 
@@ -105,6 +108,14 @@
 
 @additionalHeadBlock = {
     <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
+    @ptaHead()
+    @if(!disableSessionExpired) {
+        @hmrcTimeoutDialogHelper(
+            signOutUrl = routes.ServiceController.sessionExpiredPage().url,
+            keepAliveUrl = Some("/keep-alive")
+        )
+    }
     <link @CSPNonce.attr rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
 @if(!disableSessionExpired) {
     @hmrcTimeoutDialogHelper(
@@ -248,11 +259,12 @@
 }
 
 @additionalScriptsBlock = {
+    @ptaScripts()
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/newcard.js")'></script>
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/backlink.js")'></script>
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/print.js")'></script>
 
-    
+
     <script @CSPNonce.attr type="text/javascript">
             window.onload = function() {
                 var htmlElem = document.querySelector('html')
