@@ -1,8 +1,8 @@
-import sbt.*
+import sbt._
+import play.core.PlayVersion
+import play.sbt.PlayImport._
 
 private object AppDependencies {
-  import play.core.PlayVersion
-  import play.sbt.PlayImport.*
 
   private val playVersion = "play-28"
   private val bootstrapVersion = "7.15.0"
@@ -14,10 +14,9 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.13.0-$playVersion",
     "uk.gov.hmrc"       %% "domain"                           % s"8.3.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"7.7.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
-    "uk.gov.hmrc"       %% "mongo-feature-toggles-client"     % "0.3.0"
+    "uk.gov.hmrc"       %% "mongo-feature-toggles-client"     % "0.3.0",
+    "uk.gov.hmrc"       %% "sca-wrapper"                      % "1.0.44"
   )
 
   val test: Seq[ModuleID] = Seq(
