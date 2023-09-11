@@ -17,8 +17,6 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
@@ -31,10 +29,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EmploymentsConnectorSpec extends BaseSpec with BeforeAndAfterEach {
+class EmploymentsConnectorSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
-    Mockito.reset(httpHandler)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(httpHandler)
+  }
 
   "EmploymentsConnector employments" must {
     "return a blank the service url" when {

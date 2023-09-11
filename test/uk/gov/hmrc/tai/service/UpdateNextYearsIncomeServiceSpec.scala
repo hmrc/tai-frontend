@@ -20,8 +20,6 @@ import akka.Done
 import controllers.FakeTaiPlayApplication
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.concurrent.ScalaFutures
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
@@ -33,11 +31,12 @@ import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class UpdateNextYearsIncomeServiceSpec
-    extends BaseSpec with FakeTaiPlayApplication with BeforeAndAfterEach with ScalaFutures {
+class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplication {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(successfulJourneyCacheService)
+  }
 
   "get" must {
     "initialize the journey cache and return the cache model" when {

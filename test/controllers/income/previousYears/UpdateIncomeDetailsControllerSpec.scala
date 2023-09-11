@@ -23,7 +23,6 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model.TaxYear
@@ -38,10 +37,12 @@ import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetai
 
 import scala.concurrent.Future
 
-class UpdateIncomeDetailsControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(journeyCacheService, trackingjourneyCacheService)
+  }
 
   "decision" must {
     "return ok" in {

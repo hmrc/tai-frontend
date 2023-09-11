@@ -84,7 +84,7 @@ class MainTemplateImpl @Inject() (
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
     val fullContent = if (pagePrintable) {
-      Html(s"""<div class="page-printable">
+      Html(s"""<div class="printable-page">
          $content
       </div>""")
     } else content

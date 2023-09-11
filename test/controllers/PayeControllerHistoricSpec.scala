@@ -21,7 +21,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -38,11 +37,12 @@ import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEar
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class PayeControllerHistoricSpec
-    extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with BeforeAndAfterEach {
+class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(employmentService)
+  }
 
   "Calling the payePage method with an authorised session" must {
 

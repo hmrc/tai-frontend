@@ -42,9 +42,8 @@
         </div>
     </div>
 
-    <div class="govuk-grid-row grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <div class="inner-block">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="inner-block">
 
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (LazyList.from(1))) {
 
@@ -72,11 +71,9 @@
                 }
 
             </div>
-            <div class="print-this">
-                <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
-            </div>
+        <div class="print-this">
+            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
         </div>
-
     </div>
 
 

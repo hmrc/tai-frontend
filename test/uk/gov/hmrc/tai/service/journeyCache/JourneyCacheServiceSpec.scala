@@ -20,7 +20,6 @@ import akka.Done
 import cats.implicits.catsSyntaxEitherId
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import utils.BaseSpec
@@ -30,10 +29,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class JourneyCacheServiceSpec extends BaseSpec with BeforeAndAfterEach {
+class JourneyCacheServiceSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(journeyCacheConnector)
+  }
 
   "current value methods" must {
 

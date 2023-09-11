@@ -23,7 +23,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -45,7 +44,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class AddEmploymentControllerSpec extends BaseSpec {
 
   private def createSUT = new SUT
 
@@ -74,8 +73,10 @@ class AddEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
         inject[AddIncomeCheckYourAnswersView]
       )
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(addEmploymentJourneyCacheService)
+  }
 
   "addEmploymentName" must {
     "show the employment name form page" when {

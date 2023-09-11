@@ -17,9 +17,6 @@
 package uk.gov.hmrc.tai
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.tai.model.domain.Telephone
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -29,13 +26,15 @@ import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class DecisionCacheWrapperSpec extends BaseSpec with BeforeAndAfterEach with ScalaFutures with Results {
+class DecisionCacheWrapperSpec extends BaseSpec with Results {
 
   val journeyCacheService = mock[JourneyCacheService]
   val wrapper = new DecisionCacheWrapper(journeyCacheService, ec)
 
-  override def beforeEach(): Unit = Mockito.reset(journeyCacheService)
-
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(journeyCacheService)
+  }
   "getDecision" must {
     "return a None" when {
       "there is no cached BenefitType" in {

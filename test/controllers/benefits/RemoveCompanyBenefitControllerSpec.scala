@@ -23,7 +23,6 @@ import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
@@ -50,11 +49,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
-class RemoveCompanyBenefitControllerSpec
-    extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
+class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(removeCompanyBenefitJourneyCacheService)
+  }
 
   "stopDate" must {
     "show 'When did you stop getting benefits from company?' page" in {

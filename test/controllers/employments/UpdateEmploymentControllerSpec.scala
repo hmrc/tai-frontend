@@ -22,7 +22,6 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -40,10 +39,12 @@ import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, What
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class UpdateEmploymentControllerSpec extends BaseSpec with BeforeAndAfter with BeforeAndAfterEach {
+class UpdateEmploymentControllerSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     reset(journeyCacheService, successfulJourneyCacheService, personService)
+  }
 
   "employmentDetailsUpdate" must {
     "show the 'What Do You Want To Tell Us' Page" when {

@@ -18,17 +18,18 @@ package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.http.HttpResponse
 import utils.BaseSpec
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class SessionConnectorSpec extends BaseSpec with BeforeAndAfterEach {
+class SessionConnectorSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(httpHandler)
+  }
 
   "Session Connector" must {
     "return Http response" when {

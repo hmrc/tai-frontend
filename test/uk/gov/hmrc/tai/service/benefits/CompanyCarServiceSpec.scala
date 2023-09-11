@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.service.benefits
 
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.connectors.CompanyCarConnector
 import uk.gov.hmrc.tai.model.domain._
@@ -33,10 +32,12 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.Random
 
-class CompanyCarServiceSpec extends BaseSpec with BeforeAndAfterEach {
+class CompanyCarServiceSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(carConnector)
+  }
 
   "companyCarBenefits" must {
     "return empty seq of company car benefits" when {

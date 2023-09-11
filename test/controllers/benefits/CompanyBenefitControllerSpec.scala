@@ -22,7 +22,6 @@ import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -47,11 +46,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class CompanyBenefitControllerSpec
-    extends BaseSpec with JsoupMatchers with BeforeAndAfterEach with ControllerViewTestHelper {
+class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(journeyCacheService)
+  }
 
   "redirectCompanyBenefitSelection" must {
     "redirect to decision page" in {
