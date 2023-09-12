@@ -47,8 +47,12 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
         val res = new SUT().potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         status(res) mustBe OK
       }
+      "supplied with an authorised session with no referral headers" in {
+        val res = new SUT().potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(res) mustBe OK
+      }
     }
-    "return the potentional underpayment page for current year only" when {
+    "return the potential underpayment page for current year only" when {
       "processing a TaxAccountSummary with no CY+1 amount" in {
         val sut = new SUT()
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -59,7 +63,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport with
 
       }
     }
-    "return the general potentional underpayment page covering this and next year" when {
+    "return the general potential underpayment page covering this and next year" when {
       "processing a TaxAccountSummary with a CY+1 amount" in {
         val sut = new SUT()
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
