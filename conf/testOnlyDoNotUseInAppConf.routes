@@ -15,3 +15,5 @@
 GET         /check-income-tax/test-only/update-income/delete/:id                                        controllers.testOnly.TaiUpdateIncomeController.delete(id: Int)
 
 ->         /                          prod.Routes
+
+->         /check-income-tax     mongoFeatureTogglesTestOnly.Routes

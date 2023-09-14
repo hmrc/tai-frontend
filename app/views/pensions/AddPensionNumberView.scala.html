@@ -26,13 +26,6 @@
 @(payrollNumberForm: Form[AddPensionProviderNumberForm], pensionNumberViewModel: PensionNumberViewModel)(implicit request: Request[_],
         messages: Messages, user: controllers.auth.AuthedUser)
 
-@hint = {
-<div>
-    <p>@Messages("tai.addPensionProvider.pensionNumber.para1")</p>
-    <p>@Messages("tai.addPensionProvider.pensionNumber.para2")</p>
-</div>
-}
-
 @mainTemplate(
     title = Messages("tai.addPensionProvider.pensionNumber.pagetitle"),
     authedUser = Some(user),
@@ -52,6 +45,10 @@
             }
 
             <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
+            <h1 class="govuk-heading-xl break-word">@Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName)</h1>
+
+            <p class="govuk-body">@Messages("tai.addPensionProvider.pensionNumber.para1")</p>
+            <p class="govuk-body">@Messages("tai.addPensionProvider.pensionNumber.para2")</p>
 
             @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true") {
 
@@ -60,13 +57,12 @@
                         Fieldset(
                             legend = Some(
                                 Legend(
-                                    content = Text( Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName)),
-                                    isPageHeading = true,
-                                    classes = "govuk-fieldset__legend--xl carry-over")
+                                    content = Text(Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName)),
+                                    isPageHeading = false,
+                                    classes = "govuk-visually-hidden")
                             )
                         )
                     ),
-                    hint = Some(Hint(content = HtmlContent(hint))),
                     errorMessage = payrollNumberForm.errors.filter(_.key == "PayrollNumberChoice").asTextErrorMessages.headOption,
                     idPrefix = Some("payrollNumberChoice"),
                     name = "payrollNumberChoice",

@@ -16,20 +16,22 @@
 
 @import controllers.auth.AuthenticatedRequest
 @import includes.card
+@import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 @import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-
 
 @this(mainTemplate: MainTemplate)
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
         model: WhatDoYouWantToDoViewModel,
-        appConfig: ApplicationConfig
-)(implicit request: AuthenticatedRequest[_],
-        messages: Messages,
-        user: controllers.auth.AuthedUser
-)
+        appConfig: ApplicationConfig,
+        incomeTaxHistoryEnabled: Boolean,
+        cyPlusOneEnabled: Boolean)(implicit request: AuthenticatedRequest[_],
+messages: Messages,
+user: controllers.auth.AuthedUser)
+
 
 @mainTemplate(
     title = messages("your.paye.income.tax.overview"),
@@ -38,7 +40,6 @@
     backLinkContent = None,
     pagePrintable = true
 ) {
-
 
     @model.maybeMostRecentTaxCodeChangeDate.map { mostRecentTaxCodeChangeDate =>
         <div class="govuk-grid-row">
@@ -84,7 +85,7 @@
                     headingTag = "h2"
                 )
 
-                @if(appConfig.incomeTaxHistoryEnabled) {
+                @if(incomeTaxHistoryEnabled) {
                     @card(
                         url = Some(s"/check-income-tax/income-tax-history"),
                         id = "incomeTaxHistory",
@@ -94,7 +95,7 @@
                     )
                 }
 
-                @if(model.isCyPlusOneEnabled) {
+                @if(model.cyPlusOneDataAvailable && cyPlusOneEnabled) {
                     @card(
                         url = Some("/check-income-tax/income-tax-comparison"),
                         id = "nextTaxYear",

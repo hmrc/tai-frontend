@@ -24,60 +24,63 @@
 
 @(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
-@hint = {
-    <p class="govuk-body-l">@Messages("tai.irregular.para1", model.employerName)</p>
-    <p class="govuk-body">@Messages("tai.irregular.para2", model.employerName)</p>
-    <p class="govuk-body">@Messages("tai.irregular.para3")</p>
-    <p class="govuk-!-font-weight-bold govuk-body"> @Messages("tai.irregular.para4")</p>
-}
 
 @mainTemplate(
     title = Messages("tai.irregular.preHeadingText"),
     authedUser = Some(user),
     backLinkContent= Some(Messages("tai.back-link.upper")),
+    formForErrorSummary = Some(irregularPayForm),
     backLinkUrl=Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision().url)) {
-
-@if(irregularPayForm.errors.nonEmpty){
-    @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-}
-
-
+    
 <div class="govuk-grid-row grid-row">
     <div class="govuk-grid-column-two-thirds">
+        @if(irregularPayForm.errors.nonEmpty){
+            @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
 
-        @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError()) {
 
         <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.irregular.preHeadingText")</h2>
+        <h1 class="govuk-heading-xl">@Messages("tai.irregular.heading")</h1>
 
-        @govukRadios(Radios(
-            fieldset =  Some(Fieldset(
-                                legend = Some(Legend(
-                                    content = Text(Messages("tai.irregular.heading", model.employerName)),
-                                    classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
-                                    isPageHeading = true)
+        <p class="govuk-body-l">@Messages("tai.irregular.para1", model.employerName)</p>
+        <p class="govuk-body">@Messages("tai.irregular.para2", model.employerName)</p>
+        <p class="govuk-body">@Messages("tai.irregular.para3")</p>
+        <p class="govuk-!-font-weight-bold govuk-body"> @Messages("tai.irregular.para4")</p>
+
+        @if(irregularPayForm.errors.nonEmpty){
+            @govukErrorSummary(ErrorSummary(errorList = irregularPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+        }
+        
+        @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError()) {
+
+            @govukRadios(Radios(
+                fieldset =  Some(Fieldset(
+                                    legend = Some(Legend(
+                                        content = Text(Messages("tai.irregular.heading")),
+                                        classes="govuk-visually-hidden",
+                                        isPageHeading = false)
+                                )
                             )
-                        )
+                        ),
+                idPrefix = Some("irregularPayDecision"),
+                name = "irregularPayDecision",
+                errorMessage=irregularPayForm.errors.filter(_.key == "irregularPayDecision").asTextErrorMessages.headOption,
+                items = Seq(
+                    RadioItem(
+                        content = Text(Messages("tai.irregular.option1", model.employerName)),
+                        value = Some("contactEmployer"),
+                        checked = irregularPayForm.data.get("irregularPayDecision").exists(_ == "contactEmployer")
+
+            ),
+                    RadioItem(
+                        content = Text(Messages("tai.irregular.option2")),
+                        value = Some("updateDetails"),
+                        checked = irregularPayForm.data.get("irregularPayDecision").exists(_ == "updateDetails")
                     ),
-            idPrefix = Some("irregularPayDecision"),
-            name = "irregularPayDecision",
-            hint = Some(Hint(content = HtmlContent(hint))),
-            errorMessage=irregularPayForm.errors.filter(_.key == "irregularPayDecision").asTextErrorMessages.headOption,
-            items = Seq(
-                RadioItem(
-                    content = Text(Messages("tai.irregular.option1", model.employerName)),
-                    value = Some("contactEmployer"),
-                    checked = irregularPayForm.data.get("irregularPayDecision").exists(_ == "contactEmployer")
+                )
+            ).withFormField(irregularPayForm("irregularPayDecision")))
 
-        ),
-                RadioItem(
-                    content = Text(Messages("tai.irregular.option2")),
-                    value = Some("updateDetails"),
-                    checked = irregularPayForm.data.get("irregularPayDecision").exists(_ == "updateDetails")
-                ),
-            )
-        ).withFormField(irregularPayForm("irregularPayDecision")))
-
-        @submit()
+            @submit()
 
         }
 

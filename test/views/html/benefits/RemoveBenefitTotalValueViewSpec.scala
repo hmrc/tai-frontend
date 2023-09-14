@@ -46,13 +46,16 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
       doc must haveBulletPointWithText(Messages("tai.remove.company.benefit.total.value.ask"))
       doc must haveBulletPointWithText(Messages("tai.remove.company.benefit.total.value.enter"))
     }
-    "contain label with static text" in {
-      val label = doc(view).select("#valueOfBenefit").get(0).text
-      label must include(Messages("tai.remove.company.benefit.total.value.value"))
-      label must include(Messages("tai.inPounds"))
+    "contain list with static text" in {
+      doc(view).select("#totalValueAsk").get(0).text must include(
+        Messages("tai.remove.company.benefit.total.value.ask")
+      )
+      doc(view).select("#totalValueEnter").get(0).text must include(
+        Messages("tai.remove.company.benefit.total.value.enter")
+      )
 
     }
-    "contain hint with static text" in {
+    "contain help text with static text" in {
       val hint = doc(view).select("#valueOfBenefit").get(0).text
       hint must include(Messages("tai.remove.company.benefit.total.value.hint"))
     }

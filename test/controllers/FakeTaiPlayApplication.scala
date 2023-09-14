@@ -16,6 +16,7 @@
 
 package controllers
 
+import org.mockito.MockitoSugar.mock
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.{Args, Status, Suite, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -25,6 +26,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.webchat.client.WebChatClient
 import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
@@ -34,7 +36,9 @@ import scala.concurrent.ExecutionContext
 trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfiguration with TestSuite {
   this: Suite =>
 
-  val additionalConfiguration = Map[String, Any](
+  implicit lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
+
+  val additionalConfiguration: Map[String, Any] = Map[String, Any](
     "microservice.services.contact-frontend.port"         -> "6666",
     "microservice.services.pertax-frontend.port"          -> "1111",
     "microservice.services.personal-tax-summary.port"     -> "2222",
@@ -48,7 +52,8 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
   implicit override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(additionalConfiguration)
     .overrides(
-      bind[WebChatClient].toInstance(new WebChatClientStub)
+      bind[WebChatClient].toInstance(new WebChatClientStub),
+      bind[FeatureFlagService].toInstance(mockFeatureFlagService)
     )
     .build()
 
@@ -57,12 +62,15 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     .asInstanceOf[ch.qos.logback.classic.Logger]
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
-  val address = Address("line1", "line2", "line3", "postcode", "country")
-  val partialAddress = Address(Some("line1"), None, None, Some("postcode"), Some("country"))
-  val emptyAddress = Address(None, None, None, None, None)
-  def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false, address)
-  def fakePersonWithNoAddress(nino: Nino) = Person(nino, "firstname", "surname", false, false, emptyAddress)
-  def fakePersonWithPartialAddress(nino: Nino) = Person(nino, "firstname", "surname", false, false, partialAddress)
+  val address: Address = Address("line1", "line2", "line3", "postcode", "country")
+  val partialAddress: Address = Address(Some("line1"), None, None, Some("postcode"), Some("country"))
+  val emptyAddress: Address = Address(None, None, None, None, None)
+  def fakePerson(nino: Nino): Person =
+    Person(nino, "firstname", "surname", isDeceased = false, manualCorrespondenceInd = false, address)
+  def fakePersonWithNoAddress(nino: Nino): Person =
+    Person(nino, "firstname", "surname", isDeceased = false, manualCorrespondenceInd = false, emptyAddress)
+  def fakePersonWithPartialAddress(nino: Nino): Person =
+    Person(nino, "firstname", "surname", isDeceased = false, manualCorrespondenceInd = false, partialAddress)
   val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
 
   abstract override def run(testName: Option[String], args: Args): Status =

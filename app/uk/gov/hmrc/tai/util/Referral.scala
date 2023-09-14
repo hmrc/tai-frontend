@@ -21,8 +21,8 @@ import play.api.mvc.Request
 trait Referral {
 
   def referer[A](implicit request: Request[A]): String =
-    request.headers.toMap("Referer").mkString
+    request.headers.get("Referer").getOrElse("NA")
 
   def resourceName[A](implicit request: Request[A]): String =
-    request.headers.toMap("Referer").mkString.split("/").last
+    request.headers.get("Referer").getOrElse("NA").split("/").last
 }
