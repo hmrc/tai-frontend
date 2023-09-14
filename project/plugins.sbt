@@ -12,7 +12,7 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.7")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-distributables" % "2.2.0")
 
-addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.9.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.13.0")
 
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
 

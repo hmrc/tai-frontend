@@ -78,6 +78,7 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
 
   .card-heading {
     margin-top: 0;
+    line-height: 1.5em;
   }
 
   .card-body {
@@ -89,11 +90,18 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
 
     &.active {
       background-color: $grey-4;
-      transition: .1s ease-in-out;
+      transition: 0.1s ease-in-out;
 
       .card-heading a {
         color: $link-colour;
         margin-top: 0;
+
+        &:focus {
+          box-shadow: 0 -2px #fd0, 0 4px #0b0c0c;
+          color: $black;
+          background-color: #fd0;
+          outline: 3px solid transparent;
+        }
       }
     }
 
@@ -134,6 +142,13 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
         border-bottom: 1px solid $link-colour;
         color: #2e8aca;
       }
+
+      &:focus {
+        box-shadow: 0 -2px #fd0, 0 4px #0b0c0c;
+        color: $black;
+        background-color: #fd0;
+        outline: 3px solid transparent;
+      }
     }
 
     ul {
@@ -151,7 +166,7 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
 }
 
 
-.js-enabled {
+
   .card-body.active {
     &:hover {
       background-color: $link-colour;
@@ -181,4 +196,4 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
       text-decoration: none;
     }
   }
-}
+
