@@ -135,8 +135,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
-
-        doc.select("#backLink").text() mustBe Messages("tai.back-link.upper")
+        doc.select("#back-link").text() mustBe Messages("tai.back-link.upper")
       }
     }
 

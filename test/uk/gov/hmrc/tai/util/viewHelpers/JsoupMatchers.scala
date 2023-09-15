@@ -333,13 +333,14 @@ trait JsoupMatchers {
   def haveClassCount(expectedClass: String, expectedCount: Int) =
     new CssSelectorWithTextCount(s".$expectedClass", expectedCount)
 
-  def haveBackLink = new CssSelector("a[id=backLink]")
-  def haveBackLinkNew = new CssSelector("a[id=backLinkId]")
+  def haveBackLink = new CssSelector("a[class=govuk-back-link js-visible-back]")
+  def haveBackLinkWithId = new CssSelector("a[id=back-link]")
   def haveBackLinkTaxPayslipAmount = new CssSelector("a[id=backLinkToTaxPayslipAMountPage]")
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveCancelLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "cancelLink")
   def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)
-  def haveBackLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
+  def haveBackLinkWithUrl(expectedURL: String) =
+    new ClassSelectorWithUrlMatcher(expectedURL, "govuk-back-link js-visible-back")
   def haveLinkWithUrlWithClass(classes: String, expectedURL: String) =
     new ClassSelectorWithUrlMatcher(expectedURL, classes)
   def haveReturnToSummaryButtonWithUrl(expectedURL: String) =

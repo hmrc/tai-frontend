@@ -50,7 +50,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
   override def view: HtmlFormat.Appendable = potentialUnderpayment(viewModel)
 
   "Potential Underpayment" must {
-    behave like pageWithBackLinkNew()
+    behave like pageWithBackLink()
     behave like pageWithTitle(viewModel.pageTitle)
     behave like pageWithCombinedHeaderNewFormatNew(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
 

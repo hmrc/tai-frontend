@@ -115,8 +115,8 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "display a link to return to choose tax year page" in {
-      doc must haveLinkWithUrlWithID(
-        "backLinkId",
+      doc must haveLinkWithUrlWithClass(
+        "govuk-back-link js-visible-back",
         controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
       )
       doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
@@ -204,7 +204,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "display print button link with javascript print function " in {
-      doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
+      doc must haveLinkWithUrlWithClass("print-this__link", "#")
     }
   }
 

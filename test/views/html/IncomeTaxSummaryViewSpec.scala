@@ -53,7 +53,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     }
 
     "display print button link with javascript print function " in {
-      doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
+      doc must haveLinkWithUrlWithClass("print-this__link", "#")
     }
 
     "not display iForms status message when no iForms are in progress" in {

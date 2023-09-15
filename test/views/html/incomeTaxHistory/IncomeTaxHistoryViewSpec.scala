@@ -30,7 +30,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     behave like pageWithHeader(messages("tai.incomeTax.history.title"))
 
     "display a back button" in {
-      doc must haveBackLinkNew
+      doc must haveBackLink
     }
 
     "display a details card" in {
@@ -64,7 +64,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     }
 
     "display print button link with javascript print function" in {
-      doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
+      doc must haveLinkWithUrlWithClass("print-this__link", "#")
     }
 
     "display ERN or pension" should {
