@@ -394,7 +394,7 @@ class IncomeController @Inject() (
                         employment.name,
                         employmentAmount.oldAmount,
                         newAmountKey.toInt,
-                        "#", // TODO this is temporary
+                        "#",
                         empId
                       )
 

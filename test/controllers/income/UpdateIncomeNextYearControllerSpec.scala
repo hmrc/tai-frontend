@@ -455,7 +455,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             currentAmount,
             newAmount,
             NextYearPay,
-            "javascript:history.go(-1)"
+            "#"
           )
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,

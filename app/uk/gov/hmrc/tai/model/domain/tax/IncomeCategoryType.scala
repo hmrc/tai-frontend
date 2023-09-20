@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain.tax
 
-import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue}
+import play.api.libs.json.{Format, JsResult, JsString, JsSuccess, JsValue}
 
 sealed trait IncomeCategoryType
 case object NonSavingsIncomeCategory extends IncomeCategoryType
@@ -39,6 +39,6 @@ object IncomeCategoryType {
         case _                                => throw new IllegalArgumentException("Invalid income category type")
       }
 
-    override def writes(o: IncomeCategoryType): JsValue = ???
+    override def writes(o: IncomeCategoryType): JsValue = JsString(o.toString)
   }
 }

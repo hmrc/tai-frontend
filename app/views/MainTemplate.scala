@@ -94,7 +94,7 @@ class MainTemplateImpl @Inject() (
       wrapperService.layout(
         content = fullContent,
         pageTitle = Some(fullPageTitle),
-        serviceNameKey = pageTitle,
+        serviceNameKey = Some(messages(pageTitle.getOrElse("tai.service.navTitle"))),
         serviceNameUrl = Some(appConfig.taiHomePageUrl),
 //      sidebarContent: Option[Html] = None,
         signoutUrl = controllers.routes.ServiceController.serviceSignout().url,
@@ -105,7 +105,7 @@ class MainTemplateImpl @Inject() (
         // showSignOutInHeader: Boolean = false,
         styleSheets = Seq(headBlock()),
         scripts = Seq(scripts()),
-        bannerConfig = BannerConfig(false, true, true),
+        bannerConfig = BannerConfig(false, true, false),
         // optTrustedHelper: Option[TrustedHelper] = None,
         fullWidth = true,
         hideMenuBar = !showPtaAccountNav,
