@@ -29,8 +29,8 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.workingHours.title"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(id).url),
     formForErrorSummary = Some(workingHoursForm)
 

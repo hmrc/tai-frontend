@@ -95,11 +95,11 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     }
 
     "have a back link" in {
-      doc must haveElementAtPathWithId("a", "backLink")
+      doc must haveElementAtPathWithId("a", "back-link")
     }
 
     "show the necessary print buttons" in {
-      doc.getElementsByClass("print-button").toString must include("javascript:window.print()")
+      doc.getElementsByClass("print-button").toString must include("printLink")
     }
 
     "have informative text when payment data is not available" when {

@@ -27,8 +27,8 @@ user: controllers.auth.AuthedUser)
 title = messages("tai.noCYIncomeError.title"),
 authedUser = Some(user),
 backLinkUrl = Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
-backLinkContent = Some(messages("tai.returnToChooseTaxYear")),
-backLinkId="backLinkId"
+backLinkId = "back-link-custom-url",
+backLinkContent = Some(messages("tai.returnToChooseTaxYear"))
 
 ) {
 

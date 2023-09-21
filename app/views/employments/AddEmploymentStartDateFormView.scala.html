@@ -30,9 +30,9 @@
 @mainTemplate(
     title = Messages("tai.addEmployment.startDateForm.pagetitle"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName().url),
     formForErrorSummary = Some(dateForm)
    )  {

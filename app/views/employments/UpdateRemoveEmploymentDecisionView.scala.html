@@ -30,6 +30,7 @@
     title = messages("tai.employment.decision.legend", employmentName),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).toString),
     formForErrorSummary = Some(updateRemoveForm)
 ) {

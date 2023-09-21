@@ -38,7 +38,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
     "display a back button" which {
       "links to the add telephone form page" when {
         "page is displayed" in {
-          doc must haveBackLinkNew
+          doc must haveBackLink
         }
       }
     }

@@ -26,8 +26,8 @@
 @mainTemplate(
     title = messages("tai.pension.warning.customGaTitle"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url),
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
 

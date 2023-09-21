@@ -96,7 +96,6 @@ lazy val microservice = Project(appName, file("."))
       "javascripts/tai-app.js" -> group(Seq(
         "javascripts/card.js",
         "javascripts/char-count.js",
-        "javascripts/tai-backlink.js",
         "javascripts/tai-new.js",
         "javascripts/tax-code-change.js",
         "javascripts/urbanner.js"

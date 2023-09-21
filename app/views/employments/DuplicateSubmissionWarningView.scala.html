@@ -25,8 +25,8 @@
 @mainTemplate(
     title = messages("tai.employment.warning.customGaTitle"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     formForErrorSummary = Some(duplicateSubmissionWarningForm),
     backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url)
 ){

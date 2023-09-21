@@ -151,9 +151,9 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveBackLink
     }
 
-  def pageWithBackLinkNew(): Unit =
+  def pageWithBackLinkWithId(): Unit =
     "have a back link" in {
-      doc must haveBackLinkNew
+      doc must haveBackLinkWithId
     }
 
   def pageWithBackLinkWithUrl(url: String): Unit =

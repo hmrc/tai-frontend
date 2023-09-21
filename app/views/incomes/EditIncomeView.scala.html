@@ -46,7 +46,7 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
     authedUser = Some(user),
-    backLinkId = "backLink",
+    backLinkId = "back-link-custom-url",
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.howToUpdatePage(employmentId).url),
     formForErrorSummary = Some(income)

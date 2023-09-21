@@ -394,7 +394,7 @@ class IncomeController @Inject() (
                         employment.name,
                         employmentAmount.oldAmount,
                         newAmountKey.toInt,
-                        "javascript:history.go(-1)", // TODO this is temporary
+                        "#", // TODO this is temporary
                         empId
                       )
 

@@ -37,7 +37,7 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
     behave like pageWithCheckYourAnswersSummaryNew()
 
     "display a back button" in {
-      doc must haveBackLinkNew
+      doc must haveBackLink
     }
 
     "display a cancel button" which {

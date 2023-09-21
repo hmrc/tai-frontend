@@ -43,7 +43,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     )
 
     "have a back link" in {
-      doc must haveBackLinkNew
+      doc must haveBackLink
     }
 
     "display print button link with href to historic print view" in {

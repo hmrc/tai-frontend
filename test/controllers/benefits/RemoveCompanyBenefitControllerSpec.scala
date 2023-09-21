@@ -405,7 +405,7 @@ class RemoveCompanyBenefitControllerSpec
         doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
         )
-        doc must haveBackLinkNew
+        doc must haveBackLink
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
@@ -457,7 +457,7 @@ class RemoveCompanyBenefitControllerSpec
         doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
         )
-        doc must haveBackLinkNew
+        doc must haveBackLink
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url

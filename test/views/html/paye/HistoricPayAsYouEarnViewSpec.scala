@@ -113,14 +113,14 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
   }
 
   "display a link to return to choose tax year page" in {
-    doc must haveLinkWithUrlWithID(
-      "backLinkId",
+    doc must haveLinkWithUrlWithClass(
+      "govuk-back-link js-visible-back",
       controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
     )
   }
 
   "display print link with javascript print function " in {
-    doc must haveLinkWithUrlWithClass("print-this__link", "javascript:window.print()")
+    doc must haveLinkWithUrlWithClass("print-this__link", "#")
   }
 
   "income from employment section" must {
