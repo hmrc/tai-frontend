@@ -1,0 +1,235 @@
+.print-table__header--highlight {
+    border-bottom: 2px solid #005EA5;
+}
+.print-table__header--secondary {
+    color: #6f777b;
+}
+
+.print-table__link{
+    padding: 5px 0px 5px 0px;
+    font-size: 16px;
+}
+
+.print-table {
+    text-align: left;
+}
+
+.print-table th {
+    width: 30%;
+    padding-bottom: 6px;
+}
+
+#print-date-column th{
+    width: 20%;
+    padding-bottom: 6px;
+}
+
+.print-table {
+  border-collapse: collapse;
+}
+
+tr.print-pension-contributions-data td {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #bfc1c3;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.print-table__row--bold td, th{
+  font-weight: bold;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #bfc1c3;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+#print-date-column {
+  width: 18%;
+}
+
+#print-taxable-income-column {
+  width: 23%;
+}
+
+#print-income-tax-paid-column {
+  width: 22%;
+}
+
+.print-text--right {
+  text-align: right;
+}
+
+@-ms-viewport {
+  width: device-width;
+}
+@-o-viewport {
+  width: device-width;
+}
+@-ms-viewport {
+  width: device-width;
+}
+@-o-viewport {
+  width: device-width;
+}
+@-ms-viewport {
+  width: device-width;
+}
+@-o-viewport {
+  width: device-width;
+}
+.print-grid-row:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.print-grid-row {
+  margin: 0 -15px;
+}
+
+#print-icon-important-multi {
+    float: left;
+    padding-bottom: 12%;
+    padding-right: 2%;
+}
+
+@media print {
+  @page {
+    size: portrait;
+    margin: 0mm;
+    padding: 1cm .5cm;
+  }
+  html {
+    margin: 0px;
+  }
+  main.govuk-main-wrapper div.grid.grid-1-3 .inner-block , .hide-for-print{
+    display: none;
+    visibility: hidden;
+  }
+
+  main.govuk-main-wrapper .print-banner {
+    display: block;
+    visibility: visible;
+    border-bottom: 3px solid #b1b4b6;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+   }
+
+  main.govuk-main-wrapper .print-banner .title {
+    float: right;
+    text-align: right;
+  }
+
+  main.govuk-main-wrapper .print-banner img {
+    width: 180px;
+    aspect-ratio: auto 180 / 48;
+    height: 48px;
+  }
+
+  main.govuk-main-wrapper .print-banner .hmrc-logo {
+    float:left;
+    margin-top:10px;
+  }
+
+  main.govuk-main-wrapper .print-banner .name{
+    text-align: right;
+    padding-top: 18px;
+  }
+
+
+  main.govuk-main-wrapper h1.heading-xlarge {
+    font-size: 2em;
+  }
+
+  main.govuk-main-wrapper h3.heading-large {
+    font-size: 1.5em;
+  }
+
+  main.govuk-main-wrapper .hmrc-user-research-banner,
+  main.govuk-main-wrapper .cbanner-govuk-cookie-banner,
+  main.govuk-main-wrapper a[href],
+  main.govuk-main-wrapper .hide-for-print,
+  main.govuk-main-wrapper .beta-banner,
+  main.govuk-main-wrapper header[role=banner],
+  main.govuk-main-wrapper .report-error,
+  main.govuk-main-wrapper.historic-pay-as-you-earn .govuk-phase-banner,
+  main.govuk-main-wrapper.historic-pay-as-you-earn .govuk-footer,
+  main.govuk-main-wrapper .govuk-phase-banner,
+  main.govuk-main-wrapper .govuk-footer,
+  main.govuk-main-wrapper .service-info,
+  main.govuk-main-wrapper .govuk-back-link {
+    display: none;
+    visibility: hidden;
+  }
+  header, nav, .govuk-back-link, footer {
+        display: none;
+        visibility: hidden;
+   }
+
+  div.govuk-main-wrapper .display-tax-code-for-print {
+      display: inline!important;
+      visibility: visible!important;
+      text-decoration: none;
+      color: black;
+  }
+
+  main.govuk-main-wrapper a[href]:after {
+    content: none!important;
+  }
+
+  main.govuk-main-wrapper  div.govuk-grid-column-two-thirds {
+    width: 95%!important;
+    margin: 30px!important;
+  }
+
+
+  main.govuk-main-wrapper.future-pay-as-you-earn-summary .table__row--top-border,
+  main.govuk-main-wrapper.future-pay-as-you-earn-summary .table__footer--highlight,
+  main.govuk-main-wrapper.future-pay-as-you-earn-summary .highlight {
+  background-color:#fff
+  }
+ main.govuk-main-wrapper .only-visible-on-print {
+    display: inline-block;
+    visibility: visible;
+ }
+
+
+   main.govuk-main-wrapper div.card-body  {
+     background-color:#fff!important;
+   }
+
+   main.govuk-main-wrapper h3.card-heading a {
+     display: block!important;
+     visibility: visible!important;
+   }
+
+   main.govuk-main-wrapper #taxCodesLink {
+   display:inline!important;
+   visibility:visible!important;
+   color:black;
+   text-decoration:none;
+   }
+
+  main.govuk-main-wrapper #taxOnEmploymentIncomeDesc > #taxFreeAmountLink {
+  display:inline!important;
+  visibility:visible!important;
+  color:black;
+  text-decoration:none;
+  }
+
+  main.govuk-main-wrapper #estimatedIncomeLowDesc > #taxFreeAmountLink {
+  display:inline!important;
+  visibility:visible!important;
+  color:black;
+  text-decoration:none;
+  }
+
+  main.govuk-main-wrapper thead {display: table-row-group;}
+
+  main.govuk-main-wrapper details.govuk-details.only-visible-on-print > summary {
+    color: #000;
+  }
+
+
+}

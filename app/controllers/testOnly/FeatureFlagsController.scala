@@ -37,7 +37,7 @@ class FeatureFlagsController @Inject() (
         Map(
           CyPlusOneToggle        -> true,
           IncomeTaxHistoryToggle -> true,
-          SCAWrapperToggle -> false
+          SCAWrapperToggle       -> false
         )
       )
       .map(_ => Ok("Default flags set"))
