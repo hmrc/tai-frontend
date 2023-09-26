@@ -83,16 +83,10 @@ class MainTemplateImpl @Inject() (
       }
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
-    val fullContent = if (pagePrintable) {
-      Html(s"""<div class="printable-page">
-         $content
-      </div>""")
-    } else content
-
     if (scaWrapperToggle.isEnabled) {
       logger.debug(s"SCA Wrapper layout used for request `${request.uri}``")
       wrapperService.layout(
-        content = fullContent,
+        content = content,
         pageTitle = Some(fullPageTitle),
         serviceNameKey = Some(messages(pageTitle.getOrElse("tai.service.navTitle"))),
         serviceNameUrl = Some(appConfig.taiHomePageUrl),
