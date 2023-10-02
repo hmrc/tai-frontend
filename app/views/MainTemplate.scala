@@ -100,7 +100,7 @@ class MainTemplateImpl @Inject() (
         styleSheets = Seq(headBlock()),
         scripts = Seq(scripts()),
         bannerConfig = BannerConfig(false, true, false),
-        // optTrustedHelper: Option[TrustedHelper] = None,
+        optTrustedHelper = authedUser.flatMap(_.trustedHelper),
         fullWidth = true,
         hideMenuBar = !showPtaAccountNav,
         disableSessionExpired = disableSessionExpired
