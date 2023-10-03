@@ -416,6 +416,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   def viewWithUpdateInProgressEmployment: Html = template(modelWithUpdateInProgressEmployment)
   def viewWithUpdateInProgressPension: Html = template(modelWithUpdateInProgressPension)
-  val docWithUpdateInProgressEmployment = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
-  val docWithUpdateInProgressPension = Jsoup.parse(viewWithUpdateInProgressPension.toString())
+  lazy val docWithUpdateInProgressEmployment = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
+  lazy val docWithUpdateInProgressPension = Jsoup.parse(viewWithUpdateInProgressPension.toString())
 }

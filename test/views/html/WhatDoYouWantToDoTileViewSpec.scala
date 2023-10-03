@@ -36,13 +36,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   private val whatDoYouWantToDoTileView = inject[WhatDoYouWantToDoTileView]
 
   "whatDoYouWantTodo Page" should {
-    val view: Html = whatDoYouWantToDoTileView(
-      form,
-      modelNoiFormNoCyPlus1,
-      appConfig,
-      incomeTaxHistoryEnabled = false,
-      cyPlusOneEnabled = false
-    )
 
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))

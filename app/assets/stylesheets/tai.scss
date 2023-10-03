@@ -6,6 +6,7 @@
 @import 'elements/_icons';
 @import 'elements/_elements_typography.scss';
 @import 'modules/print';
+@import 'modules/printSCA';
 @import 'modules/eyu';
 @import 'modules/navigation';
 @import 'modules/notifications';
@@ -45,16 +46,6 @@
 .button--link-style:disabled:hover{
   background-color: #fff;
   opacity: 1;
-}
-
-hr {
-  display: block;
-  background: #bfc1c3;
-  height: 1px;
-  margin-top: 0px;
-  margin-bottom: 30px;
-  padding: 0;
-  border: 0;
 }
 
 .margin-bottom-medium {
@@ -237,8 +228,7 @@ hr {
     }
 }
 
-div.print-banner,
-#print-link-btn, div.print-this{
+div.print-banner {
   display: none;
   visibility: hidden;
 }

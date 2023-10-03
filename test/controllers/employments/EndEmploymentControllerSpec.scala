@@ -22,7 +22,6 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -47,10 +46,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EndEmploymentControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class EndEmploymentControllerSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     reset(employmentService, endEmploymentJourneyCacheService)
+  }
 
   private val employerName = "employer name"
 

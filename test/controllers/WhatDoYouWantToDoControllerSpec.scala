@@ -22,7 +22,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http._
@@ -45,7 +44,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with BeforeAndAfterEach {
+class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val auditService: AuditService = mock[AuditService]
@@ -121,8 +120,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   )
 
   override def beforeEach(): Unit = {
-
-    reset(auditService, employmentService, mockFeatureFlagService, mockAppConfig)
+    super.beforeEach()
+    reset(auditService, employmentService, mockAppConfig)
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
       Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn

@@ -33,6 +33,7 @@
     title = taxCodeViewModel.title,
     authedUser = Some(user),
     backLinkContent=Some(messages("tai.back-link.upper")),
+    backLinkUrl = Some("#"),
     pagePrintable = true
     ){
 
@@ -42,43 +43,41 @@
         </div>
     </div>
 
-    <div class="govuk-grid-row grid-row">
+    <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="inner-block">
 
-                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (LazyList.from(1))) {
+                    @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (LazyList.from(1))) {
 
-                <div class="section govuk-!-margin-bottom-9">
+                    <div class="section govuk-!-margin-bottom-9">
 
-                        <h2 class="govuk-!-margin-top-5 govuk-heading-m" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
+                            <h2 class="govuk-!-margin-top-5 govuk-heading-m" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                    <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
+                        <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
 
-                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (LazyList.from(1))) {
-                        <li>
-                            <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
-                                <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                <span aria-hidden="true">@taxCodeTerm</span>
-                            </div>
-                            <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                                <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
-                                <span class="govuk-body">@Html(taxCodeList.descriptionItems(taxCodeTerm)) </span>
-                            </div>
-                        </li>
-                        }
-                    </ul>
+                            @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (LazyList.from(1))) {
+                            <li>
+                                <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                    <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                    <span aria-hidden="true">@taxCodeTerm</span>
+                                </div>
+                                <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                                    <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
+                                    <span class="govuk-body">@Html(taxCodeList.descriptionItems(taxCodeTerm)) </span>
+                                </div>
+                            </li>
+                            }
+                        </ul>
+
+                    </div>
+                    }
 
                 </div>
-                }
-
-            </div>
             <div class="print-this">
                 <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
             </div>
         </div>
-
     </div>
-
 
 
 }

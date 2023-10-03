@@ -27,10 +27,12 @@
     backLinkContent = None
 ){
 
-<div class="govuk-grid-column-two-thirds">
-    <div class="govuk-grid-row grid-row">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-row grid-row">
             <h1 class="govuk-heading-xl">@messages("global.error.InternalServerError500.tai.title")</h1>
             <p class="govuk-body">@messages("global.error.InternalServerError500.tai.message.you.can") <a href="@applicationConfig.contactHelplineUrl">@messages("global.error.InternalServerError500.tai.message.contact.hmrc")</a> @messages("global.error.InternalServerError500.tai.message.by.phone.post")</p>
         </div>
     </div>
+</div>
 }

@@ -30,6 +30,7 @@
 @import uk.gov.hmrc.webchat.client.WebChatClient
 @import views.html.helper.CSPNonce
 @import views.html.includes.attorneyBanner
+@import uk.gov.hmrc.ptafrontend.views.html._
 
 @this(
         govukTemplate: GovukTemplate,
@@ -54,30 +55,24 @@
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
         banner: attorneyBanner,
-        webChatClient: WebChatClient
+        webChatClient: WebChatClient,
+        ptaHead: PtaHead,
+        ptaScripts: PtaScripts
 )(implicit accountMenuConfig: AccountMenuConfig)
 
 
 @(
         title: String,
         authedUser: Option[controllers.auth.AuthedUser] = None,
-        serviceName: Option[String] = None,
         pageTitle: Option[String] = None,
-        isWelshTranslationAvailable: Boolean = false,
-        signOutUrl: Option[String] = None,
-        serviceUrl: Option[String] = None,
         backLinkUrl: Option[String] = Some("#"),
         backLinkContent: Option[String],
         backLinkId: String = "back-link",
         disableSessionExpired: Boolean = false,
-        additionalScriptsBlock: Option[Html] = None,
-        beforeContentBlock: Option[Html] = None,
         pagePrintable: Boolean = false,
         pagePrintName: Option[String] = None,
         showPtaAccountNav: Boolean = true,
-        formForErrorSummary: Option[Form[_]] = None,
-        nonce: Option[String] = None,
-        showUrBannerOverride: Boolean = false
+        formForErrorSummary: Option[Form[_]] = None
 )(content: Html)(implicit request: Request[_],
         messages: Messages)
 
@@ -113,6 +108,14 @@
 
 @additionalHeadBlock = {
     <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
+    @ptaHead()
+    @if(!disableSessionExpired) {
+        @hmrcTimeoutDialogHelper(
+            signOutUrl = routes.ServiceController.sessionExpiredPage().url,
+            keepAliveUrl = Some("/keep-alive")
+        )
+    }
     <link @CSPNonce.attr rel="stylesheet" href='@controllers.routes.Assets.versioned("stylesheets/tai.css")'/>
 @if(!disableSessionExpired) {
     @hmrcTimeoutDialogHelper(
@@ -151,7 +154,7 @@
         inputLanguageToggle = Some(LanguageToggle((En, switchToLanguage(En.code).url), (Cy, switchToLanguage(Cy.code).url)))
     ))
 
-    @if(!isUserResearchBannerHidden && (appConfig.urBannerEnabled || showUrBannerOverride)) {
+    @if(!isUserResearchBannerHidden && appConfig.urBannerEnabled) {
         @urBanner
     }
 }
@@ -178,13 +181,6 @@
 
     }
 
-@if(beforeContentBlock.isDefined) {
-    @beforeContentBlock
-} else {
-    @if(isWelshTranslationAvailable) {
-        @hmrcLanguageSelectHelper()
-    }
-
     @attorneyBanner
 
 @if(backLinkContent){
@@ -195,13 +191,13 @@
             href = url,
             content = Text(backLinkContent.get)))
         )
-        }
     }
 }
 
 
+
 @contentBlock = {
-@content
+    @content
     <div class="govuk-grid-row govuk-!-margin-top-9">
         <div class="govuk-grid-column-one-half govuk-!-margin-bottom-5">
         @hmrcReportTechnicalIssueHelper()
@@ -209,15 +205,15 @@
     </div>
 
 
-@govukPhaseBanner(PhaseBanner(
-    tag = Some(Tag(
-        content = Text("beta")
-    )),
-    content = HtmlContent(messages("betaBanner.message",
-        link(link = appConfig.betaFeedbackUnauthenticatedUrl,
-            messageKey = "betaBanner.linkText",
-            inParagraph = true)))
-))
+    @govukPhaseBanner(PhaseBanner(
+        tag = Some(Tag(
+            content = Text("beta")
+        )),
+        content = HtmlContent(messages("betaBanner.message",
+            link(link = appConfig.betaFeedbackUnauthenticatedUrl,
+                messageKey = "betaBanner.linkText",
+                inParagraph = true)))
+    ))
 }
 
 
@@ -262,11 +258,12 @@
 }
 
 @additionalScriptsBlock = {
+    @ptaScripts()
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/newcard.js")'></script>
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/backlink.js")'></script>
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/print.js")'></script>
 
-    
+
     <script @CSPNonce.attr type="text/javascript">
             window.onload = function() {
                 var htmlElem = document.querySelector('html')

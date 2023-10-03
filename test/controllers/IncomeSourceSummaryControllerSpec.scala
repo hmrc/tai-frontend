@@ -22,7 +22,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -41,10 +40,12 @@ import views.html.IncomeSourceSummaryView
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class IncomeSourceSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(journeyCacheService)
+  }
 
   val employmentId = 1
   val pensionId = 2

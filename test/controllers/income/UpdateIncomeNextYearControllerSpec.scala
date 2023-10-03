@@ -22,7 +22,6 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.BeforeAndAfterEach
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
@@ -45,7 +44,7 @@ import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 
-class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper with BeforeAndAfterEach {
+class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   private val updateIncomeCYPlus1ConfirmView = inject[UpdateIncomeCYPlus1ConfirmView]
   private val updateIncomeCYPlus1SuccessView = inject[UpdateIncomeCYPlus1SuccessView]
@@ -63,7 +62,10 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  override def beforeEach(): Unit = reset(mockAppConfig, mockFeatureFlagService)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockAppConfig)
+  }
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -453,7 +455,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             currentAmount,
             newAmount,
             NextYearPay,
-            "javascript:history.go(-1)"
+            "#"
           )
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,

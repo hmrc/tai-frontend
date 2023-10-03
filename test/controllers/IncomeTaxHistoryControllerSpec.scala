@@ -20,8 +20,6 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -36,8 +34,7 @@ import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import scala.concurrent.Future
 
-class IncomeTaxHistoryControllerSpec
-    extends BaseSpec with TaxAccountSummaryTestData with BeforeAndAfterEach with JsoupMatchers with ScalaFutures {
+class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData with JsoupMatchers {
 
   val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 5
   val totalInvocations: Int = numberOfPreviousYearsToShowIncomeTaxHistory + 1
@@ -45,7 +42,10 @@ class IncomeTaxHistoryControllerSpec
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val personService: PersonService = mock[PersonService]
 
-  override def beforeEach(): Unit = reset(taxAccountService, employmentService, personService)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(taxAccountService, employmentService, personService)
+  }
 
   class TestController
       extends IncomeTaxHistoryController(

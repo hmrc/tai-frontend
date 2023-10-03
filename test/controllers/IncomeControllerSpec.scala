@@ -21,7 +21,6 @@ import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -45,7 +44,7 @@ import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach {
+class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
@@ -55,7 +54,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfter
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
 
-  override def beforeEach(): Unit = reset(incomeService, journeyCacheService)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(incomeService, journeyCacheService)
+  }
 
   val payToDate = "100"
   val employerId = 1

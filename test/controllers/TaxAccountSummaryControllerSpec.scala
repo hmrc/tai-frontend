@@ -21,7 +21,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
@@ -37,10 +36,12 @@ import views.html.IncomeTaxSummaryView
 
 import scala.concurrent.Future
 
-class TaxAccountSummaryControllerSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
+class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTestData {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(auditService)
+  }
 
   "onPageLoad" must {
 

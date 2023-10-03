@@ -205,7 +205,7 @@ class UpdateIncomeNextYearController @Inject() (
                   newAmount,
                   NextYearPay,
                   "#"
-                ) // TODO this is temporary
+                )
               Ok(updateIncomeCYPlus1Confirm(vm))
             }
         case Left(error) =>

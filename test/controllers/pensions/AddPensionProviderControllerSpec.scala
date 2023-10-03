@@ -23,7 +23,6 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -43,10 +42,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class AddPensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class AddPensionProviderControllerSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(addPensionProviderJourneyCacheService)
+  }
 
   "addPensionProviderName" must {
     "show the pensionProvider name form page" when {

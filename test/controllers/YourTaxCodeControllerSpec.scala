@@ -21,7 +21,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -34,7 +33,7 @@ import views.html.{TaxCodeDetailsPreviousYearsView, TaxCodeDetailsView}
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
-class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class YourTaxCodeControllerSpec extends BaseSpec {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
@@ -51,8 +50,10 @@ class YourTaxCodeControllerSpec extends BaseSpec with BeforeAndAfterEach {
     inject[ErrorPagesHandler]
   )
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(taxAccountService)
+  }
 
   "renderTaxCodes" must {
     "display error when there is TaiFailure in service" in {

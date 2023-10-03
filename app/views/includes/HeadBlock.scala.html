@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.tai.config
+@import views.html.helper.CSPNonce
 
-import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagNamesLibrary
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, SCAWrapperToggle}
+@this()
+@()(implicit request: Request[_])
 
-class ApplicationStartUp {
-  FeatureFlagNamesLibrary.addFlags(
-    List(
-      CyPlusOneToggle,
-      IncomeTaxHistoryToggle,
-      SCAWrapperToggle
-    )
-  )
-}
+    <meta name="format-detection" content="telephone=no"/>
+    <link @CSPNonce.attr rel="stylesheet" href='@controllers.routes.AssetsController.versioned("stylesheets/tai.css")'/>
