@@ -32,6 +32,7 @@ import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
+import uk.gov.hmrc.tai.model.admin.SCAWrapperToggle
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
@@ -43,7 +44,7 @@ import utils.{FakeActionJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
-
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
@@ -91,6 +92,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   )
 
   override def beforeEach(): Unit = {
+    reset(mockFeatureFlagService)
+    when(mockFeatureFlagService.get(SCAWrapperToggle))
+      .thenReturn(Future.successful(FeatureFlag(SCAWrapperToggle, isEnabled = false)))
     reset(employmentService, trackSuccessJourneyCacheService)
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(
@@ -535,7 +539,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
       running(application) {
-        val result = controller(Some(userAnswersWithDate), mockRepository).handleEndEmploymentPage()(request)
+        val result = controller(Some(userAnswersWithDate), mockRepository).handleEndEmploymentPage(0)(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController
           .addTelephoneNumber()
@@ -553,7 +557,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
-        val result = controller(Some(userAnswers)).handleEndEmploymentPage()(request)
+        val result = controller(Some(userAnswers)).handleEndEmploymentPage(0)(request)
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -567,7 +571,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         )
       val application = applicationBuilder(userAnswers = userAnswersWithDate).build()
       running(application) {
-        val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage()(fakePostRequest)
+        val result = controller(Some(userAnswersEmpty)).handleEndEmploymentPage(0)(fakePostRequest)
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -576,7 +580,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
-        val result = controller(Some(userAnswers)).handleEndEmploymentPage()(fakePostRequest)
+        val result = controller(Some(userAnswers)).handleEndEmploymentPage(0)(fakePostRequest)
         status(result) mustBe BAD_REQUEST
       }
     }

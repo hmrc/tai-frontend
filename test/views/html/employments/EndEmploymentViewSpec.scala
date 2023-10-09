@@ -59,7 +59,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     behave like pageWithBackLink()
     behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
-    behave like pageWithContinueButtonFormNew(s"/check-income-tax/end-employment/date")
+    behave like pageWithContinueButtonFormNew(s"/check-income-tax/end-employment/date/0")
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
@@ -70,7 +70,6 @@ class EndEmploymentViewSpec extends TaiViewSpec {
       }
     }
 
-    // TODO: New test failing
     "have a legend in the form" in {
       def view: Html = template(employmentEndDateForm, viewmodel)
       val legendItem1 = doc(view).select("#date-you-left-hint").text
@@ -79,7 +78,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     }
 
     "have a form hint" in {
-      val legendItem2 = doc(view).select("#tellUsAboutEmploymentForm-hint").text
+      val legendItem2 = doc(view).select("#date-example-hint").text
 
       legendItem2 mustBe Messages("tai.label.date.example")
     }

@@ -340,37 +340,33 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  def handleEndEmploymentPage(): Action[AnyContent] =
+  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      request.userAnswers
-        .get(EmploymentIdPage)
-        .fold(
-          Future.successful(error5xxInBadRequest())
-        )(empId =>
-          employmentService
-            .employment(nino, empId)
-            .flatMap(
-              _.fold(
-                Future.successful(error5xxInBadRequest())
-              )(employment =>
-                EmploymentEndDateForm(employment.name).form
-                  .bindFromRequest()
-                  .fold(
-                    formWithErrors =>
-                      Future.successful(
-                        BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, empId)))
-                      ),
-                    date =>
-                      for {
-                        userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDatePage, date))
-                        _           <- journeyCacheNewRepository.set(userAnswers)
-                      } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
-                  )
+
+      employmentService
+        .employment(nino, employmentId)
+        .flatMap(
+          _.fold(
+            Future.successful(error5xxInBadRequest())
+          )(employment =>
+            EmploymentEndDateForm(employment.name).form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
+                  ),
+                date =>
+                  for {
+                    userAnswers <- fromTry(request.userAnswers.set(EmploymentEndDatePage, date))
+                    _           <- journeyCacheNewRepository.set(userAnswers)
+                  } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
               )
-            )
+          )
         )
+
     }
 
   def addTelephoneNumber(): Action[AnyContent] =
