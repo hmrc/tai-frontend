@@ -70,6 +70,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
       }
     }
 
+    // TODO: New test failing
     "have a legend in the form" in {
       def view: Html = template(employmentEndDateForm, viewmodel)
       val legendItem1 = doc(view).select("#date-you-left-hint").text
