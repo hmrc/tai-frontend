@@ -17,9 +17,9 @@
 package utils
 
 import builders.UserBuilder
+import controllers.FakeTaiPlayApplication
 import controllers.actions.{ActionJourney, DataRetrievalAction, IdentifierAction}
 import controllers.auth.AuthedUser
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -28,7 +28,6 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
@@ -40,7 +39,7 @@ import scala.reflect.ClassTag
 
 class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
 
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
 
   protected def applicationBuilder(userAnswers: UserAnswers = emptyUserAnswers): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
@@ -78,7 +77,7 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
   implicit lazy val lang: Lang = Lang("en")
   implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-  val nino: Nino = FakeAuthAction.nino
+  val nino: String = "CS121212C" // //FakeAuthAction.nino
 
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()

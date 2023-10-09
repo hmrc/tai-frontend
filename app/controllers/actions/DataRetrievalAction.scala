@@ -29,22 +29,32 @@ class DataRetrievalActionImpl @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
+  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
+    println("\nID=" + request.userId)
+
+    println("\nrequest.request.taiUser.nino=" + request.request.taiUser.nino)
+    println("\nrequest.request.taiUser.trustedHelper=" + request.request.taiUser.trustedHelper)
+
+    val nino: String = (request.request.taiUser.nino, request.request.taiUser.trustedHelper) match {
+      case (thisUserNino, None) => thisUserNino.nino
+      case (_, Some(th))        => th.principalNino
+    }
+
     journeyCacheNewRepository
-      .get(request.userId)
+      .get(request.userId, nino)
       .map {
         _.fold(
           DataRequest(
             request.request,
             request.request.taiUser,
             request.request.fullName,
-            UserAnswers(request.userId),
-            request.userId
+            UserAnswers(request.userId, nino)
           )
         )(
-          DataRequest(request.request, request.request.taiUser, request.request.fullName, _, request.userId)
+          DataRequest(request.request, request.request.taiUser, request.request.fullName, _)
         )
       }
+  }
 }
 
 trait DataRetrievalAction extends ActionTransformer[IdentifierRequest, DataRequest]

@@ -23,8 +23,7 @@ case class DataRequest[A](
   request: Request[A],
   taiUser: AuthedUser,
   fullName: String,
-  userAnswers: UserAnswers,
-  userId: String
+  userAnswers: UserAnswers
 ) extends WrappedRequest[A](request)
 
 // TODO - Bring back apply method

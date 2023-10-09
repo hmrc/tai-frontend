@@ -22,7 +22,6 @@ import play.api.mvc._
 import play.api.test.Helpers
 import uk.gov.hmrc.tai.model.UserAnswers
 
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class FakeActionJourney(
@@ -39,8 +38,7 @@ class FakeActionJourney(
           authRequest.request,
           authRequest.taiUser,
           authRequest.fullName,
-          userAnswers,
-          s"session-${UUID.randomUUID()}"
+          userAnswers
         )
       )
     }

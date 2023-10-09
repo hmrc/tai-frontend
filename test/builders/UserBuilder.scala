@@ -25,16 +25,17 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 object UserBuilder {
   val nino: Nino = new Generator().nextNino
 
-  def apply(utr: String = "utr", providerType: String = TaiConstants.AuthProviderGG) =
+  def apply(utr: String = "utr", providerType: String = TaiConstants.AuthProviderGG): AuthedUser =
     AuthedUser(nino.toString(), Some(utr), Some(providerType), ConfidenceLevel.L200, None, None)
 
-  def apply(utr: String, providerType: String, principalName: String) =
+  def apply(utr: String, providerType: String, principalName: String, principalNino: String): AuthedUser =
     AuthedUser(
       nino.toString(),
       Some(utr),
       Some(providerType),
       ConfidenceLevel.L200,
       None,
-      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", nino.toString()))
+      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", principalNino))
     )
+
 }

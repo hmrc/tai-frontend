@@ -26,6 +26,7 @@ import pages._
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import repository.JourneyCacheNewRepository
@@ -45,15 +46,16 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
 class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfterEach {
 
-  private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+  private def fakeGetRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-  private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+  private def fakePostRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
@@ -61,6 +63,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
+    nino,
     Json.obj(
       EndCompanyBenefitConstants.EmploymentIdKey -> 1
     )
@@ -120,7 +123,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
       .thenReturn(Future.successful(Success))
     when(mockRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
   }
 
   "employmentUpdateRemove" must {
@@ -402,7 +405,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, and cache succeeds" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
-      when(mockRepository.clear(any()))
+      when(mockRepository.clear(any(), any()))
         .thenReturn(Future.successful(true))
       when(trackSuccessJourneyCacheService.cache(any())(any()))
         .thenReturn(
@@ -429,7 +432,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
-      when(mockRepository.clear(any()))
+      when(mockRepository.clear(any(), any()))
         .thenReturn(Future.successful(false))
       when(trackSuccessJourneyCacheService.cache(any())(any()))
         .thenReturn(
@@ -1000,7 +1003,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
   "cancel" must {
     "redirect to the the IncomeSourceSummarycontroller() if cache successfully clears" in {
       val employmentId = 1
-      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = controller().cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -1008,7 +1011,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     }
     "redirect to the the IncomeSourceSummarycontroller() if cache fails to clear" in {
       val employmentId = 1
-      when(mockRepository.clear(any())).thenReturn(Future.successful(false))
+      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(false))
 
       val result = controller().cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

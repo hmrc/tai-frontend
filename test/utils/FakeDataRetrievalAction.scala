@@ -30,8 +30,7 @@ class FakeDataRetrievalAction(dataToReturn: UserAnswers) extends DataRetrievalAc
         request.request.request,
         request.request.taiUser,
         request.request.fullName,
-        dataToReturn,
-        request.userId
+        dataToReturn
       )
     )
 

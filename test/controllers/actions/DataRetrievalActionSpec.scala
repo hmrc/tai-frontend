@@ -17,7 +17,9 @@
 package controllers.actions
 
 import builders.RequestBuilder.uuid
-import controllers.auth.{AuthenticatedRequest, DataRequest, IdentifierRequest}
+import builders.UserBuilder
+import controllers.auth.{AuthedUser, AuthenticatedRequest, DataRequest, IdentifierRequest}
+import org.mockito.ArgumentMatchers
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.Json
@@ -26,6 +28,7 @@ import play.api.test.Helpers.GET
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 
 import java.time.Instant
@@ -37,14 +40,20 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
     def callTransform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = transform(request)
   }
 
+  private val repository = mock[JourneyCacheNewRepository]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(repository)
+  }
+
   "Data Retrieval Action" when {
     "when there is no data in the cache" must {
-      "must set an empty UserAnswers in the DataRequest" in {
+      "must set an empty UserAnswers in the DataRequest with correct id + nino where not acting as trusted helper" in {
         val userId = s"session-$uuid"
         val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
 
-        val repository = mock[JourneyCacheNewRepository]
-        when(repository.get(any)).thenReturn(Future.successful(None))
+        when(repository.get(any, any)).thenReturn(Future.successful(None))
         val action = new Harness(repository)
 
         val result = action
@@ -52,20 +61,44 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
           .futureValue
 
         result.userAnswers.id mustBe userId
+        result.userAnswers.nino mustBe authedUser.nino.nino
+        result.userAnswers.data mustBe Json.obj()
+      }
+
+      "must set an empty UserAnswers in the DataRequest with correct id + nino where acting as trusted helper" in {
+        val userId = s"session-$uuid"
+        val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
+
+        when(repository.get(any, any)).thenReturn(Future.successful(None))
+        val action = new Harness(repository)
+
+        val helperNino = "helper-nino"
+        val authedUser: AuthedUser = UserBuilder(
+          utr = "utr",
+          providerType = TaiConstants.AuthProviderGG,
+          principalName = "",
+          principalNino = helperNino
+        )
+
+        val result = action
+          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
+          .futureValue
+
+        result.userAnswers.id mustBe userId
+        result.userAnswers.nino mustBe helperNino
         result.userAnswers.data mustBe Json.obj()
       }
     }
 
     "when there is data in the cache" must {
-      "must set the UserAnswers in the DataRequest which exists in the cache" in {
+      "must set the UserAnswers in the DataRequest which exists in the cache where not acting as helper" in {
         val userId = s"session-$uuid"
         val request = FakeRequest().withSession(SessionKeys.sessionId -> userId)
         val instant = Instant.now()
         val data = Json.obj("testKey" -> "testValue")
 
-        val repository = mock[JourneyCacheNewRepository]
-        when(repository.get(any)).thenReturn(
-          Future(Some(UserAnswers(userId, Json.obj("testKey" -> "testValue"), instant)))
+        when(repository.get(ArgumentMatchers.eq(userId), ArgumentMatchers.eq(authedUser.nino.nino))).thenReturn(
+          Future(Some(UserAnswers(userId, authedUser.nino.nino, Json.obj("testKey" -> "testValue"), instant)))
         )
         val action = new Harness(repository)
 
@@ -74,9 +107,40 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
           .futureValue
 
         result.userAnswers.id mustBe userId
+        result.userAnswers.nino mustBe authedUser.nino.nino
+        result.userAnswers.data mustBe data
+        result.userAnswers.lastUpdated mustBe instant
+      }
+
+      "must set the UserAnswers in the DataRequest which exists in the cache where acting as helper" in {
+        val userId = s"session-$uuid"
+        val request = FakeRequest().withSession(SessionKeys.sessionId -> userId)
+        val instant = Instant.now()
+        val data = Json.obj("testKey" -> "testValue")
+
+        val helperNino = "helper-nino"
+        val authedUser: AuthedUser = UserBuilder(
+          utr = "utr",
+          providerType = TaiConstants.AuthProviderGG,
+          principalName = "",
+          principalNino = helperNino
+        )
+
+        when(repository.get(ArgumentMatchers.eq(userId), ArgumentMatchers.eq(helperNino))).thenReturn(
+          Future(Some(UserAnswers(userId, helperNino, Json.obj("testKey" -> "testValue"), instant)))
+        )
+        val action = new Harness(repository)
+
+        val result = action
+          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
+          .futureValue
+
+        result.userAnswers.id mustBe userId
+        result.userAnswers.nino mustBe helperNino
         result.userAnswers.data mustBe data
         result.userAnswers.lastUpdated mustBe instant
       }
     }
   }
+
 }

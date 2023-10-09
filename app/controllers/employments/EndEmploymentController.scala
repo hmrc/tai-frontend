@@ -22,7 +22,7 @@ import controllers.auth.{AuthedUser, DataRequest}
 import pages._
 import play.api.Logging
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -70,7 +70,7 @@ class EndEmploymentController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userId).map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.id, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -486,7 +486,7 @@ class EndEmploymentController @Inject() (
         _ <- successfulJourneyCacheService.cache(
                Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")
              )
-        _ <- journeyCacheNewRepository.clear(request.userId)
+        _ <- journeyCacheNewRepository.clear(request.userAnswers.id, request.userAnswers.nino)
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
       result.getOrElse(
