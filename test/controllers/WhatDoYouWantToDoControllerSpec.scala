@@ -22,13 +22,14 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
@@ -43,7 +44,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with BeforeAndAfterEach {
+class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val auditService: AuditService = mock[AuditService]
@@ -51,7 +52,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val jrsService: JrsService = mock[JrsService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val taxCodeIncomes = Seq(
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
     TaxCodeIncome(
       EmploymentIncome,
       Some(1),
@@ -69,20 +70,20 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
   val taxCodeNotChanged = false
   val taxCodeChanged = true
 
-  val startDate = LocalDate.now()
-  val taxCodeRecord1 = TaxCodeRecord(
+  val startDate: LocalDate = LocalDate.now()
+  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
     "D0",
     startDate,
     startDate.plusDays(1),
     OtherBasisOfOperation,
     "Employer 1",
-    false,
+    pensionIndicator = false,
     Some("1234"),
-    true
+    primary = true
   )
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
-  val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
-  val mostRecentTaxCodeChangeDate =
+  val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
+  val taxCodeChange: TaxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
+  val mostRecentTaxCodeChangeDate: String =
     TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate).replace("\u00A0", " ")
 
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
@@ -118,8 +119,15 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     )
   )
 
-  override def beforeEach(): Unit =
-    reset(auditService, employmentService)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(auditService, employmentService, mockAppConfig)
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+      Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+      Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+
+  }
 
   "Calling the What do you want to do page method" must {
 
@@ -189,8 +197,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "cyPlusOne is disabled and jrs claim data does not exist" in {
-        val testController = createTestController(isCyPlusOneEnabled = false)
 
+        val testController = createTestController()
+
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
 
@@ -240,7 +251,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "cyPlusOne is disabled and jrs claim data exist" in {
-        val testController = createTestController(isCyPlusOneEnabled = false)
+
+        val testController = createTestController()
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
 
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(Future.successful(true))
@@ -433,8 +447,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "cy plus one data is available and cy plus one is disabled" in {
-        val testController = createTestController(isCyPlusOneEnabled = false)
 
+        val testController = createTestController()
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
@@ -449,8 +465,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
       }
 
       "cy plus one data is not available and cy plus one is disabled" in {
-        val testController = createTestController(isCyPlusOneEnabled = false)
 
+        val testController = createTestController()
+
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, TaxCodeError](taxCodeNotChanged))
 
@@ -528,10 +547,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
     }
   }
 
-  private def createTestController(isCyPlusOneEnabled: Boolean = true) =
-    new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
+  private def createTestController() =
+    new WhatDoYouWantToDoControllerTest()
 
-  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true)
+  class WhatDoYouWantToDoControllerTest()
       extends WhatDoYouWantToDoController(
         employmentService,
         taxCodeChangeService,
@@ -544,11 +563,9 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers with B
         mockAppConfig,
         mcc,
         inject[WhatDoYouWantToDoTileView],
+        mockFeatureFlagService,
         inject[ErrorPagesHandler]
       ) {
-
-    when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
-    when(mockAppConfig.incomeTaxHistoryEnabled) thenReturn true
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))

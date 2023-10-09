@@ -45,6 +45,7 @@
     authedUser = Some(user),
     backLinkContent=Some(messages("your.paye.income.tax.overview")),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
+    backLinkId = "back-link-custom-url",
     pagePrintable = true
 ) {
 
@@ -73,7 +74,7 @@
 
 
         <div class="print-this">
-            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+            <a class="print-this__link" id="printLink" href="#">@messages("tai.label.print") </a>
         </div>
 
     </div>

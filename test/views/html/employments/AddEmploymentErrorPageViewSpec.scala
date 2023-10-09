@@ -30,7 +30,10 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
 
     "have link" in {
       doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
-      doc must haveLinkWithUrlWithID("backLink", routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveLinkWithUrlWithClass(
+        "govuk-back-link js-visible-back",
+        routes.TaxAccountSummaryController.onPageLoad().url
+      )
     }
 
     "have paragraph" in {

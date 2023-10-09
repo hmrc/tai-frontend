@@ -30,10 +30,9 @@
 
 @mainTemplate(
     title = messages("tai.checkYourAnswers.title"),
-    pageTitle = Some(Messages("tai.checkYourAnswers.title")),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(viewModel.backUrl)
 ){
 <div class="govuk-grid-row">

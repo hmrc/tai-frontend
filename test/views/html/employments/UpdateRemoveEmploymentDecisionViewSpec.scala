@@ -38,7 +38,7 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec {
   "update_remove_employment_decision" must {
     behave like pageWithTitle(messages("tai.employment.decision.legend", employmentName))
 
-    behave like pageWithBackLinkNew()
+    behave like pageWithBackLink()
 
     "display preheading" in {
       doc must haveElementAtPathWithText(

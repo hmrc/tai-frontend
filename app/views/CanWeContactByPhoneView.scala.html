@@ -32,12 +32,6 @@
         messages: Messages)
 
 
-@hint = {
-    <div>
-        <p>@Messages("tai.canWeContactByPhone.explanation")</p>
-        <p>@Messages("tai.canWeContactByPhone.explanation.pt2")</p>
-    </div>
-}
 
 @main(
     title = viewModel.mainHeading,
@@ -45,6 +39,7 @@
     authedUser = incomingAuthedUser,
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(viewModel.backUrl),
+    backLinkId = "back-link-custom-url",
     formForErrorSummary = Some(yesNoForm),
 ) {
 <div class = "govuk-grid-row">
@@ -54,6 +49,10 @@
         }
 
         <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@viewModel.preHeading</h2>
+        <h1 class="govuk-heading-xl break-word">@viewModel.mainHeading</h1>
+
+        <p class="govuk-body">@Messages("tai.canWeContactByPhone.explanation")</p>
+        <p class="govuk-body">@Messages("tai.canWeContactByPhone.explanation.pt2")</p>
 
         @form(action = Call("POST", viewModel.continueUrl)) {
 
@@ -63,13 +62,12 @@
                         legend = Some(
                         Legend(
                             content = Text(viewModel.mainHeading),
-                            classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
-                            isPageHeading = true
+                            classes="govuk-visually-hidden",
+                            isPageHeading = false
                            )
                         )
                     )
                 ),
-                hint = Some(Hint(content = HtmlContent(hint))),
                 errorMessage = yesNoForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
                 idPrefix = Some("yesNoChoice"),
                 name = "yesNoChoice",

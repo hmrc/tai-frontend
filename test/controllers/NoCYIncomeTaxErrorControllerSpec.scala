@@ -21,8 +21,6 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.concurrent.ScalaFutures
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
@@ -38,10 +36,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with ScalaFutures with I18nSupport with BeforeAndAfterEach {
+class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(employmentService)
+  }
 
   "Calling the Current Year Page method" should {
 

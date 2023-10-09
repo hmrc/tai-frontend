@@ -17,23 +17,27 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo}
+import play.api.cache.AsyncCacheApi
 import play.api.http.Status.OK
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
-import utils.IntegrationSpec
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
+import utils.{FakeAsyncCacheApi, IntegrationSpec}
 
 import java.time.LocalDate
 import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
+
+  lazy val fakeAsyncCacheApi = new FakeAsyncCacheApi()
 
   val url = "/check-income-tax/what-do-you-want-to-do"
 
@@ -48,9 +52,17 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
             "feature.web-chat.enabled"                                        -> true
           )
+          .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
           .build()
 
-        val person = Person(generatedNino, "Firstname", "Surname", false, false, Address("", "", "", "", ""))
+        val person = Person(
+          generatedNino,
+          "Firstname",
+          "Surname",
+          isDeceased = false,
+          manualCorrespondenceInd = false,
+          Address("", "", "", "", "")
+        )
         server.stubFor(
           get(urlEqualTo(s"/tai/$generatedNino/person"))
             .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
@@ -107,9 +119,17 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
           "feature.web-chat.enabled"                                        -> false
         )
+        .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
         .build()
 
-      val person = Person(generatedNino, "Firstname", "Surname", false, false, Address("", "", "", "", ""))
+      val person = Person(
+        generatedNino,
+        "Firstname",
+        "Surname",
+        isDeceased = false,
+        manualCorrespondenceInd = false,
+        Address("", "", "", "", "")
+      )
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/person"))
           .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
@@ -162,9 +182,17 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         "microservice.services.tai.port"  -> server.port(),
         "feature.web-chat.enabled"        -> false
       )
+      .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
       .build()
 
-    val person = Person(generatedNino, "Firstname", "Surname", false, false, Address("", "", "", "", ""))
+    val person = Person(
+      generatedNino,
+      "Firstname",
+      "Surname",
+      isDeceased = false,
+      manualCorrespondenceInd = false,
+      Address("", "", "", "", "")
+    )
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/person"))
         .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
@@ -235,9 +263,9 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         TaxYear.apply(year).end,
         Week1Month1BasisOfOperation,
         s"employer$year",
-        false,
+        pensionIndicator = false,
         None,
-        true
+        primary = true
       )
 
       lazy val taxCodeChange: TaxCodeChange = {

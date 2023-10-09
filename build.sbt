@@ -14,6 +14,7 @@ lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.domain._",
+    "uk.gov.hmrc.tai.model.admin._",
     "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",
     "_root_.uk.gov.hmrc.tai.binders.BenefitComponentTypeBinder._"))
 
@@ -95,7 +96,6 @@ lazy val microservice = Project(appName, file("."))
       "javascripts/tai-app.js" -> group(Seq(
         "javascripts/card.js",
         "javascripts/char-count.js",
-        "javascripts/tai-backlink.js",
         "javascripts/tai-new.js",
         "javascripts/tax-code-change.js",
         "javascripts/urbanner.js"

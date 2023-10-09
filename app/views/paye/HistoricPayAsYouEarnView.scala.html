@@ -41,6 +41,7 @@ messages: Messages)
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     authedUser = Some(request.taiUser),
     pageTitle = Some(Messages("tai.service.navTitle")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
@@ -106,7 +107,7 @@ messages: Messages)
 
                 <div class="govuk-!-margin-top-8 govuk-!-margin-bottom-9">
                 <div class="print-this">
-                    <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+                    <a class="print-this__link" href="#" id="printLink">@messages("tai.label.print") </a>
                 </div>
                 </div>
 

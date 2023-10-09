@@ -23,7 +23,6 @@ import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
@@ -39,10 +38,12 @@ import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeVi
 
 import scala.concurrent.Future
 
-class UpdatePensionProviderControllerSpec extends BaseSpec with BeforeAndAfterEach {
+class UpdatePensionProviderControllerSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(journeyCacheService)
+  }
 
   val pensionName = "Pension 1"
   val pensionId = "1"

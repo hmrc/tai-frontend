@@ -25,17 +25,13 @@
 
 @(dateForm: Form[LocalDate], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@hint = {
-    <p class="govuk-!-display-block carry-over">@messages("tai.addPensionProvider.startDateForm.label")</p>
-    <p>@messages("tai.label.date.example")</p>
-}
 
 @main(
     title = Messages("tai.addPensionProvider.startDateForm.pagetitle"),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay().url),
     formForErrorSummary = Some(dateForm)
 
@@ -53,7 +49,7 @@
                 @govukDateInput(DateInput(
                     id = "tellUsStartDateForm",
                     namePrefix = Some("tellUsStartDateForm"),
-                    hint = Some(Hint(content = HtmlContent(hint))),
+                    hint = Some(Hint(content = Text(messages("tai.label.date.example")))),
                     items = Seq(
                         InputItem(
                             name= "day",

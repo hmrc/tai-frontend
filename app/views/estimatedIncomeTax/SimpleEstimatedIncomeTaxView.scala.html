@@ -43,6 +43,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.estimatedIncome.title")),
     backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad().url),
+    backLinkId = "back-link-custom-url",
     backLinkContent = Some(Messages("tai.back-link.upper")),
     pagePrintable = true,
 ){
@@ -94,7 +95,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
                 @iFormLinks
             </div>
             <div class="print-this">
-                <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
+                <a class="print-this__link" href="#" id="printLink">@Messages("tai.label.print")</a>
             </div>
         </div>
 

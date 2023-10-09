@@ -25,20 +25,12 @@
 
 @(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@hint = {
-    <p class="govuk-body-l">@messages("tai.income.previousYears.decision.paragraph.one")</p>
-    <p class="govuk-body">@messages("tai.income.previousYears.decision.paragraph.two")</p>
-    <p class="govuk-body">@messages("tai.income.previousYears.decision.paragraph.three")</p>
-
-    <h2 class="govuk-body-l govuk-!-font-weight-bold ">@messages("tai.income.previousYears.decision.IWantTo")</h2>
-}
 
 @mainTemplate(
     title = messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink",
     formForErrorSummary = Some(decisionForm)
 
 ){
@@ -51,7 +43,13 @@
     }
 
         <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.income.previousYears.journey.preHeader")</h2>
+        <h1 class="govuk-heading-xl break-word">@messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year))</h1>
 
+        <p class="govuk-body-l">@messages("tai.income.previousYears.decision.paragraph.one")</p>
+        <p class="govuk-body">@messages("tai.income.previousYears.decision.paragraph.two")</p>
+        <p class="govuk-body">@messages("tai.income.previousYears.decision.paragraph.three")</p>
+
+        <h2 class="govuk-body-l govuk-!-font-weight-bold ">@messages("tai.income.previousYears.decision.IWantTo")</h2>
         @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision()) {
 
         @govukRadios(Radios(
@@ -60,12 +58,11 @@
                     legend = Some(
                     Legend(
                         content = Text(messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year))),
-                        isPageHeading = true,
-                        classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word")
+                        isPageHeading = false,
+                        classes="govuk-visually-hidden")
                 )
                 )
             ),
-            hint = Some(Hint(content = HtmlContent(hint))),
             errorMessage = decisionForm.errors.filter(_.key == "yesNoChoice").asTextErrorMessages.headOption,
             idPrefix = Some("updateIncomeChoice"),
             name = "updateIncomeChoice",

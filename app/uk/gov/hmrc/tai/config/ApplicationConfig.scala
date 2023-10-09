@@ -106,7 +106,8 @@ class ApplicationConfig @Inject() (
 
   lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
   lazy val sessionCountdownInSeconds: Int = getOptional[Int]("tai.session.countdown").getOrElse(120)
-  lazy val messagesFrontendTimeoutInSec = getOptional[Int]("messages-frontend.timeout-in-seconds").getOrElse(5)
+  lazy val messagesFrontendTimeoutInSec: Int = getOptional[Int]("messages-frontend.timeout-in-seconds").getOrElse(5)
+  lazy val SCAWrapperFutureTimeout: Int = servicesConfig.getInt("sca-wrapper.future-timeout")
 
   lazy val personDetailsMessageCountToggle: Boolean = servicesConfig.getBoolean("messages-frontend.unread-toggle")
 
@@ -128,5 +129,4 @@ class ApplicationConfig @Inject() (
   lazy val messagesFrontendUrl: String = servicesConfig.baseUrl("message-frontend")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
-
 }

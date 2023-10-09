@@ -18,9 +18,6 @@ package uk.gov.hmrc.tai.connectors
 
 import akka.actor.ActorSystem
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.LockedException
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormAcquired, TrackedFormReceived}
@@ -28,10 +25,12 @@ import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class TrackingConnectorSpec extends BaseSpec with BeforeAndAfterEach with ScalaFutures {
+class TrackingConnectorSpec extends BaseSpec {
 
-  override def beforeEach(): Unit =
-    Mockito.reset(httpHandler)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(httpHandler)
+  }
 
   "Tracking Url" should {
     "fetch the correct service url" when {

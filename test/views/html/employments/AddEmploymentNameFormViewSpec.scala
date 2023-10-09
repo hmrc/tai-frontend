@@ -39,7 +39,7 @@ class AddEmploymentNameFormViewSpec extends TaiViewSpec {
       )
     }
 
-    behave like pageWithBackLinkNew()
+    behave like pageWithBackLink()
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-name")
     behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 

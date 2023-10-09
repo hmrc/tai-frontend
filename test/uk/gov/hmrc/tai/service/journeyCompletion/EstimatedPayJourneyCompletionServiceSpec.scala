@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.service.journeyCompletion
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
@@ -27,7 +26,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with BeforeAndAfterEach {
+class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec {
 
   private def createTestService = new EstimatedPayJourneyCompletionServiceTest
 
@@ -43,8 +42,10 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec with BeforeAndAf
         successfulJourneyCacheService
       )
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(successfulJourneyCacheService)
+  }
 
   "Estimated Pay Journey Completed Service" must {
 

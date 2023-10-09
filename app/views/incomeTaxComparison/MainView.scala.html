@@ -48,6 +48,7 @@
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
     backLinkUrl = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url),
+    backLinkId = "back-link-custom-url",
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true,
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
@@ -149,7 +150,7 @@
             </p>
 
             <div class="print-this">
-                <a class="print-this__link" href="javascript:window.print()">@Messages("tai.label.print")</a>
+                <a class="print-this__link" href="#" id="printLink">@Messages("tai.label.print")</a>
             </div>
 
         </div>

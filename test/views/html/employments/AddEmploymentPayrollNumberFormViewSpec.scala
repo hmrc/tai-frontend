@@ -38,7 +38,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
-    behave like pageWithBackLinkNew()
+    behave like pageWithBackLink()
     behave like pageWithContinueButtonFormNew("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(
       AddEmploymentPayrollNumberConstants.PayrollNumberChoice,
@@ -54,7 +54,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
       )
       def view: Html = add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
-      doc must haveBackLinkNew
+      doc must haveBackLink
     }
 
     "have an input field for payroll number" in {

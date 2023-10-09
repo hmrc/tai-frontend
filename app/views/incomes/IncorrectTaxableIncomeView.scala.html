@@ -24,7 +24,7 @@ user: controllers.auth.AuthedUser)
 @mainTemplate(
     title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkId = "backLink",
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage(employerId).url),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     authedUser = Some(user),

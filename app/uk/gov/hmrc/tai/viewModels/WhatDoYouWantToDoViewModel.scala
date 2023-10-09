@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import java.time.LocalDate
 
 case class WhatDoYouWantToDoViewModel(
-  isCyPlusOneEnabled: Boolean,
+  cyPlusOneDataAvailable: Boolean,
   showJrsLink: Boolean,
   maybeMostRecentTaxCodeChangeDate: Option[LocalDate]
 )

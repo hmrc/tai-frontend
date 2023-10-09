@@ -27,7 +27,7 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
 
   "Irregular pay page" must {
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))
-    behave like pageWithBackLinkNew()
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.irregular.preHeadingText"),

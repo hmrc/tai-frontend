@@ -24,12 +24,15 @@ import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -49,6 +52,7 @@ class WhatDoYouWantToDoController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,
+  featureFlagService: FeatureFlagService,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
@@ -107,28 +111,29 @@ class WhatDoYouWantToDoController @Inject() (
     }
     taxCodeChangeDate.flatMap { maybeMostRecentTaxCodeChangeDate =>
       lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
-        isCyPlusOneEnabled = applicationConfig.cyPlusOneEnabled,
+        cyPlusOneDataAvailable = true,
         showJrsLink = showJrsLink,
         maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
       )
 
       lazy val unsuccessfulResponseModel =
         WhatDoYouWantToDoViewModel(
-          isCyPlusOneEnabled = false,
+          cyPlusOneDataAvailable = false,
           showJrsLink = showJrsLink,
           maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
         )
-
-      if (applicationConfig.cyPlusOneEnabled) {
-        taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
-          case _: NotFoundException =>
-            logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-            unsuccessfulResponseModel
-          case _ =>
-            unsuccessfulResponseModel
+      featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
+        if (toggle.isEnabled) {
+          taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
+            case _: NotFoundException =>
+              logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+              unsuccessfulResponseModel
+            case _ =>
+              unsuccessfulResponseModel
+          }
+        } else {
+          Future.successful(successfulResponseModel)
         }
-      } else {
-        Future.successful(successfulResponseModel)
       }
     }
   }
@@ -136,7 +141,7 @@ class WhatDoYouWantToDoController @Inject() (
   private def allowWhatDoYouWantToDo(implicit
     request: AuthenticatedRequest[AnyContent],
     user: AuthedUser
-  ): EitherT[Future, TaxCodeError, Result] = {
+  ) = {
     val nino = user.nino
     for {
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
@@ -144,8 +149,20 @@ class WhatDoYouWantToDoController @Inject() (
       model <- EitherT[Future, TaxCodeError, WhatDoYouWantToDoViewModel](
                  whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
                )
+      incomeTaxHistoryToggle <-
+        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight))
+      cyPlusOneToggle <-
+        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
       _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
-    } yield Ok(whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model, applicationConfig))
+    } yield Ok(
+      whatDoYouWantToDoTileView(
+        WhatDoYouWantToDoForm.createForm,
+        model,
+        applicationConfig,
+        incomeTaxHistoryToggle.isEnabled,
+        cyPlusOneToggle.isEnabled
+      )
+    )
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit

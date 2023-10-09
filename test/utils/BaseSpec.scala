@@ -20,19 +20,25 @@ import controllers.auth.AuthedUser
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.admin.SCAWrapperToggle
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+trait BaseSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach
+    with ScalaFutures {
 
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
@@ -59,6 +65,12 @@ trait BaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar wi
   implicit class StringUtils(str: String) {
     def replaceU00A0 = str.replace("\u00A0", " ")
     def replaceNbsp = str.replaceAll("&nbsp;", " ")
+  }
+
+  override def beforeEach(): Unit = {
+    reset(mockFeatureFlagService)
+    when(mockFeatureFlagService.get(SCAWrapperToggle))
+      .thenReturn(Future.successful(FeatureFlag(SCAWrapperToggle, isEnabled = false)))
   }
 
 }

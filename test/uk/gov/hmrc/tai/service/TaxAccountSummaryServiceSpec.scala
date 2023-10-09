@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.tai.model.domain._
@@ -30,9 +29,10 @@ import utils.{BaseSpec, TaxAccountSummaryTestData}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class TaxAccountSummaryServiceSpec extends BaseSpec with BeforeAndAfterEach with TaxAccountSummaryTestData {
+class TaxAccountSummaryServiceSpec extends BaseSpec with TaxAccountSummaryTestData {
 
   override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(taxAccountService)
     Mockito.reset(employmentService)
   }

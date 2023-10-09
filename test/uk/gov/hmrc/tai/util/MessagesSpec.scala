@@ -43,10 +43,10 @@ class MessagesSpec extends BaseSpec {
     }
 
     "have messages for default and cy only" in {
-      messagesApi.messages("en").size mustBe 0
+      (messagesApi.messages("en") -- scaKeys).size mustBe 0
       val englishMessageCount = messagesApi.messages("default").size
 
-      messagesApi.messages("cy").size mustBe englishMessageCount
+      (messagesApi.messages("cy") -- scaKeys).size mustBe englishMessageCount
     }
   }
 
@@ -147,7 +147,7 @@ class MessagesSpec extends BaseSpec {
 
   private lazy val defaultMessages: Map[String, String] = getExpectedMessages("default")
 
-  private lazy val welshMessages: Map[String, String] = getExpectedMessages("cy") -- commonProvidedKeys
+  private lazy val welshMessages: Map[String, String] = getExpectedMessages("cy") -- commonProvidedKeys -- scaKeys
 
   private def getExpectedMessages(languageCode: String) =
     messagesApi.messages.getOrElse(languageCode, throw new Exception(s"Missing messages for $languageCode"))
@@ -165,5 +165,26 @@ class MessagesSpec extends BaseSpec {
 
   private val commonProvidedKeys = Set(
     "error.address.invalid.character"
+  )
+
+  private val scaKeys = Set(
+    "label.back",
+    "sca-wrapper.banner.label.no_thanks",
+    "sca-wrapper.child.benefit.banner.heading",
+    "sca-wrapper.child.benefit.banner.link.text",
+    "sca-wrapper.fallback.menu.back",
+    "sca-wrapper.fallback.menu.bta",
+    "sca-wrapper.fallback.menu.home",
+    "sca-wrapper.fallback.menu.messages",
+    "sca-wrapper.fallback.menu.name",
+    "sca-wrapper.fallback.menu.profile",
+    "sca-wrapper.fallback.menu.progress",
+    "sca-wrapper.fallback.menu.signout",
+    "sca-wrapper.help.improve.banner.heading",
+    "sca-wrapper.help.improve.banner.link.text",
+    "sca-wrapper.timeout.keepAlive",
+    "sca-wrapper.timeout.message",
+    "sca-wrapper.timeout.signOut",
+    "sca-wrapper.timeout.title"
   )
 }

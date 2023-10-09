@@ -78,7 +78,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     }
 
     "have a form hint" in {
-      val legendItem2 = doc(view).select("#date-example-hint").text
+      val legendItem2 = doc(view).select("#tellUsAboutEmploymentForm-hint").text
 
       legendItem2 mustBe Messages("tai.label.date.example")
     }

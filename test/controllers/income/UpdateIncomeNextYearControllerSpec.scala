@@ -22,16 +22,17 @@ import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.scalatest.BeforeAndAfterEach
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
+import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
@@ -43,7 +44,7 @@ import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 
-class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper with BeforeAndAfterEach {
+class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   private val updateIncomeCYPlus1ConfirmView = inject[UpdateIncomeCYPlus1ConfirmView]
   private val updateIncomeCYPlus1SuccessView = inject[UpdateIncomeCYPlus1SuccessView]
@@ -60,7 +61,10 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  override def beforeEach(): Unit = reset(mockAppConfig)
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockAppConfig)
+  }
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -450,7 +454,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             currentAmount,
             newAmount,
             NextYearPay,
-            "javascript:history.go(-1)"
+            "#"
           )
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,
@@ -526,7 +530,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val model: UpdateNextYearsIncomeCacheModel =
         UpdateNextYearsIncomeCacheModel("employer name", employmentID, isPension, currentEstPay)
 
-      when(mockAppConfig.cyPlusOneEnabled) thenReturn isCyPlusOneEnabled
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
 
       when(updateNextYearsIncomeService.get(meq(employmentID), any())(any()))
         .thenReturn(Future.successful(model))
@@ -550,6 +555,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         updateIncomeCYPlus1EditView,
         updateIncomeCYPlus1SameView,
         inject[SameEstimatedPayView],
+        mockFeatureFlagService,
         inject[ErrorPagesHandler]
       )
 }

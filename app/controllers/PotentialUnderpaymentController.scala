@@ -20,6 +20,7 @@ import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.Logging
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.Referral
@@ -40,7 +41,7 @@ class PotentialUnderpaymentController @Inject() (
   potentialUnderpayment: PotentialUnderpaymentView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Referral {
+    extends TaiBaseController(mcc) with Referral with Logging {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -57,6 +58,9 @@ class PotentialUnderpaymentController @Inject() (
             Map("nino" -> nino.toString())
           )
           val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+          if (vm.iyaCYAmount <= 0 && vm.iyaCYPlusOneAmount <= 0) {
+            logger.error(s"No underpayment found to display content. Referer was: $referer")
+          }
           Ok(potentialUnderpayment(vm))
         }
       } recover { case e: Exception =>

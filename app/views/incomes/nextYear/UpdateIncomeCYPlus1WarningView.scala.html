@@ -28,18 +28,11 @@
 @(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 
-@hint = {
-    <p class="govuk-body">@viewModel.paragraphOne</p>
-    <p class="govuk-body">@messages("tai.incomes.warning.text2")</p>
-    <p class="govuk-inset-text">@messages("tai.incomes.warning.text3")</p>
-}
-
 @mainTemplate(
     title = messages("tai.incomes.warning.customGaTitle"),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink",
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
 
 ) {
@@ -50,6 +43,11 @@
             }
 
             <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.incomes.warning.preHeading")</h2>
+            <h1 class="govuk-heading-xl break-word">@viewModel.heading</h1>
+
+            <p class="govuk-body">@viewModel.paragraphOne</p>
+            <p class="govuk-body">@messages("tai.incomes.warning.text2")</p>
+            <p class="govuk-inset-text">@messages("tai.incomes.warning.text3")</p>
 
             @form(action = controllers.income.routes.UpdateIncomeNextYearController.submitDuplicateWarning(empId)) {
                 @govukRadios(Radios(
@@ -58,12 +56,11 @@
                             legend = Some(
                                 Legend(
                                 content = Text(viewModel.heading),
-                                classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
-                                isPageHeading = true)
+                                classes="govuk-visually-hidden",
+                                isPageHeading = false)
                             )
                         )
                     ),
-                    hint = Some(Hint(content = HtmlContent(hint))),
                     errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
                     idPrefix = Some(FormValuesConstants.YesNoChoice),
                     name = FormValuesConstants.YesNoChoice,

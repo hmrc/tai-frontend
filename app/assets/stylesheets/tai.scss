@@ -6,6 +6,7 @@
 @import 'elements/_icons';
 @import 'elements/_elements_typography.scss';
 @import 'modules/print';
+@import 'modules/printSCA';
 @import 'modules/eyu';
 @import 'modules/navigation';
 @import 'modules/notifications';
@@ -45,16 +46,6 @@
 .button--link-style:disabled:hover{
   background-color: #fff;
   opacity: 1;
-}
-
-hr {
-  display: block;
-  background: #bfc1c3;
-  height: 1px;
-  margin-top: 0px;
-  margin-bottom: 30px;
-  padding: 0;
-  border: 0;
 }
 
 .margin-bottom-medium {
@@ -237,8 +228,7 @@ hr {
     }
 }
 
-div.print-banner,
-#print-link-btn, div.print-this{
+div.print-banner {
   display: none;
   visibility: hidden;
 }
@@ -400,34 +390,54 @@ header + .hmrc-user-research-banner {
 }
 
 
-// workaround solution to style header language selectors
-html:lang(cy) a[lang=cy].govuk-header__link {
-  color:#fff!important;
+html:lang(en) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li,
+html:lang(cy) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li {
+
+  a {
+    color: #B1B4B6;
+  }
 }
 
-html:lang(en) ul.hmrc-language-select__items li a[lang=en] {
-  color:#fff!important;
+html:lang(en) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a[lang=en] {
+  color: #fff;
+  &:focus {
+    color: #000;
+  }
+
 }
 
-// underline on hover
-html:lang(en) ul.hmrc-language-select__items li a[lang=en]:hover,
-html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:hover {
-  text-decoration: underline!important;
-  text-decoration-thickness: 3px!important;
+html:lang(cy) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a[lang=cy] {
+  color: #fff;
+  &:focus {
+    color: #000;
+  }
 }
+
+html .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  color: #fff;
+}
+
+html .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a:focus {
+  color:#000;
+}
+
+//
+//// underline on hover
+//html:lang(en) ul.hmrc-language-select__items li a[lang=en]:hover,
+//html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:hover {
+//  text-decoration: underline!important;
+//  text-decoration-thickness: 3px!important;
+//}
 
 // background on focus
 html:lang(en) ul.hmrc-language-select__items li a[lang=en]:focus,
 html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:focus {
   background-color: #fd0;
+  color: #000;
   box-shadow: 0 -2px #fd0,0 4px #0b0c0c;
   text-decoration: none!important;
   outline: 3px solid rgba(0,0,0,0);
 }
-
-// dim welsh link if html lang=en
-html:lang(en) ul.hmrc-language-select__items li a[lang=cy] {
-  color:#B1B4B6!important;
-}
-//  workaround solution to style header language selectors
 

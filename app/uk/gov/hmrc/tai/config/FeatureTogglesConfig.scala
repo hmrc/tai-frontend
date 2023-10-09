@@ -16,20 +16,10 @@
 
 package uk.gov.hmrc.tai.config
 
-trait FeatureTogglesConfig { self: ApplicationConfig =>
-  val cyPlusOneEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
+trait FeatureTogglesConfig {
+  self: ApplicationConfig =>
   val jrsClaimsEnabled: Boolean = getOptional[Boolean]("tai.jrsClaims.enabled").getOrElse(false)
-  val welshLanguageEnabled: Boolean = getOptional[Boolean]("tai.feature.welshLanguage.enabled").getOrElse(false)
-  val companyCarForceRedirectEnabled: Boolean =
-    getOptional[Boolean]("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
-  val cyPlus1EstimatedPayEnabled: Boolean = getOptional[Boolean]("tai.cyPlusOne.enabled").getOrElse(false)
-  lazy val accessibilityStatementToggle: Boolean =
-    getOptional[Boolean]("accessibility-statement.toggle").getOrElse(false)
-  lazy val isTaiCy3Enabled: Boolean = getOptional[Boolean]("tai.cy3.enabled").getOrElse(false)
   val trackingEnabled: Boolean = getOptional[Boolean]("tai.tracking.enabled").getOrElse(false)
-
-  lazy val incomeTaxHistoryEnabled: Boolean = getOptional[Boolean]("tai.incomeTaxHistory.enabled").getOrElse(true)
-
   val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
   val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 5
 }

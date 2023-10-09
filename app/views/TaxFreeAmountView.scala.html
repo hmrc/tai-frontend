@@ -35,7 +35,6 @@
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "backLink",
     pagePrintable=true
 
 ){
@@ -142,7 +141,7 @@
     <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-!-margin-top-9"  >
         <div class="print-this">
-            <a class="print-this__link" href="javascript:window.print()">@messages("tai.label.print") </a>
+            <a class="print-this__link" href="#" id="printLink">@messages("tai.label.print") </a>
         </div>
     </div>
     </div>

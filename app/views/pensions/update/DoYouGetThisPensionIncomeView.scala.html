@@ -28,8 +28,8 @@
 @main(
     title = Messages("tai.updatePension.decision.pagetitle"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id).url),
     formForErrorSummary =  Some(updateOrRemoveForm)
 ) {

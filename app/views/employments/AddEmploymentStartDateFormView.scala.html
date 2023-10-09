@@ -26,16 +26,13 @@
 
 @(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@hint = {
-    <p class="govuk-body carry-over">@messages("tai.addEmployment.startDateForm.subHeading")</p>
-    <p>@messages("tai.label.date.example")</p>
-}
+
 @mainTemplate(
     title = Messages("tai.addEmployment.startDateForm.pagetitle"),
     authedUser = Some(user),
-    backLinkId = "backLink",
     pageTitle = Some(Messages("tai.service.navTitle")),
     backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
     backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentName().url),
     formForErrorSummary = Some(dateForm)
    )  {
@@ -54,7 +51,7 @@
                     @govukDateInput(DateInput(
                         id = "tellUsStartDateForm",
                         namePrefix = Some("tellUsStartDateForm"),
-                        hint = Some(Hint(content = HtmlContent(hint))),
+                        hint = Some(Hint(content = Text(messages("tai.label.date.example")))),
 
                         items = Seq(
                             InputItem(

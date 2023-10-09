@@ -1,8 +1,8 @@
-import sbt.*
+import sbt._
+import play.core.PlayVersion
+import play.sbt.PlayImport._
 
 private object AppDependencies {
-  import play.core.PlayVersion
-  import play.sbt.PlayImport.*
 
   private val playVersion = "play-28"
   private val bootstrapVersion = "7.15.0"
@@ -10,16 +10,16 @@ private object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     filters,
     jodaForms,
-    ws,
-    "org.typelevel"     %% "cats-core"                        % "2.9.0",
+    "org.typelevel"     %% "cats-core"                        % "2.10.0",
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.13.0-$playVersion",
-    "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion" % bootstrapVersion,
     "uk.gov.hmrc"       %% "domain"                           % s"8.3.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-hmrc"               % s"7.7.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
-    "uk.gov.hmrc.mongo" %% s"hmrc-mongo-$playVersion"         % "1.3.0"
+    "uk.gov.hmrc.mongo" %% s"hmrc-mongo-$playVersion"         % "1.3.0",
+    "uk.gov.hmrc" %% "mongo-feature-toggles-client" % "0.3.0",
+    "uk.gov.hmrc" %% "sca-wrapper" % "1.0.44"
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -30,7 +30,7 @@ private object AppDependencies {
     "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
     "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.15.0",
     "uk.gov.hmrc.mongo"      %% s"hmrc-mongo-test-$playVersion" % "1.3.0",
-    "com.vladsch.flexmark"   %  "flexmark-all"                  % "0.62.2"
+    "com.vladsch.flexmark"   %  "flexmark-all"                  % "0.64.8"
   ).map(_ % "test,it")
 
   val jacksonVersion         = "2.13.2"

@@ -24,15 +24,11 @@
 
 @(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusOvertimeAmountForm], employer: IncomeSource)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@hint = {
-    <p>@messages("tai.bonusPaymentsAmount.hint")</p>
-}
-
 
 @mainTemplate(
     title = messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     authedUser = Some(user),
-    backLinkId = "backLink",
+    backLinkId = "back-link-custom-url",
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url),
     formForErrorSummary = Some(bonusOvertimeAmountForm)
@@ -58,7 +54,7 @@
                     name = "amount",
                     value = bonusOvertimeAmountForm.data.get("amount"),
                     classes = "govuk-input--width-5",
-                    hint = Some(Hint(content = HtmlContent(hint))),
+                    hint = Some(Hint(content = Text(messages("tai.bonusPaymentsAmount.hint")))),
                     prefix = Some(PrefixOrSuffix(
                         content = Text("£")
                     )),

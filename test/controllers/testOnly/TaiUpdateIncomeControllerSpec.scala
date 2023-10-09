@@ -22,8 +22,6 @@ import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status.SEE_OTHER
 import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
@@ -34,12 +32,14 @@ import utils.BaseSpec
 
 import scala.concurrent.Future
 
-class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport with BeforeAndAfterEach with ScalaFutures {
+class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
-  override def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     Mockito.reset(journeyCacheService)
+  }
 
   val employerId = 14
   val cacheKey = s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId"
