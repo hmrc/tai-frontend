@@ -42,8 +42,8 @@ class DataRetrievalActionImpl @Inject() (
 
     journeyCacheNewRepository
       .get(request.userId, nino)
-      .map {
-        _.fold(
+      .map { x =>
+        val y = x.fold(
           DataRequest(
             request.request,
             request.request.taiUser,
@@ -53,6 +53,8 @@ class DataRetrievalActionImpl @Inject() (
         )(
           DataRequest(request.request, request.request.taiUser, request.request.fullName, _)
         )
+        println("\nDATA REQUEST user answers =" + y.userAnswers)
+        y
       }
   }
 }

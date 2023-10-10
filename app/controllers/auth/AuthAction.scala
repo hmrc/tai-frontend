@@ -56,6 +56,7 @@ class AuthActionImpl @Inject() (
       Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper
     ) {
       case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
+        // TODO: _ above is logged in user nino - do we need to use this instead of helpee nino below?
         val providerType = credentials.map(_.providerType)
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
           val user = AuthedUser(helper, saUtr, providerType, confidenceLevel, messageCount)

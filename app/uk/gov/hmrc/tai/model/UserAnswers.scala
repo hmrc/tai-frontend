@@ -56,7 +56,7 @@ object UserAnswers {
 
     (
       (__ \ "_id").read[String] and
-        (__ \ "nino").read[String] and
+        (__ \ "_nino").read[String] and
         (__ \ "data").read[JsObject] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
     )(UserAnswers.apply _)
@@ -68,7 +68,7 @@ object UserAnswers {
 
     (
       (__ \ "_id").write[String] and
-        (__ \ "nino").write[String] and
+        (__ \ "_nino").write[String] and
         (__ \ "data").write[JsObject] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
     )(unlift(UserAnswers.unapply))
