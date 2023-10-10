@@ -20,7 +20,7 @@ import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.test.FakeRequest
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.auth.core.ConfidenceLevel.L250
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -113,12 +113,12 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
       doc must haveClassWithText("You are using this service for Principal.", "pta-attorney-banner__text")
     }
     "not display the attorney banner when not acting as a trusted helped" in {
-      def view =
+      def view: HtmlFormat.Appendable =
         mainTemplate(
           "Title",
           Some(
             AuthedUser(
-              None,
+              "",
               Some("1130492359"),
               Some("GovernmentGateway"),
               L250,

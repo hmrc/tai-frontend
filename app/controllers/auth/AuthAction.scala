@@ -63,7 +63,7 @@ class AuthActionImpl @Inject() (
           authWithCredentials(request, block, credentials, user)
         }
 
-      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ =>
+      case credentials ~ Some(nino) ~ saUtr ~ confidenceLevel ~ _ =>
         val providerType = credentials.map(_.providerType)
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
           val user = AuthedUser(nino, saUtr, providerType, confidenceLevel, messageCount)

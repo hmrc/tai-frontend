@@ -33,15 +33,14 @@ case class AuthedUser(
 
 object AuthedUser {
   def apply(
-    nino: Option[String],
+    nino: String,
     saUtr: Option[String],
     providerType: Option[String],
     confidenceLevel: ConfidenceLevel,
     messageCount: Option[Int]
-  ): AuthedUser = {
-    val validNino = nino.getOrElse("")
-    AuthedUser(validNino, saUtr, providerType, confidenceLevel, messageCount: Option[Int], None)
-  }
+  ): AuthedUser =
+    // Why is this here? Surely there will always be a nino????
+    AuthedUser(nino, saUtr, providerType, confidenceLevel, messageCount: Option[Int], None)
 
   def apply(
     trustedHelper: TrustedHelper,
