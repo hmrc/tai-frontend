@@ -26,6 +26,8 @@ import scala.concurrent.{Await, Future}
 
 class SessionConnectorSpec extends BaseSpec {
 
+  val httpHandler: HttpHandler = mock[HttpHandler]
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     Mockito.reset(httpHandler)
@@ -42,18 +44,15 @@ class SessionConnectorSpec extends BaseSpec {
 
     "call the proper url to invalidate the cache" in {
       Await.result(sut.invalidateCache(), 5.seconds)
-      verify(httpHandler, times(1)).deleteFromApi(meq("localhost/tai/session-cache"))(any(), any(), any())
+      verify(httpHandler, times(1)).deleteFromApi(meq("localhost/tai/session-cache"), any())(any(), any())
     }
   }
-
-  val httpHandler: HttpHandler = mock[HttpHandler]
 
   def sut: SessionConnector = new SessionConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "localhost"
 
-    when(httpHandler.deleteFromApi(any())(any(), any(), any()))
+    when(httpHandler.deleteFromApi(any(), any())(any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(200, "")))
 
   }
-
 }

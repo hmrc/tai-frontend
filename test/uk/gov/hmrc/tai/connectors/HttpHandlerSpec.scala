@@ -19,7 +19,8 @@ package uk.gov.hmrc.tai.connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.http.Status._
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsValue, Json, OFormat, Writes}
+import play.api.libs.ws.BodyWritable
 import uk.gov.hmrc.http._
 import utils.{BaseSpec, WireMockHelper}
 
@@ -30,12 +31,12 @@ import scala.language.postfixOps
 
 class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
-  lazy val httpHandler = inject[HttpHandler]
+  lazy val httpHandler: HttpHandler = inject[HttpHandler]
 
-  lazy val testUrl = server.url("/")
+  lazy val testUrl: String = server.url("/")
 
   protected case class ResponseObject(name: String, age: Int)
-  implicit val responseObjectFormat = Json.format[ResponseObject]
+  implicit val responseObjectFormat: OFormat[ResponseObject] = Json.format[ResponseObject]
 
   private val responseBodyObject = ResponseObject("Name", 24)
 
@@ -44,6 +45,13 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
   object DateRequest {
 
     implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+
+    implicit val writes: Writes[DateRequest] = Json.writes[DateRequest]
+
+    implicit def jsonBodyWritable[T](implicit
+      writes: Writes[T],
+      jsValueBodyWritable: BodyWritable[JsValue]
+    ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
   }
 
   "getFromApiV2" must {

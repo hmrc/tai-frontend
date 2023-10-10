@@ -30,50 +30,7 @@ import scala.language.postfixOps
 
 class BenefitsConnectorSpec extends BaseSpec {
 
-  "getCompanyCarBenefits" must {
-    "fetch the company car details" when {
-      "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(benefitsJson))
-
-        val result = sut.benefits(nino, 2018)
-        Await.result(result, 5 seconds) mustBe benefits
-      }
-    }
-
-    "thrown exception" when {
-      "benefit type is invalid" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(invalidBenefitsJson))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
-        ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
-      }
-    }
-  }
-
-  "removeCompanyBenefit" must {
-
-    "return an envelope id on a successful invocation" in {
-      val employmentId = 1
-      val endedCompanyBenefit =
-        EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
-      val json = Json.obj("data" -> JsString("123-456-789"))
-      when(
-        httpHandler.postToApi(
-          meq(
-            s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
-          ),
-          meq(endedCompanyBenefit)
-        )(any(), any(), any())
-      ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
-
-      val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
-
-      result mustBe Some("123-456-789")
-    }
-
-  }
-
-  val companyCars = List(
+  val companyCars: Seq[CompanyCar] = List(
     CompanyCar(
       100,
       "Make Model",
@@ -84,9 +41,9 @@ class BenefitsConnectorSpec extends BaseSpec {
     )
   )
 
-  val companyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
-  val genericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
-  val benefits = Benefits(Seq(companyCarBenefit), Seq(genericBenefit))
+  val companyCarBenefit: CompanyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
+  val genericBenefit: GenericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
+  val benefits: Benefits = Benefits(Seq(companyCarBenefit), Seq(genericBenefit))
 
   val companyCarsJson: JsObject =
     Json.obj(
@@ -132,10 +89,52 @@ class BenefitsConnectorSpec extends BaseSpec {
       "links" -> Json.arr()
     )
 
-  val httpHandler = mock[HttpHandler]
+  val httpHandler: HttpHandler = mock[HttpHandler]
 
   def sut: BenefitsConnector = new BenefitsConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "mockUrl"
   }
 
+  "getCompanyCarBenefits" must {
+    "fetch the company car details" when {
+      "provided with valid nino" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(benefitsJson))
+
+        val result = sut.benefits(nino, 2018)
+        Await.result(result, 5 seconds) mustBe benefits
+      }
+    }
+
+    "thrown exception" when {
+      "benefit type is invalid" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(invalidBenefitsJson))
+
+        val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
+        ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
+      }
+    }
+  }
+
+  "removeCompanyBenefit" must {
+
+    "return an envelope id on a successful invocation" in {
+      val employmentId = 1
+      val endedCompanyBenefit =
+        EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
+      val json = Json.obj("data" -> JsString("123-456-789"))
+      when(
+        httpHandler.postToApi(
+          meq(
+            s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
+          ),
+          meq(endedCompanyBenefit),
+          any()
+        )(any(), any(), any(), any())
+      ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
+
+      val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
+
+      result mustBe Some("123-456-789")
+    }
+  }
 }

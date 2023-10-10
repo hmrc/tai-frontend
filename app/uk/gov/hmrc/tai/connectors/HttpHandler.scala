@@ -19,14 +19,17 @@ package uk.gov.hmrc.tai.connectors
 import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Writes}
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import play.api.libs.json.JsValue
+import play.api.libs.ws.BodyWritable
+import uk.gov.hmrc.http.{BadRequestException, _}
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.runtime.universe.TypeTag
 
-class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunctions with Logging {
+class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
 
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
@@ -48,19 +51,38 @@ class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunct
       Left(UpstreamErrorResponse(exception.message, 502, 502))
     })
 
-  def getFromApiV2(url: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] = {
-    implicit val httpRds = new HttpReads[HttpResponse] {
+  def getFromApiV2(url: String, timeoutInSec: Option[Int] = None)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[JsValue] = {
+    implicit val httpRds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
           case UNAUTHORIZED => response
-          case _            => handleResponse(http, url)(response)
+          case _ =>
+            handleResponseEither(http, url)(response).fold(
+              error =>
+                if (error.statusCode == BAD_REQUEST) {
+                  throw new BadRequestException("bad request")
+                } else if (error.statusCode == NOT_FOUND) {
+                  throw new NotFoundException("not found")
+                } else {
+                  throw error
+                },
+              httpResponse => httpResponse
+            )
         }
 
-      def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
+      def read(http: String, url: String, res: HttpResponse): HttpResponse = customRead(http, url, res)
     }
 
-    val futureResponse = http.GET[HttpResponse](url)
+    val httpCall = if (timeoutInSec.isDefined) {
+      http.get(url"$url").transform(_.withRequestTimeout(timeoutInSec.get.seconds))
+    } else {
+      http.get(url"$url")
+    }
 
+    val futureResponse = httpCall.execute[HttpResponse]
     futureResponse.flatMap { httpResponse =>
       httpResponse.status match {
 
@@ -94,68 +116,97 @@ class HttpHandler @Inject() (val http: DefaultHttpClient) extends HttpErrorFunct
     }
   }
 
-  def putToApi[I](url: String, data: I)(implicit
+  def putToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[Int] = None)(implicit
     hc: HeaderCarrier,
-    writes: Writes[I],
-    executionContext: ExecutionContext
-  ): Future[HttpResponse] =
-    http.PUT[I, HttpResponse](url, data).flatMap { httpResponse =>
-      httpResponse.status match {
+    executionContext: ExecutionContext,
+    jsValueBodyWritable: BodyWritable[I]
+  ): Future[HttpResponse] = {
 
-        case OK =>
-          Future.successful(httpResponse)
-
-        case NOT_FOUND =>
-          logger.warn(s"HttpHandler - No data can be found")
-          Future.failed(new NotFoundException(httpResponse.body))
-
-        case INTERNAL_SERVER_ERROR =>
-          logger.warn(s"HttpHandler - Internal Server Error received")
-          Future.failed(new InternalServerException(httpResponse.body))
-
-        case BAD_REQUEST =>
-          logger.warn(s"HttpHandler - Bad Request received")
-          Future.failed(new BadRequestException(httpResponse.body))
-
-        case _ =>
-          logger.warn(s"HttpHandler - Server error received")
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
-      }
+    val httpCall = if (timeoutInSec.isDefined) {
+      http.put(url"$url")(hc).withBody(data).transform(_.withRequestTimeout(timeoutInSec.get.seconds))
+    } else {
+      http.put(url"$url")(hc).withBody(data)
     }
 
-  def postToApi[I](url: String, data: I)(implicit
-    hc: HeaderCarrier,
-    writes: Writes[I],
-    executionContext: ExecutionContext
-  ): Future[HttpResponse] =
-    http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
-      httpResponse.status match {
-        case OK | CREATED =>
-          Future.successful(httpResponse)
+    httpCall
+      .execute[HttpResponse]
+      .flatMap { httpResponse =>
+        httpResponse.status match {
 
-        case _ =>
-          logger.warn(
-            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
-          )
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+          case OK =>
+            Future.successful(httpResponse)
+
+          case NOT_FOUND =>
+            logger.warn(s"HttpHandler - No data can be found")
+            Future.failed(new NotFoundException(httpResponse.body))
+
+          case INTERNAL_SERVER_ERROR =>
+            logger.warn(s"HttpHandler - Internal Server Error received")
+            Future.failed(new InternalServerException(httpResponse.body))
+
+          case BAD_REQUEST =>
+            logger.warn(s"HttpHandler - Bad Request received")
+            Future.failed(new BadRequestException(httpResponse.body))
+
+          case _ =>
+            logger.warn(s"HttpHandler - Server error received")
+            Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+        }
       }
+  }
+
+  def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[Int] = None)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    jsValueBodyWritable: BodyWritable[I]
+  ): Future[HttpResponse] = {
+
+    val httpCall = if (timeoutInSec.isDefined) {
+      http.post(url"$url")(hc).withBody(data).transform(_.withRequestTimeout(timeoutInSec.get.seconds))
+    } else {
+      http.post(url"$url")(hc).withBody(data)
     }
 
-  def deleteFromApi(url: String)(implicit
-    hc: HeaderCarrier,
-    rds: HttpReads[HttpResponse],
-    executionContext: ExecutionContext
-  ): Future[HttpResponse] =
-    http.DELETE[HttpResponse](url) flatMap { httpResponse =>
-      httpResponse.status match {
-        case OK | NO_CONTENT | ACCEPTED =>
-          Future.successful(httpResponse)
-        case _ =>
-          logger.warn(
-            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
-          )
-          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+    httpCall
+      .execute[HttpResponse]
+      .flatMap { httpResponse =>
+        httpResponse.status match {
+          case OK | CREATED =>
+            Future.successful(httpResponse)
+
+          case _ =>
+            logger.warn(
+              s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
+            )
+            Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+        }
       }
+  }
+
+  def deleteFromApi(url: String, timeoutInSec: Option[Int] = None)(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext
+  ): Future[HttpResponse] = {
+
+    val httpCall = if (timeoutInSec.isDefined) {
+      http.delete(url"$url").transform(_.withRequestTimeout(timeoutInSec.get.seconds))
+    } else {
+      http.delete(url"$url")
     }
+
+    httpCall
+      .execute[HttpResponse]
+      .flatMap { httpResponse =>
+        httpResponse.status match {
+          case OK | NO_CONTENT | ACCEPTED =>
+            Future.successful(httpResponse)
+          case _ =>
+            logger.warn(
+              s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
+            )
+            Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+        }
+      }
+  }
 
 }
