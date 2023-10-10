@@ -21,14 +21,13 @@ import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
 case class AuthedUser(
-  validNino: Nino,
+  nino: Nino,
   utr: Option[String],
   providerType: Option[String],
   confidenceLevel: ConfidenceLevel,
   messageCount: Option[Int],
   trustedHelper: Option[TrustedHelper]
 ) {
-  def nino: Nino = validNino
 
   override def toString: String = super.toString
 }
