@@ -27,10 +27,7 @@ case class AuthedUser(
   confidenceLevel: ConfidenceLevel,
   messageCount: Option[Int],
   trustedHelper: Option[TrustedHelper]
-) {
-
-  override def toString: String = super.toString
-}
+)
 
 object AuthedUser {
 
