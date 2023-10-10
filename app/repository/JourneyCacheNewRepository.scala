@@ -77,8 +77,8 @@ class JourneyCacheNewRepository @Inject() (
     }
 
   def set(answers: UserAnswers): Future[Boolean] = {
-
     val updatedAnswers = answers copy (lastUpdated = Instant.now(clock))
+    println("\nSETTING1")
 
     collection
       .replaceOne(
@@ -87,7 +87,10 @@ class JourneyCacheNewRepository @Inject() (
         options = ReplaceOptions().upsert(true)
       )
       .toFuture()
-      .map(_ => true)
+      .map { _ =>
+        println("\nSETTING2")
+        true
+      }
   }
 
   def clear(id: String, nino: String): Future[Boolean] =

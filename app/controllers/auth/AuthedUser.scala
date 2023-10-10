@@ -39,11 +39,11 @@ object AuthedUser {
     messageCount: Option[Int]
   ): AuthedUser =
     AuthedUser(
-      Nino(trustedHelper.principalNino),
-      saUtr,
-      providerType,
-      confidenceLevel,
-      messageCount,
-      Some(trustedHelper)
+      nino = Nino(trustedHelper.principalNino),
+      utr = saUtr,
+      providerType = providerType,
+      confidenceLevel = confidenceLevel,
+      messageCount = messageCount,
+      trustedHelper = Some(trustedHelper)
     )
 }
