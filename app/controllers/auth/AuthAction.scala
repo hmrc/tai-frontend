@@ -66,11 +66,12 @@ class AuthActionImpl @Inject() (
       case credentials ~ Some(nino) ~ saUtr ~ confidenceLevel ~ _ =>
         val providerType = credentials.map(_.providerType)
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
-          val user = AuthedUser(nino, saUtr, providerType, confidenceLevel, messageCount)
+          val user = AuthedUser(uk.gov.hmrc.domain.Nino(nino), saUtr, providerType, confidenceLevel, messageCount, None)
           authWithCredentials(request, block, credentials, user)
         }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
+
   }
 
   private def authWithCredentials[A](

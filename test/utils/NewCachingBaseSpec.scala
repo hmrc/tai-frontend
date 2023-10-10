@@ -28,6 +28,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
@@ -36,6 +37,7 @@ import uk.gov.hmrc.tai.model.UserAnswers
 
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
+import scala.util.Random
 
 class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
 
@@ -77,7 +79,7 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
   implicit lazy val lang: Lang = Lang("en")
   implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-  val nino: String = "CS121212C" // //FakeAuthAction.nino
+  protected val nino: String = new Generator(new Random).nextNino.nino
 
   implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()

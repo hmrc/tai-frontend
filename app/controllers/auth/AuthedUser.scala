@@ -21,26 +21,19 @@ import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
 case class AuthedUser(
-  validNino: String,
+  validNino: Nino,
   utr: Option[String],
   providerType: Option[String],
   confidenceLevel: ConfidenceLevel,
   messageCount: Option[Int],
   trustedHelper: Option[TrustedHelper]
 ) {
-  def nino: Nino = Nino(validNino)
+  def nino: Nino = validNino
+
+  override def toString: String = super.toString
 }
 
 object AuthedUser {
-  def apply(
-    nino: String,
-    saUtr: Option[String],
-    providerType: Option[String],
-    confidenceLevel: ConfidenceLevel,
-    messageCount: Option[Int]
-  ): AuthedUser =
-    // Why is this here? Surely there will always be a nino????
-    AuthedUser(nino, saUtr, providerType, confidenceLevel, messageCount: Option[Int], None)
 
   def apply(
     trustedHelper: TrustedHelper,
@@ -50,7 +43,7 @@ object AuthedUser {
     messageCount: Option[Int]
   ): AuthedUser =
     AuthedUser(
-      trustedHelper.principalNino,
+      Nino(trustedHelper.principalNino),
       saUtr,
       providerType,
       confidenceLevel,

@@ -26,11 +26,11 @@ object UserBuilder {
   val nino: Nino = new Generator().nextNino
 
   def apply(utr: String = "utr", providerType: String = TaiConstants.AuthProviderGG): AuthedUser =
-    AuthedUser(nino.toString(), Some(utr), Some(providerType), ConfidenceLevel.L200, None, None)
+    AuthedUser(Nino(nino.toString()), Some(utr), Some(providerType), ConfidenceLevel.L200, None, None)
 
   def apply(utr: String, providerType: String, principalName: String, principalNino: String): AuthedUser =
     AuthedUser(
-      nino.toString(),
+      Nino(nino.toString()),
       Some(utr),
       Some(providerType),
       ConfidenceLevel.L200,
