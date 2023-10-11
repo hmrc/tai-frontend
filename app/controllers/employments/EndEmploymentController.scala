@@ -246,12 +246,14 @@ class EndEmploymentController @Inject() (
 
   def irregularPaymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
+      println("\nAAA1")
       implicit val authUser: AuthedUser = request.taiUser
       request.userAnswers
         .get(EmploymentIdPage)
-        .fold(
+        .fold {
+          println("\nAAA2")
           Future.successful(error5xxInBadRequest())
-        )(empId =>
+        } { empId =>
           employmentService
             .employment(request.taiUser.nino, empId)
             .map(
@@ -266,7 +268,7 @@ class EndEmploymentController @Inject() (
                 )
               )
             )
-        )
+        }
     }
 
   def handleIrregularPaymentError: Action[AnyContent] =
