@@ -43,6 +43,7 @@ class JourneyCacheNewRepository @Inject() (
         IndexModel(
           Indexes.ascending("sessionId", "nino"),
           IndexOptions()
+            .unique(true)
             .name("sessionIdAndNino")
         ),
         IndexModel(
