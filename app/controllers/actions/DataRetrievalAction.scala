@@ -30,11 +30,6 @@ class DataRetrievalActionImpl @Inject() (
     extends DataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
-    println("\nID=" + request.userId)
-
-    println("\nrequest.request.taiUser.nino=" + request.request.taiUser.nino)
-    println("\nrequest.request.taiUser.trustedHelper=" + request.request.taiUser.trustedHelper)
-
     val nino: String = (request.request.taiUser.nino, request.request.taiUser.trustedHelper) match {
       case (thisUserNino, None) => thisUserNino.nino
       case (_, Some(th))        => th.principalNino

@@ -46,6 +46,12 @@ final case class UserAnswers(
       page.cleanup(Some(value), updatedAnswers)
     }
   }
+
+  def setOrException[A](page: Settable[A], value: A)(implicit writes: Writes[A]): UserAnswers =
+    set(page, value) match {
+      case Success(ua) => ua
+      case Failure(ex) => throw ex
+    }
 }
 
 object UserAnswers {

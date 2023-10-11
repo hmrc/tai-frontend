@@ -100,7 +100,7 @@ class EndEmploymentController @Inject() (
             .map(
               _.fold(
                 error5xxInBadRequest()
-              )(employment =>
+              ) { employment =>
                 Ok(
                   updateRemoveEmploymentDecision(
                     UpdateRemoveEmploymentForm
@@ -110,7 +110,7 @@ class EndEmploymentController @Inject() (
                     empId
                   )
                 )
-              )
+              }
             )
         )
     }
@@ -244,16 +244,34 @@ class EndEmploymentController @Inject() (
       }
     }
 
+  /*
+  def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+    EitherT(
+      journeyCacheService
+        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
+    )
+      .map { mandatoryJourneyValues =>
+        Ok(
+          endEmploymentIrregularPaymentError(
+            IrregularPayForm.createForm,
+            EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
+          )
+        )
+      }
+      .getOrElse {
+        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
+      }
+  }
+   */
   def irregularPaymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
-      println("\nAAA1")
       implicit val authUser: AuthedUser = request.taiUser
       request.userAnswers
         .get(EmploymentIdPage)
-        .fold {
-          println("\nAAA2")
+        .fold(
           Future.successful(error5xxInBadRequest())
-        } { empId =>
+        ) { empId =>
           employmentService
             .employment(request.taiUser.nino, empId)
             .map(
