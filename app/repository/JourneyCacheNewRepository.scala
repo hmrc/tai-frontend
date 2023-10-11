@@ -41,6 +41,11 @@ class JourneyCacheNewRepository @Inject() (
       domainFormat = UserAnswers.format,
       indexes = Seq(
         IndexModel(
+          Indexes.ascending("sessionId", "nino"),
+          IndexOptions()
+            .name("sessionIdAndNino")
+        ),
+        IndexModel(
           Indexes.ascending("lastUpdated"),
           IndexOptions()
             .name("lastUpdatedIdx")
@@ -56,8 +61,8 @@ class JourneyCacheNewRepository @Inject() (
 
   private def byIdAndNino(id: String, nino: String): Bson =
     Filters.and(
-      Filters.equal("_id", id),
-      Filters.equal("_nino", nino)
+      Filters.equal("sessionId", id),
+      Filters.equal("nino", nino)
     )
 
   def keepAlive(id: String, nino: String): Future[Boolean] =
@@ -78,19 +83,15 @@ class JourneyCacheNewRepository @Inject() (
 
   def set(answers: UserAnswers): Future[Boolean] = {
     val updatedAnswers = answers copy (lastUpdated = Instant.now(clock))
-    println("\nSETTING1")
 
     collection
       .replaceOne(
-        filter = byIdAndNino(updatedAnswers.id, updatedAnswers.nino),
+        filter = byIdAndNino(updatedAnswers.sessionId, updatedAnswers.nino),
         replacement = updatedAnswers,
         options = ReplaceOptions().upsert(true)
       )
       .toFuture()
-      .map { _ =>
-        println("\nSETTING2")
-        true
-      }
+      .map(_ => true)
   }
 
   def clear(id: String, nino: String): Future[Boolean] =

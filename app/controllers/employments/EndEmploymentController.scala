@@ -70,7 +70,7 @@ class EndEmploymentController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.id, request.userAnswers.nino).map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -486,7 +486,7 @@ class EndEmploymentController @Inject() (
         _ <- successfulJourneyCacheService.cache(
                Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")
              )
-        _ <- journeyCacheNewRepository.clear(request.userAnswers.id, request.userAnswers.nino)
+        _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
       result.getOrElse(

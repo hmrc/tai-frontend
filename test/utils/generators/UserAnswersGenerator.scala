@@ -35,13 +35,13 @@ trait UserAnswersGenerator extends TryValues {
   implicit lazy val arbitraryUserData: Arbitrary[UserAnswers] =
     Arbitrary {
       for {
-        id <- nonEmptyString
+        sessionId <- nonEmptyString
         data <- generators match {
                   case Nil => Gen.const(Map[QuestionPage[_], JsValue]())
                   case _   => Gen.mapOf(oneOf(generators))
                 }
       } yield UserAnswers(
-        id = id,
+        sessionId = sessionId,
         nino = generateNino.nino,
         data = data.foldLeft(Json.obj()) { case (obj, (path, value)) =>
           obj.setObject(path.path, value).get

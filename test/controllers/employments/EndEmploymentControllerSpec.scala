@@ -410,7 +410,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       when(trackSuccessJourneyCacheService.cache(any())(any()))
         .thenReturn(
           Future.successful(
-            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
+            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.sessionId}" -> "true")
           )
         )
 
@@ -437,7 +437,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
       when(trackSuccessJourneyCacheService.cache(any())(any()))
         .thenReturn(
           Future.successful(
-            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
+            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.sessionId}" -> "true")
           )
         )
 

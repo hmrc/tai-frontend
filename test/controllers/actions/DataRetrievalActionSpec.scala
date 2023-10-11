@@ -60,7 +60,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
           .futureValue
 
-        result.userAnswers.id mustBe userId
+        result.userAnswers.sessionId mustBe userId
         result.userAnswers.nino mustBe authedUser.nino.nino
         result.userAnswers.data mustBe Json.obj()
       }
@@ -84,7 +84,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
           .futureValue
 
-        result.userAnswers.id mustBe userId
+        result.userAnswers.sessionId mustBe userId
         result.userAnswers.nino mustBe helperNino
         result.userAnswers.data mustBe Json.obj()
       }
@@ -106,7 +106,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
           .futureValue
 
-        result.userAnswers.id mustBe userId
+        result.userAnswers.sessionId mustBe userId
         result.userAnswers.nino mustBe authedUser.nino.nino
         result.userAnswers.data mustBe data
         result.userAnswers.lastUpdated mustBe instant
@@ -135,7 +135,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
           .futureValue
 
-        result.userAnswers.id mustBe userId
+        result.userAnswers.sessionId mustBe userId
         result.userAnswers.nino mustBe helperNino
         result.userAnswers.data mustBe data
         result.userAnswers.lastUpdated mustBe instant
