@@ -37,11 +37,11 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     )
 
     "have explanation of tax-free amount" in {
-      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
+      doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }
 
     "have h2 heading for how tax-free amount is calculated" in {
-      doc must haveH3HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
+      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
     }
 
     "display a detail section" which {
