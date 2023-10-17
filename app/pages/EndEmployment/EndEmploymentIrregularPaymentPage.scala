@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package pages.EndEmployment
 
-class EmploymentIdPageSpec extends PageBehaviours {
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 
-  "EmploymentIdPage" must {
+case object EndEmploymentIrregularPaymentPage extends QuestionPage[String] {
 
-    beRetrievable[Int](EmploymentIdPage)
+  override def path: JsPath = JsPath \ toString
 
-    beSettable[Int](EmploymentIdPage)
-  }
+  override def toString: String = IrregularPayConstants.IrregularPayDecision
 }

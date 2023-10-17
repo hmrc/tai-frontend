@@ -16,14 +16,12 @@
 
 package pages
 
-import java.time.LocalDate
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.EmploymentDecisionConstants
 
-class EmploymentLatestPaymentPageSpec extends PageBehaviours {
+case object EmploymentDecisionPage extends QuestionPage[String] {
 
-  "EmploymentLatestPaymentPage" must {
+  override def path: JsPath = JsPath \ toString
 
-    beRetrievable[LocalDate](EmploymentLatestPaymentPage)
-
-    beSettable[LocalDate](EmploymentLatestPaymentPage)
-  }
+  override def toString: String = EmploymentDecisionConstants.EmploymentDecision
 }

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package pages
+package pages.EndEmployment
 
-class EmploymentUpdateRemovePageSpec extends PageBehaviours {
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-  "EmploymentUpdateRemovePage" must {
+import java.time.LocalDate
 
-    beRetrievable[String](EmploymentUpdateRemovePage)
+case object EndEmploymentEndDatePage extends QuestionPage[LocalDate] {
 
-    beSettable[String](EmploymentUpdateRemovePage)
-  }
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = EndEmploymentConstants.EndDateKey
+
 }

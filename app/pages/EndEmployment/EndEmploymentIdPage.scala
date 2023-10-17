@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package pages.EndEmployment
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
 
-case object EmploymentTelephoneNumberPage extends QuestionPage[String] {
+case object EndEmploymentIdPage extends QuestionPage[Int] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = EndEmploymentConstants.TelephoneNumberKey
+  override def toString: String = EndEmploymentConstants.EmploymentIdKey
 }

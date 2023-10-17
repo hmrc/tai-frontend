@@ -16,12 +16,16 @@
 
 package pages
 
-class EmploymentIrregularPaymentPageSpec extends PageBehaviours {
+import pages.EndEmployment.EndEmploymentEndDatePage
 
-  "EmploymentIrregularPaymentPage" must {
+import java.time.LocalDate
 
-    beRetrievable[String](EmploymentIrregularPaymentPage)
+class EndEmploymentEndDatePageSpec extends PageBehaviours {
 
-    beSettable[String](EmploymentIrregularPaymentPage)
+  "EmploymentEndDatePage" must {
+
+    beRetrievable[LocalDate](EndEmploymentEndDatePage)
+
+    beSettable[LocalDate](EndEmploymentEndDatePage)
   }
 }

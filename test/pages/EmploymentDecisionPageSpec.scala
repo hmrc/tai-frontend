@@ -16,12 +16,12 @@
 
 package pages
 
-import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.util.constants.EmploymentDecisionConstants
+class EmploymentDecisionPageSpec extends PageBehaviours {
 
-case object EmploymentUpdateRemovePage extends QuestionPage[String] {
+  "EmploymentUpdateRemovePage" must {
 
-  override def path: JsPath = JsPath \ toString
+    beRetrievable[String](EmploymentDecisionPage)
 
-  override def toString: String = EmploymentDecisionConstants.EmploymentDecision
+    beSettable[String](EmploymentDecisionPage)
+  }
 }

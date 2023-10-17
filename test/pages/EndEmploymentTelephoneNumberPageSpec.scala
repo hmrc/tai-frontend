@@ -16,12 +16,14 @@
 
 package pages
 
-import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.util.constants.journeyCache.EndEmploymentConstants
+import pages.EndEmployment.EndEmploymentTelephoneNumberPage
 
-case object EmploymentTelephoneQuestionPage extends QuestionPage[String] {
+class EndEmploymentTelephoneNumberPageSpec extends PageBehaviours {
 
-  override def path: JsPath = JsPath \ toString
+  "EmploymentTelephoneNumberPage" must {
 
-  override def toString: String = EndEmploymentConstants.TelephoneQuestionKey
+    beRetrievable[String](EndEmploymentTelephoneNumberPage)
+
+    beSettable[String](EndEmploymentTelephoneNumberPage)
+  }
 }

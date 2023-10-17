@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
+import pages.EndEmployment.{EndEmploymentEndDatePage, EndEmploymentIdPage, EndEmploymentLatestPaymentPage, EndEmploymentTelephoneNumberPage, EndEmploymentTelephoneQuestionPage}
 import pages._
 import play.api.Application
 import play.api.http.ContentTypes
@@ -580,12 +581,12 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
   )
 
   private val userAnswers = UserAnswers("", "", Json.obj("test" -> "test"))
-    .setOrException(EmploymentIdPage, 1)
-    .setOrException(EmploymentUpdateRemovePage, "company name")
-    .setOrException(EmploymentLatestPaymentPage, LocalDate.of(2022, 2, 2))
-    .setOrException(EmploymentEndDatePage, LocalDate.of(2022, 2, 2))
-    .setOrException(EmploymentTelephoneQuestionPage, "999")
-    .setOrException(EmploymentTelephoneNumberPage, "999")
+    .setOrException(EndEmploymentIdPage, 1)
+    .setOrException(EmploymentDecisionPage, "company name")
+    .setOrException(EndEmploymentLatestPaymentPage, LocalDate.of(2022, 2, 2))
+    .setOrException(EndEmploymentEndDatePage, LocalDate.of(2022, 2, 2))
+    .setOrException(EndEmploymentTelephoneQuestionPage, "999")
+    .setOrException(EndEmploymentTelephoneNumberPage, "999")
 
   override def beforeEach() = {
     super.beforeEach()
