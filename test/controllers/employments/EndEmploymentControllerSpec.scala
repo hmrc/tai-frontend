@@ -674,6 +674,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val application = applicationBuilderWithoutRepository(userAnswers)
           .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
           .build()
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
         running(application) {
           val result = controller(repository = mockRepository).submitTelephoneNumber()(request)
@@ -695,6 +696,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
         val application = applicationBuilderWithoutRepository(userAnswers)
           .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
           .build()
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
         running(application) {
           val result = controller(repository = mockRepository).submitTelephoneNumber()(request)

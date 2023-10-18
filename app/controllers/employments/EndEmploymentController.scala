@@ -433,12 +433,11 @@ class EndEmploymentController @Inject() (
                 Future.successful(
                   BadRequest(canWeContactByPhone(Some(authUser), telephoneNumberViewModel(empId), formWithErrors))
                 ),
-              form => {
-                val cache = submitTelephoneCacheHandler(form)
-                fromTry(cache).map { _ =>
-                  Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
-                }
-              }
+              form =>
+                for {
+                  userAnswers <- fromTry(submitTelephoneCacheHandler(form))
+                  _           <- journeyCacheNewRepository.set(userAnswers)
+                } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
             )
         )
     }
@@ -452,10 +451,7 @@ class EndEmploymentController @Inject() (
         for {
           question <- request.userAnswers.set(EndEmploymentTelephoneQuestionPage, questionCached)
           number   <- question.set(EndEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
-        } yield {
-          journeyCacheNewRepository.set(number)
-          number
-        }
+        } yield number
       case _ =>
         val questionCached = Messages(
           s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
@@ -463,10 +459,7 @@ class EndEmploymentController @Inject() (
         for {
           question <- request.userAnswers.set(EndEmploymentTelephoneQuestionPage, questionCached)
           number   <- question.set(EndEmploymentTelephoneNumberPage, "")
-        } yield {
-          journeyCacheNewRepository.set(number)
-          number
-        }
+        } yield number
     }
 
   def endEmploymentCheckYourAnswers: Action[AnyContent] =
