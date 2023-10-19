@@ -46,9 +46,7 @@ import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
 import javax.inject.{Inject, Named}
-import scala.concurrent.Future.fromTry
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class EndEmploymentController @Inject() (
   auditService: AuditService,
@@ -122,9 +120,8 @@ class EndEmploymentController @Inject() (
         .get(EndEmploymentIdPage)
         .fold(
           for {
-            userAnswers <- fromTry(request.userAnswers.set(EndEmploymentIdPage, empId))
-            _           <- journeyCacheNewRepository.set(userAnswers)
-            result      <- checkDuplicateSubmission(empId)
+            _      <- journeyCacheNewRepository.set(request.userAnswers.setOrException(EndEmploymentIdPage, empId))
+            result <- checkDuplicateSubmission(empId)
           } yield result
         )(_ => checkDuplicateSubmission(empId))
     }
@@ -193,8 +190,9 @@ class EndEmploymentController @Inject() (
 
     latestPaymentDate.map { latestPaymentDate =>
       for {
-        userAnswers <- fromTry(request.userAnswers.set(EndEmploymentLatestPaymentPage, latestPaymentDate))
-        _           <- journeyCacheNewRepository.set(userAnswers)
+        _ <- journeyCacheNewRepository.set(
+               request.userAnswers.setOrException(EndEmploymentLatestPaymentPage, latestPaymentDate)
+             )
       } yield
         if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
           auditService
@@ -316,16 +314,15 @@ class EndEmploymentController @Inject() (
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
                   for {
-                    userAnswers <- fromTry(
-                                     request.userAnswers
-                                       .set(EndEmploymentIrregularPaymentPage, IrregularPayConstants.ContactEmployer)
-                                   )
-                    _ <- journeyCacheNewRepository.set(userAnswers)
+                    _ <- journeyCacheNewRepository.set(
+                           request.userAnswers
+                             .setOrException(EndEmploymentIrregularPaymentPage, IrregularPayConstants.ContactEmployer)
+                         )
                   } yield Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
                 case Some(value) =>
                   for {
-                    userAnswers <- fromTry(request.userAnswers.set(EndEmploymentIrregularPaymentPage, value))
-                    _           <- journeyCacheNewRepository.set(userAnswers)
+                    _ <- journeyCacheNewRepository
+                           .set(request.userAnswers.setOrException(EndEmploymentIrregularPaymentPage, value))
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
               }
             )
@@ -381,8 +378,8 @@ class EndEmploymentController @Inject() (
                   ),
                 date =>
                   for {
-                    userAnswers <- fromTry(request.userAnswers.set(EndEmploymentEndDatePage, date))
-                    _           <- journeyCacheNewRepository.set(userAnswers)
+                    _ <-
+                      journeyCacheNewRepository.set(request.userAnswers.setOrException(EndEmploymentEndDatePage, date))
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
               )
           )
@@ -435,8 +432,7 @@ class EndEmploymentController @Inject() (
                 ),
               form =>
                 for {
-                  userAnswers <- fromTry(submitTelephoneCacheHandler(form))
-                  _           <- journeyCacheNewRepository.set(userAnswers)
+                  _ <- journeyCacheNewRepository.set(submitTelephoneCacheHandler(form))
                 } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
             )
         )
@@ -444,22 +440,20 @@ class EndEmploymentController @Inject() (
 
   private def submitTelephoneCacheHandler(
     form: YesNoTextEntryForm
-  )(implicit request: DataRequest[_]): Try[UserAnswers] =
+  )(implicit request: DataRequest[_]): UserAnswers =
     form.yesNoChoice match {
       case Some(yes) if yes == FormValuesConstants.YesValue =>
         val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
-        for {
-          question <- request.userAnswers.set(EndEmploymentTelephoneQuestionPage, questionCached)
-          number   <- question.set(EndEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
-        } yield number
+        request.userAnswers
+          .setOrException(EndEmploymentTelephoneQuestionPage, questionCached)
+          .setOrException(EndEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
       case _ =>
         val questionCached = Messages(
           s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
         )
-        for {
-          question <- request.userAnswers.set(EndEmploymentTelephoneQuestionPage, questionCached)
-          number   <- question.set(EndEmploymentTelephoneNumberPage, "")
-        } yield number
+        request.userAnswers
+          .setOrException(EndEmploymentTelephoneQuestionPage, questionCached)
+          .setOrException(EndEmploymentTelephoneNumberPage, "")
     }
 
   def endEmploymentCheckYourAnswers: Action[AnyContent] =
