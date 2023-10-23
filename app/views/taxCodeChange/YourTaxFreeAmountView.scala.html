@@ -49,12 +49,12 @@
     <div class="govuk-grid-column-two-thirds">
 
         <div class="grid-row">
-            <h2 class="govuk-caption-l">@Messages("taxCode.change.yourTaxFreeAmount.desc")</h2>
+            <p class="govuk-caption-l">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
         </div>
 
 
         <div id="yourTaxFreeAmount" class="govuk-!-margin-top-7">
-                <h3 class="govuk-heading-m">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h3>
+                <h2 class="govuk-heading-m">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
                 <div class="margin-bottom-large">
                 @taxFreeAmountSummaryComparison(currentTaxFreeAmount, taxCodeChange = true)
                 </div>

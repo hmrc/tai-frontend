@@ -24,7 +24,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class PayPeriodViewSpec extends TaiViewSpec {
 
   val id = 1
-  val employerName = "Employer"
 
   "Pay period view" should {
     behave like pageWithBackLinkWithUrl(
