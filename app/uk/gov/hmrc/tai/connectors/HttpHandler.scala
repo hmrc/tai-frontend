@@ -21,8 +21,8 @@ import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import play.api.libs.ws.BodyWritable
-import uk.gov.hmrc.http.{BadRequestException, _}
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{BadRequestException, _}
 
 import javax.inject.Inject
 import scala.concurrent.duration.DurationInt
@@ -74,13 +74,12 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       def read(http: String, url: String, res: HttpResponse): HttpResponse = customRead(http, url, res)
     }
 
-    val httpCall = if (timeoutInSec.isDefined) {
-      http.get(url"$url").transform(_.withRequestTimeout(timeoutInSec.get.seconds))
-    } else {
-      http.get(url"$url")
-    }
+    val httpCall = http.get(url"$url")
 
-    val futureResponse = httpCall.execute[HttpResponse]
+    val transformedHttpCall =
+      timeoutInSec.fold(httpCall)(timeOut => httpCall.transform(_.withRequestTimeout(timeOut.seconds)))
+
+    val futureResponse = transformedHttpCall.execute[HttpResponse]
     futureResponse.flatMap { httpResponse =>
       httpResponse.status match {
 
@@ -120,13 +119,12 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
     jsValueBodyWritable: BodyWritable[I]
   ): Future[HttpResponse] = {
 
-    val httpCall = if (timeoutInSec.isDefined) {
-      http.put(url"$url")(hc).withBody(data).transform(_.withRequestTimeout(timeoutInSec.get.seconds))
-    } else {
-      http.put(url"$url")(hc).withBody(data)
-    }
+    val httpCall = http.put(url"$url")(hc).withBody(data)
 
-    httpCall
+    val transformedHttpCall =
+      timeoutInSec.fold(httpCall)(timeOut => httpCall.transform(_.withRequestTimeout(timeOut.seconds)))
+
+    transformedHttpCall
       .execute[HttpResponse]
       .flatMap { httpResponse =>
         httpResponse.status match {
@@ -159,13 +157,12 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
     jsValueBodyWritable: BodyWritable[I]
   ): Future[HttpResponse] = {
 
-    val httpCall = if (timeoutInSec.isDefined) {
-      http.post(url"$url")(hc).withBody(data).transform(_.withRequestTimeout(timeoutInSec.get.seconds))
-    } else {
-      http.post(url"$url")(hc).withBody(data)
-    }
+    val httpCall = http.post(url"$url")(hc).withBody(data)
 
-    httpCall
+    val transformedHttpCall =
+      timeoutInSec.fold(httpCall)(timeOut => httpCall.transform(_.withRequestTimeout(timeOut.seconds)))
+
+    transformedHttpCall
       .execute[HttpResponse]
       .flatMap { httpResponse =>
         httpResponse.status match {
@@ -186,13 +183,12 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
     executionContext: ExecutionContext
   ): Future[HttpResponse] = {
 
-    val httpCall = if (timeoutInSec.isDefined) {
-      http.delete(url"$url").transform(_.withRequestTimeout(timeoutInSec.get.seconds))
-    } else {
-      http.delete(url"$url")
-    }
+    val httpCall = http.delete(url"$url")
 
-    httpCall
+    val transformedHttpCall =
+      timeoutInSec.fold(httpCall)(timeOut => httpCall.transform(_.withRequestTimeout(timeOut.seconds)))
+
+    transformedHttpCall
       .execute[HttpResponse]
       .flatMap { httpResponse =>
         httpResponse.status match {
