@@ -243,26 +243,6 @@ class EndEmploymentController @Inject() (
       }
     }
 
-  /*
-  def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    EitherT(
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-    )
-      .map { mandatoryJourneyValues =>
-        Ok(
-          endEmploymentIrregularPaymentError(
-            IrregularPayForm.createForm,
-            EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
-          )
-        )
-      }
-      .getOrElse {
-        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
-      }
-  }
-   */
   def irregularPaymentError: Action[AnyContent] =
     actionJourney.setJourneyCache.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
