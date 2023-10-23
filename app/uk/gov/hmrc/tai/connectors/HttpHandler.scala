@@ -51,7 +51,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       Left(UpstreamErrorResponse(exception.message, 502, 502))
     })
 
-  def getFromApiV2(url: String, timeoutInSec: Option[Int] = None)(implicit
+  def getFromApiV2(url: String, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[JsValue] = {
@@ -62,12 +62,10 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
           case _ =>
             handleResponseEither(http, url)(response).fold(
               error =>
-                if (error.statusCode == BAD_REQUEST) {
-                  throw new BadRequestException("bad request")
-                } else if (error.statusCode == NOT_FOUND) {
-                  throw new NotFoundException("not found")
-                } else {
-                  throw error
+                error.statusCode match {
+                  case BAD_REQUEST => throw new BadRequestException("bad request")
+                  case NOT_FOUND   => throw new NotFoundException("not found")
+                  case _           => throw error
                 },
               httpResponse => httpResponse
             )
@@ -116,7 +114,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
     }
   }
 
-  def putToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[Int] = None)(implicit
+  def putToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     jsValueBodyWritable: BodyWritable[I]
@@ -155,7 +153,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       }
   }
 
-  def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[Int] = None)(implicit
+  def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     jsValueBodyWritable: BodyWritable[I]
@@ -183,7 +181,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       }
   }
 
-  def deleteFromApi(url: String, timeoutInSec: Option[Int] = None)(implicit
+  def deleteFromApi(url: String, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
   ): Future[HttpResponse] = {
