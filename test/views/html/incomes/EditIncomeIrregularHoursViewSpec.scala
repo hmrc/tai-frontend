@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 
 class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
 
-  private val employerName = "employerName"
   private val currentAmount = 1000
   private val employmentId = 1
   private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]

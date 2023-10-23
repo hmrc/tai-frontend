@@ -22,7 +22,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
 
-  val employerName = "Employer Name"
   val employmentID = 1
   val isPension = false
   private val updateIncomeCYPlus1Start = inject[UpdateIncomeCYPlus1StartView]

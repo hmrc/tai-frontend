@@ -22,7 +22,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EditPensionSuccessSpec extends TaiViewSpec {
 
   private val employerId = 1
-  private val employerName = "fakeFieldValue"
 
   "Edit Success Pension view" should {
     "contain the success heading" in {

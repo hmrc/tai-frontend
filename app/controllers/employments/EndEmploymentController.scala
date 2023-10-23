@@ -16,24 +16,26 @@
 
 package controllers.employments
 
-import cats.data.EitherT
-import cats.implicits._
-import com.google.inject.name.Named
 import controllers._
-import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.actions.ActionJourney
+import controllers.auth.{AuthedUser, DataRequest}
+import pages.EndEmployment.{EndEmploymentEndDatePage, EndEmploymentIdPage, EndEmploymentIrregularPaymentPage, EndEmploymentLatestPaymentPage, EndEmploymentTelephoneNumberPage, EndEmploymentTelephoneQuestionPage}
+import pages._
+import play.api.Logging
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc._
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
-import uk.gov.hmrc.tai.model.domain.EndEmployment
+import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.FutureOps._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -43,14 +45,12 @@ import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject() (
   auditService: AuditService,
   employmentService: EmploymentService,
-  authenticate: AuthAction,
-  validatePerson: ValidatePerson,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler,
@@ -62,16 +62,20 @@ class EndEmploymentController @Inject() (
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
-  @Named("End Employment") journeyCacheService: JourneyCacheService,
+  actionJourney: ActionJourney,
+  journeyCacheNewRepository: JourneyCacheNewRepository,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with EmptyCacheRedirect {
+    extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
-  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    journeyCacheService.flush() map { _ =>
+  def cancel(empId: Int): Action[AnyContent] = actionJourney.setJourneyCache.async { implicit request =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
+
+  private def error5xxInBadRequest()(implicit request: Request[_]): Result =
+    BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
 
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) =
     CanWeContactByPhoneViewModel(
@@ -82,413 +86,462 @@ class EndEmploymentController @Inject() (
       controllers.employments.routes.EndEmploymentController.cancel(employmentId).url
     )
 
-  def employmentUpdateRemoveDecision: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .collectedJourneyValues(
-          Seq(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey),
-          Seq(EmploymentDecisionConstants.EmploymentDecision)
-        )
-        .map {
-          case Right((mandatorySequence, optionalSeq)) =>
-            optionalSeq match {
-              case Seq(yesOrNo) =>
+  def employmentUpdateRemoveDecision: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(request.taiUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              ) { employment =>
                 Ok(
                   updateRemoveEmploymentDecision(
-                    UpdateRemoveEmploymentForm.form(mandatorySequence.head).fill(yesOrNo),
-                    mandatorySequence.head,
-                    mandatorySequence(1).toInt
+                    UpdateRemoveEmploymentForm
+                      .form(employment.name)
+                      .fill(request.userAnswers.get(EmploymentDecisionPage)),
+                    employment.name,
+                    empId
                   )
                 )
-            }
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
-  }
-
-  private def redirectToWarningOrDecisionPage(
-    journeyCacheFuture: Future[Map[String, String]],
-    successfulJourneyCacheFuture: Future[Option[String]]
-  ): Future[Result] =
-    for {
-      _                      <- journeyCacheFuture
-      successfulJourneyCache <- successfulJourneyCacheFuture
-    } yield successfulJourneyCache match {
-      case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
-      case _       => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
-    }
-
-  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
-    employmentService.employment(nino, empId) flatMap { case Some(employment) =>
-      val journeyCacheFuture = journeyCacheService.cache(
-        Map(EndEmploymentConstants.EmploymentIdKey -> empId.toString, EndEmploymentConstants.NameKey -> employment.name)
-      )
-      val successfulJourneyCacheFuture =
-        successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
-      redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
-    } recover { case _ =>
-      NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
-    }
-  }
-
-  def handleEmploymentUpdateRemove: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-        .getOrFail
-        .flatMap { mandatoryJourneyValues =>
-          UpdateRemoveEmploymentForm
-            .form(mandatoryJourneyValues.head)
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future(
-                  BadRequest(
-                    updateRemoveEmploymentDecision(
-                      formWithErrors,
-                      mandatoryJourneyValues.head,
-                      mandatoryJourneyValues(1).toInt
-                    )
-                  )
-                ),
-              {
-                case Some(FormValuesConstants.YesValue) =>
-                  journeyCacheService
-                    .cache(
-                      Map(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
-                    )
-                    .map { _ =>
-                      Redirect(
-                        controllers.employments.routes.UpdateEmploymentController
-                          .updateEmploymentDetails(mandatoryJourneyValues(1).toInt)
-                      )
-                    }
-                case _ =>
-                  journeyCacheService
-                    .cache(
-                      Map(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.NoValue)
-                    )
-                    .map { _ =>
-                      val nino = user.nino
-                      employmentService.employment(nino, mandatoryJourneyValues(1).toInt) flatMap {
-                        case Some(employment) =>
-                          val today = LocalDate.now
-                          val latestPaymentDate: Option[LocalDate] = for {
-                            latestAnnualAccount <- employment.latestAnnualAccount
-                            latestPayment       <- latestAnnualAccount.latestPayment
-                          } yield latestPayment.date
-
-                          val hasIrregularPayment = employment.latestAnnualAccount.exists(_.isIrregularPayment)
-                          if (
-                            latestPaymentDate.isDefined && latestPaymentDate.get
-                              .isAfter(today.minusWeeks(6).minusDays(1))
-                          ) {
-
-                            val errorPageCache =
-                              Map(EndEmploymentConstants.LatestPaymentDateKey -> latestPaymentDate.get.toString)
-                            journeyCacheService.cache(errorPageCache) map { _ =>
-                              auditService
-                                .createAndSendAuditEvent(
-                                  AuditConstants.EndEmploymentWithinSixWeeksError,
-                                  Map("nino" -> nino.nino)
-                                )
-                              Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
-                            }
-                          } else if (hasIrregularPayment) {
-                            auditService
-                              .createAndSendAuditEvent(
-                                AuditConstants.EndEmploymentIrregularPayment,
-                                Map("nino" -> nino.nino)
-                              )
-                            Future(
-                              Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
-                            )
-                          } else {
-                            Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
-                          }
-                      } recover { case _ =>
-                        NotFound(errorPagesHandler.error4xxPageWithLink("No employment found"))
-                      }
-                    }
-                    .flatten
               }
             )
-        }
-  }
-
-  def endEmploymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    journeyCacheService
-      .mandatoryJourneyValues(
-        EndEmploymentConstants.LatestPaymentDateKey,
-        EndEmploymentConstants.NameKey,
-        EndEmploymentConstants.EmploymentIdKey
-      )
-      .getOrFail
-      .map { data =>
-        val date = LocalDate.parse(data.head)
-        Ok(
-          endEmploymentWithinSixWeeksError(
-            WithinSixWeeksViewModel(date.plusWeeks(6).plusDays(1), data(1), date, data(2).toInt)
-          )
         )
-      }
-  }
+    }
 
-  def irregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    EitherT(
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-    )
-      .map { mandatoryJourneyValues =>
-        Ok(
-          endEmploymentIrregularPaymentError(
-            IrregularPayForm.createForm,
-            EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
-          )
-        )
-      }
-      .getOrElse {
-        InternalServerError(errorPagesHandler.error5xx("Could not retrieve mandatory journey values"))
-      }
-  }
+  def onPageLoad(empId: Int): Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          for {
+            _      <- journeyCacheNewRepository.set(request.userAnswers.setOrException(EndEmploymentIdPage, empId))
+            result <- checkDuplicateSubmission(empId)
+          } yield result
+        )(_ => checkDuplicateSubmission(empId))
+    }
 
-  def handleIrregularPaymentError: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
+  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier) =
+    successfulJourneyCacheService
+      .currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
+      .map {
+        case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
+        case None => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+      }
+
+  def handleEmploymentUpdateRemove: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-        .getOrFail
-        .map { mandatoryJourneyValues =>
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(user.nino, empId)
+            .flatMap(
+              _.fold(
+                Future.successful(error5xxInBadRequest())
+              )(employment =>
+                UpdateRemoveEmploymentForm
+                  .form(employment.name)
+                  .bindFromRequest()
+                  .fold(
+                    formWithErrors =>
+                      Future.successful(
+                        BadRequest(
+                          updateRemoveEmploymentDecision(
+                            formWithErrors,
+                            employment.name,
+                            empId
+                          )
+                        )
+                      ),
+                    {
+                      case Some(FormValuesConstants.YesValue) =>
+                        Future.successful(
+                          Redirect(
+                            controllers.employments.routes.UpdateEmploymentController
+                              .updateEmploymentDetails(empId)
+                          )
+                        )
+                      case _ =>
+                        hasIrregularPayment(employment, user.nino.nino)
+                    }
+                  )
+              )
+            )
+        )
+    }
+
+  private def hasIrregularPayment(employment: Employment, nino: String)(implicit
+    request: DataRequest[AnyContent]
+  ): Future[Result] = {
+    val today = LocalDate.now
+    val latestPaymentDate: Option[LocalDate] = for {
+      latestAnnualAccount <- employment.latestAnnualAccount
+      latestPayment       <- latestAnnualAccount.latestPayment
+    } yield latestPayment.date
+
+    latestPaymentDate.map { latestPaymentDate =>
+      for {
+        _ <- journeyCacheNewRepository.set(
+               request.userAnswers.setOrException(EndEmploymentLatestPaymentPage, latestPaymentDate)
+             )
+      } yield
+        if (latestPaymentDate.isAfter(today.minusWeeks(6).minusDays(1))) {
+          auditService
+            .createAndSendAuditEvent(
+              AuditConstants.EndEmploymentWithinSixWeeksError,
+              Map("nino" -> nino)
+            )
+          Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
+        } else {
+          if (employment.latestAnnualAccount.exists(_.isIrregularPayment)) {
+            auditService
+              .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino))
+            Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
+          } else {
+            Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+          }
+        }
+    }
+  }.getOrElse(
+    Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
+  )
+
+  def endEmploymentError: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      (request.userAnswers.get(EndEmploymentIdPage), request.userAnswers.get(EndEmploymentLatestPaymentPage)) match {
+        case (Some(empId), Some(latestPayment)) =>
+          employmentService
+            .employment(user.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  endEmploymentWithinSixWeeksError(
+                    WithinSixWeeksViewModel(
+                      latestPayment.plusWeeks(6).plusDays(1),
+                      employment.name,
+                      latestPayment,
+                      empId
+                    )
+                  )
+                )
+              )
+            )
+        case _ =>
+          Future.successful(error5xxInBadRequest())
+      }
+    }
+
+  def irregularPaymentError: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        ) { empId =>
+          employmentService
+            .employment(request.taiUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  endEmploymentIrregularPaymentError(
+                    IrregularPayForm.createForm,
+                    EmploymentViewModel(employment.name, empId)
+                  )
+                )
+              )
+            )
+        }
+    }
+
+  def handleIrregularPaymentError: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers.get(EndEmploymentIdPage) match {
+        case Some(empId) =>
           IrregularPayForm.createForm
             .bindFromRequest()
             .fold(
               formWithErrors =>
-                BadRequest(
-                  endEmploymentIrregularPaymentError(
-                    formWithErrors,
-                    EmploymentViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1).toInt)
-                  )
-                ),
-              formData =>
-                formData.irregularPayDecision match {
-                  case Some(IrregularPayConstants.ContactEmployer) =>
-                    Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-                  case _ =>
-                    Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
-                }
+                employmentService
+                  .employment(request.taiUser.nino, empId)
+                  .map(
+                    _.fold(
+                      error5xxInBadRequest()
+                    )(employment =>
+                      BadRequest(
+                        endEmploymentIrregularPaymentError(
+                          formWithErrors,
+                          EmploymentViewModel(employment.name, empId)
+                        )
+                      )
+                    )
+                  ),
+              {
+                case Some(IrregularPayConstants.ContactEmployer) =>
+                  for {
+                    _ <- journeyCacheNewRepository.set(
+                           request.userAnswers
+                             .setOrException(EndEmploymentIrregularPaymentPage, IrregularPayConstants.ContactEmployer)
+                         )
+                  } yield Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+                case Some(value) =>
+                  for {
+                    _ <- journeyCacheNewRepository
+                           .set(request.userAnswers.setOrException(EndEmploymentIrregularPaymentPage, value))
+                  } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+              }
             )
-        }
-  }
-
-  def endEmploymentPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey),
-        Seq(EndEmploymentConstants.EndDateKey)
-      )
-      .map {
-        case Right((mandatorySequence, optionalSeq)) =>
-          optionalSeq match {
-            case Seq(Some(date)) =>
-              Ok(
-                endEmploymentView(
-                  EmploymentEndDateForm(mandatorySequence.head).form.fill(LocalDate.parse(date)),
-                  EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)
-                )
-              )
-            case _ =>
-              Ok(
-                endEmploymentView(
-                  EmploymentEndDateForm(mandatorySequence.head).form,
-                  EmploymentViewModel(mandatorySequence.head, mandatorySequence(1).toInt)
-                )
-              )
-          }
-        case Left(_) =>
-          Redirect(taxAccountSummaryRedirect)
+        case None =>
+          Future.successful(error5xxInBadRequest())
       }
-  }
+    }
 
-  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
+  def endEmploymentPage: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      (request.userAnswers.get(EndEmploymentIdPage), request.userAnswers.get(EndEmploymentEndDatePage)) match {
+        case (Some(empId), endDate) =>
+          employmentService
+            .employment(authUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              ) { employment =>
+                val formData = endDate
+                  .map(date => EmploymentEndDateForm(employment.name).form.fill(date))
+                  .getOrElse(EmploymentEndDateForm(employment.name).form)
+                Ok(
+                  endEmploymentView(
+                    formData,
+                    EmploymentViewModel(employment.name, empId)
+                  )
+                )
+              }
+            )
+        case _ =>
+          Future.successful(error5xxInBadRequest())
+      }
+    }
+
+  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      employmentService.employment(nino, employmentId).flatMap {
-        case Some(employment) =>
-          EmploymentEndDateForm(employment.name).form
+
+      employmentService
+        .employment(nino, employmentId)
+        .flatMap(
+          _.fold(
+            Future.successful(error5xxInBadRequest())
+          )(employment =>
+            EmploymentEndDateForm(employment.name).form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
+                  ),
+                date =>
+                  for {
+                    _ <-
+                      journeyCacheNewRepository.set(request.userAnswers.setOrException(EndEmploymentEndDatePage, date))
+                  } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+              )
+          )
+        )
+
+    }
+
+  def addTelephoneNumber(): Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      (
+        request.userAnswers.get(EndEmploymentIdPage),
+        request.userAnswers.get(EndEmploymentTelephoneQuestionPage),
+        request.userAnswers.get(EndEmploymentTelephoneNumberPage)
+      ) match {
+        case (Some(empId), telephoneQuestion, telephoneNumber) =>
+          Future.successful(
+            Ok(
+              canWeContactByPhone(
+                Some(authUser),
+                telephoneNumberViewModel(empId),
+                YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneQuestion, telephoneNumber))
+              )
+            )
+          )
+        case _ =>
+          Future.successful(error5xxInBadRequest())
+      }
+    }
+
+  def submitTelephoneNumber(): Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          YesNoTextEntryForm
+            .form(
+              Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
+              Messages("tai.canWeContactByPhone.telephone.empty"),
+              Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)
+            )
             .bindFromRequest()
             .fold(
               formWithErrors =>
                 Future.successful(
-                  BadRequest(endEmploymentView(formWithErrors, EmploymentViewModel(employment.name, employmentId)))
+                  BadRequest(canWeContactByPhone(Some(authUser), telephoneNumberViewModel(empId), formWithErrors))
                 ),
-              date => {
-                val employmentJourneyCacheData = Map(EndEmploymentConstants.EndDateKey -> date.toString)
-                journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
-                  Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
-                }
-              }
+              form =>
+                for {
+                  _ <- journeyCacheNewRepository.set(submitTelephoneCacheHandler(form))
+                } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
             )
-        case _ => Future.successful(NotFound(errorPagesHandler.error4xxPageWithLink("No employment found")))
+        )
+    }
+
+  private def submitTelephoneCacheHandler(
+    form: YesNoTextEntryForm
+  )(implicit request: DataRequest[_]): UserAnswers =
+    form.yesNoChoice match {
+      case Some(yes) if yes == FormValuesConstants.YesValue =>
+        val questionCached = Messages(s"tai.label.${yes.toLowerCase}")
+        request.userAnswers
+          .setOrException(EndEmploymentTelephoneQuestionPage, questionCached)
+          .setOrException(EndEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
+      case _ =>
+        val questionCached = Messages(
+          s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
+        )
+        request.userAnswers
+          .setOrException(EndEmploymentTelephoneQuestionPage, questionCached)
+          .setOrException(EndEmploymentTelephoneNumberPage, "")
+    }
+
+  def endEmploymentCheckYourAnswers: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      (
+        request.userAnswers.get(EndEmploymentIdPage),
+        request.userAnswers.get(EndEmploymentEndDatePage),
+        request.userAnswers.get(EndEmploymentTelephoneQuestionPage),
+        request.userAnswers.get(EndEmploymentTelephoneNumberPage)
+      ) match {
+        case (Some(empId), Some(endDate), Some(telephoneQuestion), telephoneNumber) =>
+          val model = IncomeCheckYourAnswersViewModel(
+            employmentId = empId,
+            preHeading = Messages("tai.endEmployment.preHeadingText"),
+            incomeSourceEnd = endDate.toString,
+            contactableByPhone = telephoneQuestion,
+            phoneNumber = telephoneNumber,
+            backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
+            submissionUrl = controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
+            cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(empId).url
+          )
+          Future.successful(Ok(addIncomeCheckYourAnswers(model)))
+        case _ =>
+          Future.successful(error5xxInBadRequest())
       }
-  }
-
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    (
-      journeyCacheService.mandatoryJourneyValueAsInt(EndEmploymentConstants.EmploymentIdKey),
-      journeyCacheService
-        .optionalValues(EndEmploymentConstants.TelephoneQuestionKey, EndEmploymentConstants.TelephoneNumberKey)
-    ).mapN {
-      case (Right(mandatoryEmploymentId), telephoneCache) =>
-        Ok(
-          canWeContactByPhone(
-            Some(user),
-            telephoneNumberViewModel(mandatoryEmploymentId),
-            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
-          )
-        )
-      case _ => Redirect(taxAccountSummaryRedirect)
     }
-  }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    YesNoTextEntryForm
-      .form(
-        Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
-        Messages("tai.canWeContactByPhone.telephone.empty"),
-        Some(TelephoneNumberConstraint.telephoneNumberSizeConstraint)
-      )
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          journeyCacheService.mandatoryJourneyValueAsInt(EndEmploymentConstants.EmploymentIdKey) map {
-            case Right(employmentId) =>
-              BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
-          },
-        form => {
-          val mandatoryData = Map(
-            EndEmploymentConstants.TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
-            )
-          )
-          val dataForCache = form.yesNoChoice match {
-            case Some(FormValuesConstants.YesValue) =>
-              mandatoryData ++ Map(EndEmploymentConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-            case _ => mandatoryData ++ Map(EndEmploymentConstants.TelephoneNumberKey -> "")
-          }
-          journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
-          }
-        }
-      )
-  }
-
-  def endEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      journeyCacheService
-        .collectedJourneyValues(
-          Seq(
-            EndEmploymentConstants.EmploymentIdKey,
-            EndEmploymentConstants.EndDateKey,
-            EndEmploymentConstants.TelephoneQuestionKey
-          ),
-          Seq(EndEmploymentConstants.TelephoneNumberKey)
-        )
-        .map {
-          case Right((mandatoryValues, optionalSeq)) =>
-            val model = IncomeCheckYourAnswersViewModel(
-              employmentId = mandatoryValues.head.toInt,
-              preHeading = Messages("tai.endEmployment.preHeadingText"),
-              incomeSourceEnd = mandatoryValues(1),
-              contactableByPhone = mandatoryValues(2),
-              phoneNumber = optionalSeq.head,
-              backLinkUrl = controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
-              submissionUrl = controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
-              cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(mandatoryValues.head.toInt).url
-            )
-            Ok(addIncomeCheckYourAnswers(model))
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
-  }
-
-  def confirmAndSendEndEmployment(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
-      for {
-        (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
-                                                   .collectedJourneyValues(
-                                                     Seq(
-                                                       EndEmploymentConstants.EmploymentIdKey,
-                                                       EndEmploymentConstants.EndDateKey,
-                                                       EndEmploymentConstants.TelephoneQuestionKey
-                                                     ),
-                                                     Seq(EndEmploymentConstants.TelephoneNumberKey)
-                                                   )
-                                                   .getOrFail
-        model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)), mandatoryCacheSeq(2), optionalCacheSeq.head)
-        _ <- employmentService.endEmployment(nino, mandatoryCacheSeq.head.toInt, model)
+  def confirmAndSendEndEmployment(): Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      val result = for {
+        empId             <- request.userAnswers.get(EndEmploymentIdPage)
+        endDate           <- request.userAnswers.get(EndEmploymentEndDatePage)
+        telephoneQuestion <- request.userAnswers.get(EndEmploymentTelephoneQuestionPage)
+        telephoneNumber   <- request.userAnswers.get(EndEmploymentTelephoneNumberPage)
+        model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
+      } yield for {
         _ <- successfulJourneyCacheService.cache(
-               Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${mandatoryCacheSeq.head}" -> "true")
+               Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")
              )
-        _ <- journeyCacheService.flush()
+        _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+        _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
-  }
-
-  def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    journeyCacheService
-      .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey) map {
-      case Right(mandatoryValues) =>
-        Ok(
-          duplicateSubmissionWarning(
-            DuplicateSubmissionWarningForm.createForm,
-            mandatoryValues.head,
-            mandatoryValues(1).toInt
-          )
-        )
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
+      result.getOrElse(
+        Future.successful(error5xxInBadRequest())
+      )
     }
-  }
 
-  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .mandatoryJourneyValues(EndEmploymentConstants.NameKey, EndEmploymentConstants.EmploymentIdKey)
-        .getOrFail
-        .flatMap { mandatoryValues =>
-          val empId = mandatoryValues(1).toInt
-          DuplicateSubmissionWarningForm.createForm
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, mandatoryValues.head, empId))),
-              success =>
-                success.yesNoChoice match {
-                  case Some(FormValuesConstants.YesValue) =>
-                    Future.successful(
-                      Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
-                    )
-                  case Some(FormValuesConstants.NoValue) =>
-                    Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-                }
+  def duplicateSubmissionWarning: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(authUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                Ok(
+                  duplicateSubmissionWarning(
+                    DuplicateSubmissionWarningForm.createForm,
+                    employment.name,
+                    empId
+                  )
+                )
+              )
             )
-        }
-  }
+        )
+    }
 
-  def showConfirmationPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitDuplicateSubmissionWarning: Action[AnyContent] =
+    actionJourney.setJourneyCache.async { implicit request =>
+      implicit val authUser: AuthedUser = request.taiUser
+      request.userAnswers
+        .get(EndEmploymentIdPage)
+        .fold(
+          Future.successful(error5xxInBadRequest())
+        )(empId =>
+          employmentService
+            .employment(authUser.nino, empId)
+            .map(
+              _.fold(
+                error5xxInBadRequest()
+              )(employment =>
+                DuplicateSubmissionWarningForm.createForm
+                  .bindFromRequest()
+                  .fold(
+                    formWithErrors => BadRequest(duplicateSubmissionWarning(formWithErrors, employment.name, empId)),
+                    success =>
+                      success.yesNoChoice match {
+                        case Some(FormValuesConstants.YesValue) =>
+                          Redirect(
+                            controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
+                          )
+                        case Some(FormValuesConstants.NoValue) =>
+                          Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+                      }
+                  )
+              )
+            )
+        )
+    }
+
+  def showConfirmationPage: Action[AnyContent] = actionJourney.authAndValidate.async { implicit request =>
     Future.successful(Ok(confirmation()))
   }
 }
