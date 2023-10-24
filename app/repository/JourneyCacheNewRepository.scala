@@ -28,8 +28,10 @@ import uk.gov.hmrc.tai.model.UserAnswers
 
 import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class JourneyCacheNewRepository @Inject() (
   mongoComponent: MongoComponent,
   appConfig: ApplicationConfig,
