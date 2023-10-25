@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, Irregul
 
 class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
 
+  val employerName = "employerName"
   val currentAmount = 1234
   val estimatedAmount = 1000
   val employmentId = 1

@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmoun
 
 class TaxablePayslipAmountViewSpec extends TaiViewSpec {
 
+  private val employerName = "Employer"
   private val employer = IncomeSource(id = 1, employerName)
   private val taxablePayslipViewModel = createViewModel()
 

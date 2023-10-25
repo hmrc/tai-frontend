@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
 
   val empId = 1
+  val employerName = "fakeFieldValue"
   private val estimatedPayLandingPage = inject[EstimatedPayLandingPageView]
 
   "Estimated Pay Landing Page" should {

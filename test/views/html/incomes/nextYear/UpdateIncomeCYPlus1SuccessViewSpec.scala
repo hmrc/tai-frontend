@@ -21,6 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1SuccessViewSpec extends TaiViewSpec {
 
+  val employerName = "Employer Name"
   val isPension = false
   private val template = inject[UpdateIncomeCYPlus1SuccessView]
 

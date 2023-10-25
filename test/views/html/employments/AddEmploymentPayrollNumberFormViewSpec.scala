@@ -94,6 +94,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
     )
   )
 
+  private lazy val employerName = "Employer"
   private lazy val payrollNumberViewModel = PayrollNumberViewModel(
     employerName,
     firstPayChoice = false,
