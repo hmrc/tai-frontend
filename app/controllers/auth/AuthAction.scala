@@ -62,14 +62,15 @@ class AuthActionImpl @Inject() (
           authWithCredentials(request, block, credentials, user)
         }
 
-      case credentials ~ nino ~ saUtr ~ confidenceLevel ~ _ =>
+      case credentials ~ Some(nino) ~ saUtr ~ confidenceLevel ~ _ =>
         val providerType = credentials.map(_.providerType)
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
-          val user = AuthedUser(nino, saUtr, providerType, confidenceLevel, messageCount)
+          val user = AuthedUser(uk.gov.hmrc.domain.Nino(nino), saUtr, providerType, confidenceLevel, messageCount, None)
           authWithCredentials(request, block, credentials, user)
         }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
+
   }
 
   private def authWithCredentials[A](
@@ -105,7 +106,8 @@ class AuthActionImpl @Inject() (
     handleFailure(routes.UnauthorisedController.loginGG())
 
   private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
-    case _: NoActiveSession => Redirect(redirect)
+    case _: NoActiveSession =>
+      Redirect(redirect)
     case ex: AuthorisationException =>
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())

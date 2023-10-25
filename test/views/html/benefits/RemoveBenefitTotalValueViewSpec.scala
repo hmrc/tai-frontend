@@ -77,7 +77,6 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
 
   }
 
-  private lazy val employerName = "HMRC"
   private lazy val benefitName = "Other Benefit"
 
   private val template = inject[RemoveBenefitTotalValueView]
