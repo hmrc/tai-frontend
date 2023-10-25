@@ -54,6 +54,8 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
     }
   }
 
+  private lazy val employerName = "Employer"
+
   private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm.form.bind(
     Map(
       AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue

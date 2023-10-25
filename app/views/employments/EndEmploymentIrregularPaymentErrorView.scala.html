@@ -17,11 +17,12 @@
 @import includes.{cancelLink, submit}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.tai.forms.employments.IrregularPayFormData
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 
-@(irregularPayForm: Form[Option[String]], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
+@(irregularPayForm: Form[IrregularPayFormData], model: EmploymentViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 
 @mainTemplate(

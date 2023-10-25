@@ -14,12 +14,8 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.13.0-$playVersion",
     "uk.gov.hmrc"       %% "domain"                           % s"8.3.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
-    "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
-
     "uk.gov.hmrc"       %% "mongo-feature-toggles-client"     % "0.3.0",
     "uk.gov.hmrc"       %% "sca-wrapper"                      % "1.0.45"
-
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -28,10 +24,7 @@ private object AppDependencies {
     "com.github.tomakehurst" % "wiremock-jre8"                  % "2.35.1",
     "com.typesafe.play"      %% "play-test"                     % PlayVersion.current,
     "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
-
     "org.scalatestplus"      %% "scalacheck-1-17"               % "3.2.17.0",
-    "uk.gov.hmrc.mongo"      %% s"hmrc-mongo-test-$playVersion" % "1.3.0",
-
     "com.vladsch.flexmark"   %  "flexmark-all"                  % "0.64.8"
   ).map(_ % "test,it")
 

@@ -131,7 +131,7 @@ class UpdateEmploymentController @Inject() (
 
   def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
     for {
-      employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateEmploymentConstants.EmploymentIdKey)
+      employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(EndEmploymentConstants.EmploymentIdKey)
       telephoneCache <-
         journeyCacheService
           .optionalValues(UpdateEmploymentConstants.TelephoneQuestionKey, UpdateEmploymentConstants.TelephoneNumberKey)

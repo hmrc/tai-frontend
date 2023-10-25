@@ -21,15 +21,27 @@ import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
 case class AuthedUser(
-  nino: Nino,
+  validNino: String,
   utr: Option[String],
   providerType: Option[String],
   confidenceLevel: ConfidenceLevel,
   messageCount: Option[Int],
   trustedHelper: Option[TrustedHelper]
-)
+) {
+  def nino: Nino = Nino(validNino)
+}
 
 object AuthedUser {
+  def apply(
+    nino: Option[String],
+    saUtr: Option[String],
+    providerType: Option[String],
+    confidenceLevel: ConfidenceLevel,
+    messageCount: Option[Int]
+  ): AuthedUser = {
+    val validNino = nino.getOrElse("")
+    AuthedUser(validNino, saUtr, providerType, confidenceLevel, messageCount: Option[Int], None)
+  }
 
   def apply(
     trustedHelper: TrustedHelper,
@@ -39,11 +51,11 @@ object AuthedUser {
     messageCount: Option[Int]
   ): AuthedUser =
     AuthedUser(
-      nino = Nino(trustedHelper.principalNino),
-      utr = saUtr,
-      providerType = providerType,
-      confidenceLevel = confidenceLevel,
-      messageCount = messageCount,
-      trustedHelper = Some(trustedHelper)
+      trustedHelper.principalNino,
+      saUtr,
+      providerType,
+      confidenceLevel,
+      messageCount,
+      Some(trustedHelper)
     )
 }

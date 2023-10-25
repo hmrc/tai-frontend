@@ -20,19 +20,16 @@ import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.test.FakeRequest
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.ConfidenceLevel.L250
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 
-import scala.util.Random
-
 class MainTemplateSpec extends BaseSpec with JsoupMatchers {
 
-  private val mainTemplate = app.injector.instanceOf[MainTemplate]
-  private implicit val authRequest = AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
+  val mainTemplate = app.injector.instanceOf[MainTemplate]
+  implicit val authRequest = AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
 
   "MainTemplate View" must {
     "show the correct nav menu items" when {
@@ -72,7 +69,7 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
             "Title",
             Some(
               AuthedUser(
-                TrustedHelper("Principal", "Attorney", "/", nino.nino),
+                TrustedHelper("Principal", "Attorney", "/", ""),
                 Some("1130492359"),
                 Some("GovernmentGateway"),
                 L250,
@@ -99,7 +96,7 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
           "Title",
           Some(
             AuthedUser(
-              TrustedHelper("Principal", "Attorney", "/", nino.nino),
+              TrustedHelper("Principal", "Attorney", "/", ""),
               Some("1130492359"),
               Some("GovernmentGateway"),
               L250,
@@ -116,16 +113,15 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
       doc must haveClassWithText("You are using this service for Principal.", "pta-attorney-banner__text")
     }
     "not display the attorney banner when not acting as a trusted helped" in {
-      def view: HtmlFormat.Appendable =
+      def view =
         mainTemplate(
           "Title",
           Some(
             AuthedUser(
-              nino,
+              None,
               Some("1130492359"),
               Some("GovernmentGateway"),
               L250,
-              None,
               None
             )
           ),

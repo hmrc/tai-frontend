@@ -88,7 +88,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
       "Failed response is received from service" in {
 
         implicit val authedTrustedUser: AuthedUser =
-          UserBuilder("utr", TaiConstants.AuthProviderGG, "principalName", nino.toString())
+          UserBuilder("utr", TaiConstants.AuthProviderGG, "principalName")
 
         implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedTrustedUser, "name")
 

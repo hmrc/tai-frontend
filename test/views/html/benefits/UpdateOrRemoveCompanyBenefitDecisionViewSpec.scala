@@ -77,6 +77,7 @@ class UpdateOrRemoveCompanyBenefitDecisionViewSpec extends TaiViewSpec {
   private val idYesIGetThisBenefit = "decisionChoice"
   private val idNoIDontGetThisBenefit = "decisionChoice-2"
   private lazy val benefitType = "Expenses"
+  private lazy val employerName = "EmployerA"
   private lazy val viewModel =
     CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form, 1)
   private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType, employerName, formWithErrors, 1)

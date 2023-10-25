@@ -54,7 +54,7 @@ trait BaseSpec
 
   val nino: Nino = FakeAuthAction.nino
 
-  protected implicit val authedUser: AuthedUser = UserBuilder()
+  implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
   override implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
