@@ -28,8 +28,8 @@ import java.time.LocalDate
 class EndEmploymentViewSpec extends TaiViewSpec {
 
   private val employmentId: Int = 0
-//  private val employmentName = "employer name"
-  private val eedf = EmploymentEndDateForm(employerName)
+  private val employmentName = "employer name"
+  private val eedf = EmploymentEndDateForm(employmentName)
 
   private val globalErrorMessage: String = "day error message"
   private val formWithErrors: Form[LocalDate] = eedf.form.withError("", globalErrorMessage)
@@ -41,7 +41,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     )
   )
 
-  private val viewmodel = EmploymentViewModel(employerName, employmentId)
+  private val viewmodel = EmploymentViewModel(employmentName, employmentId)
 
   private val template = inject[EndEmploymentView]
 
@@ -53,13 +53,13 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.endEmployment.preHeadingText"),
-      messages("tai.endEmployment.endDateForm.title", employerName),
+      messages("tai.endEmployment.endDateForm.title", employmentName),
       Some(messages("tai.ptaHeader.accessible.preHeading"))
     )
 
     behave like pageWithBackLink()
     behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
-    behave like pageWithContinueButtonFormNew(s"/check-income-tax/end-employment/date/0")
+    behave like pageWithContinueButtonFormNew(s"/check-income-tax/end-employment/date/$employmentId")
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
@@ -70,15 +70,8 @@ class EndEmploymentViewSpec extends TaiViewSpec {
       }
     }
 
-    "have a legend in the form" in {
-      def view: Html = template(employmentEndDateForm, viewmodel)
-      val legendItem1 = doc(view).select("#date-you-left-hint").text
-
-      legendItem1 mustBe Messages("tai.endEmployment.endDateForm.label", employerName)
-    }
-
     "have a form hint" in {
-      val legendItem2 = doc(view).select("#date-example-hint").text
+      val legendItem2 = doc(view).select("#tellUsAboutEmploymentForm-hint").text
 
       legendItem2 mustBe Messages("tai.label.date.example")
     }

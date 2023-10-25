@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
 
+  private val employerName = "testEmployer"
   val empId = 1
 
   private val template = inject[WhatDoYouWantToTellUsView]

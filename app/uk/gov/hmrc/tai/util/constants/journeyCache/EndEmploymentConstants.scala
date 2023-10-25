@@ -19,10 +19,10 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 object EndEmploymentConstants {
 
   val JourneyKey = "end-employment"
-  val EmploymentIdKey = s"$JourneyKey-employmentId"
-  val NameKey = s"$JourneyKey-employmentName"
-  val EndDateKey = s"$JourneyKey-employmentEndDate"
-  val TelephoneQuestionKey = s"$JourneyKey-employmentTelephoneQuestion"
-  val TelephoneNumberKey = s"$JourneyKey-employmentTelephoneNumber"
-  val LatestPaymentDateKey = s"$JourneyKey-employmentLatestPaymentDate"
+  val EmploymentIdKey = "employmentId"
+  val NameKey = "employmentName"
+  val EndDateKey = "employmentEndDate"
+  val TelephoneQuestionKey = "employmentTelephoneQuestion"
+  val TelephoneNumberKey = "employmentTelephoneNumber"
+  val LatestPaymentDateKey = "employmentLatestPaymentDate"
 }
