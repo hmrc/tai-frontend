@@ -110,6 +110,16 @@ class AuthActionSpec extends BaseSpec {
       val baseRetrieval =
         creds ~ Some(nino.nino) ~ saUtr ~ ConfidenceLevel.L200
 
+      "no nino is returned" in {
+        val baseRetrieval =
+          creds ~ None ~ saUtr ~ ConfidenceLevel.L200
+        val controller = Harness.successful(baseRetrieval ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+        val expectedTaiUser = AuthedUser(Nino(""), saUtr, authProviderGG, ConfidenceLevel.L200, None, None)
+
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
+
       "no trusted helper data is returned" in {
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
