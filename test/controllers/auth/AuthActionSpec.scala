@@ -24,7 +24,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino => _, _}
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.MessageFrontendService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
@@ -106,15 +106,13 @@ class AuthActionSpec extends BaseSpec {
       val authProviderGG = Some(TaiConstants.AuthProviderGG)
       val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
       val saUtr = Some("000111222")
-      val nino = new Generator().nextNino.nino
+      val nino = Nino(new Generator().nextNino.nino)
       val baseRetrieval =
-        creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L200
+        creds ~ Some(nino.nino) ~ saUtr ~ ConfidenceLevel.L200
 
       "no trusted helper data is returned" in {
-
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
-
         val expectedTaiUser = AuthedUser(nino, saUtr, authProviderGG, ConfidenceLevel.L200, None, None)
 
         contentAsString(result) mustBe expectedTaiUser.toString
@@ -128,9 +126,23 @@ class AuthActionSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
-          AuthedUser(nino.nino, Some("000111222"), authProviderGG, ConfidenceLevel.L200, None, Some(trustedHelper))
+          AuthedUser(nino, Some("000111222"), authProviderGG, ConfidenceLevel.L200, None, Some(trustedHelper))
 
         contentAsString(result) mustBe expectedTaiUser.toString
+      }
+
+      "redirect a user to uplift if the confidence level is below 200 and no nino" in {
+
+        val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
+        val saUtr = Some("000111222")
+        val baseRetrieval =
+          creds ~ None ~ saUtr ~ ConfidenceLevel.L50
+
+        val controller = Harness.successful(baseRetrieval ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.UnauthorisedController.upliftFailedUrl().url
       }
 
       "redirect a user to uplift if the confidence level is below 200" in {

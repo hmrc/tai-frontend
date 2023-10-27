@@ -169,7 +169,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
     }
   }
-  private val employerName = "Employer Name"
   private val empId = 1
   private val endEmploymentJourneyCacheService = mock[JourneyCacheService]
 }

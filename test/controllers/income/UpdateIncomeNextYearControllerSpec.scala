@@ -56,7 +56,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val employmentID = 1
   val currentEstPay = 1234
   val newEstPay = 9999
-  val employerName = "EmployerName"
   val isPension = false
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
@@ -529,7 +528,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController =
     new TestUpdateIncomeNextYearController() {
       val model: UpdateNextYearsIncomeCacheModel =
-        UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
+        UpdateNextYearsIncomeCacheModel("employer name", employmentID, isPension, currentEstPay)
 
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))

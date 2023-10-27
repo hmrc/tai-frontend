@@ -18,7 +18,7 @@ package views.html.employments
 
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.employments.{IrregularPayForm, IrregularPayFormData}
+import uk.gov.hmrc.tai.forms.employments.IrregularPayForm
 import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
@@ -61,13 +61,13 @@ class EndEmploymentIrregularPaymentErrorViewSpec extends TaiViewSpec {
     }
   }
 
-  private lazy val formWithErrors: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
+  private lazy val formWithErrors: Form[Option[String]] = IrregularPayForm.createForm.bind(
     Map(
       IrregularPayConstants.IrregularPayDecision -> ""
     )
   )
 
-  private lazy val validForm: Form[IrregularPayFormData] = IrregularPayForm.createForm.bind(
+  private lazy val validForm: Form[Option[String]] = IrregularPayForm.createForm.bind(
     Map(
       IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer
     )

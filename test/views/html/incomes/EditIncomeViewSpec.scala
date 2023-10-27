@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EditIncomeViewSpec extends TaiViewSpec {
 
   val empId = 1
-  val employerName = "fakeFieldValue"
   "Edit income view" should {
     behave like pageWithBackLink()
     behave like pageWithCombinedHeaderNewFormatNew(
@@ -38,7 +37,7 @@ class EditIncomeViewSpec extends TaiViewSpec {
 
   override def view: Html =
     editIncome(
-      EditIncomeForm.create(preFillData = EmploymentAmount("fakeFieldValue", "", 1, 1, 1)),
+      EditIncomeForm.create(preFillData = EmploymentAmount(employerName, "", 1, 1, 1)),
       hasMultipleIncomes = false,
       empId,
       "0",
