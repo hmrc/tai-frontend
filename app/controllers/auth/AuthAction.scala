@@ -59,39 +59,47 @@ class AuthActionImpl @Inject() (
         val providerType = credentials.map(_.providerType)
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
           val user = AuthedUser(helper, saUtr, providerType, confidenceLevel, messageCount)
-          authWithCredentials(request, block, credentials, user)
+          authWithCredentials(request, block, credentials, user, confidenceLevel)
         }
 
-      case credentials ~ Some(nino) ~ saUtr ~ confidenceLevel ~ _ =>
+      case credentials ~ optNino ~ saUtr ~ confidenceLevel ~ _ =>
         val providerType = credentials.map(_.providerType)
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
-          val user = AuthedUser(uk.gov.hmrc.domain.Nino(nino), saUtr, providerType, confidenceLevel, messageCount, None)
-          authWithCredentials(request, block, credentials, user)
+          lazy val user = AuthedUser(
+            uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+            saUtr,
+            providerType,
+            confidenceLevel,
+            messageCount,
+            None
+          )
+          authWithCredentials(request, block, credentials, user, confidenceLevel)
         }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
-
   }
 
   private def authWithCredentials[A](
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result],
     credentials: Option[Credentials],
-    user: AuthedUser
+    user: => AuthedUser,
+    confidenceLevel: ConfidenceLevel
   ): Future[Result] =
     credentials match {
       case Some(Credentials(_, TaiConstants.AuthProviderGG)) =>
-        processRequest(user, request, block, handleGGFailure)
+        processRequest(confidenceLevel, user, request, block, handleGGFailure)
       case _ => throw new RuntimeException("Can't find valid credentials for user")
     }
 
   private def processRequest[A](
-    user: AuthedUser,
+    confidenceLevel: ConfidenceLevel,
+    user: => AuthedUser,
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result],
     failureHandler: PartialFunction[Throwable, Result]
   ): Future[Result] =
-    (user.confidenceLevel.level match {
+    (confidenceLevel.level match {
       case level if level >= 200 =>
         for {
           result <- block(InternalAuthenticatedRequest(request, user))

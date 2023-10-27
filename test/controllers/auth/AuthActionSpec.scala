@@ -131,6 +131,20 @@ class AuthActionSpec extends BaseSpec {
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
+      "redirect a user to uplift if the confidence level is below 200 and no nino" in {
+
+        val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
+        val saUtr = Some("000111222")
+        val baseRetrieval =
+          creds ~ None ~ saUtr ~ ConfidenceLevel.L50
+
+        val controller = Harness.successful(baseRetrieval ~ None)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.UnauthorisedController.upliftFailedUrl().url
+      }
+
       "redirect a user to uplift if the confidence level is below 200" in {
 
         val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
