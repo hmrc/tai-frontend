@@ -25,6 +25,10 @@
 
 @(dateForm: Form[LocalDate], viewmodel: EmploymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
+@hint = {
+    <span id="date-you-left-hint" class="govuk-!-font-weight-bold govuk-!-display-block carry-over" >@Messages("tai.endEmployment.endDateForm.label" , viewmodel.employerName)</span>
+    <span id="date-example-hint">@Messages("tai.label.date.example")</span>
+}
 
 @mainTemplate(
     title = Messages("tai.endEmployment.endDateForm.pagetitle"),
@@ -50,7 +54,7 @@
                 @govukDateInput(DateInput(
                     id = "tellUsAboutEmploymentForm",
                     namePrefix = Some("tellUsAboutEmploymentForm"),
-                    hint = Some(Hint(content = Text(Messages("tai.label.date.example")))),
+                    hint = Some(Hint(content = HtmlContent(hint))),
                     items = Seq(
                         InputItem(
                             name= "day",

@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 
-  val employerName = "Employer Name"
   val employmentID = 1
   val currentEstPay = 1234
   val isPension = false

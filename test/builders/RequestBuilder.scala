@@ -25,11 +25,13 @@ object RequestBuilder {
 
   private val HTTP_VERBS = List("GET", "POST", "PUT", "DELETE")
 
+  val uuid = UUID.randomUUID().toString
+
   def buildFakeRequestWithOnlySession(method: String) = {
     require(HTTP_VERBS contains method)
 
     FakeRequest(method = method, path = "")
-      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
+      .withSession(SessionKeys.sessionId -> s"session-$uuid")
   }
 
   def buildFakeRequestWithAuth(method: String, headers: (String, String)*) =
@@ -47,7 +49,7 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}")
+      .withSession(SessionKeys.sessionId -> s"session-$uuid")
       .withHeaders(headers: _*)
 
   def buildFakeRequestWithAuth(method: String) =
@@ -65,7 +67,7 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}", SessionKeys.authToken -> "Bearer 1")
+      .withSession(SessionKeys.sessionId -> s"session-$uuid", SessionKeys.authToken -> "Bearer 1")
 
   def buildFakeRequestWithAuth(method: String, action: String) =
     FakeRequest(method = method, path = "")
@@ -83,12 +85,12 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}", SessionKeys.authToken -> "Bearer 1")
+      .withSession(SessionKeys.sessionId -> s"session-$uuid", SessionKeys.authToken -> "Bearer 1")
 
   def buildFakeInvalidRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "")
       .withFormUrlEncodedBody("name" -> "test1", "description" -> "description", "employmentId" -> "14")
-      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}", SessionKeys.authToken -> "Bearer 1")
+      .withSession(SessionKeys.sessionId -> s"session-$uuid", SessionKeys.authToken -> "Bearer 1")
 
   def buildFakeRequestWithoutAuth(method: String) =
     FakeRequest(method = method, path = "")
@@ -105,7 +107,7 @@ object RequestBuilder {
         "isOccupationalPension" -> "false",
         "hasMultipleIncomes"    -> "true"
       )
-      .withSession(SessionKeys.sessionId -> s"session-${UUID.randomUUID()}", SessionKeys.authToken -> "Bearer 1")
+      .withSession(SessionKeys.sessionId -> s"session-$uuid", SessionKeys.authToken -> "Bearer 1")
 
   def buildFakePostRequestWithAuth(formArgs: (String, String)*) =
     buildFakeRequestWithAuth("POST")

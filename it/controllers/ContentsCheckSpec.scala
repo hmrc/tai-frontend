@@ -17,10 +17,12 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, matching, ok, post, put, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
+import pages.EndEmployment.{EndEmploymentEndDatePage, EndEmploymentIdPage, EndEmploymentLatestPaymentPage, EndEmploymentTelephoneNumberPage, EndEmploymentTelephoneQuestionPage}
+import pages._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -30,15 +32,16 @@ import play.api.libs.json.{JsArray, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
-import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, YearAndMonth}
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, SCAWrapperToggle}
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
-import uk.gov.hmrc.tai.model.domain.{Address, CarBenefit, Person, TaxAccountSummary, TaxCodeChange, TaxCodeRecord, TaxComponentType}
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import utils.IntegrationSpec
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
@@ -51,7 +54,8 @@ import scala.util.Random
 
 class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
 
-  val mockFeatureFlagService = mock[FeatureFlagService]
+  private val mockFeatureFlagService = mock[FeatureFlagService]
+  private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   case class ExpectedData(
     title: String,
@@ -136,7 +140,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "remove-employment-warning" =>
         ExpectedData("You have already sent an update about this employment - Check your Income Tax - GOV.UK", true)
       case "end-employment-decision" =>
-        ExpectedData("Do you currently work for H M Revenue and Customs? - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Do you currently work for company name? - Check your Income Tax - GOV.UK", true)
       case "end-employment-six-weeks" =>
         ExpectedData("We cannot update your details yet - Check your Income Tax - GOV.UK", true)
       case "end-employment-irregular-payment" =>
@@ -446,7 +450,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .overrides(
-      bind[FeatureFlagService].toInstance(mockFeatureFlagService)
+      bind[FeatureFlagService].toInstance(mockFeatureFlagService),
+      bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository)
     )
     .configure(
       "microservice.services.auth.port"                                -> server.port(),
@@ -575,6 +580,14 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
   )
 
+  private val userAnswers = UserAnswers("", "", Json.obj("test" -> "test"))
+    .setOrException(EndEmploymentIdPage, 1)
+    .setOrException(EmploymentDecisionPage, "company name")
+    .setOrException(EndEmploymentLatestPaymentPage, LocalDate.of(2022, 2, 2))
+    .setOrException(EndEmploymentEndDatePage, LocalDate.of(2022, 2, 2))
+    .setOrException(EndEmploymentTelephoneQuestionPage, "999")
+    .setOrException(EndEmploymentTelephoneNumberPage, "999")
+
   override def beforeEach() = {
     super.beforeEach()
 
@@ -583,6 +596,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, true)))
     when(mockFeatureFlagService.get(SCAWrapperToggle))
       .thenReturn(Future.successful(FeatureFlag(SCAWrapperToggle, true)))
+    when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/person"))
         .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
@@ -936,6 +950,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             .get(urlMatching("/single-customer-account-wrapper-data/wrapper-data.*"))
             .willReturn(ok(wrapperDataResponse))
         )
+
+        // JourneyCacheNewRepository
 
         val result: Future[Result] = route(app, request(url)).get
         val content = Jsoup.parse(contentAsString(result))
