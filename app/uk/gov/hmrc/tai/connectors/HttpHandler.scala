@@ -19,15 +19,16 @@ package uk.gov.hmrc.tai.connectors
 import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status._
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.libs.ws.BodyWritable
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{BadRequestException, _}
 
 import javax.inject.Inject
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.runtime.universe.TypeTag
+import scala.util.chaining.scalaUtilChainingOps
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
 
@@ -165,21 +166,21 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
   def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
-    jsValueBodyWritable: BodyWritable[I]
+    writes: Writes[I]
   ): Future[HttpResponse] = {
+    def includeTimeOut: RequestBuilder => RequestBuilder = rb =>
+      timeoutInSec
+        .fold(rb)(timeOut => rb.transform(_.withRequestTimeout(timeOut.seconds)))
 
-    val httpCall = http.post(url"$url")(hc).withBody(data)
-
-    val transformedHttpCall =
-      timeoutInSec.fold(httpCall)(timeOut => httpCall.transform(_.withRequestTimeout(timeOut.seconds)))
-
-    transformedHttpCall
+    http
+      .post(url"$url")(hc)
+      .withBody(Json.toJson(data))
+      .pipe(includeTimeOut)
       .execute[HttpResponse]
       .flatMap { httpResponse =>
         httpResponse.status match {
           case OK | CREATED =>
             Future.successful(httpResponse)
-
           case _ =>
             logger.warn(
               s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
