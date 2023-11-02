@@ -142,6 +142,26 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       }
   }
 
+  /*
+  def postToApi[I](url: String, data: I)(implicit
+    hc: HeaderCarrier,
+    writes: Writes[I],
+    executionContext: ExecutionContext
+  ): Future[HttpResponse] =
+    http.POST[I, HttpResponse](url, data) flatMap { httpResponse =>
+      httpResponse.status match {
+        case OK | CREATED =>
+          Future.successful(httpResponse)
+
+        case _ =>
+          logger.warn(
+            s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
+          )
+          Future.failed(new HttpException(httpResponse.body, httpResponse.status))
+      }
+    }
+   */
+
   def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
