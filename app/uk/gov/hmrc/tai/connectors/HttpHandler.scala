@@ -162,14 +162,10 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
   def deleteFromApi(url: String, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[HttpResponse] = {
-
-    val httpCall = http.delete(url"$url")
-
-    val transformedHttpCall =
-      timeoutInSec.fold(httpCall)(timeOut => httpCall.transform(_.withRequestTimeout(timeOut.seconds)))
-
-    transformedHttpCall
+  ): Future[HttpResponse] =
+    http
+      .delete(url"$url")(hc)
+      .pipe(includeTimeOut(timeoutInSec, _))
       .execute[HttpResponse]
       .flatMap { httpResponse =>
         httpResponse.status match {
@@ -182,6 +178,5 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
             Future.failed(new HttpException(httpResponse.body, httpResponse.status))
         }
       }
-  }
 
 }
