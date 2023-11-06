@@ -1389,7 +1389,6 @@ tai.updateEmployment.incomeSame.newEstimate.text=Your new estimated income is
 tai.updateEmployment.incomeSame.description=This amount has already been estimated for {0} for {1}, so you do not need to update your income.
 tai.updateEmployment.incomeSame.employment.return.link=Return to your employment details
 tai.updateEmployment.incomeSame.pension.return.link=Return to your pension details
-tai.updateOrRemove.fromOtherSources=Update or remove {0}
 tai.updateOrRemove=Update or remove
 tai.updatePension.confirmation.heading=Your update about a pension has been received
 tai.updatePension.cya.currentlyReceivePension=Currently receive pension

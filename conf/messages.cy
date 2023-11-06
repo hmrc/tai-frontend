@@ -1368,7 +1368,6 @@ tai.updateEmployment.incomeSame.description=Mae’r swm hwn eisoes wedi’i amca
 tai.updateEmployment.incomeSame.employment.return.link=Dychwelyd i’ch manylion cyflogaeth
 tai.updateEmployment.incomeSame.pension.return.link=Dychwelyd i’ch manylion pensiwn
 
-tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.updateOrRemove=Diweddaru neu ddileu
 tai.updatePension.confirmation.heading=Mae’ch diweddariad am bensiwn wedi dod i law
 tai.updatePension.cya.currentlyReceivePension=Ar hyn o bryd yn cael y pensiwn hwn

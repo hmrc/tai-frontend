@@ -96,8 +96,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
             @link(
                 id=Some(s"${typeLabel}${idx}DetailsLink"),
                 url=incomeSource.detailsLinkUrl,
-                copy=incomeSource.detailsLinkLabel,
-                altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
+                copy=incomeSource.detailsLinkLabel
             )
         </p>
         }
