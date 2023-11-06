@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsValue, Json, Writes}
+import play.api.libs.ws.BodyWritable
 
 case class IncorrectPensionProvider(
   whatYouToldUs: String,
@@ -26,4 +27,10 @@ case class IncorrectPensionProvider(
 
 object IncorrectPensionProvider {
   implicit val formats: Format[IncorrectPensionProvider] = Json.format[IncorrectPensionProvider]
+  implicit val writes: Writes[IncorrectPensionProvider] = Json.writes[IncorrectPensionProvider]
+
+  implicit def jsonBodyWritable[T](implicit
+    writes: Writes[T],
+    jsValueBodyWritable: BodyWritable[JsValue]
+  ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
 }

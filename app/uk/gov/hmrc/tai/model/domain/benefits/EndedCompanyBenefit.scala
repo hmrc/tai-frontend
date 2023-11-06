@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.model.domain.benefits
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsValue, Json, Writes}
+import play.api.libs.ws.BodyWritable
 
 case class EndedCompanyBenefit(
   benefitType: String,
@@ -28,4 +29,10 @@ case class EndedCompanyBenefit(
 
 object EndedCompanyBenefit {
   implicit val formats: Format[EndedCompanyBenefit] = Json.format[EndedCompanyBenefit]
+  implicit val writes: Writes[EndedCompanyBenefit] = Json.writes[EndedCompanyBenefit]
+
+  implicit def jsonBodyWritable[T](implicit
+    writes: Writes[T],
+    jsValueBodyWritable: BodyWritable[JsValue]
+  ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
 }

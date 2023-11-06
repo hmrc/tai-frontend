@@ -16,10 +16,17 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsValue, Json, OFormat, Writes}
+import play.api.libs.ws.BodyWritable
 
 case class UpdateTaxCodeIncomeRequest(amount: Int)
 
 object UpdateTaxCodeIncomeRequest {
   implicit val formats: OFormat[UpdateTaxCodeIncomeRequest] = Json.format[UpdateTaxCodeIncomeRequest]
+  implicit val writes: Writes[UpdateTaxCodeIncomeRequest] = Json.writes[UpdateTaxCodeIncomeRequest]
+
+  implicit def jsonBodyWritable[T](implicit
+    writes: Writes[T],
+    jsValueBodyWritable: BodyWritable[JsValue]
+  ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
 }

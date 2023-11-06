@@ -30,25 +30,33 @@ import scala.language.postfixOps
 
 class JourneyCacheConnectorSpec extends BaseSpec {
 
+  private val journeyName = "journey1"
+
+  val httpHandler: HttpHandler = mock[HttpHandler]
+
+  def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler, servicesConfig) {
+    override val serviceUrl: String = "mockUrl"
+  }
+
   "currentCache" must {
 
     "return the map of current cached values [String, String], as returned from the api call" in {
       val cacheString = """{"key1":"value1","key2":"value2"}"""
-      when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(Json.parse(cacheString)))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(Json.parse(cacheString)))
 
       val expectedResult = Map("key1" -> "value1", "key2" -> "value2")
       val result = Await.result(sut.currentCache(journeyName), 5 seconds)
       result mustBe expectedResult
     }
     "trap a NO CONTENT exception (a valid business scenario), and return an empty map in its place" in {
-      when(httpHandler.getFromApiV2(any())(any(), any()))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
         .thenReturn(Future.failed(new HttpException("no cache was found", NO_CONTENT)))
 
       val result = Await.result(sut.currentCache(journeyName), 5 seconds)
       result mustBe Map.empty[String, String]
     }
     "expose any exception that is not a NOT FOUND type" in {
-      when(httpHandler.getFromApiV2(any())(any(), any()))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
         .thenReturn(Future.failed(new InternalServerException("something terminal")))
 
       val thrown = the[InternalServerException] thrownBy Await.result(sut.currentCache(journeyName), 5 seconds)
@@ -59,9 +67,9 @@ class JourneyCacheConnectorSpec extends BaseSpec {
   "currentValueAs" must {
 
     "return the cached value transformed by the supplied function" in {
-      when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(JsString("1")))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(JsString("1")))
 
-      when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(JsString("2017-03-04")))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(JsString("2017-03-04")))
       Await.result(
         sut.currentValueAs[LocalDate](journeyName, "dateValKey", string => LocalDate.parse(string)),
         5 seconds
@@ -69,7 +77,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     }
 
     "trap a NO CONTENT exception (a valid business scenario), and return None in its place" in {
-      when(httpHandler.getFromApiV2(any())(any(), any()))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
         .thenReturn(Future.failed(new HttpException("key wasn't found in cache", NO_CONTENT)))
 
       val result = Await.result(sut.currentValueAs[String](journeyName, "key1", string => string), 5 seconds)
@@ -77,7 +85,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     }
 
     "expose an exception that is not a NOT FOUND type" in {
-      when(httpHandler.getFromApiV2(any())(any(), any()))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
         .thenReturn(Future.failed(new InternalServerException("something terminal")))
 
       val thrown = the[InternalServerException] thrownBy Await
@@ -89,7 +97,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
   "mandatoryJourneyValueAs" must {
 
     "return the requested values where present" in {
-      when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(JsString("true")))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(JsString("true")))
       Await.result(
         sut.mandatoryJourneyValueAs[Boolean](journeyName, "booleanValKey", string => string.toBoolean),
         5 seconds
@@ -97,7 +105,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     }
 
     "return an error message when the requested value is not found" in {
-      when(httpHandler.getFromApiV2(any())(any(), any()))
+      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
         .thenReturn(Future.failed(new HttpException("key wasn't found in cache", NO_CONTENT)))
 
       val expectedMsg = "The mandatory value under key 'key1' was not found in the journey cache for 'journey1'"
@@ -114,7 +122,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       val newValuesToCache = Map("key1" -> "value1", "key2" -> "value2")
       val updatedCacheJson = """{"key1":"value1","key2":"value2","key7":"value7"}"""
       val updatedCacheMap = Map("key1" -> "value1", "key2" -> "value2", "key7" -> "value7")
-      when(httpHandler.postToApi(any(), any())(any(), any(), any()))
+      when(httpHandler.postToApi(any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, updatedCacheJson)))
 
       val result = Await.result(sut.cache(journeyName, newValuesToCache), 5 seconds)
@@ -126,7 +134,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(journeyName)}"
 
-      when(httpHandler.deleteFromApi(meq(url))(any(), any(), any()))
+      when(httpHandler.deleteFromApi(meq(url), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(NO_CONTENT, "")))
 
       val result = Await.result(sut.flush(journeyName), 5 seconds)
@@ -138,20 +146,11 @@ class JourneyCacheConnectorSpec extends BaseSpec {
     "remove journey cache data for company car journey" in {
       val url = s"${sut.cacheUrl(s"$journeyName/1")}"
 
-      when(httpHandler.deleteFromApi(meq(url))(any(), any(), any()))
+      when(httpHandler.deleteFromApi(meq(url), any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(NO_CONTENT, "")))
 
       val result = Await.result(sut.flushWithEmpId(journeyName, 1), 5 seconds)
       result mustBe Done
     }
   }
-
-  private val journeyName = "journey1"
-
-  val httpHandler: HttpHandler = mock[HttpHandler]
-
-  def sut: JourneyCacheConnector = new JourneyCacheConnector(httpHandler, servicesConfig) {
-    override val serviceUrl: String = "mockUrl"
-  }
-
 }

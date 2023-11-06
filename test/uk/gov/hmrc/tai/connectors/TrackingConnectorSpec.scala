@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import akka.actor.ActorSystem
 import org.mockito.ArgumentMatchers.any
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.LockedException
@@ -26,48 +25,6 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class TrackingConnectorSpec extends BaseSpec {
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(httpHandler)
-  }
-
-  "Tracking Url" should {
-    "fetch the correct service url" when {
-      "given an id and idType" in {
-        sut.trackingUrl(nino.nino) mustBe s"mockUrl/tracking-data/user/nino/${nino.nino}"
-      }
-    }
-  }
-
-  "getUserTracking" should {
-    "fetch the user tracking details" when {
-      "provided with id and idType" in {
-        when(httpHandler.getFromApiV2(any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
-
-        val result = sut.getUserTracking(nino.nino)
-        result.futureValue mustBe trackedFormSeq
-      }
-    }
-
-    "return an empty response" when {
-      "json is not valid" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(Json.parse("""{}""")))
-
-        val result = sut.getUserTracking(nino.nino)
-        result.futureValue mustBe Seq.empty[TrackedForm]
-      }
-
-      "getFromApiV2 throws" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.failed(new LockedException("locked")))
-
-        val result = sut.getUserTracking(nino.nino)
-        result.futureValue mustBe Seq.empty[TrackedForm]
-      }
-    }
-
-  }
 
   val trackedFormSeqJson =
     """{"submissions":[{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
@@ -87,12 +44,53 @@ class TrackingConnectorSpec extends BaseSpec {
                            {"milestone": "Done","status": "incomplete"}
                          ]}]}"""
 
-  val trackedFormSeq =
+  val trackedFormSeq: Seq[TrackedForm] =
     Seq(TrackedForm("R39_EN", "TES1", TrackedFormReceived), TrackedForm("R38_EN", "TES2", TrackedFormAcquired))
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig, appConfig, inject[ActorSystem]) {
+  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig, appConfig) {
     override lazy val serviceUrl: String = "mockUrl"
+  }
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(httpHandler)
+  }
+
+  "Tracking Url" should {
+    "fetch the correct service url" when {
+      "given an id and idType" in {
+        sut.trackingUrl(nino.nino) mustBe s"mockUrl/tracking-data/user/nino/${nino.nino}"
+      }
+    }
+  }
+
+  "getUserTracking" should {
+    "fetch the user tracking details" when {
+      "provided with id and idType" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
+
+        val result = sut.getUserTracking(nino.nino)
+        result.futureValue mustBe trackedFormSeq
+      }
+    }
+
+    "return an empty response" when {
+      "json is not valid" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(Json.parse("""{}""")))
+
+        val result = sut.getUserTracking(nino.nino)
+        result.futureValue mustBe Seq.empty[TrackedForm]
+      }
+
+      "getFromApiV2 throws" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+          .thenReturn(Future.failed(new LockedException("locked")))
+
+        val result = sut.getUserTracking(nino.nino)
+        result.futureValue mustBe Seq.empty[TrackedForm]
+      }
+    }
   }
 }

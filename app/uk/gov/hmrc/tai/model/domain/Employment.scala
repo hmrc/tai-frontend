@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsValue, Json, Writes}
+import play.api.libs.ws.BodyWritable
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncomeSourceStatus
 
 import java.time.LocalDate
@@ -54,6 +55,12 @@ case class AddEmployment(
 object AddEmployment {
 
   implicit val addEmploymentFormat: Format[AddEmployment] = Json.format[AddEmployment]
+  implicit val writes: Writes[AddEmployment] = Json.writes[AddEmployment]
+
+  implicit def jsonBodyWritable[T](implicit
+    writes: Writes[T],
+    jsValueBodyWritable: BodyWritable[JsValue]
+  ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
 }
 
 case class EndEmployment(endDate: LocalDate, telephoneContactAllowed: String, telephoneNumber: Option[String])
@@ -61,10 +68,23 @@ case class EndEmployment(endDate: LocalDate, telephoneContactAllowed: String, te
 object EndEmployment {
 
   implicit val addEmploymentFormat: Format[EndEmployment] = Json.format[EndEmployment]
+  implicit val writes: Writes[EndEmployment] = Json.writes[EndEmployment]
+
+  implicit def jsonBodyWritable[T](implicit
+    writes: Writes[T],
+    jsValueBodyWritable: BodyWritable[JsValue]
+  ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
+
 }
 
 case class IncorrectIncome(whatYouToldUs: String, telephoneContactAllowed: String, telephoneNumber: Option[String])
 
 object IncorrectIncome {
   implicit val formats: Format[IncorrectIncome] = Json.format[IncorrectIncome]
+  implicit val writes: Writes[IncorrectIncome] = Json.writes[IncorrectIncome]
+
+  implicit def jsonBodyWritable[T](implicit
+    writes: Writes[T],
+    jsValueBodyWritable: BodyWritable[JsValue]
+  ): BodyWritable[T] = jsValueBodyWritable.map(writes.writes)
 }

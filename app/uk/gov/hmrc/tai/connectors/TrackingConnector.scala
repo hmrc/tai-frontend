@@ -16,27 +16,23 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import akka.actor.ActorSystem
 import play.api.Logging
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
 import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
-import uk.gov.hmrc.tai.util.{FutureEarlyTimeout, Timeout}
 
 import javax.inject.Inject
-import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class TrackingConnector @Inject() (
   httpHandler: HttpHandler,
   servicesConfig: ServicesConfig,
-  applicationConfig: ApplicationConfig,
-  override val system: ActorSystem
+  applicationConfig: ApplicationConfig
 )(implicit ec: ExecutionContext)
-    extends TrackedFormFormatters with Timeout with Logging {
+    extends TrackedFormFormatters with Logging {
 
   lazy val serviceUrl: String = servicesConfig.baseUrl("tracking")
 
@@ -46,16 +42,14 @@ class TrackingConnector @Inject() (
 
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
     if (applicationConfig.trackingEnabled) {
-      withTimeout(5.seconds) {
-        (httpHandler.getFromApiV2(trackingUrl(nino)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
-          case NonFatal(x) =>
-            logger.warn(
-              s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}"
-            )
-            Seq.empty[TrackedForm]
-        }
-      }.recover { case FutureEarlyTimeout =>
-        Seq.empty[TrackedForm]
+      (httpHandler.getFromApiV2(trackingUrl(nino), Some(5)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
+        case NonFatal(x) =>
+          logger.warn(
+            s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}"
+          )
+          Seq.empty[TrackedForm]
+        case _: GatewayTimeoutException =>
+          Seq.empty[TrackedForm]
       }
     } else {
       Future.successful(Seq.empty[TrackedForm])

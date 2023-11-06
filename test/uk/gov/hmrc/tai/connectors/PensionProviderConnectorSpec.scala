@@ -28,6 +28,8 @@ import scala.concurrent.{Await, Future}
 
 class PensionProviderConnectorSpec extends BaseSpec {
 
+  val httpHandler: HttpHandler = mock[HttpHandler]
+
   "PensionProviderConnector addPensionProvider" must {
     "return an envelope id on a successful invocation" in {
       val addPensionProvider =
@@ -35,7 +37,12 @@ class PensionProviderConnectorSpec extends BaseSpec {
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
-          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider))(any(), any(), any())
+          .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider), any())(
+            any(),
+            any(),
+            any(),
+            any()
+          )
       )
         .thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
 
@@ -54,11 +61,13 @@ class PensionProviderConnectorSpec extends BaseSpec {
       )
       val json = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler.postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider))(
-          any(),
-          any(),
-          any()
-        )
+        httpHandler
+          .postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider), any())(
+            any(),
+            any(),
+            any(),
+            any()
+          )
       )
         .thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
 
@@ -67,8 +76,6 @@ class PensionProviderConnectorSpec extends BaseSpec {
       result mustBe Some("123-456-789")
     }
   }
-
-  val httpHandler: HttpHandler = mock[HttpHandler]
 
   def sut: PensionProviderConnector = new PensionProviderConnector(httpHandler, servicesConfig) {
     override val serviceUrl: String = "testUrl"

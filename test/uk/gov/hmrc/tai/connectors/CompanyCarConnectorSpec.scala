@@ -30,66 +30,6 @@ import scala.language.postfixOps
 
 class CompanyCarConnectorSpec extends BaseSpec {
 
-  "Company car url" should {
-    "fetch the correct Url" in {
-      sut
-        .companyCarEmploymentUrl(
-          nino,
-          employmentId
-        ) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
-    }
-  }
-
-  "getCompanyCarBenefits" should {
-    "fetch the company car details" when {
-      "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(companyCarForEmploymentJson))
-
-        val result = sut.companyCarBenefitForEmployment(nino, employmentId)
-        Await.result(result, 5 seconds) mustBe Some(companyCar)
-      }
-    }
-
-    "thrown exception" when {
-      "tai sends an invalid json" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(corruptJsonResponse))
-
-        val ex = the[JsResultException] thrownBy Await
-          .result(sut.companyCarBenefitForEmployment(nino, employmentId), 5 seconds)
-        ex.getMessage must include("List(JsonValidationError(List(error.path.missing)")
-      }
-    }
-  }
-
-  "companyCarsForCurrentYearEmployments" must {
-    "return CompanyCarBenefit" when {
-      "provided with valid nino" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(companyCars))
-
-        val result = sut.companyCarsForCurrentYearEmployments(nino)
-        Await.result(result, 5 seconds) mustBe Seq(companyCar)
-      }
-    }
-
-    "return empty sequence of company car benefit" when {
-      "company car service returns no car" in {
-        when(httpHandler.getFromApiV2(any())(any(), any())).thenReturn(Future.successful(emptyCompanyCars))
-
-        val result = sut.companyCarsForCurrentYearEmployments(nino)
-        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
-      }
-
-      "company car service returns a failure response" in {
-        when(httpHandler.getFromApiV2(any())(any(), any()))
-          .thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
-
-        val result = sut.companyCarsForCurrentYearEmployments(nino)
-        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
-      }
-    }
-
-  }
-
   val companyCar: CompanyCarBenefit = CompanyCarBenefit(
     10,
     1000,
@@ -171,4 +111,64 @@ class CompanyCarConnectorSpec extends BaseSpec {
     override val serviceUrl: String = "mockUrl"
   }
 
+  "Company car url" should {
+    "fetch the correct Url" in {
+      sut
+        .companyCarEmploymentUrl(
+          nino,
+          employmentId
+        ) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-components/employments/$employmentId/benefits/company-car"
+    }
+  }
+
+  "getCompanyCarBenefits" should {
+    "fetch the company car details" when {
+      "provided with valid nino" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+          .thenReturn(Future.successful(companyCarForEmploymentJson))
+
+        val result = sut.companyCarBenefitForEmployment(nino, employmentId)
+        Await.result(result, 5 seconds) mustBe Some(companyCar)
+      }
+    }
+
+    "thrown exception" when {
+      "tai sends an invalid json" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(corruptJsonResponse))
+
+        val ex = the[JsResultException] thrownBy Await
+          .result(sut.companyCarBenefitForEmployment(nino, employmentId), 5 seconds)
+        ex.getMessage must include("List(JsonValidationError(List(error.path.missing)")
+      }
+    }
+  }
+
+  "companyCarsForCurrentYearEmployments" must {
+    "return CompanyCarBenefit" when {
+      "provided with valid nino" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(companyCars))
+
+        val result = sut.companyCarsForCurrentYearEmployments(nino)
+        Await.result(result, 5 seconds) mustBe Seq(companyCar)
+      }
+    }
+
+    "return empty sequence of company car benefit" when {
+      "company car service returns no car" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any())).thenReturn(Future.successful(emptyCompanyCars))
+
+        val result = sut.companyCarsForCurrentYearEmployments(nino)
+        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
+      }
+
+      "company car service returns a failure response" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+          .thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
+
+        val result = sut.companyCarsForCurrentYearEmployments(nino)
+        Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
+      }
+    }
+
+  }
 }

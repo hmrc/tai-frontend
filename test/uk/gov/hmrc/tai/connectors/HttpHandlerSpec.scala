@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.http.Status._
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.http._
 import utils.{BaseSpec, WireMockHelper}
 
@@ -30,19 +30,19 @@ import scala.language.postfixOps
 
 class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
-  lazy val httpHandler = inject[HttpHandler]
+  private lazy val httpHandler: HttpHandler = inject[HttpHandler]
 
-  lazy val testUrl = server.url("/")
+  private lazy val testUrl: String = server.url("/")
 
   protected case class ResponseObject(name: String, age: Int)
-  implicit val responseObjectFormat = Json.format[ResponseObject]
+
+  private implicit val responseObjectFormat: OFormat[ResponseObject] = Json.format[ResponseObject]
 
   private val responseBodyObject = ResponseObject("Name", 24)
 
-  case class DateRequest(date: LocalDate)
+  private case class DateRequest(date: LocalDate)
 
-  object DateRequest {
-
+  private object DateRequest {
     implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
   }
 

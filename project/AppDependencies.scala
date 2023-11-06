@@ -15,7 +15,6 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "domain"                           % s"8.3.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "play-frontend-pta"                % "0.5.0",
-    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "mongo-feature-toggles-client"     % "0.3.0",
     "uk.gov.hmrc"       %% "sca-wrapper"                      % "1.0.45"
   )
