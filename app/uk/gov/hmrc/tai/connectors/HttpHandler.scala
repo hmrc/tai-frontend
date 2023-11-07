@@ -30,7 +30,27 @@ import scala.reflect.runtime.universe.TypeTag
 import scala.util.chaining.scalaUtilChainingOps
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
-
+  /*
+EitherT(response.map {
+  case Right(response)                                                                 =>
+    Right(response)
+  case Left(error) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
+    logger.error(error.message)
+    Left(error)
+  case Left(error) if error.statusCode == NOT_FOUND || error.statusCode == LOCKED      =>
+    logger.info(error.message)
+    Left(error)
+  case Left(error)                                                                     =>
+    logger.error(error.message, error)
+    Left(error)
+} recover {
+  case exception: HttpException =>
+    logger.error(exception.message)
+    Left(UpstreamErrorResponse(exception.message, BAD_GATEWAY, BAD_GATEWAY))
+  case exception                =>
+    throw exception
+})
+   */
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
   )(implicit executionContext: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =

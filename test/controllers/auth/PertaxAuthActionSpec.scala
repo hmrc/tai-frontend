@@ -272,9 +272,8 @@ class PertaxAuthActionSpec extends BaseSpec {
           )
 
         val result = fakeController.onPageLoad()(FakeRequest())
-
         status(result) mustBe INTERNAL_SERVER_ERROR
-        contentAsString(result) must include(messages("global.error.InternalServerError500.title"))
+        contentAsString(result) must include(messages("global.error.InternalServerError500.tai.title"))
       }
     }
 
