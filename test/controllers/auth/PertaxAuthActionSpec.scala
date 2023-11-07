@@ -1,6 +1,17 @@
 /*
  * Copyright 2023 HM Revenue & Customs
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package controllers.auth
@@ -17,7 +28,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status, stubMessagesControllerComponents}
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
@@ -34,13 +44,13 @@ import scala.concurrent.Future
 
 class PertaxAuthActionSpec extends BaseSpec {
 
-  lazy val mockPertaxConnector: PertaxConnector               = mock[PertaxConnector]
-  lazy val mockAuthConnector: AuthConnector                   = mock[AuthConnector]
-  override val mockFeatureFlagService: FeatureFlagService     = mock[FeatureFlagService]
+  lazy val mockPertaxConnector: PertaxConnector = mock[PertaxConnector]
+  lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  override lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
   lazy val mockMessageFrontendService: MessageFrontendService = mock[MessageFrontendService]
 
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
-  private val mainTemplateView: MainTemplate                   = inject[MainTemplate]
+  private val mainTemplateView: MainTemplate = inject[MainTemplate]
 
   val testAction: PertaxAuthAction = inject[PertaxAuthAction]
 
@@ -81,8 +91,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     super.beforeEach()
   }
 
-  private val testRequest     = FakeRequest("GET", "/paye/benefits/medical-benefit")
-  private val fakeCredentials = Credentials("foo", "bar")
+  private val testRequest = FakeRequest("GET", "/paye/benefits/medical-benefit")
 
   val expectedRequest: AuthenticatedRequest[AnyContentAsEmpty.type] =
     AuthenticatedRequest(testRequest, authedUser, "Firstname Surname")
@@ -110,9 +119,10 @@ class PertaxAuthActionSpec extends BaseSpec {
 
     "the pertax API response returns a NO_HMRC_PT_ENROLMENT response" must {
       "redirect to the returned location" in {
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future.successful(
-          FeatureFlag(PertaxBackendToggle, isEnabled = true)
-        )
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -130,9 +140,10 @@ class PertaxAuthActionSpec extends BaseSpec {
 
     "the pertax API response returns a CREDENTIAL_STRENGTH_UPLIFT_REQUIRED response" must {
       "redirect to the returned location" in {
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future.successful(
-          FeatureFlag(PertaxBackendToggle, isEnabled = true)
-        )
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -157,9 +168,10 @@ class PertaxAuthActionSpec extends BaseSpec {
     "the pertax API response returns a CONFIDENCE_LEVEL_UPLIFT_REQUIRED response" must {
       "redirect to the returned location" in {
 
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future.successful(
-          FeatureFlag(PertaxBackendToggle, isEnabled = true)
-        )
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -182,9 +194,10 @@ class PertaxAuthActionSpec extends BaseSpec {
     "the pertax API response returns an error view" must {
       "show the corresponding view" in {
 
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future.successful(
-          FeatureFlag(PertaxBackendToggle, isEnabled = true)
-        )
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -213,9 +226,10 @@ class PertaxAuthActionSpec extends BaseSpec {
 
       "failed to show the corresponding view" in {
 
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future.successful(
-          FeatureFlag(PertaxBackendToggle, isEnabled = true)
-        )
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -245,9 +259,10 @@ class PertaxAuthActionSpec extends BaseSpec {
     "the pertax API response returns an unexpected response" must {
       "throw an internal server error" in {
 
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future.successful(
-          FeatureFlag(PertaxBackendToggle, isEnabled = true)
-        )
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(

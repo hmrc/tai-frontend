@@ -40,7 +40,7 @@ case object SCAWrapperToggle extends FeatureFlagName {
 }
 
 case object PertaxBackendToggle extends FeatureFlagName {
-  override val name: String                = "pertax-backend-toggle"
+  override val name: String = "pertax-backend-toggle"
   override val description: Option[String] = Some(
     "Enable/disable pertax backend during auth"
   )
