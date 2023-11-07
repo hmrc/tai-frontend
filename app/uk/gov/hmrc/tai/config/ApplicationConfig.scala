@@ -129,4 +129,6 @@ class ApplicationConfig @Inject() (
   lazy val messagesFrontendUrl: String = servicesConfig.baseUrl("message-frontend")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
+  lazy val pertaxUrl: String =
+    servicesConfig.baseUrl("pertax")
 }

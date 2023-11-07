@@ -1,0 +1,119 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ */
+
+package controllers.auth
+
+import com.google.inject.{Inject, Singleton}
+import play.api.Logging
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc._
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, ConfidenceLevel}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
+import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.play.partials.HtmlPartial
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.connectors.PertaxConnector
+import uk.gov.hmrc.tai.model.PertaxResponse
+import uk.gov.hmrc.tai.model.admin.PertaxBackendToggle
+import views.html.{InternalServerErrorView, MainTemplate}
+
+import scala.concurrent.{ExecutionContext, Future}
+
+@Singleton
+class PertaxAuthAction @Inject()(
+                                  override val authConnector: AuthConnector,
+                                  pertaxConnector: PertaxConnector,
+                                  featureFlagService: FeatureFlagService,
+                                  internalServerErrorView: InternalServerErrorView,
+                                  mainTemplate: MainTemplate,
+                                  cc: ControllerComponents,
+                                  appConfig: ApplicationConfig
+                                ) extends ActionFilter[Request]
+  with AuthorisedFunctions
+  with Results
+  with I18nSupport
+  with Logging {
+
+  private val failureUrl: String =
+    "/paye/benefits/medical-benefit/showUpliftFailedJourneyOutcome?origin=benefits-frontend"
+  private val completionUrl: String = "/paye/benefits/medical-benefit"
+  private val confidenceLevel: Int = ConfidenceLevel.L250.level
+
+  override def messagesApi: MessagesApi = cc.messagesApi
+
+  // scalastyle:off method.length
+  override def filter[A](request: Request[A]): Future[Option[Result]] = {
+    implicit val implicitRequest: Request[A] = request
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
+    featureFlagService.get(PertaxBackendToggle).flatMap { toggle =>
+      if (toggle.isEnabled) {
+        pertaxConnector
+          .pertaxPostAuthorise()
+          .fold(
+            { _: UpstreamErrorResponse =>
+              Future.successful(
+                Some(InternalServerError(internalServerErrorView(appConfig)))
+              )
+            },
+            {
+              case PertaxResponse("ACCESS_GRANTED", _, _, _) => Future.successful(None)
+              case PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect)) =>
+                Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(request.uri).encodedUrl}")))
+              case PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(redirect)) =>
+                Future.successful(
+                  Some(
+                    Redirect(
+                      s"$redirect?origin=benefits-frontend&continueUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
+                    )
+                  )
+                )
+              case PertaxResponse("CONFIDENCE_LEVEL_UPLIFT_REQUIRED", _, _, Some(redirect)) =>
+                Future.successful(
+                  Some(
+                    Redirect(
+                      s"$redirect?origin=benefits-frontend&confidenceLevel=$confidenceLevel&completionURL=$completionUrl&failureURL=$failureUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
+                    )
+                  )
+                )
+              case PertaxResponse(_, _, Some(errorView), _) =>
+                pertaxConnector.loadPartial(errorView.url).map {
+                  case partial: HtmlPartial.Success =>
+                    Some(
+                      Status(errorView.statusCode)(
+                        mainTemplate(
+                          title = partial.title.getOrElse(""),
+                          pageTitle = partial.title,
+                          backLinkContent = None,
+                          showPtaAccountNav = false
+                        )(partial.content)
+                      )
+                    )
+                  case _: HtmlPartial.Failure =>
+                    logger.error(s"The partial ${errorView.url} failed to be retrieved")
+                    Some(InternalServerError(internalServerErrorView(appConfig)))
+                }
+              case response =>
+                val ex = new RuntimeException(
+                  s"Pertax response `${response.code}` with message ${response.message} is not handled"
+                )
+                logger.error(ex.getMessage, ex)
+                Future.successful(
+                  Some(InternalServerError(internalServerErrorView(appConfig)))
+                )
+            }
+          )
+          .flatten
+      } else {
+        Future.successful(None)
+      }
+    }
+  }
+
+  override protected implicit val executionContext: ExecutionContext = cc.executionContext
+
+}
