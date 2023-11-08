@@ -1613,3 +1613,21 @@ mci.link.text=resolve the MCI issue with an advisor
 #=============================================================
 betaBanner.message=This is a new service ‐ your {0} will help us to improve it.
 betaBanner.linkText=feedback
+
+#*************************************************************
+# IV failed journeys
+#*************************************************************
+label.contact_HMRC_for_help =contact HM Revenue and Customs for help
+label.you_will_need_to = You will need to:
+
+ivIncomplete.title = Sorry, there is a problem with the service
+ivIncomplete.heading = Sorry, there is a problem with the service
+ivIncomplete.p = Please try again later.
+
+ivInsufficientEvidence.title = We could not confirm your identity online
+ivInsufficientEvidence.heading = We could not confirm your identity online
+ivInsufficientEvidence.p = You have not given us enough information to prove your identity.
+
+preconditionFailed.title = Sorry, there is a problem with the service
+preconditionFailed.heading = Sorry, there is a problem with the service
+preconditionFailed.p = We need to reconfirm your national insurance number.
