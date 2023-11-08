@@ -131,6 +131,4 @@ class ApplicationConfig @Inject() (
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String =
     servicesConfig.baseUrl("pertax")
-  lazy val helpQueriesUrl =
-    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
 }
