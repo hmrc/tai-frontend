@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
@@ -38,7 +38,7 @@ class TaxAccountSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,
   auditService: AuditService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -48,7 +48,7 @@ class TaxAccountSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
     val year = TaxYear()
 

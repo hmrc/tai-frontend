@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -35,7 +35,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateBonusController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
@@ -43,7 +43,7 @@ class IncomeUpdateBonusController @Inject() (
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
-  def bonusPaymentsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def bonusPaymentsPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (
@@ -59,7 +59,7 @@ class IncomeUpdateBonusController @Inject() (
     }
   }
 
-  def handleBonusPayments(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def handleBonusPayments(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -88,7 +88,7 @@ class IncomeUpdateBonusController @Inject() (
         )
   }
 
-  def bonusOvertimeAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def bonusOvertimeAmountPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     (
       IncomeSource.create(journeyCacheService),
@@ -102,7 +102,7 @@ class IncomeUpdateBonusController @Inject() (
       }
   }
 
-  def handleBonusOvertimeAmount(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def handleBonusOvertimeAmount(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 

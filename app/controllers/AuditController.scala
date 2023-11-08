@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.service.AuditService
 
@@ -26,13 +26,13 @@ import scala.concurrent.ExecutionContext
 
 class AuditController @Inject() (
   auditService: AuditService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def auditLinksToIForm(iformName: String): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def auditLinksToIForm(iformName: String): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       val taiUser = request.taiUser
 

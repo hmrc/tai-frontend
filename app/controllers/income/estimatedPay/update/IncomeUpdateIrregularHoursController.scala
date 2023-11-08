@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,7 +42,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class IncomeUpdateIrregularHoursController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
@@ -72,7 +72,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       )
     }
 
-  def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -94,7 +94,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       }.flatten
   }
 
-  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       val collectedValues = journeyCacheService
         .collectedJourneyValues(
@@ -139,7 +139,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
         }
   }
 
-  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       journeyCacheService.currentCache flatMap { cache =>
         val name = cache(UpdateIncomeConstants.NameKey)
@@ -165,7 +165,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       }
   }
 
-  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino

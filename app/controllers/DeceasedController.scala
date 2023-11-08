@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthJourney}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.DeceasedHelplineView
 
@@ -24,13 +24,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeceasedController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   deceasedHelpline: DeceasedHelplineView
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def deceased(): Action[AnyContent] =
-    authenticate.async(implicit request => Future.successful(Ok(deceasedHelpline())))
+    authenticate.authWithoutValidatePerson.async(implicit request => Future.successful(Ok(deceasedHelpline())))
 
 }

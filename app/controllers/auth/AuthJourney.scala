@@ -23,6 +23,7 @@ import play.api.mvc.{ActionBuilder, AnyContent, DefaultActionBuilder}
 @ImplementedBy(classOf[AuthJourneyImpl])
 trait AuthJourney {
   val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent]
+  val authWithoutValidatePerson: ActionBuilder[InternalAuthenticatedRequest, AnyContent]
 }
 
 class AuthJourneyImpl @Inject() (
@@ -34,5 +35,8 @@ class AuthJourneyImpl @Inject() (
 
   val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent] =
     defaultActionBuilder andThen pertaxAuthAction andThen authAction andThen validatePerson
+
+  val authWithoutValidatePerson: ActionBuilder[InternalAuthenticatedRequest, AnyContent] =
+    defaultActionBuilder andThen pertaxAuthAction andThen authAction
 
 }

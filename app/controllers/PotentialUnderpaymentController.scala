@@ -18,7 +18,7 @@ package controllers
 
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.Logging
 import uk.gov.hmrc.tai.model.TaxYear
@@ -35,7 +35,7 @@ class PotentialUnderpaymentController @Inject() (
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   auditService: AuditService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   potentialUnderpayment: PotentialUnderpaymentView,
@@ -43,28 +43,27 @@ class PotentialUnderpaymentController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral with Logging {
 
-  def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      {
+  def potentialUnderpaymentPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+    {
 
-        implicit val user: AuthedUser = request.taiUser
-        val nino = user.nino
-        (
-          taxAccountService.taxAccountSummary(nino, TaxYear()),
-          codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-        ).mapN { case (tas, ccs) =>
-          auditService.createAndSendAuditEvent(
-            AuditConstants.PotentialUnderpaymentInYearAdjustment,
-            Map("nino" -> nino.toString())
-          )
-          val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
-          if (vm.iyaCYAmount <= 0 && vm.iyaCYPlusOneAmount <= 0) {
-            logger.error(s"No underpayment found to display content. Referer was: $referer")
-          }
-          Ok(potentialUnderpayment(vm))
+      implicit val user: AuthedUser = request.taiUser
+      val nino = user.nino
+      (
+        taxAccountService.taxAccountSummary(nino, TaxYear()),
+        codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+      ).mapN { case (tas, ccs) =>
+        auditService.createAndSendAuditEvent(
+          AuditConstants.PotentialUnderpaymentInYearAdjustment,
+          Map("nino" -> nino.toString())
+        )
+        val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
+        if (vm.iyaCYAmount <= 0 && vm.iyaCYPlusOneAmount <= 0) {
+          logger.error(s"No underpayment found to display content. Referer was: $referer")
         }
-      } recover { case e: Exception =>
-        errorPagesHandler.internalServerError(e.getMessage, Some(e))
+        Ok(potentialUnderpayment(vm))
       }
+    } recover { case e: Exception =>
+      errorPagesHandler.internalServerError(e.getMessage, Some(e))
+    }
   }
 }

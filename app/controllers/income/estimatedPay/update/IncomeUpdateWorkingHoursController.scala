@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -32,7 +32,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class IncomeUpdateWorkingHoursController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
@@ -40,7 +40,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def workingHoursPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def workingHoursPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncomeConstants.WorkingHoursKey))
@@ -57,7 +57,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
       }
   }
 
-  def handleWorkingHours: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handleWorkingHours: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     HoursWorkedForm

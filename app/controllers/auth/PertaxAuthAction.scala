@@ -16,7 +16,7 @@
 
 package controllers.auth
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -34,8 +34,13 @@ import views.html.{InternalServerErrorView, MainTemplate}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@ImplementedBy(classOf[PertaxAuthActionImpl])
+trait PertaxAuthAction
+    extends ActionBuilder[InternalAuthenticatedRequest, AnyContent]
+    with ActionFunction[Request, InternalAuthenticatedRequest]
+
 @Singleton
-class PertaxAuthAction @Inject() (
+class PertaxAuthActionImpl @Inject() (
   override val authConnector: AuthConnector,
   pertaxConnector: PertaxConnector,
   featureFlagService: FeatureFlagService,

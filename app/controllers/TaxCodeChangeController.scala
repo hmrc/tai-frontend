@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -35,7 +35,7 @@ class TaxCodeChangeController @Inject() (
   taxCodeChangeService: TaxCodeChangeService,
   taxAccountService: TaxAccountService,
   describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   yourTaxFreeAmountService: YourTaxFreeAmountService,
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
@@ -47,7 +47,7 @@ class TaxCodeChangeController @Inject() (
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) with YourTaxFreeAmount {
 
-  def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def taxCodeComparison: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino: Nino = request.taiUser.nino
 
     val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
@@ -77,7 +77,7 @@ class TaxCodeChangeController @Inject() (
     }
   }
 
-  def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def yourTaxFreeAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino: Nino = request.taiUser.nino
     val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
@@ -86,7 +86,7 @@ class TaxCodeChangeController @Inject() (
     taxFreeAmountViewModel.map(viewModel => Ok(yourTaxFreeAmountView(viewModel)))
   }
 
-  def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def whatHappensNext: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     Future.successful(Ok(whatHappensNextView()))
   }

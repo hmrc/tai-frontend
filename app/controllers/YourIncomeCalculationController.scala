@@ -34,7 +34,7 @@ class YourIncomeCalculationController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   paymentsService: PaymentsService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -45,7 +45,7 @@ class YourIncomeCalculationController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       incomeCalculationPage(empId)
   }
@@ -82,7 +82,7 @@ class YourIncomeCalculationController @Inject() (
     yourIncomeCalculationHistoricYears(year, empId, printPage = true)
 
   private def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int, printPage: Boolean): Action[AnyContent] =
-    (authenticate andThen validatePerson).async { implicit request =>
+    authenticate.authWithValidatePerson.async { implicit request =>
       if (year <= TaxYear().prev) {
         val nino = request.taiUser.nino
 

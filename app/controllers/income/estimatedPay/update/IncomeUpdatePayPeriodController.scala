@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -34,7 +34,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.ExecutionContext
 
 class IncomeUpdatePayPeriodController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   payPeriodView: PayPeriodView,
@@ -42,7 +42,7 @@ class IncomeUpdatePayPeriodController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
-  def payPeriodPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def payPeriodPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (
@@ -58,7 +58,7 @@ class IncomeUpdatePayPeriodController @Inject() (
 
   }
 
-  def handlePayPeriod: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handlePayPeriod: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
