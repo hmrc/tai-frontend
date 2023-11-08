@@ -63,7 +63,7 @@ class PertaxAuthActionSpec extends BaseSpec {
   )
 
   class FakeController @Inject() (defaultActionBuilder: DefaultActionBuilder) extends InjectedController {
-    def onPageLoad(): Action[AnyContent] = (defaultActionBuilder andThen testAction).async {
+    def onPageLoad(): Action[AnyContent] = (defaultActionBuilder andThen testAction).async { implicit request =>
       Future.successful(Ok("ok"))
     }
   }
@@ -271,9 +271,10 @@ class PertaxAuthActionSpec extends BaseSpec {
           )
 
         val result = fakeController.onPageLoad()(FakeRequest())
+
         status(result) mustBe INTERNAL_SERVER_ERROR
 
-        contentAsString(result) must include(messages("global.error.InternalServerError500.tai.title"))
+        contentAsString(result) must include("global.error.InternalServerError500.tai.title")
       }
     }
 
