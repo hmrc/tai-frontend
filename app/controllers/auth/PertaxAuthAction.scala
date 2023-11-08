@@ -47,9 +47,9 @@ class PertaxAuthAction @Inject() (
   /*
   def upliftUrl: String = appConfig.sa16UpliftUrl
    */
-  private val failureUrl: String = appConfig.pertaxServiceUpliftFailedUrl
-  private val completionUrl: String = appConfig.taiHomePageUrl
-  private val confidenceLevel: Int = ConfidenceLevel.L250.level
+  private def failureUrl: String = appConfig.pertaxServiceUpliftFailedUrl
+  private def completionUrl: String = appConfig.taiHomePageUrl
+  private def confidenceLevel: Int = ConfidenceLevel.L250.level
 
   override def messagesApi: MessagesApi = cc.messagesApi
 

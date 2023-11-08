@@ -51,8 +51,16 @@ class PertaxAuthActionSpec extends BaseSpec {
 
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
   private val mainTemplateView: MainTemplate = inject[MainTemplate]
-
-  val testAction: PertaxAuthAction = inject[PertaxAuthAction]
+  private val testAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  val testAction: PertaxAuthAction = new PertaxAuthAction(
+    mockAuthConnector,
+    mockPertaxConnector,
+    mockFeatureFlagService,
+    internalServerErrorView,
+    mainTemplateView,
+    mcc,
+    testAppConfig
+  )
 
   class FakeController @Inject() (defaultActionBuilder: DefaultActionBuilder) extends InjectedController {
     def onPageLoad(): Action[AnyContent] = (defaultActionBuilder andThen testAction).async {
@@ -61,9 +69,6 @@ class PertaxAuthActionSpec extends BaseSpec {
   }
 
   val fakeController = new FakeController(inject[DefaultActionBuilder])
-
-  private val testAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  when(testAppConfig.pertaxUrl).thenReturn("PERTAX_URL")
 
   override implicit lazy val app: Application = GuiceApplicationBuilder()
     .overrides(
@@ -74,20 +79,14 @@ class PertaxAuthActionSpec extends BaseSpec {
     )
     .build()
 
-  val pertaxAuthAction = new PertaxAuthAction(
-    mockAuthConnector,
-    mockPertaxConnector,
-    mockFeatureFlagService,
-    internalServerErrorView,
-    mainTemplateView,
-    mcc,
-    testAppConfig
-  )
-
   override def beforeEach(): Unit = {
     reset(mockFeatureFlagService)
     reset(mockAuthConnector)
     reset(mockPertaxConnector)
+    reset(testAppConfig)
+    when(testAppConfig.pertaxUrl).thenReturn("PERTAX_URL")
+    when(testAppConfig.pertaxServiceUpliftFailedUrl).thenReturn("/failed")
+    when(testAppConfig.taiHomePageUrl).thenReturn("/home")
     super.beforeEach()
   }
 
@@ -185,12 +184,8 @@ class PertaxAuthActionSpec extends BaseSpec {
         val result = fakeController.onPageLoad()(FakeRequest())
 
         status(result) mustBe SEE_OTHER
-        /*
-        actual:-
-         Some("redirectLocation?origin=tai-frontend&confidenceLevel=250&completionURL=http://localhost:9230/check-income-tax/what-do-you-want-to-do&failureURL=http://localhost:9232/personal-account/identity-check-failed=%2F")
-         */
         redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=tai-frontend&confidenceLevel=250&completionURL=/paye/benefits/medical-benefit&failureURL=/paye/benefits/medical-benefit/showUpliftFailedJourneyOutcome?origin=benefits-frontend=%2F"
+          "redirectLocation?origin=tai-frontend&confidenceLevel=250&completionURL=/home&failureURL=/failed=%2F"
         )
       }
     }
@@ -277,6 +272,7 @@ class PertaxAuthActionSpec extends BaseSpec {
 
         val result = fakeController.onPageLoad()(FakeRequest())
         status(result) mustBe INTERNAL_SERVER_ERROR
+
         contentAsString(result) must include(messages("global.error.InternalServerError500.tai.title"))
       }
     }
