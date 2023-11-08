@@ -44,10 +44,11 @@ class PertaxAuthAction @Inject() (
   cc: ControllerComponents,
   appConfig: ApplicationConfig
 ) extends ActionFilter[Request] with AuthorisedFunctions with Results with I18nSupport with Logging {
-
-  private val failureUrl: String =
-    "/paye/benefits/medical-benefit/showUpliftFailedJourneyOutcome?origin=benefits-frontend"
-  private val completionUrl: String = "/paye/benefits/medical-benefit"
+  /*
+  def upliftUrl: String = appConfig.sa16UpliftUrl
+   */
+  private val failureUrl: String = appConfig.pertaxServiceUpliftFailedUrl
+  private val completionUrl: String = appConfig.taiHomePageUrl
   private val confidenceLevel: Int = ConfidenceLevel.L250.level
 
   override def messagesApi: MessagesApi = cc.messagesApi
@@ -75,7 +76,7 @@ class PertaxAuthAction @Inject() (
                 Future.successful(
                   Some(
                     Redirect(
-                      s"$redirect?origin=benefits-frontend&continueUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
+                      s"$redirect?origin=tai-frontend&continueUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
                     )
                   )
                 )
@@ -83,7 +84,7 @@ class PertaxAuthAction @Inject() (
                 Future.successful(
                   Some(
                     Redirect(
-                      s"$redirect?origin=benefits-frontend&confidenceLevel=$confidenceLevel&completionURL=$completionUrl&failureURL=$failureUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
+                      s"$redirect?origin=tai-frontend&confidenceLevel=$confidenceLevel&completionURL=$completionUrl&failureURL=$failureUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
                     )
                   )
                 )

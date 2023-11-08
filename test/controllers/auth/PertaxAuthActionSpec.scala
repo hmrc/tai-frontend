@@ -160,7 +160,7 @@ class PertaxAuthActionSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=benefits-frontend&continueUrl=%2F"
+          "redirectLocation?origin=tai-frontend&continueUrl=%2F"
         )
       }
     }
@@ -185,8 +185,12 @@ class PertaxAuthActionSpec extends BaseSpec {
         val result = fakeController.onPageLoad()(FakeRequest())
 
         status(result) mustBe SEE_OTHER
+        /*
+        actual:-
+         Some("redirectLocation?origin=tai-frontend&confidenceLevel=250&completionURL=http://localhost:9230/check-income-tax/what-do-you-want-to-do&failureURL=http://localhost:9232/personal-account/identity-check-failed=%2F")
+         */
         redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=benefits-frontend&confidenceLevel=250&completionURL=/paye/benefits/medical-benefit&failureURL=/paye/benefits/medical-benefit/showUpliftFailedJourneyOutcome?origin=benefits-frontend=%2F"
+          "redirectLocation?origin=tai-frontend&confidenceLevel=250&completionURL=/paye/benefits/medical-benefit&failureURL=/paye/benefits/medical-benefit/showUpliftFailedJourneyOutcome?origin=benefits-frontend=%2F"
         )
       }
     }
