@@ -1609,3 +1609,21 @@ mci.link.text=er mwyn datrys y broblem MCI gydag ymgynghorydd
 #=============================================================
 betaBanner.message=Mae hwn yn wasanaeth newydd ‐ bydd eich {0} yn ein helpu i’w wella.
 betaBanner.linkText=adborth
+
+#*************************************************************
+# IV failed journeys PLACEHOLDER TO GET UNIT TESTS PASSING
+#*************************************************************
+label.contact_HMRC_for_help =contact HM Revenue and Customs for help
+label.you_will_need_to = You will need to:
+
+ivIncomplete.title = Sorry, there is a problem with the service
+ivIncomplete.heading = Sorry, there is a problem with the service
+ivIncomplete.p = Please try again later.
+
+ivInsufficientEvidence.title = We could not confirm your identity online
+ivInsufficientEvidence.heading = We could not confirm your identity online
+ivInsufficientEvidence.p = You have not given us enough information to prove your identity.
+
+preconditionFailed.title = Sorry, there is a problem with the service
+preconditionFailed.heading = Sorry, there is a problem with the service
+preconditionFailed.p = We need to reconfirm your national insurance number.

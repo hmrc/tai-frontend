@@ -38,7 +38,6 @@ class IvUpliftControllerSpec extends BaseSpec {
 
   lazy val mockIdentityVerificationFrontendService: IvUpliftFrontendService = mock[IvUpliftFrontendService]
 
-
   private val ivInsufficientEvidenceView = inject[IvInsufficientEvidenceView]
   private val ivIncompleteView = inject[IvIncompleteView]
   private val ivPreconditionFailedView = inject[IvPreconditionFailedView]
@@ -67,8 +66,8 @@ class IvUpliftControllerSpec extends BaseSpec {
   }
 
   def getIVJourneyStatusResponse(
-                                  expectedResponse: IdentityVerificationResponse
-                                ): EitherT[Future, UpstreamErrorResponse, IdentityVerificationResponse] =
+    expectedResponse: IdentityVerificationResponse
+  ): EitherT[Future, UpstreamErrorResponse, IdentityVerificationResponse] =
     EitherT[Future, UpstreamErrorResponse, IdentityVerificationResponse](Future.successful(Right(expectedResponse)))
 
   "Calling IvUpliftController showUpliftJourneyOutcome" must {

@@ -40,8 +40,7 @@ class IvUpliftController @Inject() (
   ivPreconditionFailedView: IvPreconditionFailedView,
   internalServerErrorView: InternalServerErrorView
 )(implicit appConfig: ApplicationConfig, ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+    extends FrontendBaseController with I18nSupport {
 
   private lazy val logger = Logger(this.getClass)
 
@@ -79,7 +78,7 @@ class IvUpliftController @Inject() (
               logErrorMessage("Unable to get IV journey status")
               InternalServerError(internalServerErrorView(appConfig))
             }
-        case None      =>
+        case None =>
           logger.error("journeyId missing or incorrect")
           Future.successful(InternalServerError(internalServerErrorView(appConfig)))
       }
