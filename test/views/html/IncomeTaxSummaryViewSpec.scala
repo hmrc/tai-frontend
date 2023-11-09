@@ -424,7 +424,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display a view details link when instructed" in {
       doc must haveElementAtPathWithText(
         "#employment1DetailsLink",
-        s"${activeEmployment.detailsLinkLabel}"
+        s"${activeEmployment.detailsLinkLabel} ${messages("tai.updateOrRemove.fromOtherSources", "Company1")}"
       )
       doc must haveElementAtPathWithAttribute("#employment1DetailsLink", "href", activeEmployment.detailsLinkUrl)
     }

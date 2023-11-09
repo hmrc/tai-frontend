@@ -1367,8 +1367,8 @@ tai.updateEmployment.incomeSame.newEstimate.text=Eich incwm amcangyfrifedig newy
 tai.updateEmployment.incomeSame.description=Mae’r swm hwn eisoes wedi’i amcangyfrif ar gyfer {0} ar gyfer {1}, felly does dim rhaid i chi ddiweddaru’ch cyflogaeth.
 tai.updateEmployment.incomeSame.employment.return.link=Dychwelyd i’ch manylion cyflogaeth
 tai.updateEmployment.incomeSame.pension.return.link=Dychwelyd i’ch manylion pensiwn
-
 tai.updateOrRemove=Diweddaru neu ddileu
+tai.updateOrRemove.fromOtherSources = Bwrw golwg ar, neu ddiweddaru, fanylion cyflogaeth i {0}
 tai.updatePension.confirmation.heading=Mae’ch diweddariad am bensiwn wedi dod i law
 tai.updatePension.cya.currentlyReceivePension=Ar hyn o bryd yn cael y pensiwn hwn
 tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
