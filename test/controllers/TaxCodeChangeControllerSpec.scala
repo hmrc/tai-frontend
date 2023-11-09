@@ -43,7 +43,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
         implicit val request =
-          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "testUser")
+          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
 
         val result = createController().whatHappensNext()(request)
 
@@ -65,9 +65,6 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
             Seq.empty
           )
 
-        implicit val fakeAuthenticatedRequest =
-          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "testUser")
-
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(meq(FakeAuthAction.nino))(any(), any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
@@ -75,7 +72,16 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs yourTaxFreeAmountView(expectedViewModel)
+        result rendersTheSameViewAs yourTaxFreeAmountView(expectedViewModel)(
+          AuthenticatedRequest(
+            RequestBuilder
+              .buildFakeRequestWithAuth("GET"),
+            authedUser,
+            "testUser"
+          ),
+          implicitly,
+          implicitly
+        )
       }
     }
   }
@@ -148,19 +154,19 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
   private val taxCodeComparisonView = inject[TaxCodeComparisonView]
 
   private class TaxCodeChangeTestController
-      extends TaxCodeChangeController(
-        taxCodeChangeService,
-        taxAccountService,
-        describedYourTaxFreeAmountService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        yourTaxFreeAmountService,
-        taxCodeChangeReasonsService,
-        appConfig,
-        mcc,
-        taxCodeComparisonView,
-        yourTaxFreeAmountView,
-        whatHappensNextView
-      ) {}
+    extends TaxCodeChangeController(
+      taxCodeChangeService,
+      taxAccountService,
+      describedYourTaxFreeAmountService,
+      mockAuthJourney,
+      FakeValidatePerson,
+      yourTaxFreeAmountService,
+      taxCodeChangeReasonsService,
+      appConfig,
+      mcc,
+      taxCodeComparisonView,
+      yourTaxFreeAmountView,
+      whatHappensNextView
+    ) {}
 
 }
