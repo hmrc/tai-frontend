@@ -17,18 +17,26 @@
 package utils
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlEqualTo}
+import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
+import org.mockito.MockitoSugar.{mock, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.mvc._
 import play.api.test.Injecting
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.auth.core.ConfidenceLevel
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class IntegrationSpec
     extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
     with Injecting {
 
+  protected lazy val mockAuthJourney: AuthJourney = mock[AuthJourney]
   val generatedNino = new Generator().nextNino
 
   val generatedSaUtr = new Generator().nextAtedUtr
@@ -38,6 +46,56 @@ class IntegrationSpec
   implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
   val taxYear = TaxYear().year
+
+  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
+
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+
+  when(mockAuthJourney.authWithValidatePerson).thenReturn(new ActionBuilder[AuthenticatedRequest, AnyContent] {
+    private val user =
+      AuthedUser(
+        Nino(generatedNino.toString()),
+        Some("saUtr"),
+        Some(TaiConstants.AuthProviderGG),
+        ConfidenceLevel.L200,
+        None,
+        None
+      )
+
+    override def invokeBlock[A](
+      request: Request[A],
+      block: AuthenticatedRequest[A] => Future[Result]
+    ): Future[Result] =
+      block(AuthenticatedRequest(request, user, "testUser"))
+
+    override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+    override protected def executionContext: ExecutionContext = ec
+  })
+
+  when(mockAuthJourney.authWithoutValidatePerson).thenReturn(
+    new ActionBuilder[InternalAuthenticatedRequest, AnyContent] {
+      private val user =
+        AuthedUser(
+          Nino(generatedNino.toString()),
+          Some("saUtr"),
+          Some(TaiConstants.AuthProviderGG),
+          ConfidenceLevel.L200,
+          None,
+          None
+        )
+
+      override def invokeBlock[A](
+        request: Request[A],
+        block: InternalAuthenticatedRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(InternalAuthenticatedRequest(request, user))
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
+  )
 
   override def beforeEach() = {
 

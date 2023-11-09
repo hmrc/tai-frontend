@@ -52,7 +52,7 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Random
 
-class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
+class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with MockitoSugar with Matchers {
 
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
@@ -456,7 +456,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
     .configure(
       "microservice.services.auth.port" -> server.port(),
-      //      "microservice.services.pertax.port"                              -> server.port(),
+//      "microservice.services.pertax.port"                              -> server.port(),
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),

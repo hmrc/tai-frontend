@@ -17,20 +17,23 @@
 package controllers.auth
 
 import com.google.inject.{ImplementedBy, Inject}
-import controllers.actions.ValidatePerson
+import controllers.actions.{DataRetrievalAction, IdentifierAction, ValidatePerson}
 import play.api.mvc.{ActionBuilder, AnyContent, DefaultActionBuilder}
 
 @ImplementedBy(classOf[AuthJourneyImpl])
 trait AuthJourney {
   val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent]
   val authWithoutValidatePerson: ActionBuilder[InternalAuthenticatedRequest, AnyContent]
+  val authWithDataRetrieval: ActionBuilder[DataRequest, AnyContent]
 }
 
 class AuthJourneyImpl @Inject() (
   authAction: AuthAction,
   pertaxAuthAction: PertaxAuthAction,
   defaultActionBuilder: DefaultActionBuilder,
-  validatePerson: ValidatePerson
+  validatePerson: ValidatePerson,
+  identifierAction: IdentifierAction,
+  dataRetrievalAction: DataRetrievalAction
 ) extends AuthJourney {
 
   val authWithValidatePerson: ActionBuilder[AuthenticatedRequest, AnyContent] =
@@ -38,5 +41,8 @@ class AuthJourneyImpl @Inject() (
 
   val authWithoutValidatePerson: ActionBuilder[InternalAuthenticatedRequest, AnyContent] =
     defaultActionBuilder andThen pertaxAuthAction andThen authAction
+
+  val authWithDataRetrieval: ActionBuilder[DataRequest, AnyContent] =
+    authWithValidatePerson andThen identifierAction andThen dataRetrievalAction
 
 }
