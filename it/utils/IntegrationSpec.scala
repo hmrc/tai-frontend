@@ -72,5 +72,10 @@ class IntegrationSpec
       post(urlEqualTo("/auth/authorise"))
         .willReturn(aResponse().withBody(authResponse))
     )
+
+    server.stubFor(
+      post(urlEqualTo("/pertax/authorise"))
+        .willReturn(aResponse().withBody("""{"code":"ACCESS_GRANTED", "message":"test"}"""))
+    )
   }
 }

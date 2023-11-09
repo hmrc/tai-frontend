@@ -32,7 +32,7 @@ import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.admin.SCAWrapperToggle
+import uk.gov.hmrc.tai.model.admin.{PertaxBackendToggle, SCAWrapperToggle}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -76,6 +76,9 @@ trait BaseSpec
     reset(mockAuthJourney)
     when(mockFeatureFlagService.get(SCAWrapperToggle))
       .thenReturn(Future.successful(FeatureFlag(SCAWrapperToggle, isEnabled = false)))
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
+      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = false))
+    )
 
     when(mockAuthJourney.authWithValidatePerson).thenReturn(new ActionBuilder[AuthenticatedRequest, AnyContent] {
       private val user =

@@ -154,19 +154,19 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
   private val taxCodeComparisonView = inject[TaxCodeComparisonView]
 
   private class TaxCodeChangeTestController
-    extends TaxCodeChangeController(
-      taxCodeChangeService,
-      taxAccountService,
-      describedYourTaxFreeAmountService,
-      mockAuthJourney,
-      FakeValidatePerson,
-      yourTaxFreeAmountService,
-      taxCodeChangeReasonsService,
-      appConfig,
-      mcc,
-      taxCodeComparisonView,
-      yourTaxFreeAmountView,
-      whatHappensNextView
-    ) {}
+      extends TaxCodeChangeController(
+        taxCodeChangeService,
+        taxAccountService,
+        describedYourTaxFreeAmountService,
+        mockAuthJourney,
+        FakeValidatePerson,
+        yourTaxFreeAmountService,
+        taxCodeChangeReasonsService,
+        appConfig,
+        mcc,
+        taxCodeComparisonView,
+        yourTaxFreeAmountView,
+        whatHappensNextView
+      ) {}
 
 }

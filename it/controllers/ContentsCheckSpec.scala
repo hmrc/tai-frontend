@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
-import pages.EndEmployment.{EndEmploymentEndDatePage, EndEmploymentIdPage, EndEmploymentLatestPaymentPage, EndEmploymentTelephoneNumberPage, EndEmploymentTelephoneQuestionPage}
+import pages.EndEmployment._
 import pages._
 import play.api.Application
 import play.api.http.ContentTypes
@@ -37,10 +37,10 @@ import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, SCAWrapperToggle}
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, PertaxBackendToggle, SCAWrapperToggle}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
-import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import utils.IntegrationSpec
@@ -455,6 +455,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
     .configure(
       "microservice.services.auth.port"                                -> server.port(),
+      "microservice.services.pertax.port"                              -> server.port(),
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
@@ -592,6 +593,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     super.beforeEach()
 
     when(mockFeatureFlagService.get(CyPlusOneToggle)).thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, true)))
+    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
+      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = false))
+    )
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, true)))
     when(mockFeatureFlagService.get(SCAWrapperToggle))
