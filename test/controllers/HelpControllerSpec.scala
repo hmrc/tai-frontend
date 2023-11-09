@@ -37,7 +37,7 @@ class HelpControllerSpec extends BaseSpec with JsoupMatchers {
   }
 
   def sut = new HelpController(
-    FakeAuthAction,
+    mockAuthJourney,
     FakeValidatePerson,
     appConfig,
     mcc,

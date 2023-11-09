@@ -1035,7 +1035,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         employmentService,
         incomeService,
         estimatedPayJourneyCompletionService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[ConfirmAmountEnteredView],

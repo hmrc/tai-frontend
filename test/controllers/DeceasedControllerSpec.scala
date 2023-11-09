@@ -41,7 +41,7 @@ class DeceasedControllerSpec extends BaseSpec {
   }
 
   def createSut = new DeceasedController(
-    FakeAuthAction,
+    mockAuthJourney,
     mcc,
     inject[DeceasedHelplineView]
   )

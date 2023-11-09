@@ -44,7 +44,7 @@ import scala.concurrent.Future
 class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
   implicit val request: Request[_] = FakeRequest()
-  implicit val fakeAuthenticatedRequest = AuthenticatedRequest(request, authedUser, "Firstname Surname")
+  implicit val fakeAuthenticatedRequest = AuthenticatedRequest(request, authedUser, "testUser")
   private val noCurrentIncomeView = inject[NoCurrentIncomeView]
   private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
   private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]
@@ -436,7 +436,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         codingComponentService,
         partialService,
         taxAccountService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         noCurrentIncomeView,
         complexEstimatedIncomeTaxView,

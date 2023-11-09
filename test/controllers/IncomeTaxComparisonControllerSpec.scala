@@ -197,7 +197,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
         employmentService,
         codingComponentService,
         updateNextYearsIncomeService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         appConfig,
         mcc,

@@ -111,7 +111,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         employmentService,
         taxAccountService,
         companyCarService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         appConfig,
         mcc,

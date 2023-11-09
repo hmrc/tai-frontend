@@ -46,7 +46,7 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
   private class SUT()
       extends UnderpaymentFromPreviousYearController(
         codingComponentService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[PreviousYearUnderpaymentView]

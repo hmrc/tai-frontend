@@ -58,7 +58,7 @@ class AuditControllerSpec extends BaseSpec {
   class TestAuditController
       extends AuditController(
         auditService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc
       ) {

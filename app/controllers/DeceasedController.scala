@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, AuthJourney}
+import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.DeceasedHelplineView
 

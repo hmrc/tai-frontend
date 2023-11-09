@@ -266,7 +266,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       taxAccountService,
       employmentService,
       paymentsService,
-      FakeAuthAction,
+      mockAuthJourney,
       FakeValidatePerson,
       appConfig,
       mcc,

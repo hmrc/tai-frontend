@@ -35,9 +35,7 @@ import views.html.{InternalServerErrorView, MainTemplate}
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[PertaxAuthActionImpl])
-trait PertaxAuthAction
-    extends ActionBuilder[InternalAuthenticatedRequest, AnyContent]
-    with ActionFunction[Request, InternalAuthenticatedRequest]
+trait PertaxAuthAction extends ActionFilter[Request]
 
 @Singleton
 class PertaxAuthActionImpl @Inject() (
@@ -48,7 +46,7 @@ class PertaxAuthActionImpl @Inject() (
   mainTemplate: MainTemplate,
   cc: ControllerComponents,
   appConfig: ApplicationConfig
-) extends ActionFilter[Request] with AuthorisedFunctions with Results with I18nSupport with Logging {
+) extends PertaxAuthAction with AuthorisedFunctions with Results with I18nSupport with Logging {
   /*
   def upliftUrl: String = appConfig.sa16UpliftUrl
    */

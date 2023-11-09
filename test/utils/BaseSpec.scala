@@ -16,15 +16,15 @@
 
 package utils
 import builders.UserBuilder
-import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
-import play.api.mvc.{ActionBuilder, AnyContent, BodyParser, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 trait BaseSpec
-  extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach
     with ScalaFutures {
 
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
@@ -88,9 +88,9 @@ trait BaseSpec
           None
         )
       override def invokeBlock[A](
-                                   request: Request[A],
-                                   block: AuthenticatedRequest[A] => Future[Result]
-                                 ): Future[Result] =
+        request: Request[A],
+        block: AuthenticatedRequest[A] => Future[Result]
+      ): Future[Result] =
         block(AuthenticatedRequest(request, user, "testUser"))
 
       override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
@@ -98,27 +98,29 @@ trait BaseSpec
       override protected def executionContext: ExecutionContext = ec
     })
 
-    when(mockAuthJourney.authWithoutValidatePerson).thenReturn(new ActionBuilder[InternalAuthenticatedRequest, AnyContent] {
-      private val user =
-        AuthedUser(
-          Nino(nino.toString()),
-          Some("saUtr"),
-          Some(TaiConstants.AuthProviderGG),
-          ConfidenceLevel.L200,
-          None,
-          None
-        )
+    when(mockAuthJourney.authWithoutValidatePerson).thenReturn(
+      new ActionBuilder[InternalAuthenticatedRequest, AnyContent] {
+        private val user =
+          AuthedUser(
+            Nino(nino.toString()),
+            Some("saUtr"),
+            Some(TaiConstants.AuthProviderGG),
+            ConfidenceLevel.L200,
+            None,
+            None
+          )
 
-      override def invokeBlock[A](
-                                   request: Request[A],
-                                   block: InternalAuthenticatedRequest[A] => Future[Result]
-                                 ): Future[Result] =
-        block(InternalAuthenticatedRequest(request, user))
+        override def invokeBlock[A](
+          request: Request[A],
+          block: InternalAuthenticatedRequest[A] => Future[Result]
+        ): Future[Result] =
+          block(InternalAuthenticatedRequest(request, user))
 
-      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+        override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
 
-      override protected def executionContext: ExecutionContext = ec
-    })
+        override protected def executionContext: ExecutionContext = ec
+      }
+    )
 
   }
 

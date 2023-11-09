@@ -254,7 +254,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     taxAccountService,
     taxAccountSummaryService,
     auditService,
-    FakeAuthAction,
+    mockAuthJourney,
     FakeValidatePerson,
     appConfig,
     mcc,

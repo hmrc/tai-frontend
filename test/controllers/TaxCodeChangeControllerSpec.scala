@@ -43,7 +43,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
         implicit val request =
-          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
+          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "testUser")
 
         val result = createController().whatHappensNext()(request)
 
@@ -66,7 +66,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
           )
 
         implicit val fakeAuthenticatedRequest =
-          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
+          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "testUser")
 
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(meq(FakeAuthAction.nino))(any(), any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
@@ -108,7 +108,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
           scottishRates,
           reasons,
           isAGenericReason = false,
-          maybeUserName = Some("Firstname Surname")
+          maybeUserName = Some("testUser")
         )
 
       status(result) mustBe OK
@@ -152,7 +152,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxCodeChangeService,
         taxAccountService,
         describedYourTaxFreeAmountService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,

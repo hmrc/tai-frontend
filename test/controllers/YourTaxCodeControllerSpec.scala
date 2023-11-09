@@ -41,7 +41,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
   def sut = new YourTaxCodeController(
     taxAccountService,
     taxCodeChangeService,
-    FakeAuthAction,
+    mockAuthJourney,
     FakeValidatePerson,
     mcc,
     appConfig,

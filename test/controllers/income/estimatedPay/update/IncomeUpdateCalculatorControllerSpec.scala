@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.scalatest.concurrent.ScalaFutures
@@ -75,7 +75,7 @@ class IncomeUpdateCalculatorControllerSpec
         employmentService,
         taxAccountService,
         estimatedPayJourneyCompletionService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[DuplicateSubmissionWarningView],

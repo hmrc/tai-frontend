@@ -18,7 +18,6 @@ package controllers.testOnly
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -46,7 +45,7 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
   private def sut = new TaiUpdateIncomeController(
     journeyCacheService,
-    FakeAuthAction,
+    mockAuthJourney,
     FakeValidatePerson,
     mcc
   )

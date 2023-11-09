@@ -52,7 +52,7 @@ class PertaxAuthActionSpec extends BaseSpec {
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
   private val mainTemplateView: MainTemplate = inject[MainTemplate]
   private val testAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val testAction: PertaxAuthAction = new PertaxAuthAction(
+  val testAction: PertaxAuthActionImpl = new PertaxAuthActionImpl(
     mockAuthConnector,
     mockPertaxConnector,
     mockFeatureFlagService,

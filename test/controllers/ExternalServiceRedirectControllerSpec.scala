@@ -109,7 +109,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
       extends ExternalServiceRedirectController(
         sessionService,
         auditService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[ErrorPagesHandler]
