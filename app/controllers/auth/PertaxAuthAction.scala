@@ -72,7 +72,8 @@ class PertaxAuthActionImpl @Inject() (
               )
             },
             {
-              case PertaxResponse("ACCESS_GRANTED", _, _, _) => Future.successful(None)
+              case PertaxResponse("ACCESS_GRANTED", _, _, _) =>
+                Future.successful(None)
               case PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect)) =>
                 Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(request.uri).encodedUrl}")))
               case PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(redirect)) =>

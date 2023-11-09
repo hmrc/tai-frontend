@@ -455,8 +455,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository)
     )
     .configure(
-      "microservice.services.auth.port" -> server.port(),
-      //      "microservice.services.pertax.port"                              -> server.port(),
+      "microservice.services.auth.port"                                -> server.port(),
+      "microservice.services.pertax.port"                              -> server.port(),
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
@@ -595,7 +595,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
     when(mockFeatureFlagService.get(CyPlusOneToggle)).thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, true)))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
-      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = false))
+      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = true))
     )
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, true)))
