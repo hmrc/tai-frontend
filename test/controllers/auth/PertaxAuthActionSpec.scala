@@ -63,7 +63,7 @@ class PertaxAuthActionSpec extends BaseSpec {
   )
 
   class FakeController @Inject() (defaultActionBuilder: DefaultActionBuilder) extends InjectedController {
-    def onPageLoad(): Action[AnyContent] = (defaultActionBuilder andThen testAction).async { implicit request =>
+    def onPageLoad(): Action[AnyContent] = (defaultActionBuilder andThen testAction).async {
       Future.successful(Ok("ok"))
     }
   }

@@ -25,7 +25,6 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
-import uk.gov.hmrc.sca.config.AppConfig
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{PertaxRequestDetails, PertaxResponse}
 

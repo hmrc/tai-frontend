@@ -19,7 +19,7 @@ package controllers.employments
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthJourney, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
