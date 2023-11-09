@@ -47,9 +47,7 @@ class PertaxAuthActionImpl @Inject() (
   cc: ControllerComponents,
   appConfig: ApplicationConfig
 ) extends PertaxAuthAction with AuthorisedFunctions with Results with I18nSupport with Logging {
-  /*
-  def upliftUrl: String = appConfig.sa16UpliftUrl
-   */
+
   private def failureUrl: String = appConfig.pertaxServiceUpliftFailedUrl
   private def completionUrl: String = appConfig.taiHomePageUrl
   private def confidenceLevel: Int = ConfidenceLevel.L250.level
