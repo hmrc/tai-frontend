@@ -13,7 +13,7 @@
     > * {
       display: table-cell;
       vertical-align: top;
-      border-top: 1px solid $border-colour;
+      border-top: 1px solid #bfc1c3;
       padding: em(12, 19) em(20, 19) em(12, 19) 0;
     }
 
@@ -24,7 +24,7 @@
     }
 
     &:last-child > * {
-      border-bottom: 1px solid $border-colour;
+      border-bottom: 1px solid #bfc1c3;
     }
   }
 
@@ -47,7 +47,7 @@
       > * {
 
         display: block;
-        border-bottom: 1px solid $border-colour;
+        border-bottom: 1px solid #bfc1c3;
 
         > dt:first-of-type, div:first-of-type {
             padding-bottom: 0;
