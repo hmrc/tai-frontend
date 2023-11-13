@@ -16,16 +16,35 @@
 
 package uk.gov.hmrc.tai.config
 
-import play.api.{ConfigLoader, Configuration}
+import play.api.{ConfigLoader, Configuration, Environment, Mode}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.net.URI
 import javax.inject.Inject
 
 class ApplicationConfig @Inject() (
   val runModeConfiguration: Configuration,
-  servicesConfig: ServicesConfig
+  servicesConfig: ServicesConfig,
+  env: Environment
 ) extends FeatureTogglesConfig with AuthConfigProperties {
+
+  def localFriendlyUrl(url: String, hostAndPort: String): String = {
+    val isLocalEnv =
+      if (env.mode.equals(Mode.Test)) {
+        false
+      } else {
+        getOptional[String]("run.mode").contains(Mode.Dev.toString)
+      }
+
+    val uri = new URI(url)
+
+    if (!uri.isAbsolute && isLocalEnv) {
+      s"http://$hostAndPort$url"
+    } else {
+      url
+    }
+  }
 
   def getOptional[A](key: String)(implicit loader: ConfigLoader[A]): Option[A] =
     runModeConfiguration.getOptional[A](key)

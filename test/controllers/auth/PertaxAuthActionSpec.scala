@@ -87,6 +87,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     when(testAppConfig.pertaxUrl).thenReturn("PERTAX_URL")
     when(testAppConfig.pertaxServiceUpliftFailedUrl).thenReturn("/failed")
     when(testAppConfig.taiHomePageUrl).thenReturn("/home")
+    when(testAppConfig.localFriendlyUrl(any(), any())).thenReturn("/localfriendlyurl")
     super.beforeEach()
   }
 
@@ -133,7 +134,7 @@ class PertaxAuthActionSpec extends BaseSpec {
         val result = fakeController.onPageLoad()(FakeRequest())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("redirectLocation/?redirectUrl=%2F")
+        redirectLocation(result) mustBe Some("redirectLocation/?redirectUrl=%2Flocalfriendlyurl")
       }
     }
 
@@ -159,7 +160,7 @@ class PertaxAuthActionSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=tai-frontend&continueUrl=%2F"
+          "redirectLocation?origin=TAI&continueUrl=%2Flocalfriendlyurl"
         )
       }
     }
@@ -185,7 +186,7 @@ class PertaxAuthActionSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=tai-frontend&confidenceLevel=250&completionURL=/home&failureURL=/failed=%2F"
+          "redirectLocation?origin=TAI&confidenceLevel=200&completionURL=%2Flocalfriendlyurl&failureURL=%2Ffailed"
         )
       }
     }

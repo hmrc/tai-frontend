@@ -49,8 +49,7 @@ class PertaxAuthActionImpl @Inject() (
 ) extends PertaxAuthAction with AuthorisedFunctions with Results with I18nSupport with Logging {
 
   private def failureUrl: String = appConfig.pertaxServiceUpliftFailedUrl
-  private def completionUrl: String = appConfig.taiHomePageUrl
-  private def confidenceLevel: Int = ConfidenceLevel.L250.level
+  private def confidenceLevel: Int = ConfidenceLevel.L200.level
 
   override def messagesApi: MessagesApi = cc.messagesApi
 
@@ -61,6 +60,7 @@ class PertaxAuthActionImpl @Inject() (
 
     featureFlagService.get(PertaxBackendToggle).flatMap { toggle =>
       if (toggle.isEnabled) {
+        def continueUrl: String = appConfig.localFriendlyUrl(request.uri, request.host)
         pertaxConnector
           .pertaxPostAuthorise()
           .fold(
@@ -73,12 +73,12 @@ class PertaxAuthActionImpl @Inject() (
               case PertaxResponse("ACCESS_GRANTED", _, _, _) =>
                 Future.successful(None)
               case PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect)) =>
-                Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(request.uri).encodedUrl}")))
+                Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(continueUrl).encodedUrl}")))
               case PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(redirect)) =>
                 Future.successful(
                   Some(
                     Redirect(
-                      s"$redirect?origin=tai-frontend&continueUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
+                      s"$redirect?origin=TAI&continueUrl=${SafeRedirectUrl(continueUrl).encodedUrl}"
                     )
                   )
                 )
@@ -86,7 +86,8 @@ class PertaxAuthActionImpl @Inject() (
                 Future.successful(
                   Some(
                     Redirect(
-                      s"$redirect?origin=tai-frontend&confidenceLevel=$confidenceLevel&completionURL=$completionUrl&failureURL=$failureUrl=${SafeRedirectUrl(request.uri).encodedUrl}"
+                      s"$redirect?origin=TAI&confidenceLevel=$confidenceLevel&completionURL=" +
+                        s"${SafeRedirectUrl(continueUrl).encodedUrl}&failureURL=${SafeRedirectUrl(failureUrl).encodedUrl}"
                     )
                   )
                 )
