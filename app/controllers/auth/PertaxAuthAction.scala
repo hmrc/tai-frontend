@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.PertaxConnector
 import uk.gov.hmrc.tai.model.PertaxResponse
 import uk.gov.hmrc.tai.model.admin.PertaxBackendToggle
+import uk.gov.hmrc.tai.service.URLService
 import views.html.{InternalServerErrorView, MainTemplate}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,7 +46,8 @@ class PertaxAuthActionImpl @Inject() (
   internalServerErrorView: InternalServerErrorView,
   mainTemplate: MainTemplate,
   cc: ControllerComponents,
-  appConfig: ApplicationConfig
+  appConfig: ApplicationConfig,
+  urlService: URLService
 ) extends PertaxAuthAction with AuthorisedFunctions with Results with I18nSupport with Logging {
 
   private def failureUrl: String = appConfig.pertaxServiceUpliftFailedUrl
@@ -60,7 +62,7 @@ class PertaxAuthActionImpl @Inject() (
 
     featureFlagService.get(PertaxBackendToggle).flatMap { toggle =>
       if (toggle.isEnabled) {
-        def continueUrl: String = appConfig.localFriendlyUrl(request.uri, request.host)
+        def continueUrl: String = urlService.localFriendlyUrl(request.uri, request.host)
         pertaxConnector
           .pertaxPostAuthorise()
           .fold(

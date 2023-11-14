@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.PertaxConnector
 import uk.gov.hmrc.tai.model.admin.PertaxBackendToggle
 import uk.gov.hmrc.tai.model.{ErrorView, PertaxResponse}
-import uk.gov.hmrc.tai.service.MessageFrontendService
+import uk.gov.hmrc.tai.service.{MessageFrontendService, URLService}
 import utils.BaseSpec
 import views.html.{InternalServerErrorView, MainTemplate}
 
@@ -46,6 +46,7 @@ class PertaxAuthActionSpec extends BaseSpec {
 
   lazy val mockPertaxConnector: PertaxConnector = mock[PertaxConnector]
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  private lazy val mockURLService = mock[URLService]
   override lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
   lazy val mockMessageFrontendService: MessageFrontendService = mock[MessageFrontendService]
 
@@ -59,7 +60,8 @@ class PertaxAuthActionSpec extends BaseSpec {
     internalServerErrorView,
     mainTemplateView,
     mcc,
-    testAppConfig
+    testAppConfig,
+    mockURLService
   )
 
   class FakeController @Inject() (defaultActionBuilder: DefaultActionBuilder) extends InjectedController {
@@ -87,7 +89,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     when(testAppConfig.pertaxUrl).thenReturn("PERTAX_URL")
     when(testAppConfig.pertaxServiceUpliftFailedUrl).thenReturn("/failed")
     when(testAppConfig.taiHomePageUrl).thenReturn("/home")
-    when(testAppConfig.localFriendlyUrl(any(), any())).thenReturn("/localfriendlyurl")
+    when(mockURLService.localFriendlyUrl(any(), any())).thenReturn("/localfriendlyurl")
     super.beforeEach()
   }
 
