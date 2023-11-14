@@ -92,12 +92,12 @@
                     </td>
                     @if(employmentIncomeSourceDetail.isLive) {
                         <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @link(
-                            id = Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
-                            url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
-                            copy = messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
-                            visuallyHiddenText = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
-                        )
+                            @link(
+                                id=Some(s"estimated-income-link-${employmentIncomeSourceDetail.empId}"),
+                                url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(employmentIncomeSourceDetail.empId).url,
+                                copy=messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
+                                altCopy=Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)}")
+                            )
                         </td>
                     } else {
                         <td class="govuk-table__cell govuk-table__cell set-no-row-border ">
@@ -140,12 +140,12 @@
                     </td>
                     @if(pensionIncomeSourceDetail.isLive) {
                         <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @includes.link(
-                            id = Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
-                            url = controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
-                            copy = messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
-                            visuallyHiddenText = Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
-                        )
+                            @includes.link(
+                                id=Some(s"estimated-income-link-${pensionIncomeSourceDetail.empId}"),
+                                url=controllers.income.routes.UpdateIncomeNextYearController.onPageLoad(pensionIncomeSourceDetail.empId).url,
+                                copy=messages("tai.incomeTaxComparison.incomeTax.updateEstimated"),
+                                altCopy=Some(s" ${messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)}")
+                            )
                         </td>
                     } else {
                         <td class="govuk-table__cell govuk-table__cell--numeric">

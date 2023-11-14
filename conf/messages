@@ -680,7 +680,7 @@ tai.incomeTaxComparison.incomeTax.description=This estimate is based on your cur
 tai.incomeTaxComparison.incomeTax.income.tax.type=Income Tax type
 
 tai.incomeTaxComparison.incomeTax.updateEstimated=Update estimated income
-tai.incomeTaxComparison.incomeTax.forEmployer=for {0}
+tai.incomeTaxComparison.incomeTax.forEmployer=Update estimated income for {0}
 tai.incomeTaxComparison.incomeTax.fromEmployer.description=You can update your estimated income from employment or pensions for next year. This will update the estimate that we will base next year’s tax on.
 
 tai.incomeTaxComparison.incomeTax.estimate=Your PAYE Income Tax estimate

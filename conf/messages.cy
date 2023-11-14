@@ -673,7 +673,7 @@ tai.incomeTaxComparison.incomeTax.description=Mae’r amcangyfrif hwn yn seilied
 tai.incomeTaxComparison.incomeTax.income.tax.type=Math o Dreth Incwm
 
 tai.incomeTaxComparison.incomeTax.updateEstimated=Diweddarwch incwm amcangyfrifedig
-tai.incomeTaxComparison.incomeTax.forEmployer=ar gyfer {0}
+tai.incomeTaxComparison.incomeTax.forEmployer=Diweddarwch incwm amcangyfrifedig ar gyfer {0}
 tai.incomeTaxComparison.incomeTax.fromEmployer.description=Gallwch ddiweddaru’r amcangyfrif o’ch incwm o gyflogaeth neu bensiynau ar gyfer y flwyddyn nesaf. Bydd hyn yn diweddaru’r amcangyfrif y byddwn yn seilio treth y flwyddyn nesaf arno.
 
 tai.incomeTaxComparison.incomeTax.estimate=Amcangyfrif o’ch Treth Incwm TWE
