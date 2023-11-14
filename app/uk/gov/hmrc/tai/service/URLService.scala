@@ -22,10 +22,10 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import java.net.URI
 import javax.inject.Inject
 
-class URLService @Inject()(
-                           appConfig: ApplicationConfig,
-                           env: Environment
-                         ) {
+class URLService @Inject() (
+  appConfig: ApplicationConfig,
+  env: Environment
+) {
   def localFriendlyUrl(url: String, hostAndPort: String): String = {
     val isLocalEnv =
       if (env.mode.equals(Mode.Test)) {
