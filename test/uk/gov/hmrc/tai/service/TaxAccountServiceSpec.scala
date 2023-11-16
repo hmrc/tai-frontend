@@ -217,7 +217,7 @@ class TaxAccountServiceSpec extends BaseSpec {
   val taxCodes = Seq("SD0", "1150L")
 
   private val nonTaxCodeIncome = NonTaxCodeIncome(
-    Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])),
+    Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")),
     Seq(OtherNonTaxCodeIncome(Profit, None, 100, "Profit"))
   )
 

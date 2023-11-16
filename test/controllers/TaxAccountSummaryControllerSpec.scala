@@ -237,7 +237,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
   override val nonTaxCodeIncome = NonTaxCodeIncome(
     Some(
       uk.gov.hmrc.tai.model.domain.income
-        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest", Seq.empty[BankAccount])
+        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest")
     ),
     Seq(
       OtherNonTaxCodeIncome(Profit, None, testAmount, "Profit")
