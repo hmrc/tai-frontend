@@ -7,6 +7,7 @@ add.missing.employment=Ychwanegu cyflogwr sydd ar goll
 add.missing.pension=Ychwanegu pensiwn sydd ar goll
 account.closed=Cyfrif wedi cau
 action=Camau i’w cymryd
+generic.warning=Rhybudd
 check.current.income=Bwriwch olwg dros faint o incwm trethadwy a gawsoch, a’ch swm rhydd o dreth, ar gyfer y cyfnod {0}.
 check.estimated.income=Bwriwch olwg dros eich codau treth a’r amcangyfrif o’ch Treth Incwm TWE o gyflogaeth a phensiynau ar gyfer y cyfnod {0}.
 check.tax.hasChanged.header=Gwirio’r newid diweddaraf i’ch cod treth

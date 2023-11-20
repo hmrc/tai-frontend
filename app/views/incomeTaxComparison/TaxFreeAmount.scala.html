@@ -25,10 +25,13 @@
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
 
 @model.personalAllowanceIncreaseInfo.map{ paIncreasedMessage =>
-    <p>
-        <i class="icon icon-information"><span class="govuk-visually-hidden">@messages("tai.information")</span></i>
-        <strong class="bold-small">@paIncreasedMessage</strong>
-    </p>
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">@messages("checkProgress.important")</span>
+            @paIncreasedMessage
+        </strong>
+    </div>
 }
 
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>

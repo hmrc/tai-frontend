@@ -75,31 +75,31 @@
 
                     <h2 class = "govuk-heading-m no-print hide-for-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
-                    <ul class="govuk-list no print">
-                        <li><p class="icon icon-plus-no-rpt">
-                        @link(
-                            id=Some("addMissingAddition"),
-                            url=appConfig.taxFreeAllowanceLinkUrl,
-                            copy=Messages("tai.taxFreeAmount.missing.section.addition"))
-                        </p></li>
-                        <li><p class="icon icon-plus-no-rpt">
-                        @link(
-                            id=Some("addMissingDeduction"),
-                            url=appConfig.companyBenefitsLinkUrl,
-                            copy=Messages("add.missing.company.benefit"))
-                        </p></li>
-                        <li><p class="icon icon-plus-no-rpt">
-                        @link(
-                            id=Some("addMissingInvestment"),
-                            url=appConfig.investmentIncomeLinkUrl,
-                            copy=Messages("tai.taxFreeAmount.missing.section.investment"))
-                        </p></li>
-                        <li><p class="icon icon-plus-no-rpt">
-                        @link(
-                            id=Some("addMissingIncome"),
-                            url=appConfig.otherIncomeLinkUrl,
-                            copy=Messages("tai.taxFreeAmount.missing.section.income"))
-                        </p></li>
+                    <ul class="govuk-list govuk-list--bullet govuk-list--spaced hide-for-print">
+                        <li>
+                            @link(
+                                id=Some("addMissingAddition"),
+                                url=appConfig.taxFreeAllowanceLinkUrl,
+                                copy=Messages("tai.taxFreeAmount.missing.section.addition"))
+                        </li>
+                        <li>
+                            @link(
+                                id=Some("addMissingDeduction"),
+                                url=appConfig.companyBenefitsLinkUrl,
+                                copy=Messages("add.missing.company.benefit"))
+                        </li>
+                        <li>
+                            @link(
+                                id=Some("addMissingInvestment"),
+                                url=appConfig.investmentIncomeLinkUrl,
+                                copy=Messages("tai.taxFreeAmount.missing.section.investment"))
+                        </li>
+                        <li>
+                            @link(
+                                id=Some("addMissingIncome"),
+                                url=appConfig.otherIncomeLinkUrl,
+                                copy=Messages("tai.taxFreeAmount.missing.section.income"))
+                        </li>
                     </ul>
 
         </div>
@@ -111,25 +111,25 @@
 
                     <ul class="link-list govuk-list govuk-list--spaced">
                         <li>
-                        @link(
-                            id=Some("taxCodesLink"),
-                            url=routes.YourTaxCodeController.taxCodes().url,
-                            copy=Messages("check.your.tax.codes"))</li>
+                            @link(
+                                id=Some("taxCodesLink"),
+                                url=routes.YourTaxCodeController.taxCodes().url,
+                                copy=Messages("check.your.tax.codes"))</li>
 
                         <li>
-                        @link(
-                            id=Some("incomeTaxEstimateLink"),
-                            url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
-                            copy=Messages("check.your.income.tax.estimate"),
-                            linkClasses=Seq("link-list__item"))
+                            @link(
+                                id=Some("incomeTaxEstimateLink"),
+                                url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
+                                copy=Messages("check.your.income.tax.estimate"),
+                                linkClasses=Seq("link-list__item"))
                         </li>
 
                         <li>
-                        @link(
-                            id=Some("taxableIncomeLink"),
-                            url=routes.TaxAccountSummaryController.onPageLoad().url,
-                            copy=Messages("return.to.your.income.tax.summary"),
-                            linkClasses=Seq("link-list__item"))
+                            @link(
+                                id=Some("taxableIncomeLink"),
+                                url=routes.TaxAccountSummaryController.onPageLoad().url,
+                                copy=Messages("return.to.your.income.tax.summary"),
+                                linkClasses=Seq("link-list__item"))
                         </li>
                     </ul>
                 </nav>

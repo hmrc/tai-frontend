@@ -247,7 +247,7 @@
                 <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
             }
 
-            <p class="icon icon-plus-no-rpt">
+            <p class="govuk-body">
                 @link(
                     id=Some("addMissingCompanyBenefitLink"),
                     url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
@@ -255,7 +255,7 @@
             </p>
 
             @if(model.displayAddCompanyCarLink) {
-                <p class="icon icon-plus-no-rpt">
+                <p class="govuk-body">
                     @link(
                         id=Some("addMissingCompanyCarLink"),
                         url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,

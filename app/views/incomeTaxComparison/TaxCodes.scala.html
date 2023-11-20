@@ -24,11 +24,14 @@
 <p>@messages("tai.incomeTaxComparison.taxCodes.description")</p>
 
 @if(model.hasScottishTaxCodeNextYear) {
-    <p class="notice text">
-        <i class="icon icon-information"><span class="govuk-visually-hidden">@messages("tai.information")</span></i>
-        <strong id="scottishTaxCodeInfo" class="bold-small">@Html(messages("tai.incomeTaxComparison.taxCodes.scottishInfo",
-            includes.link(url = appConfig.scottishRateIncomeTaxUrl, copy=Messages("tai.taxCode.scottishIncomeText.link"), externalLink = true)))</strong>
-    </p>
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text" id="scottishTaxCodeInfo">
+            <span class="govuk-warning-text__assistive">@messages("generic.warning")</span>
+            @Html(messages("tai.incomeTaxComparison.taxCodes.scottishInfo",
+                includes.link(url = appConfig.scottishRateIncomeTaxUrl, copy=Messages("tai.taxCode.scottishIncomeText.link"), externalLink = true)))
+        </strong>
+    </div>
 }
 
 <table class="govuk-table table--font-reset flush--bottom responsive" id="taxCodeComparisonTable" role="table">
