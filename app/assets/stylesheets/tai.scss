@@ -8,7 +8,6 @@
 @import 'modules/navigation';
 @import 'modules/tax_bar';
 @import 'modules/forms';
-@import 'modules/description_list';
 @import 'modules/charcount';
 @import 'modules/card';
 @import 'modules/tax_code_change';
@@ -444,4 +443,9 @@ html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:focus {
   flex-wrap: wrap;
   justify-content: flex-start;
   padding: 0 15px;
+}
+
+
+.govuk-vertical-align-middle {
+  vertical-align: top;
 }

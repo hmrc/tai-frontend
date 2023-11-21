@@ -49,27 +49,23 @@
 
                     @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (LazyList.from(1))) {
 
-                    <div class="section govuk-!-margin-bottom-9">
+                        <h2 class="govuk-!-margin-top-5 govuk-heading-m" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                            <h2 class="govuk-!-margin-top-5 govuk-heading-m" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
-
-                        <ul id="taxCodeList@{listIdx.toString}" class="govuk-!-padding-0 govuk- tai-description-list flush">
-
+                        <dl id="taxCodeList@{listIdx.toString}" class="govuk-summary-list">
                             @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (LazyList.from(1))) {
-                            <li>
-                                <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
-                                    <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                    <span aria-hidden="true">@taxCodeTerm</span>
+                                <div class="govuk-summary-list__row">
+                                    <dt id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}" class="govuk-summary-list__key govuk-heading-l govuk-vertical-align-middle">
+                                        <span class="govuk-visually-hidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                        <span aria-hidden="true">@taxCodeTerm</span>
+                                    </dt>
+                                    <dd id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}" class="govuk-summary-list__value">
+                                        <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
+                                        <span class="govuk-body">@Html(taxCodeList.descriptionItems(taxCodeTerm)) </span>
+                                    </dd>
                                 </div>
-                                <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                                    <span class="govuk-visually-hidden">@messages("tai.taxCode.definition.announce") </span>
-                                    <span class="govuk-body">@Html(taxCodeList.descriptionItems(taxCodeTerm)) </span>
-                                </div>
-                            </li>
                             }
-                        </ul>
+                        </dl>
 
-                    </div>
                     }
 
                 </div>
