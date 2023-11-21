@@ -247,11 +247,10 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
 
-          val bankAccounts = Seq(BankAccount(1, Some("ACCNo"), None, None, 100, None))
           val nonTaxCodeIncomeWithBankAccounts = NonTaxCodeIncome(
             Some(
               uk.gov.hmrc.tai.model.domain.income
-                .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", bankAccounts)
+                .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")
             ),
             Seq(
               OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
@@ -315,12 +314,10 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url
           )
 
-          val bankAccounts = Seq(BankAccount(1, Some("ACCNo"), None, None, 100, None))
-
           val nonTaxCodeIncomeWithBankAccounts = NonTaxCodeIncome(
             Some(
               uk.gov.hmrc.tai.model.domain.income
-                .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", bankAccounts)
+                .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")
             ),
             Seq(
               OtherNonTaxCodeIncome(Tips, None, 100, "Tips"),

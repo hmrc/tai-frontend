@@ -74,7 +74,7 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings())
   .settings(resolvers ++= Seq(Resolver.jcenterRepo))
-  .settings(majorVersion := 0)
+  .settings(majorVersion := 1)
   .settings(Test / Keys.fork := true)
   .settings(scalacOptions ++= Seq(
     "-feature",

@@ -52,7 +52,7 @@ trait TaxAccountSummaryTestData {
   val nonTaxCodeIncome = NonTaxCodeIncome(
     Some(
       uk.gov.hmrc.tai.model.domain.income
-        .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])
+        .UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")
     ),
     Seq(
       OtherNonTaxCodeIncome(Profit, None, 100, "Profit")

@@ -16,7 +16,7 @@
 
 @(
     copy: String,
-    altCopy: Option[String] = Some(""),
+    altCopy: Option[String] = None,
     visuallyHiddenText: Option[String] = None,
     url: String,
     isButton: Boolean = false,
@@ -52,9 +52,11 @@
     }
     >
 
-    @if(altCopy.getOrElse("").nonEmpty){
+    @if(altCopy.isDefined){
         <span aria-hidden="true">@copy</span>
-        <span class="govuk-visually-hidden">@altCopy</span>
+        @altCopy.map{ ac =>
+            <span class="govuk-visually-hidden">@ac</span>
+        }
     } else {
         @copy
         @visuallyHiddenText.map { _ =>
