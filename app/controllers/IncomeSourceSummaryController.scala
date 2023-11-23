@@ -19,7 +19,7 @@ package controllers
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -44,7 +44,7 @@ class IncomeSourceSummaryController @Inject() (
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -53,7 +53,7 @@ class IncomeSourceSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =

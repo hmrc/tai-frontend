@@ -18,8 +18,8 @@ package utils
 
 import builders.UserBuilder
 import controllers.FakeTaiPlayApplication
-import controllers.actions.{ActionJourney, DataRetrievalAction, IdentifierAction}
-import controllers.auth.AuthedUser
+import controllers.actions.{DataRetrievalAction, IdentifierAction}
+import controllers.auth.{AuthJourney, AuthedUser}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -47,7 +47,7 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
     new GuiceApplicationBuilder()
       .overrides(
         bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)),
+        bind[AuthJourney].toInstance(new FakeAuthJourney(userAnswers)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
         bind[JourneyCacheNewRepository].toInstance(mockRepository)
       )
@@ -59,7 +59,7 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
     new GuiceApplicationBuilder()
       .overrides(
         bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[ActionJourney].toInstance(new FakeActionJourney(userAnswers)),
+        bind[AuthJourney].toInstance(new FakeAuthJourney(userAnswers)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
       .configure(additionalConfiguration)

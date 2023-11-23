@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 
@@ -27,7 +27,7 @@ import scala.concurrent.ExecutionContext
 class ExternalServiceRedirectController @Inject() (
   sessionService: SessionService,
   auditService: AuditService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler
@@ -35,7 +35,7 @@ class ExternalServiceRedirectController @Inject() (
     extends TaiBaseController(mcc) {
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
-    (authenticate andThen validatePerson).async { implicit request =>
+    authenticate.authWithValidatePerson.async { implicit request =>
       (for {
         _           <- sessionService.invalidateCache()
         redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
@@ -45,7 +45,7 @@ class ExternalServiceRedirectController @Inject() (
     }
 
   def auditAndRedirectService(serviceAndIFormName: String): Action[AnyContent] =
-    (authenticate andThen validatePerson).async { implicit request =>
+    authenticate.authWithValidatePerson.async { implicit request =>
       (for {
         redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
       } yield Redirect(redirectUri)) recover { case _ =>

@@ -57,7 +57,7 @@ class AddEmploymentControllerSpec extends BaseSpec {
       extends AddEmploymentController(
         auditService,
         employmentService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         addEmploymentJourneyCacheService,
         trackSuccessJourneyCacheService,

@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.help.GetHelpView
@@ -26,7 +26,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HelpController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -34,7 +34,7 @@ class HelpController @Inject() (
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def helpPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def helpPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     Future.successful(Ok(getHelp(appConfig)))

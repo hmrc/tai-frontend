@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipDeductionsForm, PayslipForm, TaxablePayslipForm}
@@ -34,7 +34,7 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdatePayslipAmountController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   payslipAmount: PayslipAmountView,
@@ -44,7 +44,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
 
-  def payslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def payslipAmountPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val mandatoryKeys = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
@@ -77,7 +77,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     }
   }
 
-  def handlePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handlePayslipAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (
@@ -112,7 +112,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
 
   }
 
-  def taxablePayslipAmountPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def taxablePayslipAmountPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val mandatoryKeys = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
     val optionalKeys =
       Seq(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey, UpdateIncomeConstants.TaxablePayKey)
@@ -134,7 +134,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     }
   }
 
-  def handleTaxablePayslipAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handleTaxablePayslipAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
@@ -172,7 +172,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     }.flatten
   }
 
-  def payslipDeductionsPage: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def payslipDeductionsPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (
@@ -187,7 +187,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
       }
   }
 
-  def handlePayslipDeductions: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handlePayslipDeductions: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     PayslipDeductionsForm

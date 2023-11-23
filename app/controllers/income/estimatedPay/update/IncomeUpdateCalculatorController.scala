@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.data.EitherT
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -47,7 +47,7 @@ class IncomeUpdateCalculatorController @Inject() (
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
@@ -60,7 +60,7 @@ class IncomeUpdateCalculatorController @Inject() (
 
   val logger: Logger = Logger(this.getClass)
 
-  def onPageLoad(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     (
       estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString),
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id))
@@ -91,7 +91,7 @@ class IncomeUpdateCalculatorController @Inject() (
         Future.failed(new RuntimeException("Not able to find employment"))
     }
 
-  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -113,7 +113,7 @@ class IncomeUpdateCalculatorController @Inject() (
       }
   }
 
-  def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -150,7 +150,7 @@ class IncomeUpdateCalculatorController @Inject() (
         }
   }
 
-  def checkYourAnswersPage(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def checkYourAnswersPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -209,7 +209,7 @@ class IncomeUpdateCalculatorController @Inject() (
       }
   }
 
-  def handleCalculationResult: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handleCalculationResult: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user = request.taiUser
     val nino = user.nino
 

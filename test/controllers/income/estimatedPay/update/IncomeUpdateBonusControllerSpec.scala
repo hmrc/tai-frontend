@@ -18,8 +18,8 @@ package controllers.income.estimatedPay.update
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ControllerViewTestHelper
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
@@ -50,7 +50,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
   class TestIncomeUpdateBonusController(maybeTaxablePayKey: Option[String] = Some("taxablePay"))
       extends IncomeUpdateBonusController(
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         bonusPaymentsView,

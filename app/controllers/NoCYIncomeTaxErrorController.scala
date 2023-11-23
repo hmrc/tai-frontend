@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -34,14 +34,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class NoCYIncomeTaxErrorController @Inject() (
   employmentService: EmploymentService,
   val auditConnector: AuditConnector,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def noCYIncomeTaxErrorPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def noCYIncomeTaxErrorPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     for {
       emp <- previousYearEmployments(request.taiUser.nino)
     } yield {

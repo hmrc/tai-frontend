@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.NotFoundException
@@ -37,7 +37,7 @@ class TaxFreeAmountController @Inject() (
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   companyCarService: CompanyCarService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -46,7 +46,7 @@ class TaxFreeAmountController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def taxFreeAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
 
     (for {

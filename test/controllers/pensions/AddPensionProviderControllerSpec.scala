@@ -18,8 +18,8 @@ package controllers.pensions
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ErrorPagesHandler
 import controllers.actions.FakeValidatePerson
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -1020,7 +1020,7 @@ class AddPensionProviderControllerSpec extends BaseSpec {
         pensionProviderService,
         auditService,
         mock[AuditConnector],
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[CanWeContactByPhoneView],

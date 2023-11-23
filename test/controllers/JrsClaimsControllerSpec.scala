@@ -44,7 +44,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
 
   val jrsClaimsController = new JrsClaimsController(
     inject[AuditConnector],
-    FakeAuthAction,
+    mockAuthJourney,
     FakeValidatePerson,
     jrsService,
     mcc,

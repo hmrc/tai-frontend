@@ -40,7 +40,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
     new DetailedIncomeTaxEstimateController(
       taxAccountService,
       codingComponentService,
-      FakeAuthAction,
+      mockAuthJourney,
       FakeValidatePerson,
       mcc,
       inject[DetailedIncomeTaxEstimateView],

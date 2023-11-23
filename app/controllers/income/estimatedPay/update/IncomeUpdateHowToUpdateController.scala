@@ -17,7 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class IncomeUpdateHowToUpdateController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   employmentService: EmploymentService,
   incomeService: IncomeService,
@@ -72,7 +72,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
       case _ => throw new RuntimeException("Not able to find employment")
     }
 
-  def howToUpdatePage(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def howToUpdatePage(id: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
@@ -124,7 +124,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
       case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome(id)))
     }
 
-  def handleChooseHowToUpdate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handleChooseHowToUpdate: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     HowToUpdateForm

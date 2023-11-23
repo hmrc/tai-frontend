@@ -177,10 +177,11 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   "show the WhatDoYouWantToDo page" should {
     lazy val app = new GuiceApplicationBuilder()
       .configure(
-        "auditing.enabled"                -> "false",
-        "microservice.services.auth.port" -> server.port(),
-        "microservice.services.tai.port"  -> server.port(),
-        "feature.web-chat.enabled"        -> false
+        "auditing.enabled"                  -> "false",
+        "microservice.services.auth.port"   -> server.port(),
+        "microservice.services.pertax.port" -> server.port(),
+        "microservice.services.tai.port"    -> server.port(),
+        "feature.web-chat.enabled"          -> false
       )
       .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
       .build()

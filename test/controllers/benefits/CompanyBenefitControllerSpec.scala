@@ -18,7 +18,7 @@ package controllers.benefits
 
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -348,7 +348,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         employmentService,
         new DecisionCacheWrapper(journeyCacheService, ec),
         journeyCacheService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         updateOrRemoveCompanyBenefitDecisionView,

@@ -18,7 +18,7 @@ package controllers
 
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
@@ -34,7 +34,7 @@ class EstimatedIncomeTaxController @Inject() (
   codingComponentService: CodingComponentService,
   partialService: HasFormPartialService,
   taxAccountService: TaxAccountService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   noCurrentIncome: NoCurrentIncomeView,
   complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
@@ -46,7 +46,7 @@ class EstimatedIncomeTaxController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def estimatedIncomeTax(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def estimatedIncomeTax(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
 
     (

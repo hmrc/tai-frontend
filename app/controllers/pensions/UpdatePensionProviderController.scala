@@ -17,7 +17,7 @@
 package controllers.pensions
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
@@ -50,7 +50,7 @@ class UpdatePensionProviderController @Inject() (
   taxAccountService: TaxAccountService,
   pensionProviderService: PensionProviderService,
   auditService: AuditService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
@@ -66,7 +66,7 @@ class UpdatePensionProviderController @Inject() (
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
-  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cancel(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.flush() map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
@@ -90,7 +90,7 @@ class UpdatePensionProviderController @Inject() (
       controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId).url
     )
 
-  def doYouGetThisPension(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def doYouGetThisPension(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.collectedJourneyValues(
@@ -105,7 +105,7 @@ class UpdatePensionProviderController @Inject() (
     }
   }
 
-  def handleDoYouGetThisPension: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def handleDoYouGetThisPension: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
       .mandatoryJourneyValues(UpdatePensionProviderConstants.IdKey, UpdatePensionProviderConstants.NameKey) flatMap {
       case Right(mandatoryVals) =>
@@ -132,7 +132,7 @@ class UpdatePensionProviderController @Inject() (
     }
   }
 
-  def whatDoYouWantToTellUs: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def whatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
       .collectedJourneyValues(
         Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey),
@@ -152,26 +152,25 @@ class UpdatePensionProviderController @Inject() (
       }
   }
 
-  def submitWhatDoYouWantToTellUs: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      WhatDoYouWantToTellUsForm.form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            journeyCacheService
-              .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)
-              .getOrFail map { mandatoryValues =>
-              implicit val user: AuthedUser = request.taiUser
-              BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
-            },
-          pensionDetails =>
-            journeyCacheService
-              .cache(Map(UpdatePensionProviderConstants.DetailsKey -> pensionDetails))
-              .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()))
-        )
+  def submitWhatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+    WhatDoYouWantToTellUsForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          journeyCacheService
+            .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)
+            .getOrFail map { mandatoryValues =>
+            implicit val user: AuthedUser = request.taiUser
+            BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
+          },
+        pensionDetails =>
+          journeyCacheService
+            .cache(Map(UpdatePensionProviderConstants.DetailsKey -> pensionDetails))
+            .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()))
+      )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     for {
       pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProviderConstants.IdKey)
       telephoneCache <- journeyCacheService.optionalValues(
@@ -194,7 +193,7 @@ class UpdatePensionProviderController @Inject() (
 
   }
 
-  def submitTelephoneNumber: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitTelephoneNumber: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -235,7 +234,7 @@ class UpdatePensionProviderController @Inject() (
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
       .collectedJourneyValues(
         Seq(
@@ -267,7 +266,7 @@ class UpdatePensionProviderController @Inject() (
       }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
 
     for {
@@ -289,7 +288,7 @@ class UpdatePensionProviderController @Inject() (
     } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
   }
 
-  def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     Future.successful(Ok(confirmationView()))
@@ -307,7 +306,7 @@ class UpdatePensionProviderController @Inject() (
       case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
     }
 
-  def UpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def UpdatePension(id: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
       val successfulJourneyCacheFuture =
         successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$id")
@@ -337,7 +336,7 @@ class UpdatePensionProviderController @Inject() (
 
   }
 
-  def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
       .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey) map {
@@ -353,7 +352,7 @@ class UpdatePensionProviderController @Inject() (
     }
   }
 
-  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService

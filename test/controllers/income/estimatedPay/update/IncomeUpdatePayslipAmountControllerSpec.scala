@@ -18,8 +18,8 @@ package controllers.income.estimatedPay.update
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ControllerViewTestHelper
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -48,7 +48,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
   class TestIncomeUpdatePayslipAmountController
       extends IncomeUpdatePayslipAmountController(
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         payslipAmountView,

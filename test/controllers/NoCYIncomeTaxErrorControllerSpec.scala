@@ -91,7 +91,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
       extends NoCYIncomeTaxErrorController(
         employmentService,
         mock[AuditConnector],
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[NoCYIncomeTaxErrorView]

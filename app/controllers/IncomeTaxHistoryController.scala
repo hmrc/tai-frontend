@@ -18,7 +18,7 @@ package controllers
 
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeTaxHistoryController @Inject() (
   val config: ApplicationConfig,
   personService: PersonService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
@@ -91,7 +91,7 @@ class IncomeTaxHistoryController @Inject() (
   private def fetchLastPayment(employment: Employment, taxYear: TaxYear) =
     employment.annualAccounts.find(_.taxYear.year == taxYear.year).flatMap(_.payments.lastOption)
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
     val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
       .map(TaxYear(_))

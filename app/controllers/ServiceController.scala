@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
@@ -26,7 +26,7 @@ import javax.inject.Inject
 import scala.concurrent.Future
 
 class ServiceController @Inject() (
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -39,11 +39,11 @@ class ServiceController @Inject() (
     Future.successful(Ok(timeout()))
   }
 
-  def serviceSignout(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def serviceSignout(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
   }
 
-  def mciErrorPage(): Action[AnyContent] = authenticate.async { implicit request =>
+  def mciErrorPage(): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
     val contactUrl = request2Messages.lang.code match {
       case "cy" => applicationConfig.contactHelplineWelshUrl
       case _    => applicationConfig.contactHelplineUrl

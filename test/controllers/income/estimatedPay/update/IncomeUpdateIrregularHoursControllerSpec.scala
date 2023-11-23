@@ -18,8 +18,8 @@ package controllers.income.estimatedPay.update
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ErrorPagesHandler
 import controllers.actions.FakeValidatePerson
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -52,7 +52,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   class TestIncomeUpdateIrregularHoursController
       extends IncomeUpdateIrregularHoursController(
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         incomeService,
         taxAccountService,

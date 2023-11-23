@@ -558,7 +558,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         mock[AuditConnector],
         auditService,
         jrsService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mockAppConfig,
         mcc,

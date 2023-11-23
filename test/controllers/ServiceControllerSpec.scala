@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.FakeValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
@@ -84,9 +84,9 @@ class ServiceControllerSpec extends BaseSpec {
     }
   }
 
-  def createSut(authAction: AuthAction = FakeAuthAction) = new SUT(authAction)
+  def createSut(authAction: AuthJourney = mockAuthJourney) = new SUT(authAction)
 
-  class SUT(authAction: AuthAction = FakeAuthAction)
+  class SUT(authAction: AuthJourney = mockAuthJourney)
       extends ServiceController(
         authAction,
         FakeValidatePerson,

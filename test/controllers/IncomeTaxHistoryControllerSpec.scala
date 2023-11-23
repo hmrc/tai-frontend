@@ -51,7 +51,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       extends IncomeTaxHistoryController(
         appConfig,
         personService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         inject[IncomeTaxHistoryView],
         mcc,

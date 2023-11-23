@@ -20,7 +20,7 @@ import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
@@ -51,7 +51,7 @@ class IncomeController @Inject() (
   employmentService: EmploymentService,
   incomeService: IncomeService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   confirmAmountEntered: ConfirmAmountEnteredView,
@@ -64,13 +64,13 @@ class IncomeController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cancel(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.flush() map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
 
-  def regularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def regularIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
@@ -95,7 +95,7 @@ class IncomeController @Inject() (
       }
   }
 
-  def sameEstimatedPayInCache(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def sameEstimatedPayInCache(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       (for {
         cachedData <- journeyCacheService
@@ -120,7 +120,7 @@ class IncomeController @Inject() (
       }
   }
 
-  def sameAnnualEstimatedPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def sameAnnualEstimatedPay(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     lazy val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.NameKey).getOrFail
 
     lazy val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey).getOrFail
@@ -142,7 +142,7 @@ class IncomeController @Inject() (
     }
   }
 
-  def editRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def editRegularIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -185,7 +185,7 @@ class IncomeController @Inject() (
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
     FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
 
-  def confirmRegularIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def confirmRegularIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -236,7 +236,7 @@ class IncomeController @Inject() (
         }
   }
 
-  def updateEstimatedIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def updateEstimatedIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -281,7 +281,7 @@ class IncomeController @Inject() (
         }
   }
 
-  def pensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def pensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
@@ -334,7 +334,7 @@ class IncomeController @Inject() (
       .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
       .map(_ => Redirect(confirmationCallback))
 
-  def editPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def editPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -369,7 +369,7 @@ class IncomeController @Inject() (
         }
   }
 
-  def confirmPensionIncome(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def confirmPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -410,7 +410,7 @@ class IncomeController @Inject() (
         }
   }
 
-  def viewIncomeForEdit: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def viewIncomeForEdit: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     (for {
       id               <- EitherT(journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey))
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(request.taiUser.nino, id))
