@@ -77,9 +77,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
                        .descriptionItems
     ) {
 
-      doc must haveClassWithText(explanation._1, "tax-code-change__part")
-
-      doc must haveClassWithText(explanation._2, "tax-code-change__part-definition")
+      doc must haveH2HeadingWithText(explanation._1)
+      doc must haveParagraphWithText(explanation._2)
     }
   }
 

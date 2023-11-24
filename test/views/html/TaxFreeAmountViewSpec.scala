@@ -70,7 +70,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains one group per summary category view model" in {
-        doc.select(".govuk-check-your-answers").size() mustBe 4
+        doc.select(".govuk-summary-list").size() mustBe 4
         doc must haveElementWithId("summaryTable1")
         doc must haveElementWithId("summaryTable2")
         doc must haveElementWithId("summaryTable3")
@@ -117,7 +117,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
       "visually formats the final table" when {
         "the corresponding final summary item view model contains only a single row" in {
-          doc.select("#summaryTable4 .cya-question").size() mustBe 1
+          doc.select("#summaryTable4 .govuk-summary-list__key").size() mustBe 1
 
         }
       }

@@ -361,6 +361,9 @@ trait JsoupMatchers {
 
   def haveStrongWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "strong")
 
+  def haveGovukWarningWithText(expectedText: String) =
+    new CssSelectorWithTextMatcher("Important " + expectedText, ".govuk-warning-text__text")
+
   def havePanelWithBodyText(expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, ".govuk-panel__body")
 
