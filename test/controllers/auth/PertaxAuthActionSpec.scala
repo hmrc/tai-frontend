@@ -18,6 +18,7 @@ package controllers.auth
 
 import cats.data.EitherT
 import com.google.inject.Inject
+import controllers.routes
 import org.mockito.ArgumentMatchers.any
 import play.api.Application
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER, UNAUTHORIZED}
@@ -255,6 +256,34 @@ class PertaxAuthActionSpec extends BaseSpec {
         val result = fakeController.onPageLoad()(FakeRequest())
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "the pertax API returns an Unauthorised error response" must {
+      "redirect to gg login" in {
+        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
+          .successful(
+            FeatureFlag(PertaxBackendToggle, isEnabled = true)
+          )
+
+        when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, PertaxResponse](
+              Future.successful(
+                Left(
+                  UpstreamErrorResponse(
+                    "Unauthorised response",
+                    UNAUTHORIZED
+                  )
+                )
+              )
+            )
+          )
+
+        val result = fakeController.onPageLoad()(FakeRequest())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().url)
       }
     }
 

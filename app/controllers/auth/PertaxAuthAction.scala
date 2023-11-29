@@ -17,6 +17,7 @@
 package controllers.auth
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
+import controllers.routes
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -66,10 +67,14 @@ class PertaxAuthActionImpl @Inject() (
         pertaxConnector
           .pertaxPostAuthorise()
           .fold(
-            { _: UpstreamErrorResponse =>
-              Future.successful(
-                Some(InternalServerError(internalServerErrorView(appConfig)))
-              )
+            { error: UpstreamErrorResponse =>
+              if (error.statusCode == 401) {
+                Future.successful(Some(Redirect(routes.UnauthorisedController.loginGG())))
+              } else {
+                Future.successful(
+                  Some(InternalServerError(internalServerErrorView(appConfig)))
+                )
+              }
             },
             {
               case PertaxResponse("ACCESS_GRANTED", _, _, _) =>
