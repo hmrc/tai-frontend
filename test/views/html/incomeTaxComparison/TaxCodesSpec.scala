@@ -34,14 +34,15 @@ class TaxCodesSpec extends TaiViewSpec {
 
     "display scottish tax code information" in {
       doc.select("#scottishTaxCodeInfo").html().replaceAll("\\s+", "") mustBe Html(
-        messages(
-          "tai.incomeTaxComparison.taxCodes.scottishInfo",
-          link(
-            url = appConfig.scottishRateIncomeTaxUrl,
-            copy = messages("tai.taxCode.scottishIncomeText.link"),
-            externalLink = true
+        "<span class=\"govuk-warning-text__assistive\">Warning</span>" +
+          messages(
+            "tai.incomeTaxComparison.taxCodes.scottishInfo",
+            link(
+              url = appConfig.scottishRateIncomeTaxUrl,
+              copy = messages("tai.taxCode.scottishIncomeText.link"),
+              externalLink = true
+            )
           )
-        )
       ).body.replaceAll("\\s+", "")
     }
 

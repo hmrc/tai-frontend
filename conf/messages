@@ -7,6 +7,7 @@ add.missing.employment=Add a missing employer
 add.missing.pension=Add a missing pension
 account.closed=Account closed
 action=Action
+generic.warning=Warning
 current.tax.year=Check current tax year
 check.current.income=See how much taxable income you have received and view your tax-free amount for {0}.
 check.estimated.income=View your tax codes and estimated PAYE Income Tax from employment and pensions for {0}.

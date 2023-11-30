@@ -216,45 +216,36 @@
 
                 <h2 id="addMissingIncomeSourceHeading"  class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
-                <ul class="govuk-list">
+                <ul class="govuk-list govuk-list--bullet govuk-list--spaced govuk-!-padding-bottom-3">
                     <li>
-                        <p class="icon icon-plus-no-rpt">
-                            @link(
-                                id=Some("addEmploymentLink"),
-                                url=controllers.employments.routes.AddEmploymentController.addEmploymentName().url,
-                                copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")
-                            )
-                        </p>
+                        @link(
+                            id=Some("addEmploymentLink"),
+                            url=controllers.employments.routes.AddEmploymentController.addEmploymentName().url,
+                            copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")
+                        )
                     </li>
                     <li>
-                        <p class="icon icon-plus-no-rpt">
-                            @link(
-                                id=Some("addPensionLink"),
-                                url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url,
-                                copy=Messages("add.missing.pension")
-                            )
-                        </p>
+                        @link(
+                            id=Some("addPensionLink"),
+                            url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url,
+                            copy=Messages("add.missing.pension")
+                        )
                     </li>
                     <li>
-                        <p class="icon icon-plus-no-rpt">
                         @link(
                             id=Some("addInvestmentLink"),
                             url=appConfig.investmentIncomeLinkUrl,
                             copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.investmentIncomeLink")
                             )
-                        </p>
                     </li>
                     <li>
-                        <p class="icon icon-plus-no-rpt">
-                            @link(
-                                id=Some("addOtherIncomeSourceLink"),
-                                url=appConfig.otherIncomeLinkUrl,
-                                copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")
-                            )
-                        </p>
+                        @link(
+                            id=Some("addOtherIncomeSourceLink"),
+                            url=appConfig.otherIncomeLinkUrl,
+                            copy=Messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink")
+                        )
                     </li>
                 </ul>
-
             </div>
         </div>
     </div>

@@ -42,7 +42,7 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
       val PA_CY_PLUS_ONE_INDEX = 1
       val personalAllowanceCYPlusOneAmount =
         MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(model.personalAllowance.values(PA_CY_PLUS_ONE_INDEX), 0))
-      doc must haveStrongWithText(
+      doc must haveGovukWarningWithText(
         messages(
           "tai.incomeTaxComparison.taxFreeAmount.PA.information1",
           personalAllowanceCYPlusOneAmount,

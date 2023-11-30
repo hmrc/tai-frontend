@@ -3,24 +3,13 @@
 @import 'base/links';
 @import 'base/table';
 @import 'base/assets_frontend_3.0.2_patch';
-@import 'elements/_icons';
-@import 'elements/_elements_typography.scss';
 @import 'modules/print';
 @import 'modules/printSCA';
-@import 'modules/eyu';
 @import 'modules/navigation';
-@import 'modules/notifications';
-@import 'modules/pta_header';
-@import 'modules/tabs';
 @import 'modules/tax_bar';
-@import 'modules/text-input';
 @import 'modules/forms';
-@import 'modules/description_list';
-@import 'modules/typography';
-@import 'modules/cya-tax-summary';
 @import 'modules/charcount';
 @import 'modules/card';
-@import 'modules/flexbox';
 @import 'modules/tax_code_change';
 @import 'modules/responsive_table';
 @import "modules/cy-plus-one-income-tax-comparison";
@@ -441,3 +430,22 @@ html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:focus {
   outline: 3px solid rgba(0,0,0,0);
 }
 
+
+
+
+.flex-container {
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0 15px;
+}
+
+
+.govuk-vertical-align-middle {
+  vertical-align: top;
+}

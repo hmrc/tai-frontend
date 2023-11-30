@@ -85,7 +85,7 @@
                 }
                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
                 <p>@Messages("tai.income.calculation.eyu.summary.multi", historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
-                <ul id="eyu-multi-messages-bullets" class="bullets">
+                <ul id="eyu-multi-messages-bullets" class="govuk-list govuk-list--bullet govuk-!-padding-right-3">
                     @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
                     <li>@eyuMessage</li>
                     }

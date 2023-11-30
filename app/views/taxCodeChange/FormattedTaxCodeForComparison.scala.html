@@ -39,18 +39,14 @@
                 summaryClass=Some("govuk-details__summary"),
                 panelClass = Some("tax-code-change__details govuk-details__text")
             ){
-                <ul class="tai-description-list">
-                    @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
-                    <li>
-                        <div class="bold-medium">
-                            <span class="tax-code-change__part govuk-!-font-weight-bold">@taxCodeExplanation._1</span>
-                        </div>
-                        <div class="fixed-small">
-                            <span class="tax-code-change__part-definition ">@Html(taxCodeExplanation._2)</span>
-                        </div>
-                    </li>
-                    }
-                </ul>
+                @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
+                        <h2 class="govuk-heading-m govuk-!-margin-bottom-1">
+                                @taxCodeExplanation._1
+                        </h2>
+                        <p class="govuk-body">
+                            @Html(taxCodeExplanation._2)
+                        </p>
+                }
             }
         </div>
     }
