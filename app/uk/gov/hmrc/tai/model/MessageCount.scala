@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.model
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class MessageCount(count: Int)
 
 object MessageCount {
-  implicit val formats = Json.format[MessageCount]
+  implicit val formats: OFormat[MessageCount] = Json.format[MessageCount]
 }

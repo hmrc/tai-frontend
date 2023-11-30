@@ -20,13 +20,14 @@ import controllers.auth.AuthenticatedRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
-import play.api.mvc.Call
+import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import utils.BaseSpec
 
 trait TaiViewSpec extends BaseSpec with JsoupMatchers {
-  implicit val authRequest = AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
+  implicit val authRequest: AuthenticatedRequest[AnyContentAsEmpty.type] =
+    AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
 
   def view: Html
 

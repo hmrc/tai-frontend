@@ -19,6 +19,7 @@ package views.html
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.auth.core.ConfidenceLevel.L250
@@ -32,7 +33,8 @@ import scala.util.Random
 class MainTemplateSpec extends BaseSpec with JsoupMatchers {
 
   private val mainTemplate = app.injector.instanceOf[MainTemplate]
-  private implicit val authRequest = AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
+  private implicit val authRequest: AuthenticatedRequest[AnyContentAsEmpty.type] =
+    AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
 
   "MainTemplate View" must {
     "show the correct nav menu items" when {

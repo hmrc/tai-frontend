@@ -43,7 +43,7 @@ class MessageFrontendConnectorSpec extends BaseSpec with WireMockHelper with Sca
 
   private lazy val testMessageFrontendConnector = app.injector.instanceOf[MessageFrontendConnector]
 
-  implicit val defaultPatience =
+  implicit val defaultPatience: PatienceConfig =
     PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
 
   "MessageFrontendConnector" must {
