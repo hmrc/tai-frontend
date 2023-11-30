@@ -209,43 +209,35 @@
     <div class="govuk-grid-row">
         <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
             <h2 id="companyBenefitsHeading" class="govuk-heading-m carry-over">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
+
+
             @if(model.benefits.size > 0) {
-                <table id="companyBenefitList" class="govuk-table responsive-table-fix">
-                    <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                        <td class="govuk-visually-hidden" aria-hidden="true"  colspan="3">unused</td>
-                        </tr>
-                    </thead>
-                    <tbody class="govuk-table__body">
-                        @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell  xgovuk-!-width-one-half ">
-                                <div id="companyBenefitTerm@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
-                                    @benefit.name
-                                </div>
-                            </td>
-                            <td class="govuk-table__cell govuk-table__cell--numeric" >
-                                <div id="companyBenefitDescription@idx" class="govuk-!-margin-right-0 govuk-!-padding-right-0" >
-                                    <span aria-hidden="true">@pounds(benefit.amount)</span>
-                                </div>
-                            </td>
-                            <td class="govuk-table__cell govuk-table__cell--numeric custom-td-format">
-                                <div id="companyBenefitChangeLinkDescription@idx">
+                <dl class="govuk-summary-list" id="companyBenefitList">
+                    @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {
+                        <div class="govuk-summary-list__row">
+                            <dt id="companyBenefitTerm@idx" class="govuk-summary-list__key">
+                                @benefit.name
+                            </dt>
+                            <dd id="companyBenefitDescription@idx" class="govuk-summary-list__value govuk-!-text-align-right">
+                                @pounds(benefit.amount)
+                            </dd>
+                            <dd class="govuk-summary-list__actions" id="companyBenefitChangeLinkDescription@idx">
                                 @link(
                                     id = Some("changeCompanyBenefitLink" + idx.toString),
                                     url = benefit.changeUrl,
                                     copy=Messages("tai.updateOrRemove"),
                                     altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
                                     linkClasses = Nil
-                                )</div>
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
+                                )
+                            </dd>
+                        </div>
+                    }
+                </dl>
+
             } else {
                 <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
             }
+
 
             <p class="icon icon-plus-no-rpt">
                 @link(
