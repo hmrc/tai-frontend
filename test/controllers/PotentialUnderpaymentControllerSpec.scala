@@ -103,7 +103,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
         taxAccountService,
         codingComponentService,
         auditService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[PotentialUnderpaymentView],

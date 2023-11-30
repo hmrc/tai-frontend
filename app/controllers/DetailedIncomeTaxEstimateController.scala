@@ -18,7 +18,7 @@ package controllers
 
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
@@ -33,7 +33,7 @@ import scala.util.control.NonFatal
 class DetailedIncomeTaxEstimateController @Inject() (
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
@@ -41,7 +41,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def taxExplanationPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
 
     (

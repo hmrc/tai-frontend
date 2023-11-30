@@ -30,7 +30,6 @@ import scala.reflect.runtime.universe.TypeTag
 import scala.util.chaining.scalaUtilChainingOps
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
-
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
   )(implicit executionContext: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =

@@ -229,7 +229,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
         appConfig,
         taxCodeChangeService,
         employmentService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[RtiDisabledHistoricPayAsYouEarnView],

@@ -19,7 +19,7 @@ package controllers
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthenticatedRequest}
+import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -42,7 +42,7 @@ class IncomeTaxComparisonController @Inject() (
   employmentService: EmploymentService,
   codingComponentService: CodingComponentService,
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -51,7 +51,7 @@ class IncomeTaxComparisonController @Inject() (
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
     val currentTaxYear = TaxYear()
     val nextTaxYear = currentTaxYear.next

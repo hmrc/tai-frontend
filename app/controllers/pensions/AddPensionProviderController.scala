@@ -17,7 +17,7 @@
 package controllers.pensions
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,7 +46,7 @@ class AddPensionProviderController @Inject() (
   pensionProviderService: PensionProviderService,
   auditService: AuditService,
   val auditConnector: AuditConnector,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   canWeContactByPhone: CanWeContactByPhoneView, // TODO remove once backLink issue is resolved
@@ -72,34 +72,33 @@ class AddPensionProviderController @Inject() (
       controllers.pensions.routes.AddPensionProviderController.cancel().url
     )
 
-  def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cancel(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.flush() map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
-  def addPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addPensionProviderName(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.currentValue(AddPensionProviderConstants.NameKey) map { pensionName =>
       implicit val user: AuthedUser = request.taiUser
       Ok(addPensionNameView(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
     }
   }
 
-  def submitPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      PensionProviderNameForm.form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(addPensionNameView(formWithErrors))),
-          pensionProviderName =>
-            journeyCacheService
-              .cache(Map(AddPensionProviderConstants.NameKey -> pensionProviderName))
-              .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()))
-        )
+  def submitPensionProviderName(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+    PensionProviderNameForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(addPensionNameView(formWithErrors))),
+        pensionProviderName =>
+          journeyCacheService
+            .cache(Map(AddPensionProviderConstants.NameKey -> pensionProviderName))
+            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()))
+      )
   }
 
-  def receivedFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def receivedFirstPay(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
       .collectedJourneyValues(
@@ -117,7 +116,7 @@ class AddPensionProviderController @Inject() (
     }
   }
 
-  def submitFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitFirstPay(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     AddPensionProviderFirstPayForm.form
@@ -142,7 +141,7 @@ class AddPensionProviderController @Inject() (
       )
   }
 
-  def cantAddPension(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cantAddPension(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.mandatoryJourneyValue(AddPensionProviderConstants.NameKey) map {
       case Right(pensionProviderName) =>
         auditService
@@ -158,7 +157,7 @@ class AddPensionProviderController @Inject() (
     }
   }
 
-  def addPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def addPensionProviderStartDate(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService
@@ -178,7 +177,7 @@ class AddPensionProviderController @Inject() (
         }
   }
 
-  def submitPensionProviderStartDate(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitPensionProviderStartDate(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService.currentCache flatMap { currentCache =>
@@ -197,7 +196,7 @@ class AddPensionProviderController @Inject() (
       }
   }
 
-  def addPensionNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addPensionNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService.currentCache map { cache =>
       val viewModel = PensionNumberViewModel(cache)
@@ -218,7 +217,7 @@ class AddPensionProviderController @Inject() (
     }
   }
 
-  def submitPensionNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitPensionNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     AddPensionProviderNumberForm.form
@@ -243,7 +242,7 @@ class AddPensionProviderController @Inject() (
       )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
       .optionalValues(
         AddPensionProviderConstants.TelephoneQuestionKey,
@@ -265,7 +264,7 @@ class AddPensionProviderController @Inject() (
     }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -296,7 +295,7 @@ class AddPensionProviderController @Inject() (
       )
   }
 
-  def checkYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def checkYourAnswers: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService
@@ -326,7 +325,7 @@ class AddPensionProviderController @Inject() (
       }
   }
 
-  def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitYourAnswers: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     for {
@@ -354,7 +353,7 @@ class AddPensionProviderController @Inject() (
     } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
   }
 
-  def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def confirmation: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     Future.successful(Ok(addPensionConfirmationView()))

@@ -17,7 +17,7 @@
 package controllers.income.previousYears
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,7 +42,7 @@ import scala.util.control.NonFatal
 
 class UpdateIncomeDetailsController @Inject() (
   previousYearsIncomeService: PreviousYearsIncomeService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   canWeContactByPhone: CanWeContactByPhoneView,
@@ -65,14 +65,14 @@ class UpdateIncomeDetailsController @Inject() (
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
 
-  def decision(taxYear: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def decision(taxYear: TaxYear): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.cache(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear.year.toString)) map { _ =>
       implicit val user: AuthedUser = request.taiUser
       Ok(UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
     }
   }
 
-  def submitDecision(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitDecision(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     UpdateIncomeDetailsDecisionForm.form
@@ -87,7 +87,7 @@ class UpdateIncomeDetailsController @Inject() (
       )
   }
 
-  def details(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def details(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     (for {
       userSuppliedDetails <- journeyCacheService.currentValue(UpdatePreviousYearsIncomeConstants.IncomeDetailsKey)
@@ -102,7 +102,7 @@ class UpdateIncomeDetailsController @Inject() (
     }
   }
 
-  def submitDetails(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitDetails(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     UpdateIncomeDetailsForm.form
       .bindFromRequest()
@@ -123,7 +123,7 @@ class UpdateIncomeDetailsController @Inject() (
       )
   }
 
-  def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def telephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (for {
@@ -141,7 +141,7 @@ class UpdateIncomeDetailsController @Inject() (
     }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     YesNoTextEntryForm
@@ -181,7 +181,7 @@ class UpdateIncomeDetailsController @Inject() (
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService
@@ -212,7 +212,7 @@ class UpdateIncomeDetailsController @Inject() (
       }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
@@ -235,7 +235,7 @@ class UpdateIncomeDetailsController @Inject() (
     } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
   }
 
-  def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     Future.successful(Ok(UpdateIncomeDetailsConfirmation()))
   }
 

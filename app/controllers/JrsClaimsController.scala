@@ -18,7 +18,7 @@ package controllers
 
 import com.google.inject.{Inject, Singleton}
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class JrsClaimsController @Inject() (
   val auditConnector: AuditConnector,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class JrsClaimsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
 
     if (appConfig.jrsClaimsEnabled) {

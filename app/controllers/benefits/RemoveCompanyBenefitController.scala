@@ -19,7 +19,7 @@ package controllers.benefits
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.language.LanguageUtils
@@ -52,7 +52,7 @@ class RemoveCompanyBenefitController @Inject() (
   @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
   benefitsService: BenefitsService,
   trackingService: TrackingService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   langUtils: LanguageUtils,
@@ -64,7 +64,7 @@ class RemoveCompanyBenefitController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def stopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def stopDate: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService.currentCache map { currentCache =>
@@ -88,7 +88,7 @@ class RemoveCompanyBenefitController @Inject() (
     }
   }
 
-  def submitStopDate: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitStopDate: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val taxYear = TaxYear()
 
@@ -135,7 +135,7 @@ class RemoveCompanyBenefitController @Inject() (
     }
   }
 
-  def totalValueOfBenefit(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def totalValueOfBenefit(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val mandatoryKeys = Seq(EndCompanyBenefitConstants.EmploymentNameKey, EndCompanyBenefitConstants.BenefitNameKey)
     val optionalKeys = Seq(EndCompanyBenefitConstants.BenefitValueKey)
@@ -147,7 +147,7 @@ class RemoveCompanyBenefitController @Inject() (
     }
   }
 
-  def submitBenefitValue(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitBenefitValue(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     CompanyBenefitTotalValueForm.form
       .bindFromRequest()
@@ -178,7 +178,7 @@ class RemoveCompanyBenefitController @Inject() (
       )
   }
 
-  def telephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def telephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val user = request.taiUser
     journeyCacheService.currentCache map { currentCache =>
       val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
@@ -195,7 +195,7 @@ class RemoveCompanyBenefitController @Inject() (
     }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val user = request.taiUser
     YesNoTextEntryForm
       .form(
@@ -229,7 +229,7 @@ class RemoveCompanyBenefitController @Inject() (
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheService
@@ -267,7 +267,7 @@ class RemoveCompanyBenefitController @Inject() (
       }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     for {
@@ -300,7 +300,7 @@ class RemoveCompanyBenefitController @Inject() (
     } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
   }
 
-  def cancel: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cancel: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     for {
       mandatoryJourneyValues <- journeyCacheService
                                   .mandatoryJourneyValues(EndCompanyBenefitConstants.RefererKey)
@@ -309,7 +309,7 @@ class RemoveCompanyBenefitController @Inject() (
     } yield Redirect(mandatoryJourneyValues.head)
   }
 
-  def confirmation(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     trackingService.isAnyIFormInProgress(user.nino.nino).map { timeToProcess =>
       val (title, summary) = timeToProcess match {

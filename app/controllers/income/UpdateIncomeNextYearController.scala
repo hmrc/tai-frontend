@@ -17,7 +17,7 @@
 package controllers.income
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, Messages}
@@ -46,7 +46,7 @@ import scala.util.control.NonFatal
 class UpdateIncomeNextYearController @Inject() (
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
   val auditConnector: AuditConnector,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
@@ -62,7 +62,7 @@ class UpdateIncomeNextYearController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with I18nSupport with Logging {
 
-  def onPageLoad(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def onPageLoad(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       preAction {
         updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(employmentId).map {
@@ -72,7 +72,7 @@ class UpdateIncomeNextYearController @Inject() (
       }
   }
 
-  def duplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def duplicateWarning(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       preAction {
         implicit val user: AuthedUser = request.taiUser
@@ -108,7 +108,7 @@ class UpdateIncomeNextYearController @Inject() (
         Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
     }
 
-  def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitDuplicateWarning(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       preAction {
         implicit val user: AuthedUser = request.taiUser
@@ -135,7 +135,7 @@ class UpdateIncomeNextYearController @Inject() (
       }
   }
 
-  def start(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def start(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     preAction {
 
       implicit val user: AuthedUser = request.taiUser
@@ -147,7 +147,7 @@ class UpdateIncomeNextYearController @Inject() (
     }
   }
 
-  def edit(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def edit(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     preAction {
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -166,7 +166,7 @@ class UpdateIncomeNextYearController @Inject() (
     }
   }
 
-  def same(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def same(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     preAction {
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -177,7 +177,7 @@ class UpdateIncomeNextYearController @Inject() (
     }
   }
 
-  def success(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def success(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     preAction {
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -188,7 +188,7 @@ class UpdateIncomeNextYearController @Inject() (
     }
   }
 
-  def confirm(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def confirm(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     preAction {
       implicit val user: AuthedUser = request.taiUser
 
@@ -216,7 +216,7 @@ class UpdateIncomeNextYearController @Inject() (
   }
 
   def handleConfirm(employmentId: Int): Action[AnyContent] =
-    (authenticate andThen validatePerson).async { implicit request =>
+    authenticate.authWithValidatePerson.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
       featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
         if (toggle.isEnabled) {
@@ -234,7 +234,7 @@ class UpdateIncomeNextYearController @Inject() (
       }
     }
 
-  def update(employmentId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def update(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val nino = user.nino

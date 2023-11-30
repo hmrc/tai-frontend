@@ -19,7 +19,7 @@ package controllers.testOnly
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.AuthAction
+import controllers.auth.AuthJourney
 import play.api.mvc._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 
@@ -29,13 +29,13 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class TaiUpdateIncomeController @Inject() (
   @Named("Update Income") journeyCacheService: JourneyCacheService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def delete(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def delete(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.delete() map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }

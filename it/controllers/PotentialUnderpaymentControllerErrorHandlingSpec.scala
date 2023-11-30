@@ -29,10 +29,13 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
     .configure(
       "auditing.enabled"                                                -> "false",
       "microservice.services.auth.port"                                 -> server.port(),
+      "microservice.services.pertax.port"                               -> server.port(),
       "microservice.services.tai.port"                                  -> server.port(),
       "microservice.services.digital-engagement-platform-partials.port" -> server.port()
     )
     .build()
+
+  //    .post(url"$pertaxUrl/pertax/authorise")
 
   "/check-income-tax/income-summary" must {
 

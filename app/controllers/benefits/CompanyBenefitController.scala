@@ -18,7 +18,7 @@ package controllers.benefits
 
 import com.google.inject.name.Named
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -40,7 +40,7 @@ class CompanyBenefitController @Inject() (
   employmentService: EmploymentService,
   decisionCacheWrapper: DecisionCacheWrapper,
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
@@ -49,7 +49,7 @@ class CompanyBenefitController @Inject() (
     extends TaiBaseController(mcc) with Logging {
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
-    (authenticate andThen validatePerson).async { implicit request =>
+    authenticate.authWithValidatePerson.async { implicit request =>
       val cacheValues = Map(
         EndCompanyBenefitConstants.EmploymentIdKey -> empId.toString,
         EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType.toString
@@ -61,7 +61,7 @@ class CompanyBenefitController @Inject() (
 
     }
 
-  def decision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def decision: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (for {
@@ -117,7 +117,7 @@ class CompanyBenefitController @Inject() (
         failureRoute
     }
 
-  def submitDecision: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitDecision: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     UpdateOrRemoveCompanyBenefitDecisionForm.form

@@ -19,7 +19,7 @@ package controllers
 import cats.data.{EitherT, OptionT}
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser, AuthenticatedRequest}
+import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest}
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -47,7 +47,7 @@ class WhatDoYouWantToDoController @Inject() (
   val auditConnector: AuditConnector,
   auditService: AuditService,
   jrsService: JrsService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -59,7 +59,7 @@ class WhatDoYouWantToDoController @Inject() (
 
   private implicit val recoveryLocation: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
-  def whatDoYouWantToDoPage(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def whatDoYouWantToDoPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     {
       implicit val user: AuthedUser = request.taiUser
       val nino = request.taiUser.nino

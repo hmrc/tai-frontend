@@ -260,10 +260,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "use conditional logic to display a company benefits list" which {
       "displays the list when benefits are present in the view model" in {
         val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
-        testDoc must haveElementAtPathWithId("#companyBenefitsSection table", "companyBenefitList")
+        testDoc must haveElementAtPathWithId("#companyBenefitsSection dl", "companyBenefitList")
       }
       "does not display the list when benefits are absent from the view model" in {
-        doc must not(haveElementAtPathWithId("#companyBenefitsSection table", "companyBenefitList"))
+        doc must not(haveElementAtPathWithId("#companyBenefitsSection dl", "companyBenefitList"))
       }
       "displays a 'no company benefits' message when benefits are absent from the view model" in {
         doc must haveElementWithId("noCompanyBenefitsMessage")
@@ -273,10 +273,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "display the appropriate number of company benefit list entries" in {
       val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
       testDoc must haveElementWithId("companyBenefitList")
-      testDoc must haveElementAtPathWithId("#companyBenefitList div", "companyBenefitTerm1")
-      testDoc must haveElementAtPathWithId("#companyBenefitList div", "companyBenefitTerm2")
-      testDoc must haveElementAtPathWithId("#companyBenefitList div", "companyBenefitTerm3")
-      testDoc must not(haveElementAtPathWithId("#companyBenefitList div", "companyBenefitTerm4"))
+      testDoc must haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm1")
+      testDoc must haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm2")
+      testDoc must haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm3")
+      testDoc must not(haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm4"))
     }
 
     "display the appropriate content with a specific company benefit list entry" in {
@@ -286,10 +286,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         s"ben1"
       )
       testDoc must haveElementAtPathWithText(
-        "#companyBenefitDescription1 span",
+        "#companyBenefitDescription1",
         "£100"
       )
-      testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", "£100")
+      testDoc must haveElementAtPathWithText("#companyBenefitDescription1", "£100")
       testDoc must haveElementAtPathWithText(
         "#companyBenefitChangeLinkDescription1 a span",
         s"${messages("tai.updateOrRemove")} ben1"

@@ -18,8 +18,8 @@ package controllers.employments
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ErrorPagesHandler
 import controllers.actions.FakeValidatePerson
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
@@ -522,7 +522,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
       extends UpdateEmploymentController(
         employmentService,
         mock[AuditConnector],
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[WhatDoYouWantToTellUsView],

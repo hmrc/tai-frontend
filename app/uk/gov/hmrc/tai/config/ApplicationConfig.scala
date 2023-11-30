@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.config
 
-import play.api.{ConfigLoader, Configuration}
+import play.api.{ConfigLoader, Configuration, Environment}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -24,7 +24,8 @@ import javax.inject.Inject
 
 class ApplicationConfig @Inject() (
   val runModeConfiguration: Configuration,
-  servicesConfig: ServicesConfig
+  servicesConfig: ServicesConfig,
+  env: Environment
 ) extends FeatureTogglesConfig with AuthConfigProperties {
 
   def getOptional[A](key: String)(implicit loader: ConfigLoader[A]): Option[A] =
@@ -129,4 +130,6 @@ class ApplicationConfig @Inject() (
   lazy val messagesFrontendUrl: String = servicesConfig.baseUrl("message-frontend")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
+  lazy val pertaxUrl: String =
+    servicesConfig.baseUrl("pertax")
 }

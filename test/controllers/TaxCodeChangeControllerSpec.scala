@@ -65,9 +65,6 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
             Seq.empty
           )
 
-        implicit val fakeAuthenticatedRequest =
-          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
-
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(meq(FakeAuthAction.nino))(any(), any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
@@ -75,7 +72,16 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
         status(result) mustBe OK
 
-        result rendersTheSameViewAs yourTaxFreeAmountView(expectedViewModel)
+        result rendersTheSameViewAs yourTaxFreeAmountView(expectedViewModel)(
+          AuthenticatedRequest(
+            RequestBuilder
+              .buildFakeRequestWithAuth("GET"),
+            authedUser,
+            "testUser"
+          ),
+          implicitly,
+          implicitly
+        )
       }
     }
   }
@@ -108,7 +114,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
           scottishRates,
           reasons,
           isAGenericReason = false,
-          maybeUserName = Some("Firstname Surname")
+          maybeUserName = Some("testUser")
         )
 
       status(result) mustBe OK
@@ -152,7 +158,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxCodeChangeService,
         taxAccountService,
         describedYourTaxFreeAmountService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,

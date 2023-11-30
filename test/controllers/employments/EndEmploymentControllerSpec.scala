@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
 import org.scalatest.BeforeAndAfterEach
-import pages.EndEmployment.{EndEmploymentEndDatePage, EndEmploymentIdPage, EndEmploymentLatestPaymentPage, EndEmploymentTelephoneNumberPage, EndEmploymentTelephoneQuestionPage}
+import pages.EndEmployment._
 import pages._
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -31,6 +31,7 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
@@ -42,11 +43,10 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
-import utils.{FakeActionJourney, NewCachingBaseSpec}
+import utils.{FakeAuthJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
 import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
-import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -90,7 +90,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
     inject[DuplicateSubmissionWarningView],
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
-    new FakeActionJourney(userAnswersAsArg.getOrElse(userAnswers)),
+    new FakeAuthJourney(userAnswersAsArg.getOrElse(userAnswers)),
     repository,
     trackSuccessJourneyCacheService
   )

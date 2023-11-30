@@ -18,8 +18,8 @@ package controllers.benefits
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ControllerViewTestHelper
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -847,7 +847,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         trackSuccessJourneyCacheService,
         benefitsService,
         trackingService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         langUtils,

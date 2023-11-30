@@ -17,7 +17,7 @@
 package controllers.employments
 
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,7 +46,7 @@ import scala.util.control.NonFatal
 class UpdateEmploymentController @Inject() (
   employmentService: EmploymentService,
   val auditConnector: AuditConnector,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
@@ -59,7 +59,7 @@ class UpdateEmploymentController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral with EmptyCacheRedirect {
 
-  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def cancel(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService.flush() map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
@@ -74,7 +74,7 @@ class UpdateEmploymentController @Inject() (
       controllers.employments.routes.UpdateEmploymentController.cancel(id).url
     )
 
-  def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def updateEmploymentDetails(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       (for {
@@ -107,7 +107,7 @@ class UpdateEmploymentController @Inject() (
 
   }
 
-  def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       UpdateEmploymentDetailsForm.form
         .bindFromRequest()
@@ -129,7 +129,7 @@ class UpdateEmploymentController @Inject() (
         )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     for {
       employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateEmploymentConstants.EmploymentIdKey)
       telephoneCache <-
@@ -151,7 +151,7 @@ class UpdateEmploymentController @Inject() (
     }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -189,7 +189,7 @@ class UpdateEmploymentController @Inject() (
       )
   }
 
-  def updateEmploymentCheckYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def updateEmploymentCheckYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -220,7 +220,7 @@ class UpdateEmploymentController @Inject() (
         }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def submitYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     for {
       (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
@@ -242,7 +242,7 @@ class UpdateEmploymentController @Inject() (
     } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())
   }
 
-  def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def confirmation: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     Future.successful(Ok(confirmationView()))
   }
 }

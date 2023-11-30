@@ -21,9 +21,12 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.mvc._
 import play.api.test.Injecting
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.TaxYear
+
+import scala.concurrent.ExecutionContext
 
 class IntegrationSpec
     extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
@@ -38,6 +41,10 @@ class IntegrationSpec
   implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
   val taxYear = TaxYear().year
+
+  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
+
+  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   override def beforeEach() = {
 
@@ -71,6 +78,11 @@ class IntegrationSpec
     server.stubFor(
       post(urlEqualTo("/auth/authorise"))
         .willReturn(aResponse().withBody(authResponse))
+    )
+
+    server.stubFor(
+      post(urlEqualTo("/pertax/authorise"))
+        .willReturn(aResponse().withBody("""{"code":"ACCESS_GRANTED", "message":"test"}"""))
     )
   }
 }

@@ -19,7 +19,7 @@ package controllers.income
 import akka.Done
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
-import controllers.{ControllerViewTestHelper, ErrorPagesHandler, FakeAuthAction}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.data.FormBinding.Implicits.formBinding
@@ -544,7 +544,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       extends UpdateIncomeNextYearController(
         updateNextYearsIncomeService,
         mock[AuditConnector],
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         mockAppConfig,

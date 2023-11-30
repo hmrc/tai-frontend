@@ -17,8 +17,8 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import controllers.ErrorPagesHandler
 import controllers.actions.FakeValidatePerson
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -49,7 +49,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   class TestIncomeUpdateEstimatedPayController
       extends IncomeUpdateEstimatedPayController(
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         incomeService,
         appConfig,
@@ -120,7 +120,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     }
     "return to /income-details when nothing is present in the cache" in {
       val testController = new IncomeUpdateEstimatedPayController(
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         incomeService,
         appConfig,

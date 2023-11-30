@@ -18,8 +18,8 @@ package controllers.income.previousYears
 
 import akka.Done
 import builders.RequestBuilder
+import controllers.ErrorPagesHandler
 import controllers.actions.FakeValidatePerson
-import controllers.{ErrorPagesHandler, FakeAuthAction}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -431,7 +431,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   private class SUT
       extends UpdateIncomeDetailsController(
         previousYearsIncomeService,
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[CanWeContactByPhoneView],

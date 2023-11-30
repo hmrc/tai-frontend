@@ -18,7 +18,7 @@ package controllers
 
 import cats.implicits._
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthenticatedRequest}
+import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -34,7 +34,7 @@ class PayeControllerHistoric @Inject() (
   val config: ApplicationConfig,
   taxCodeChangeService: TaxCodeChangeService,
   employmentService: EmploymentService,
-  authenticate: AuthAction,
+  authenticate: AuthJourney,
   validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   RtiDisabledHistoricPayAsYouEarnView: RtiDisabledHistoricPayAsYouEarnView,
@@ -43,11 +43,11 @@ class PayeControllerHistoric @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def lastYearPaye(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def lastYearPaye(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
   }
 
-  def payePage(year: TaxYear): Action[AnyContent] = (authenticate andThen validatePerson).async { implicit request =>
+  def payePage(year: TaxYear): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     getHistoricPayePage(year)
   }
 

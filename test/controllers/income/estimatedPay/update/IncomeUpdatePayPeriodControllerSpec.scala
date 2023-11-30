@@ -17,7 +17,6 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.FakeAuthAction
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -40,7 +39,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
   class TestIncomeUpdatePayPeriodController
       extends IncomeUpdatePayPeriodController(
-        FakeAuthAction,
+        mockAuthJourney,
         FakeValidatePerson,
         mcc,
         inject[PayPeriodView],

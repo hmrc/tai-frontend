@@ -234,7 +234,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     employmentService,
     benefitsService,
     estimatedPayJourneyCompletionService,
-    FakeAuthAction,
+    mockAuthJourney,
     FakeValidatePerson,
     appConfig,
     mcc,
