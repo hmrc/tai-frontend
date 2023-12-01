@@ -17,7 +17,9 @@
 package controllers.auth
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
+import controllers.routes
 import play.api.Logging
+import play.api.http.Status.UNAUTHORIZED
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, ConfidenceLevel}
@@ -66,9 +68,14 @@ class PertaxAuthActionImpl @Inject() (
         pertaxConnector
           .pertaxPostAuthorise()
           .fold(
-            { _: UpstreamErrorResponse =>
+            { error: UpstreamErrorResponse =>
               Future.successful(
-                Some(InternalServerError(internalServerErrorView(appConfig)))
+                Some(
+                  error.statusCode match {
+                    case UNAUTHORIZED => Redirect(routes.UnauthorisedController.loginGG())
+                    case _            => InternalServerError(internalServerErrorView(appConfig))
+                  }
+                )
               )
             },
             {

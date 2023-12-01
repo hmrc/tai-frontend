@@ -18,7 +18,7 @@ package controllers
 
 import builders.{RequestBuilder, UserBuilder}
 import controllers.actions.FakeValidatePerson
-import controllers.auth.AuthenticatedRequest
+import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -44,7 +44,8 @@ import scala.concurrent.Future
 class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
   implicit val request: Request[_] = FakeRequest()
-  implicit val fakeAuthenticatedRequest = AuthenticatedRequest(request, authedUser, "testUser")
+  implicit val fakeAuthenticatedRequest: AuthenticatedRequest[Any] =
+    AuthenticatedRequest(request, authedUser, "testUser")
   private val noCurrentIncomeView = inject[NoCurrentIncomeView]
   private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
   private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]
@@ -423,7 +424,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
     }
   }
 
-  implicit val user = UserBuilder()
+  implicit val user: AuthedUser = UserBuilder()
 
   private def createSUT = new SUT
 

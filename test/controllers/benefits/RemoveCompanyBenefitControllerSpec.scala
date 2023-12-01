@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
@@ -592,7 +592,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         )
       )
 
-      implicit val request = FakeRequest()
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       val result = SUT.checkYourAnswers()(request)
 

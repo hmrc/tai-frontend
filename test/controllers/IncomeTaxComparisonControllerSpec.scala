@@ -21,6 +21,8 @@ import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
@@ -36,7 +38,7 @@ import scala.concurrent.Future
 
 class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
-  implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+  implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
   "onPageLoad" must {
     "display the cy plus one page" in {

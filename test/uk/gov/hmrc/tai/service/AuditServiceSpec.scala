@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{Authorization, ForwardedFor, HeaderCarrier, RequestId, SessionId}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -78,8 +79,8 @@ class AuditServiceSpec extends BaseSpec {
 
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
-        implicit val hc = HeaderCarrier()
-        implicit val request =
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withSession((AuthProvider, AuthProviderGG)).withHeaders(("Referer", testPath))
 
         val stuff = sut.createAndSendAuditEvent("testEvent", eventDetails)
@@ -108,8 +109,9 @@ class AuditServiceSpec extends BaseSpec {
 
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         val stuff = sut.createAndSendAuditEvent("testEvent", eventDetails)
 
@@ -184,8 +186,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started employee-pension iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, EmployeePensionIForm), 5.seconds)
 
@@ -209,7 +212,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, EmployeePensionIForm), 5.seconds)
@@ -237,8 +240,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started company-benefits iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyBenefitsIform), 5.seconds)
 
@@ -253,7 +257,7 @@ class AuditServiceSpec extends BaseSpec {
       "user started company-benefits iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(
+        implicit val hc: HeaderCarrier = HeaderCarrier(
           sessionId = Some(SessionId("1234")),
           authorization = Some(Authorization("123")),
           requestId = Some(RequestId("requestId")),
@@ -262,7 +266,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyBenefitsIform), 5.seconds)
@@ -288,8 +292,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started company-car iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyCarsIform), 5.seconds)
 
@@ -304,7 +309,7 @@ class AuditServiceSpec extends BaseSpec {
       "user started company-car iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(
+        implicit val hc: HeaderCarrier = HeaderCarrier(
           sessionId = Some(SessionId("1234")),
           authorization = Some(Authorization("123")),
           requestId = Some(RequestId("requestId")),
@@ -313,7 +318,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, CompanyCarsIform), 5.seconds)
@@ -339,8 +344,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started medical-benefits iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MedicalBenefitsIform), 5.seconds)
 
@@ -355,7 +361,7 @@ class AuditServiceSpec extends BaseSpec {
       "user started medical-benefits iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(
+        implicit val hc: HeaderCarrier = HeaderCarrier(
           sessionId = Some(SessionId("1234")),
           authorization = Some(Authorization("123")),
           requestId = Some(RequestId("requestId")),
@@ -364,7 +370,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MedicalBenefitsIform), 5.seconds)
@@ -390,8 +396,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started other-income iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, OtherIncomeIform), 5.seconds)
 
@@ -406,7 +413,7 @@ class AuditServiceSpec extends BaseSpec {
       "user started other-income iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(
+        implicit val hc: HeaderCarrier = HeaderCarrier(
           sessionId = Some(SessionId("1234")),
           authorization = Some(Authorization("123")),
           requestId = Some(RequestId("requestId")),
@@ -415,7 +422,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, OtherIncomeIform), 5.seconds)
@@ -441,8 +448,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started state-benefit iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, StateBenefitsIform), 5.seconds)
 
@@ -457,7 +465,7 @@ class AuditServiceSpec extends BaseSpec {
       "user started state-benefit iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(
+        implicit val hc: HeaderCarrier = HeaderCarrier(
           sessionId = Some(SessionId("1234")),
           authorization = Some(Authorization("123")),
           requestId = Some(RequestId("requestId")),
@@ -466,7 +474,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, StateBenefitsIform), 5.seconds)
@@ -492,8 +500,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started investment-income iform journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, InvestIncomeIform), 5.seconds)
 
@@ -508,7 +517,7 @@ class AuditServiceSpec extends BaseSpec {
       "user started investment-income iform journey with proper headers" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier(
+        implicit val hc: HeaderCarrier = HeaderCarrier(
           sessionId = Some(SessionId("1234")),
           authorization = Some(Authorization("123")),
           requestId = Some(RequestId("requestId")),
@@ -517,7 +526,7 @@ class AuditServiceSpec extends BaseSpec {
           forwarded = Some(ForwardedFor("ip")),
           trueClientPort = Some("clientPort")
         )
-        implicit val request =
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
           FakeRequest().withHeaders(("Referer", "/test-path")).withSession((AuthProvider, AuthProviderGG))
 
         Await.result(sut.sendAuditEventAndGetRedirectUri(nino, InvestIncomeIform), 5.seconds)
@@ -543,8 +552,9 @@ class AuditServiceSpec extends BaseSpec {
       "user started marriage allowance service journey" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        implicit val hc = HeaderCarrier()
-        implicit val request = FakeRequest().withSession((AuthProvider, AuthProviderGG))
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          FakeRequest().withSession((AuthProvider, AuthProviderGG))
 
         val result = Await.result(sut.sendAuditEventAndGetRedirectUri(nino, MarriageAllowanceService), 5.seconds)
 

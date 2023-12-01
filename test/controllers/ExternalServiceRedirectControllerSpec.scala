@@ -19,6 +19,8 @@ package controllers
 import builders.RequestBuilder
 import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
@@ -33,7 +35,8 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
       "a valid service and i-form name has been passed" in {
         val sut = createSut
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
         when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
@@ -52,7 +55,8 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         val sut = createSut
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
         when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.failed(new IllegalArgumentException))
@@ -69,7 +73,8 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
       "a valid service and i-form name has been passed" in {
         val sut = createSut
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
         when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
@@ -86,7 +91,8 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         val sut = createSut
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
 
         when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.failed(new IllegalArgumentException))

@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.model
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class ErrorView(url: String, statusCode: Int)
 
 object ErrorView {
-  implicit val format = Json.format[ErrorView]
+  implicit val format: OFormat[ErrorView] = Json.format[ErrorView]
 }

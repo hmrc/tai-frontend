@@ -19,12 +19,13 @@ package uk.gov.hmrc.tai.config
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.Configuration
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.BaseSpec
 import views.html.{ErrorTemplateNoauth, InternalServerErrorView}
 
 class ErrorHandlerSpec extends BaseSpec {
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   lazy val errorHandler: ErrorHandler = new ErrorHandler(
     appConfig,

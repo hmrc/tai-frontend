@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.annotation.nowarn
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -59,7 +58,6 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
-    @nowarn
     override def buildTaxFreeAmount(
       unused1: LocalDate,
       previous: Option[Seq[CodingComponent]],

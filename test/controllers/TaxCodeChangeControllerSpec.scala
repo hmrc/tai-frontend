@@ -42,7 +42,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
   "whatHappensNext" must {
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
-        implicit val request =
+        implicit val request: AuthenticatedRequest[AnyContentAsFormUrlEncoded] =
           AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
 
         val result = createController().whatHappensNext()(request)

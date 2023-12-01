@@ -17,7 +17,7 @@
 package json
 
 import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import utils.BaseSpec
 
 class TupleFormatSpec extends BaseSpec with ScalaFutures {
@@ -25,13 +25,13 @@ class TupleFormatSpec extends BaseSpec with ScalaFutures {
   case class ExampleTuple2(a: List[(String, String)])
 
   object ExampleTuple2 {
-    implicit val format = Json.format[ExampleTuple2]
+    implicit val format: OFormat[ExampleTuple2] = Json.format[ExampleTuple2]
   }
 
   case class ExampleTuple3(a: List[(String, String, String)])
 
   object ExampleTuple3 {
-    implicit val format = Json.format[ExampleTuple3]
+    implicit val format: OFormat[ExampleTuple3] = Json.format[ExampleTuple3]
   }
 
   "JSON serialization/deserialize" should {
