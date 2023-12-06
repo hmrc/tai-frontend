@@ -27,7 +27,6 @@ import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.tai.service.MessageFrontendService
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -87,9 +86,8 @@ class AuthActionImpl @Inject() (
     confidenceLevel: ConfidenceLevel
   ): Future[Result] =
     credentials match {
-      case Some(Credentials(_, TaiConstants.AuthProviderGG)) =>
-        processRequest(confidenceLevel, user, request, block, handleGGFailure)
-      case _ => throw new RuntimeException("Can't find valid credentials for user")
+      case Some(_) => processRequest(confidenceLevel, user, request, block, handleGGFailure)
+      case _       => throw new RuntimeException("Can't find valid credentials for user")
     }
 
   private def processRequest[A](
