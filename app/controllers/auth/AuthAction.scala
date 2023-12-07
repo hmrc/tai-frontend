@@ -23,7 +23,7 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.tai.service.MessageFrontendService
@@ -52,43 +52,28 @@ class AuthActionImpl @Inject() (
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(
-      Retrievals.credentials and Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper
+      Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper
     ) {
-      case credentials ~ _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
-        val providerType = credentials.map(_.providerType)
+      case _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
-          val user = AuthedUser(helper, saUtr, providerType, confidenceLevel, messageCount)
-          authWithCredentials(request, block, credentials, user, confidenceLevel)
+          val user = AuthedUser(helper, saUtr, confidenceLevel, messageCount)
+          processRequest(confidenceLevel, user, request, block, handleGGFailure)
         }
 
-      case credentials ~ optNino ~ saUtr ~ confidenceLevel ~ _ =>
-        val providerType = credentials.map(_.providerType)
+      case optNino ~ saUtr ~ confidenceLevel ~ _ =>
         messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
           lazy val user = AuthedUser(
             uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
             saUtr,
-            providerType,
             confidenceLevel,
             messageCount,
             None
           )
-          authWithCredentials(request, block, credentials, user, confidenceLevel)
+          processRequest(confidenceLevel, user, request, block, handleGGFailure)
         }
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
   }
-
-  private def authWithCredentials[A](
-    request: Request[A],
-    block: InternalAuthenticatedRequest[A] => Future[Result],
-    credentials: Option[Credentials],
-    user: => AuthedUser,
-    confidenceLevel: ConfidenceLevel
-  ): Future[Result] =
-    credentials match {
-      case Some(_) => processRequest(confidenceLevel, user, request, block, handleGGFailure)
-      case _       => throw new RuntimeException("Can't find valid credentials for user")
-    }
 
   private def processRequest[A](
     confidenceLevel: ConfidenceLevel,
@@ -118,6 +103,8 @@ class AuthActionImpl @Inject() (
       logger.warn(s"Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())
   }
+
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
   override protected def executionContext: ExecutionContext = ec
 }

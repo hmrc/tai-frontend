@@ -31,7 +31,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import uk.gov.hmrc.tai.service.JrsService
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 import views.html.{InternalServerErrorView, JrsClaimSummaryView, NoJrsClaimView}
 
@@ -88,7 +87,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
       "Failed response is received from service" in {
 
         implicit val authedTrustedUser: AuthedUser =
-          UserBuilder("utr", TaiConstants.AuthProviderGG, "principalName", nino.toString())
+          UserBuilder("utr", "principalName", nino.toString())
 
         implicit val request: AuthenticatedRequest[AnyContent] =
           AuthenticatedRequest[AnyContent](fakeRequest, authedTrustedUser, "name")

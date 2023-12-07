@@ -23,7 +23,6 @@ import uk.gov.hmrc.domain.Nino
 case class AuthedUser(
   nino: Nino,
   utr: Option[String],
-  providerType: Option[String],
   confidenceLevel: ConfidenceLevel,
   messageCount: Option[Int],
   trustedHelper: Option[TrustedHelper]
@@ -34,14 +33,12 @@ object AuthedUser {
   def apply(
     trustedHelper: TrustedHelper,
     saUtr: Option[String],
-    providerType: Option[String],
     confidenceLevel: ConfidenceLevel,
     messageCount: Option[Int]
   ): AuthedUser =
     AuthedUser(
       nino = Nino(trustedHelper.principalNino),
       utr = saUtr,
-      providerType = providerType,
       confidenceLevel = confidenceLevel,
       messageCount = messageCount,
       trustedHelper = Some(trustedHelper)

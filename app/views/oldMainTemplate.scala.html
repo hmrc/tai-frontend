@@ -60,7 +60,6 @@
         ptaScripts: PtaScripts
 )(implicit accountMenuConfig: AccountMenuConfig)
 
-
 @(
         title: String,
         authedUser: Option[controllers.auth.AuthedUser] = None,
@@ -78,12 +77,6 @@
 
 
 @isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
-
-@isGG = @{
-    authedUser.fold(false) {
-        _.providerType.contains(TaiConstants.AuthProviderGG)
-    }
-}
 
 @isSa = @{
     authedUser.fold(false) {
@@ -163,7 +156,7 @@
 @beforeContent = {
     @authedUser.map { auth =>
         @if(showPtaAccountNav) {
-            @if(isGG && isSa && !auth.trustedHelper.isDefined) {
+            @if(isSa && !auth.trustedHelper.isDefined) {
                 @hmrcAccountMenu(AccountMenu(
                     businessTaxAccount = Some(BusinessTaxAccount()),
                     language = if(messages.lang.code == "cy") Cy else En,
