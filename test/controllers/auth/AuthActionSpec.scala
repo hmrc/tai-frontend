@@ -22,12 +22,11 @@ import play.api.mvc.AbstractController
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.MessageFrontendService
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 
 import scala.concurrent.duration._
@@ -103,17 +102,15 @@ class AuthActionSpec extends BaseSpec {
 
     "return the users nino in an Ok response" when {
 
-      val authProviderGG = Some(TaiConstants.AuthProviderGG)
-      val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
       val saUtr = Some("000111222")
       val nino = Nino(new Generator().nextNino.nino)
       val baseRetrieval =
-        creds ~ Some(nino.nino) ~ saUtr ~ ConfidenceLevel.L200
+        Some(nino.nino) ~ saUtr ~ ConfidenceLevel.L200
 
       "no trusted helper data is returned" in {
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
-        val expectedTaiUser = AuthedUser(nino, saUtr, authProviderGG, ConfidenceLevel.L200, None, None)
+        val expectedTaiUser = AuthedUser(nino, saUtr, ConfidenceLevel.L200, None, None)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
@@ -126,17 +123,16 @@ class AuthActionSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
-          AuthedUser(nino, Some("000111222"), authProviderGG, ConfidenceLevel.L200, None, Some(trustedHelper))
+          AuthedUser(nino, Some("000111222"), ConfidenceLevel.L200, None, Some(trustedHelper))
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
       "redirect a user to uplift if the confidence level is below 200 and no nino" in {
 
-        val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
         val saUtr = Some("000111222")
         val baseRetrieval =
-          creds ~ None ~ saUtr ~ ConfidenceLevel.L50
+          None ~ saUtr ~ ConfidenceLevel.L50
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
@@ -147,11 +143,10 @@ class AuthActionSpec extends BaseSpec {
 
       "redirect a user to uplift if the confidence level is below 200" in {
 
-        val creds = Some(Credentials("GG", TaiConstants.AuthProviderGG))
         val saUtr = Some("000111222")
         val nino = new Generator().nextNino.nino
         val baseRetrieval =
-          creds ~ Some(nino) ~ saUtr ~ ConfidenceLevel.L50
+          Some(nino) ~ saUtr ~ ConfidenceLevel.L50
 
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)

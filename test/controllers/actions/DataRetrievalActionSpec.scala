@@ -28,7 +28,6 @@ import play.api.test.Helpers.GET
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
 
 import java.time.Instant
@@ -75,7 +74,6 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val helperNino = "helper-nino"
         val authedUser: AuthedUser = UserBuilder(
           utr = "utr",
-          providerType = TaiConstants.AuthProviderGG,
           principalName = "",
           principalNino = helperNino
         )
@@ -121,7 +119,6 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val helperNino = "helper-nino"
         val authedUser: AuthedUser = UserBuilder(
           utr = "utr",
-          providerType = TaiConstants.AuthProviderGG,
           principalName = "",
           principalNino = helperNino
         )

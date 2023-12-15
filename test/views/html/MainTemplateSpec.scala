@@ -24,11 +24,8 @@ import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.auth.core.ConfidenceLevel.L250
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-
-import scala.util.Random
 
 class MainTemplateSpec extends BaseSpec with JsoupMatchers {
 
@@ -76,7 +73,6 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
               AuthedUser(
                 TrustedHelper("Principal", "Attorney", "/", nino.nino),
                 Some("1130492359"),
-                Some("GovernmentGateway"),
                 L250,
                 None
               )
@@ -103,7 +99,6 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
             AuthedUser(
               TrustedHelper("Principal", "Attorney", "/", nino.nino),
               Some("1130492359"),
-              Some("GovernmentGateway"),
               L250,
               None
             )
@@ -125,7 +120,6 @@ class MainTemplateSpec extends BaseSpec with JsoupMatchers {
             AuthedUser(
               nino,
               Some("1130492359"),
-              Some("GovernmentGateway"),
               L250,
               None,
               None

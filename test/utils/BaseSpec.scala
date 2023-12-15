@@ -16,8 +16,8 @@
 
 package utils
 import builders.UserBuilder
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
 import org.scalatest.BeforeAndAfterEach
@@ -33,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.admin.{PertaxBackendToggle, SCAWrapperToggle}
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -85,7 +84,6 @@ trait BaseSpec
         AuthedUser(
           Nino(nino.toString()),
           Some("saUtr"),
-          Some(TaiConstants.AuthProviderGG),
           ConfidenceLevel.L200,
           None,
           None
@@ -107,7 +105,6 @@ trait BaseSpec
           AuthedUser(
             Nino(nino.toString()),
             Some("saUtr"),
-            Some(TaiConstants.AuthProviderGG),
             ConfidenceLevel.L200,
             None,
             None
