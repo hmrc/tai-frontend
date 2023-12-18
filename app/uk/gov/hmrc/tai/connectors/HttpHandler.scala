@@ -32,7 +32,7 @@ import scala.util.{Failure, Success, Try}
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
   private val logErrorResponses: PartialFunction[Try[Either[UpstreamErrorResponse, HttpResponse]], Unit] = {
-    case Success(Left(error)) if error.statusCode == NOT_FOUND || error.statusCode == UNPROCESSABLE_ENTITY =>
+    case Success(Left(error)) if Set(NOT_FOUND, UNPROCESSABLE_ENTITY, UNAUTHORIZED).contains(error.statusCode) =>
       logger.info(error.message)
     case Success(Left(error)) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
       logger.error(error.message)
