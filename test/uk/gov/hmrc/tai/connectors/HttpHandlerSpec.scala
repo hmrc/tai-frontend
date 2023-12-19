@@ -56,6 +56,8 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
     override protected val logger: Logger = mockLogger
   }
 
+  private val dummyContent = "error message"
+
   "read" must {
     Set(NOT_FOUND, UNPROCESSABLE_ENTITY, UNAUTHORIZED).foreach { httpResponseCode =>
       s"log message: 1 info & 1 error level when response code is $httpResponseCode" in {
@@ -64,13 +66,13 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
         doNothing.when(mockLogger).error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
 
         val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
-          Future(Left(UpstreamErrorResponse("", httpResponseCode)))
+          Future(Left(UpstreamErrorResponse(dummyContent, httpResponseCode)))
         whenReady(httpHandlerUsingMockLogger.read(response).value) { actual =>
-          actual mustBe Left(UpstreamErrorResponse("", httpResponseCode))
+          actual mustBe Left(UpstreamErrorResponse(dummyContent, httpResponseCode))
 
           Mockito
             .verify(mockLogger, times(1))
-            .info(ArgumentMatchers.any())(ArgumentMatchers.any())
+            .info(ArgumentMatchers.eq(dummyContent))(ArgumentMatchers.any())
           Mockito
             .verify(mockLogger, times(0))
             .error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
@@ -84,16 +86,16 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       doNothing.when(mockLogger).error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
 
       val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
-        Future(Left(UpstreamErrorResponse("", BAD_REQUEST)))
+        Future(Left(UpstreamErrorResponse(dummyContent, BAD_REQUEST)))
       whenReady(httpHandlerUsingMockLogger.read(response).value) { actual =>
-        actual mustBe Left(UpstreamErrorResponse("", BAD_REQUEST))
+        actual mustBe Left(UpstreamErrorResponse(dummyContent, BAD_REQUEST))
 
         Mockito
           .verify(mockLogger, times(0))
           .info(ArgumentMatchers.any())(ArgumentMatchers.any())
         Mockito
           .verify(mockLogger, times(1))
-          .error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+          .error(ArgumentMatchers.eq(dummyContent), ArgumentMatchers.any())(ArgumentMatchers.any())
 
       }
     }
