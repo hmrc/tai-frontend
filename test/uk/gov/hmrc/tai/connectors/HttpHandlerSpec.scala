@@ -17,20 +17,24 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import org.mockito.{ArgumentMatchers, Mockito}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.{BaseSpec, WireMockHelper}
 
 import java.time.LocalDate
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
 class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
   private lazy val httpHandler: HttpHandler = inject[HttpHandler]
+  private lazy val httpClientV2: HttpClientV2 = inject[HttpClientV2]
 
   private lazy val testUrl: String = server.url("/")
 
@@ -44,6 +48,57 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
 
   private object DateRequest {
     implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+  }
+
+  private val mockLogger: Logger = mock[Logger]
+
+  private lazy val httpHandlerUsingMockLogger: HttpHandler = new HttpHandler(httpClientV2) {
+    override protected val logger: Logger = mockLogger
+  }
+
+  private val dummyContent = "error message"
+
+  "read" must {
+    Set(NOT_FOUND, UNPROCESSABLE_ENTITY, UNAUTHORIZED).foreach { httpResponseCode =>
+      s"log message: 1 info & 0 error level when response code is $httpResponseCode" in {
+        reset(mockLogger)
+        doNothing.when(mockLogger).warn(ArgumentMatchers.any())(ArgumentMatchers.any())
+        doNothing.when(mockLogger).error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+
+        val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
+          Future(Left(UpstreamErrorResponse(dummyContent, httpResponseCode)))
+        whenReady(httpHandlerUsingMockLogger.read(response).value) { actual =>
+          actual mustBe Left(UpstreamErrorResponse(dummyContent, httpResponseCode))
+
+          Mockito
+            .verify(mockLogger, times(1))
+            .info(ArgumentMatchers.eq(dummyContent))(ArgumentMatchers.any())
+          Mockito
+            .verify(mockLogger, times(0))
+            .error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+
+        }
+      }
+    }
+    "log message: 1 error & 0 info level when response is BAD_REQUEST" in {
+      reset(mockLogger)
+      doNothing.when(mockLogger).warn(ArgumentMatchers.any())(ArgumentMatchers.any())
+      doNothing.when(mockLogger).error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
+
+      val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
+        Future(Left(UpstreamErrorResponse(dummyContent, BAD_REQUEST)))
+      whenReady(httpHandlerUsingMockLogger.read(response).value) { actual =>
+        actual mustBe Left(UpstreamErrorResponse(dummyContent, BAD_REQUEST))
+
+        Mockito
+          .verify(mockLogger, times(0))
+          .info(ArgumentMatchers.any())(ArgumentMatchers.any())
+        Mockito
+          .verify(mockLogger, times(1))
+          .error(ArgumentMatchers.eq(dummyContent), ArgumentMatchers.any())(ArgumentMatchers.any())
+
+      }
+    }
   }
 
   "getFromApiV2" must {

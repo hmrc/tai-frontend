@@ -28,27 +28,28 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.runtime.universe.TypeTag
 import scala.util.chaining.scalaUtilChainingOps
+import scala.util.{Failure, Success, Try}
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
+  private val logErrorResponses: PartialFunction[Try[Either[UpstreamErrorResponse, HttpResponse]], Unit] = {
+    case Success(Left(error)) if Set(NOT_FOUND, UNPROCESSABLE_ENTITY, UNAUTHORIZED).contains(error.statusCode) =>
+      logger.info(error.message)
+    case Success(Left(error)) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
+      logger.error(error.message)
+    case Success(Left(error)) =>
+      logger.error(error.message, error)
+    case Failure(exception: HttpException) =>
+      logger.error(exception.message)
+  }
+
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
-  )(implicit executionContext: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
-    EitherT(response.map {
-      case Right(response) =>
-        Right(response)
-      case Left(error) if error.statusCode == NOT_FOUND || error.statusCode == UNPROCESSABLE_ENTITY =>
-        logger.info(error.message)
-        Left(error)
-      case Left(error) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
-        logger.error(error.message)
-        Left(error)
-      case Left(error) =>
-        logger.error(error.message, error)
-        Left(error)
-    } recover { case exception: HttpException =>
-      logger.error(exception.message)
-      Left(UpstreamErrorResponse(exception.message, 502, 502))
-    })
+  )(implicit ec: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+    EitherT(
+      response andThen logErrorResponses recover { case exception: HttpException =>
+        Left(UpstreamErrorResponse(exception.message, BAD_GATEWAY, BAD_GATEWAY))
+      }
+    )
 
   private val includeTimeOut: (Option[DurationInt], RequestBuilder) => RequestBuilder = (timeoutInSec, rb) =>
     timeoutInSec
