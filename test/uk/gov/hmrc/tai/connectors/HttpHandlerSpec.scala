@@ -60,7 +60,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
 
   "read" must {
     Set(NOT_FOUND, UNPROCESSABLE_ENTITY, UNAUTHORIZED).foreach { httpResponseCode =>
-      s"log message: 1 info & 1 error level when response code is $httpResponseCode" in {
+      s"log message: 1 info & 0 error level when response code is $httpResponseCode" in {
         reset(mockLogger)
         doNothing.when(mockLogger).warn(ArgumentMatchers.any())(ArgumentMatchers.any())
         doNothing.when(mockLogger).error(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())
