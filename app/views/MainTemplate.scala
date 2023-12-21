@@ -99,7 +99,7 @@ class MainTemplateImpl @Inject() (
         // showSignOutInHeader: Boolean = false,
         styleSheets = Seq(headBlock()),
         scripts = Seq(scripts()),
-        bannerConfig = BannerConfig(false, true, false),
+        bannerConfig = BannerConfig(false, true, true),
         optTrustedHelper = authedUser.flatMap(_.trustedHelper),
         fullWidth = true,
         hideMenuBar = !showPtaAccountNav,
