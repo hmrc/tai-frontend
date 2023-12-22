@@ -29,3 +29,7 @@ if(backlink != null && backlink != 'undefined' ) {
         }
     });
 }
+
+if (document.getElementsByTagName("html")[0].getAttribute("lang") == "en") {
+    document.getElementsByClassName('govuk-link hmrc-user-research-banner__link')[0].textContent="Take part in user research (opens in new tab)";
+}
