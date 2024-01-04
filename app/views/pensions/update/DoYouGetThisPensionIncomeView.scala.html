@@ -75,7 +75,7 @@
                 ).withFormField(updateOrRemoveForm(IncorrectPensionDecisionConstants.IncorrectPensionDecision))
                 )
 
-                @govukButton(Button(content = Text(messages("tai.continue"))))
+                @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))
                 @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))
             }
         </div>

@@ -72,7 +72,7 @@
                     errorMessage = updateEmploymentDetailsForm.errors.asTextErrorMessages.headOption
                     ))
 
-                @govukButton(Button(content = Text(messages("tai.continue"))))
+                @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))
             }
             <div class="govuk-link govuk-body-m">
                 @cancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(viewmodel.empId))

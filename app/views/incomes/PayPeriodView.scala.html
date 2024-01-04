@@ -98,7 +98,7 @@
                     )
                 ).withFormField(payPeriodForm(PayPeriodConstants.PayPeriodKey)))
 
-                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text")), id=Some("submitButton")))
             }
 
             @cancelLink(controllers.routes.IncomeController.cancel(id))

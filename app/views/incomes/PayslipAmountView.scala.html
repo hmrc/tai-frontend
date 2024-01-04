@@ -65,7 +65,7 @@
                     errorMessage = viewModel.payslipForm.errors.asTextErrorMessages.headOption
                 ))
 
-                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text")), id=Some("submitButton")))
             }
 
         @cancelLink(Call("GET", controllers.routes.IncomeController.cancel(viewModel.employer.id).url))

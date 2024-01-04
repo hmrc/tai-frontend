@@ -73,7 +73,7 @@
             ).withFormField(viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice)))
 
 
-        @govukButton(Button(content = Text(messages("tai.continue"))))
+        @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))
 
         }
 
