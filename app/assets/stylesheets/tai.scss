@@ -2,18 +2,16 @@
 @import 'base/layout';
 @import 'base/links';
 @import 'base/table';
-@import 'base/assets_frontend_3.0.2_patch';
 @import 'modules/print';
 @import 'modules/printSCA';
 @import 'modules/navigation';
 @import 'modules/tax_bar';
-@import 'modules/forms';
 @import 'modules/charcount';
 @import 'modules/card';
 @import 'modules/tax_code_change';
 @import 'modules/responsive_table';
 @import "modules/cy-plus-one-income-tax-comparison";
-@import "modules/income_tax_history";
+
 
 .income-data {
   .income-data-input {

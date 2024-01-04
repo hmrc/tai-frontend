@@ -1,5 +1,4 @@
 @import '../base/_conditionals';
-@import '../base/_colours';
 
 .govuk-c-charcount__highlight.form-control-error{
   border-width: 2px !important; // force this one as the validation overwrites it
@@ -39,7 +38,7 @@ textarea{
   }
 }
 .govuk-c-charcount__wrapper-error{
-  border-color: $error-colour;
+  border-color: #df3034;
 }
 .govuk-c-charcount__highlight-input, .govuk-c-charcount__highlight{
   z-index: 1;
@@ -54,7 +53,7 @@ textarea{
   border-color: transparent;
   mark {
     color: transparent;
-    background-color: $error-colour;
+    background-color: #df3034;
     opacity: .2;
   }
 }
