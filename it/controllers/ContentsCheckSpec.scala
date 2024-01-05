@@ -56,6 +56,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  private val startTaxYear = TaxYear().start.getYear
 
   case class ExpectedData(
     title: String,
@@ -336,19 +337,19 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     }
 
   val urls = Map(
-    "/check-income-tax/what-do-you-want-to-do"                        -> getExpectedData("what-to-do"),
-    "/check-income-tax/jrs-claims"                                    -> getExpectedData("jrs-claims"),
-    "/check-income-tax/income-tax/no-info"                            -> getExpectedData("no-info"),
-    s"/check-income-tax/historic-paye/${LocalDate.now().getYear - 1}" -> getExpectedData("historic-paye-year"),
-    "/check-income-tax/income-tax-history"                            -> getExpectedData("income-tax-history"),
-    "/check-income-tax/timeout"                                       -> getExpectedData("timeout"),
-    "/check-income-tax/tax-estimate-unavailable"                      -> getExpectedData("tax-estimate-unavailable"),
-    "/check-income-tax/deceased"                                      -> getExpectedData("deceased"),
-    "/check-income-tax/session-expired"                               -> getExpectedData("session-expired"),
-    "/check-income-tax/add-employment/employment-name"                -> getExpectedData("add-employment-name"),
-    "/check-income-tax/add-employment/employment-start-date"          -> getExpectedData("add-employment-start-date"),
-    "/check-income-tax/add-employment/employment-first-pay"           -> getExpectedData("add-employment-first-pay"),
-    "/check-income-tax/add-employment/six-weeks"                      -> getExpectedData("add-employment-six-weeks"),
+    "/check-income-tax/what-do-you-want-to-do"                   -> getExpectedData("what-to-do"),
+    "/check-income-tax/jrs-claims"                               -> getExpectedData("jrs-claims"),
+    "/check-income-tax/income-tax/no-info"                       -> getExpectedData("no-info"),
+    s"/check-income-tax/historic-paye/${startTaxYear - 1}"       -> getExpectedData("historic-paye-year"),
+    "/check-income-tax/income-tax-history"                       -> getExpectedData("income-tax-history"),
+    "/check-income-tax/timeout"                                  -> getExpectedData("timeout"),
+    "/check-income-tax/tax-estimate-unavailable"                 -> getExpectedData("tax-estimate-unavailable"),
+    "/check-income-tax/deceased"                                 -> getExpectedData("deceased"),
+    "/check-income-tax/session-expired"                          -> getExpectedData("session-expired"),
+    "/check-income-tax/add-employment/employment-name"           -> getExpectedData("add-employment-name"),
+    "/check-income-tax/add-employment/employment-start-date"     -> getExpectedData("add-employment-start-date"),
+    "/check-income-tax/add-employment/employment-first-pay"      -> getExpectedData("add-employment-first-pay"),
+    "/check-income-tax/add-employment/six-weeks"                 -> getExpectedData("add-employment-six-weeks"),
     "/check-income-tax/add-employment/employment-payroll-number" -> getExpectedData("add-employment-payroll-number"),
     "/check-income-tax/add-employment/telephone-number"          -> getExpectedData("add-employment-telephone-number"),
     "/check-income-tax/add-employment/check-your-answers"        -> getExpectedData("add-employment-cya"),
@@ -367,24 +368,24 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     "/check-income-tax/end-employment/date"               -> getExpectedData("end-employment-date"),
     "/check-income-tax/end-employment/check-your-answers" -> getExpectedData("end-employment-cya"),
     "/check-income-tax/update-employment/what-do-you-want-to-tell-us/1" -> getExpectedData("update-employment-tell-us"),
-    "/check-income-tax/update-employment/telephone-number"    -> getExpectedData("update-employment-telephone-number"),
-    "/check-income-tax/update-employment/check-your-answers"  -> getExpectedData("update-employment-cya"),
-    "/check-income-tax/update-employment/success"             -> getExpectedData("update-employment-success"),
-    "/check-income-tax/previous-underpayment"                 -> getExpectedData("previous-underpayment"),
-    "/check-income-tax/underpayment-estimate"                 -> getExpectedData("underpayment-estimate"),
-    "/check-income-tax/tax-free-allowance"                    -> getExpectedData("tax-free-allowance"),
-    "/check-income-tax/tax-code/1"                            -> getExpectedData("tax-code"),
-    s"/check-income-tax/tax-codes/${LocalDate.now().getYear}" -> getExpectedData("year-tax-codes"),
-    "/check-income-tax/paye-income-tax-estimate"              -> getExpectedData("paye-income-tax-estimate"),
-    "/check-income-tax/detailed-income-tax-estimate"          -> getExpectedData("detailed-income-tax-estimate"),
-    "/check-income-tax/income-tax-comparison"                 -> getExpectedData("income-tax-comparison"),
-    "/check-income-tax/your-income-calculation-details/1"     -> getExpectedData("your-income-calculation-details"),
-    "/check-income-tax/update-income/warning/1"               -> getExpectedData("update-income-warning"),
-    "/check-income-tax/update-income/check-your-answers/1"    -> getExpectedData("update-income-cya"),
-    "/check-income-tax/update-income/start/1"                 -> getExpectedData("update-income-start"),
-    "/check-income-tax/update-income/estimated-pay/1"         -> getExpectedData("update-income-estimated-pay"),
-    "/check-income-tax/update-income/how-to-update-income/1"  -> getExpectedData("how-to-update-income"),
-    "/check-income-tax/update-income/working-hours"           -> getExpectedData("update-income-working-hours"),
+    "/check-income-tax/update-employment/telephone-number"   -> getExpectedData("update-employment-telephone-number"),
+    "/check-income-tax/update-employment/check-your-answers" -> getExpectedData("update-employment-cya"),
+    "/check-income-tax/update-employment/success"            -> getExpectedData("update-employment-success"),
+    "/check-income-tax/previous-underpayment"                -> getExpectedData("previous-underpayment"),
+    "/check-income-tax/underpayment-estimate"                -> getExpectedData("underpayment-estimate"),
+    "/check-income-tax/tax-free-allowance"                   -> getExpectedData("tax-free-allowance"),
+    "/check-income-tax/tax-code/1"                           -> getExpectedData("tax-code"),
+    s"/check-income-tax/tax-codes/$startTaxYear"             -> getExpectedData("year-tax-codes"),
+    "/check-income-tax/paye-income-tax-estimate"             -> getExpectedData("paye-income-tax-estimate"),
+    "/check-income-tax/detailed-income-tax-estimate"         -> getExpectedData("detailed-income-tax-estimate"),
+    "/check-income-tax/income-tax-comparison"                -> getExpectedData("income-tax-comparison"),
+    "/check-income-tax/your-income-calculation-details/1"    -> getExpectedData("your-income-calculation-details"),
+    "/check-income-tax/update-income/warning/1"              -> getExpectedData("update-income-warning"),
+    "/check-income-tax/update-income/check-your-answers/1"   -> getExpectedData("update-income-cya"),
+    "/check-income-tax/update-income/start/1"                -> getExpectedData("update-income-start"),
+    "/check-income-tax/update-income/estimated-pay/1"        -> getExpectedData("update-income-estimated-pay"),
+    "/check-income-tax/update-income/how-to-update-income/1" -> getExpectedData("how-to-update-income"),
+    "/check-income-tax/update-income/working-hours"          -> getExpectedData("update-income-working-hours"),
     "/check-income-tax/update-income/edit-income-irregular-hours/1" -> getExpectedData("edit-income-irregular-hours"),
     "/check-income-tax/update-income/edit-income-irregular-hours/1/confirm" -> getExpectedData(
       "edit-income-irregular-hours-confirm"
@@ -460,7 +461,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
-      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port()
+      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port(),
+      "microservice.services.message-frontend.port"                    -> server.port()
     )
     .build()
 
@@ -608,7 +610,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
 
     server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear + 1}/summary"))
+      get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
         .willReturn(ok(Json.toJson(taxAccountSummary).toString))
     )
 
@@ -617,7 +619,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         .willReturn(ok("false"))
     )
 
-    for (year <- LocalDate.now().getYear - 5 to LocalDate.now().getYear + 1) {
+    for (year <- startTaxYear - 5 to startTaxYear + 1) {
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/employments/years/$year"))
           .willReturn(ok(Json.toJson(employments).toString))
@@ -844,7 +846,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     server.stubFor(
       get(s"/tai/journey-cache/update-previous-years-income")
         .willReturn(ok(s"""{
-                          |"taxYear":"${LocalDate.now().getYear}",
+                          |"taxYear":"$startTaxYear",
                           |"incomeDetails":"details",
                           |"updateIncomeTelephoneContactAllowed":"No",
                           |"updateIncomeTelephoneNumber":""}""".stripMargin))
@@ -889,13 +891,15 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
                           |"update-next-years-successful":"Yes"}""".stripMargin))
     )
 
-    server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear}/tax-code/latest"))
-        .willReturn(ok(s"""{"data":$taxCodeRecordJson}"""))
-    )
+    (startTaxYear - 2 to startTaxYear + 1).foreach { year =>
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${year + 1}/tax-code/latest"))
+          .willReturn(ok(s"""{"data":$taxCodeRecordJson}"""))
+      )
+    }
 
     server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear}/income"))
+      get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/income"))
         .willReturn(ok(incomeJson.toString))
     )
 
@@ -906,7 +910,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
     server.stubFor(
       put(
-        s"/tai/$generatedNino/tax-account/snapshots/${LocalDate.now().getYear}/incomes/tax-code-incomes/1/estimated-pay"
+        s"/tai/$generatedNino/tax-account/snapshots/$startTaxYear/incomes/tax-code-incomes/1/estimated-pay"
       )
         .withHeader(CONTENT_TYPE, matching(ContentTypes.JSON))
         .willReturn(
@@ -915,19 +919,19 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
 
     server.stubFor(
-      get(s"/tai/$generatedNino/employments/year/${LocalDate.now().getYear}/status/ceased")
+      get(s"/tai/$generatedNino/employments/year/$startTaxYear/status/ceased")
         .willReturn(ok("""{"data": []}"""))
     )
     server.stubFor(
-      get(s"/tai/$generatedNino/tax-account/year/${LocalDate.now().getYear}/income/EmploymentIncome/status/Live")
+      get(s"/tai/$generatedNino/tax-account/year/$startTaxYear/income/EmploymentIncome/status/Live")
         .willReturn(ok("""{"data": []}"""))
     )
     server.stubFor(
-      get(s"/tai/$generatedNino/tax-account/year/${LocalDate.now().getYear}/income/EmploymentIncome/status/NotLive")
+      get(s"/tai/$generatedNino/tax-account/year/$startTaxYear/income/EmploymentIncome/status/NotLive")
         .willReturn(ok("""{"data": []}"""))
     )
     server.stubFor(
-      get(s"/tai/$generatedNino/tax-account/year/${LocalDate.now().getYear}/income/PensionIncome/status/Live")
+      get(s"/tai/$generatedNino/tax-account/year/$startTaxYear/income/PensionIncome/status/Live")
         .willReturn(ok("""{"data": []}"""))
     )
     server.stubFor(
@@ -939,15 +943,24 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         .willReturn(ok(taxCodeComparisonJson.toString()))
     )
   }
+  server.stubFor(
+    get(urlMatching("/messages/count.*"))
+      .willReturn(ok(s"""{"count": 0}"""))
+  )
 
   "/check-income-tax/" must {
     urls.foreach { case (url, expectedData: ExpectedData) =>
       s"pass content checks at url $url" in {
 
         server.stubFor(
+          get(urlMatching("/messages/count.*"))
+            .willReturn(ok(s"""{"count": 0}"""))
+        )
+
+        server.stubFor(
           WireMock
             .get(urlMatching("/single-customer-account-wrapper-data/message-data.*"))
-            .willReturn(ok(s"""{"count": 0}"""))
+            .willReturn(ok(s"""0"""))
         )
 
         server.stubFor(
