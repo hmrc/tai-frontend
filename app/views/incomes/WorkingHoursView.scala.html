@@ -75,7 +75,7 @@
                 ).withFormField(workingHoursForm("workingHours"))
                 )
 
-                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text")), id=Some("submitButton")))
             }
             @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
 

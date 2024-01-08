@@ -44,7 +44,8 @@ messages: Messages, user: controllers.auth.AuthedUser)
         <p>
         @govukButton(Button(
             href = Some(routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString),
-            content = Text(messages("tai.incomes.updated.check.button"))
+            content = Text(messages("tai.incomes.updated.check.button")),
+            id=Some("submitButton")
         ))
         </p>
     </div>
