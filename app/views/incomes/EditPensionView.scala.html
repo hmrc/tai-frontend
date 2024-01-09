@@ -82,7 +82,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
         </div>
 
         <div class="form-field-group">
-            <input type="submit" class="govuk-button" value='@messages("tai.continue")'/>
+            <input type="submit" class="govuk-button" id="submitButton" value='@messages("tai.continue")'/>
 
             <div class="govuk-link govuk-body-m">
                 @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
