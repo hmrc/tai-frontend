@@ -28,7 +28,7 @@
             <div id="summaryTable@{itemIdx.toString}" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
 
                 @if(!isAllowanceOrTotalItem){
-                    <h3 class="heading-small govuk-heading-s section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
+                    <h3 class="heading-small govuk-heading-s" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
                 }
 
                 @if(item.rows.length>1) {

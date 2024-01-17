@@ -33,7 +33,7 @@
 
 @taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord, identifier: String) = {
     @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands, identifier, appConfig)) { taxCodeDescription =>
-        <div class="tax-code-change__explanation">
+        <div class="tax-code-change__explanation govuk-!-margin-bottom-3">
             @includes.detailsSummary(
                 taxCodeDescription.heading,
                 summaryClass=Some("govuk-details__summary"),
