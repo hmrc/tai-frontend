@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountComparisonViewModel
 @(model: TaxFreeAmountComparisonViewModel)(implicit messages: Messages)
 
-<h2 class="govuk-heading-l" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
+<h2 class="govuk-heading-l govuk-!-margin-top-8" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
 
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
 
@@ -36,17 +36,17 @@
 
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>
 
-
-<table class="govuk-table table--font-reset flush--bottom responsive" role="table">
-    <caption class="govuk-visually-hidden">@messages("tai.income.personalAllowance")</caption>
+<table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">
+        Tax-free amount summary</caption>
     <thead id="taxFreeAmountComparisonTableHeader" class="govuk-table__head">
         <tr class="govuk-table__row">
-            <th class="govuk-table__header" >@messages("tai.incomeTaxComparison.taxFreeAmount.how.we.calculate")</th>
-            <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter tax-free-amount-dates taxFreeAmountComparisonTableHeaderCol1" scope="col">
+            <th scope="col" class="govuk-table__header">Calculated items</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
             </th>
-            <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter tax-free-amount-dates taxFreeComparisonTableTableHeaderCol2" scope="col">
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">
                 @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
             </th>
@@ -54,42 +54,77 @@
     </thead>
     <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
-            <td  class="govuk-table__header tax-free-amount-table-heading">
+            <td class="govuk-table__cell">
                 @messages("tai.income.personalAllowance")
             </td>
             @for((personalAllowance, itemIndex) <- model.personalAllowance.values zip (LazyList.from(1))) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                    @if(itemIndex == 1){
-                        <span class="table-heading" aria-hidden="true">
-                            @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
-                        </span>
-                        }else{
-                        <span class="table-heading" aria-hidden="true">
-                            @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-                            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
-                        </span>
-                        }
-                @pounds(personalAllowance)</td>
+                    @pounds(personalAllowance)
+                </td>
+            }
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</td>
+                @if(!model.hasAdditions) {
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        @pounds(0)
+                    </td>
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        @pounds(0)
+                    </td>
+                }
+            @*Todo: add else when there are additions then calculate and display the total of that here and breakdown in another table below*@
+        </tr>
+
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption")</td>
+            @if(model.hasDeductions) {
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @pounds(0)
+                </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @pounds(0)
+                </td>
+            }
+            @*Todo: add else when there are deductions then calculate and display the total of that here and breakdown in another table below*@
+        </tr>
+
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</th>
+            @for((total, itemIndex) <- model.footer.values zip (LazyList.from(1))) {
+                @if(itemIndex ==1){
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        @pounds(total)
+                    </td>
+                }else {
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        @pounds(total)
+                    </td>
+                }
             }
         </tr>
     </tbody>
 </table>
 
 
-<table class="govuk-table table--font-reset flush--bottom my-new-class responsive" role="table">
-    <caption class="govuk-!-text-align-left table__caption table__caption--bottom-border tax-free-amount-table-heading">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</caption>
+
+<table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</caption>
     <thead id="taxFreeAmountComparisonTableHeader2" class="govuk-table__head">
         <tr class="govuk-table__row">
-            <th class="govuk-visually-hidden govuk-!-width-one-half">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</th>
-            <th class="govuk-visually-hidden govuk-!-width-one-quarter taxFreeAmountComparisonTableHeaderCol1" scope="col">
-                @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
+            <th scope="col" class="govuk-table__header govuk-visually-hidden">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+                <span class="govuk-visually-hidden">
+                    @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                    @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
+                </span>
 
             </th>
-            <th class="govuk-visually-hidden govuk-!-width-one-quarter taxFreeComparisonTableTableHeaderCol2" scope="col">
-                @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">
+                <span class="govuk-visually-hidden">
+                    @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+                    @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
+                </span>
 
             </th>
         </tr>
@@ -97,24 +132,16 @@
     <tbody class="govuk-table__body">
         @for(row <- model.additions.additions) {
             <tr class="govuk-table__row">
-                <td class="govuk-table__cell table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
+                <th scope="row" class="govuk-table__header">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</th>
                 @for((addition, itemIndex) <- row.values zip (LazyList.from(1))) {
                     @{itemIndex match {
                         case 1 =>
                             <td class="govuk-table__cell govuk-table__cell--numeric">
-                            <span class="table-heading" aria-hidden="true">
-                            {Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))}
-                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))}
-                            </span>
-                            {model.prettyPrint(addition)}
+                                {model.prettyPrint(addition)}
                             </td>
 
                         case 2 =>
                             <td class="govuk-table__cell govuk-table__cell--numeric">
-                            <span class="table-heading" aria-hidden="true">
-                            {Html(model.htmlNonBroken(messages("tai.NextTaxYear")))}
-                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))}
-                            </span>
                                 {model.prettyPrint(addition)}
                             </td>
                         case _ => None
@@ -125,23 +152,13 @@
 
         @if(!model.hasAdditions) {
             <tr class="govuk-table__row">
-                <td class="govuk-table__cell table-title">
-                    <span aria-hidden="true">
+                <th scope="row" class="govuk-table__header">
                     @messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions")
-                    </span>
-                </td>
+                </th>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                    <span class="table-heading" aria-hidden="true">
-                        @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
-                    </span>
                     @pounds(0)
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                    <span class="table-heading" aria-hidden="true">
-                        @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
-                    </span>
                     @pounds(0)
                 </td>
             </tr>
