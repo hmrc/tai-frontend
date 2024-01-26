@@ -68,7 +68,7 @@ object TaxFreeAmountComparisonViewModel {
     val sortedcodingComponentsByYear = codingComponentForYears.sortBy(_.year)
     val sortedTaxAccountSummaryByYear = taxAccountSummaryForYears.sortBy(_.year)
     val personalAllowance = createPersonalAllowanceRow(sortedcodingComponentsByYear)
-    val additions = createAdditionsRow(sortedcodingComponentsByYear)
+    val additions: Additions = createAdditionsRow(sortedcodingComponentsByYear)
     val deductions = createDeductionsRow(sortedcodingComponentsByYear)
     val footer = createFooterRow(sortedTaxAccountSummaryByYear)
     TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
@@ -99,7 +99,7 @@ object TaxFreeAmountComparisonViewModel {
     val additions =
       allowances.map(codingComponentType => componentTypeToRow(codingComponentType, codingComponentForYears))
 
-    Additions(additions, createTotalRow(additions))
+    Additions(additions)
   }
 
   private def createDeductionsRow(codingComponentForYears: Seq[CodingComponentForYear]) = {
@@ -119,7 +119,7 @@ object TaxFreeAmountComparisonViewModel {
     val deductions =
       deduction.map(codingComponentType => componentTypeToRow(codingComponentType, codingComponentForYears))
 
-    Deductions(deductions, createTotalRow(deductions))
+    Deductions(deductions)
   }
 
   private def createFooterRow(taxAccountSummaryForYears: Seq[TaxAccountSummaryForYear]) = {
@@ -127,21 +127,10 @@ object TaxFreeAmountComparisonViewModel {
     Footer(taxFreeAmountTotals)
   }
 
-  private def createTotalRow(rows: Seq[Row]): Total = {
-    val numberOfYearsToCompare = 2
-    val addCyNyValues = (firstRowValues: Seq[BigDecimal], secondRowValues: Seq[BigDecimal]) =>
-      firstRowValues.zip(secondRowValues).map(t => t._1 + t._2)
-    val totals = rows
-      .map(_.values.map(_.getOrElse(BigDecimal(0))))
-      .foldLeft(Seq.fill[BigDecimal](numberOfYearsToCompare)(0))(addCyNyValues)
-
-    Total(totals)
-  }
-
   private def componentTypeToRow(
     componentType: TaxComponentType,
     codingComponentForYears: Seq[CodingComponentForYear]
-  ) = {
+  ): Row = {
     val amounts = codingComponentForYears.map(_.codingComponents.find(_.componentType == componentType).map(_.amount))
 
     Row(componentType.toString, amounts)
@@ -155,12 +144,32 @@ case class TaxAccountSummaryForYear(year: TaxYear, taxAccountSummary: TaxAccount
 
 case class PersonalAllowance(values: Seq[BigDecimal])
 
-case class Additions(additions: Seq[Row], totalRow: Total)
-
-case class Deductions(deductions: Seq[Row], totalRow: Total)
+case class Additions(additions: Seq[Row]) extends WithRowTotal {
+  def totals: Seq[BigDecimal] = getTotals(additions)
+}
+case class Deductions(deductions: Seq[Row]) extends WithRowTotal {
+  def totals: Seq[BigDecimal] = getTotals(deductions)
+}
 
 case class Footer(values: Seq[BigDecimal])
 
 case class Row(label: String, values: Seq[Option[BigDecimal]])
 
-case class Total(totals: Seq[BigDecimal])
+trait WithRowTotal {
+
+  /* Sum the vectors of values element wise.
+     total = Seq(a1, a2) + Seq(b1, b2) = Seq(a1 + b1, a2 + b2)
+   */
+  def getTotals(components: Seq[Row]): Seq[BigDecimal] =
+    components
+      .map(_.values)
+      .foldLeft(Seq.empty[BigDecimal]) { (runningTotals, currentsOption) =>
+        runningTotals
+          .zipAll(
+            currentsOption.map(_.getOrElse(BigDecimal(0))),
+            BigDecimal(0),
+            BigDecimal(0)
+          )
+          .map((tuple: (BigDecimal, BigDecimal)) => tuple._1 + tuple._2)
+      }
+}

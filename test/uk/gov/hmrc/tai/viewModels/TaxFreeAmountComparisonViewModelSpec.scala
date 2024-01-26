@@ -165,7 +165,7 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
           Row("MarriageAllowanceReceived", Seq(Some(1000), None))
         )
 
-        model.additions.totalRow mustBe Total(Seq(1100, 150))
+        model.additions.totals mustBe Seq(1100, 150)
       }
 
       "personal allowance is not present" in {
@@ -200,7 +200,7 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
           Seq.empty[TaxAccountSummaryForYear]
         )
 
-        model.additions.totalRow.totals mustBe Seq(1100, 150)
+        model.additions.totals mustBe Seq(1100, 150)
         model.hasAdditions mustBe true
       }
 
@@ -213,7 +213,7 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
           Seq.empty[TaxAccountSummaryForYear]
         )
 
-        model.additions.totalRow.totals mustBe Seq(0, 0)
+        model.additions.totals mustBe Seq.empty
         model.hasAdditions mustBe false
       }
     }
@@ -249,7 +249,7 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
           Seq.empty[TaxAccountSummaryForYear]
         )
 
-        model.deductions.totalRow mustBe Total(Seq(1100, 150))
+        model.deductions.totals mustBe Seq(1100, 150)
         model.hasDeductions mustBe true
       }
 
@@ -262,7 +262,7 @@ class TaxFreeAmountComparisonViewModelSpec extends BaseSpec {
           Seq.empty[TaxAccountSummaryForYear]
         )
 
-        model.deductions.totalRow mustBe Total(Seq(0, 0))
+        model.deductions.totals mustBe Seq.empty
         model.hasDeductions mustBe false
       }
     }

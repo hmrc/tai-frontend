@@ -116,17 +116,17 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   private lazy val personalAllowance = PersonalAllowance(Seq(11500, 11850))
   private lazy val additionsRow1 = Row("GiftAidPayments", Seq(Some(1000), Some(1100)))
   private lazy val additionsRow2 = Row("PartTimeEarnings", Seq(Some(1000), None))
-  private lazy val additions = Additions(Seq(additionsRow1, additionsRow2), Total(Seq(2000, 1100)))
+  private lazy val additions = Additions(Seq(additionsRow1, additionsRow2))
 
   private lazy val deductionsRow1 = Row("OtherEarnings", Seq(Some(1000), Some(1100)))
   private lazy val deductionsRow2 = Row("CasualEarnings", Seq(None, Some(1100)))
-  private lazy val deductions = Deductions(Seq(deductionsRow1, deductionsRow2), Total(Seq(1000, 2200)))
+  private lazy val deductions = Deductions(Seq(deductionsRow1, deductionsRow2))
 
   private lazy val footer = Footer(Seq(3000, 3300))
 
   private lazy val model = TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
   private lazy val modelWithOutAdditionsAndDeductions =
-    TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil, Total(Nil)), Deductions(Nil, Total(Nil)), footer)
+    TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil), Deductions(Nil), footer)
 
   override def view: Html = views.html.incomeTaxComparison.TaxFreeAmount(model)
   def viewWithoutAdditionAndDeductions: Html =
