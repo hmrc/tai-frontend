@@ -38,10 +38,10 @@
 
 <table class="govuk-table">
     <caption class="govuk-table__caption govuk-table__caption--m">
-        Tax-free amount summary</caption>
+        @messages("tai.incomeTaxComparison.taxFreeAmount.summary")</caption>
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Calculated items</th>
+            <th scope="col" class="govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.calculated.items")</th>
             <th scope="col" class="govuk-table__header govuk-table__header--numeric">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -92,21 +92,21 @@
             @if(model.hasDeductions) {
                 @for((total, itemIndex) <- model.deductions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1) {
-                        <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @pounds(total)
+                        <td class="govuk-table__cell table__cell--top-align-nowrap govuk-table__cell--numeric">
+                            @if(total != 0){&minus;}@pounds(total)
                         </td>
                     } else {
-                        <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @pounds(total)
+                        <td class="govuk-table__cell table__cell--top-align-nowrap govuk-table__cell--numeric">
+                            @if(total != 0){&minus;}@pounds(total)
                         </td>
                     }
                 }
             } else {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                @pounds(0)
+                    @pounds(0)
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                @pounds(0)
+                    @pounds(0)
                 </td>
             }
         </tr>
@@ -131,10 +131,10 @@
 
 @if(model.hasAdditions) {
     <table class="govuk-table">
-        <caption class="govuk-table__caption govuk-table__caption--m">Breakdown of additions</caption>
+        <caption class="govuk-table__caption govuk-table__caption--m">@messages("tai.incomeTaxComparison.taxFreeAmount.breakdown.additions")</caption>
         <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Addition</th>
+                <th scope="col" class="govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.addition")</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric">
                     @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                     @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -168,7 +168,7 @@
                 </tr>
             }
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Total additions</th>
+                <th scope="col" class="govuk-table__header">@messages("tai.taxFreeAmount.table.additions.total")</th>
                 @for((total, itemIndex) <- model.additions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1){
                         <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -188,10 +188,10 @@
 
 @if(model.hasDeductions) {
     <table class="govuk-table">
-        <caption class="govuk-table__caption govuk-table__caption--m">Breakdown of deductions</caption>
+        <caption class="govuk-table__caption govuk-table__caption--m">@messages("tai.incomeTaxComparison.taxFreeAmount.breakdown.deductions")</caption>
         <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Deduction</th>
+                <th scope="col" class="govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.deduction")</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric">
                     @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                     @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -225,7 +225,7 @@
             }
 
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Total deductions</th>
+                <th scope="col" class="govuk-table__header">@messages("tai.taxFreeAmount.table.deductions.total")</th>
                 @for((total, itemIndex) <- model.deductions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1){
                         <td class="govuk-table__cell govuk-table__cell--numeric">

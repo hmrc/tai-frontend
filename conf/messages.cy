@@ -711,6 +711,13 @@ tai.incomeTaxComparison.taxFreeAmount.totalAdditions=Cyfanswm yr ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Cyfanswm y didyniadau
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Eich cyfanswm sy’n rhydd o dreth
 
+tai.incomeTaxComparison.taxFreeAmount.summary=Crynodeb o’r swm rhydd o dreth
+tai.incomeTaxComparison.taxFreeAmount.calculated.items=Eitemau cyfrifedig
+tai.incomeTaxComparison.taxFreeAmount.addition=Ychwanegiad
+tai.incomeTaxComparison.taxFreeAmount.breakdown.additions=Dadansoddiad o’r ychwanegiadau
+tai.incomeTaxComparison.taxFreeAmount.deduction=Didyniad
+tai.incomeTaxComparison.taxFreeAmount.breakdown.deductions=Dadansoddiad o’r didyniadau
+
 tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
 tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
 tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text=Caiff eich codau treth a’ch amcangyfrifon incwm ar gyfer y flwyddyn dreth nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
