@@ -51,8 +51,8 @@
 
     @personalAllowanceRow = {
 
-        <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header tax-free-amount-comparison-personal-allowance">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</th>
+        <tr class="govuk-table__row tax-free-amount-comparison-personal-allowance">
+            <th scope="row" class="govuk-table__header">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</th>
             @if(showPreviousColumn) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)</td>
             }
@@ -65,13 +65,13 @@
     @iabdBreakdownRows(sequence: Seq[CodingComponentPairModel], translations: Map[String, String]) = {
 
         <tr class="govuk-table__row">
-            <td colspan="@taxFreeAmount.columns" class="govuk-table__cell" aria-colspan="@taxFreeAmount.columns">
+            <td colspan="@taxFreeAmount.columns" class="govuk-table__cell tax-free-amount-comparison-row-heading" aria-colspan="@taxFreeAmount.columns">
             @Messages(translations("title"))
             </td>
         </tr>
 
     @if(sequence.isEmpty) {
-        <tr class="govuk-table__row">
+        <tr class="govuk-table__row tax-free-amount-comparison-blank-row">
             <th scope="row" class="govuk-table__header">@Messages(translations("noItems"))</th>
             @if(showPreviousColumn) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -126,7 +126,7 @@
     }
 
     @totalTaxFreeAmountRow = {
-        <tr class="govuk-table__row">
+        <tr class="govuk-table__row tax-free-amount-comparison-total">
             <th id="totals-label" scope="row" class="govuk-table__header">
             @Messages("tai.taxFreeAmount.table.totals.label")
             </th>
