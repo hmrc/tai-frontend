@@ -52,7 +52,7 @@
     @personalAllowanceRow = {
 
         <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</th>
+            <th scope="row" class="govuk-table__header tax-free-amount-comparison-personal-allowance">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</th>
             @if(showPreviousColumn) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)</td>
             }

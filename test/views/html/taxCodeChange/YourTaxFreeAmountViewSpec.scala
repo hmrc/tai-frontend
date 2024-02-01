@@ -40,14 +40,14 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }
 
-    "have h2 heading for how tax-free amount is calculated" in {
-      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
+    "have table caption for how tax-free amount is calculated" in {
+      doc must haveCaptionWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
     }
 
     "display a detail section" which {
 
       "contains 3 columns when previous is present" in {
-        doc.select("th").size() mustBe 3
+        doc.select("th").size() mustBe 7
       }
 
       "contains no header when previous is not present" in {

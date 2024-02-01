@@ -1,6 +1,5 @@
 @import 'base/helpers';
 @import 'base/layout';
-@import 'base/table';
 @import 'modules/print';
 @import 'modules/printSCA';
 @import 'modules/navigation';
@@ -443,4 +442,11 @@ html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:focus {
 
 .govuk-vertical-align-middle {
   vertical-align: top;
+}
+
+// css to ensure minus stays with amount in one line
+.table__cell--top-align-nowrap {
+  vertical-align: top;
+  white-space: nowrap;
+  width: 28%;
 }
