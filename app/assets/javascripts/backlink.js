@@ -29,11 +29,3 @@ if(backlink != null && backlink != 'undefined') {
         }
     });
 }
-
-const urbannerText = document.getElementsByClassName('govuk-link hmrc-user-research-banner__link')[0];
-
-if (urbannerText != null && urbannerText != 'undefined') {
-    if (document.getElementsByTagName("html")[0].getAttribute("lang") == "en") {
-        urbannerText.textContent="Take part in user research (opens in new tab)";
-    }
-}
