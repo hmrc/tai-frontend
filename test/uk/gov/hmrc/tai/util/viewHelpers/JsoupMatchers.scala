@@ -265,6 +265,7 @@ trait JsoupMatchers {
   def haveSpanWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "span")
   def haveSummaryElementWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "summary")
   def haveListItemWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "li")
+  def haveDivItemWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "div")
   def haveBulletPointWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "ul>li")
   def haveOrderedBulletPointWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "ol>li")
   def haveThWithText(expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "th")

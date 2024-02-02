@@ -41,7 +41,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
           messages("tai.incomeTax.history.details.nationalInsurance") +
           s" ${person.nino.formatted}"
       )
-      doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
+      doc must haveDivItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
 
     "display a details card when some of the fields are empty" in {
@@ -53,7 +53,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
           messages("tai.incomeTax.history.details.nationalInsurance") +
           s" ${person.nino.formatted}"
       )
-      doc must haveListItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
+      doc must haveDivItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
 
     "display a details card with no address" when {
@@ -69,15 +69,15 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
     "display ERN or pension" should {
       "display pension if available" in {
-        doc must haveListItemWithText(messages("tai.pensionNumber") + "pension-number")
+        doc must haveDivItemWithText(messages("tai.pensionNumber") + " pension-number")
       }
 
       "display ern if pension but no payroll number" in {
-        doc must haveListItemWithText(messages("tai.incomeTax.history.employerReference") + "ern-for-pension")
+        doc must haveDivItemWithText(messages("tai.incomeTax.history.employerReference") + " ern-for-pension")
       }
 
       "display ern if not a pension" in {
-        doc must haveListItemWithText(messages("tai.incomeTax.history.employerReference") + "ern")
+        doc must haveDivItemWithText(messages("tai.incomeTax.history.employerReference") + " ern")
       }
     }
 
@@ -97,9 +97,9 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
         maybeTaxCode match {
           case Some(taxCode) =>
-            doc must haveListItemWithText(s"Tax code $taxCode")
+            doc must haveDivItemWithText(s"Tax code $taxCode")
           case None =>
-            doc must haveListItemWithText("Tax code " + messages("tai.incomeTax.history.unavailable"))
+            doc must haveDivItemWithText("Tax code " + messages("tai.incomeTax.history.unavailable"))
         }
       }
     }
