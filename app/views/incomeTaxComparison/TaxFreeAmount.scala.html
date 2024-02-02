@@ -54,9 +54,9 @@
     </thead>
     <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">
+            <th scope="row" class="govuk-table__cell">
             @messages("tai.income.personalAllowance")
-            </td>
+            </th>
             @for((personalAllowance, itemIndex) <- model.personalAllowance.values zip (LazyList.from(1))) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
                 @pounds(personalAllowance)
@@ -64,7 +64,7 @@
             }
         </tr>
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</td>
+            <th scope="row" class="govuk-table__cell">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</th>
             @if(model.hasAdditions) {
                 @for((total, itemIndex) <- model.additions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1) {
@@ -88,7 +88,7 @@
         </tr>
 
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">@messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption")</td>
+            <th scope="row" class="govuk-table__cell">@messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption")</th>
             @if(model.hasDeductions) {
                 @for((total, itemIndex) <- model.deductions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1) {
@@ -112,7 +112,7 @@
         </tr>
 
         <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</th>
+            <th scope="row" class="govuk-table__header">@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</th>
             @for((total, itemIndex) <- model.footer.values zip (LazyList.from(1))) {
                 @if(itemIndex ==1){
                     <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -168,7 +168,7 @@
                 </tr>
             }
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">@messages("tai.taxFreeAmount.table.additions.total")</th>
+                <th scope="row" class="govuk-table__header">@messages("tai.taxFreeAmount.table.additions.total")</th>
                 @for((total, itemIndex) <- model.additions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1){
                         <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -205,7 +205,7 @@
         <tbody class="govuk-table__body">
             @for(row <- model.deductions.deductions) {
                 <tr class="govuk-table__row">
-                    <td class="govuk-table__cell table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
+                    <th scope="row" class="govuk-table__cell table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</th>
                     @for((deduction, itemIndex) <- row.values zip (LazyList.from(1))) {
                         @{itemIndex match {
                             case 1 =>
@@ -225,7 +225,7 @@
             }
 
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">@messages("tai.taxFreeAmount.table.deductions.total")</th>
+                <th scope="row" class="govuk-table__header">@messages("tai.taxFreeAmount.table.deductions.total")</th>
                 @for((total, itemIndex) <- model.deductions.totals zip (LazyList.from(1))) {
                     @if(itemIndex ==1){
                         <td class="govuk-table__cell govuk-table__cell--numeric">
