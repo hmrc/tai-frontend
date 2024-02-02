@@ -94,10 +94,8 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
     "display no additions details" when {
       "there are no additions" in {
         val docWithOutAdditions = doc(viewWithoutAdditionAndDeductions)
-
-        docWithOutAdditions must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions"))
-        docWithOutAdditions must haveTdWithText("£0")
-        docWithOutAdditions must haveTdWithText("£0")
+        docWithOutAdditions must haveElementWithIdAndText("noAdditionsCurrentYear", "£0")
+        docWithOutAdditions must haveElementWithIdAndText("noAdditionsNextYear", "£0")
 
       }
     }
@@ -105,10 +103,8 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
     "display no deductions details" when {
       "there are no deductions" in {
         val docWithOutDeductions = doc(viewWithoutAdditionAndDeductions)
-
-        docWithOutDeductions must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions"))
-        docWithOutDeductions must haveTdWithText("£0")
-        docWithOutDeductions must haveTdWithText("£0")
+        docWithOutDeductions must haveElementWithIdAndText("noDeductionsCurrentYear", "£0")
+        docWithOutDeductions must haveElementWithIdAndText("noDeductionsNextYear", "£0")
       }
     }
   }
