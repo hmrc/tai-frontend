@@ -157,20 +157,20 @@ messages: Messages)
                                 @if(summary.maybeTaxableIncome.isDefined) {
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
-                                        @Messages("tai.pensionNumber")
+                                            @Messages("tai.incomeTax.history.taxableIncome")
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                        @summary.payrollNumber
+                                            @summary.maybeTaxableIncome
                                         </dd>
                                     </div>
                                 }
                                 @if(summary.maybeIncomeTaxPaid.isDefined) {
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
-                                        @Messages("tai.incomeTax.history.incomeTaxPaid")
+                                            @Messages("tai.incomeTax.history.incomeTaxPaid")
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                        @summary.maybeIncomeTaxPaid
+                                            @summary.maybeIncomeTaxPaid
                                         </dd>
                                     </div>
                                 }
