@@ -31,6 +31,7 @@
 
 <a @if(id.getOrElse("").nonEmpty){id="@id"} href="@url"
     @if(isButton){
+        id="submitButton"
         role="button"
         @if(isSecondary){
             class="govuk-button govuk-button--secondary @linkClasses.mkString(" ")"

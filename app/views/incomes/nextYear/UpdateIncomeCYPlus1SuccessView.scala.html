@@ -49,8 +49,8 @@
 
             @govukButton(Button(
                 href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url.toString),
-                content = Text(messages("return.to.your.income.tax.summary"))
-            ))
+                content = Text(messages("return.to.your.income.tax.summary")),
+                id=Some("submitButton")))
         </div>
     </div>
 }

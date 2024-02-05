@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo, urlMatching}
 import play.api.cache.AsyncCacheApi
 import play.api.http.Status.OK
 import play.api.inject.bind
@@ -32,7 +32,6 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 import utils.{FakeAsyncCacheApi, IntegrationSpec}
 
-import java.time.LocalDate
 import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
@@ -40,6 +39,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   lazy val fakeAsyncCacheApi = new FakeAsyncCacheApi()
 
   val url = "/check-income-tax/what-do-you-want-to-do"
+  private val startTaxYear = TaxYear().start.getYear
 
   "What do you want to do page" must {
     "show the webchat" when {
@@ -80,18 +80,18 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
         val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
+          get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
             .willReturn(ok(Json.toJson(employments).toString))
         )
 
         val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear}/summary"))
+          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
             .willReturn(ok(Json.toJson(taxAccountSummary).toString))
         )
 
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear + 1}/summary"))
+          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
             .willReturn(ok(Json.toJson(taxAccountSummary).toString))
         )
 
@@ -147,18 +147,18 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
       val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
       server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
+        get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
           .willReturn(ok(Json.toJson(employments).toString))
       )
 
       val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
       server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear}/summary"))
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/summary"))
           .willReturn(ok(Json.toJson(taxAccountSummary).toString))
       )
 
       server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear + 1}/summary"))
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
           .willReturn(ok(Json.toJson(taxAccountSummary).toString))
       )
 
@@ -201,7 +201,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
     val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
     server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
+      get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
         .willReturn(ok(Json.toJson(employments).toString))
     )
 
@@ -213,7 +213,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         )
 
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
+          get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
             .willReturn(ok(Json.toJson(employments).toString))
         )
 
@@ -231,12 +231,19 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
       "the user has a tax code mismatch and no reported tax code change" in {
         server.stubFor(
+          get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/income/tax-code-incomes"))
+            .willReturn(
+              ok(taxCodeIncomesJson)
+            )
+        )
+
+        server.stubFor(
           get(urlEqualTo(s"/tai/$generatedNino/person"))
             .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
         )
 
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
+          get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
             .willReturn(ok(Json.toJson(employments).toString))
         )
 
@@ -282,17 +289,17 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         )
 
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/${LocalDate.now().getYear}"))
+          get(urlMatching(s"/tai/$generatedNino/employments/years/.*"))
             .willReturn(ok(Json.toJson(employments).toString))
         )
 
         val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear}/summary"))
+          get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startYear/summary"))
             .willReturn(ok(Json.toJson(taxAccountSummary).toString))
         )
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${LocalDate.now().getYear + 1}/summary"))
+          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startYear + 1}/summary"))
             .willReturn(ok(Json.toJson(taxAccountSummary).toString))
         )
 

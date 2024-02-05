@@ -73,7 +73,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
                     classes = "govuk-radios--inline"
                 ).withFormField(payslipDeductionsForm("payslipDeductions")))
 
-                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text"))))
+                @govukButton(Button(content = Text(messages("tai.selectIncome.link.text")), id=Some("submitButton")))
             }
 
             @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(employer.id).url))

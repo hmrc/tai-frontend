@@ -15,7 +15,7 @@ if (
 // back click handle, dependent upon presence of referrer & no host change
 const backlink = document.getElementById('back-link');
 
-if(backlink != null && backlink != 'undefined' ) {
+if(backlink != null && backlink != 'undefined') {
     backlink.addEventListener('click', function (e) {
         e.preventDefault();
         if (
@@ -28,8 +28,4 @@ if(backlink != null && backlink != 'undefined' ) {
             window.history.back();
         }
     });
-}
-
-if (document.getElementsByTagName("html")[0].getAttribute("lang") == "en") {
-    document.getElementsByClassName('govuk-link hmrc-user-research-banner__link')[0].textContent="Take part in user research (opens in new tab)";
 }

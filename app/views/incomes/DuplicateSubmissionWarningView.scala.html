@@ -91,7 +91,7 @@
 
     </div>
 
-    @govukButton(Button(content = Text(messages("tai.submit"))))
+    @govukButton(Button(content = Text(messages("tai.submit")), id=Some("submitButton")))
 
     @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId))
 
