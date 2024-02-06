@@ -24,14 +24,6 @@ import uk.gov.hmrc.tai.viewModels._
 
 class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   "Tax free amount comparision view" must {
-
-    val taxYearEnds = "Current tax year ends " + HtmlFormatter
-      .htmlNonBroken(Dates.formatDate(TaxYear().end))
-      .replaceAll("\u00A0", " ")
-    val taxYearStarts = "Next tax year from " + HtmlFormatter
-      .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
-      .replaceAll("\u00A0", " ")
-
     "display heading" in {
       doc must haveHeadingH2WithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
     }
