@@ -65,14 +65,14 @@
     @iabdBreakdownRows(sequence: Seq[CodingComponentPairModel], translations: Map[String, String]) = {
 
         <tr class="govuk-table__row">
-            <td colspan="@taxFreeAmount.columns" class="govuk-table__cell tax-free-amount-comparison-row-heading" aria-colspan="@taxFreeAmount.columns">
+            <td colspan="@taxFreeAmount.columns" class="govuk-table__cell govuk-table__header tax-free-amount-comparison-row-heading" aria-colspan="@taxFreeAmount.columns">
             @Messages(translations("title"))
             </td>
         </tr>
 
     @if(sequence.isEmpty) {
         <tr class="govuk-table__row tax-free-amount-comparison-blank-row">
-            <th scope="row" class="govuk-table__header">@Messages(translations("noItems"))</th>
+            <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">@Messages(translations("noItems"))</th>
             @if(showPreviousColumn) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
                 @YourTaxFreeAmountViewModel.prettyPrint(0)
@@ -85,7 +85,7 @@
     } else {
         @for(pair <- sequence) {
             <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">
+                <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
                     @pair.label.value
                     @pair.label.link.map { link =>
                         @includes.link(
@@ -110,7 +110,7 @@
         }
 
         <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">@Messages(translations("totalTitle"))</th>
+            <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">@Messages(translations("totalTitle"))</th>
 
             @if(showPreviousColumn) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -133,12 +133,12 @@
 
 
             @if(showPreviousColumn) {
-                <td class="govuk-table__cell govuk-table__cell--numeric">
+                <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
                 @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.annualTaxFreeAmount)
                 </td>
             }
 
-            <td class="govuk-table__cell govuk-table__cell--numeric">
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
             @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
             </td>
         </tr>

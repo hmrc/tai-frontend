@@ -92,7 +92,7 @@ messages: Messages)
             ))
 
         </div>
-        <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+        <div class="govuk-grid-column-two-thirds">
 
             @for(incomeTaxYear <- incomeTaxYears) {
                 <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
@@ -199,7 +199,7 @@ messages: Messages)
 
                 }
 
-            <p class="govuk-!-font-size-19 govuk-!-margin-bottom-9 ">
+            <p class="govuk-!-font-size-19 govuk-!-margin-bottom-3">
                 @if(incomeTaxYear.taxYear == TaxYear() && incomeTaxYear.incomeTaxHistory.nonEmpty){
                     @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
                 } else if (incomeTaxYear.incomeTaxHistory.nonEmpty){
