@@ -95,8 +95,6 @@ lazy val microservice = Project(appName, file("."))
     Concat.groups := Seq(
       "javascripts/tai-app.js" -> group(Seq(
         "javascripts/card.js",
-        "javascripts/char-count.js",
-        "javascripts/tai-new.js",
         "javascripts/tax-code-change.js",
         "javascripts/urbanner.js"
       ))

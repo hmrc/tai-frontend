@@ -92,59 +92,122 @@ messages: Messages)
             ))
 
         </div>
-    </div>
+        <div class="govuk-grid-column-two-thirds">
 
-    @for(incomeTaxYear <- incomeTaxYears) {
-        <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
+            @for(incomeTaxYear <- incomeTaxYears) {
+                <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
 
-        @{
-            if (incomeTaxYear.incomeTaxHistory.isEmpty){
-                <div class="govuk-inset-text">
-                    <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
-                </div>
-            }
-        }
-
-        @for(summary <- incomeTaxYear.incomeTaxHistory) {
-            <div class="employment-card-single-u">
-                <div class="employer-name govuk-body carry-over">@summary.employerName</div>
-                <ul class="govuk-list govuk-!-font-size-16 .ul-incomeTaxHistory">
-                    @if(summary.isPension && summary.payrollNumber.isDefined) {
-                        <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.pensionNumber")</span>@summary.payrollNumber</li>
-                    } else {
-                        <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.employerReference")</span>@summary.ern</li>
+                @{
+                    if (incomeTaxYear.incomeTaxHistory.isEmpty){
+                        <div class="govuk-inset-text">
+                            <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
+                        </div>
                     }
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.startDate")</span> @TaxYearRangeUtil.formatDate(summary.startDate)	</li>
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.endDate")</span>
-                        @{if(summary.maybeEndDate.isDefined)
-                            TaxYearRangeUtil.formatDate(summary.maybeEndDate.get)
-                        else
-                            Messages("tai.incomeTax.history.endDate.notApplicable")
-                        }
-                </li>
-                @if(summary.maybeTaxableIncome.isDefined) {
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxableIncome") </span>@summary.maybeTaxableIncome</li>
                 }
-                @if(summary.maybeIncomeTaxPaid.isDefined) {
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.incomeTaxPaid") </span>@summary.maybeIncomeTaxPaid</li>
+
+                @for(summary <- incomeTaxYear.incomeTaxHistory) {
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">@summary.employerName</h2>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                @if(summary.isPension && summary.payrollNumber.isDefined) {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            @Messages("tai.pensionNumber")
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @summary.payrollNumber
+                                        </dd>
+                                    </div>
+                                } else {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            @Messages("tai.incomeTax.history.employerReference")
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @summary.ern
+                                        </dd>
+                                    </div>
+                                }
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        @Messages("tai.incomeTax.history.startDate")
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @TaxYearRangeUtil.formatDate(summary.startDate)
+                                    </dd>
+
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        @Messages("tai.incomeTax.history.endDate")
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @{if(summary.maybeEndDate.isDefined)
+                                            TaxYearRangeUtil.formatDate(summary.maybeEndDate.get)
+                                        else
+                                            Messages("tai.incomeTax.history.endDate.notApplicable")
+                                        }
+                                    </dd>
+
+                                </div>
+
+                                @if(summary.maybeTaxableIncome.isDefined) {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            @Messages("tai.incomeTax.history.taxableIncome")
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @summary.maybeTaxableIncome
+                                        </dd>
+                                    </div>
+                                }
+                                @if(summary.maybeIncomeTaxPaid.isDefined) {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            @Messages("tai.incomeTax.history.incomeTaxPaid")
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @summary.maybeIncomeTaxPaid
+                                        </dd>
+                                    </div>
+                                }
+                                @if(summary.maybeTaxCode.isDefined) {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            @Messages("tai.incomeTax.history.taxCode")
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @summary.maybeTaxCode
+                                        </dd>
+                                    </div>
+                                } else {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            @Messages("tai.incomeTax.history.taxCode")
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @messages("tai.incomeTax.history.unavailable")
+                                        </dd>
+                                    </div>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+
                 }
-                @if(summary.maybeTaxCode.isDefined) {
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxCode") </span>@summary.maybeTaxCode</li>
-                } else {
-                    <li class ="li-incomeTaxHistory"><span class="ul-span-incomeTaxHistory">@Messages("tai.incomeTax.history.taxCode") </span>@messages("tai.incomeTax.history.unavailable")</li>
+
+            <p class="govuk-!-font-size-19 govuk-!-margin-bottom-3">
+                @if(incomeTaxYear.taxYear == TaxYear() && incomeTaxYear.incomeTaxHistory.nonEmpty){
+                    @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
+                } else if (incomeTaxYear.incomeTaxHistory.nonEmpty){
+                    @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
                 }
-            </ul>
+            </p>
+
+            }
         </div>
-    }
-
-    <p class="govuk-!-font-size-19 govuk-!-margin-bottom-9 ">
-        @if(incomeTaxYear.taxYear == TaxYear() && incomeTaxYear.incomeTaxHistory.nonEmpty){
-            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = "/check-income-tax/income-summary", linkClasses = Seq("govuk-link"))
-        } else if (incomeTaxYear.incomeTaxHistory.nonEmpty){
-            @link(copy = messages("tai.incomeTax.history.table.link",TaxPeriodLabelService.taxPeriodLabelYears(incomeTaxYear.taxYear.year)), url = s"/check-income-tax/historic-paye/${incomeTaxYear.taxYear.year}", linkClasses = Seq("govuk-link"))
-        }
-    </p>
-
-    }
-
+    </div>
 }

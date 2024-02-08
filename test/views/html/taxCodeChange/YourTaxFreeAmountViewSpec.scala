@@ -40,14 +40,14 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }
 
-    "have h2 heading for how tax-free amount is calculated" in {
-      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
+    "have table caption for how tax-free amount is calculated" in {
+      doc must haveCaptionWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
     }
 
     "display a detail section" which {
 
       "contains 3 columns when previous is present" in {
-        doc.select("th").size() mustBe 3
+        doc.select("th").size() mustBe 7
       }
 
       "contains no header when previous is not present" in {
@@ -55,27 +55,33 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains 3 cells for personal allowance" in {
-        doc.select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 3
+        doc.select(".tax-free-amount-comparison-personal-allowance th").size() mustBe 1
+        doc.select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 2
       }
 
       "contains 2 cells for personal allowance when previous is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 2
+        doc(currentOnlyView).select(".tax-free-amount-comparison-personal-allowance th").size() mustBe 1
+        doc(currentOnlyView).select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 1
       }
 
       "contains 3 cells for each addition and deduction" in {
-        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 6
+        doc.select(".tax-free-amount-comparison-blank-row th").size() mustBe 2
+        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 4
       }
 
       "contains 2 cells for each addition and deduction when previous is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 4
+        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row th").size() mustBe 2
+        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 2
       }
 
       "contains 3 cells for total tax free amount" in {
-        doc.select(".tax-free-amount-comparison-total td").size() mustBe 3
+        doc.select(".tax-free-amount-comparison-total th").size() mustBe 1
+        doc.select(".tax-free-amount-comparison-total td").size() mustBe 2
       }
 
       "contains 2 cells for total tax free amount is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-total td").size() mustBe 2
+        doc(currentOnlyView).select(".tax-free-amount-comparison-total th").size() mustBe 1
+        doc(currentOnlyView).select(".tax-free-amount-comparison-total td").size() mustBe 1
       }
 
       "contains a heading for the addition section" in {
@@ -94,13 +100,13 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
       "contains heading for the personal allowance category" in {
         doc must haveElementAtPathWithText(
-          ".tax-free-amount-comparison-row-title",
+          ".tax-free-amount-comparison-personal-allowance th",
           Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")
         )
       }
 
       "contains heading for the total category" in {
-        doc must haveElementAtPathWithText("td#totals-label", Messages("tai.taxFreeAmount.table.totals.label"))
+        doc must haveElementAtPathWithText("#totals-label", Messages("tai.taxFreeAmount.table.totals.label"))
       }
 
       "visually formats the final table" when {

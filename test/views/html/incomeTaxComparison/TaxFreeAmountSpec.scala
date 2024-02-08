@@ -24,14 +24,6 @@ import uk.gov.hmrc.tai.viewModels._
 
 class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   "Tax free amount comparision view" must {
-
-    val taxYearEnds = "Current tax year ends " + HtmlFormatter
-      .htmlNonBroken(Dates.formatDate(TaxYear().end))
-      .replaceAll("\u00A0", " ")
-    val taxYearStarts = "Next tax year from " + HtmlFormatter
-      .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
-      .replaceAll("\u00A0", " ")
-
     "display heading" in {
       doc must haveHeadingH2WithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
     }
@@ -58,46 +50,44 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "display  personal allowance table" in {
-      doc must haveTdWithText(messages("tai.income.personalAllowance"))
-      doc must haveTdWithText(taxYearEnds + " £11,500")
-      doc must haveTdWithText(taxYearStarts + " £11,850")
+      doc must haveThWithText(messages("tai.income.personalAllowance"))
+      doc must haveTdWithText("£11,500")
+      doc must haveTdWithText("£11,850")
     }
 
     "display additions table" in {
-      doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption"))
-      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"))
-      doc must haveTdWithText(taxYearEnds + " £1,000")
-      doc must haveTdWithText(taxYearStarts + " £1,100")
+      doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.breakdown.additions"))
+      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"))
+      doc must haveTdWithText("£1,000")
+      doc must haveTdWithText("£1,100")
 
-      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.PartTimeEarnings"))
-      doc must haveTdWithText(taxYearStarts + " not applicable")
+      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.PartTimeEarnings"))
+      doc must haveTdWithText("not applicable")
     }
 
     "display deductions table" in {
-      doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption"))
-      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"))
-      doc must haveTdWithText(taxYearEnds + " £1,000")
-      doc must haveTdWithText(taxYearStarts + " £1,100")
+      doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.breakdown.deductions"))
+      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"))
+      doc must haveTdWithText("£1,000")
+      doc must haveTdWithText("£1,100")
 
-      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.CasualEarnings"))
-      doc must haveTdWithText(taxYearEnds + " not applicable")
-      doc must haveTdWithText(taxYearStarts + " £1,100")
+      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.CasualEarnings"))
+      doc must haveTdWithText("not applicable")
+      doc must haveTdWithText("£1,100")
 
     }
 
     "display total table" in {
-      doc must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
-      doc must haveTdWithText("Current tax year £3,000")
-      doc must haveTdWithText("Next tax year £3,300")
+      doc must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
+      doc must haveTdWithText("£3,000")
+      doc must haveTdWithText("£3,300")
     }
 
     "display no additions details" when {
       "there are no additions" in {
         val docWithOutAdditions = doc(viewWithoutAdditionAndDeductions)
-
-        docWithOutAdditions must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions"))
-        docWithOutAdditions must haveTdWithText(taxYearEnds + " £0")
-        docWithOutAdditions must haveTdWithText(taxYearStarts + " £0")
+        docWithOutAdditions must haveElementWithIdAndText("noAdditionsCurrentYear", "£0")
+        docWithOutAdditions must haveElementWithIdAndText("noAdditionsNextYear", "£0")
 
       }
     }
@@ -105,10 +95,8 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
     "display no deductions details" when {
       "there are no deductions" in {
         val docWithOutDeductions = doc(viewWithoutAdditionAndDeductions)
-
-        docWithOutDeductions must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions"))
-        docWithOutDeductions must haveTdWithText(taxYearEnds + " £0")
-        docWithOutDeductions must haveTdWithText(taxYearStarts + " £0")
+        docWithOutDeductions must haveElementWithIdAndText("noDeductionsCurrentYear", "£0")
+        docWithOutDeductions must haveElementWithIdAndText("noDeductionsNextYear", "£0")
       }
     }
   }
@@ -116,17 +104,17 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   private lazy val personalAllowance = PersonalAllowance(Seq(11500, 11850))
   private lazy val additionsRow1 = Row("GiftAidPayments", Seq(Some(1000), Some(1100)))
   private lazy val additionsRow2 = Row("PartTimeEarnings", Seq(Some(1000), None))
-  private lazy val additions = Additions(Seq(additionsRow1, additionsRow2), Total(Seq(2000, 1100)))
+  private lazy val additions = Additions(Seq(additionsRow1, additionsRow2))
 
   private lazy val deductionsRow1 = Row("OtherEarnings", Seq(Some(1000), Some(1100)))
   private lazy val deductionsRow2 = Row("CasualEarnings", Seq(None, Some(1100)))
-  private lazy val deductions = Deductions(Seq(deductionsRow1, deductionsRow2), Total(Seq(1000, 2200)))
+  private lazy val deductions = Deductions(Seq(deductionsRow1, deductionsRow2))
 
   private lazy val footer = Footer(Seq(3000, 3300))
 
   private lazy val model = TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
   private lazy val modelWithOutAdditionsAndDeductions =
-    TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil, Total(Nil)), Deductions(Nil, Total(Nil)), footer)
+    TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil), Deductions(Nil), footer)
 
   override def view: Html = views.html.incomeTaxComparison.TaxFreeAmount(model)
   def viewWithoutAdditionAndDeductions: Html =

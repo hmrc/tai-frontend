@@ -48,103 +48,99 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="inner-block">
-        @historicIncomeCalculationViewModel.realTimeStatus match {
-        case Available if historicIncomeCalculationViewModel.payments.nonEmpty => {
-        <div class="subsection subsection--wide">
-            <p id="previous-year-summary-message" class="govuk-body">
-                @messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</p>
-            @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
-            @historicIncomeCalculationViewModel.employerName.map { name =>
-            <p id="eyu-message-previous" class="govuk-body">@messages("tai.income.calculation.eyu.previous", name)</p>
-            }
-            } else {
-            @historicIncomeCalculationViewModel.employerName.map { name =>
-            <p class="govuk-body">@messages("tai.income.calculation.previous", name)</p>
-            }
-            }
-        </div>
-        <div class="section soft--top soft--bottom">
-            <table id="taxable-income-table" class="govuk-table">
-                <caption class="text--left table__caption table__caption--bottom-border govuk-visually-hidden">
-                    @messages("tai.income.calculation.incomeTable.caption")
-                </caption>
-                <thead class="govuk-table__head">
-                <tr>
-                    <th class="govuk-table__header govuk-table__header--text govuk-!-width-one-quarter">
-                        @messages("tai.income.calculation.incomeTable.dateHeader")
-                    </th>
-                    <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
-                        @messages("tai.income.calculation.incomeTable.incomeHeader")
-                    </th>
-                    <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
-                        @messages("tai.income.calculation.incomeTable.taxPaidHeader")
-                    </th>
-                    <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
-                        @messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")
-                    </th>
-                </tr>
-                </thead>
-                <tbody class="govuk-table__body">
-                @for(payment <- historicIncomeCalculationViewModel.payments){
-                <tr class="govuk-table__row">
-                    <td class="govuk-table__cell">@Dates.formatDate(payment.date)</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.amount}%,.2f"}</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.taxAmount}%,.2f"}</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @{f"${payment.nationalInsuranceAmount}%,.2f"}
-                    </td>
-                </tr>
+                @historicIncomeCalculationViewModel.realTimeStatus match {
+                    case Available if historicIncomeCalculationViewModel.payments.nonEmpty => {
+                        <div>
+                            <p id="previous-year-summary-message" class="govuk-body">
+                                @messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</p>
+                            @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
+                                @historicIncomeCalculationViewModel.employerName.map { name =>
+                                    <p id="eyu-message-previous" class="govuk-body">@messages("tai.income.calculation.eyu.previous", name)</p>
+                                }
+                            } else {
+                                @historicIncomeCalculationViewModel.employerName.map { name =>
+                                    <p class="govuk-body">@messages("tai.income.calculation.previous", name)</p>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <table id="taxable-income-table" class="govuk-table">
+                                <caption class="govuk-table__caption govuk-visually-hidden">
+                                    @messages("tai.income.calculation.incomeTable.caption")
+                                </caption>
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                                            @messages("tai.income.calculation.incomeTable.dateHeader")
+                                        </th>
+                                        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
+                                            @messages("tai.income.calculation.incomeTable.incomeHeader")
+                                        </th>
+                                        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
+                                            @messages("tai.income.calculation.incomeTable.taxPaidHeader")
+                                        </th>
+                                        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
+                                            @messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="govuk-table__body">
+                                    @for(payment <- historicIncomeCalculationViewModel.payments){
+                                        <tr class="govuk-table__row">
+                                            <th scope="row" class="govuk-table__header">@Dates.formatDate(payment.date)</th>
+                                            <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.amount}%,.2f"}</td>
+                                            <td class="govuk-table__cell govuk-table__cell--numeric">@{f"${payment.taxAmount}%,.2f"}</td>
+                                            <td class="govuk-table__cell govuk-table__cell--numeric">
+                                                @{f"${payment.nationalInsuranceAmount}%,.2f"}
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr class="govuk-table__row">
+                                        <th scope="row" class="govuk-table__header">@messages("tai.taxFree.total")</th>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
+                                            @{f"${historicIncomeCalculationViewModel.payments.last.amountYearToDate}%,.2f"}
+                                        </td>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
+                                            @{f"${historicIncomeCalculationViewModel.payments.last.taxAmountYearToDate}%,.2f"}
+                                        </td>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
+                                            @{f"${historicIncomeCalculationViewModel.payments.last.nationalInsuranceAmountYearToDate}%,.2f"}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div id="eyu-messages">
+                                @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
+                                    <p class="govuk-body">
+                                        @messages("tai.income.calculation.eyu.summary.single",
+                                        historicIncomeCalculationViewModel.employerName.getOrElse("")) </p>
+                                    <p class="govuk-body">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.head</p>
+                                }
+                                @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
+                                    <p class="govuk-body">@messages("tai.income.calculation.eyu.summary.multi",
+                                        historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
+                                    <ul id="eyu-multi-messages-bullets" class="govuk-list govuk-list--bullet">
+                                        @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
+                                            <li>@eyuMessage</li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+
+                        </div>
+                    }
+                    case _ => {
+                        <p class="govuk-body">
+                            @messages("tai.income.calculation.noRtiDataPreviousYear",Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
+                    }
                 }
-                <tr class="table__row--bold">
-                    <td class="govuk-table__cell govuk-!-font-weight-bold">@messages("tai.taxFree.total")</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
-                        @{f"${historicIncomeCalculationViewModel.payments.last.amountYearToDate}%,.2f"}
-                    </td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
-                        @{f"${historicIncomeCalculationViewModel.payments.last.taxAmountYearToDate}%,.2f"}
-                    </td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
-                        @{f"${historicIncomeCalculationViewModel.payments.last.nationalInsuranceAmountYearToDate}%,.2f"}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <div id="eyu-messages" class="section flush--bottom soft--bottom">
-                <div class="eyu-multi-messages">
-                    @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
-                    <p class="govuk-body">
-                        @messages("tai.income.calculation.eyu.summary.single",
-                        historicIncomeCalculationViewModel.employerName.getOrElse("")) </p>
-                    <p class="govuk-body">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.head</p>
-                    }
-                    @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
-                    <p class="govuk-body">@messages("tai.income.calculation.eyu.summary.multi",
-                        historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
-                    <ul id="eyu-multi-messages-bullets" class="govuk-list govuk-list--bullet govuk-!-padding-left-3">
-                        @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
-                        <li>@eyuMessage</li>
-                        }
-                    </ul>
-                    }
-                </div>
             </div>
-
-        </div>
-        }
-        case _ => {
-            <div class="subsection subsection--wide">
-                <p class="govuk-body">
-                    @messages("tai.income.calculation.noRtiDataPreviousYear",Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
-            </div>
-        }
-        }
             <div class="print-this">
                 <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(historicIncomeCalculationViewModel.taxYear,historicIncomeCalculationViewModel.employmentId).toString"
                    class="print-this__link" >@Messages("tai.label.print")</a>
             </div>
-    </div>
-    </div>
-    </div>
 
+        </div>
+    </div>
 }
