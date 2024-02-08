@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.config
 
 import play.api.{ConfigLoader, Configuration, Environment}
-import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
+import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
@@ -56,9 +57,16 @@ class ApplicationConfig @Inject() (
 
   lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
   lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
-  def accessibilityStatementUrl(referrer: String): String =
-    s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=${SafeRedirectUrl(accessibilityBaseUrl + referrer).encodedUrl}"
 
+  def accessibilityStatementUrl(referrer: String) = {
+    val redirectUrl = RedirectUrl(accessibilityBaseUrl + referrer).getEither(
+      OnlyRelative | AbsoluteWithHostnameFromAllowlist("localhost")
+    ) match {
+      case Right(safeRedirectUrl) => safeRedirectUrl.url
+      case Left(error)            => throw new IllegalArgumentException(error)
+    }
+    s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=$redirectUrl"
+  }
   lazy val reportAProblemPartialUrl: String =
     s"${servicesConfig.baseUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUnauthenticatedUrl =

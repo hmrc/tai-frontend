@@ -114,7 +114,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   "display a link to return to choose tax year page" in {
     doc must haveLinkWithUrlWithClass(
-      "govuk-back-link js-visible-back",
+      "govuk-back-link",
       controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
     )
   }

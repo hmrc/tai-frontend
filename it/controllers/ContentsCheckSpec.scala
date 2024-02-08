@@ -992,7 +992,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           .filter(_.contains("accessibility-statement"))
           .head
         accessibilityStatement must include(
-          "http://localhost:12346/accessibility-statement/check-income-tax?referrerUrl=http%3A%2F%2Flocalhost%3A12346%2Fcheck-income-tax"
+          "http://localhost:12346/accessibility-statement/check-income-tax"
         )
 
         if (expectedData.navBarExpected) {

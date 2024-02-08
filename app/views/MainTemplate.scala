@@ -23,15 +23,11 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.ServiceURLs
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.sca.models.BannerConfig
 import uk.gov.hmrc.sca.services.WrapperService
-import uk.gov.hmrc.tai.model.admin.SCAWrapperToggle
-
-import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
-import views.html.oldMainTemplate
 import views.html.includes.{AdditionalJavascript, HeadBlock}
 
 @ImplementedBy(classOf[MainTemplateImpl])
@@ -55,7 +51,6 @@ class MainTemplateImpl @Inject() (
   appConfig: ApplicationConfig,
   featureFlagService: FeatureFlagService,
   wrapperService: WrapperService,
-  oldLayout: oldMainTemplate,
   scripts: AdditionalJavascript,
   headBlock: HeadBlock
 ) extends MainTemplate with Logging {
@@ -72,8 +67,6 @@ class MainTemplateImpl @Inject() (
     showPtaAccountNav: Boolean = true,
     formForErrorSummary: Option[Form[_]] = None
   )(content: Html)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable = {
-    val scaWrapperToggle =
-      Await.result(featureFlagService.get(SCAWrapperToggle), Duration(appConfig.SCAWrapperFutureTimeout, SECONDS))
 
     val prefix =
       if (formForErrorSummary.exists(_.errors.nonEmpty)) {
@@ -83,43 +76,29 @@ class MainTemplateImpl @Inject() (
       }
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
-    if (scaWrapperToggle.isEnabled) {
-      logger.debug(s"SCA Wrapper layout used for request `${request.uri}``")
-      wrapperService.layout(
-        content = content,
-        pageTitle = Some(fullPageTitle),
-        serviceNameKey = Some(messages(pageTitle.getOrElse("tai.service.navTitle"))),
-        serviceNameUrl = Some(appConfig.taiHomePageUrl),
-//      sidebarContent: Option[Html] = None,
-        signoutUrl = controllers.routes.ServiceController.serviceSignout().url,
-        timeOutUrl = Some(controllers.routes.ServiceController.sessionExpiredPage().url),
-        keepAliveUrl = controllers.routes.ServiceController.keepAlive().url,
-        showBackLinkJS = backLinkContent.isDefined && backLinkUrl.contains("#"),
-        backLinkUrl = if (backLinkContent.isDefined) backLinkUrl else None,
-        // showSignOutInHeader: Boolean = false,
-        styleSheets = Seq(headBlock()),
-        scripts = Seq(scripts()),
-        bannerConfig = BannerConfig(false, true, false),
-        optTrustedHelper = authedUser.flatMap(_.trustedHelper),
-        fullWidth = true,
-        hideMenuBar = !showPtaAccountNav,
-        disableSessionExpired = disableSessionExpired
-      )(messages, HeaderCarrierConverter.fromRequest(request), request)
-    } else {
-      logger.debug(s"Old layout used for request `${request.uri}``")
-      oldLayout(
-        title,
-        authedUser,
-        pageTitle,
-        backLinkUrl,
-        backLinkContent,
-        backLinkId,
-        disableSessionExpired,
-        pagePrintable,
-        pagePrintName,
-        showPtaAccountNav,
-        formForErrorSummary
-      )(content)(request, messages)
-    }
+    logger.debug(s"SCA Wrapper layout used for request `${request.uri}``")
+    wrapperService.standardScaLayout(
+      content = content,
+      pageTitle = Some(fullPageTitle),
+      serviceNameKey = Some(messages(pageTitle.getOrElse("tai.service.navTitle"))),
+      serviceURLs = ServiceURLs(
+        serviceUrl = Some(appConfig.taiHomePageUrl),
+        signOutUrl = Some(controllers.routes.ServiceController.serviceSignout().url),
+        accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl(request.uri))
+      ),
+//    sidebarContent: Option[Html] = None,
+      timeOutUrl = Some(controllers.routes.ServiceController.sessionExpiredPage().url),
+      keepAliveUrl = controllers.routes.ServiceController.keepAlive().url,
+      showBackLinkJS = backLinkContent.isDefined && backLinkUrl.contains("#"),
+      backLinkUrl = if (backLinkContent.isDefined) backLinkUrl else None,
+      // showSignOutInHeader: Boolean = false,
+      styleSheets = Seq(headBlock()),
+      scripts = Seq(scripts()),
+      bannerConfig = BannerConfig(false, true, false),
+      optTrustedHelper = authedUser.flatMap(_.trustedHelper),
+      fullWidth = true,
+      hideMenuBar = !showPtaAccountNav,
+      disableSessionExpired = disableSessionExpired
+    )(messages, HeaderCarrierConverter.fromRequest(request), request)
   }
 }

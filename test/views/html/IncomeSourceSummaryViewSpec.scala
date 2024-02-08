@@ -325,7 +325,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display a link to return to income tax summary" in {
       doc must haveLinkWithUrlWithClass(
-        "govuk-back-link js-visible-back",
+        "govuk-back-link",
         controllers.routes.TaxAccountSummaryController.onPageLoad().url
       )
     }
