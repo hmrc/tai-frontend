@@ -70,7 +70,7 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),List())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 
@@ -97,7 +97,7 @@ class JrsClaimsSpec extends PlaySpec with BaseSpec {
         invalidJson.as[JrsClaims]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/employers,List(JsonValidationError(List(error.path.missing),List())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/employers,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
 
     }
 

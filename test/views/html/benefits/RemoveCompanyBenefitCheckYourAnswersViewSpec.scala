@@ -42,7 +42,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
 
     "display a back button" in {
       doc must haveLinkWithUrlWithClass(
-        "govuk-back-link js-visible-back",
+        "govuk-back-link",
         controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
       )
     }

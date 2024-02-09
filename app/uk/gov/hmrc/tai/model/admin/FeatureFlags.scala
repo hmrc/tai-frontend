@@ -32,13 +32,6 @@ case object IncomeTaxHistoryToggle extends FeatureFlagName {
   )
 }
 
-case object SCAWrapperToggle extends FeatureFlagName {
-  override val name: String = "sca-wrapper-toggle"
-  override val description: Option[String] = Some(
-    "Enable/disable the SCA wrapper"
-  )
-}
-
 case object PertaxBackendToggle extends FeatureFlagName {
   override val name: String = "pertax-backend-toggle"
   override val description: Option[String] = Some(

@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.metrics
 
 import com.codahale.metrics.{MetricRegistry, Timer}
 import play.api.mvc.{Action, BaseController, Result}
+import uk.gov.hmrc.play.bootstrap.metrics.Metrics
 
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +33,7 @@ trait HasActionMetrics extends HasMetrics { self: BaseController =>
 trait HasMetrics {
   type Metric = String
 
-  def metrics: com.kenshoo.play.metrics.Metrics
+  def metrics: Metrics
 
   lazy val registry: MetricRegistry = metrics.defaultRegistry
 

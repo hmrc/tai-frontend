@@ -203,22 +203,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         Messages("income.tax.history.content", appConfig.numberOfPreviousYearsToShowIncomeTaxHistory)
       )
     }
-
-    "show the unread messages indicator when user has unread messages" in {
-      val messageCount = Random.nextInt(100) + 1
-
-      implicit val authedUser: AuthedUser = UserBuilder().copy(messageCount = Some(messageCount))
-
-      val view: Html = whatDoYouWantToDoTileView(
-        form,
-        modelNoiFormNoCyPlus1,
-        appConfig,
-        incomeTaxHistoryEnabled = true,
-        cyPlusOneEnabled = false
-      )
-
-      view.body must include(s"""<span class="hmrc-notification-badge">$messageCount</span>""")
-    }
   }
 
   def createViewModel(

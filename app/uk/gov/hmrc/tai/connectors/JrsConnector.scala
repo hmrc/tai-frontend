@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.connectors
 
 import cats.data.OptionT
 import com.google.inject.{Inject, Singleton}
-import com.kenshoo.play.metrics.Metrics
 import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HttpClient, _}
+import uk.gov.hmrc.play.bootstrap.metrics.Metrics
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.metrics.HasMetrics
 import uk.gov.hmrc.tai.model.JrsClaims

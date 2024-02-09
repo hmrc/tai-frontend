@@ -37,7 +37,7 @@ import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, PertaxBackendToggle, SCAWrapperToggle}
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, PertaxBackendToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -600,8 +600,6 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
     )
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, true)))
-    when(mockFeatureFlagService.get(SCAWrapperToggle))
-      .thenReturn(Future.successful(FeatureFlag(SCAWrapperToggle, true)))
     when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
 
     server.stubFor(
@@ -986,7 +984,7 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
           .filter(_.contains("accessibility-statement"))
           .head
         accessibilityStatement must include(
-          "http://localhost:12346/accessibility-statement/check-income-tax?referrerUrl=http%3A%2F%2Flocalhost%3A12346%2Fcheck-income-tax"
+          "http://localhost:12346/accessibility-statement/check-income-tax"
         )
 
         if (expectedData.navBarExpected) {

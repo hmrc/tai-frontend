@@ -115,11 +115,9 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "display a link to return to choose tax year page" in {
-      doc must haveLinkWithUrlWithClass(
-        "govuk-back-link js-visible-back",
+      doc must haveBackLinkWithUrl(
         controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
       )
-      doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
 
     "show the tax codes section" in {
