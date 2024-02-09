@@ -31,11 +31,9 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
-import uk.gov.hmrc.tai.model.admin.SCAWrapperToggle
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
@@ -97,8 +95,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfter
 
   override def beforeEach(): Unit = {
     reset(mockFeatureFlagService)
-    when(mockFeatureFlagService.get(SCAWrapperToggle))
-      .thenReturn(Future.successful(FeatureFlag(SCAWrapperToggle, isEnabled = false)))
     reset(employmentService, trackSuccessJourneyCacheService)
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(

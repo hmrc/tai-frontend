@@ -19,7 +19,7 @@ package controllers.testOnly
 import controllers.TaiBaseController
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, SCAWrapperToggle}
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -36,8 +36,7 @@ class FeatureFlagsController @Inject() (
       .setAll(
         Map(
           CyPlusOneToggle        -> true,
-          IncomeTaxHistoryToggle -> true,
-          SCAWrapperToggle       -> false
+          IncomeTaxHistoryToggle -> true
         )
       )
       .map(_ => Ok("Default flags set"))
