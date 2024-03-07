@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, _}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
@@ -208,7 +208,10 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
         val taxBands = List(
           TaxBand("B", "", 32010, 6402, None, None, 20),
-          TaxBand("D0", "", 36466, 36466, None, None, 40)
+          TaxBand("D0", "", 36466, 36466, None, None, 40),
+          TaxBand("D1", "", 36466, 36466, None, None, 40),
+          TaxBand("D2", "", 36466, 36466, None, None, 40),
+          TaxBand("D3", "", 36466, 36466, None, None, 40)
         )
 
         val incomeCategories = Seq(
@@ -237,7 +240,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
         doc(viewWithNonSavings) must haveTdWithText("£36,466")
         doc(viewWithNonSavings) must haveTdWithText(messages("estimate.scottish.bandtype.D0"))
         doc(viewWithNonSavings) must haveTdWithText("40%")
-        doc(viewWithNonSavings) must haveTdWithText("£36,466")
+        doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+        doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+        doc(viewWithNonSavings) must haveTdWithText("Higher rate")
+        doc(viewWithNonSavings) must haveTdWithText("Advanced rate")
+        doc(viewWithNonSavings) must haveTdWithText("Top rate")
+
       }
 
       "UK user have savings" in {
