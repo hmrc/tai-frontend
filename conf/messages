@@ -44,6 +44,7 @@ estimate.scottish.bandtype.B=Basic rate
 estimate.scottish.bandtype.D0=Intermediate rate
 estimate.scottish.bandtype.D1=Higher rate
 estimate.scottish.bandtype.D2=Advanced rate
+estimate.scottish.bandtype.D2.2023=Top rate
 estimate.scottish.bandtype.D3=Top rate
 estimate.scottish.bandtype.D4=Higher3 rate
 estimate.scottish.bandtype.D5=Higher4 rate

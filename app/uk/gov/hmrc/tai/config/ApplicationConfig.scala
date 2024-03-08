@@ -21,6 +21,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 class ApplicationConfig @Inject() (
@@ -140,4 +141,10 @@ class ApplicationConfig @Inject() (
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String =
     servicesConfig.baseUrl("pertax")
+
+  lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
+  lazy val newTaxBandsReleaseDate: LocalDate = {
+    println("aaaaaa" + LocalDate.parse(newTaxBandsRelease))
+    LocalDate.parse(newTaxBandsRelease)
+  }
 }

@@ -43,6 +43,7 @@ estimate.scottish.bandtype.B=Cyfradd sylfaenol
 estimate.scottish.bandtype.D0=Cyfradd ganolradd
 estimate.scottish.bandtype.D1=Cyfradd uwch
 estimate.scottish.bandtype.D2=Cyfradd uwch bellach
+estimate.scottish.bandtype.D2.2023=Cyfradd uchaf
 estimate.scottish.bandtype.D3=Cyfradd uchaf
 estimate.scottish.bandtype.D4=Cyfradd uwch3
 estimate.scottish.bandtype.D5=Cyfradd uwch4

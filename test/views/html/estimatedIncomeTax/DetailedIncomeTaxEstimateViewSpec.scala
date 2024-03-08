@@ -19,6 +19,7 @@ package views.html.estimatedIncomeTax
 import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -29,6 +30,8 @@ import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, TaxSummaryLabel}
 import views.html.includes.link
+
+import java.time.LocalDate
 
 class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
@@ -193,59 +196,108 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           nonTaxCodeIncome
         )
 
-        val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel)
+        val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, appConfig)
         doc(viewWithNonSavings) must haveTdWithText("£32,010")
-        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.uk.bandtype.B"))
+        doc(viewWithNonSavings) must haveTdWithText("Basic rate")
         doc(viewWithNonSavings) must haveTdWithText("20%")
         doc(viewWithNonSavings) must haveTdWithText("£6,402")
         doc(viewWithNonSavings) must haveTdWithText("£36,466")
-        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.uk.bandtype.D0"))
+        doc(viewWithNonSavings) must haveTdWithText("Higher rate")
         doc(viewWithNonSavings) must haveTdWithText("40%")
         doc(viewWithNonSavings) must haveTdWithText("£36,466")
       }
 
-      "Scottish user have non-savings" in {
+      "Scottish user have non-savings" when {
+        "before new tax year 2024" in {
 
-        val taxBands = List(
-          TaxBand("B", "", 32010, 6402, None, None, 20),
-          TaxBand("D0", "", 36466, 36466, None, None, 40),
-          TaxBand("D1", "", 36466, 36466, None, None, 40),
-          TaxBand("D2", "", 36466, 36466, None, None, 40),
-          TaxBand("D3", "", 36466, 36466, None, None, 40)
-        )
+          val mockAppConfig = mock[ApplicationConfig]
 
-        val incomeCategories = Seq(
-          IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
-        )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-        val taxCodeIncome: Seq[TaxCodeIncome] =
-          List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
+          val taxBands = List(
+            TaxBand("B", "", 32010, 6402, None, None, 20),
+            TaxBand("D0", "", 36466, 36466, None, None, 40),
+            TaxBand("D1", "", 36466, 36466, None, None, 40),
+            TaxBand("D2", "", 36466, 36466, None, None, 40),
+            TaxBand("D3", "", 36466, 36466, None, None, 40)
+          )
 
-        val viewModel = DetailedIncomeTaxEstimateViewModel(
-          totalTax,
-          taxCodeIncome,
-          taxAccountSummary,
-          Seq.empty[CodingComponent],
-          nonTaxCodeIncome
-        )
+          val incomeCategories = Seq(
+            IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
+          )
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+          val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+          val taxCodeIncome: Seq[TaxCodeIncome] =
+            List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
-        val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel)
+          val viewModel = DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncome,
+            taxAccountSummary,
+            Seq.empty[CodingComponent],
+            nonTaxCodeIncome
+          )
 
-        doc(viewWithNonSavings) must haveTdWithText("£32,010")
-        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.scottish.bandtype.B"))
-        doc(viewWithNonSavings) must haveTdWithText("20%")
-        doc(viewWithNonSavings) must haveTdWithText("£6,402")
-        doc(viewWithNonSavings) must haveTdWithText("£36,466")
-        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.scottish.bandtype.D0"))
-        doc(viewWithNonSavings) must haveTdWithText("40%")
-        doc(viewWithNonSavings) must haveTdWithText("Basic rate")
-        doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
-        doc(viewWithNonSavings) must haveTdWithText("Higher rate")
-        doc(viewWithNonSavings) must haveTdWithText("Advanced rate")
-        doc(viewWithNonSavings) must haveTdWithText("Top rate")
+          when(mockAppConfig.newTaxBandsReleaseDate).thenReturn(LocalDate.now().plusDays(1))
+          val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, mockAppConfig)
 
+          doc(viewWithNonSavings) must haveTdWithText("£32,010")
+          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+          doc(viewWithNonSavings) must haveTdWithText("20%")
+          doc(viewWithNonSavings) must haveTdWithText("£6,402")
+          doc(viewWithNonSavings) must haveTdWithText("£36,466")
+          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+          doc(viewWithNonSavings) must haveTdWithText("40%")
+          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+          doc(viewWithNonSavings) must haveTdWithText("Higher rate")
+          doc(viewWithNonSavings) must haveTdWithText("Top rate")
+          doc(viewWithNonSavings) mustNot haveTdWithText("Advanced rate")
+        }
+        "after new tax year 2024" in {
+
+          val mockAppConfig = mock[ApplicationConfig]
+
+          val taxBands = List(
+            TaxBand("B", "", 32010, 6402, None, None, 20),
+            TaxBand("D0", "", 36466, 36466, None, None, 40),
+            TaxBand("D1", "", 36466, 36466, None, None, 40),
+            TaxBand("D2", "", 36466, 36466, None, None, 40),
+            TaxBand("D3", "", 36466, 36466, None, None, 40)
+          )
+
+          val incomeCategories = Seq(
+            IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
+          )
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+          val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+          val taxCodeIncome: Seq[TaxCodeIncome] =
+            List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
+
+          val viewModel = DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncome,
+            taxAccountSummary,
+            Seq.empty[CodingComponent],
+            nonTaxCodeIncome
+          )
+
+          when(mockAppConfig.newTaxBandsReleaseDate).thenReturn(LocalDate.now().minusDays(1))
+          val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, mockAppConfig)
+
+          doc(viewWithNonSavings) must haveTdWithText("£32,010")
+          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+          doc(viewWithNonSavings) must haveTdWithText("20%")
+          doc(viewWithNonSavings) must haveTdWithText("£6,402")
+          doc(viewWithNonSavings) must haveTdWithText("£36,466")
+          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+          doc(viewWithNonSavings) must haveTdWithText("40%")
+          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+          doc(viewWithNonSavings) must haveTdWithText("Higher rate")
+          doc(viewWithNonSavings) must haveTdWithText("Advanced rate")
+          doc(viewWithNonSavings) must haveTdWithText("Top rate")
+        }
       }
 
       "UK user have savings" in {
@@ -271,14 +323,14 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           nonTaxCodeIncome
         )
 
-        val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel)
+        val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel, appConfig)
 
         doc(viewWithSavings) must haveTdWithText("£32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("estimate.uk.bandtype.LSR"))
+        doc(viewWithSavings) must haveTdWithText("Basic rate")
         doc(viewWithSavings) must haveTdWithText("20%")
         doc(viewWithSavings) must haveTdWithText("£6,402")
         doc(viewWithSavings) must haveTdWithText("£36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("estimate.uk.bandtype.HSR1"))
+        doc(viewWithSavings) must haveTdWithText("Higher rate")
         doc(viewWithSavings) must haveTdWithText("40%")
         doc(viewWithSavings) must haveTdWithText("£36,466")
       }
@@ -306,14 +358,14 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           nonTaxCodeIncome
         )
 
-        val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel)
+        val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel, appConfig)
 
         doc(viewWithSavings) must haveTdWithText("£32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("estimate.scottish.bandtype.LSR"))
+        doc(viewWithSavings) must haveTdWithText("Basic rate")
         doc(viewWithSavings) must haveTdWithText("20%")
         doc(viewWithSavings) must haveTdWithText("£6,402")
         doc(viewWithSavings) must haveTdWithText("£36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("estimate.scottish.bandtype.HSR1"))
+        doc(viewWithSavings) must haveTdWithText("Higher rate")
         doc(viewWithSavings) must haveTdWithText("40%")
         doc(viewWithSavings) must haveTdWithText("£36,466")
       }
@@ -341,14 +393,14 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           nonTaxCodeIncome
         )
 
-        val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel)
+        val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel, appConfig)
 
         doc(viewWithDividends) must haveTdWithText("£32,010")
-        doc(viewWithDividends) must haveTdWithText(messages("estimate.uk.bandtype.LDR"))
+        doc(viewWithDividends) must haveTdWithText("Basic rate")
         doc(viewWithDividends) must haveTdWithText("20%")
         doc(viewWithDividends) must haveTdWithText("£6,402")
         doc(viewWithDividends) must haveTdWithText("£36,466")
-        doc(viewWithDividends) must haveTdWithText(messages("estimate.uk.bandtype.HDR1"))
+        doc(viewWithDividends) must haveTdWithText("Higher rate")
         doc(viewWithDividends) must haveTdWithText("40%")
         doc(viewWithDividends) must haveTdWithText("£36,466")
       }
@@ -377,14 +429,14 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           nonTaxCodeIncome
         )
 
-        val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel)
+        val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel, appConfig)
 
         doc(viewWithDividends) must haveTdWithText("£32,010")
-        doc(viewWithDividends) must haveTdWithText(messages("estimate.scottish.bandtype.LDR"))
+        doc(viewWithDividends) must haveTdWithText("Basic rate")
         doc(viewWithDividends) must haveTdWithText("20%")
         doc(viewWithDividends) must haveTdWithText("£6,402")
         doc(viewWithDividends) must haveTdWithText("£36,466")
-        doc(viewWithDividends) must haveTdWithText(messages("estimate.scottish.bandtype.HDR1"))
+        doc(viewWithDividends) must haveTdWithText("Higher rate")
         doc(viewWithDividends) must haveTdWithText("40%")
         doc(viewWithDividends) must haveTdWithText("£36,466")
       }
@@ -426,7 +478,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
         val savingsBands = Seq(taxBandSR, taxBandPSR)
         val model = defaultViewModel.copy(savings = savingsBands)
 
-        def view: HtmlFormat.Appendable = detailedIncomeTaxEstimate(model)
+        def view: HtmlFormat.Appendable = detailedIncomeTaxEstimate(model, appConfig)
 
         doc(view) must haveH2HeadingWithText(
           messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")
@@ -455,7 +507,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
         val savingsBands = Seq(taxBandSR, taxBandPSR, taxBandHSR1)
         val model = defaultViewModel.copy(savings = savingsBands)
 
-        def view: Html = detailedIncomeTaxEstimate(model)
+        def view: Html = detailedIncomeTaxEstimate(model, appConfig)
 
         doc(view) must haveH2HeadingWithText(
           messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")
@@ -507,7 +559,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     )
     val model = createViewModel(additionalRows, Seq.empty[ReductionTaxRow])
 
-    def additionalDetailView: Html = detailedIncomeTaxEstimate(model)
+    def additionalDetailView: Html = detailedIncomeTaxEstimate(model, appConfig)
 
     doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
     doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages(
@@ -591,7 +643,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
     val model = createViewModel(Seq.empty[AdditionalTaxDetailRow], reductionTaxRows)
 
-    def reductionTaxDetailView: Html = detailedIncomeTaxEstimate(model)
+    def reductionTaxDetailView: Html = detailedIncomeTaxEstimate(model, appConfig)
 
     doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
     doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages(
@@ -693,7 +745,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     )
   )
 
-  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = detailedIncomeTaxEstimate(vm)
+  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = detailedIncomeTaxEstimate(vm, appConfig)
 
   override def view: Html = view(defaultViewModel)
 
