@@ -143,8 +143,5 @@ class ApplicationConfig @Inject() (
     servicesConfig.baseUrl("pertax")
 
   lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
-  lazy val newTaxBandsReleaseDate: LocalDate = {
-    println("aaaaaa" + LocalDate.parse(newTaxBandsRelease))
-    LocalDate.parse(newTaxBandsRelease)
-  }
+  lazy val newTaxBandsReleaseDate: LocalDate = LocalDate.parse(newTaxBandsRelease)
 }
