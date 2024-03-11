@@ -760,6 +760,7 @@ tai.incomeTaxSummary.ceasedIncomeAmount.prefix=Your taxable income to date is
 tai.incomeTaxSummary.employment.link=View employment details
 tai.incomeTaxSummary.employment.section.heading=Your current employment
 tai.incomeTaxSummary.employmentAndBenefits.link=View or update employment details
+tai.incomeTaxSummary.companyBenefits.link=View or update company benefits
 tai.incomeTaxSummary.endDate.prefix=End date: {0}
 tai.incomeTaxSummary.generalAmount.prefix=The amount is
 tai.incomeTaxSummary.title=Your PAYE Income Tax summary

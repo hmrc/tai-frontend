@@ -101,6 +101,14 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
             )
         </p>
         }
+        <p class="govuk-body flush--top">
+            @link(
+            id=Some(s"${typeLabel}${idx}CompanyLink"),
+            url=incomeSource.cocarLinkUrl,
+            copy=incomeSource.cocarLinkLabel,
+            altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
+            )
+        </p>
     </div>
     }
 

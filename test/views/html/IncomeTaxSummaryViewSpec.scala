@@ -562,122 +562,143 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
   }
 
-  val activeEmployment =
+  val activeEmployment: IncomeSourceViewModel =
     IncomeSourceViewModel(
-      "Company1",
-      "£23,000",
-      "1150L",
+      name = "Company1",
+      amount = "£23,000",
+      taxCode = "1150L",
       displayTaxCode = true,
-      "123",
-      "A100",
-      "123456",
+      taxDistrictNumber = "123",
+      payeNumber = "A100",
+      payrollNumber = "123456",
       displayPayrollNumber = true,
-      "",
+      endDate = "",
       displayEndDate = false,
-      "view employment details",
-      "fake/active/url",
-      Some(url)
+      detailsLinkLabel = "view employment details",
+      detailsLinkUrl = "fake/active/url",
+      taxCodeUrl = Some(url),
+      displayDetailsLink = true,
+      cocarLinkLabel = "view company benefits",
+      cocarLinkUrl = "fake2/active/url"
     )
-  val endedEmployment =
+
+  val endedEmployment: IncomeSourceViewModel =
     IncomeSourceViewModel(
-      "Company2",
-      "£25,000",
-      "1150L",
+      name = "Company2",
+      amount = "£25,000",
+      taxCode = "1150L",
       displayTaxCode = true,
-      "",
-      "",
-      "",
+      taxDistrictNumber = "",
+      payeNumber = "",
+      payrollNumber = "",
       displayPayrollNumber = false,
-      "31 July 2017",
+      endDate = "31 July 2017",
       displayEndDate = true,
-      "view income details",
-      "fake/ended/url"
+      detailsLinkLabel = "view income details",
+      detailsLinkUrl = "fake/ended/url",
+      taxCodeUrl = None,
+      displayDetailsLink = false,
+      cocarLinkLabel = "",
+      cocarLinkUrl = ""
     )
-  val pensionIncome =
+
+  val pensionIncome: IncomeSourceViewModel =
     IncomeSourceViewModel(
-      "PensionProvider1",
-      "£14,000",
-      "",
+      name = "PensionProvider1",
+      amount = "£14,000",
+      taxCode = "",
       displayTaxCode = false,
-      "",
-      "",
-      "",
+      taxDistrictNumber = "",
+      payeNumber = "",
+      payrollNumber = "",
       displayPayrollNumber = false,
-      "",
+      endDate = "",
       displayEndDate = false,
-      "view pension details",
-      "fake/pension/url"
+      detailsLinkLabel = "view pension details",
+      detailsLinkUrl = "fake/pension/url",
+      taxCodeUrl = None,
+      displayDetailsLink = false,
+      cocarLinkLabel = "",
+      cocarLinkUrl = ""
     )
+
   val employments: Seq[IncomeSourceViewModel] = Seq(
     IncomeSourceViewModel(
-      "Company1",
-      "£23,000",
-      "1150L",
+      name = "Company1",
+      amount = "£23,000",
+      taxCode = "1150L",
       displayTaxCode = true,
-      "123",
-      "A100",
-      "123456",
+      taxDistrictNumber = "123",
+      payeNumber = "A100",
+      payrollNumber = "123456",
       displayPayrollNumber = true,
-      "",
+      endDate = "",
       displayEndDate = false,
-      "view income details",
-      "fake/url"
+      detailsLinkLabel = "view income details",
+      detailsLinkUrl = "fake/url",
+      taxCodeUrl = None,
+      displayDetailsLink = false,
+      cocarLinkLabel = "view company benefits",
+      cocarLinkUrl = "fake2/url"
     )
   )
 
-  val otherIncomeSourceViewModel = IncomeSourceViewModel(
-    "State Pension",
-    "£123",
-    "",
+  val otherIncomeSourceViewModel: IncomeSourceViewModel = IncomeSourceViewModel(
+    name = "State Pension",
+    amount = "£123",
+    taxCode = "",
     displayTaxCode = false,
-    "",
-    "",
-    "",
+    taxDistrictNumber = "",
+    payeNumber = "",
+    payrollNumber = "",
     displayPayrollNumber = false,
-    "",
+    endDate = "",
     displayEndDate = false,
-    "",
-    "",
-    displayDetailsLink = false
+    detailsLinkLabel = "",
+    detailsLinkUrl = "",
+    taxCodeUrl = None,
+    displayDetailsLink = false,
+    cocarLinkLabel = "",
+    cocarLinkUrl = ""
   )
 
-  val vm = TaxAccountSummaryViewModel(
-    "main heading",
-    "title",
-    "£15,000",
-    "£12,320",
-    "5 April 2017",
-    Seq(activeEmployment),
-    Seq(pensionIncome),
-    Seq(endedEmployment),
+  val vm: TaxAccountSummaryViewModel = TaxAccountSummaryViewModel(
+    header = "main heading",
+    title = "title",
+    taxFreeAmount = "£15,000",
+    estimatedIncomeTaxAmount = "£12,320",
+    lastTaxYearEnd = "5 April 2017",
+    employments = Seq(activeEmployment),
+    pensions = Seq(pensionIncome),
+    ceasedEmployments = Seq(endedEmployment),
     displayIyaBanner = false,
-    ThreeWeeks,
-    Seq(otherIncomeSourceViewModel),
+    isAnyFormInProgress = ThreeWeeks,
+    otherIncomeSources = Seq(otherIncomeSourceViewModel),
     rtiAvailable = true,
-    "0"
+    totalEstimatedIncome = "0"
   )
 
-  val noSectionsVm = TaxAccountSummaryViewModel(
-    "main heading",
-    "title",
-    "£15,000",
-    "£12,320",
-    "5 April 2017",
-    Nil,
-    Nil,
-    Nil,
+  val noSectionsVm: TaxAccountSummaryViewModel = TaxAccountSummaryViewModel(
+    header = "main heading",
+    title = "title",
+    taxFreeAmount = "£15,000",
+    estimatedIncomeTaxAmount = "£12,320",
+    lastTaxYearEnd = "5 April 2017",
+    employments = Nil,
+    pensions = Nil,
+    ceasedEmployments = Nil,
     displayIyaBanner = false,
-    ThreeWeeks,
-    Seq(otherIncomeSourceViewModel),
+    isAnyFormInProgress = ThreeWeeks,
+    otherIncomeSources = Seq(otherIncomeSourceViewModel),
     rtiAvailable = true,
-    "0"
+    totalEstimatedIncome = "0"
   )
 
   private val template = inject[IncomeTaxSummaryView]
 
-  val employerId = 9876543
-  val taxCode = "1150L"
-  val taxCodeDescription1 =
+  val employerId: Int = 9876543
+  val taxCode: String = "1150L"
+  val taxCodeDescription1: DescriptionListViewModel =
     DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
 
   val viewModel: Map[String, TaxCodeViewModel] = Map(
