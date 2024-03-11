@@ -282,7 +282,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             nonTaxCodeIncome
           )
 
-          when(mockAppConfig.newTaxBandsReleaseDate).thenReturn(LocalDate.now().minusDays(1))
+          when(mockAppConfig.newTaxBandsReleaseDate).thenReturn(LocalDate.now())
           val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, mockAppConfig)
 
           doc(viewWithNonSavings) must haveTdWithText("£32,010")
