@@ -24,9 +24,9 @@ GET         /session-expired                                                    
 
 GET         /start-government-gateway                                                  controllers.AuthProviderController.governmentGatewayEntryPoint()
 
-GET         /company-benefits                                                          controllers.TaxAccountSummaryController.onPageLoad()
 GET         /income-summary                                                            controllers.TaxAccountSummaryController.onPageLoad()
 GET         /income-tax                                                                controllers.TaxAccountSummaryController.onPageLoad()
+GET         /company-benefits                                                          controllers.benefits.CompanyBenefitsSummaryController.onPageLoad(empId: Int)
 GET         /income-details/:empId                                                     controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
 GET         /add-employment/cancel                                                     controllers.employments.AddEmploymentController.cancel()

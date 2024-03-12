@@ -103,10 +103,10 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
         }
         <p class="govuk-body flush--top">
             @link(
-            id=Some(s"${typeLabel}${idx}CompanyLink"),
-            url=incomeSource.companyBenefitLinkUrl,
-            copy=incomeSource.companyBenefitLinkLabel,
-            altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
+                id=Some(s"${typeLabel}${idx}CompanyLink"),
+                url=incomeSource.companyBenefitLinkUrl,
+                copy=incomeSource.companyBenefitLinkLabel,
+                altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
             )
         </p>
     </div>

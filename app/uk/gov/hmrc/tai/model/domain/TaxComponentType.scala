@@ -33,6 +33,7 @@ sealed trait EmploymentPensions extends NonTaxCodeIncomeComponentType
 sealed trait TaxableStateBenefits extends NonTaxCodeIncomeComponentType
 sealed trait OtherIncomes extends NonTaxCodeIncomeComponentType
 sealed trait SavingAndInvestments extends NonTaxCodeIncomeComponentType
+sealed trait CompanyBenefits extends NonTaxCodeIncomeComponentType
 
 sealed trait TaxCodeIncomeComponentType extends IncomeComponentType
 sealed trait NonTaxCodeIncomeComponentType extends IncomeComponentType

@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Call
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{CompanyBenefitsIform, EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHelper}
 
 case class IncomeSourceViewModel(
@@ -85,10 +85,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
           messages(s"tai.incomeTaxSummary.$messageKey.link")
         case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
           messages("tai.incomeTaxSummary.employment.link")
-        case PensionIncome =>
-          messages("tai.incomeTaxSummary.pension.link")
-        case _ =>
-          messages("tai.incomeTaxSummary.income.link")
+        case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
+        case _             => messages("tai.incomeTaxSummary.income.link")
       }
 
     val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
@@ -111,7 +109,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
       ) {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url
       } else {
-        controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        controllers.benefits.routes.CompanyBenefitsSummaryController
+          .onPageLoad(taxedIncome.employment.sequenceNumber)
+          .url
       }
 
     IncomeSourceViewModel(
@@ -144,12 +144,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
       taxCodeIncome.componentType match {
         case EmploymentIncome if employment.employmentStatus == Live =>
           messages(s"tai.incomeTaxSummary.$messageKey.link")
-        case EmploymentIncome if employment.employmentStatus != Live =>
-          messages("tai.incomeTaxSummary.employment.link")
-        case PensionIncome =>
-          messages("tai.incomeTaxSummary.pension.link")
-        case _ =>
-          messages("tai.incomeTaxSummary.income.link")
+        case EmploymentIncome if employment.employmentStatus != Live => messages("tai.incomeTaxSummary.employment.link")
+        case PensionIncome                                           => messages("tai.incomeTaxSummary.pension.link")
+        case _                                                       => messages("tai.incomeTaxSummary.income.link")
       }
 
     val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
@@ -207,9 +204,10 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
         otherNonTaxCodeIncome.incomeComponentType match {
           case _: OtherIncomes =>
-            model.copy(
-              detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url,
-              companyBenefitLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
+            model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
+          case _: CompanyBenefits =>
+            model.copy(companyBenefitLinkUrl =
+              controllers.routes.AuditController.auditLinksToIForm(CompanyBenefitsIform).url
             )
           case _: TaxableStateBenefits =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url)
