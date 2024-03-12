@@ -232,7 +232,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url,
-            cocarLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
+            companyBenefitLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
 
           val sut = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
@@ -246,7 +246,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url,
-            cocarLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
+            companyBenefitLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
 
           val nonTaxCodeIncomeWithBankAccounts = NonTaxCodeIncome(
@@ -276,7 +276,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url,
-            cocarLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
+            companyBenefitLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
 
           val sut = TaxAccountSummaryViewModel(
@@ -296,7 +296,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url,
-            cocarLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
+            companyBenefitLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
           val otherIncomeSourceViewModel3 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.OccupationalPension"),
@@ -389,8 +389,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(nonMatchingSequenceNumber).url,
         taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(nonMatchingSequenceNumber)),
         displayDetailsLink = true,
-        cocarLinkLabel = "View or update company benefits",
-        cocarLinkUrl = "/check-income-tax/company-benefits"
+        companyBenefitLinkLabel = "View or update company benefits",
+        companyBenefitLinkUrl = "/check-income-tax/company-benefits"
       )
     }
   }
@@ -410,8 +410,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
     detailsLinkUrl = "",
     taxCodeUrl = None,
     displayDetailsLink = true,
-    cocarLinkLabel = "",
-    cocarLinkUrl = ""
+    companyBenefitLinkLabel = "",
+    companyBenefitLinkUrl = ""
   )
 
   val noIncomesSources: IncomeSources = IncomeSources(Seq(), Seq(), Seq())

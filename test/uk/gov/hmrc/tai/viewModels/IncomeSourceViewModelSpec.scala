@@ -272,8 +272,8 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
             controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url,
           taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber)),
           displayDetailsLink = true,
-          cocarLinkLabel = messagesApi("tai.incomeTaxSummary.companyBenefits.link"),
-          cocarLinkUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
+          companyBenefitLinkLabel = messagesApi("tai.incomeTaxSummary.companyBenefits.link"),
+          companyBenefitLinkUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
         )
 
       actual mustBe expected

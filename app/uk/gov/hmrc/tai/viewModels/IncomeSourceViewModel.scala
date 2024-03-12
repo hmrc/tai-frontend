@@ -38,8 +38,8 @@ case class IncomeSourceViewModel(
   detailsLinkUrl: String,
   taxCodeUrl: Option[Call] = None,
   displayDetailsLink: Boolean = true,
-  cocarLinkLabel: String,
-  cocarLinkUrl: String
+  companyBenefitLinkLabel: String,
+  companyBenefitLinkUrl: String
 )
 
 object IncomeSourceViewModel extends ViewModelHelper {
@@ -71,8 +71,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
       detailsLinkUrl =
         controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
       taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber)),
-      cocarLinkLabel = messages("tai.incomeTaxSummary.companyBenefits.link"),
-      cocarLinkUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      companyBenefitLinkLabel = messages("tai.incomeTaxSummary.companyBenefits.link"),
+      companyBenefitLinkUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
     )
   }
 
@@ -92,7 +92,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       }
 
     val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
-    val cocarLinkLabel = getLinkLabel("companyBenefits")
+    val companyBenefitLinkLabel = getLinkLabel("companyBenefits")
 
     val detailsLinkUrl =
       if (
@@ -105,7 +105,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url
       }
 
-    val cocarLinkUrl =
+    val companyBenefitLinkUrl =
       if (
         taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
       ) {
@@ -129,8 +129,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
       detailsLinkLabel = detailsLinkLabel,
       detailsLinkUrl = detailsLinkUrl,
       taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber)),
-      cocarLinkLabel = cocarLinkLabel,
-      cocarLinkUrl = cocarLinkUrl
+      companyBenefitLinkLabel = companyBenefitLinkLabel,
+      companyBenefitLinkUrl = companyBenefitLinkUrl
     )
   }
 
@@ -153,7 +153,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       }
 
     val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
-    val cocarLinkLabel = getLinkLabel("companyBenefits")
+    val companyBenefitLinkLabel = getLinkLabel("companyBenefits")
 
     val incomeSourceSummaryUrl =
       if (taxCodeIncome.componentType == EmploymentIncome && employment.employmentStatus != Live) {
@@ -176,8 +176,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
       detailsLinkLabel = detailsLinkLabel,
       detailsLinkUrl = incomeSourceSummaryUrl,
       taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber)),
-      cocarLinkLabel = cocarLinkLabel,
-      cocarLinkUrl = incomeSourceSummaryUrl
+      companyBenefitLinkLabel = companyBenefitLinkLabel,
+      companyBenefitLinkUrl = incomeSourceSummaryUrl
     )
   }
 
@@ -201,15 +201,15 @@ object IncomeSourceViewModel extends ViewModelHelper {
           detailsLinkLabel = messages("tai.updateOrRemove"),
           detailsLinkUrl = "",
           taxCodeUrl = None,
-          cocarLinkLabel = "",
-          cocarLinkUrl = ""
+          companyBenefitLinkLabel = "",
+          companyBenefitLinkUrl = ""
         )
 
         otherNonTaxCodeIncome.incomeComponentType match {
           case _: OtherIncomes =>
             model.copy(
               detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url,
-              cocarLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
+              companyBenefitLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
             )
           case _: TaxableStateBenefits =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url)

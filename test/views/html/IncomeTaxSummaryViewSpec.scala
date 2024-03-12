@@ -578,8 +578,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       detailsLinkUrl = "fake/active/url",
       taxCodeUrl = Some(url),
       displayDetailsLink = true,
-      cocarLinkLabel = "view company benefits",
-      cocarLinkUrl = "fake2/active/url"
+      companyBenefitLinkLabel = "view company benefits",
+      companyBenefitLinkUrl = "fake2/active/url"
     )
 
   val endedEmployment: IncomeSourceViewModel =
@@ -598,8 +598,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       detailsLinkUrl = "fake/ended/url",
       taxCodeUrl = None,
       displayDetailsLink = false,
-      cocarLinkLabel = "",
-      cocarLinkUrl = ""
+      companyBenefitLinkLabel = "",
+      companyBenefitLinkUrl = ""
     )
 
   val pensionIncome: IncomeSourceViewModel =
@@ -618,8 +618,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       detailsLinkUrl = "fake/pension/url",
       taxCodeUrl = None,
       displayDetailsLink = false,
-      cocarLinkLabel = "",
-      cocarLinkUrl = ""
+      companyBenefitLinkLabel = "",
+      companyBenefitLinkUrl = ""
     )
 
   val employments: Seq[IncomeSourceViewModel] = Seq(
@@ -638,8 +638,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       detailsLinkUrl = "fake/url",
       taxCodeUrl = None,
       displayDetailsLink = false,
-      cocarLinkLabel = "view company benefits",
-      cocarLinkUrl = "fake2/url"
+      companyBenefitLinkLabel = "view company benefits",
+      companyBenefitLinkUrl = "fake2/url"
     )
   )
 
@@ -658,8 +658,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     detailsLinkUrl = "",
     taxCodeUrl = None,
     displayDetailsLink = false,
-    cocarLinkLabel = "",
-    cocarLinkUrl = ""
+    companyBenefitLinkLabel = "",
+    companyBenefitLinkUrl = ""
   )
 
   val vm: TaxAccountSummaryViewModel = TaxAccountSummaryViewModel(
