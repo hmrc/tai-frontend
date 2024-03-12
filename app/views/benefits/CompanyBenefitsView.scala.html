@@ -30,7 +30,7 @@
     if(model.isPension){
         messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
     } else {
-        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
+        messages("tai.income.details.companyuBenefitsHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
     }
 }
 
@@ -38,7 +38,7 @@
     if(model.isPension){
         messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
     } else {
-        messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
+        messages("tai.income.details.companyuBenefitsHeading", TaxYearRangeUtil.currentTaxYearRange)
     }
 }
 @backLinkToTaxAccountSummary= {
