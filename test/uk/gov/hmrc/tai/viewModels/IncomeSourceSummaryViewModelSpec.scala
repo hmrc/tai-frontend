@@ -51,7 +51,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     true,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "475",
+    taxDistrictNumber = "475",
     payeNumber = "GA82452"
   )
 
@@ -66,7 +66,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     true,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "475",
+    taxDistrictNumber = "475",
     payeNumber = "GA82452",
     isUpdateInProgress = true
   )
@@ -82,7 +82,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     false,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
 
@@ -97,7 +97,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     false,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345",
     isUpdateInProgress = true
   )

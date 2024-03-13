@@ -37,7 +37,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     isPension = false,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
 
@@ -52,7 +52,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     isPension = false,
     estimatedPayJourneyCompleted = true,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345",
     isUpdateInProgress = true
   )
@@ -68,7 +68,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     isPension = true,
     estimatedPayJourneyCompleted = true,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345",
     isUpdateInProgress = true
   )
@@ -84,7 +84,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     isPension = true,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
 
@@ -251,7 +251,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           isPension = false,
           estimatedPayJourneyCompleted = true,
           rtiAvailable = false,
-          taxDistrctNumber = "123",
+          taxDistrictNumber = "123",
           payeNumber = "AB12345"
         )
 
@@ -272,7 +272,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           isPension = true,
           estimatedPayJourneyCompleted = true,
           rtiAvailable = false,
-          taxDistrctNumber = "123",
+          taxDistrictNumber = "123",
           payeNumber = "AB12345"
         )
 
@@ -297,14 +297,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "display ERN number" when {
         "income source is employment" in {
           doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
-          doc must haveParagraphWithText(s"${model.taxDistrctNumber}/${model.payeNumber}")
+          doc must haveParagraphWithText(s"${model.taxDistrictNumber}/${model.payeNumber}")
         }
       }
 
       "display ERN number" when {
         "income source is pension" in {
           doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
-          doc must haveParagraphWithText(s"${model.taxDistrctNumber}/${model.payeNumber}")
+          doc must haveParagraphWithText(s"${model.taxDistrictNumber}/${model.payeNumber}")
         }
       }
 

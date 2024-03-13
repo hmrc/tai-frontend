@@ -47,7 +47,7 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
     isPension = false,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
 
@@ -62,7 +62,7 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
     isPension = false,
     estimatedPayJourneyCompleted = true,
     rtiAvailable = true,
-    taxDistrctNumber = "123",
+    taxDistrictNumber = "123",
     payeNumber = "AB12345",
     isUpdateInProgress = true
   )
