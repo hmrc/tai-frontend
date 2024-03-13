@@ -27,19 +27,10 @@
 @(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages)
 
 @mainHeading = @{
-    if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
-    } else {
-        messages("tai.income.details.companyuBenefitsHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
-    }
+    messages("tai.income.details.companyBenefitsHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
 }
-
 @title = @{
-    if(model.isPension){
-        messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRange)
-    } else {
-        messages("tai.income.details.companyuBenefitsHeading", TaxYearRangeUtil.currentTaxYearRange)
-    }
+    messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRange)
 }
 @backLinkToTaxAccountSummary= {
     <p class="flush--bottom">
@@ -78,9 +69,6 @@
 
 <div class="govuk-grid-row">
     <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
-        <h2 id="companyBenefitsHeading" class="govuk-heading-m carry-over">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
-
-
         @if(model.benefits.size > 0) {
         <dl class="govuk-summary-list" id="companyBenefitList">
             @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {

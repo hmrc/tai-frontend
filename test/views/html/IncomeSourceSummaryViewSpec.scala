@@ -242,7 +242,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       doc must haveDivWithId("companyBenefitsSection")
       doc must haveH2HeadingWithIdAndText(
         "companyBenefitsHeading",
-        messages("tai.income.details.companyuBenefitsHeading", "Employer")
+        messages("tai.income.details.companyBenefitsHeading", "Employer")
       )
     }
 
