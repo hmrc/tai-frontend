@@ -52,9 +52,65 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
   val cacheKeyEmployment = s"$UpdateIncomeConfirmedAmountKey-$employmentId"
   val cacheKeyPension = s"$UpdateIncomeConfirmedAmountKey-$pensionId"
 
+  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+
+  val annualAccount: AnnualAccount = AnnualAccount(
+    uk.gov.hmrc.tai.model.TaxYear(),
+    Available,
+    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
+    Nil
+  )
+
+  val employment: Employment = Employment(
+    "test employment",
+    Live,
+    Some("EMPLOYER-1122"),
+    LocalDate.now(),
+    None,
+    Seq(annualAccount),
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
+
+  private val taxCodeIncomes = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
+
+  private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
+
+  val personService: PersonService = mock[PersonService]
+  val benefitsService: BenefitsService = mock[BenefitsService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
+    mock[EstimatedPayJourneyCompletionService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  def sut = new CompanyBenefitsSummaryController(
+    mock[AuditConnector],
+    journeyCacheService,
+    taxAccountService,
+    employmentService,
+    benefitsService,
+    estimatedPayJourneyCompletionService,
+    mockAuthJourney,
+    appConfig,
+    mcc,
+    inject[CompanyBenefitsView],
+    inject[ErrorPagesHandler]
+  )
+
   "onPageLoad" must {
-    "display the income details page" when {
-      "asked for employment details" in {
+    "display the benefits details page" when {
+      "asked for benefits details" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -71,13 +127,13 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
           Messages(
-            "tai.employment.income.details.mainHeading.gaTitle",
+            "tai.income.details.companyBenefitsHeading",
             TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
           )
         )
       }
 
-      "asked for pension details" in {
+      "asked for company details" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -94,7 +150,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
           Messages(
-            "tai.pension.income.details.mainHeading.gaTitle",
+            "tai.income.details.companyBenefitsHeading",
             TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
           )
         )
@@ -141,103 +197,12 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
+          Messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
         verify(journeyCacheService, times(1)).flushWithEmpId(meq(employmentId))(any())
       }
     }
-    "display the income details page with an update message" when {
-      "update is in progress for employment as cache update amount is different to the HOD amount" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any()))
-          .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(meq(cacheKeyEmployment))(any())) thenReturn Future
-          .successful(Some(3333))
 
-        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.toString must include(Messages("tai.income.details.updateInProgress"))
-        verify(journeyCacheService, times(0)).flush()(any())
-      }
-    }
-    "display the income details page with an update message" when {
-      "update is in progress for pension as cache update amount is different to the HOD amount" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any()))
-          .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(meq(cacheKeyPension))(any())) thenReturn Future
-          .successful(Some(3333))
-
-        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.toString must include(Messages("tai.income.details.updateInProgress"))
-      }
-    }
   }
 
-  val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  val annualAccount = AnnualAccount(
-    uk.gov.hmrc.tai.model.TaxYear(),
-    Available,
-    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
-    Nil
-  )
-  val employment = Employment(
-    "test employment",
-    Live,
-    Some("EMPLOYER-1122"),
-    LocalDate.now(),
-    None,
-    Seq(annualAccount),
-    "",
-    "",
-    2,
-    None,
-    false,
-    false
-  )
-
-  private val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
-  )
-
-  private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
-
-  val personService: PersonService = mock[PersonService]
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-
-  def sut = new CompanyBenefitsSummaryController(
-    mock[AuditConnector],
-    journeyCacheService,
-    taxAccountService,
-    employmentService,
-    benefitsService,
-    estimatedPayJourneyCompletionService,
-    mockAuthJourney,
-    appConfig,
-    mcc,
-    inject[CompanyBenefitsView],
-    inject[ErrorPagesHandler]
-  )
 }

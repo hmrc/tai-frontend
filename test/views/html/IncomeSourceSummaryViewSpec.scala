@@ -18,13 +18,89 @@ package views.html
 
 import controllers.routes
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
+import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
+
+  private lazy val model = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Employer",
+    100,
+    400,
+    "1100L",
+    "EMPLOYER-1122",
+    isPension = false,
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345"
+  )
+
+  private lazy val modelWithUpdateInProgressEmployment = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Employer",
+    100,
+    400,
+    "1100L",
+    "EMPLOYER-1122",
+    isPension = false,
+    estimatedPayJourneyCompleted = true,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345",
+    isUpdateInProgress = true
+  )
+
+  private lazy val modelWithUpdateInProgressPension = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Pension",
+    100,
+    400,
+    "1100L",
+    "PENSION-1122",
+    isPension = true,
+    estimatedPayJourneyCompleted = true,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345",
+    isUpdateInProgress = true
+  )
+
+  private lazy val pensionModel = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Pension",
+    100,
+    400,
+    "1100L",
+    "PENSION-1122",
+    isPension = true,
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true,
+    taxDistrctNumber = "123",
+    payeNumber = "AB12345"
+  )
+
+  private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
+  private val template: IncomeSourceSummaryView = inject[IncomeSourceSummaryView]
+
+  override def view: Html = template(model)
+
+  def pensionView: Html = template(pensionModel)
+
+  def viewWithUpdateInProgressEmployment: Html = template(modelWithUpdateInProgressEmployment)
+
+  def viewWithUpdateInProgressPension: Html = template(modelWithUpdateInProgressPension)
+
+  lazy val docWithUpdateInProgressEmployment: Document = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
+  lazy val docWithUpdateInProgressPension: Document = Jsoup.parse(viewWithUpdateInProgressPension.toString())
 
   "Income details spec" must {
     behave like pageWithCombinedHeaderNewFormatNew(
@@ -172,7 +248,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           400,
           "1100L",
           "EMPLOYER-1122",
-          false,
+          isPension = false,
           estimatedPayJourneyCompleted = true,
           rtiAvailable = false,
           taxDistrctNumber = "123",
@@ -193,7 +269,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           400,
           "1100L",
           "EMPLOYER-1122",
-          true,
+          isPension = true,
           estimatedPayJourneyCompleted = true,
           rtiAvailable = false,
           taxDistrctNumber = "123",
@@ -237,185 +313,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveParagraphWithText(pensionModel.pensionOrPayrollNumber)
       }
     }
-
-    "display a company benefit section" in {
-      doc must haveDivWithId("companyBenefitsSection")
-      doc must haveH2HeadingWithIdAndText(
-        "companyBenefitsHeading",
-        messages("tai.income.details.companyBenefitsHeading", "Employer")
-      )
-    }
-
-    "use conditional logic to display the company benefits section" which {
-      "hides the section when the income type is pension" in {
-        val testDoc = Jsoup.parse(template(model.copy(isPension = true)).toString)
-        testDoc must not(haveDivWithId("companyBenefitsSection"))
-      }
-      "displays the scetion otherwise" in {
-        val testDoc = Jsoup.parse(template(model.copy(isPension = false)).toString)
-        testDoc must haveDivWithId("companyBenefitsSection")
-      }
-    }
-
-    "use conditional logic to display a company benefits list" which {
-      "displays the list when benefits are present in the view model" in {
-        val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
-        testDoc must haveElementAtPathWithId("#companyBenefitsSection dl", "companyBenefitList")
-      }
-      "does not display the list when benefits are absent from the view model" in {
-        doc must not(haveElementAtPathWithId("#companyBenefitsSection dl", "companyBenefitList"))
-      }
-      "displays a 'no company benefits' message when benefits are absent from the view model" in {
-        doc must haveElementWithId("noCompanyBenefitsMessage")
-      }
-    }
-
-    "display the appropriate number of company benefit list entries" in {
-      val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
-      testDoc must haveElementWithId("companyBenefitList")
-      testDoc must haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm1")
-      testDoc must haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm2")
-      testDoc must haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm3")
-      testDoc must not(haveElementAtPathWithId("#companyBenefitList dt", "companyBenefitTerm4"))
-    }
-
-    "display the appropriate content with a specific company benefit list entry" in {
-      val testDoc = Jsoup.parse(template(modelWithCompanyBenefits).toString)
-      testDoc must haveElementAtPathWithText(
-        "#companyBenefitTerm1",
-        s"ben1"
-      )
-      testDoc must haveElementAtPathWithText(
-        "#companyBenefitDescription1",
-        "£100"
-      )
-      testDoc must haveElementAtPathWithText("#companyBenefitDescription1", "£100")
-      testDoc must haveElementAtPathWithText(
-        "#companyBenefitChangeLinkDescription1 a span",
-        s"${messages("tai.updateOrRemove")} ben1"
-      )
-      testDoc must haveLinkWithUrlWithID("changeCompanyBenefitLink1", "url1")
-    }
-
-    "display a link to add a missing company benefit" in {
-      doc must haveElementAtPathWithId("#companyBenefitsSection a", "addMissingCompanyBenefitLink")
-      doc must haveLinkWithUrlWithID(
-        "addMissingCompanyBenefitLink",
-        controllers.routes.ExternalServiceRedirectController
-          .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform)
-          .url
-      )
-    }
-
-    "use conditional logic to display a link to add a company car" which {
-      "displays the link when the view model flag is set" in {
-        val testDoc = Jsoup.parse(template(model.copy(displayAddCompanyCarLink = true)).toString)
-        testDoc must haveLinkWithUrlWithID(
-          "addMissingCompanyCarLink",
-          controllers.routes.ExternalServiceRedirectController
-            .auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform)
-            .url
-        )
-      }
-      "hides the link when the view model flag is not set" in {
-        val testDoc = Jsoup.parse(template(model.copy(displayAddCompanyCarLink = false)).toString)
-        testDoc must not(haveElementWithId("addMissingCompanyCarLink"))
-      }
-    }
-
-    "display a link to return to income tax summary" in {
-      doc must haveLinkWithUrlWithClass(
-        "govuk-back-link",
-        controllers.routes.TaxAccountSummaryController.onPageLoad().url
-      )
-    }
-
-    "display an estimated pay update confirmation banner when the journey has been successfully completed" in {
-      docWithUpdateInProgressEmployment must haveParagraphWithText(
-        messages("tai.estimatedIncome.confirmation.banner.heading")
-      )
-    }
-
   }
 
-  private lazy val model = IncomeSourceSummaryViewModel(
-    1,
-    "User Name",
-    "Employer",
-    100,
-    400,
-    "1100L",
-    "EMPLOYER-1122",
-    false,
-    estimatedPayJourneyCompleted = false,
-    rtiAvailable = true,
-    taxDistrctNumber = "123",
-    payeNumber = "AB12345"
-  )
-
-  private lazy val modelWithUpdateInProgressEmployment = IncomeSourceSummaryViewModel(
-    1,
-    "User Name",
-    "Employer",
-    100,
-    400,
-    "1100L",
-    "EMPLOYER-1122",
-    false,
-    estimatedPayJourneyCompleted = true,
-    rtiAvailable = true,
-    taxDistrctNumber = "123",
-    payeNumber = "AB12345",
-    isUpdateInProgress = true
-  )
-
-  private lazy val modelWithUpdateInProgressPension = IncomeSourceSummaryViewModel(
-    1,
-    "User Name",
-    "Pension",
-    100,
-    400,
-    "1100L",
-    "PENSION-1122",
-    true,
-    estimatedPayJourneyCompleted = true,
-    rtiAvailable = true,
-    taxDistrctNumber = "123",
-    payeNumber = "AB12345",
-    isUpdateInProgress = true
-  )
-
-  private lazy val companyBenefits = Seq(
-    CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
-    CompanyBenefitViewModel("ben2", BigDecimal(3002.23), "url2"),
-    CompanyBenefitViewModel("ben3", BigDecimal(22.44), "url3")
-  )
-  private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)
-  private lazy val pensionModel = IncomeSourceSummaryViewModel(
-    1,
-    "User Name",
-    "Pension",
-    100,
-    400,
-    "1100L",
-    "PENSION-1122",
-    true,
-    estimatedPayJourneyCompleted = false,
-    rtiAvailable = true,
-    taxDistrctNumber = "123",
-    payeNumber = "AB12345"
-  )
-
-  private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
-
-  private val template: IncomeSourceSummaryView = inject[IncomeSourceSummaryView]
-
-  override def view: Html = template(model)
-
-  def pensionView: Html = template(pensionModel)
-
-  def viewWithUpdateInProgressEmployment: Html = template(modelWithUpdateInProgressEmployment)
-  def viewWithUpdateInProgressPension: Html = template(modelWithUpdateInProgressPension)
-  lazy val docWithUpdateInProgressEmployment = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
-  lazy val docWithUpdateInProgressPension = Jsoup.parse(viewWithUpdateInProgressPension.toString())
 }
