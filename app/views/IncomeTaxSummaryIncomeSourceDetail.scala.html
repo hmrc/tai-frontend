@@ -101,6 +101,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
             )
         </p>
         }
+        @if(typeLabel != "pension"){
         <p class="govuk-body flush--top">
             @link(
                 id=Some(s"${typeLabel}${idx}CompanyLink"),
@@ -109,6 +110,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
                 altCopy=Some(Messages("tai.updateOrRemove.fromOtherSources", incomeSource.name))
             )
         </p>
+        }
     </div>
     }
 
