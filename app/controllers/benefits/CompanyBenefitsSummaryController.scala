@@ -93,7 +93,7 @@ class CompanyBenefitsSummaryController @Inject() (
         Ok(companyBenefits(incomeDetailsViewModel))
       case _ => errorPagesHandler.internalServerError("Error while fetching company benefits details")
     } recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
+      errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
     }
   }
 }
