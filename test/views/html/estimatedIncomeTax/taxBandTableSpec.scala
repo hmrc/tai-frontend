@@ -49,10 +49,10 @@ class taxBandTableSpec extends TaiViewSpec {
     }
 
     "display the given tax band types" in {
-      doc(view).select(".bandType0").text() mustBe messages("estimate.uk.bandtype.SDR")
-      doc(view).select(".bandType1").text() mustBe messages("estimate.uk.bandtype.LDR")
-      doc(view).select(".bandType2").text() mustBe messages("estimate.uk.bandtype.HDR1")
-      doc(view).select(".bandType3").text() mustBe messages("estimate.uk.bandtype.HDR2")
+      doc(view).select(".bandType0").text() mustBe "Tax-free amount"
+      doc(view).select(".bandType1").text() mustBe "Basic rate"
+      doc(view).select(".bandType2").text() mustBe "Higher rate"
+      doc(view).select(".bandType3").text() mustBe "Additional rate"
     }
     "display the given amounts" in {
       doc(view).select(".income0").text() mustBe "£11,500"
@@ -81,6 +81,6 @@ class taxBandTableSpec extends TaiViewSpec {
     TaxBand(BandTypesConstants.DividendAdditionalRate, "", 40000, 15000, None, None, 50)
   )
 
-  override def view: Html = views.html.estimatedIncomeTax.taxBandTable("table-id", taxBands, UkTaxRegion)
+  override def view: Html = views.html.estimatedIncomeTax.taxBandTable("table-id", taxBands, UkTaxRegion, appConfig)
 
 }

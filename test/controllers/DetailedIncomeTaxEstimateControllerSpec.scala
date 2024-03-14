@@ -44,6 +44,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       FakeValidatePerson,
       mcc,
       inject[DetailedIncomeTaxEstimateView],
+      appConfig,
       inject[ErrorPagesHandler]
     )
 

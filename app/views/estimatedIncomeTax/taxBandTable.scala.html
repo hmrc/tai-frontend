@@ -17,8 +17,10 @@
 @import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 @import uk.gov.hmrc.tai.util.MoneyPounds
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import java.time.LocalDate
 
-@(tableClass: String, taxBands: List[TaxBand], taxRegion: String)(implicit messages: Messages)
+@(tableClass: String, taxBands: List[TaxBand], taxRegion: String, appConfig: ApplicationConfig)(implicit messages: Messages)
 
 
 
@@ -35,7 +37,11 @@
 
     @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
     <tr class="govuk-table__row">
-        <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
+        @if(LocalDate.now.isBefore(appConfig.newTaxBandsReleaseDate) && taxRegion.toLowerCase.equals("scottish") && taxBand.bandType.equals("D2")) {
+            <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}.2023")</td>
+        } else {
+            <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
+        }
         <td class="govuk-table__cell govuk-table__cell--numeric numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
         <td class="govuk-table__cell govuk-table__cell--numeric numeric taxRate@{count}">@taxBand.rate%</td>
         <td class="govuk-table__cell govuk-table__cell--numeric numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>

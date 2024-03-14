@@ -183,9 +183,9 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
         "govuk-table__header govuk-table__header--numeric numeric tax",
         messages("tai.tax")
       )
-      document.select(".bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
-      document.select(".bandType1").text() mustBe messages("estimate.uk.bandtype.B")
-      document.select(".bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
+      document.select(".bandType0").text() mustBe "Tax-free amount"
+      document.select(".bandType1").text() mustBe "Basic rate"
+      document.select(".bandType2").text() mustBe "Higher rate"
       document.select(".income0").text() mustBe "£11,500"
       document.select(".taxRate0").text() mustBe "0%"
       document.select(".tax0").text() mustBe "£0"
@@ -249,7 +249,7 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
   private val template = inject[SimpleEstimatedIncomeTaxView]
 
   def view(vm: SimpleEstimatedIncomeTaxViewModel): Html =
-    template(vm, Html("<Html><head></head><body>Test</body></Html>"))
+    template(vm, Html("<Html><head></head><body>Test</body></Html>"), appConfig)
 
   override def view: Html = view(ukViewModel)
 
