@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyBenefitsSummaryController @Inject() (
@@ -58,7 +58,7 @@ class CompanyBenefitsSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       journeyCacheService.currentValueAsInt(s"$UpdateIncomeConfirmedAmountKey-$empId")
 
-    (
+    val incomeDetailsResult = (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
@@ -86,14 +86,19 @@ class CompanyBenefitsSummaryController @Inject() (
           cacheUpdatedIncomeAmount
         )
 
-        if (!incomeDetailsViewModel.isUpdateInProgress) {
-          journeyCacheService.flushWithEmpId(empId)
+        val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
+          journeyCacheService.flushWithEmpId(empId).map(_ => (): Unit)
+        } else {
+          Future.successful((): Unit)
         }
+        result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
 
-        Ok(companyBenefits(incomeDetailsViewModel))
-      case _ => errorPagesHandler.internalServerError("Error while fetching company benefits details")
+      case _ =>
+        Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
     } recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
+      Future.successful(errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e)))
     }
+    incomeDetailsResult.flatten
   }
+
 }

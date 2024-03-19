@@ -117,8 +117,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(meq(cacheKeyEmployment))(any())) thenReturn Future
-          .successful(None)
+        when(journeyCacheService.currentValueAsInt(meq(cacheKeyEmployment))(any()))
+          .thenReturn(Future.successful(Some(123)))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -140,8 +140,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
-        when(journeyCacheService.currentValueAsInt(meq(cacheKeyPension))(any())) thenReturn Future
-          .successful(None)
+        when(journeyCacheService.currentValueAsInt(meq("updateIncomeConfirmedAmountKey-2"))(any()))
+          .thenReturn(Future.successful(Some(123)))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
