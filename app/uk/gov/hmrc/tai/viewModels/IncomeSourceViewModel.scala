@@ -141,12 +141,11 @@ object IncomeSourceViewModel extends ViewModelHelper {
     val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
 
     def getLinkLabel(messageKey: String): String =
-      taxCodeIncome.componentType match {
-        case EmploymentIncome if employment.employmentStatus == Live =>
-          messages(s"tai.incomeTaxSummary.$messageKey.link")
-        case EmploymentIncome if employment.employmentStatus != Live => messages("tai.incomeTaxSummary.employment.link")
-        case PensionIncome                                           => messages("tai.incomeTaxSummary.pension.link")
-        case _                                                       => messages("tai.incomeTaxSummary.income.link")
+      (taxCodeIncome.componentType, employment.employmentStatus) match {
+        case (EmploymentIncome, Live) => messages(s"tai.incomeTaxSummary.$messageKey.link")
+        case (EmploymentIncome, _)    => messages("tai.incomeTaxSummary.employment.link")
+        case (PensionIncome, _)       => messages("tai.incomeTaxSummary.pension.link")
+        case _                        => messages("tai.incomeTaxSummary.income.link")
       }
 
     val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
