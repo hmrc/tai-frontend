@@ -14,7 +14,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "play-conditional-form-mapping"    % s"1.13.0-$playVersion",
     "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc"       %% "mongo-feature-toggles-client"     % "0.3.0",
-    "uk.gov.hmrc"       %% s"sca-wrapper-$playVersion"        % "1.3.0"
+    "uk.gov.hmrc"       %% s"sca-wrapper-$playVersion"        % "1.6.0"
   )
 
   val test: Seq[ModuleID] = Seq(
