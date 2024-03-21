@@ -230,9 +230,28 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
     val giftAidPayments = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPayments)
     val giftAidPaymentsRelief =
       EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
+    val brdReduction = codingComponents.find(_.componentType == BRDifferenceTaxReduction).map(_.amount)
+    val brdCharge = codingComponents.find(_.componentType == BRDifferenceTaxCharge).map(_.amount)
+
     val giftAidPaymentsReliefRow = createReductionTaxRow(
       giftAidPaymentsRelief,
-      Messages("gift.aid.tax.relief", giftAidPayments.getOrElse(0), giftAidPaymentsRelief.getOrElse(0)),
+      (brdReduction, brdCharge) match {
+        case (Some(reduction), None) =>
+          Messages(
+            "gift.aid.tax.relief.brd.reduction",
+            giftAidPayments.getOrElse(0),
+            giftAidPaymentsRelief.getOrElse(0),
+            reduction
+          )
+        case (None, Some(charge)) =>
+          Messages(
+            "gift.aid.tax.relief.brd.charge",
+            giftAidPayments.getOrElse(0),
+            giftAidPaymentsRelief.getOrElse(0),
+            charge
+          )
+        case _ => Messages("gift.aid.tax.relief", giftAidPayments.getOrElse(0), giftAidPaymentsRelief.getOrElse(0))
+      },
       Messages("gift.aid.savings")
     )
 

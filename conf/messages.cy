@@ -78,6 +78,8 @@ estimate.uk.bandtype.SR=Cyfradd gychwynnol ar gyfer cynilion
 estimate.uk.bandtype.pa=Lwfans rhydd o dreth
 gift.aid.savings=Cynilion Rhodd Cymorth
 gift.aid.tax.relief=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi ac yn arbed £{1} o Dreth Incwm
+gift.aid.tax.relief.brd.charge=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi, ac yn arbed £{1} o Dreth Incwm. Mae hyn yn cynnwys didyniad ar y gwahaniaeth yn y gyfradd sylfaenol o £{2}.
+gift.aid.tax.relief.brd.reduction=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi, ac yn arbed £{1} o Dreth Incwm. Mae hyn yn cynnwys ychwanegiad ar y gwahaniaeth yn y gyfradd sylfaenol o £{2}.
 
 label.closed_sundays_and_bank_holidays=Ar gau ddydd Sul a gwyliau’r banc.
 label.find_out_about_call_charges=Gwybodaeth am gostau galwadau

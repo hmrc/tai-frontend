@@ -79,6 +79,9 @@ estimate.uk.bandtype.SR=Starting rate for savings
 estimate.uk.bandtype.pa=Tax-free amount
 gift.aid.savings=Gift Aid savings
 gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
+gift.aid.tax.relief.brd.charge=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}. This includes a basic rate difference deduction of £{2}.
+gift.aid.tax.relief.brd.reduction=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}. This includes a basic rate divergence addition of £{2}.
+
 
 label.closed_sundays_and_bank_holidays=Closed Sundays and bank holidays.
 label.find_out_about_call_charges=Find out about call charges
