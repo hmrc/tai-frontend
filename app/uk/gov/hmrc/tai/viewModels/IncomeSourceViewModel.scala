@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Call
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live, NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{CompanyBenefitsIform, EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHelper}
 
 case class IncomeSourceViewModel(
@@ -37,7 +37,9 @@ case class IncomeSourceViewModel(
   detailsLinkLabel: String,
   detailsLinkUrl: String,
   taxCodeUrl: Option[Call] = None,
-  displayDetailsLink: Boolean = true
+  displayDetailsLink: Boolean = true,
+  companyBenefitLinkLabel: String,
+  companyBenefitLinkUrl: String
 )
 
 object IncomeSourceViewModel extends ViewModelHelper {
@@ -55,33 +57,40 @@ object IncomeSourceViewModel extends ViewModelHelper {
     val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
 
     IncomeSourceViewModel(
-      employment.name,
-      amountString,
-      "",
+      name = employment.name,
+      amount = amountString,
+      taxCode = "",
       displayTaxCode = false,
-      employment.taxDistrictNumber,
-      employment.payeNumber,
-      employment.payrollNumber.getOrElse(""),
+      taxDistrictNumber = employment.taxDistrictNumber,
+      payeNumber = employment.payeNumber,
+      payrollNumber = employment.payrollNumber.getOrElse(""),
       displayPayrollNumber = employment.payrollNumber.isDefined,
-      endDate.getOrElse(""),
+      endDate = endDate.getOrElse(""),
       displayEndDate = endDate.isDefined,
-      messages("tai.incomeTaxSummary.employment.link"),
-      controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
-      Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber))
+      detailsLinkLabel = messages("tai.incomeTaxSummary.employment.link"),
+      detailsLinkUrl =
+        controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
+      taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber)),
+      companyBenefitLinkLabel = messages("tai.incomeTaxSummary.companyBenefits.link"),
+      companyBenefitLinkUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
     )
   }
 
   def createFromTaxedIncome(taxedIncome: TaxedIncome)(implicit messages: Messages): IncomeSourceViewModel = {
     val endDate: Option[String] = taxedIncome.employment.endDate.map(Dates.formatDate(_))
 
-    val detailsLinkLabel = taxedIncome.taxCodeIncome.componentType match {
-      case EmploymentIncome if taxedIncome.employment.employmentStatus == Live =>
-        messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
-        messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
-      case _             => messages("tai.incomeTaxSummary.income.link")
-    }
+    def getLinkLabel(messageKey: String): String =
+      taxedIncome.taxCodeIncome.componentType match {
+        case EmploymentIncome if taxedIncome.employment.employmentStatus == Live =>
+          messages(s"tai.incomeTaxSummary.$messageKey.link")
+        case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
+          messages("tai.incomeTaxSummary.employment.link")
+        case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
+        case _             => messages("tai.incomeTaxSummary.income.link")
+      }
+
+    val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
+    val companyBenefitLinkLabel = getLinkLabel("companyBenefits")
 
     val detailsLinkUrl =
       if (
@@ -94,20 +103,34 @@ object IncomeSourceViewModel extends ViewModelHelper {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url
       }
 
+    val companyBenefitLinkUrl =
+      if (
+        taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
+      ) {
+        controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url
+      } else {
+        controllers.benefits.routes.CompanyBenefitsSummaryController
+          .onPageLoad(taxedIncome.employment.sequenceNumber)
+          .url
+      }
+
     IncomeSourceViewModel(
-      taxedIncome.employment.name,
-      withPoundPrefixAndSign(MoneyPounds(taxedIncome.taxCodeIncome.amount, 0)),
-      taxedIncome.taxCodeIncome.taxCode,
-      taxedIncome.employment.employmentStatus == Live || taxedIncome.employment.employmentStatus == Ceased,
-      taxedIncome.employment.taxDistrictNumber,
-      taxedIncome.employment.payeNumber,
-      taxedIncome.employment.payrollNumber.getOrElse(""),
-      taxedIncome.employment.payrollNumber.isDefined,
-      endDate.getOrElse(""),
-      taxedIncome.employment.employmentStatus != Live && endDate.isDefined,
-      detailsLinkLabel,
-      detailsLinkUrl,
-      Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber))
+      name = taxedIncome.employment.name,
+      amount = withPoundPrefixAndSign(MoneyPounds(taxedIncome.taxCodeIncome.amount, 0)),
+      taxCode = taxedIncome.taxCodeIncome.taxCode,
+      displayTaxCode =
+        taxedIncome.employment.employmentStatus == Live || taxedIncome.employment.employmentStatus == Ceased,
+      taxDistrictNumber = taxedIncome.employment.taxDistrictNumber,
+      payeNumber = taxedIncome.employment.payeNumber,
+      payrollNumber = taxedIncome.employment.payrollNumber.getOrElse(""),
+      displayPayrollNumber = taxedIncome.employment.payrollNumber.isDefined,
+      endDate = endDate.getOrElse(""),
+      displayEndDate = taxedIncome.employment.employmentStatus != Live && endDate.isDefined,
+      detailsLinkLabel = detailsLinkLabel,
+      detailsLinkUrl = detailsLinkUrl,
+      taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber)),
+      companyBenefitLinkLabel = companyBenefitLinkLabel,
+      companyBenefitLinkUrl = companyBenefitLinkUrl
     )
   }
 
@@ -116,13 +139,17 @@ object IncomeSourceViewModel extends ViewModelHelper {
   ): IncomeSourceViewModel = {
 
     val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
-    val detailsLinkLabel = taxCodeIncome.componentType match {
-      case EmploymentIncome if employment.employmentStatus == Live =>
-        messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if employment.employmentStatus != Live => messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome                                           => messages("tai.incomeTaxSummary.pension.link")
-      case _                                                       => messages("tai.incomeTaxSummary.income.link")
-    }
+
+    def getLinkLabel(messageKey: String): String =
+      (taxCodeIncome.componentType, employment.employmentStatus) match {
+        case (EmploymentIncome, Live) => messages(s"tai.incomeTaxSummary.$messageKey.link")
+        case (EmploymentIncome, _)    => messages("tai.incomeTaxSummary.employment.link")
+        case (PensionIncome, _)       => messages("tai.incomeTaxSummary.pension.link")
+        case _                        => messages("tai.incomeTaxSummary.income.link")
+      }
+
+    val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
+    val companyBenefitLinkLabel = getLinkLabel("companyBenefits")
 
     val incomeSourceSummaryUrl =
       if (taxCodeIncome.componentType == EmploymentIncome && employment.employmentStatus != Live) {
@@ -132,19 +159,21 @@ object IncomeSourceViewModel extends ViewModelHelper {
       }
 
     IncomeSourceViewModel(
-      employment.name,
-      withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
-      taxCodeIncome.taxCode,
-      employment.employmentStatus == Live,
-      employment.taxDistrictNumber,
-      employment.payeNumber,
-      employment.payrollNumber.getOrElse(""),
-      employment.payrollNumber.isDefined,
-      endDate.getOrElse(""),
-      employment.employmentStatus != Live && endDate.isDefined,
-      detailsLinkLabel,
-      incomeSourceSummaryUrl,
-      Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber))
+      name = employment.name,
+      amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
+      taxCode = taxCodeIncome.taxCode,
+      displayTaxCode = employment.employmentStatus == Live,
+      taxDistrictNumber = employment.taxDistrictNumber,
+      payeNumber = employment.payeNumber,
+      payrollNumber = employment.payrollNumber.getOrElse(""),
+      displayPayrollNumber = employment.payrollNumber.isDefined,
+      endDate = endDate.getOrElse(""),
+      displayEndDate = employment.employmentStatus != Live && endDate.isDefined,
+      detailsLinkLabel = detailsLinkLabel,
+      detailsLinkUrl = incomeSourceSummaryUrl,
+      taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(employment.sequenceNumber)),
+      companyBenefitLinkLabel = companyBenefitLinkLabel,
+      companyBenefitLinkUrl = incomeSourceSummaryUrl
     )
   }
 
@@ -155,23 +184,30 @@ object IncomeSourceViewModel extends ViewModelHelper {
       )
       .map { otherNonTaxCodeIncome =>
         val model = IncomeSourceViewModel(
-          messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
-          withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
-          "",
+          name = messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
+          amount = withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
+          taxCode = "",
           displayTaxCode = false,
-          "",
-          "",
-          "",
+          taxDistrictNumber = "",
+          payeNumber = "",
+          payrollNumber = "",
           displayPayrollNumber = false,
-          "",
+          endDate = "",
           displayEndDate = false,
-          messages("tai.updateOrRemove"),
-          ""
+          detailsLinkLabel = messages("tai.updateOrRemove"),
+          detailsLinkUrl = "",
+          taxCodeUrl = None,
+          companyBenefitLinkLabel = "",
+          companyBenefitLinkUrl = ""
         )
 
         otherNonTaxCodeIncome.incomeComponentType match {
           case _: OtherIncomes =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
+          case _: CompanyBenefits =>
+            model.copy(companyBenefitLinkUrl =
+              controllers.routes.AuditController.auditLinksToIForm(CompanyBenefitsIform).url
+            )
           case _: TaxableStateBenefits =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url)
           case _: EmploymentPensions =>

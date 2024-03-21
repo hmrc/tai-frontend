@@ -257,20 +257,25 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
       val expected =
         IncomeSourceViewModel(
-          "Employer name1",
-          "£1,111",
-          "1150L",
-          true,
-          "DIST1",
-          "PAYE1",
-          "1ABC",
-          true,
-          "",
-          false,
-          messagesApi("tai.incomeTaxSummary.employmentAndBenefits.link"),
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url,
-          Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber)),
-          true
+          name = "Employer name1",
+          amount = "£1,111",
+          taxCode = "1150L",
+          displayTaxCode = true,
+          taxDistrictNumber = "DIST1",
+          payeNumber = "PAYE1",
+          payrollNumber = "1ABC",
+          displayPayrollNumber = true,
+          endDate = "",
+          displayEndDate = false,
+          detailsLinkLabel = messagesApi("tai.incomeTaxSummary.employmentAndBenefits.link"),
+          detailsLinkUrl =
+            controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url,
+          taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(taxedIncome.employment.sequenceNumber)),
+          displayDetailsLink = true,
+          companyBenefitLinkLabel = messagesApi("tai.incomeTaxSummary.companyBenefits.link"),
+          companyBenefitLinkUrl = controllers.benefits.routes.CompanyBenefitsSummaryController
+            .onPageLoad(taxedIncome.employment.sequenceNumber)
+            .url
         )
 
       actual mustBe expected

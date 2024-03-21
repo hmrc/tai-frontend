@@ -38,7 +38,7 @@ case class IncomeSourceSummaryViewModel(
   displayAddCompanyCarLink: Boolean = true,
   estimatedPayJourneyCompleted: Boolean,
   rtiAvailable: Boolean,
-  taxDistrctNumber: String,
+  taxDistrictNumber: String,
   payeNumber: String,
   isUpdateInProgress: Boolean = false
 ) extends ViewModelHelper {

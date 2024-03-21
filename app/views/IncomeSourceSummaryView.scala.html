@@ -185,7 +185,7 @@
         <div class="govuk-grid-column-one-half">
             <h3 class="govuk-heading-m flush--top">@messages("tai.income.details.ERN")</h3>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                @{model.taxDistrctNumber}/@{model.payeNumber}
+                @{model.taxDistrictNumber}/@{model.payeNumber}
             </p>
         </div>
     </div>
@@ -203,61 +203,6 @@
             }
         </div>
     </div>
-
-    @if(!model.isPension){
-    <div class="govuk-!-padding-bottom-7"></div>
-    <div class="govuk-grid-row">
-        <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
-            <h2 id="companyBenefitsHeading" class="govuk-heading-m carry-over">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
-
-
-            @if(model.benefits.size > 0) {
-                <dl class="govuk-summary-list" id="companyBenefitList">
-                    @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {
-                        <div class="govuk-summary-list__row">
-                            <dt id="companyBenefitTerm@idx" class="govuk-summary-list__key">
-                                @benefit.name
-                            </dt>
-                            <dd id="companyBenefitDescription@idx" class="govuk-summary-list__value govuk-!-text-align-right">
-                                @pounds(benefit.amount)
-                            </dd>
-                            <dd class="govuk-summary-list__actions" id="companyBenefitChangeLinkDescription@idx">
-                                @link(
-                                    id = Some("changeCompanyBenefitLink" + idx.toString),
-                                    url = benefit.changeUrl,
-                                    copy=Messages("tai.updateOrRemove"),
-                                    altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
-                                    linkClasses = Nil
-                                )
-                            </dd>
-                        </div>
-                    }
-                </dl>
-
-            } else {
-                <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
-            }
-
-            <p class="govuk-body">
-                @link(
-                    id=Some("addMissingCompanyBenefitLink"),
-                    url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
-                    copy=Messages("add.missing.company.benefit"))
-            </p>
-
-            @if(model.displayAddCompanyCarLink) {
-                <p class="govuk-body">
-                    @link(
-                        id=Some("addMissingCompanyCarLink"),
-                        url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
-                        copy=Messages("tai.income.details.addMissingCompanyCar"))
-                </p>
-            }
-
-        </div>
-    </div>
-    }
-
 
 </div>
 

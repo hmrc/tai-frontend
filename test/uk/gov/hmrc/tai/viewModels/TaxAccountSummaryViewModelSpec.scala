@@ -374,8 +374,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         amount = "£123",
         taxCode = "",
         displayTaxCode = false,
-        "DIST123",
-        "PAYE543",
+        taxDistrictNumber = "DIST123",
+        payeNumber = "PAYE543",
         payrollNumber = "123ABC",
         displayPayrollNumber = true,
         endDate = s"21 April ${TaxYear().next.year}",
@@ -384,29 +384,34 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         detailsLinkUrl =
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(nonMatchingSequenceNumber).url,
         taxCodeUrl = Some(controllers.routes.YourTaxCodeController.taxCode(nonMatchingSequenceNumber)),
-        true
+        displayDetailsLink = true,
+        companyBenefitLinkLabel = "View or update company benefits",
+        companyBenefitLinkUrl = controllers.routes.TaxAccountSummaryController.onPageLoad().url
       )
     }
   }
 
-  val otherIncomeSourceViewModel = IncomeSourceViewModel(
-    "",
-    "",
-    "",
+  val otherIncomeSourceViewModel: IncomeSourceViewModel = IncomeSourceViewModel(
+    name = "State Pension",
+    amount = "£123",
+    taxCode = "",
     displayTaxCode = false,
-    "",
-    "",
-    "",
+    taxDistrictNumber = "",
+    payeNumber = "",
+    payrollNumber = "",
     displayPayrollNumber = false,
-    "",
+    endDate = "",
     displayEndDate = false,
-    "",
-    "",
-    displayDetailsLink = true
+    detailsLinkLabel = "",
+    detailsLinkUrl = "",
+    taxCodeUrl = None,
+    displayDetailsLink = true,
+    companyBenefitLinkLabel = "",
+    companyBenefitLinkUrl = ""
   )
 
-  val noIncomesSources = IncomeSources(Seq(), Seq(), Seq())
-  val incomeSources =
+  val noIncomesSources: IncomeSources = IncomeSources(Seq(), Seq(), Seq())
+  val incomeSources: IncomeSources =
     IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources)
 
 }

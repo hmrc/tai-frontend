@@ -1,0 +1,121 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import controllers.auth.AuthenticatedRequest
+@import includes.{link, ptaHeader}
+@import uk.gov.hmrc.tai.util.Money.pounds
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import uk.gov.hmrc.tai.util.constants.TaiConstants
+@import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+
+
+@this(main: MainTemplate)
+
+@(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages)
+
+@mainHeading = @{
+    messages("tai.income.details.companyBenefitsHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
+}
+@title = @{
+    messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRange)
+}
+@backLinkToTaxAccountSummary= {
+    <p class="flush--bottom">
+        @link(
+            id=Some("taxableIncomeLink"),
+            url=routes.TaxAccountSummaryController.onPageLoad().url,
+            copy=Messages("return.to.your.income.tax.summary"),
+            linkClasses=Seq("link-back"))
+    </p>
+}
+
+@header() = @{
+    ptaHeader(
+        formForErrorSummary = None,
+        mainHeadingText = mainHeading,
+        customBackLinkContent = Some(backLinkToTaxAccountSummary),
+        preHeadingText = model.displayName)
+}
+
+@main(
+    title = title,
+    pageTitle = Some(Messages("tai.service.navTitle")),
+    authedUser = Some(request.taiUser),
+    pagePrintable = true,
+    backLinkContent = Some(Messages("return.to.your.income.tax.summary")),
+    backLinkId = "back-link-custom-url",
+    backLinkUrl = Some(routes.TaxAccountSummaryController.onPageLoad().url)
+
+){
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        @header()
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+    <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
+        @if(model.benefits.size > 0) {
+        <dl class="govuk-summary-list" id="companyBenefitList">
+            @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {
+            <div class="govuk-summary-list__row">
+                <dt id="companyBenefitTerm@idx" class="govuk-summary-list__key">
+                    @benefit.name
+                </dt>
+                <dd id="companyBenefitDescription@idx" class="govuk-summary-list__value govuk-!-text-align-right">
+                    @pounds(benefit.amount)
+                </dd>
+                <dd class="govuk-summary-list__actions" id="companyBenefitChangeLinkDescription@idx">
+                    @link(
+                    id = Some("changeCompanyBenefitLink" + idx.toString),
+                    url = benefit.changeUrl,
+                    copy=Messages("tai.updateOrRemove"),
+                    altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
+                    linkClasses = Nil
+                    )
+                </dd>
+            </div>
+            }
+        </dl>
+
+        } else {
+        <p id="noCompanyBenefitsMessage" class="govuk-body carry-over">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
+        }
+
+        <p class="govuk-body">
+            @link(
+            id=Some("addMissingCompanyBenefitLink"),
+            url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
+            copy=Messages("add.missing.company.benefit"))
+        </p>
+
+        @if(model.displayAddCompanyCarLink) {
+        <p class="govuk-body">
+            @link(
+            id=Some("addMissingCompanyCarLink"),
+            url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
+            copy=Messages("tai.income.details.addMissingCompanyCar"))
+        </p>
+        }
+
+    </div>
+</div>
+}
+
+<div class="print-this">
+    <a class="print-this__link" href="#" id="printLink">@Messages("tai.label.print")</a>
+</div>
