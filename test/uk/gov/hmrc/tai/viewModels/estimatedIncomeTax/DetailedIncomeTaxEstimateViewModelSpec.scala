@@ -421,6 +421,150 @@ class DetailedIncomeTaxEstimateViewModelSpec
             )
           )
         }
+
+        "there is a BRD tax charge" in {
+
+          val taxReliefComponent = Seq(
+            TaxAdjustmentComponent(GiftAidPaymentsRelief, 1000)
+          )
+
+          val totalTax = TotalTax(
+            0,
+            Seq.empty[IncomeCategory],
+            None,
+            None,
+            None,
+            Some(100),
+            Some(tax.TaxAdjustment(2100, taxReliefComponent))
+          )
+
+          val codingComponents = Seq(
+            CodingComponent(BRDifferenceTaxCharge, None, 100, "", None)
+          )
+
+          val result: Seq[ReductionTaxRow] =
+            DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
+
+          result mustBe Seq(
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.otherIncome.description"),
+              100,
+              Messages("tai.taxCollected.atSource.otherIncome.title")
+            ),
+            ReductionTaxRow(
+              Messages("gift.aid.tax.relief.brd.charge", 0, 1000, 100),
+              1000,
+              Messages("gift.aid.savings")
+            )
+          )
+        }
+        "there is a BRD reduction" in {
+
+          val alreadyTaxedAtSource = Seq(
+            TaxAdjustmentComponent(TaxOnBankBSInterest, 100),
+            TaxAdjustmentComponent(TaxCreditOnUKDividends, 200),
+            TaxAdjustmentComponent(TaxCreditOnForeignInterest, 300),
+            TaxAdjustmentComponent(TaxCreditOnForeignIncomeDividends, 400)
+          )
+
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 500),
+            TaxAdjustmentComponent(ConcessionalRelief, 600),
+            TaxAdjustmentComponent(MaintenancePayments, 700),
+            TaxAdjustmentComponent(MarriedCouplesAllowance, 800),
+            TaxAdjustmentComponent(DoubleTaxationRelief, 900)
+          )
+
+          val taxReliefComponent = Seq(
+            TaxAdjustmentComponent(GiftAidPaymentsRelief, 1000),
+            TaxAdjustmentComponent(PersonalPensionPaymentRelief, 1100)
+          )
+
+          val totalTax = TotalTax(
+            0,
+            Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
+            None,
+            Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
+            Some(100),
+            Some(tax.TaxAdjustment(2100, taxReliefComponent))
+          )
+
+          val codingComponents = Seq(
+            CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),
+            CodingComponent(BRDifferenceTaxReduction, None, 100, "", None)
+          )
+
+          val tabIndexLink = link(
+            url = routes.YourTaxCodeController.taxCodes().url,
+            copy = Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"),
+            tabindexMinusOne = true
+          )
+
+          val result: Seq[ReductionTaxRow] =
+            DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
+
+          result mustBe Seq(
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.otherIncome.description"),
+              100,
+              Messages("tai.taxCollected.atSource.otherIncome.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.dividends.description", 10),
+              200,
+              Messages("tai.taxCollected.atSource.dividends.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.bank.description", 20),
+              100,
+              Messages("tai.taxCollected.atSource.bank.title")
+            ),
+            ReductionTaxRow(
+              Messages(
+                "tai.taxCollected.atSource.marriageAllowance.description",
+                MoneyPounds(1200).quantity,
+                tabIndexLink
+              ),
+              800,
+              Messages("tai.taxCollected.atSource.marriageAllowance.title")
+            ),
+            ReductionTaxRow(
+              Messages(
+                "tai.taxCollected.atSource.maintenancePayments.description",
+                MoneyPounds(1200).quantity,
+                routes.YourTaxCodeController.taxCodes().url
+              ),
+              700,
+              Messages("tai.taxCollected.atSource.maintenancePayments.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
+              500,
+              Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.concessionalRelief.description"),
+              600,
+              Messages("tai.taxCollected.atSource.concessionalRelief.title")
+            ),
+            ReductionTaxRow(
+              Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
+              900,
+              Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")
+            ),
+            ReductionTaxRow(
+              Messages("gift.aid.tax.relief.brd.reduction", 0, 1000, 100),
+              1000,
+              Messages("gift.aid.savings")
+            ),
+            ReductionTaxRow(
+              Messages("personal.pension.payment.relief", 0, 1100),
+              1100,
+              Messages("personal.pension.payments")
+            )
+          )
+        }
       }
 
       "return empty reduction tax table" when {
