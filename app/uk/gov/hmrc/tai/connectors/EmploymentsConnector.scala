@@ -35,11 +35,7 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: 
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
-      if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
-        (json \ "data" \ "employments").as[Seq[Employment]]
-      } else {
-        throw new RuntimeException("Invalid employment json")
-      }
+      (json \ "data" \ "employments").as[Seq[Employment]]
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =

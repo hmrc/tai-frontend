@@ -147,10 +147,10 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     }
   }
 
-  val employment = Employment("employment1", Live, None, LocalDate.now, None, Nil, "", "", 1, None, false, false)
-  val employment2 = Employment("employment2", Live, None, LocalDate.now, None, Nil, "", "", 2, None, false, false)
-  val pension = Employment("employment3", Live, None, LocalDate.now, None, Nil, "", "", 3, None, false, true)
-  val pension2 = Employment("employment4", Live, None, LocalDate.now, None, Nil, "", "", 4, None, false, true)
+  val employment = Employment("employment1", Live, None, Some(LocalDate.now), None, Nil, "", "", 1, None, false, false)
+  val employment2 = Employment("employment2", Live, None, Some(LocalDate.now), None, Nil, "", "", 2, None, false, false)
+  val pension = Employment("employment3", Live, None, Some(LocalDate.now), None, Nil, "", "", 3, None, false, true)
+  val pension2 = Employment("employment4", Live, None, Some(LocalDate.now), None, Nil, "", "", 4, None, false, true)
   val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
   val taxCodeIncomesNoEmpId = Seq(

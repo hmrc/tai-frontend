@@ -654,7 +654,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     "company name",
     Live,
     Some("888"),
-    LocalDate.of(2019, 5, 26),
+    Some(LocalDate.of(2019, 5, 26)),
     None,
     Seq.empty[AnnualAccount],
     "",

@@ -253,7 +253,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       name = name,
       employmentStatus = Live,
       payrollNumber = None,
-      startDate = TaxYear().start,
+      startDate = Some(TaxYear().start),
       endDate = None,
       annualAccounts = Seq.empty,
       taxDistrictNumber = "123",
