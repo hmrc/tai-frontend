@@ -36,21 +36,47 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
       }
       "only one employment is present in the seq but without an end date" in {
         val employment =
-          Employment("test employment", Live, Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "test employment",
+            Live,
+            Some("111111"),
+            Some(empStartDateOne),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
 
         val sut = createSut(Seq(employment))
         sut.endDate mustBe None
       }
       "multiple employments are present in the seq with no end dates" in {
         val employment =
-          Employment("test employment", Live, Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "test employment",
+            Live,
+            Some("111111"),
+            Some(empStartDateOne),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
 
         val employment1 =
           Employment(
             "test employment1",
             Live,
             Some("222222"),
-            empStartDateTwo,
+            Some(empStartDateTwo),
             None,
             Nil,
             "",
@@ -66,7 +92,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             "test employment2",
             Live,
             Some("333333"),
-            empStartDateThree,
+            Some(empStartDateThree),
             None,
             Nil,
             "",
@@ -88,7 +114,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           "test employment",
           Live,
           Some("111111"),
-          empStartDateOne,
+          Some(empStartDateOne),
           Some(empEndDateOne),
           Nil,
           "",
@@ -108,13 +134,26 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
     "return the most recent employment's end date" when {
       "multiple employments are present in the seq with one of them doesnt have end date" in {
         val employment =
-          Employment("test employment", Live, Some("111111"), empStartDateOne, None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "test employment",
+            Live,
+            Some("111111"),
+            Some(empStartDateOne),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
 
         val employment1 = Employment(
           "test employment1",
           Live,
           Some("222222"),
-          empStartDateTwo,
+          Some(empStartDateTwo),
           Some(empEndDateTwo),
           Nil,
           "",
@@ -129,7 +168,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           "test employment2",
           Live,
           Some("333333"),
-          empStartDateThree,
+          Some(empStartDateThree),
           Some(empEndDateThree),
           Nil,
           "",
@@ -148,7 +187,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           "test employment",
           Live,
           Some("111111"),
-          empStartDateOne,
+          Some(empStartDateOne),
           Some(empEndDateOne),
           Nil,
           "",
@@ -163,7 +202,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           "test employment1",
           Live,
           Some("222222"),
-          empStartDateTwo,
+          Some(empStartDateTwo),
           Some(empEndDateTwo),
           Nil,
           "",
@@ -178,7 +217,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           "test employment2",
           Live,
           Some("333333"),
-          empStartDateThree,
+          Some(empStartDateThree),
           Some(empEndDateThree),
           Nil,
           "",

@@ -138,7 +138,20 @@ class AuditServiceSpec extends BaseSpec {
         implicit val hc = HeaderCarrier()
 
         val employment =
-          Employment("The Man Plc", Live, None, LocalDate.parse("2016-06-09"), None, Nil, "", "", 1, None, false, false)
+          Employment(
+            "The Man Plc",
+            Live,
+            None,
+            Some(LocalDate.parse("2016-06-09")),
+            None,
+            Nil,
+            "",
+            "",
+            1,
+            None,
+            false,
+            false
+          )
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         Await.result(

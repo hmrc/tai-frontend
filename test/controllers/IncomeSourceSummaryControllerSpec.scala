@@ -201,7 +201,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     "test employment",
     Live,
     Some("EMPLOYER-1122"),
-    LocalDate.now(),
+    Some(LocalDate.now()),
     None,
     Seq(annualAccount),
     "",

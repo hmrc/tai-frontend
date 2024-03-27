@@ -102,7 +102,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         "empName",
         Live,
         None,
-        LocalDate.of(2017, 6, 9),
+        Some(LocalDate.of(2017, 6, 9)),
         None,
         Nil,
         "taxNumber",

@@ -23,7 +23,7 @@ case class IncomeTaxHistoryViewModel(
   isPension: Boolean,
   ern: String,
   payrollNumber: Option[String],
-  startDate: LocalDate,
+  startDate: Option[LocalDate],
   maybeEndDate: Option[LocalDate],
   maybeTaxableIncome: Option[String],
   maybeIncomeTaxPaid: Option[String],

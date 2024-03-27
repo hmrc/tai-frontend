@@ -47,7 +47,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       "company",
       Live,
       Some("123"),
-      LocalDate.parse("2016-05-26"),
+      Some(LocalDate.parse("2016-05-26")),
       None,
       Nil,
       "",

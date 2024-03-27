@@ -55,7 +55,7 @@ object EmploymentAmount {
       taxCodeIncome.amount.toInt,
       None,
       None,
-      Some(employment.startDate),
+      employment.startDate,
       employment.endDate,
       employment.employmentStatus == Live,
       taxCodeIncome.componentType == PensionIncome

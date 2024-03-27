@@ -395,7 +395,20 @@ class IncomeServiceSpec extends BaseSpec {
   )
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) =
-    Employment("ABCD", Live, Some("ABC123"), LocalDate.of(2000, 5, 20), None, accounts, "", "", 8, None, false, false)
+    Employment(
+      "ABCD",
+      Live,
+      Some("ABC123"),
+      Some(LocalDate.of(2000, 5, 20)),
+      None,
+      accounts,
+      "",
+      "",
+      8,
+      None,
+      false,
+      false
+    )
 
   def paymentOnDate(date: LocalDate) =
     Payment(
