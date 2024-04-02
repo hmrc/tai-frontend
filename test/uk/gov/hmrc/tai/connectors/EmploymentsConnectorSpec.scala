@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsResultException, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -339,8 +339,11 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut("test/service").employments(nino, year), 5 seconds)
-        ex.getMessage mustBe "Invalid employment json"
+        val result = sut("test/service").employments(nino, year)
+
+        whenReady(result.failed) { e =>
+          e mustBe a[JsResultException]
+        }
       }
     }
 
