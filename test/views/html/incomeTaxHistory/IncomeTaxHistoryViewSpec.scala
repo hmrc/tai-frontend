@@ -23,6 +23,8 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 
+import scala.jdk.CollectionConverters.ListHasAsScala
+
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   "Income tax history view" must {
@@ -79,6 +81,14 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       "display ern if not a pension" in {
         doc must haveDivItemWithText(messages("tai.incomeTax.history.employerReference") + " ern")
       }
+    }
+
+    "display Not available when startDate is None" in {
+      val doc = Jsoup.parse(viewWithMissingStartDate.toString())
+      println(doc.getElementsByClass("govuk-summary-list__row").asScala.toList)
+      val startDateElement =
+        doc.getElementsByClass("govuk-summary-list__row").asScala.toList.filter(_.text.contains("Start date")).head
+      startDateElement.getElementsByTag("dd").text() mustBe "Not available"
     }
 
     val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
@@ -195,6 +205,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
 
+  lazy val viewWithMissingStartDate: Html = incomeTaxHistoryView(
+    appConfig,
+    personWithNoAddress,
+    List(IncomeTaxYear(taxYear, List(historyViewModel.copy(startDate = None))))
+  )
   lazy val viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
   lazy val viewWithPartialAddress: Html = incomeTaxHistoryView(appConfig, personWithPartialAddress, incomeTaxYears)
 

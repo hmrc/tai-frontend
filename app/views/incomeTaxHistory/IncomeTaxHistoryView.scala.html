@@ -137,7 +137,7 @@ messages: Messages)
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         @{
-                                            summary.startDate.fold(""){ startDate =>
+                                            summary.startDate.fold(Messages("tai.incomeTaxComparison.incomeSourceAbsent")){ startDate =>
                                                 TaxYearRangeUtil.formatDate(startDate)
                                             }
                                         }
