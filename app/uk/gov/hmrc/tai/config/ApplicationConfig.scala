@@ -115,11 +115,6 @@ class ApplicationConfig @Inject() (
   lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
 
   lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
-  lazy val sessionCountdownInSeconds: Int = getOptional[Int]("tai.session.countdown").getOrElse(120)
-  lazy val messagesFrontendTimeoutInSec: Int = getOptional[Int]("messages-frontend.timeout-in-seconds").getOrElse(5)
-  lazy val SCAWrapperFutureTimeout: Int = servicesConfig.getInt("sca-wrapper.future-timeout")
-
-  lazy val personDetailsMessageCountToggle: Boolean = servicesConfig.getBoolean("messages-frontend.unread-toggle")
 
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   lazy val citizenAuthHost: String = decorateUrlForLocalDev("citizen-auth.host")
@@ -136,7 +131,6 @@ class ApplicationConfig @Inject() (
   lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
   lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
-  lazy val messagesFrontendUrl: String = servicesConfig.baseUrl("message-frontend")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String =

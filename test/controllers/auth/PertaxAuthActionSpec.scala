@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.PertaxConnector
 import uk.gov.hmrc.tai.model.admin.PertaxBackendToggle
 import uk.gov.hmrc.tai.model.{ErrorView, PertaxResponse}
-import uk.gov.hmrc.tai.service.{MessageFrontendService, URLService}
+import uk.gov.hmrc.tai.service.URLService
 import utils.BaseSpec
 import views.html.{InternalServerErrorView, MainTemplate}
 
@@ -49,7 +49,6 @@ class PertaxAuthActionSpec extends BaseSpec {
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
   private lazy val mockURLService = mock[URLService]
   override lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
-  lazy val mockMessageFrontendService: MessageFrontendService = mock[MessageFrontendService]
 
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
   private val mainTemplateView: MainTemplate = inject[MainTemplate]

@@ -26,7 +26,6 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import uk.gov.hmrc.tai.service.MessageFrontendService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +38,6 @@ trait AuthAction
 @Singleton
 class AuthActionImpl @Inject() (
   override val authConnector: AuthConnector,
-  messageFrontendService: MessageFrontendService,
   mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends AuthAction with AuthorisedFunctions with Logging {
@@ -55,22 +53,17 @@ class AuthActionImpl @Inject() (
       Retrievals.nino and Retrievals.saUtr and Retrievals.confidenceLevel and Retrievals.trustedHelper
     ) {
       case _ ~ saUtr ~ confidenceLevel ~ Some(helper) =>
-        messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
-          val user = AuthedUser(helper, saUtr, confidenceLevel, messageCount)
-          processRequest(confidenceLevel, user, request, block, handleGGFailure)
-        }
+        val user = AuthedUser(helper, saUtr, confidenceLevel)
+        processRequest(confidenceLevel, user, request, block, handleGGFailure)
 
       case optNino ~ saUtr ~ confidenceLevel ~ _ =>
-        messageFrontendService.getUnreadMessageCount(request).flatMap { messageCount =>
-          lazy val user = AuthedUser(
-            uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
-            saUtr,
-            confidenceLevel,
-            messageCount,
-            None
-          )
-          processRequest(confidenceLevel, user, request, block, handleGGFailure)
-        }
+        lazy val user = AuthedUser(
+          uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+          saUtr,
+          confidenceLevel,
+          None
+        )
+        processRequest(confidenceLevel, user, request, block, handleGGFailure)
       case _ => throw new RuntimeException("Can't find credentials for user")
     } recover handleEntryPointFailure(request)
   }
