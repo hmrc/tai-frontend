@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.ServiceURLs
-import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.sca.models.BannerConfig
 import uk.gov.hmrc.sca.services.WrapperService
@@ -49,7 +48,6 @@ trait MainTemplate {
 
 class MainTemplateImpl @Inject() (
   appConfig: ApplicationConfig,
-  featureFlagService: FeatureFlagService,
   wrapperService: WrapperService,
   scripts: AdditionalJavascript,
   headBlock: HeadBlock
