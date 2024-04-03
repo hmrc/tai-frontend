@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.config
 
-import play.api.{ConfigLoader, Configuration, Environment}
+import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
 import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -26,8 +26,7 @@ import javax.inject.Inject
 
 class ApplicationConfig @Inject() (
   val runModeConfiguration: Configuration,
-  servicesConfig: ServicesConfig,
-  env: Environment
+  servicesConfig: ServicesConfig
 ) extends FeatureTogglesConfig with AuthConfigProperties {
 
   def getOptional[A](key: String)(implicit loader: ConfigLoader[A]): Option[A] =
@@ -68,13 +67,7 @@ class ApplicationConfig @Inject() (
     }
     s"$accessibilityBaseUrl/accessibility-statement$accessibilityRedirectUrl?referrerUrl=$redirectUrl"
   }
-  lazy val reportAProblemPartialUrl: String =
-    s"${servicesConfig.baseUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
-  lazy val betaFeedbackUnauthenticatedUrl =
-    "https://www.tax.service.gov.uk/contact/beta-feedback-unauthenticated?service=TES"
 
-  lazy val urBannerEnabled: Boolean = getOptional[String]("feature.ur-banner.enabled").getOrElse("true").toBoolean
-  lazy val urBannerLink: String = getOptional[String]("ur-banner.url").getOrElse("")
   lazy val checkUpdateProgressLinkUrl: String = s"$trackFrontendHost/track"
   lazy val pertaxServiceUrl: String = s"$pertaxFrontendHost/personal-account"
   lazy val pertaxServiceUpliftFailedUrl: String = s"$pertaxFrontendHost/personal-account/identity-check-failed"
@@ -91,8 +84,6 @@ class ApplicationConfig @Inject() (
   lazy val hardshipHelpUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-how-you-want-to-pay-estimated-tax/draft/guide"
 
-  lazy val assetsPath: String =
-    s"${getOptional[String](s"assets.url").getOrElse("")}${getOptional[String](s"assets.version").getOrElse("")}/"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
   lazy val welshRateIncomeTaxUrl: String = "https://www.gov.uk/welsh-income-tax"
   lazy val welshRateIncomeTaxWelshUrl: String = "https://www.gov.uk/treth-incwm-cymru"
@@ -100,9 +91,6 @@ class ApplicationConfig @Inject() (
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees"
   lazy val contactHelplineWelshUrl: String =
     "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
-
-  lazy val frontendTemplatePath: String =
-    getOptional[String]("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
   lazy val basGatewayFrontendSignOutUrl: String =
     s"$basGatewayHost/bas-gateway/sign-out-without-state?continue=$feedbackSurveyUrl"
@@ -112,17 +100,10 @@ class ApplicationConfig @Inject() (
 
   lazy val basGatewayFrontendSignInUrl: String = s"$basGatewayHost/bas-gateway/sign-in"
 
-  lazy val citizenAuthFrontendSignOutUrl: String = citizenAuthHost + "/ida/signout"
-
   lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
-  lazy val sessionCountdownInSeconds: Int = getOptional[Int]("tai.session.countdown").getOrElse(120)
   lazy val messagesFrontendTimeoutInSec: Int = getOptional[Int]("messages-frontend.timeout-in-seconds").getOrElse(5)
-  lazy val SCAWrapperFutureTimeout: Int = servicesConfig.getInt("sca-wrapper.future-timeout")
-
-  lazy val personDetailsMessageCountToggle: Boolean = servicesConfig.getBoolean("messages-frontend.unread-toggle")
 
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
-  lazy val citizenAuthHost: String = decorateUrlForLocalDev("citizen-auth.host")
   lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")
   lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
   lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
@@ -144,4 +125,10 @@ class ApplicationConfig @Inject() (
 
   lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
   lazy val newTaxBandsReleaseDate: LocalDate = LocalDate.parse(newTaxBandsRelease)
+
+  lazy val startEmploymentDateFilteredBefore: LocalDate =
+    LocalDate.parse(servicesConfig.getString("feature.startEmploymentDateFilteredBefore"))
+
+  val taiServiceUrl: String = servicesConfig.baseUrl("tai")
+
 }

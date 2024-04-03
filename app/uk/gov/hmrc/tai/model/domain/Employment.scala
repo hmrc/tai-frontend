@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.{Format, JsPath, JsValue, Json, Reads, Writes}
+import play.api.libs.json.{Format, JsValue, Json, Writes}
 import play.api.libs.ws.BodyWritable
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncomeSourceStatus
 
@@ -42,25 +41,7 @@ case class Employment(
 }
 
 object Employment {
-  private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =
-    dateOption.filter(_.isAfter(LocalDate.of(1950, 1, 1)))
-
-  implicit val reads: Reads[Employment] = (
-    (JsPath \ "name").read[String] and
-      (JsPath \ "employmentStatus").read[TaxCodeIncomeSourceStatus] and
-      (JsPath \ "payrollNumber").readNullable[String] and
-      (JsPath \ "startDate").readNullable[LocalDate].map(filterDate) and
-      (JsPath \ "endDate").readNullable[LocalDate] and
-      (JsPath \ "annualAccounts").read[Seq[AnnualAccount]] and
-      (JsPath \ "taxDistrictNumber").read[String] and
-      (JsPath \ "payeNumber").read[String] and
-      (JsPath \ "sequenceNumber").read[Int] and
-      (JsPath \ "cessationPay").readNullable[BigDecimal] and
-      (JsPath \ "hasPayrolledBenefit").read[Boolean] and
-      (JsPath \ "receivingOccupationalPension").read[Boolean]
-  )(Employment.apply _)
-
-  implicit val writes: Writes[Employment] = Json.writes[Employment]
+  implicit val formats: Format[Employment] = Json.format[Employment]
 }
 
 case class AddEmployment(

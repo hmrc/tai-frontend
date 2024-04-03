@@ -222,7 +222,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, servicesConfig) {
+  def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, appConfig) {
     override val serviceUrl: String = servUrl
   }
 
@@ -411,9 +411,10 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
 
-        val ex = the[RuntimeException] thrownBy Await
-          .result(sut("test/service").ceasedEmployments(nino, year), 5 seconds)
-        ex.getMessage mustBe "Invalid employment json"
+        val result = sut("test/service").ceasedEmployments(nino, year)
+        whenReady(result.failed) { e =>
+          e mustBe a[JsResultException]
+        }
       }
     }
   }

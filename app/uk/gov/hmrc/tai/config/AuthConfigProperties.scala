@@ -18,7 +18,4 @@ package uk.gov.hmrc.tai.config
 
 trait AuthConfigProperties { self: ApplicationConfig =>
   val postSignInRedirectUrl: Option[String] = getOptional[String]("microservice.login-callback.url")
-
-  val taxPlatformTaiRootUri: String =
-    getOptional[String]("microservice.taxPlatformTaiRootUri").getOrElse("http://noConfigTaiRootUri")
 }
