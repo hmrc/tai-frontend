@@ -32,7 +32,6 @@ object FakeAuthAction extends AuthAction {
       Nino(nino.toString()),
       Some("saUtr"),
       ConfidenceLevel.L200,
-      None,
       None
     )
   val cc: ControllerComponents = stubControllerComponents()
