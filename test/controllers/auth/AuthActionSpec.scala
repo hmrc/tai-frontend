@@ -26,7 +26,6 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.MessageFrontendService
 import utils.BaseSpec
 
 import scala.concurrent.duration._
@@ -35,8 +34,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 class AuthActionSpec extends BaseSpec {
 
   val cc = stubControllerComponents()
-
-  val mfs = app.injector.instanceOf[MessageFrontendService]
 
   abstract class Harness(authAction: AuthAction) extends AbstractController(cc) {
 
@@ -54,11 +51,11 @@ class AuthActionSpec extends BaseSpec {
       val mocked = mock[AuthConnector]
       when(mocked.authorise[A](any(), any())(any(), any())).thenReturn(Future.successful(a))
 
-      fromAction(new AuthActionImpl(mocked, mfs, mcc))
+      fromAction(new AuthActionImpl(mocked, mcc))
     }
 
     def failure(ex: Throwable): Harness =
-      fromAction(new AuthActionImpl(new FakeFailingAuthConnector(ex), mfs, mcc))
+      fromAction(new AuthActionImpl(new FakeFailingAuthConnector(ex), mcc))
   }
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
@@ -110,7 +107,7 @@ class AuthActionSpec extends BaseSpec {
       "no trusted helper data is returned" in {
         val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
-        val expectedTaiUser = AuthedUser(nino, saUtr, ConfidenceLevel.L200, None, None)
+        val expectedTaiUser = AuthedUser(nino, saUtr, ConfidenceLevel.L200, None)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
@@ -123,7 +120,7 @@ class AuthActionSpec extends BaseSpec {
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
-          AuthedUser(nino, Some("000111222"), ConfidenceLevel.L200, None, Some(trustedHelper))
+          AuthedUser(nino, Some("000111222"), ConfidenceLevel.L200, Some(trustedHelper))
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }

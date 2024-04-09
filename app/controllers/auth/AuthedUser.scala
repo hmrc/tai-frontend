@@ -24,7 +24,6 @@ case class AuthedUser(
   nino: Nino,
   utr: Option[String],
   confidenceLevel: ConfidenceLevel,
-  messageCount: Option[Int],
   trustedHelper: Option[TrustedHelper]
 )
 
@@ -33,14 +32,12 @@ object AuthedUser {
   def apply(
     trustedHelper: TrustedHelper,
     saUtr: Option[String],
-    confidenceLevel: ConfidenceLevel,
-    messageCount: Option[Int]
+    confidenceLevel: ConfidenceLevel
   ): AuthedUser =
     AuthedUser(
       nino = Nino(trustedHelper.principalNino),
       utr = saUtr,
       confidenceLevel = confidenceLevel,
-      messageCount = messageCount,
       trustedHelper = Some(trustedHelper)
     )
 }

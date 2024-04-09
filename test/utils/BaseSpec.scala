@@ -83,7 +83,6 @@ trait BaseSpec
           Nino(nino.toString()),
           Some("saUtr"),
           ConfidenceLevel.L200,
-          None,
           None
         )
       override def invokeBlock[A](
@@ -104,7 +103,6 @@ trait BaseSpec
             Nino(nino.toString()),
             Some("saUtr"),
             ConfidenceLevel.L200,
-            None,
             None
           )
 
