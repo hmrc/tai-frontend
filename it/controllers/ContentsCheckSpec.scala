@@ -28,7 +28,7 @@ import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsArray, JsValue, Json}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
@@ -70,273 +70,342 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "what-to-do" =>
         ExpectedData(
           "PAYE Income Tax overview - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "jrs-claims" =>
         ExpectedData(
           "Coronavirus Job Retention Scheme - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "no-info" =>
         ExpectedData(
           "Your PAYE Income Tax - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "historic-paye-year" =>
-        ExpectedData("Your taxable income for 6 April 2022 to 5 April 2023 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your taxable income for 6 April 2022 to 5 April 2023 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "income-tax-history" =>
-        ExpectedData("Income tax history - Check your Income Tax - GOV.UK", true)
-      case "timeout" => ExpectedData("Log In - Check your Income Tax - GOV.UK", false)
+        ExpectedData("Income tax history - Check your Income Tax - GOV.UK", navBarExpected = true)
+      case "timeout" => ExpectedData("Log In - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "tax-estimate-unavailable" =>
-        ExpectedData("We cannot access your details - Check your Income Tax - GOV.UK", false, LOCKED)
+        ExpectedData("We cannot access your details - Check your Income Tax - GOV.UK", navBarExpected = false, LOCKED)
       case "deceased" =>
-        ExpectedData("The information you want is not available to view - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "The information you want is not available to view - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "session-expired" =>
-        ExpectedData("For your security, we signed you out - Check your Income Tax - GOV.UK", false)
+        ExpectedData("For your security, we signed you out - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "add-employment-name" =>
-        ExpectedData("What is the name of the employer you want to add? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "What is the name of the employer you want to add? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "add-employment-start-date" =>
-        ExpectedData("When did you start working for this employer? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "When did you start working for this employer? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "add-employment-first-pay" =>
         ExpectedData(
           "Have you received your first pay from H M Revenue and Customs? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "add-employment-six-weeks" =>
         ExpectedData(
           "We cannot add this employer yet - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "add-employment-payroll-number" =>
         ExpectedData(
           "Do you know your payroll number for this employer? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "add-employment-telephone-number" | "add-pension-telephone-number" | "end-employment-telephone-number" |
           "update-employment-telephone-number" | "update-income-details-number" | "remove-telephone-number" |
           "incorrect-pension-telephone-number" =>
-        ExpectedData("Can we call you if we need more information? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Can we call you if we need more information? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "add-employment-cya" | "add-pension-cya" | "end-employment-cya" | "update-employment-cya" |
           "update-income-cya" | "update-income-details-cya" | "remove-cya" | "incorrect-pension-cya" =>
-        ExpectedData("Check your answers - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Check your answers - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "add-employment-success" =>
-        ExpectedData("Your update about an employment has been received - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your update about an employment has been received - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "add-pension-name" =>
         ExpectedData(
           "What is the name of the pension provider you want to add? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "add-pension-first-payment" =>
         ExpectedData(
           "Have you received your first pension payment from this employer? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "add-pension-number" =>
         ExpectedData(
           "Do you know your pension number from your this employer? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "add-pension-success" =>
-        ExpectedData("Your update about a pension has been received - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your update about a pension has been received - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "remove-employment-warning" =>
-        ExpectedData("You have already sent an update about this employment - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "You have already sent an update about this employment - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "end-employment-decision" =>
-        ExpectedData("Do you currently work for company name? - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Do you currently work for company name? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "end-employment-six-weeks" =>
-        ExpectedData("We cannot update your details yet - Check your Income Tax - GOV.UK", true)
+        ExpectedData("We cannot update your details yet - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "end-employment-irregular-payment" =>
-        ExpectedData("End employment - Check your Income Tax - GOV.UK", true)
+        ExpectedData("End employment - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "end-employment-date" =>
-        ExpectedData("When did you finish working for this employer? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "When did you finish working for this employer? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-employment-tell-us" =>
-        ExpectedData("What do you want to tell us about this employer? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "What do you want to tell us about this employer? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-employment-success" =>
-        ExpectedData("Your update about an employment has been received - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your update about an employment has been received - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "previous-underpayment" =>
-        ExpectedData("What is a previous year underpayment? - Check your Income Tax - GOV.UK", true)
+        ExpectedData("What is a previous year underpayment? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "underpayment-estimate" =>
-        ExpectedData("Estimated tax you owe - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Estimated tax you owe - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "tax-free-allowance" =>
-        ExpectedData("Your tax-free amount for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your tax-free amount for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "tax-code" =>
-        ExpectedData("Your tax code for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your tax code for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "year-tax-codes" =>
-        ExpectedData("Your last tax code for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your last tax code for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "paye-income-tax-estimate" =>
         ExpectedData(
           "Your PAYE Income Tax estimate - Check your Income Tax - GOV.UK",
-          true,
+          navBarExpected = true,
           headerTitle = "Your PAYE Income Tax estimate"
         )
       case "detailed-income-tax-estimate" =>
-        ExpectedData("Your detailed PAYE Income Tax estimate - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Your detailed PAYE Income Tax estimate - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income-tax-comparison" =>
-        ExpectedData("Income Tax comparison: current tax year and next tax year - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Income Tax comparison: current tax year and next tax year - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "your-income-calculation-details" =>
-        ExpectedData("Taxable income from company name - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Taxable income from company name - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-warning" =>
-        ExpectedData("You have already sent a new estimated income - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "You have already sent a new estimated income - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-income-start" =>
-        ExpectedData("Update your estimated income - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Update your estimated income - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-estimated-pay" =>
-        ExpectedData("There is an error with your calculation - Check your Income Tax - GOV.UK", true)
+        ExpectedData("There is an error with your calculation - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "how-to-update-income" =>
-        ExpectedData("How do you want to update your estimated income - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "How do you want to update your estimated income - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-income-working-hours" =>
-        ExpectedData("What are your working hours through the year? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "What are your working hours through the year? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "edit-income-irregular-hours" =>
         ExpectedData(
           "We cannot calculate your annual income as you have irregular working hours - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "edit-income-irregular-hours-confirm" | "update-income-check-save" =>
         ExpectedData(
           "Confirm your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "edit-income-irregular-hours-submit" =>
         ExpectedData(
           "Your taxable income has been updated - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-income-pay-period" =>
         ExpectedData(
           "How often do you get paid? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-income-payslip-amount" =>
-        ExpectedData("Enter your gross pay for the month - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Enter your gross pay for the month - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-payslip-deductions" =>
         ExpectedData(
           "Does your payslip show deductions before tax and National Insurance? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-income-taxable-payslip-amount" =>
-        ExpectedData("Enter your taxable pay for the month - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Enter your taxable pay for the month - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-bonus-payments" =>
         ExpectedData(
           "Will you get any bonus, commission or overtime between 6 April 2023 and 5 April 2024? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-income-bonus-overtime-amount" =>
         ExpectedData(
           "How much do you think you will get in bonus, commission or overtime between 6 April 2023 and 5 April 2024? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-income-edit-taxable-pay" | "update-income-edit-pension" =>
         ExpectedData(
           "Update your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-income-same-estimated-pay" =>
-        ExpectedData("Your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-income-success-page" =>
-        ExpectedData("Your taxable income has been updated - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Your taxable income has been updated - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "get-help" =>
-        ExpectedData("Cannot pay the tax you owe this year - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Cannot pay the tax you owe this year - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-details-decision" =>
-        ExpectedData("Update income details for 6 April 2022 to 5 April 2023 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Update income details for 6 April 2022 to 5 April 2023 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-income-what-to-tell" =>
-        ExpectedData("What do you want to tell us about your income details? - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "What do you want to tell us about your income details? - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-income-details-success" =>
-        ExpectedData("Your update has been received - Check your Income Tax - GOV.UK", true)
+        ExpectedData("Your update has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income" =>
-        ExpectedData("Your tax-free amount for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your tax-free amount for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "income-tax-refresh" =>
         ExpectedData(
           "Your PAYE Income Tax summary for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "remove-stop-date" =>
         ExpectedData(
           "When did you stop getting benefitName benefit from employmentName? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "remove-total-value-of-benefit" =>
         ExpectedData(
           "What was the total value of your benefitName benefit from employmentName? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "remove-success" =>
         ExpectedData(
           "Your update has been received - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "company-benefit-decision" =>
         ExpectedData(
           "Do you currently get Telephone benefit from company name? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "incorrect-pension-decision" =>
         ExpectedData(
           "Confirm your pension provider - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "incorrect-pension-what-to-tell" =>
         ExpectedData(
           "What do you want to tell us about your pension provider? - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "incorrect-pension-success" =>
         ExpectedData(
           "Your update about a pension has been received - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "incorrect-pension-warning" =>
         ExpectedData(
           "You have already sent an update about this pension - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "tax-code-comparison" =>
         ExpectedData(
           "Your tax code change - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "your-tax-free-amount" =>
         ExpectedData(
           "How we worked out your tax code - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "what-happens-next" =>
         ExpectedData(
           "What happens next - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "unauthorised" =>
         ExpectedData(
           "You have been signed out for your security - Check your Income Tax - GOV.UK",
-          false
+          navBarExpected = false
         )
       case "update-next-income-warning" =>
         ExpectedData(
           "You have already sent a new estimated income - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-next-income-start" =>
         ExpectedData(
           "Update your estimated income from <span class=\"carry-over\">company name</span> for next tax year - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-next-income-edit" =>
         ExpectedData(
           "Update your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-next-income-no-change" =>
-        ExpectedData("Your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK", true)
+        ExpectedData(
+          "Your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          navBarExpected = true
+        )
       case "update-next-income-confirm" =>
         ExpectedData(
           "Confirm your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
       case "update-next-income-success" =>
         ExpectedData(
           "Your updated estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
-          true
+          navBarExpected = true
         )
     }
 
-  val urls = Map(
+  val urls: Map[String, ExpectedData] = Map(
     "/check-income-tax/what-do-you-want-to-do"                   -> getExpectedData("what-to-do"),
     "/check-income-tax/jrs-claims"                               -> getExpectedData("jrs-claims"),
     "/check-income-tax/income-tax/no-info"                       -> getExpectedData("no-info"),
@@ -461,31 +530,30 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
-      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port(),
-      "microservice.services.message-frontend.port"                    -> server.port()
+      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port()
     )
     .build()
 
-  val uuid = UUID.randomUUID().toString
+  val uuid: String = UUID.randomUUID().toString
 
   def request(url: String): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(GET, url)
       .withSession(SessionKeys.sessionId -> uuid, SessionKeys.authToken -> "Bearer 1")
       .withHeaders("Referer" -> "")
 
-  val wrapperDataResponse = Json
+  val wrapperDataResponse: String = Json
     .toJson(
       WrapperDataResponse(
         Seq(
-          MenuItemConfig("id", "NewLayout Item", "link", false, 0, None, None),
-          MenuItemConfig("signout", "Sign out", "link", false, 0, None, None)
+          MenuItemConfig("id", "NewLayout Item", "link", leftAligned = false, 0, None, None),
+          MenuItemConfig("signout", "Sign out", "link", leftAligned = false, 0, None, None)
         ),
         PtaMinMenuConfig("MenuName", "BackName")
       )
     )
     .toString
 
-  val person = Person(
+  val person: Person = Person(
     generatedNino,
     "Firstname",
     "Surname",
@@ -493,14 +561,14 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     manualCorrespondenceInd = false,
     Address("", "", "", "", "")
   )
-  val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
-  val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
-  val employer1 = Employers("Employer", "reference", List(YearAndMonth("2020-01"), YearAndMonth("2021-01")))
-  val jrsClaim = JrsClaims(List(employer1))
+  val employments: JsObject = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
+  val taxAccountSummary: JsObject = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
+  val employer1: Employers = Employers("Employer", "reference", List(YearAndMonth("2020-01"), YearAndMonth("2021-01")))
+  val jrsClaim: JrsClaims = JrsClaims(List(employer1))
 
-  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val taxBand: TaxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCategories: IncomeCategory = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCategories), None, None, None)
 
   val taxCodeRecordJson =
     """[{"taxCodeId":2,"taxCode":"1100L","basisOfOperation":"Week 1 Month 1","startDate":"2023-09-14","endDate":"2024-04-05","employerName":"Asda","payrollNumber":"NPSQAR-62","pensionIndicator":false,"primary":true}]"""
@@ -540,9 +608,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         }"""
 
   val startYear = 2023
-  val numberOfYears = Random.between(2, 10)
+  val numberOfYears: Int = Random.between(2, 10)
 
-  def taxCodeRecord(year: Int) = TaxCodeRecord(
+  def taxCodeRecord(year: Int): TaxCodeRecord = TaxCodeRecord(
     s"${year}X",
     TaxYear.apply(year).start,
     TaxYear.apply(year).end,
@@ -559,7 +627,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     TaxCodeChange(previousYears, currentYears)
   }
 
-  val taxCodeComparisonJson = Json.obj(
+  val taxCodeComparisonJson: JsObject = Json.obj(
     "data" -> Json.obj(
       "previous" -> Json.arr(
         Json.obj(
@@ -592,15 +660,16 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(EndEmploymentTelephoneQuestionPage, "999")
     .setOrException(EndEmploymentTelephoneNumberPage, "999")
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
 
-    when(mockFeatureFlagService.get(CyPlusOneToggle)).thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, true)))
+    when(mockFeatureFlagService.get(CyPlusOneToggle))
+      .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
       Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = true))
     )
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
-      .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, true)))
+      .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/person"))
