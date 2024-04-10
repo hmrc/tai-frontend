@@ -62,7 +62,7 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
       doc must haveTdWithText("£1,100")
 
       doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.PartTimeEarnings"))
-      doc must haveTdWithText("not applicable")
+      doc must haveTdWithText("Not applicable")
     }
 
     "display deductions table" in {
@@ -72,7 +72,7 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
       doc must haveTdWithText("£1,100")
 
       doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.CasualEarnings"))
-      doc must haveTdWithText("not applicable")
+      doc must haveTdWithText("Not applicable")
       doc must haveTdWithText("£1,100")
 
     }
