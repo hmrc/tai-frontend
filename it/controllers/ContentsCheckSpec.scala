@@ -83,32 +83,20 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           navBarExpected = true
         )
       case "historic-paye-year" =>
-        ExpectedData(
-          "Your taxable income for 6 April 2022 to 5 April 2023 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your taxable income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income-tax-history" =>
         ExpectedData("Income tax history - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "timeout" => ExpectedData("Log In - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "tax-estimate-unavailable" =>
         ExpectedData("We cannot access your details - Check your Income Tax - GOV.UK", navBarExpected = false, LOCKED)
       case "deceased" =>
-        ExpectedData(
-          "The information you want is not available to view - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("The information you want is not available to view - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "session-expired" =>
         ExpectedData("For your security, we signed you out - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "add-employment-name" =>
-        ExpectedData(
-          "What is the name of the employer you want to add? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("What is the name of the employer you want to add? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "add-employment-start-date" =>
-        ExpectedData(
-          "When did you start working for this employer? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("When did you start working for this employer? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "add-employment-first-pay" =>
         ExpectedData(
           "Have you received your first pay from H M Revenue and Customs? - Check your Income Tax - GOV.UK",
@@ -127,18 +115,12 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "add-employment-telephone-number" | "add-pension-telephone-number" | "end-employment-telephone-number" |
           "update-employment-telephone-number" | "update-income-details-number" | "remove-telephone-number" |
           "incorrect-pension-telephone-number" =>
-        ExpectedData(
-          "Can we call you if we need more information? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Can we call you if we need more information? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "add-employment-cya" | "add-pension-cya" | "end-employment-cya" | "update-employment-cya" |
           "update-income-cya" | "update-income-details-cya" | "remove-cya" | "incorrect-pension-cya" =>
         ExpectedData("Check your answers - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "add-employment-success" =>
-        ExpectedData(
-          "Your update about an employment has been received - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your update about an employment has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "add-pension-name" =>
         ExpectedData(
           "What is the name of the pension provider you want to add? - Check your Income Tax - GOV.UK",
@@ -155,15 +137,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           navBarExpected = true
         )
       case "add-pension-success" =>
-        ExpectedData(
-          "Your update about a pension has been received - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your update about a pension has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "remove-employment-warning" =>
-        ExpectedData(
-          "You have already sent an update about this employment - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("You have already sent an update about this employment - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "end-employment-decision" =>
         ExpectedData("Do you currently work for company name? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "end-employment-six-weeks" =>
@@ -171,39 +147,21 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "end-employment-irregular-payment" =>
         ExpectedData("End employment - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "end-employment-date" =>
-        ExpectedData(
-          "When did you finish working for this employer? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("When did you finish working for this employer? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-employment-tell-us" =>
-        ExpectedData(
-          "What do you want to tell us about this employer? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("What do you want to tell us about this employer? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-employment-success" =>
-        ExpectedData(
-          "Your update about an employment has been received - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your update about an employment has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "previous-underpayment" =>
         ExpectedData("What is a previous year underpayment? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "underpayment-estimate" =>
         ExpectedData("Estimated tax you owe - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "tax-free-allowance" =>
-        ExpectedData(
-          "Your tax-free amount for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your tax-free amount for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "tax-code" =>
-        ExpectedData(
-          "Your tax code for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your tax code for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "year-tax-codes" =>
-        ExpectedData(
-          "Your last tax code for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your last tax code for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "paye-income-tax-estimate" =>
         ExpectedData(
           "Your PAYE Income Tax estimate - Check your Income Tax - GOV.UK",
@@ -213,31 +171,19 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "detailed-income-tax-estimate" =>
         ExpectedData("Your detailed PAYE Income Tax estimate - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income-tax-comparison" =>
-        ExpectedData(
-          "Income Tax comparison: current tax year and next tax year - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Income Tax comparison: current tax year and next tax year - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "your-income-calculation-details" =>
         ExpectedData("Taxable income from company name - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-warning" =>
-        ExpectedData(
-          "You have already sent a new estimated income - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("You have already sent a new estimated income - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-start" =>
         ExpectedData("Update your estimated income - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-estimated-pay" =>
         ExpectedData("There is an error with your calculation - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "how-to-update-income" =>
-        ExpectedData(
-          "How do you want to update your estimated income - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("How do you want to update your estimated income - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-working-hours" =>
-        ExpectedData(
-          "What are your working hours through the year? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("What are your working hours through the year? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "edit-income-irregular-hours" =>
         ExpectedData(
           "We cannot calculate your annual income as you have irregular working hours - Check your Income Tax - GOV.UK",
@@ -245,7 +191,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "edit-income-irregular-hours-confirm" | "update-income-check-save" =>
         ExpectedData(
-          "Confirm your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          "Confirm your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "edit-income-irregular-hours-submit" =>
@@ -269,48 +215,36 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         ExpectedData("Enter your taxable pay for the month - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-bonus-payments" =>
         ExpectedData(
-          "Will you get any bonus, commission or overtime between 6 April 2023 and 5 April 2024? - Check your Income Tax - GOV.UK",
+          "Will you get any bonus, commission or overtime between 6 April 2024 and 5 April 2025? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-bonus-overtime-amount" =>
         ExpectedData(
-          "How much do you think you will get in bonus, commission or overtime between 6 April 2023 and 5 April 2024? - Check your Income Tax - GOV.UK",
+          "How much do you think you will get in bonus, commission or overtime between 6 April 2024 and 5 April 2025? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-edit-taxable-pay" | "update-income-edit-pension" =>
         ExpectedData(
-          "Update your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          "Update your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-same-estimated-pay" =>
-        ExpectedData(
-          "Your estimated income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-success-page" =>
         ExpectedData("Your taxable income has been updated - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "get-help" =>
         ExpectedData("Cannot pay the tax you owe this year - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-details-decision" =>
-        ExpectedData(
-          "Update income details for 6 April 2022 to 5 April 2023 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Update income details for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-what-to-tell" =>
-        ExpectedData(
-          "What do you want to tell us about your income details? - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("What do you want to tell us about your income details? - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-details-success" =>
         ExpectedData("Your update has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income" =>
-        ExpectedData(
-          "Your tax-free amount for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your tax-free amount for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income-tax-refresh" =>
         ExpectedData(
-          "Your PAYE Income Tax summary for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          "Your PAYE Income Tax summary for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "remove-stop-date" =>
@@ -385,22 +319,19 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "update-next-income-edit" =>
         ExpectedData(
-          "Update your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          "Update your estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-next-income-no-change" =>
-        ExpectedData(
-          "Your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+        ExpectedData("Your estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-next-income-confirm" =>
         ExpectedData(
-          "Confirm your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          "Confirm your estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-next-income-success" =>
         ExpectedData(
-          "Your updated estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          "Your updated estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
     }
@@ -530,7 +461,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
-      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port()
+      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port(),
+      "microservice.services.message-frontend.port"                    -> server.port()
     )
     .build()
 
@@ -663,8 +595,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
   override def beforeEach(): Unit = {
     super.beforeEach()
 
-    when(mockFeatureFlagService.get(CyPlusOneToggle))
-      .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
+    when(mockFeatureFlagService.get(CyPlusOneToggle)).thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
       Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = true))
     )

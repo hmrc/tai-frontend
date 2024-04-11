@@ -136,7 +136,11 @@ messages: Messages)
                                         @Messages("tai.incomeTax.history.startDate")
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @TaxYearRangeUtil.formatDate(summary.startDate)
+                                        @{
+                                            summary.startDate.fold(Messages("tai.incomeTaxComparison.incomeSourceAbsent")){ startDate =>
+                                                TaxYearRangeUtil.formatDate(startDate)
+                                            }
+                                        }
                                     </dd>
 
                                 </div>

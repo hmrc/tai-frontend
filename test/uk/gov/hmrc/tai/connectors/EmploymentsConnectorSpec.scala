@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsResultException, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -35,8 +35,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
     "company name",
     Live,
     Some("123"),
-    LocalDate.parse("2016-05-26"),
     Some(LocalDate.parse("2016-05-26")),
+    Some(LocalDate.parse("2016-06-26")),
     Nil,
     "123",
     "321",
@@ -60,8 +60,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
       "company name",
       Ceased,
       Some("123"),
-      LocalDate.parse("2016-05-26"),
       Some(LocalDate.parse("2016-05-26")),
+      Some(LocalDate.parse("2016-06-26")),
       Nil,
       "123",
       "321",
@@ -103,7 +103,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
             "employmentStatus" : "Live",
             "payrollNumber": "123",
             "startDate": "2016-05-26",
-            "endDate": "2016-05-26",
+            "endDate": "2016-06-26",
             "annualAccounts": [],
             "taxDistrictNumber": "123",
             "payeNumber": "321",
@@ -123,7 +123,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
             "employmentStatus" : "Live",
             "payrollNumber": "123",
             "startDate": "2016-05-26",
-            "endDate": "2016-05-26",
+            "endDate": "2016-06-26",
             "annualAccounts": [],
             "taxDistrictNumber": "123",
             "payeNumber": "321",
@@ -143,7 +143,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "employmentStatus" : "Live",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
-      |            "endDate": "2016-05-26",
+      |            "endDate": "2016-06-26",
       |            "annualAccounts": [],
       |            "taxDistrictNumber": "123",
       |            "payeNumber": "321",
@@ -157,7 +157,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "employmentStatus" : "Live",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
-      |            "endDate": "2016-05-26",
+      |            "endDate": "2016-06-26",
       |            "annualAccounts": [],
       |            "taxDistrictNumber": "1234",
       |            "payeNumber": "4321",
@@ -175,7 +175,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
             "employmentStatus" : "Ceased",
             "payrollNumber": "123",
             "startDate": "2016-05-26",
-            "endDate": "2016-05-26",
+            "endDate": "2016-06-26",
             "annualAccounts": [],
             "taxDistrictNumber": "123",
             "payeNumber": "321",
@@ -193,7 +193,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "employmentStatus" : "Ceased",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
-      |            "endDate": "2016-05-26",
+      |            "endDate": "2016-06-26",
       |            "annualAccounts": [],
       |            "taxDistrictNumber": "123",
       |            "payeNumber": "321",
@@ -207,7 +207,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "employmentStatus" : "Ceased",
       |            "payrollNumber": "123",
       |            "startDate": "2016-05-26",
-      |            "endDate": "2016-05-26",
+      |            "endDate": "2016-06-26",
       |            "annualAccounts": [],
       |            "taxDistrictNumber": "1234",
       |            "payeNumber": "4321",
@@ -222,7 +222,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, servicesConfig) {
+  def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, appConfig) {
     override val serviceUrl: String = servUrl
   }
 
@@ -316,6 +316,20 @@ class EmploymentsConnectorSpec extends BaseSpec {
         verify(httpHandler)
           .getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"), any())(any(), any())
       }
+
+      "startDate older than 1950 are filtered out" in {
+
+        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Json.parse(oneEmployment.replace("2016-05-26", "1945-05-26"))))
+
+        val responseFuture = sut().employments(nino, year)
+
+        val result = Await.result(responseFuture, 5 seconds)
+
+        result mustBe oneEmploymentDetails.map(_.copy(startDate = None))
+
+        verify(httpHandler).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"), any())(any(), any())
+      }
     }
 
     "return nil when api returns zero employments" in {
@@ -339,8 +353,11 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut("test/service").employments(nino, year), 5 seconds)
-        ex.getMessage mustBe "Invalid employment json"
+        val result = sut("test/service").employments(nino, year)
+
+        whenReady(result.failed) { e =>
+          e mustBe a[JsResultException]
+        }
       }
     }
 
@@ -387,6 +404,23 @@ class EmploymentsConnectorSpec extends BaseSpec {
       }
     }
 
+    "startDate older than 1950 are filtered out" in {
+      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Json.parse(oneCeasedEmployment.replace("2016-05-26", "1950-01-01"))))
+
+      val responseFuture = sut("test/service").ceasedEmployments(nino, year)
+
+      val result = Await.result(responseFuture, 5 seconds)
+
+      result mustBe oneCeasedEmploymentDetails.map(_.copy(startDate = None))
+
+      verify(httpHandler)
+        .getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"), any())(
+          any(),
+          any()
+        )
+    }
+
     "return nil when api returns zero employments" in {
 
       when(httpHandler.getFromApiV2(any(), any())(any(), any()))
@@ -408,9 +442,10 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
 
-        val ex = the[RuntimeException] thrownBy Await
-          .result(sut("test/service").ceasedEmployments(nino, year), 5 seconds)
-        ex.getMessage mustBe "Invalid employment json"
+        val result = sut("test/service").ceasedEmployments(nino, year)
+        whenReady(result.failed) { e =>
+          e mustBe a[JsResultException]
+        }
       }
     }
   }
@@ -429,6 +464,16 @@ class EmploymentsConnectorSpec extends BaseSpec {
         val result = Await.result(sut().employment(nino, "123"), 5.seconds)
 
         result mustBe Some(anEmploymentObject)
+        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+      }
+
+      "startDate older than 1950 are filtered out" in {
+        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26"))))
+
+        val result = Await.result(sut().employment(nino, "123"), 5.seconds)
+
+        result mustBe Some(anEmploymentObject.copy(startDate = None))
         verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
       }
     }

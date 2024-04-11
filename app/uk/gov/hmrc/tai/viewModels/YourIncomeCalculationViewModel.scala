@@ -180,7 +180,9 @@ object YourIncomeCalculationViewModel {
     paymentDate: Option[LocalDate]
   )(implicit messages: Messages): Option[String] = {
 
-    val startDate = if (TaxYear().within(employment.startDate)) employment.startDate else TaxYear().start
+    val startDate = employment.startDate.fold(TaxYear().start) { startDate =>
+      if (TaxYear().within(startDate)) startDate else TaxYear().start
+    }
 
     if (amount == amountYearToDate) {
       Some(
@@ -277,7 +279,7 @@ object PaymentFrequencyIncomeMessages {
     paymentDate: Option[LocalDate]
   )(implicit messages: Messages): Option[String] = {
 
-    val isMidYear = employment.startDate.isAfter(TaxYear().start)
+    val isMidYear = employment.startDate.fold(false)(_.isAfter(TaxYear().start))
     val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
 
     paymentFrequency collect {
@@ -285,7 +287,7 @@ object PaymentFrequencyIncomeMessages {
         if (isMidYear)
           messages(
             s"tai.income.calculation.rti.midYear.weekly",
-            Dates.formatDate(employment.startDate),
+            Dates.formatDate(employment.startDate.get),
             paymentDt,
             MoneyPounds(amountYearToDate, 2).quantity
           )
@@ -300,7 +302,7 @@ object PaymentFrequencyIncomeMessages {
         if (isMidYear)
           messages(
             "tai.income.calculation.rti.midYear.weekly",
-            Dates.formatDate(employment.startDate),
+            Dates.formatDate(employment.startDate.get),
             paymentDt,
             MoneyPounds(amountYearToDate, 2).quantity
           )

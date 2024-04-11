@@ -24,8 +24,10 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import java.time.LocalDate
 import javax.inject.Inject
 
-class ApplicationConfig @Inject() (val runModeConfiguration: Configuration, servicesConfig: ServicesConfig)
-    extends FeatureTogglesConfig with AuthConfigProperties {
+class ApplicationConfig @Inject() (
+  val runModeConfiguration: Configuration,
+  servicesConfig: ServicesConfig
+) extends FeatureTogglesConfig with AuthConfigProperties {
 
   def getOptional[A](key: String)(implicit loader: ConfigLoader[A]): Option[A] =
     runModeConfiguration.getOptional[A](key)
@@ -74,8 +76,8 @@ class ApplicationConfig @Inject() (val runModeConfiguration: Configuration, serv
   lazy val marriageServiceHistoryUrl: String = s"$tamcFrontendHost/marriage-allowance-application/history"
   lazy val medBenefitServiceUrl: String = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
 
-  private lazy val ivUpliftprefix: String = decorateUrlForLocalDev("identity-verification.prefix")
-  lazy val sa16UpliftUrl: String = s"$identityVerificationHost/$ivUpliftprefix/uplift"
+  private lazy val ivUpliftPrefix: String = decorateUrlForLocalDev("identity-verification.prefix")
+  lazy val sa16UpliftUrl: String = s"$identityVerificationHost/$ivUpliftPrefix/uplift"
 
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus: String = s"$taxCalcFrontendHost/tax-you-paid/status"
@@ -121,4 +123,10 @@ class ApplicationConfig @Inject() (val runModeConfiguration: Configuration, serv
 
   private lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
   lazy val newTaxBandsReleaseDate: LocalDate = LocalDate.parse(newTaxBandsRelease)
+
+  lazy val startEmploymentDateFilteredBefore: LocalDate =
+    LocalDate.parse(servicesConfig.getString("feature.startEmploymentDateFilteredBefore"))
+
+  val taiServiceUrl: String = servicesConfig.baseUrl("tai")
+
 }
