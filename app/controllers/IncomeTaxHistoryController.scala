@@ -69,19 +69,19 @@ class IncomeTaxHistoryController @Inject() (
         val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
 
         IncomeTaxHistoryViewModel(
-          employment.name,
-          isPension,
-          s"${employment.taxDistrictNumber}/${employment.payeNumber}",
-          employment.payrollNumber,
-          employment.startDate,
-          employment.endDate,
-          maybeLastPayment.map { payment =>
+          employerName = employment.name,
+          isPension = isPension,
+          ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
+          payrollNumber = employment.payrollNumber,
+          startDate = employment.startDate,
+          maybeEndDate = employment.endDate,
+          maybeTaxableIncome = maybeLastPayment.map { payment =>
             withPoundPrefix(MoneyPounds(payment.amountYearToDate, 2, roundUp = false))
           },
-          maybeLastPayment.map { payment =>
+          maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
             withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate, 2, roundUp = false))
           },
-          maybeTaxCode.map(_.taxCode)
+          maybeTaxCode = maybeTaxCode.map(_.taxCode)
         )
       }.toList
       IncomeTaxYear(taxYear, incomeTaxHistory)

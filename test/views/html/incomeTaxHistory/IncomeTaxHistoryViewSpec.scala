@@ -23,6 +23,8 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 
+import scala.jdk.CollectionConverters.ListHasAsScala
+
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
   "Income tax history view" must {
@@ -81,6 +83,14 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       }
     }
 
+    "display Not available when startDate is None" in {
+      val doc = Jsoup.parse(viewWithMissingStartDate.toString())
+      println(doc.getElementsByClass("govuk-summary-list__row").asScala.toList)
+      val startDateElement =
+        doc.getElementsByClass("govuk-summary-list__row").asScala.toList.filter(_.text.contains("Start date")).head
+      startDateElement.getElementsByTag("dd").text() mustBe "Not available"
+    }
+
     val taxYears = (TaxYear().year until (TaxYear().year - 5) by -1).map(TaxYear(_)).toList
 
     for (taxYear <- taxYears) {
@@ -113,7 +123,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     isPension = true,
     "ern",
     Some("pension-number"),
-    taxYear.start,
+    Some(taxYear.start),
     None,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
@@ -125,7 +135,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     isPension = true,
     "ern-for-pension",
     None,
-    taxYear.start.minusYears(1),
+    Some(taxYear.start.minusYears(1)),
     Some(taxYear.end.minusYears(1)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
@@ -137,7 +147,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     isPension = false,
     "ern",
     None,
-    taxYear.start.minusYears(2),
+    Some(taxYear.start.minusYears(2)),
     Some(taxYear.end.minusYears(2)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
@@ -149,7 +159,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     isPension = false,
     "ern",
     None,
-    taxYear.start.minusYears(3),
+    Some(taxYear.start.minusYears(3)),
     Some(taxYear.end.minusYears(3)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
@@ -161,7 +171,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     isPension = false,
     "ern",
     None,
-    taxYear.start.minusYears(4),
+    Some(taxYear.start.minusYears(4)),
     Some(taxYear.end.minusYears(4)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
@@ -173,7 +183,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     isPension = false,
     "ern",
     None,
-    taxYear.start.minusYears(5),
+    Some(taxYear.start.minusYears(5)),
     Some(taxYear.end.minusYears(5)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
@@ -195,6 +205,11 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
   override def view: Html =
     incomeTaxHistoryView(appConfig, person, incomeTaxYears)
 
+  lazy val viewWithMissingStartDate: Html = incomeTaxHistoryView(
+    appConfig,
+    personWithNoAddress,
+    List(IncomeTaxYear(taxYear, List(historyViewModel.copy(startDate = None))))
+  )
   lazy val viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
   lazy val viewWithPartialAddress: Html = incomeTaxHistoryView(appConfig, personWithPartialAddress, incomeTaxYears)
 

@@ -18,39 +18,47 @@ package uk.gov.hmrc.tai.connectors
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfig: ApplicationConfig)(implicit
   ec: ExecutionContext
 ) {
 
-  val serviceUrl: String = servicesConfig.baseUrl("tai")
+  val serviceUrl: String = applicationConfig.taiServiceUrl
 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
+  private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =
+    dateOption.filter(_.isAfter(applicationConfig.startEmploymentDateFilteredBefore))
+
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
-      if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
-        (json \ "data" \ "employments").as[Seq[Employment]]
-      } else {
-        throw new RuntimeException("Invalid employment json")
+      (json \ "data" \ "employments").as[Seq[Employment]].map { employment =>
+        employment.copy(startDate = filterDate(employment.startDate))
       }
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
-      (json \ "data").validate[Seq[Employment]].recoverTotal(_ => throw new RuntimeException("Invalid employment json"))
+      (json \ "data").as[Seq[Employment]].map { employment =>
+        employment.copy(startDate = filterDate(employment.startDate))
+      }
     }
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler
       .getFromApiV2(employmentUrl(nino, id))
-      .map(json => (json \ "data").asOpt[Employment])
+      .map(json =>
+        (json \ "data").asOpt[Employment].map { employment =>
+          employment.copy(startDate = filterDate(employment.startDate))
+        }
+      )
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>

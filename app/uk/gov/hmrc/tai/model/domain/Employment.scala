@@ -26,7 +26,7 @@ case class Employment(
   name: String,
   employmentStatus: TaxCodeIncomeSourceStatus,
   payrollNumber: Option[String],
-  startDate: LocalDate,
+  startDate: Option[LocalDate],
   endDate: Option[LocalDate],
   annualAccounts: Seq[AnnualAccount],
   taxDistrictNumber: String,
@@ -41,7 +41,7 @@ case class Employment(
 }
 
 object Employment {
-  implicit val employmentFormat: Format[Employment] = Json.format[Employment]
+  implicit val formats: Format[Employment] = Json.format[Employment]
 }
 
 case class AddEmployment(

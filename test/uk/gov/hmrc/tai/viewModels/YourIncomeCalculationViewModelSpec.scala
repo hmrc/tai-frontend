@@ -143,7 +143,20 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return none" when {
       "amountYearToDate is not same as amount" in {
         val employment =
-          Employment("employment", Live, None, TaxYear().start.plusDays(1), None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "employment",
+            Live,
+            None,
+            Some(TaxYear().start.plusDays(1)),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
 
         YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 1000, "emp", None) mustBe None
       }
@@ -152,7 +165,20 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return message" when {
       "amountYearToDate is not same as amount" in {
         val employment =
-          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "employment",
+            Live,
+            None,
+            Some(TaxYear().start.minusMonths(1)),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
 
         YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 100, "emp", None) mustBe
           Some(
@@ -174,7 +200,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -193,7 +219,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -211,7 +237,20 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return message for potentially ceased employment" when {
       "end date is not available" in {
         val employment =
-          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "employment",
+            Live,
+            None,
+            Some(TaxYear().start.minusMonths(1)),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(PotentiallyCeased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
@@ -223,7 +262,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -245,7 +284,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -263,7 +302,20 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return message for potentially ceased employment" when {
       "end date is not available" in {
         val employment =
-          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "employment",
+            Live,
+            None,
+            Some(TaxYear().start.minusMonths(1)),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(PotentiallyCeased, employment, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
       }
@@ -275,7 +327,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -297,7 +349,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -317,7 +369,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -337,7 +389,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -357,7 +409,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -378,7 +430,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.plusMonths(1),
+          Some(TaxYear().start.plusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -393,7 +445,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Some(
             messagesApi(
               "tai.income.calculation.rti.midYear.weekly",
-              Dates.formatDate(employment.startDate),
+              Dates.formatDate(employment.startDate.get),
               "",
               MoneyPounds(1000, 2).quantity
             )
@@ -405,7 +457,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.plusMonths(1),
+          Some(TaxYear().start.plusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -420,7 +472,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Some(
             messagesApi(
               "tai.income.calculation.rti.midYear.weekly",
-              Dates.formatDate(employment.startDate),
+              Dates.formatDate(employment.startDate.get),
               "",
               MoneyPounds(1000, 2).quantity
             )
@@ -432,7 +484,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.plusMonths(1),
+          Some(TaxYear().start.plusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -452,7 +504,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.plusMonths(1),
+          Some(TaxYear().start.plusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -473,7 +525,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.plusMonths(1),
+          Some(TaxYear().start.plusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1067,7 +1119,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1102,7 +1154,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1141,7 +1193,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1179,7 +1231,20 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "getSameMsg returns the first message" in {
         val employment =
-          Employment("employment", Live, None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
+          Employment(
+            "employment",
+            Live,
+            None,
+            Some(TaxYear().start.minusMonths(1)),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false
+          )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
           Some(2),
@@ -1211,7 +1276,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1246,7 +1311,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1282,7 +1347,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "employment",
           Live,
           None,
-          TaxYear().start.minusMonths(1),
+          Some(TaxYear().start.minusMonths(1)),
           Some(TaxYear().end),
           Nil,
           "",
@@ -1337,7 +1402,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       "test employment",
       employmentStatus,
       Some("EMPLOYER1"),
-      uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1),
+      Some(uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1)),
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,
       Seq(annualAccount),
       "",
