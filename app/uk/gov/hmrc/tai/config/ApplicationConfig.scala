@@ -32,10 +32,10 @@ class ApplicationConfig @Inject() (
   def getOptional[A](key: String)(implicit loader: ConfigLoader[A]): Option[A] =
     runModeConfiguration.getOptional[A](key)
 
-  def decorateUrlForLocalDev(key: String): String =
+  private def decorateUrlForLocalDev(key: String): String =
     runModeConfiguration.getOptional[String](s"external-url.$key").getOrElse("")
 
-  lazy val dfsDigitalFormsFrontend: String = servicesConfig.baseUrl("dfs-digital-forms-frontend")
+  private lazy val dfsDigitalFormsFrontend: String = servicesConfig.baseUrl("dfs-digital-forms-frontend")
 
   lazy val incomeTaxFormPartialLinkUrl: String =
     s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
@@ -55,10 +55,10 @@ class ApplicationConfig @Inject() (
   lazy val taxFreeAllowanceLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
 
-  lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
+  private lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
   lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
 
-  def accessibilityStatementUrl(referrer: String) = {
+  def accessibilityStatementUrl(referrer: String): String = {
     val redirectUrl = RedirectUrl(accessibilityBaseUrl + referrer).getEither(
       OnlyRelative | AbsoluteWithHostnameFromAllowlist("localhost")
     ) match {
@@ -71,13 +71,13 @@ class ApplicationConfig @Inject() (
   lazy val checkUpdateProgressLinkUrl: String = s"$trackFrontendHost/track"
   lazy val pertaxServiceUrl: String = s"$pertaxFrontendHost/personal-account"
   lazy val pertaxServiceUpliftFailedUrl: String = s"$pertaxFrontendHost/personal-account/identity-check-failed"
-  lazy val feedbackSurveyUrl: String = s"$feedbackHost/feedback/TES"
+  private lazy val feedbackSurveyUrl: String = s"$feedbackHost/feedback/TES"
   lazy val cocarFrontendUrl: String = s"$cocarFrontendHost/paye/company-car/details"
   lazy val marriageServiceHistoryUrl: String = s"$tamcFrontendHost/marriage-allowance-application/history"
   lazy val medBenefitServiceUrl: String = s"$benefitsFrontendHost/paye/benefits/medical-benefit"
 
-  lazy val ivUpliftprefix: String = decorateUrlForLocalDev("identity-verification.prefix")
-  lazy val sa16UpliftUrl: String = s"$identityVerificationHost/$ivUpliftprefix/uplift"
+  private lazy val ivUpliftPrefix: String = decorateUrlForLocalDev("identity-verification.prefix")
+  lazy val sa16UpliftUrl: String = s"$identityVerificationHost/$ivUpliftPrefix/uplift"
 
   lazy val taiHomePageUrl: String = s"$taiRootUri/check-income-tax/what-do-you-want-to-do"
   lazy val taxYouPaidStatus: String = s"$taxCalcFrontendHost/tax-you-paid/status"
@@ -103,25 +103,25 @@ class ApplicationConfig @Inject() (
   lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
 
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
-  lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")
-  lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
-  lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
+  private lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")
+  private lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
+  private lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
   lazy val unauthorisedSignOutUrl: String = decorateUrlForLocalDev("company-auth.unauthorised-url")
-  lazy val dfsFrontendHost: String = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
-  lazy val taiRootUri: String = decorateUrlForLocalDev("tai-frontend.host")
-  lazy val pertaxFrontendHost: String = decorateUrlForLocalDev("pertax-frontend.host")
-  lazy val cocarFrontendHost: String = decorateUrlForLocalDev("cocar-frontend.host")
-  lazy val tamcFrontendHost: String = decorateUrlForLocalDev("tamc-frontend.host")
-  lazy val benefitsFrontendHost: String = decorateUrlForLocalDev("benefits-frontend.host")
-  lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
-  lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
-  lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
+  private lazy val dfsFrontendHost: String = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
+  private lazy val taiRootUri: String = decorateUrlForLocalDev("tai-frontend.host")
+  private lazy val pertaxFrontendHost: String = decorateUrlForLocalDev("pertax-frontend.host")
+  private lazy val cocarFrontendHost: String = decorateUrlForLocalDev("cocar-frontend.host")
+  private lazy val tamcFrontendHost: String = decorateUrlForLocalDev("tamc-frontend.host")
+  private lazy val benefitsFrontendHost: String = decorateUrlForLocalDev("benefits-frontend.host")
+  private lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
+  private lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
+  private lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
   lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String =
     servicesConfig.baseUrl("pertax")
 
-  lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
+  private lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
   lazy val newTaxBandsReleaseDate: LocalDate = LocalDate.parse(newTaxBandsRelease)
 
   lazy val startEmploymentDateFilteredBefore: LocalDate =
