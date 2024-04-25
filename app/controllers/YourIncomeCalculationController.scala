@@ -16,12 +16,11 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth._
 import play.api.mvc._
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
 import views.html.print.HistoricIncomePrintView
@@ -30,12 +29,10 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class YourIncomeCalculationController @Inject() (
-  personService: PersonService,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   paymentsService: PaymentsService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,

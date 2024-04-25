@@ -238,10 +238,6 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with TaxAccountSummaryTestDa
     )
 
     when(trackingService.isAnyIFormInProgress(any())(any(), any())).thenReturn(Future.successful(ThreeWeeks))
-
-    when(personService.personDetails(any())(any(), any())).thenReturn(Future.successful(fakePerson(nino)))
   }
-
-  override def fakePerson(nino: Nino) = Person(nino, "firstname", "surname", false, false, address)
 
 }

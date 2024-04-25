@@ -27,7 +27,7 @@ import utils.BaseSpec
 
 trait TaiViewSpec extends BaseSpec with JsoupMatchers {
   implicit val authRequest: AuthenticatedRequest[AnyContentAsEmpty.type] =
-    AuthenticatedRequest(FakeRequest(), authedUser, "Firstname Surname")
+    AuthenticatedRequest(FakeRequest(), authedUser, fakePerson(nino))
 
   def view: Html
 

@@ -89,7 +89,7 @@ trait BaseSpec
         request: Request[A],
         block: AuthenticatedRequest[A] => Future[Result]
       ): Future[Result] =
-        block(AuthenticatedRequest(request, user, "testUser"))
+        block(AuthenticatedRequest(request, user, fakePerson(nino)))
 
       override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
 

@@ -15,16 +15,22 @@
  */
 
 package controllers.actions
+import controllers.FakeAuthAction
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import play.api.mvc.Result
 import play.api.test.Helpers.stubControllerComponents
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 object FakeValidatePerson extends ValidatePerson {
   override protected def refine[A](
     request: InternalAuthenticatedRequest[A]
-  ): Future[Either[Result, AuthenticatedRequest[A]]] =
-    Future.successful(Right(AuthenticatedRequest(request, request.taiUser, "Firstname Surname")))
+  ): Future[Either[Result, AuthenticatedRequest[A]]] = {
+    val address: Address = Address("line1", "line2", "line3", "postcode", "country")
+    def fakePerson: Person = Person(FakeAuthAction.nino, "firstname", "surname", isDeceased = false, address)
+    Future.successful(Right(AuthenticatedRequest(request, request.taiUser, fakePerson)))
+  }
+
   override protected def executionContext: ExecutionContext = stubControllerComponents().executionContext
 }
