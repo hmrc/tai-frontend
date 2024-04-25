@@ -16,22 +16,21 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.PersonConnector
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.tai.connectors.CitizenDetailsConnector
+import uk.gov.hmrc.tai.model.domain.{Person, PersonFormatter}
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class PersonService @Inject() (personConnector: PersonConnector) {
+class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector) {
 
-  def personDetails(nino: Nino)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Person] =
-    personConnector
-      .person(nino)
-      .recoverWith { case _ =>
-        Future.failed(
-          throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
-        )
-      }
+  def personDetails(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Person] =
+    citizenDetailsConnector
+      .retrieveCitizenDetails(nino)
+      .map(_.json.as[Person])(PersonFormatter.personReads)
 }

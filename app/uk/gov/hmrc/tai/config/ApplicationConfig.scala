@@ -129,4 +129,6 @@ class ApplicationConfig @Inject() (
 
   val taiServiceUrl: String = servicesConfig.baseUrl("tai")
 
+  val citizenDetailsUrl: String = servicesConfig.baseUrl("citizen-details")
+
 }

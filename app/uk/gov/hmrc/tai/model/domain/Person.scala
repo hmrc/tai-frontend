@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
 
 case class Person(
@@ -24,12 +25,21 @@ case class Person(
   firstName: String,
   surname: String,
   isDeceased: Boolean,
-  manualCorrespondenceInd: Boolean,
   address: Address
 ) {
   lazy val name: String = s"$firstName $surname"
 }
 
-object Person {
-  implicit val personFormat: Format[Person] = Json.format[Person]
+object PersonFormatter {
+
+  implicit val addressFormat: OFormat[Address] = Json.format[Address]
+
+  implicit val personReads: Reads[Person] = (
+    (JsPath \ "person" \ "nino").read[Nino] and
+      ((JsPath \ "person" \ "firstName").read[String] or Reads.pure("")) and
+      ((JsPath \ "person" \ "lastName").read[String] or Reads.pure("")) and
+      ((JsPath \ "person" \ "deceased").read[Boolean] or Reads.pure(false)) and
+      ((JsPath \ "address").read[Address] or Reads.pure(Address.emptyAddress))
+  )(Person.apply _)
+
 }

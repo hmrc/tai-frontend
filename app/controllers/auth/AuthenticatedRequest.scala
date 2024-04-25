@@ -17,8 +17,11 @@
 package controllers.auth
 
 import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.tai.model.domain.Person
 
-case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser, fullName: String)
-    extends WrappedRequest[A](request)
+case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser, person: Person)
+    extends WrappedRequest[A](request) {
+  def fullName: String = person.name
+}
 
 case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)

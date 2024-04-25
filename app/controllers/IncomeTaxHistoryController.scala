@@ -20,6 +20,7 @@ import cats.implicits._
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -34,6 +35,7 @@ import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class IncomeTaxHistoryController @Inject() (
   val config: ApplicationConfig,
@@ -46,7 +48,7 @@ class IncomeTaxHistoryController @Inject() (
   employmentService: EmploymentService,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+    extends TaiBaseController(mcc) with Logging {
 
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
@@ -97,15 +99,16 @@ class IncomeTaxHistoryController @Inject() (
       .map(TaxYear(_))
       .toList
 
-    val allTaxYearsList = taxYears traverse (taxYear =>
-      getIncomeTaxYear(nino, taxYear).recover { case e: Exception =>
-        IncomeTaxYear(taxYear, Nil)
+    taxYears
+      .traverse(taxYear =>
+        getIncomeTaxYear(nino, taxYear).recover { case NonFatal(e) =>
+          logger.error(e.getMessage, e)
+          IncomeTaxYear(taxYear, Nil)
+        }
+      )
+      .map { taxCodeIncome =>
+        Ok(incomeTaxHistoryView(config, request.person, taxCodeIncome))
       }
-    )
 
-    for {
-      person        <- personService.personDetails(nino)
-      taxCodeIncome <- allTaxYearsList
-    } yield Ok(incomeTaxHistoryView(config, person, taxCodeIncome))
   }
 }

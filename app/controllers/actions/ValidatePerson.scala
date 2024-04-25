@@ -18,7 +18,8 @@ package controllers.actions
 
 import com.google.inject.ImplementedBy
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
-import controllers.routes
+import controllers.{ErrorPagesHandler, routes}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,8 +33,12 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, AuthenticatedRequest]
 
 @Singleton
-class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: ExecutionContext)
-    extends ValidatePerson {
+class ValidatePersonImpl @Inject() (
+  personService: PersonService,
+  val messagesApi: MessagesApi,
+  errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
+    extends ValidatePerson with I18nSupport {
 
   override protected def refine[A](
     request: InternalAuthenticatedRequest[A]
@@ -45,13 +50,19 @@ class ValidatePersonImpl @Inject() (personService: PersonService)(implicit ec: E
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
 
-    person map {
-      case p if p.isDeceased =>
+    // TODO: PertaxAuthAction is already checking MCI_RECORD. deceased check can also be removed once DDCNL-8734 is complete
+    person.transform {
+      case Right(person) if person.isDeceased =>
         Left(Redirect(routes.DeceasedController.deceased()))
-      case p if p.manualCorrespondenceInd =>
-        Left(Redirect(routes.ServiceController.mciErrorPage()))
-      case p => Right(AuthenticatedRequest(request, request.taiUser, p.name))
-    }
+      case Right(person) => Right(AuthenticatedRequest(request, request.taiUser, person))
+      case Left(_) =>
+        Left(
+          errorPagesHandler.internalServerError("Failed to get person designatory details")(
+            request,
+            request2Messages(request)
+          )
+        )
+    }.value
   }
   override protected def executionContext: ExecutionContext = ec
 }
