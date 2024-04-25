@@ -17,7 +17,6 @@
 package controllers
 
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.Logging
@@ -43,7 +42,7 @@ class IncomeTaxHistoryController @Inject() (
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
-  employmentService: EmploymentService,
+  employmentService: EmploymentService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
