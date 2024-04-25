@@ -30,16 +30,16 @@ case class Person(
   lazy val name: String = s"$firstName $surname"
 }
 
-object PersonFormatter {
+object Person {
 
   implicit val addressFormat: OFormat[Address] = Json.format[Address]
 
-  implicit val personReads: Reads[Person] = (
+  implicit val reads: Reads[Person] = (
     (JsPath \ "person" \ "nino").read[Nino] and
-      ((JsPath \ "person" \ "firstName").read[String] or Reads.pure("")) and
-      ((JsPath \ "person" \ "lastName").read[String] or Reads.pure("")) and
-      ((JsPath \ "person" \ "deceased").read[Boolean] or Reads.pure(false)) and
-      ((JsPath \ "address").read[Address] or Reads.pure(Address.emptyAddress))
+      (JsPath \ "person" \ "firstName").readNullable[String].map(_.getOrElse("")) and
+      (JsPath \ "person" \ "lastName").readNullable[String].map(_.getOrElse("")) and
+      (JsPath \ "person" \ "deceased").readNullable[Boolean].map(_.getOrElse(false)) and
+      (JsPath \ "address").readNullable[Address].map(_.getOrElse(Address.emptyAddress))
   )(Person.apply _)
 
 }

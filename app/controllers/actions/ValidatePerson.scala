@@ -50,7 +50,7 @@ class ValidatePersonImpl @Inject() (
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
 
-    // TODO: PertaxAuthAction is already checking MCI_RECORD. deceased check can also be removed once DDCNL-8734 is complete
+    // TODO: PertaxAuthAction is already checking MCI_RECORD. isDeceased check can also be removed once DDCNL-8734 is complete
     person.transform {
       case Right(person) if person.isDeceased =>
         Left(Redirect(routes.DeceasedController.deceased()))

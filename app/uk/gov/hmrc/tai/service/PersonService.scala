@@ -20,17 +20,17 @@ import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.CitizenDetailsConnector
-import uk.gov.hmrc.tai.model.domain.{Person, PersonFormatter}
+import uk.gov.hmrc.tai.model.domain.Person
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector) {
+class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector)(implicit ec: ExecutionContext) {
 
   def personDetails(
     nino: Nino
   )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Person] =
     citizenDetailsConnector
       .retrieveCitizenDetails(nino)
-      .map(_.json.as[Person])(PersonFormatter.personReads)
+      .map(_.json.as[Person])
 }
