@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.util.ViewModelHelper._
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
@@ -39,14 +39,11 @@ import scala.util.control.NonFatal
 
 class IncomeTaxHistoryController @Inject() (
   val config: ApplicationConfig,
-  personService: PersonService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
-  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
@@ -109,6 +106,5 @@ class IncomeTaxHistoryController @Inject() (
       .map { taxCodeIncome =>
         Ok(incomeTaxHistoryView(config, request.person, taxCodeIncome))
       }
-
   }
 }
