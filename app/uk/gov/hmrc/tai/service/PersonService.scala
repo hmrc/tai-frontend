@@ -25,11 +25,11 @@ import uk.gov.hmrc.tai.model.domain.Person
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector)(implicit ec: ExecutionContext) {
+class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector) {
 
   def personDetails(
     nino: Nino
-  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Person] =
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, UpstreamErrorResponse, Person] =
     citizenDetailsConnector
       .retrieveCitizenDetails(nino)
       .map(_.json.as[Person])
