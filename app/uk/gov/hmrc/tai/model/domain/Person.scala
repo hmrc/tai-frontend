@@ -32,7 +32,7 @@ case class Person(
 
 object Person {
 
-  implicit val addressFormat: OFormat[Address] = Json.format[Address]
+  implicit val formats: OFormat[Person] = Json.format[Person]
 
   implicit val reads: Reads[Person] = (
     (JsPath \ "person" \ "nino").read[Nino] and

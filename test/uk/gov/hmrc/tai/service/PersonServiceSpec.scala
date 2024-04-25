@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.model.domain.Address
 import utils.BaseSpec
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class PersonServiceSpec extends BaseSpec {
 
