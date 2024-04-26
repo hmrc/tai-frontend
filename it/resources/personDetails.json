@@ -1,19 +1,28 @@
-
-  {
-    "data": {
-      "nino": "AA000031C",
-      "firstName": "JAMES",
-      "surname": "SLATER",
-      "dateOfBirth": "1961-06-07",
-      "address": {
-        "line1": "",
-        "line2": "",
-        "line3": "",
-        "postcode": "",
-        "country": ""
-      },
-      "isDeceased": false,
-      "manualCorrespondenceInd": false
-    },
-    "links": []
+{
+  "etag": "1",
+  "person": {
+    "firstName": "BOB",
+    "lastName": "JONES",
+    "title": "Mrs",
+    "sex": "F",
+    "dateOfBirth": "1962-09-08",
+    "nino": "YC363560B",
+    "deceased": false
+  },
+  "address": {
+    "line1": "11 Test Street",
+    "line2": "Testtown",
+    "postcode": "FX97 4TU",
+    "startDate": "2016-04-06",
+    "country": "GREAT BRITAIN",
+    "type": "Residential"
+  },
+  "correspondenceAddress": {
+    "line1": "11 Test Street",
+    "line2": "Testtown",
+    "postcode": "FX97 4TU",
+    "startDate": "2012-07-05",
+    "country": "GREAT BRITAIN",
+    "type": "Correspondence"
   }
+}
