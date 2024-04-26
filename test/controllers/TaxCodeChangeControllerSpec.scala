@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -114,7 +113,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
           scottishRates,
           reasons,
           isAGenericReason = false,
-          maybeUserName = Some("testUser")
+          maybeUserName = Some("Firstname Surname")
         )
 
       status(result) mustBe OK
@@ -159,7 +158,6 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxAccountService,
         describedYourTaxFreeAmountService,
         mockAuthJourney,
-        FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,
         appConfig,
