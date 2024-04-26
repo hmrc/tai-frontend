@@ -61,7 +61,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
     "the person is deceased" must {
       "redirect the user to a deceased page " in {
 
-        val deceasedPerson = Person(nino, "firstName", "lastName", isDeceased = true, address)
+        val deceasedPerson = fakePerson(nino).copy(isDeceased = true)
 
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](deceasedPerson))
@@ -79,7 +79,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
     "the person is alive" must {
       "not redirect the user to a deceased page " in {
 
-        val alivePerson = Person(nino, "firstName", "lastName", isDeceased = false, address)
+        val alivePerson = fakePerson(nino)
 
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))

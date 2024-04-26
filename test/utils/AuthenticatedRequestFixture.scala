@@ -29,7 +29,7 @@ object AuthenticatedRequestFixture {
     authedUser: AuthedUser = UserBuilder()
   ): AuthenticatedRequest[A] = {
     val address: Address = Address("line1", "line2", "line3", "postcode", "country")
-    def fakePerson: Person = Person(FakeAuthAction.nino, "firstname", "surname", isDeceased = false, address)
+    def fakePerson: Person = Person(FakeAuthAction.nino, "Firstname", "Surname", isDeceased = false, address)
     AuthenticatedRequest(request, authedUser, fakePerson)
   }
 }
