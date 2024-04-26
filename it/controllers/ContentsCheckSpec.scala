@@ -558,7 +558,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     "Firstname",
     "Surname",
     isDeceased = false,
-    manualCorrespondenceInd = false,
     Address("", "", "", "", "")
   )
   val employments: JsObject = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))

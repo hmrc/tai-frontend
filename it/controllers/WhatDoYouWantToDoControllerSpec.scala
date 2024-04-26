@@ -60,7 +60,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           "Firstname",
           "Surname",
           isDeceased = false,
-          manualCorrespondenceInd = false,
           Address("", "", "", "", "")
         )
         server.stubFor(
@@ -127,7 +126,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         "Firstname",
         "Surname",
         isDeceased = false,
-        manualCorrespondenceInd = false,
         Address("", "", "", "", "")
       )
       server.stubFor(
@@ -191,7 +189,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
       "Firstname",
       "Surname",
       isDeceased = false,
-      manualCorrespondenceInd = false,
       Address("", "", "", "", "")
     )
     server.stubFor(
