@@ -31,7 +31,8 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       "microservice.services.auth.port"                                 -> server.port(),
       "microservice.services.pertax.port"                               -> server.port(),
       "microservice.services.tai.port"                                  -> server.port(),
-      "microservice.services.digital-engagement-platform-partials.port" -> server.port()
+      "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
+      "microservice.services.citizen-details.port"                      -> server.port()
     )
     .build()
 
@@ -47,7 +48,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
     val taxSummaryUrl = s"/tai/$generatedNino/tax-account/$taxYear/summary"
 
-    val personUrl = s"/tai/$generatedNino/person"
+    val personUrl = s"/citizen-details/$generatedNino/designatory-details"
 
     "return an OK response" in {
 

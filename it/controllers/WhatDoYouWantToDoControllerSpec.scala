@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
-import utils.{FakeAsyncCacheApi, IntegrationSpec}
+import utils.{FakeAsyncCacheApi, FileHelper, IntegrationSpec}
 
 import scala.util.Random
 
@@ -39,6 +39,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   lazy val fakeAsyncCacheApi = new FakeAsyncCacheApi()
 
   val url = "/check-income-tax/what-do-you-want-to-do"
+  private val personUrl = s"/citizen-details/$generatedNino/designatory-details"
   private val startTaxYear = TaxYear().start.getYear
 
   "What do you want to do page" must {
@@ -50,21 +51,15 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             "microservice.services.auth.port"                                 -> server.port(),
             "microservice.services.tai.port"                                  -> server.port(),
             "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
+            "microservice.services.citizen-details.port"                      -> server.port(),
             "feature.web-chat.enabled"                                        -> true
           )
           .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
           .build()
 
-        val person = Person(
-          generatedNino,
-          "Firstname",
-          "Surname",
-          isDeceased = false,
-          Address("", "", "", "", "")
-        )
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/person"))
-            .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+          get(urlEqualTo(personUrl))
+            .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
         )
 
         server.stubFor(
@@ -116,21 +111,15 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           "microservice.services.auth.port"                                 -> server.port(),
           "microservice.services.tai.port"                                  -> server.port(),
           "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
+          "microservice.services.citizen-details.port"                      -> server.port(),
           "feature.web-chat.enabled"                                        -> false
         )
         .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
         .build()
 
-      val person = Person(
-        generatedNino,
-        "Firstname",
-        "Surname",
-        isDeceased = false,
-        Address("", "", "", "", "")
-      )
       server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/person"))
-          .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+        get(urlEqualTo(personUrl))
+          .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
       )
 
       server.stubFor(
@@ -175,25 +164,19 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   "show the WhatDoYouWantToDo page" should {
     lazy val app = new GuiceApplicationBuilder()
       .configure(
-        "auditing.enabled"                  -> "false",
-        "microservice.services.auth.port"   -> server.port(),
-        "microservice.services.pertax.port" -> server.port(),
-        "microservice.services.tai.port"    -> server.port(),
-        "feature.web-chat.enabled"          -> false
+        "auditing.enabled"                           -> "false",
+        "microservice.services.auth.port"            -> server.port(),
+        "microservice.services.pertax.port"          -> server.port(),
+        "microservice.services.tai.port"             -> server.port(),
+        "microservice.services.citizen-details.port" -> server.port(),
+        "feature.web-chat.enabled"                   -> false
       )
       .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
       .build()
 
-    val person = Person(
-      generatedNino,
-      "Firstname",
-      "Surname",
-      isDeceased = false,
-      Address("", "", "", "", "")
-    )
     server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/person"))
-        .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+      get(urlEqualTo(personUrl))
+        .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
     )
 
     val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
@@ -205,8 +188,8 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     "not see the tax code banner" when {
       "the user has no tax code mismatch and no tax code change" in {
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/person"))
-            .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+          get(urlEqualTo(personUrl))
+            .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
         )
 
         server.stubFor(
@@ -235,8 +218,8 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         )
 
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/person"))
-            .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+          get(urlEqualTo(personUrl))
+            .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
         )
 
         server.stubFor(
@@ -281,8 +264,8 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
       "the user has a tax code change and mismatch with more than 1 confirmed tax code" in {
         server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/person"))
-            .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+          get(urlEqualTo(personUrl))
+            .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
         )
 
         server.stubFor(
