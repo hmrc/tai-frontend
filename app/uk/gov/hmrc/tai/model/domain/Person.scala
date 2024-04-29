@@ -32,8 +32,6 @@ case class Person(
 
 object Person {
 
-  implicit val formats: OFormat[Person] = Json.format[Person]
-
   implicit val reads: Reads[Person] = (
     (JsPath \ "person" \ "nino").read[Nino] and
       (JsPath \ "person" \ "firstName").readNullable[String].map(_.getOrElse("")) and
@@ -42,4 +40,11 @@ object Person {
       (JsPath \ "address").readNullable[Address].map(_.getOrElse(Address.emptyAddress))
   )(Person.apply _)
 
+  implicit val writes: Writes[Person] = (
+    (JsPath \ "person" \ "nino").write[Nino] and
+      (JsPath \ "person" \ "firstName").write[String] and
+      (JsPath \ "person" \ "lastName").write[String] and
+      (JsPath \ "person" \ "deceased").write[Boolean] and
+      (JsPath \ "address").write[Address]
+  )(unlift(Person.unapply))
 }
