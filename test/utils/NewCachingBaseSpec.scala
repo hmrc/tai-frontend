@@ -22,6 +22,7 @@ import controllers.actions.{DataRetrievalAction, IdentifierAction}
 import controllers.auth.{AuthJourney, AuthedUser}
 import org.jsoup.nodes.Element
 import org.mockito.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.inject.bind
@@ -39,7 +40,8 @@ import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 import scala.util.Random
 
-class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+class NewCachingBaseSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach {
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
 

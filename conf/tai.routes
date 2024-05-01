@@ -42,7 +42,7 @@ POST        /add-employment/employment-payroll-number                           
 GET         /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.addTelephoneNumber()
 POST        /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.submitTelephoneNumber()
 GET         /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers()
-POST        /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.submitYourAnswers()
+#POST        /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.submitYourAnswers()
 GET         /add-employment/employment-success                                         controllers.employments.AddEmploymentController.confirmation()
 
 
