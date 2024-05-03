@@ -20,8 +20,7 @@ import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
-import pages.AddEmployment.{AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage}
+import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollNumberQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneNumberPage, AddEmploymentTelephoneQuestionPage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -31,10 +30,11 @@ import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, FormValuesConstants}
 import utils.{FakeAuthJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
@@ -50,11 +50,10 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   private def fakeGetRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-//  private def fakePostRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("POST")
+  //  private def fakePostRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val addEmploymentJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   val userAnswers: UserAnswers = UserAnswers(
@@ -74,7 +73,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     new FakeAuthJourney(userAnswersAsArg.getOrElse(userAnswers)),
     repository,
     trackSuccessJourneyCacheService,
-    addEmploymentJourneyCacheService,
     mock[AuditConnector],
     mcc,
     inject[AddEmploymentStartDateFormView],
@@ -90,7 +88,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    Mockito.reset(addEmploymentJourneyCacheService)
+    reset(mockRepository, employmentService, trackSuccessJourneyCacheService)
     when(mockRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(userAnswers)))
   }
@@ -159,9 +157,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     "show the employment start date form page" when {
       "the request has an authorised session and no previously supplied start date is present in cache" in {
         val sut = createSUT()
-        val employmentName = "TEST"
-        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Right((Seq(employmentName), Seq(None)))))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -235,9 +230,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
-        when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
-
         val result =
           sut.submitEmploymentStartDate()(
             RequestBuilder
@@ -259,9 +251,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     "return bad request" when {
       "form is invalid" in {
         val sut = createSUT()
-
-        when(addEmploymentJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddEmploymentConstants.NameKey -> "Test")))
 
         val result =
           sut.submitEmploymentStartDate()(
@@ -395,9 +384,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     "raise an audit event" when {
       "no is selected" in {
         val sut = createSUT()
-        val employmentName = "TEST-Employer"
-        when(addEmploymentJourneyCacheService.mandatoryJourneyValue(meq(AddEmploymentConstants.NameKey))(any()))
-          .thenReturn(Future.successful(Right(employmentName)))
 
         Await.result(
           sut.sixWeeksError()(
@@ -438,65 +424,68 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   "add employment payroll number" must {
     "show the add payroll number page" when {
       "the request has an authorised session and no previous response is held in cache" in {
-        val sut = createSUT()
-        val employerName = "TEST"
-        val cache = Map(
-          AddEmploymentConstants.NameKey                 -> employerName,
-          AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
-        )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-
-        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice][checked=checked]").size() mustBe 0
-        doc.select("input[id=payrollNumberChoice-2][checked=checked]").size() mustBe 0
-        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+        val request = fakeGetRequest
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentStartDateWithinSixWeeksPage.toString -> FormValuesConstants.YesValue
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).addEmploymentPayrollNumber()(request)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
+          doc.select("input[id=payrollNumberChoice][checked=checked]").size() mustBe 0
+          doc.select("input[id=payrollNumberChoice-2][checked=checked]").size() mustBe 0
+          doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+        }
       }
+
       "the request has an authorised session and a previous 'no' response is held in cache" in {
-        val sut = createSUT()
-        val employerName = "TEST"
-        val cache = Map(
-          AddEmploymentConstants.NameKey                  -> employerName,
-          AddEmploymentConstants.StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
-          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
-          AddEmploymentConstants.PayrollNumberKey         -> "should be ignored"
-        )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-
-        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 0
-        doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 1
-        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+        val request = fakeGetRequest
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentStartDateWithinSixWeeksPage.toString -> FormValuesConstants.YesValue,
+              AddEmploymentPayrollNumberQuestionPage.toString   -> FormValuesConstants.NoValue,
+              AddEmploymentPayrollNumberPage.toString           -> "should be ignored"
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).addEmploymentPayrollNumber()(request)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
+          doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
+          doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 0
+          doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 1
+          doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+        }
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
-        val sut = createSUT()
-        val employerName = "TEST"
-        val cache = Map(
-          AddEmploymentConstants.NameKey                  -> employerName,
-          AddEmploymentConstants.StartDateWithinSixWeeks  -> FormValuesConstants.YesValue,
-          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
-          AddEmploymentConstants.PayrollNumberKey         -> "should be displayed"
-        )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-
-        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
-        doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 1
-        doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 0
-        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe "should be displayed"
+        val request = fakeGetRequest
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentStartDateWithinSixWeeksPage.toString -> FormValuesConstants.YesValue,
+              AddEmploymentPayrollNumberQuestionPage.toString   -> FormValuesConstants.YesValue,
+              AddEmploymentPayrollNumberPage.toString           -> "should be displayed"
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).addEmploymentPayrollNumber()(request)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
+          doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
+          doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 1
+          doc.select("input[id=payrollNumberChoice-2][checked]").size() mustBe 0
+          doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe "should be displayed"
+        }
       }
     }
   }
@@ -506,12 +495,8 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       "the form is valid and user knows their payroll number" in {
         val sut = createSUT()
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(
-          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
-          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
-        )
-        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
-          .thenReturn(Future.successful(mapWithPayrollNumber))
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
+
         Await.result(
           sut.submitEmploymentPayrollNumber()(
             RequestBuilder
@@ -524,7 +509,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           5 seconds
         )
 
-        verify(addEmploymentJourneyCacheService, times(1)).cache(meq(mapWithPayrollNumber))(any())
+        verify(mockRepository, times(1)).set(any())
       }
     }
 
@@ -532,12 +517,9 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       "the form is valid and user knows their payroll number" in {
         val sut = createSUT()
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(
-          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.YesValue,
-          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
-        )
-        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
-          .thenReturn(Future.successful(mapWithPayrollNumber))
+
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
+
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -550,45 +532,38 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         redirectLocation(
           result
         ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+
+        verify(mockRepository, times(1)).set(any())
       }
     }
 
     "cache payroll number as not known value" when {
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT()
-        val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
-        val mapWithPayrollNumber = Map(
-          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
-          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
-        )
 
-        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
-          .thenReturn(Future.successful(mapWithPayrollNumber))
+        when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
-        Await.result(
+        val result =
           sut.submitEmploymentPayrollNumber()(
             RequestBuilder
               .buildFakeRequestWithAuth("POST")
               .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.NoValue, PayrollNumberEntry -> "")
-          ),
-          5 seconds
-        )
+          )
 
-        verify(addEmploymentJourneyCacheService, times(1)).cache(meq(mapWithPayrollNumber))(any())
+        status(result) mustBe SEE_OTHER
+        redirectLocation(
+          result
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+
+        verify(mockRepository, times(1)).set(any())
       }
     }
 
     "redirect to add telephone number page" when {
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT()
-        val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
-        val mapWithPayrollNumber = Map(
-          AddEmploymentConstants.PayrollNumberQuestionKey -> FormValuesConstants.NoValue,
-          AddEmploymentConstants.PayrollNumberKey         -> payrollNo
-        )
 
-        when(addEmploymentJourneyCacheService.cache(meq(mapWithPayrollNumber))(any()))
-          .thenReturn(Future.successful(mapWithPayrollNumber))
+        when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder
@@ -606,12 +581,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     "return BadRequest" when {
       "there is a form validation error" in {
         val sut = createSUT()
-        val employerName = "TEST"
-        val cache = Map(
-          AddEmploymentConstants.NameKey                 -> employerName,
-          AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
-        )
-        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitEmploymentPayrollNumber()(
           RequestBuilder
@@ -630,8 +599,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     "show the contact by telephone page" when {
       "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT()
-        when(addEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(None, None)))
+
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -642,30 +610,44 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
       }
       "the request has an authorised session and a previous 'no' response is held in cache" in {
-        val sut = createSUT()
-        when(addEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(Some(FormValuesConstants.NoValue), Some("should be ignored"))))
-        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.select("input[id=yesNoChoice][checked]").size() mustBe 0
-        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 1
-        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
+        val request = fakeGetRequest
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentTelephoneQuestionPage.toString -> FormValuesConstants.NoValue,
+              AddEmploymentTelephoneNumberPage.toString   -> "should be ignored"
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).addTelephoneNumber()(request)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+          doc.select("input[id=yesNoChoice][checked]").size() mustBe 0
+          doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 1
+          doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
+        }
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
-        val sut = createSUT()
-        when(addEmploymentJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(Some(FormValuesConstants.YesValue), Some("should be displayed"))))
-        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
-        doc.select("input[id=yesNoChoice][checked]").size() mustBe 1
-        doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 0
-        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe "should be displayed"
+        val request = fakeGetRequest
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentTelephoneQuestionPage.toString -> FormValuesConstants.YesValue,
+              AddEmploymentTelephoneNumberPage.toString   -> "should be displayed"
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).addTelephoneNumber()(request)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+          doc.select("input[id=yesNoChoice][checked]").size() mustBe 1
+          doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 0
+          doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe "should be displayed"
+        }
       }
     }
   }
@@ -675,13 +657,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       "the request has an authorised session, and a telephone number has been provided" in {
         val sut = createSUT()
 
-        val expectedCache =
-          Map(
-            AddEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            AddEmploymentConstants.TelephoneNumberKey   -> "12345678"
-          )
-        when(addEmploymentJourneyCacheService.cache(any())(any()))
-          .thenReturn(Future.successful(expectedCache))
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -699,13 +675,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       "the request has an authorised session, and telephone number contact has not been approved" in {
         val sut = createSUT()
 
-        val expectedCacheWithErasingNumber =
-          Map(
-            AddEmploymentConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-            AddEmploymentConstants.TelephoneNumberKey   -> ""
-          )
-        when(addEmploymentJourneyCacheService.cache(any())(any()))
-          .thenReturn(Future.successful(expectedCacheWithErasingNumber))
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
         val result = sut.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -772,37 +742,31 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   "check your answers" must {
     "show the check answers summary page" when {
       "the request has an authorised session" in {
-        val sut = createSUT()
-        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String]("emp-name", "2017-06-15", "emp-ref-1234", "Yes"),
-                Seq[Option[String]](Some("123456789"))
-              )
+        val request = fakeGetRequest
+
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentNamePage.toString              -> "TEST-employer",
+              AddEmploymentStartDatePage.toString         -> LocalDate.of(2017, 6, 15),
+              AddEmploymentPayrollNumberPage.toString     -> "emp-ref-1234",
+              AddEmploymentTelephoneQuestionPage.toString -> "Yes",
+              AddEmploymentTelephoneNumberPage.toString   -> "should be displayed"
             )
           )
-        )
-
-        val result = sut.addEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.checkYourAnswers.title"))
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).addEmploymentCheckYourAnswers()(request)
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.checkYourAnswers.title"))
+        }
       }
     }
 
     "redirect to the tax summary page if a value is missing from the cache " in {
 
       val sut = createSUT()
-      when(
-        addEmploymentJourneyCacheService.collectedJourneyValues(
-          any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]])
-        )(any(), any())
-      ).thenReturn(
-        Future.successful(Left("An error has occurred"))
-      )
 
       val result = sut.addEmploymentCheckYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -811,62 +775,102 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     }
   }
 
-//  "submit your answers" must {
-//    "invoke the back end 'addEmployment' service and redirect to the confirmation page" when {
-//      "the request has an authorised session amd a telephone number has been provided" in {
-//        val sut = createSUT()
-//
-//        val expectedModel =
-//          AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "Yes", Some("123456789"))
-//
-//        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-//          Future.successful(
-//            Right(
-//              (
-//                Seq("empName", "2017-04-04", "I do not know", "Yes"),
-//                Seq(Some("123456789"))
-//              )
-//            )
-//          )
-//        )
-//
-//        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
-//          .thenReturn(Future.successful("envelope-123"))
-//        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
-//        when(
-//          trackSuccessJourneyCacheService
-//            .cache(meq(TrackSuccessfulJourneyConstants.AddEmploymentKey), meq("true"))(any())
-//        )
-//          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
-//
-//        val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.confirmation().url
-//      }
-//
-//      "the request has an authorised session amd no telephone number was provided" in {
-//        val sut = createSUT()
-//
-//        val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
-//        val expectedSuccessfulJourneyCache = Map("addEmployment" -> "true")
-//
-//        when(addEmploymentJourneyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-//          .thenReturn(Future.successful(Right((Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None)))))
-//
-//        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
-//          .thenReturn(Future.successful("envelope-123"))
-//        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
-//        when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
-//          .thenReturn(Future.successful(expectedSuccessfulJourneyCache))
-//
-//        val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.confirmation().url
-//      }
-//    }
-//  }
+  "submit your answers" must {
+    "invoke the back end 'addEmployment' service and redirect to the confirmation page" when {
+      "the request has an authorised session amd a telephone number has been provided" in {
+        val expectedModel =
+          AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "Yes", Some("123456789"))
+
+        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
+          .thenReturn(Future.successful("envelope-123"))
+        when(
+          trackSuccessJourneyCacheService
+            .cache(meq(TrackSuccessfulJourneyConstants.AddEmploymentKey), meq("true"))(any())
+        )
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
+
+        when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+
+        val request = fakeGetRequest
+
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            userAnswers.data ++ Json.obj(
+              AddEmploymentNamePage.toString              -> expectedModel.employerName,
+              AddEmploymentStartDatePage.toString         -> expectedModel.startDate,
+              AddEmploymentPayrollNumberPage.toString     -> expectedModel.payrollNumber,
+              AddEmploymentTelephoneQuestionPage.toString -> expectedModel.telephoneContactAllowed,
+              AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).submitYourAnswers()(request)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.confirmation().url
+        }
+      }
+
+      "the request has an authorised session amd no telephone number was provided" in {
+        val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
+
+        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
+          .thenReturn(Future.successful("envelope-123"))
+        when(
+          trackSuccessJourneyCacheService
+            .cache(meq(TrackSuccessfulJourneyConstants.AddEmploymentKey), meq("true"))(any())
+        )
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
+
+        when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+
+        val request = fakeGetRequest
+
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            Json.obj(
+              AddEmploymentNamePage.toString              -> expectedModel.employerName,
+              AddEmploymentStartDatePage.toString         -> expectedModel.startDate,
+              AddEmploymentPayrollNumberPage.toString     -> expectedModel.payrollNumber,
+              AddEmploymentTelephoneQuestionPage.toString -> expectedModel.telephoneContactAllowed,
+              AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).submitYourAnswers()(request)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController.confirmation().url
+        }
+      }
+    }
+    "show a bad request page" when {
+      "a value is missing from the needed userAnswers" in {
+        val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
+
+        val request = fakeGetRequest
+
+        val updatedUserAnswers =
+          userAnswers.copy(data =
+            Json.obj(
+              AddEmploymentStartDatePage.toString         -> expectedModel.startDate,
+              AddEmploymentPayrollNumberPage.toString     -> expectedModel.payrollNumber,
+              AddEmploymentTelephoneQuestionPage.toString -> expectedModel.telephoneContactAllowed,
+              AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
+            )
+          )
+        val application = applicationBuilder(updatedUserAnswers).build()
+        running(application) {
+          val result = createSUT(Some(updatedUserAnswers)).submitYourAnswers()(request)
+          status(result) mustBe BAD_REQUEST
+        }
+
+        verify(mockRepository, times(0)).clear(any(), any())
+        verify(trackSuccessJourneyCacheService, times(0)).cache(any())(any())
+        verify(employmentService, times(0)).addEmployment(any(), any())(any(), any())
+      }
+    }
+  }
 
   "confirmation" must {
     "show the add employment confirmation page" when {

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
+import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDateWithinSixWeeksPage}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.AddEmploymentConstants
 
@@ -30,6 +32,24 @@ object PayrollNumberViewModel {
       case _                                  => false
     }
     val backUrl = cache.get(AddEmploymentConstants.ReceivedFirstPayKey) match {
+      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
+    }
+    PayrollNumberViewModel(employerName, firstPayChoice, backUrl)
+  }
+}
+
+case class NewCachePayrollNumberViewModel(employmentName: String, firstPayChoice: Boolean, backUrl: String)
+
+object NewCachePayrollNumberViewModel {
+
+  def apply(userAnswers: UserAnswers): PayrollNumberViewModel = {
+    val employerName = userAnswers.get(AddEmploymentNamePage).getOrElse("")
+    val firstPayChoice = userAnswers.get(AddEmploymentStartDateWithinSixWeeksPage) match {
+      case Some(FormValuesConstants.YesValue) => true
+      case _                                  => false
+    }
+    val backUrl = userAnswers.get(AddEmploymentReceivedFirstPayPage) match {
       case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
     }
