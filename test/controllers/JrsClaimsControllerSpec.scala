@@ -90,7 +90,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
           UserBuilder("utr", "principalName", nino.toString())
 
         implicit val request: AuthenticatedRequest[AnyContent] =
-          AuthenticatedRequest[AnyContent](fakeRequest, authedTrustedUser, "name")
+          AuthenticatedRequest[AnyContent](fakeRequest, authedTrustedUser, fakePerson(nino))
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 

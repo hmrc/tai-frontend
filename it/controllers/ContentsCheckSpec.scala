@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import utils.IntegrationSpec
+import utils.{FileHelper, IntegrationSpec}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 
 import java.time.LocalDate
@@ -530,7 +530,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
-      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port()
+      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port(),
+      "microservice.services.citizen-details.port"                     -> server.port()
     )
     .build()
 
@@ -558,7 +559,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     "Firstname",
     "Surname",
     isDeceased = false,
-    manualCorrespondenceInd = false,
     Address("", "", "", "", "")
   )
   val employments: JsObject = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
@@ -672,8 +672,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
     server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/person"))
-        .willReturn(ok(Json.obj("data" -> Json.toJson(person)).toString))
+      get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))
+        .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
     )
 
     server.stubFor(

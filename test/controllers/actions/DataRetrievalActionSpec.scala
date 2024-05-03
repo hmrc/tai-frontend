@@ -56,7 +56,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val action = new Harness(repository)
 
         val result = action
-          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
+          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
         result.userAnswers.sessionId mustBe userId
@@ -79,7 +79,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         )
 
         val result = action
-          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
+          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
         result.userAnswers.sessionId mustBe userId
@@ -101,7 +101,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val action = new Harness(repository)
 
         val result = action
-          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
+          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
         result.userAnswers.sessionId mustBe userId
@@ -129,7 +129,7 @@ class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutur
         val action = new Harness(repository)
 
         val result = action
-          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, "testName"), userId))
+          .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
         result.userAnswers.sessionId mustBe userId

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,49 +16,62 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
+import cats.data.EitherT
+import org.mockito.ArgumentMatchers.any
+import play.api.http.Status._
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.tai.connectors.CitizenDetailsConnector
+import uk.gov.hmrc.tai.model.domain.Address
 import utils.BaseSpec
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-import scala.language.postfixOps
+import scala.concurrent.Future
 
 class PersonServiceSpec extends BaseSpec {
 
-  "personDetailsNew method" must {
+  val mockConnector: CitizenDetailsConnector = mock[CitizenDetailsConnector]
+  val sut: PersonService = new PersonService(mockConnector)
+
+  "personDetails" must {
     "return a Person model instance" when {
-      "connector returns successfully" in {
-        val sut = createSut
+      "connector returns the data successfully" in {
+        val personDetails = fakePerson(nino)
+        when(mockConnector.retrieveCitizenDetails(any())(any()))
+          .thenReturn(
+            EitherT[Future, UpstreamErrorResponse, HttpResponse](
+              Future.successful(Right(HttpResponse(OK, Json.toJson(personDetails).toString)))
+            )
+          )
 
-        val person = fakePerson(nino)
-        when(personConnector.person(meq(nino))(any()))
-          .thenReturn(Future.successful(person))
+        val result = sut.personDetails(nino).value.futureValue
 
-        val result = Await.result(sut.personDetails(nino), testTimeout)
-        result mustBe person
+        result mustBe a[Right[_, _]]
+        result.getOrElse(personDetails.copy(address = Address.emptyAddress)) mustBe personDetails
       }
     }
-    "throw a runtime exception" when {
-      "connector did not return successfully" in {
-        val sut = createSut
 
-        when(personConnector.person(meq(nino))(any()))
-          .thenReturn(Future.failed(new NotFoundException("downstream not found")))
+    List(
+      BAD_REQUEST,
+      NOT_FOUND,
+      LOCKED,
+      TOO_MANY_REQUESTS,
+      REQUEST_TIMEOUT,
+      INTERNAL_SERVER_ERROR,
+      SERVICE_UNAVAILABLE,
+      BAD_GATEWAY
+    ).foreach { errorResponse =>
+      s"return an UpstreamErrorResponse containing $errorResponse when connector returns the same" in {
+        when(mockConnector.retrieveCitizenDetails(any())(any())).thenReturn(
+          EitherT[Future, UpstreamErrorResponse, HttpResponse](
+            Future.successful(Left(UpstreamErrorResponse("", errorResponse)))
+          )
+        )
 
-        val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)
-        thrown.getMessage must include("Failed to retrieve person details for nino")
+        val result = sut.personDetails(nino).value.futureValue
+
+        result mustBe a[Left[UpstreamErrorResponse, _]]
+        result.swap.getOrElse(UpstreamErrorResponse("", OK)).statusCode mustBe errorResponse
       }
     }
   }
-
-  val testTimeout = 5 seconds
-
-  def createSut = new PersonServiceTest
-
-  val personConnector = mock[PersonConnector]
-  val taiConnector = mock[TaiConnector]
-
-  class PersonServiceTest extends PersonService(personConnector)
 }

@@ -31,7 +31,8 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       "microservice.services.auth.port"                                 -> server.port(),
       "microservice.services.pertax.port"                               -> server.port(),
       "microservice.services.tai.port"                                  -> server.port(),
-      "microservice.services.digital-engagement-platform-partials.port" -> server.port()
+      "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
+      "microservice.services.citizen-details.port"                      -> server.port()
     )
     .build()
 
@@ -47,7 +48,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
     val taxSummaryUrl = s"/tai/$generatedNino/tax-account/$taxYear/summary"
 
-    val personUrl = s"/tai/$generatedNino/person"
+    val personUrl = s"/citizen-details/$generatedNino/designatory-details"
 
     "return an OK response" in {
 
@@ -90,7 +91,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       INTERNAL_SERVER_ERROR,
       SERVICE_UNAVAILABLE
     ).foreach { httpStatus =>
-      s"return an RuntimeException when $httpStatus is thrown" in {
+      s"return an Internal Server Error with 'problem with the service' message when $httpStatus is thrown" in {
 
         server.stubFor(
           get(urlEqualTo("/template/mustache"))
@@ -120,13 +121,10 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
         val request =
           FakeRequest(GET, url).withHeaders("referer" -> REFERER).withSession(SessionKeys.authToken -> "Bearer 1")
 
-        val result = route(app, request)
+        val result = route(app, request).get
 
-        result.map(fResult =>
-          whenReady(fResult.failed) { e =>
-            e mustBe a[RuntimeException]
-          }
-        )
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, there is a problem with the service")
       }
     }
   }

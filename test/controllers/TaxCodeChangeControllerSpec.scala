@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -43,7 +42,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
         implicit val request: AuthenticatedRequest[AnyContentAsFormUrlEncoded] =
-          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, "Firstname Surname")
+          AuthenticatedRequest(RequestBuilder.buildFakeRequestWithAuth("GET"), authedUser, fakePerson(nino))
 
         val result = createController().whatHappensNext()(request)
 
@@ -77,7 +76,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
             RequestBuilder
               .buildFakeRequestWithAuth("GET"),
             authedUser,
-            "testUser"
+            fakePerson(nino)
           ),
           implicitly,
           implicitly
@@ -114,7 +113,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
           scottishRates,
           reasons,
           isAGenericReason = false,
-          maybeUserName = Some("testUser")
+          maybeUserName = Some("Firstname Surname")
         )
 
       status(result) mustBe OK
@@ -159,7 +158,6 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         taxAccountService,
         describedYourTaxFreeAmountService,
         mockAuthJourney,
-        FakeValidatePerson,
         yourTaxFreeAmountService,
         taxCodeChangeReasonsService,
         appConfig,

@@ -45,7 +45,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
   implicit val request: Request[_] = FakeRequest()
   implicit val fakeAuthenticatedRequest: AuthenticatedRequest[Any] =
-    AuthenticatedRequest(request, authedUser, "testUser")
+    AuthenticatedRequest(request, authedUser, fakePerson(nino))
   private val noCurrentIncomeView = inject[NoCurrentIncomeView]
   private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
   private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]

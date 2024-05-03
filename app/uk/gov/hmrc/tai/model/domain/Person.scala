@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
 
 case class Person(
@@ -24,12 +25,26 @@ case class Person(
   firstName: String,
   surname: String,
   isDeceased: Boolean,
-  manualCorrespondenceInd: Boolean,
   address: Address
 ) {
   lazy val name: String = s"$firstName $surname"
 }
 
 object Person {
-  implicit val personFormat: Format[Person] = Json.format[Person]
+
+  implicit val reads: Reads[Person] = (
+    (JsPath \ "person" \ "nino").read[Nino] and
+      (JsPath \ "person" \ "firstName").readNullable[String].map(_.getOrElse("")) and
+      (JsPath \ "person" \ "lastName").readNullable[String].map(_.getOrElse("")) and
+      (JsPath \ "person" \ "deceased").readNullable[Boolean].map(_.getOrElse(false)) and
+      (JsPath \ "address").readNullable[Address].map(_.getOrElse(Address.emptyAddress))
+  )(Person.apply _)
+
+  implicit val writes: Writes[Person] = (
+    (JsPath \ "person" \ "nino").write[Nino] and
+      (JsPath \ "person" \ "firstName").write[String] and
+      (JsPath \ "person" \ "lastName").write[String] and
+      (JsPath \ "person" \ "deceased").write[Boolean] and
+      (JsPath \ "address").write[Address]
+  )(unlift(Person.unapply))
 }

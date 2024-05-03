@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
@@ -36,7 +35,6 @@ class TaxCodeChangeController @Inject() (
   taxAccountService: TaxAccountService,
   describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   yourTaxFreeAmountService: YourTaxFreeAmountService,
   taxCodeChangeReasonsService: TaxCodeChangeReasonsService,
   appConfig: ApplicationConfig,

@@ -96,7 +96,7 @@ class PertaxAuthActionSpec extends BaseSpec {
   private val testRequest = FakeRequest("GET", "/paye/benefits/medical-benefit")
 
   val expectedRequest: AuthenticatedRequest[AnyContentAsEmpty.type] =
-    AuthenticatedRequest(testRequest, authedUser, "Firstname Surname")
+    AuthenticatedRequest(testRequest, authedUser, fakePerson(nino))
 
   "Pertax auth action" when {
     "the pertax API returns an ACCESS_GRANTED response" must {

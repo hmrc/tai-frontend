@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.i18n.Messages
@@ -262,19 +261,15 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
   def sut: YourIncomeCalculationController =
     new YourIncomeCalculationController(
-      personService,
       taxAccountService,
       employmentService,
       paymentsService,
       mockAuthJourney,
-      FakeValidatePerson,
       appConfig,
       mcc,
       inject[HistoricIncomeCalculationView],
       inject[YourIncomeCalculationView],
       inject[HistoricIncomePrintView],
       inject[ErrorPagesHandler]
-    ) {
-      when(personService.personDetails(any())(any(), any())).thenReturn(Future.successful(fakePerson(nino)))
-    }
+    )
 }
