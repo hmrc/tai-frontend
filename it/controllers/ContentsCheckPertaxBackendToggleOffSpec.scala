@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
+import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneQuestionPage}
 import pages.EndEmployment._
 import pages._
 import play.api.Application
@@ -658,6 +659,14 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
     .setOrException(EndEmploymentEndDatePage, LocalDate.of(2022, 2, 2))
     .setOrException(EndEmploymentTelephoneQuestionPage, "999")
     .setOrException(EndEmploymentTelephoneNumberPage, "999")
+    .setOrException(AddEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(AddEmploymentPayrollNumberPage, "1234")
+    .setOrException(AddEmploymentPayrollQuestionPage, "I don't know")
+    .setOrException(AddEmploymentPayrollNumberPage, "")
+    .setOrException(AddEmploymentReceivedFirstPayPage, "Yes")
+    .setOrException(AddEmploymentStartDatePage, LocalDate.of(2022, 7, 10))
+    .setOrException(AddEmploymentStartDateWithinSixWeeksPage, "Yes")
+    .setOrException(AddEmploymentTelephoneQuestionPage, "No")
 
   override def beforeEach(): Unit = {
     super.beforeEach()

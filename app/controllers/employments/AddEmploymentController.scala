@@ -19,7 +19,7 @@ package controllers.employments
 import com.google.inject.name.Named
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.{AuthJourney, AuthedUser}
-import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollNumberQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneNumberPage, AddEmploymentTelephoneQuestionPage}
+import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneNumberPage, AddEmploymentTelephoneQuestionPage}
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
@@ -211,7 +211,7 @@ class AddEmploymentController @Inject() (
     implicit val user: AuthedUser = request.taiUser
 
     (
-      request.userAnswers.get(AddEmploymentPayrollNumberQuestionPage),
+      request.userAnswers.get(AddEmploymentPayrollQuestionPage),
       request.userAnswers.get(AddEmploymentPayrollNumberPage)
     ) match {
       case (Some(payrollChoice), a) if payrollChoice.equals(FormValuesConstants.YesValue) =>
@@ -245,7 +245,7 @@ class AddEmploymentController @Inject() (
               _ <- journeyCacheNewRepository
                      .set(
                        request.userAnswers
-                         .setOrException(AddEmploymentPayrollNumberQuestionPage, form.payrollNumberChoice.getOrElse(""))
+                         .setOrException(AddEmploymentPayrollQuestionPage, form.payrollNumberChoice.getOrElse(""))
                          .setOrException(
                            AddEmploymentPayrollNumberPage,
                            form.payrollNumberEntry
@@ -258,10 +258,7 @@ class AddEmploymentController @Inject() (
 
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    println(
-      "eeeeeee" + request.userAnswers.get(AddEmploymentTelephoneQuestionPage) + "    " +
-        request.userAnswers.get(AddEmploymentTelephoneNumberPage)
-    )
+
     (
       request.userAnswers.get(AddEmploymentTelephoneQuestionPage),
       request.userAnswers.get(AddEmploymentTelephoneNumberPage)
@@ -300,16 +297,19 @@ class AddEmploymentController @Inject() (
           Future.successful(BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors)))
         },
         form => {
-          val telephoneQuestionValue =
-            s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
-
           val userAnswers = form.yesNoChoice match {
             case Some(yn) if yn == FormValuesConstants.YesValue =>
               request.userAnswers
                 .setOrException(AddEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
-                .setOrException(AddEmploymentTelephoneQuestionPage, telephoneQuestionValue)
+                .setOrException(
+                  AddEmploymentTelephoneQuestionPage,
+                  form.yesNoChoice.getOrElse(FormValuesConstants.NoValue)
+                )
             case _ =>
-              request.userAnswers.setOrException(AddEmploymentTelephoneQuestionPage, telephoneQuestionValue)
+              request.userAnswers.setOrException(
+                AddEmploymentTelephoneQuestionPage,
+                form.yesNoChoice.getOrElse(FormValuesConstants.NoValue)
+              )
           }
           for {
             _ <- journeyCacheNewRepository.set(userAnswers)

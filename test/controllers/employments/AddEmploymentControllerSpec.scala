@@ -20,12 +20,12 @@ import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollNumberQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneNumberPage, AddEmploymentTelephoneQuestionPage}
+import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneNumberPage, AddEmploymentTelephoneQuestionPage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
@@ -449,7 +449,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
               AddEmploymentStartDateWithinSixWeeksPage.toString -> FormValuesConstants.YesValue,
-              AddEmploymentPayrollNumberQuestionPage.toString   -> FormValuesConstants.NoValue,
+              AddEmploymentPayrollQuestionPage.toString         -> FormValuesConstants.NoValue,
               AddEmploymentPayrollNumberPage.toString           -> "should be ignored"
             )
           )
@@ -471,7 +471,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
               AddEmploymentStartDateWithinSixWeeksPage.toString -> FormValuesConstants.YesValue,
-              AddEmploymentPayrollNumberQuestionPage.toString   -> FormValuesConstants.YesValue,
+              AddEmploymentPayrollQuestionPage.toString         -> FormValuesConstants.YesValue,
               AddEmploymentPayrollNumberPage.toString           -> "should be displayed"
             )
           )
