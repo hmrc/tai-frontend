@@ -207,97 +207,49 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
         doc(viewWithNonSavings) must haveTdWithText("£36,466")
       }
 
-      "Scottish user have non-savings" when {
-        "before new tax year 2024" in {
+      "Scottish user have non-savings" in {
 
-          val mockAppConfig = mock[ApplicationConfig]
+        val mockAppConfig = mock[ApplicationConfig]
 
-          val taxBands = List(
-            TaxBand("B", "", 32010, 6402, None, None, 20),
-            TaxBand("D0", "", 36466, 36466, None, None, 40),
-            TaxBand("D1", "", 36466, 36466, None, None, 40),
-            TaxBand("D2", "", 36466, 36466, None, None, 40),
-            TaxBand("D3", "", 36466, 36466, None, None, 40)
-          )
+        val taxBands = List(
+          TaxBand("B", "", 32010, 6402, None, None, 20),
+          TaxBand("D0", "", 36466, 36466, None, None, 40),
+          TaxBand("D1", "", 36466, 36466, None, None, 40),
+          TaxBand("D2", "", 36466, 36466, None, None, 40),
+          TaxBand("D3", "", 36466, 36466, None, None, 40)
+        )
 
-          val incomeCategories = Seq(
-            IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
-          )
-          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-          val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-          val taxCodeIncome: Seq[TaxCodeIncome] =
-            List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
+        val incomeCategories = Seq(
+          IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] =
+          List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
-          val viewModel = DetailedIncomeTaxEstimateViewModel(
-            totalTax,
-            taxCodeIncome,
-            taxAccountSummary,
-            Seq.empty[CodingComponent],
-            nonTaxCodeIncome
-          )
+        val viewModel = DetailedIncomeTaxEstimateViewModel(
+          totalTax,
+          taxCodeIncome,
+          taxAccountSummary,
+          Seq.empty[CodingComponent],
+          nonTaxCodeIncome
+        )
 
-          when(mockAppConfig.newTaxBandsReleaseDate).thenReturn(LocalDate.now().plusDays(1))
-          val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, mockAppConfig)
+        val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, mockAppConfig)
 
-          doc(viewWithNonSavings) must haveTdWithText("£32,010")
-          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
-          doc(viewWithNonSavings) must haveTdWithText("20%")
-          doc(viewWithNonSavings) must haveTdWithText("£6,402")
-          doc(viewWithNonSavings) must haveTdWithText("£36,466")
-          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
-          doc(viewWithNonSavings) must haveTdWithText("40%")
-          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
-          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
-          doc(viewWithNonSavings) must haveTdWithText("Higher rate")
-          doc(viewWithNonSavings) must haveTdWithText("Top rate")
-          doc(viewWithNonSavings) mustNot haveTdWithText("Advanced rate")
-        }
-        "after new tax year 2024" in {
-
-          val mockAppConfig = mock[ApplicationConfig]
-
-          val taxBands = List(
-            TaxBand("B", "", 32010, 6402, None, None, 20),
-            TaxBand("D0", "", 36466, 36466, None, None, 40),
-            TaxBand("D1", "", 36466, 36466, None, None, 40),
-            TaxBand("D2", "", 36466, 36466, None, None, 40),
-            TaxBand("D3", "", 36466, 36466, None, None, 40)
-          )
-
-          val incomeCategories = Seq(
-            IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
-          )
-          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-          val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
-          val taxCodeIncome: Seq[TaxCodeIncome] =
-            List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
-
-          val viewModel = DetailedIncomeTaxEstimateViewModel(
-            totalTax,
-            taxCodeIncome,
-            taxAccountSummary,
-            Seq.empty[CodingComponent],
-            nonTaxCodeIncome
-          )
-
-          when(mockAppConfig.newTaxBandsReleaseDate).thenReturn(LocalDate.now())
-          val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel, mockAppConfig)
-
-          doc(viewWithNonSavings) must haveTdWithText("£32,010")
-          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
-          doc(viewWithNonSavings) must haveTdWithText("20%")
-          doc(viewWithNonSavings) must haveTdWithText("£6,402")
-          doc(viewWithNonSavings) must haveTdWithText("£36,466")
-          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
-          doc(viewWithNonSavings) must haveTdWithText("40%")
-          doc(viewWithNonSavings) must haveTdWithText("Basic rate")
-          doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
-          doc(viewWithNonSavings) must haveTdWithText("Higher rate")
-          doc(viewWithNonSavings) must haveTdWithText("Advanced rate")
-          doc(viewWithNonSavings) must haveTdWithText("Top rate")
-        }
+        doc(viewWithNonSavings) must haveTdWithText("£32,010")
+        doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+        doc(viewWithNonSavings) must haveTdWithText("20%")
+        doc(viewWithNonSavings) must haveTdWithText("£6,402")
+        doc(viewWithNonSavings) must haveTdWithText("£36,466")
+        doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+        doc(viewWithNonSavings) must haveTdWithText("40%")
+        doc(viewWithNonSavings) must haveTdWithText("Basic rate")
+        doc(viewWithNonSavings) must haveTdWithText("Intermediate rate")
+        doc(viewWithNonSavings) must haveTdWithText("Higher rate")
+        doc(viewWithNonSavings) must haveTdWithText("Advanced rate")
+        doc(viewWithNonSavings) must haveTdWithText("Top rate")
       }
 
       "UK user have savings" in {

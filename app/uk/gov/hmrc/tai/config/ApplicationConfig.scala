@@ -121,9 +121,6 @@ class ApplicationConfig @Inject() (
   lazy val pertaxUrl: String =
     servicesConfig.baseUrl("pertax")
 
-  private lazy val newTaxBandsRelease: String = servicesConfig.getString("tai.newTaxBandRelease")
-  lazy val newTaxBandsReleaseDate: LocalDate = LocalDate.parse(newTaxBandsRelease)
-
   lazy val startEmploymentDateFilteredBefore: LocalDate =
     LocalDate.parse(servicesConfig.getString("feature.startEmploymentDateFilteredBefore"))
 
