@@ -37,11 +37,7 @@
 
     @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
     <tr class="govuk-table__row">
-        @if(LocalDate.now.isBefore(appConfig.newTaxBandsReleaseDate) && taxRegion.toLowerCase.equals("scottish") && taxBand.bandType.equals("D2")) {
-            <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}.2023")</td>
-        } else {
-            <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
-        }
+        <td class="govuk-table__cell bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
         <td class="govuk-table__cell govuk-table__cell--numeric numeric income@{count}">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
         <td class="govuk-table__cell govuk-table__cell--numeric numeric taxRate@{count}">@taxBand.rate%</td>
         <td class="govuk-table__cell govuk-table__cell--numeric numeric tax@{count}">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
