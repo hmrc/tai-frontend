@@ -21,7 +21,6 @@ import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
-import org.scalatest.BeforeAndAfterEach
 import pages.EndEmployment._
 import pages._
 import play.api.i18n.Messages
@@ -50,7 +49,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
-class EndEmploymentControllerSpec extends NewCachingBaseSpec with BeforeAndAfterEach {
+class EndEmploymentControllerSpec extends NewCachingBaseSpec {
 
   private def fakeGetRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
