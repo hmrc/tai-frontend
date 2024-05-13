@@ -28,6 +28,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 
@@ -46,10 +47,12 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     "microservice.services.company-auth.port"             -> "4444"
   )
 
+  private val mockWebChatClient = mock[WebChatClient]
+
   implicit override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(additionalConfiguration)
     .overrides(
-      //     bind[WebChatClient].toInstance(new WebChatClientStub),
+      bind[WebChatClient].toInstance(mockWebChatClient),
       bind[FeatureFlagService].toInstance(mockFeatureFlagService)
     )
     .build()

@@ -23,7 +23,7 @@ private object AppDependencies {
   val test: Seq[ModuleID] = Seq(
     "org.jsoup"              % "jsoup"                         % "1.17.2",
     "org.mockito"           %% "mockito-scala-scalatest"       % "1.17.31",
-    "com.github.tomakehurst" % "wiremock-jre8"                 % "2.35.1",
+//    "com.github.tomakehurst" % "wiremock-jre8"                 % "2.35.1",
     "com.typesafe.play"     %% "play-test"                     % PlayVersion.current,
     "uk.gov.hmrc"           %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
     "org.scalatestplus"     %% "scalacheck-1-17"               % "3.2.18.0",
