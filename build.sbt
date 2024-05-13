@@ -1,14 +1,19 @@
+import com.typesafe.sbt.uglify.Import.*
+import com.typesafe.sbt.web.Import.*
 import com.typesafe.sbt.web.SbtWeb
-import play.sbt.routes.RoutesKeys._
+import net.ground5hark.sbt.concat.Import.*
+import play.sbt.routes.RoutesKeys.*
 import sbt.GlobFilter
-import sbt.Keys._
+import sbt.Keys.*
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings}
-import com.typesafe.sbt.web.Import._
-import net.ground5hark.sbt.concat.Import._
-import com.typesafe.sbt.uglify.Import._
+import uk.gov.hmrc.DefaultBuildSettings
+import uk.gov.hmrc.DefaultBuildSettings.defaultSettings
 
 val appName = "tai-frontend"
+
+ThisBuild / majorVersion := 1
+ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalafmtOnCompile := true
 
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
 lazy val playSettings: Seq[Setting[_]] = Seq(
@@ -32,49 +37,43 @@ lazy val scoverageSettings = {
   )
 }
 
-def makeExcludedFiles(rootDir: File): Seq[String] = {
-  val excluded = findPlayConfFiles(rootDir) ++ findSbtFiles(rootDir) ++ wartRemovedExcludedClasses
-  println(s"[auto-code-review] excluding the following files: ${excluded.mkString(",")}")
-  excluded
-}
+//def makeExcludedFiles(rootDir: File): Seq[String] = {
+//  def findSbtFiles(rootDir: File): Seq[String] =
+//    if (rootDir.getName == "project") {
+//      rootDir.listFiles().map(_.getName).toSeq
+//    } else {
+//      Seq()
+//    }
+//  def findPlayConfFiles(rootDir: File): Seq[String] =
+//    Option {
+//      new File(rootDir, "conf").listFiles()
+//    }.fold(Seq[String]()) { confFiles =>
+//      confFiles
+//        .map(_.getName.replace(".routes", ".Routes"))
+//    }
+//  val wartRemovedExcludedClasses = Seq(
+//    "uk.gov.hmrc.BuildInfo"
+//  )
+//  val excluded = findPlayConfFiles(rootDir) ++ findSbtFiles(rootDir) ++ wartRemovedExcludedClasses
+//  println(s"[auto-code-review] excluding the following files: ${excluded.mkString(",")}")
+//  excluded
+//}
 
-def findSbtFiles(rootDir: File): Seq[String] =
-  if (rootDir.getName == "project") {
-    rootDir.listFiles().map(_.getName).toSeq
-  } else {
-    Seq()
-  }
 
-def findPlayConfFiles(rootDir: File): Seq[String] =
-  Option {
-    new File(rootDir, "conf").listFiles()
-  }.fold(Seq[String]()) { confFiles =>
-    confFiles
-      .map(_.getName.replace(".routes", ".Routes"))
-  }
 
-val wartRemovedExcludedClasses = Seq(
-  "uk.gov.hmrc.BuildInfo"
-)
-
-val silencerVersion = "1.7.12"
+//val silencerVersion = "1.7.12"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(defaultSettings(): _*)
-  .settings(scalaVersion := "2.13.12")
   .settings(
     libraryDependencies ++= AppDependencies.all,
     retrieveManaged := true,
     routesGenerator := InjectedRoutesGenerator,
-    scalafmtOnCompile := true,
     PlayKeys.playDefaultPort := 9230
   )
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings())
   .settings(resolvers ++= Seq(Resolver.jcenterRepo))
-  .settings(majorVersion := 1)
   .settings(Test / Keys.fork := true)
   .settings(scalacOptions ++= Seq(
     "-feature",
@@ -107,14 +106,17 @@ lazy val microservice = Project(appName, file("."))
     uglify / includeFilter := GlobFilter("tai-*.js")
   )
 
+lazy val it = project
+  .enablePlugins(play.sbt.PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(
+    libraryDependencies ++= AppDependencies.test,
+    DefaultBuildSettings.itSettings()
+  )
 
 TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.hmrcfrontend.views.html.components._",
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
-)
-
-ThisBuild / libraryDependencySchemes ++= Seq(
-  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 
 // Scalafix configuration - Only un comment if you want to correct the styling of the service, then comment again as this causes compile and test issues in the service
