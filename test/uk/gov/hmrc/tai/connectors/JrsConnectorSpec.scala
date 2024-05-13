@@ -16,33 +16,42 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.codahale.metrics.Timer.Context
+import com.codahale.metrics.{Counter, MetricRegistry, Timer}
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
+import org.mockito.ArgumentMatchers.anyString
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
-import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
-import uk.gov.hmrc.tai.util.TestMetrics
-import uk.gov.hmrc.webchat.client.WebChatClient
-import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 import utils.{BaseSpec, WireMockHelper}
 
 class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.coronavirus-jrs-published-employees.port" -> server.port)
-    .overrides(
-      bind[WebChatClient].toInstance(new WebChatClientStub)
-    )
+//    .overrides(
+//      bind[WebChatClient].toInstance(new WebChatClientStub)
+//    )
     .build()
 
   lazy val httpClient = inject[HttpClient]
 
-  val testMetrics = new TestMetrics
+  val mockTimer: Timer = mock[Timer]
+  val mockCounter: Counter = mock[Counter]
+  val mockMetricRegistry: MetricRegistry = mock[MetricRegistry]
+  val mockContext: Context = mock[Context]
 
-  lazy val jrsConnector = new JrsConnector(httpClient, testMetrics, appConfig)
+  when(mockMetricRegistry.timer(anyString())).thenReturn(mockTimer)
+
+  when(mockMetricRegistry.counter(anyString())).thenReturn(mockCounter)
+
+  when(mockContext.stop()).thenReturn(1L)
+  when(mockTimer.time()).thenReturn(mockContext)
+
+  lazy val jrsConnector = new JrsConnector(httpClient, mockMetricRegistry, appConfig)
 
   val jrsClaimsUrl: String =
     s"/coronavirus-jrs-published-employees/employee/$nino"

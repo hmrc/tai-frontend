@@ -24,6 +24,3 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class AssetsController @Inject() (errorHandler: HttpErrorHandler, metaData: AssetsMetadata, env: Environment)
     extends AssetsBuilder(errorHandler, metaData, env)
-
-//class AssetsController @Inject() (errorHandler: HttpErrorHandler, metaData: AssetsMetadata)
-//    extends AssetsBuilder(errorHandler, metaData)

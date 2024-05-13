@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.tai.metrics
 
-import com.codahale.metrics.Timer
+import com.codahale.metrics.{MetricRegistry, Timer}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.scalatest.compatible.Assertion
 import org.scalatest.{BeforeAndAfterAll, OptionValues}
 import play.api.mvc.{BaseController, ControllerComponents, Results}
 import play.api.test.{FakeRequest, Helpers}
-import uk.gov.hmrc.tai.util.TestMetrics
 import utils.BaseSpec
 
 import scala.concurrent.Future
@@ -32,7 +31,7 @@ class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
 
   trait MockHasMetrics { self: HasMetrics =>
     val timer = mock[Timer.Context]
-    val metrics = new TestMetrics
+    val metrics = new MetricRegistry // new TestMetrics
     override val localMetrics: LocalMetrics = mock[LocalMetrics]
     when(localMetrics.startTimer(any())) thenReturn timer
   }
