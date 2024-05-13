@@ -29,7 +29,6 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.webchat.client.WebChatClient
-import uk.gov.hmrc.webchat.testhelpers.WebChatClientStub
 
 import scala.concurrent.ExecutionContext
 

@@ -14,6 +14,7 @@ private object AppDependencies {
     "org.typelevel" %% "cats-core"                     % "2.10.0",
     "uk.gov.hmrc" %% s"play-conditional-form-mapping-$playVersion" % "2.0.0",
 //    "uk.gov.hmrc"   %% "digital-engagement-platform-chat-29"           % s"1.4.0-$playVersion",
+    //    "uk.gov.hmrc"       %% "digital-engagement-platform-chat" % s"0.32.0-$playVersion",
     "uk.gov.hmrc" %% "digital-engagement-platform-chat-29"        % webChatVersion,
     "uk.gov.hmrc" %% s"mongo-feature-toggles-client-$playVersion" % "1.3.0",
     "uk.gov.hmrc" %% s"sca-wrapper-$playVersion"                  % "1.6.0"
