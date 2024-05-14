@@ -64,7 +64,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
-
+  
   "estimatedPayLandingPage" must {
 
     val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)

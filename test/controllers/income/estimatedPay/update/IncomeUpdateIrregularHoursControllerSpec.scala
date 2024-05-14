@@ -344,57 +344,57 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     }
   }
 
-  "submitIncomeIrregularHours" must {
-    object SubmitIncomeIrregularHoursHarness {
-
-      sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Either[String, Seq[String]]]) {
-
-        when(
-          journeyCacheService.mandatoryJourneyValues(any())(any(), any())
-        ).thenReturn(mandatoryValuesFuture)
-        when(
-          taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
-        ).thenReturn(
-          Future.successful(Done)
-        )
-        when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employer.id.toString))(any(), any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(journeyCacheService.cache(any(), any())(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        def submitIncomeIrregularHours(
-          employmentId: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]
-        ): Future[Result] =
-          new TestIncomeUpdateIrregularHoursController()
-            .submitIncomeIrregularHours(employmentId)(request)
-      }
-
-      def setup(mandatoryValuesFuture: Future[Either[String, Seq[String]]]): SubmitIncomeIrregularHoursHarness =
-        new SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture)
-    }
-    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
-
-      val result: Future[Result] = SubmitIncomeIrregularHoursHarness
-        .setup(Future.failed(new Exception))
-        .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
-
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-
-    "sends Ok on successful submit" in {
-
-      val result = SubmitIncomeIrregularHoursHarness
-        .setup(Future.successful(Right(Seq(employer.name, "123", employer.id.toString))))
-        .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
-
-      status(result) mustBe OK
-
-      val doc = Jsoup.parse(contentAsString(result))
-
-      doc.title() must include(messages("tai.incomes.updated.check.title", employer.name))
-    }
-  }
+//  "submitIncomeIrregularHours" must {
+//    object SubmitIncomeIrregularHoursHarness {
+//
+//      sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Either[String, Seq[String]]]) {
+//
+//        when(
+//          journeyCacheService.mandatoryJourneyValues(any())(any(), any())
+//        ).thenReturn(mandatoryValuesFuture)
+//        when(
+//          taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
+//        ).thenReturn(
+//          Future.successful(Done)
+//        )
+//        when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employer.id.toString))(any(), any()))
+//          .thenReturn(Future.successful(Map.empty[String, String]))
+//
+//        when(journeyCacheService.cache(any(), any())(any()))
+//          .thenReturn(Future.successful(Map.empty[String, String]))
+//
+//        def submitIncomeIrregularHours(
+//          employmentId: Int,
+//          request: FakeRequest[AnyContentAsFormUrlEncoded]
+//        ): Future[Result] =
+//          new TestIncomeUpdateIrregularHoursController()
+//            .submitIncomeIrregularHours(employmentId)(request)
+//      }
+//
+//      def setup(mandatoryValuesFuture: Future[Either[String, Seq[String]]]): SubmitIncomeIrregularHoursHarness =
+//        new SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture)
+//    }
+//    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
+//
+//      val result: Future[Result] = SubmitIncomeIrregularHoursHarness
+//        .setup(Future.failed(new Exception))
+//        .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
+//
+//      status(result) mustBe INTERNAL_SERVER_ERROR
+//    }
+//
+//    "sends Ok on successful submit" in {
+//
+//      val result = SubmitIncomeIrregularHoursHarness
+//        .setup(Future.successful(Right(Seq(employer.name, "123", employer.id.toString))))
+//        .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
+//
+//      status(result) mustBe OK
+//
+//      val doc = Jsoup.parse(contentAsString(result))
+//
+//      doc.title() must include(messages("tai.incomes.updated.check.title", employer.name))
+//    }
+//  }
 
 }

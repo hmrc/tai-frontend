@@ -38,7 +38,8 @@ import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, Incorr
 
 import java.time.LocalDate
 import javax.inject.{Inject, Named}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthJourney,
@@ -60,6 +61,13 @@ class IncomeUpdateEstimatedPayController @Inject() (
   def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
+
+      val x = Await.result(
+        journeyCacheService
+          .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IncomeTypeKey),
+        Duration.Inf
+      )
+      println("\nx=" + x)
 
       journeyCacheService
         .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IncomeTypeKey)

@@ -47,7 +47,7 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
     "microservice.services.company-auth.port"             -> "4444"
   )
 
-  private val mockWebChatClient = mock[WebChatClient]
+  protected val mockWebChatClient: WebChatClient = mock[WebChatClient]
 
   implicit override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(additionalConfiguration)
