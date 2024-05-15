@@ -46,7 +46,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         inject[WorkingHoursView],
         journeyCacheService
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+    when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -86,7 +86,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdateWorkingHoursController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.workingHoursPage(fakeRequest)
@@ -167,7 +167,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
       val controller = new TestIncomeUpdateWorkingHoursController()
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
         .thenReturn(Future.successful(Left("")))
 
       val result = controller.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())

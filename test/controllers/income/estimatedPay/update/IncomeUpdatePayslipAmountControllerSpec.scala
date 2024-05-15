@@ -56,7 +56,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         inject[PayslipDeductionsView],
         journeyCacheService
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+    when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -150,7 +150,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     object HandlePayslipAmountHarness {
       sealed class HandlePayslipAmountHarness(salary: String) {
 
-        when(journeyCacheService.optionalValues(any())(any(), any()))
+        when(journeyCacheService.optionalValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(Monthly), None)))
 
         when(
@@ -274,7 +274,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     object HandleTaxablePayslipAmountPageHarness {
       sealed class HandleTaxablePayslipAmountPageHarness() {
 
-        when(journeyCacheService.optionalValues(any())(any(), any()))
+        when(journeyCacheService.optionalValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(Monthly), None, Some("4000"))))
 
         when(
@@ -330,7 +330,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
       "IncomeSource.create returns a left" in {
         val controller = new TestIncomeUpdatePayslipAmountController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())

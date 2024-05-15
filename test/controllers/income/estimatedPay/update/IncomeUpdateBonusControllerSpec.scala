@@ -57,7 +57,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         bonusPaymentAmountView,
         journeyCacheService
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+    when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
     when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.TaxablePayKey))(any()))
       .thenReturn(Future.successful(maybeTaxablePayKey))
@@ -129,7 +129,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.bonusPaymentsPage(fakeRequest)
@@ -151,7 +151,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
           .thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.flush()(any()))
           .thenReturn(Future.successful(Done))
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 
         def handleBonusPayments(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -228,7 +228,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.handleBonusPayments(employer.id)(fakeRequest)
@@ -280,7 +280,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.bonusOvertimeAmountPage(fakeRequest)
@@ -299,7 +299,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         when(journeyCacheService.cache(any())(any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
 
         def handleBonusOvertimeAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -352,7 +352,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         val controller = new TestIncomeUpdateBonusController
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Left("")))
 
         val result = controller.handleBonusOvertimeAmount(employer.id)(fakeRequest)
