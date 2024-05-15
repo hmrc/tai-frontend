@@ -149,10 +149,8 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   "handlePayslipAmount" must {
     object HandlePayslipAmountHarness {
       sealed class HandlePayslipAmountHarness(salary: String) {
-
         when(journeyCacheService.optionalValues(any(), any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(Monthly), None)))
-
         when(
           journeyCacheService.cache(
             meq(Map(UpdateIncomeConstants.TotalSalaryKey -> salary))
@@ -274,7 +272,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     object HandleTaxablePayslipAmountPageHarness {
       sealed class HandleTaxablePayslipAmountPageHarness() {
 
-        when(journeyCacheService.optionalValues(any(), any())(any(), any()))
+        when(journeyCacheService.optionalValues(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Seq(Some(Monthly), None, Some("4000"))))
 
         when(

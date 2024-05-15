@@ -43,9 +43,8 @@ class TaiConnectorTestSpec extends BaseSpec with WireMockHelper with ScalaFuture
         post(anyUrl())
           .willReturn(aResponse().withStatus(OK).withBody(Json.toJson(expectedResponse).toString()))
       )
-
       val response = Await.result(taiConnector.calculateEstimatedPay(payDetails), 5.seconds)
-
+      println("\nB")
       response mustBe expectedResponse
     }
   }
