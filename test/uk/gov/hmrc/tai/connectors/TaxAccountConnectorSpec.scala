@@ -20,6 +20,7 @@ import akka.Done
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
+import play.api.inject.bind
 import play.api.http.ContentTypes
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
@@ -30,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{BaseSpec, WireMockHelper}
 
 import java.time.LocalDate
@@ -41,7 +43,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.tai.port" -> server.port)
     .overrides(
-      //     bind[WebChatClient].toInstance(new WebChatClientStub)
+      bind[WebChatClient].toInstance(mockWebChatClient)
     )
     .build()
 

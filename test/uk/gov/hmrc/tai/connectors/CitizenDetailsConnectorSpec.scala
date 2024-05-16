@@ -18,20 +18,25 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status._
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Application
+import play.api.http.Status._
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.{CONTENT_TYPE, JSON}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{BaseSpec, WireMockHelper}
 
 class CitizenDetailsConnectorSpec extends BaseSpec with WireMockHelper {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure("microservice.services.citizen-details.port" -> server.port())
+    .overrides(
+      bind[WebChatClient].toInstance(mockWebChatClient)
+    )
     .build()
 
   val person: Person = fakePerson(nino)
