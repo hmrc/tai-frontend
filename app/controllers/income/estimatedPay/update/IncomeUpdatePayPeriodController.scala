@@ -48,7 +48,7 @@ class IncomeUpdatePayPeriodController @Inject() (
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
-        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)
+        .optionalValues(Seq(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey))
     ).mapN {
       case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))

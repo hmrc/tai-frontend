@@ -54,15 +54,16 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
   def mandatoryValueAsDate(key: String)(implicit hc: HeaderCarrier): Future[Either[String, LocalDate]] =
     mandatoryJourneyValueAs[LocalDate](key, string => LocalDate.parse(string))
 
+  //
   def mandatoryJourneyValues(
-    keys: String*
+    keys: Seq[String]
   )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Either[String, Seq[String]]] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, keys)
 
   def optionalValues(
-    keys: String*
+    keys: Seq[String]
   )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[Option[String]]] =
     currentCache.map(cache => mappedOptional(cache, keys).toList)
 

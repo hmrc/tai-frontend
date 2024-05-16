@@ -238,7 +238,7 @@ class AddEmploymentController @Inject() (
 
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
-      .optionalValues(AddEmploymentConstants.TelephoneQuestionKey, AddEmploymentConstants.TelephoneNumberKey) map {
+      .optionalValues(Seq(AddEmploymentConstants.TelephoneQuestionKey, AddEmploymentConstants.TelephoneNumberKey)) map {
       optSeq =>
         val telNoToDisplay = optSeq.head match {
           case Some(FormValuesConstants.YesValue) => optSeq(1)

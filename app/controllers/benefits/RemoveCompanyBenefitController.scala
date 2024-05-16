@@ -101,8 +101,7 @@ class RemoveCompanyBenefitController @Inject() (
           formWithErrors =>
             journeyCacheService
               .mandatoryJourneyValues(
-                EndCompanyBenefitConstants.BenefitNameKey,
-                EndCompanyBenefitConstants.EmploymentNameKey
+                Seq(EndCompanyBenefitConstants.BenefitNameKey, EndCompanyBenefitConstants.EmploymentNameKey)
               )
               .getOrFail
               .map { mandatoryJourneyValues =>
@@ -155,8 +154,7 @@ class RemoveCompanyBenefitController @Inject() (
         formWithErrors =>
           journeyCacheService
             .mandatoryJourneyValues(
-              EndCompanyBenefitConstants.EmploymentNameKey,
-              EndCompanyBenefitConstants.BenefitNameKey
+              Seq(EndCompanyBenefitConstants.EmploymentNameKey, EndCompanyBenefitConstants.BenefitNameKey)
             )
             .getOrFail
             .flatMap { mandatoryJourneyValues =>
@@ -303,7 +301,7 @@ class RemoveCompanyBenefitController @Inject() (
   def cancel: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     for {
       mandatoryJourneyValues <- journeyCacheService
-                                  .mandatoryJourneyValues(EndCompanyBenefitConstants.RefererKey)
+                                  .mandatoryJourneyValues(Seq(EndCompanyBenefitConstants.RefererKey))
                                   .getOrFail
       _ <- journeyCacheService.flush()
     } yield Redirect(mandatoryJourneyValues.head)

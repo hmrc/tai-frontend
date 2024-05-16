@@ -107,7 +107,9 @@ class UpdatePensionProviderController @Inject() (
 
   def handleDoYouGetThisPension: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
-      .mandatoryJourneyValues(UpdatePensionProviderConstants.IdKey, UpdatePensionProviderConstants.NameKey) flatMap {
+      .mandatoryJourneyValues(
+        Seq(UpdatePensionProviderConstants.IdKey, UpdatePensionProviderConstants.NameKey)
+      ) flatMap {
       case Right(mandatoryVals) =>
         UpdateRemovePensionForm.form
           .bindFromRequest()
@@ -158,7 +160,7 @@ class UpdatePensionProviderController @Inject() (
       .fold(
         formWithErrors =>
           journeyCacheService
-            .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)
+            .mandatoryJourneyValues(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey))
             .getOrFail map { mandatoryValues =>
             implicit val user: AuthedUser = request.taiUser
             BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
@@ -173,10 +175,10 @@ class UpdatePensionProviderController @Inject() (
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     for {
       pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProviderConstants.IdKey)
-      telephoneCache <- journeyCacheService.optionalValues(
-                          UpdatePensionProviderConstants.TelephoneQuestionKey,
-                          UpdatePensionProviderConstants.TelephoneNumberKey
-                        )
+      telephoneCache <-
+        journeyCacheService.optionalValues(
+          Seq(UpdatePensionProviderConstants.TelephoneQuestionKey, UpdatePensionProviderConstants.TelephoneNumberKey)
+        )
     } yield pensionId match {
       case Right(mandatoryPensionId) =>
         val user = Some(request.taiUser)
@@ -339,7 +341,7 @@ class UpdatePensionProviderController @Inject() (
   def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     journeyCacheService
-      .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey) map {
+      .mandatoryJourneyValues(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)) map {
       case Right(mandatoryValues) =>
         Ok(
           duplicateSubmissionWarningView(
@@ -356,7 +358,7 @@ class UpdatePensionProviderController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       journeyCacheService
-        .mandatoryJourneyValues(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)
+        .mandatoryJourneyValues(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey))
         .getOrFail flatMap { mandatoryValues =>
         DuplicateSubmissionWarningForm.createForm
           .bindFromRequest()

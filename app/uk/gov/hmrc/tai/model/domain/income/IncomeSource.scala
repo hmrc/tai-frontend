@@ -32,7 +32,7 @@ object IncomeSource {
     journeyCacheService: JourneyCacheService
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[String, IncomeSource]] =
     EitherT(
-      journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
+      journeyCacheService.mandatoryJourneyValues(Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey))
     ).map { seq =>
       val id :: name :: _ = seq.toList
       IncomeSource(id.toInt, name)

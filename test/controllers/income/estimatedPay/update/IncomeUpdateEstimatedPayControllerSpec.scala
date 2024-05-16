@@ -61,7 +61,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         journeyCacheService,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
   }
 
@@ -69,7 +69,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
 
-    when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
+    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.name, employer.id.toString, TaiConstants.IncomeTypeEmployment))))
     when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
 
@@ -135,7 +135,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       when(
         journeyCacheService.mandatoryJourneyValues(
-          any(),
           any()
         )(any(), any())
       ).thenReturn(Future.successful(Left("empty cache")))
@@ -235,7 +234,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val controller = new TestIncomeUpdateEstimatedPayController
 
-        when(journeyCacheService.mandatoryJourneyValues(any(), any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
