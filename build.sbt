@@ -21,7 +21,9 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
     "uk.gov.hmrc.domain._",
     "uk.gov.hmrc.tai.model.admin._",
     "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",
-    "_root_.uk.gov.hmrc.tai.binders.BenefitComponentTypeBinder._"))
+    "_root_.uk.gov.hmrc.tai.binders.BenefitComponentTypeBinder._"
+  )
+)
 
 lazy val scoverageSettings = {
 
@@ -37,32 +39,6 @@ lazy val scoverageSettings = {
   )
 }
 
-//def makeExcludedFiles(rootDir: File): Seq[String] = {
-//  def findSbtFiles(rootDir: File): Seq[String] =
-//    if (rootDir.getName == "project") {
-//      rootDir.listFiles().map(_.getName).toSeq
-//    } else {
-//      Seq()
-//    }
-//  def findPlayConfFiles(rootDir: File): Seq[String] =
-//    Option {
-//      new File(rootDir, "conf").listFiles()
-//    }.fold(Seq[String]()) { confFiles =>
-//      confFiles
-//        .map(_.getName.replace(".routes", ".Routes"))
-//    }
-//  val wartRemovedExcludedClasses = Seq(
-//    "uk.gov.hmrc.BuildInfo"
-//  )
-//  val excluded = findPlayConfFiles(rootDir) ++ findSbtFiles(rootDir) ++ wartRemovedExcludedClasses
-//  println(s"[auto-code-review] excluding the following files: ${excluded.mkString(",")}")
-//  excluded
-//}
-
-
-
-//val silencerVersion = "1.7.12"
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
@@ -75,28 +51,32 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(resolvers ++= Seq(Resolver.jcenterRepo))
   .settings(Test / Keys.fork := true)
-  .settings(scalacOptions ++= Seq(
-    "-feature",
-//    "-Werror",
-    "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
-    "-Wconf:cat=unused-imports&site=<empty>:s",
-    "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
-    "-Wconf:cat=unused&src=.*Routes\\.scala:s",
-    "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
-    "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
-    "-Wconf:cat=deprecation&msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
-    "-Wconf:cat=deprecation&msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
-    "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s",
-  ))
+  .settings(
+    scalacOptions ++= Seq(
+      "-feature",
+      "-Werror",
+      "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
+      "-Wconf:cat=unused-imports&site=<empty>:s",
+      "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
+      "-Wconf:cat=unused&src=.*Routes\\.scala:s",
+      "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
+      "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
+      "-Wconf:cat=deprecation&msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
+      "-Wconf:cat=deprecation&msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
+      "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s"
+    )
+  )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
   .settings(
     // concatenate js
     Concat.groups := Seq(
-      "javascripts/tai-app.js" -> group(Seq(
-        "javascripts/card.js",
-        "javascripts/tax-code-change.js",
-        "javascripts/urbanner.js"
-      ))
+      "javascripts/tai-app.js" -> group(
+        Seq(
+          "javascripts/card.js",
+          "javascripts/tax-code-change.js",
+          "javascripts/urbanner.js"
+        )
+      )
     ),
     // prevent removal of unused code which generates warning errors due to use of third-party libs
     uglifyCompressOptions := Seq("unused=false", "dead_code=false"),
