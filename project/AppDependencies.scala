@@ -27,10 +27,19 @@ private object AppDependencies {
     "com.typesafe.play"     %% "play-test"                     % PlayVersion.current,
     "uk.gov.hmrc"           %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
     "org.scalatestplus"     %% "scalacheck-1-17"               % "3.2.18.0",
-    "uk.gov.hmrc.mongo"     %% s"hmrc-mongo-test-$playVersion" % hmrcMongoVersion,
-    "com.vladsch.flexmark"   % "flexmark-all"                  % "0.64.8"
+    "uk.gov.hmrc.mongo"     %% s"hmrc-mongo-test-$playVersion" % hmrcMongoVersion
+  //  "com.vladsch.flexmark"   % "flexmark-all"                  % "0.64.8"
   ).map(_ % "test")
 
+  /*
+  "org.scalatest" %% "scalatest" % "3.2.18",
+"org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1",
+"org.pegdown" % "pegdown" % "1.6.0",
+"org.playframework" %% "play-test" % PlayVersion.current,
+"com.github.tomakehurst" % "wiremock-standalone" % "3.0.1",
+"com.vladsch.flexmark" % "flexmark-all" % "0.64.8",
+   */
+  
   val jacksonVersion = "2.13.2"
   val jacksonDatabindVersion = "2.13.2.2"
 
