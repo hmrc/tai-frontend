@@ -43,6 +43,7 @@ import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{FileHelper, IntegrationSpec}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 
@@ -522,7 +523,8 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
   override lazy val app: Application = new GuiceApplicationBuilder()
     .overrides(
       bind[FeatureFlagService].toInstance(mockFeatureFlagService),
-      bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository)
+      bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository),
+      bind[WebChatClient].toInstance(mockWebChatClient)
     )
     .configure(
       "microservice.services.auth.port"                                -> server.port(),

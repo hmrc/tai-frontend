@@ -17,6 +17,8 @@
 package utils
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlEqualTo}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.MockitoSugar.{mock, reset, when}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -25,13 +27,14 @@ import play.api.mvc._
 import play.api.test.Injecting
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 
-class IntegrationSpec
+trait IntegrationSpec
     extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
     with Injecting {
-
+  protected val mockWebChatClient: WebChatClient = mock[WebChatClient]
   val generatedNino = new Generator().nextNino
 
   val generatedSaUtr = new Generator().nextAtedUtr
@@ -84,5 +87,6 @@ class IntegrationSpec
       post(urlEqualTo("/pertax/authorise"))
         .willReturn(aResponse().withBody("""{"code":"ACCESS_GRANTED", "message":"test"}"""))
     )
+    reset(mockWebChatClient)
   }
 }

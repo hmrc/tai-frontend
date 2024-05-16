@@ -22,6 +22,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.SessionKeys
 import utils.{FileHelper, IntegrationSpec}
+import play.api.inject.bind
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
@@ -33,6 +35,9 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       "microservice.services.tai.port"                                  -> server.port(),
       "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
       "microservice.services.citizen-details.port"                      -> server.port()
+    )
+    .overrides(
+      bind[WebChatClient].toInstance(mockWebChatClient)
     )
     .build()
 

@@ -43,6 +43,7 @@ import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{FileHelper, IntegrationSpec}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 
@@ -532,6 +533,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       "microservice.services.tai.port"                                 -> server.port(),
       "microservice.services.coronavirus-jrs-published-employees.port" -> server.port(),
       "microservice.services.citizen-details.port"                     -> server.port()
+    )
+    .overrides(
+      bind[WebChatClient].toInstance(mockWebChatClient)
     )
     .build()
 
