@@ -139,34 +139,6 @@ class JourneyCacheServiceSpec extends BaseSpec {
 
   }
 
-  "mandatoryJourneyValues method (collection retrieval)" must {
-
-    "return a seq of all retrieved values" in {
-      val sut = createSut
-      when(journeyCacheConnector.currentCache(meq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(testCache))
-      Await.result(sut.mandatoryJourneyValues(Seq("key1", "key2")), 5 seconds) mustBe Right(Seq("val1", "val2"))
-    }
-
-    "throw a runtime exception if one or more of the requested values is not found" in {
-      val sut = createSut
-      when(journeyCacheConnector.currentCache(meq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(testCache))
-      val thrown = the[RuntimeException] thrownBy Await
-        .result(sut.mandatoryJourneyValues(Seq("key1", "doesntexist")), 5 seconds)
-      thrown.getMessage mustBe "The mandatory value under key 'doesntexist' was not found in the journey cache for 'fakeJourneyName'"
-    }
-
-    "throw a runtime exception if one or more of the requested values is the empty string" in {
-      val sut = createSut
-      when(journeyCacheConnector.currentCache(meq(sut.journeyName))(any()))
-        .thenReturn(Future.successful(testCache))
-      val thrown =
-        the[RuntimeException] thrownBy Await.result(sut.mandatoryJourneyValues(Seq("key1", "key3")), 5 seconds)
-      thrown.getMessage mustBe "The mandatory value under key 'key3' was not found in the journey cache for 'fakeJourneyName'"
-    }
-  }
-
   "Mandatory Journey value" must {
 
     "return a value" in {
