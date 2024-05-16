@@ -38,8 +38,7 @@ import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, Incorr
 
 import java.time.LocalDate
 import javax.inject.{Inject, Named}
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthJourney,

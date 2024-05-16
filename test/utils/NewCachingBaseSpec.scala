@@ -21,7 +21,9 @@ import controllers.FakeTaiPlayApplication
 import controllers.actions.{DataRetrievalAction, IdentifierAction}
 import controllers.auth.{AuthJourney, AuthedUser}
 import org.jsoup.nodes.Element
+import org.mockito.ArgumentMatchers.any
 import org.mockito.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.inject.bind
@@ -34,12 +36,14 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.webchat.client.WebChatClient
 
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 import scala.util.Random
 
-class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
+class NewCachingBaseSpec
+    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach {
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
 
@@ -49,7 +53,8 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[AuthJourney].toInstance(new FakeAuthJourney(userAnswers)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-        bind[JourneyCacheNewRepository].toInstance(mockRepository)
+        bind[JourneyCacheNewRepository].toInstance(mockRepository),
+        bind[WebChatClient].toInstance(mockWebChatClient)
       )
       .configure(additionalConfiguration)
 
@@ -60,9 +65,15 @@ class NewCachingBaseSpec extends PlaySpec with FakeTaiPlayApplication with Mocki
       .overrides(
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[AuthJourney].toInstance(new FakeAuthJourney(userAnswers)),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
+        bind[WebChatClient].toInstance(mockWebChatClient)
       )
       .configure(additionalConfiguration)
+
+  override def beforeEach(): Unit = {
+    reset(mockWebChatClient)
+    when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(None)
+  }
 
   val userAnswersId: String = "id"
 

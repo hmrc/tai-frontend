@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
+import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneQuestionPage}
 import pages.EndEmployment._
 import pages._
 import play.api.Application
@@ -663,6 +664,14 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(EndEmploymentEndDatePage, LocalDate.of(2022, 2, 2))
     .setOrException(EndEmploymentTelephoneQuestionPage, "999")
     .setOrException(EndEmploymentTelephoneNumberPage, "999")
+    .setOrException(AddEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(AddEmploymentPayrollNumberPage, "1234")
+    .setOrException(AddEmploymentPayrollQuestionPage, "I don't know")
+    .setOrException(AddEmploymentPayrollNumberPage, "")
+    .setOrException(AddEmploymentReceivedFirstPayPage, "Yes")
+    .setOrException(AddEmploymentStartDatePage, LocalDate.of(2022, 7, 10))
+    .setOrException(AddEmploymentStartDateWithinSixWeeksPage, "Yes")
+    .setOrException(AddEmploymentTelephoneQuestionPage, "No")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -865,22 +874,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             |"employmentTelephoneNumber":"",
             |"employmentId":"1",
             |"employmentDecision":"No"}""".stripMargin
-        )
-      )
-    )
-
-    server.stubFor(
-      get(urlEqualTo("/tai/journey-cache/add-employment")).willReturn(
-        ok(
-          """{
-            |"employmentName":"H M Revenue and Customs",
-            |"employmentStartDate":"2022-07-10",
-            |"employmentStartDateWithinSixWeeks":"No",
-            |"employmentFirstPayReceived":"2022-08-10",
-            |"employmentPayrollNumberKnown":"No",
-            |"employmentPayrollNumber":"I do not know",
-            |"employmentTelephoneContactAllowed":"No",
-            |"employmentTelephoneNumber":""}""".stripMargin
         )
       )
     )
