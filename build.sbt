@@ -63,20 +63,6 @@ val wartRemovedExcludedClasses = Seq(
   "uk.gov.hmrc.BuildInfo"
 )
 
-private lazy val commonScalacOptions: Seq[String] = Seq(
-  "-feature",
-  "-Werror",
-  "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
-  "-Wconf:cat=unused-imports&site=<empty>:s",
-  "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
-  "-Wconf:cat=unused&src=.*Routes\\.scala:s",
-  "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
-  "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
-  "-Wconf:cat=deprecation&msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
-  "-Wconf:cat=deprecation&msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
-  "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s"
-)
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
@@ -90,7 +76,24 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers ++= Seq(Resolver.jcenterRepo))
   .settings(Test / Keys.fork := true)
   .settings(
-    scalacOptions ++= commonScalacOptions
+    scalacOptions ++= Seq(
+      "-unchecked",
+      "-feature",
+      "-Werror",
+      "-Xlint:_",
+      "-Wdead-code",
+      "-Wunused:_",
+      "-Wextra-implicit",
+      "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
+      "-Wconf:cat=unused-imports&site=<empty>:s",
+      "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
+      "-Wconf:cat=unused&src=.*Routes\\.scala:s",
+      "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
+      "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
+      "-Wconf:cat=deprecation&msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
+      "-Wconf:cat=deprecation&msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
+      "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s"
+    )
   )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
   .settings(
@@ -118,7 +121,13 @@ lazy val it = project
   .settings(
     libraryDependencies ++= AppDependencies.test,
     DefaultBuildSettings.itSettings(),
-    scalacOptions ++= commonScalacOptions
+    scalacOptions ++= Seq(
+      "-feature",
+      "-Werror",
+      "-Xlint:_",
+      "-Wdead-code",
+      "-Wunused:_"
+    )
   )
 
 TwirlKeys.templateImports ++= Seq(

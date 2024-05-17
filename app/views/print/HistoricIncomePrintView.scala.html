@@ -16,16 +16,15 @@
 
 @import controllers.auth.AuthenticatedRequest
 @import play.api.i18n.Messages
-@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.model.domain.Available
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 @this()
-@(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel, appConfig: ApplicationConfig
+@(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
 )(implicit request: AuthenticatedRequest[_], messages: Messages)
 
-@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading"), appConfig){
+@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
 <div class="print-wrapper">
     <p><strong>@request.fullName</strong></p>
