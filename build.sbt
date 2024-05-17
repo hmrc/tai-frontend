@@ -26,7 +26,6 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
 )
 
 lazy val scoverageSettings = {
-
   val scoverageExcludePatterns =
     List("<empty>", "Reverse.*", "dev.Routes.*", "tai.Routes.*", "prod.*", "testOnlyDoNotUseInAppConf.*", "config.*")
 
@@ -38,6 +37,31 @@ lazy val scoverageSettings = {
     Test / parallelExecution := false
   )
 }
+
+def makeExcludedFiles(rootDir: File): Seq[String] = {
+  val excluded = findPlayConfFiles(rootDir) ++ findSbtFiles(rootDir) ++ wartRemovedExcludedClasses
+  println(s"[auto-code-review] excluding the following files: ${excluded.mkString(",")}")
+  excluded
+}
+
+def findSbtFiles(rootDir: File): Seq[String] =
+  if (rootDir.getName == "project") {
+    rootDir.listFiles().map(_.getName).toSeq
+  } else {
+    Seq()
+  }
+
+def findPlayConfFiles(rootDir: File): Seq[String] =
+  Option {
+    new File(rootDir, "conf").listFiles()
+  }.fold(Seq[String]()) { confFiles =>
+    confFiles
+      .map(_.getName.replace(".routes", ".Routes"))
+  }
+
+val wartRemovedExcludedClasses = Seq(
+  "uk.gov.hmrc.BuildInfo"
+)
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
