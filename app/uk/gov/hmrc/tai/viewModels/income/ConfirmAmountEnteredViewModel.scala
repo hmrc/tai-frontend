@@ -35,8 +35,8 @@ case class ConfirmAmountEnteredViewModel(
 
 object ConfirmAmountEnteredViewModel {
 
-  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType, backUrl: String)(
-    implicit messages: Messages
+  def apply(employmentId: Int, empName: String, estIncome: Int, payType: PayType, backUrl: String)(implicit
+    messages: Messages
   ): ConfirmAmountEnteredViewModel = {
 
     val irregularPayCurrentYear =
@@ -69,7 +69,7 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(implicit
+  def apply(empName: String, estIncome: Int, backUrl: String, empId: Int)(implicit
     messages: Messages
   ): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(

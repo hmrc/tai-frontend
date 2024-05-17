@@ -18,7 +18,6 @@ package controllers.testOnly
 
 import com.google.inject.name.Named
 import controllers.TaiBaseController
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -30,7 +29,6 @@ import scala.concurrent.ExecutionContext
 class TaiUpdateIncomeController @Inject() (
   @Named("Update Income") journeyCacheService: JourneyCacheService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {

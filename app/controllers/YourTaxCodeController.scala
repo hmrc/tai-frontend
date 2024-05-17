@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -33,7 +32,6 @@ class YourTaxCodeController @Inject() (
   taxAccountService: TaxAccountService,
   taxCodeChangeService: TaxCodeChangeService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
   taxCodeDetails: TaxCodeDetailsView,

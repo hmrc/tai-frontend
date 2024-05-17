@@ -18,7 +18,6 @@ package controllers.income.estimatedPay.update
 
 import cats.implicits._
 import controllers.TaiBaseController
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -36,7 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateBonusController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
   bonusPaymentAmount: BonusPaymentAmountView,

@@ -16,7 +16,6 @@
 
 package controllers.pensions
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
@@ -47,7 +46,6 @@ class AddPensionProviderController @Inject() (
   auditService: AuditService,
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   canWeContactByPhone: CanWeContactByPhoneView, // TODO remove once backLink issue is resolved
   addPensionConfirmationView: AddPensionConfirmationView,

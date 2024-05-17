@@ -17,7 +17,6 @@
 package controllers
 
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -35,7 +34,6 @@ class DetailedIncomeTaxEstimateController @Inject() (
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
   appConfig: ApplicationConfig,

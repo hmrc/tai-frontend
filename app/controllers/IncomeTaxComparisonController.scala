@@ -18,7 +18,6 @@ package controllers
 
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -43,7 +42,6 @@ class IncomeTaxComparisonController @Inject() (
   codingComponentService: CodingComponentService,
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   mainView: MainView,

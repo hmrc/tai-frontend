@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,12 +33,10 @@ import scala.util.control.NonFatal
 
 @Singleton
 class TaxAccountSummaryController @Inject() (
-  employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,
   auditService: AuditService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,

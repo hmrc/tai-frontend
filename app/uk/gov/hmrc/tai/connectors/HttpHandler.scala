@@ -26,7 +26,6 @@ import uk.gov.hmrc.http.{BadRequestException, _}
 import javax.inject.Inject
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.runtime.universe.TypeTag
 import scala.util.chaining.scalaUtilChainingOps
 import scala.util.{Failure, Success, Try}
 
@@ -106,7 +105,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       }
   }
 
-  def putToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
+  def putToApi[I](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     writes: Writes[I]
@@ -138,7 +137,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
         }
       }
 
-  def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
+  def postToApi[I](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     writes: Writes[I]

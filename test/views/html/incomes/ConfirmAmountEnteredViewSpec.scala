@@ -29,7 +29,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   private val confirmAmountEntered = inject[ConfirmAmountEnteredView]
 
   val vm =
-    ConfirmAmountEnteredViewModel(employmentId, employerName, currentAmount, estimatedAmount, IrregularPay, "backUrl")
+    ConfirmAmountEnteredViewModel(employmentId, employerName, estimatedAmount, IrregularPay, "backUrl")
   override lazy val view: Html = confirmAmountEntered(vm)
 
   "Confirm income Irregular Hours view" should {
@@ -67,7 +67,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income Annual Amount view" should {
 
     "display the correct confirm and send button" in {
-      val vm = ConfirmAmountEnteredViewModel(employerName, currentAmount, estimatedAmount, "backUrl", employmentId)
+      val vm = ConfirmAmountEnteredViewModel(employerName, estimatedAmount, "backUrl", employmentId)
       val annualPayView: Html = confirmAmountEntered(vm)
 
       doc(annualPayView) must haveLinkElement(
@@ -84,7 +84,6 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
       val vm = ConfirmAmountEnteredViewModel(
         employmentId,
         employerName,
-        currentAmount,
         estimatedAmount,
         NextYearPay,
         "backUrl"

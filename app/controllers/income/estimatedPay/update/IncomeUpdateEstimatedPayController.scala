@@ -18,7 +18,6 @@ package controllers.income.estimatedPay.update
 
 import cats.data._
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
@@ -42,7 +41,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   incomeService: IncomeService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,

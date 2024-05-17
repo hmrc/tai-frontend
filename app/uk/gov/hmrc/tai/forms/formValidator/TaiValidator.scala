@@ -24,6 +24,5 @@ import java.time.LocalDate
   */
 object TaiValidator extends BaseValidator {
 
-  def validateOptionalDate(): Mapping[Option[LocalDate]] =
-    dateTuple(true)
+  def validateOptionalDate(): Mapping[Option[LocalDate]] = dateTuple
 }

@@ -16,7 +16,6 @@
 
 package controllers.income
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logging
@@ -26,7 +25,6 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
@@ -47,9 +45,7 @@ class UpdateIncomeNextYearController @Inject() (
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
-  applicationConfig: ApplicationConfig,
   updateIncomeCYPlus1Success: UpdateIncomeCYPlus1SuccessView,
   updateIncomeCYPlus1Confirm: UpdateIncomeCYPlus1ConfirmView,
   updateIncomeCYPlus1Warning: UpdateIncomeCYPlus1WarningView,
@@ -172,7 +168,7 @@ class UpdateIncomeNextYearController @Inject() (
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+        Ok(updateIncomeCYPlus1Same(model.employmentName, model.currentValue))
       }
     }
   }
@@ -196,12 +192,11 @@ class UpdateIncomeNextYearController @Inject() (
         case Right(newAmount) =>
           updateNextYearsIncomeService
             .get(employmentId, user.nino)
-            .map { case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) =>
+            .map { case UpdateNextYearsIncomeCacheModel(employmentName, _, _, _) =>
               val vm =
                 ConfirmAmountEnteredViewModel(
                   employmentId,
                   employmentName,
-                  currentValue,
                   newAmount,
                   NextYearPay,
                   "#"
@@ -275,7 +270,7 @@ class UpdateIncomeNextYearController @Inject() (
 
                       Future.successful(Ok(sameEstimatedPay(samePayViewModel)))
                     case _ =>
-                      updateNextYearsIncomeService.setNewAmount(newIncome, employmentId, nino) map { _ =>
+                      updateNextYearsIncomeService.setNewAmount(newIncome, employmentId) map { _ =>
                         Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
                       }
                   }

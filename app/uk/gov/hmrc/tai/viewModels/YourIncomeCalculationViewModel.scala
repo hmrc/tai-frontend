@@ -159,7 +159,7 @@ object YourIncomeCalculationViewModel {
 
     lazy val payFrequencyMessages = (
       payFreqIncomeCalculationMessage(employment, pensionOrEmployment, paymentFrequency, amountYearToDate, paymentDate),
-      payFreqIncomeCalculationEstimateMessage(pensionOrEmployment, paymentFrequency, paymentDate, taxCodeIncome.amount)
+      payFreqIncomeCalculationEstimateMessage(pensionOrEmployment, paymentFrequency, taxCodeIncome.amount)
     )
 
     Seq(ceasedIncomeMessages, manualIncomeMessages, sameMessages, payFrequencyMessages).find(_ != (None, None)) match {
@@ -320,7 +320,6 @@ object PaymentFrequencyIncomeMessages {
   def payFreqIncomeCalculationEstimateMessage(
     pensionOrEmployment: String,
     paymentFrequency: Option[PaymentFrequency],
-    paymentDate: Option[LocalDate],
     amount: BigDecimal
   )(implicit messages: Messages): Option[String] =
     paymentFrequency collect {

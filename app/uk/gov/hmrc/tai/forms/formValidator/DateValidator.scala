@@ -27,9 +27,7 @@ import scala.util.Try
 /** Created by user02 on 7/4/14.
   */
 trait DateValidator {
-  val dateTuple: Mapping[Option[LocalDate]] = dateTuple(validate = true)
-
-  def dateTuple(validate: Boolean = true): Mapping[Option[LocalDate]] =
+  def dateTuple: Mapping[Option[LocalDate]] =
     tuple(
       year  -> optional(text),
       month -> optional(text),
@@ -63,13 +61,12 @@ trait DateValidator {
     ).transform(
       {
         case (Some(y), Some(m), Some(d)) => Try(LocalDate.of(y.trim.toInt, m.toInt, d.toInt)).toOption
-        case (a, b, c)                   => None
+        case _                           => None
       },
-      (date: Option[LocalDate]) =>
-        date match {
-          case Some(d) => (Some(d.getYear.toString), Some(d.getMonth.toString), Some(d.getDayOfMonth.toString))
-          case _       => (None, None, None)
-        }
+      {
+        case Some(d) => (Some(d.getYear.toString), Some(d.getMonth.toString), Some(d.getDayOfMonth.toString))
+        case _       => (None, None, None)
+      }
     )
 }
 

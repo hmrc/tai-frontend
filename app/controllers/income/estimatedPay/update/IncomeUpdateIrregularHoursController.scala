@@ -17,7 +17,6 @@
 package controllers.income.estimatedPay.update
 
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
@@ -43,7 +42,6 @@ import scala.util.control.NonFatal
 
 class IncomeUpdateIrregularHoursController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
@@ -124,7 +122,6 @@ class IncomeUpdateIrregularHoursController @Inject() (
                 ConfirmAmountEnteredViewModel(
                   employmentId,
                   name,
-                  paymentToDate.toInt,
                   newIrregularPay.toInt,
                   IrregularPay,
                   controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController

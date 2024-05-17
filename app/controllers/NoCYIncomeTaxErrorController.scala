@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -35,7 +34,6 @@ class NoCYIncomeTaxErrorController @Inject() (
   employmentService: EmploymentService,
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView
 )(implicit ec: ExecutionContext)

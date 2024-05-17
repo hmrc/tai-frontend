@@ -17,7 +17,6 @@
 package controllers.benefits
 
 import com.google.inject.name.Named
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logging
@@ -41,7 +40,6 @@ class CompanyBenefitController @Inject() (
   decisionCacheWrapper: DecisionCacheWrapper,
   @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
   implicit val errorPagesHandler: ErrorPagesHandler

@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -27,7 +26,6 @@ import scala.concurrent.Future
 
 class ServiceController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   timeout: TimeoutView,
@@ -57,6 +55,6 @@ class ServiceController @Inject() (
   }
 
   def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(sessionExpired(applicationConfig)).withNewSession)
+    Future.successful(Ok(sessionExpired()).withNewSession)
   }
 }

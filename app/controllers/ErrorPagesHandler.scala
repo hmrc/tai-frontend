@@ -93,7 +93,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation
-  ): PartialFunction[Throwable, Future[Result]] = { case e: NotFoundException =>
+  ): PartialFunction[Throwable, Future[Result]] = { case _: NotFoundException =>
     logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
     Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
   }

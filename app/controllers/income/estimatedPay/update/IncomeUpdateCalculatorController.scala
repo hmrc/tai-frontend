@@ -18,7 +18,6 @@ package controllers.income.estimatedPay.update
 
 import cats.data.EitherT
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
@@ -35,8 +34,8 @@ import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
+import views.html.incomes.DuplicateSubmissionWarningView
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
-import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,14 +44,11 @@ import scala.util.control.NonFatal
 class IncomeUpdateCalculatorController @Inject() (
   incomeService: IncomeService,
   employmentService: EmploymentService,
-  taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   checkYourAnswers: CheckYourAnswersView,
-  confirmAmountEntered: ConfirmAmountEnteredView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)

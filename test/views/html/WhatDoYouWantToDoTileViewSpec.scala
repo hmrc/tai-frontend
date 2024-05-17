@@ -16,8 +16,6 @@
 
 package views.html
 
-import builders.UserBuilder
-import controllers.auth.AuthedUser
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
@@ -27,7 +25,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 
 import java.time.LocalDate
-import scala.util.Random
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
@@ -48,7 +45,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     "display cards correctly" when {
       "CY+1 is not enabled" in {
         val view: Html = whatDoYouWantToDoTileView(
-          form,
           modelNoiFormNoCyPlus1,
           appConfig,
           incomeTaxHistoryEnabled = true,
@@ -74,7 +70,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val modelNoiFormWithCyPlus1 = createViewModel()
 
         val nextYearView: Html = whatDoYouWantToDoTileView(
-          form,
           modelNoiFormWithCyPlus1,
           appConfig,
           incomeTaxHistoryEnabled = true,
@@ -97,7 +92,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         val modelNoiFormWithCyPlus1 = createViewModel()
 
         val nextYearView: Html = whatDoYouWantToDoTileView(
-          form,
           modelNoiFormWithCyPlus1,
           appConfig,
           incomeTaxHistoryEnabled = true,
@@ -120,7 +114,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
           createViewModel(maybeMostRecentTaxCodeChangeDate = Some(localDate))
 
         val nextYearView: Html = whatDoYouWantToDoTileView(
-          form,
           modeWithCyPlus1TaxCodeChange,
           appConfig,
           incomeTaxHistoryEnabled = true,
@@ -144,7 +137,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       val modelJrsTileEnabled = createViewModel(showJrsLink = true)
 
       val jrsClaimView: Html = whatDoYouWantToDoTileView(
-        form,
         modelJrsTileEnabled,
         appConfig,
         incomeTaxHistoryEnabled = true,
@@ -170,7 +162,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "IncomeTaxHistory enabled" in {
       val view: Html = whatDoYouWantToDoTileView(
-        form,
         modelNoiFormNoCyPlus1,
         appConfig,
         incomeTaxHistoryEnabled = true,
@@ -216,7 +207,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   private lazy val modelNoiFormNoCyPlus1 = createViewModel()
 
   override def view: Html = whatDoYouWantToDoTileView(
-    form,
     modelNoiFormNoCyPlus1,
     appConfig,
     incomeTaxHistoryEnabled = false,

@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(main: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(main: MainTemplate, form: FormWithCSRF, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 

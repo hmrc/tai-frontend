@@ -65,7 +65,7 @@ class AuthActionImpl @Inject() (
         )
         processRequest(confidenceLevel, user, request, block, handleGGFailure)
       case _ => throw new RuntimeException("Can't find credentials for user")
-    } recover handleEntryPointFailure(request)
+    } recover handleEntryPointFailure
   }
 
   private def processRequest[A](
@@ -84,7 +84,7 @@ class AuthActionImpl @Inject() (
         Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
     }) recover failureHandler
 
-  private def handleEntryPointFailure[A](request: Request[A]): PartialFunction[Throwable, Result] = handleGGFailure
+  private def handleEntryPointFailure[A]: PartialFunction[Throwable, Result] = handleGGFailure
 
   private def handleGGFailure: PartialFunction[Throwable, Result] =
     handleFailure(routes.UnauthorisedController.loginGG())

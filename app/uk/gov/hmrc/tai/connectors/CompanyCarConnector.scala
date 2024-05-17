@@ -41,7 +41,7 @@ class CompanyCarConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
   ): Future[Option[CompanyCarBenefit]] =
     httpHandler.getFromApiV2(companyCarEmploymentUrl(nino, empId)) map (json =>
       Some((json \ "data").as[CompanyCarBenefit])
-    ) recover { case e: NotFoundException =>
+    ) recover { case _: NotFoundException =>
       logger.warn(s"Couldn't retrieve company car benefits for nino: $nino employmentId:$empId")
       None
     }

@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -27,7 +26,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HelpController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   getHelp: GetHelpView

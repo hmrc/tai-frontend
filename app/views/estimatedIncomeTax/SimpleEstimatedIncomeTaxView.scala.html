@@ -87,7 +87,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
                 <p class="govuk-body" id="taxOnEmploymentIncomeDesc">
                     @Html(viewModel.taxOnIncomeTypeDescription)
                 </p>
-                @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion, appConfig = appConfig)
+                @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
 
                 @whyThisIsAnEstimateDesc()
                 @howYouPayYourTaxDesc()

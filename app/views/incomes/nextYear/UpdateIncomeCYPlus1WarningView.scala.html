@@ -23,7 +23,7 @@
 
 
 
-@this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 

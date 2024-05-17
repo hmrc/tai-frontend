@@ -70,7 +70,7 @@ class UpdateNextYearsIncomeService @Inject() (
   def amountKey(employmentId: Int): String =
     s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
-  def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(implicit
+  def setNewAmount(newValue: String, employmentId: Int)(implicit
     hc: HeaderCarrier
   ): Future[Map[String, String]] =
     journeyCacheService.cache(amountKey(employmentId), convertCurrencyToInt(Some(newValue)).toString)

@@ -28,7 +28,7 @@ case class BonusOvertimeAmountForm(amount: Option[String] = None)
 object BonusOvertimeAmountForm {
   implicit val formats: OFormat[BonusOvertimeAmountForm] = Json.format[BonusOvertimeAmountForm]
 
-  def createForm(nonEmptyMessage: Option[String] = None, notAnAmountMessage: Option[String] = None)(implicit
+  def createForm()(implicit
     messages: Messages
   ): Form[BonusOvertimeAmountForm] =
     Form[BonusOvertimeAmountForm](

@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,7 +37,6 @@ class TaxFreeAmountController @Inject() (
   taxAccountService: TaxAccountService,
   companyCarService: CompanyCarService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   taxFreeAmount: TaxFreeAmountView,
