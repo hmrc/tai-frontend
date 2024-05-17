@@ -20,20 +20,15 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, ok, post, url
 import org.scalatest.concurrent.IntegrationPatience
 import play.api.Application
 import play.api.http.Status._
-import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.{ErrorView, PertaxResponse}
-import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{BaseSpec, WireMockHelper}
 
 class PertaxConnectorSpec extends BaseSpec with WireMockHelper with IntegrationPatience {
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.pertax.port" -> server.port())
-    .overrides(
-      bind[WebChatClient].toInstance(mockWebChatClient)
-    )
     .build()
 
   lazy val pertaxConnector: PertaxConnector = inject[PertaxConnector]

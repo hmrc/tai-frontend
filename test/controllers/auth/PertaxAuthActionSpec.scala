@@ -38,7 +38,6 @@ import uk.gov.hmrc.tai.connectors.PertaxConnector
 import uk.gov.hmrc.tai.model.admin.PertaxBackendToggle
 import uk.gov.hmrc.tai.model.{ErrorView, PertaxResponse}
 import uk.gov.hmrc.tai.service.URLService
-import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.BaseSpec
 import views.html.{InternalServerErrorView, MainTemplate}
 
@@ -78,8 +77,7 @@ class PertaxAuthActionSpec extends BaseSpec {
       bind[PertaxConnector].toInstance(mockPertaxConnector),
       bind[AuthConnector].toInstance(mockAuthConnector),
       bind[FeatureFlagService].toInstance(mockFeatureFlagService),
-      bind[MessagesControllerComponents].toInstance(stubMessagesControllerComponents()),
-      bind[WebChatClient].toInstance(mockWebChatClient)
+      bind[MessagesControllerComponents].toInstance(stubMessagesControllerComponents())
     )
     .build()
 

@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
-import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneQuestionPage}
+import pages.AddEmployment._
 import pages.EndEmployment._
 import pages._
 import play.api.Application
@@ -44,9 +44,8 @@ import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.webchat.client.WebChatClient
-import utils.{FileHelper, IntegrationSpec}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
+import utils.{FileHelper, IntegrationSpec}
 
 import java.time.LocalDate
 import java.util.UUID
@@ -524,8 +523,7 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
   override lazy val app: Application = new GuiceApplicationBuilder()
     .overrides(
       bind[FeatureFlagService].toInstance(mockFeatureFlagService),
-      bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository),
-      bind[WebChatClient].toInstance(mockWebChatClient)
+      bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository)
     )
     .configure(
       "microservice.services.auth.port"                                -> server.port(),

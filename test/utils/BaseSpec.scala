@@ -19,7 +19,6 @@ import builders.UserBuilder
 import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
-import org.mockito.ArgumentMatchers.any
 import org.mockito.MockitoSugar
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
@@ -74,11 +73,9 @@ trait BaseSpec
   override def beforeEach(): Unit = {
     reset(mockFeatureFlagService)
     reset(mockAuthJourney)
-    reset(mockWebChatClient)
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
       Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = false))
     )
-    when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(None)
 
     when(mockAuthJourney.authWithValidatePerson).thenReturn(new ActionBuilder[AuthenticatedRequest, AnyContent] {
       private val user =

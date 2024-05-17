@@ -18,7 +18,7 @@ package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo, urlMatching}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.MockitoSugar.when
+import org.mockito.MockitoSugar.{mock, when}
 import play.api.Application
 import play.api.http.Status.OK
 import play.api.inject.bind
@@ -42,6 +42,8 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   val url = "/check-income-tax/what-do-you-want-to-do"
   private val personUrl = s"/citizen-details/$generatedNino/designatory-details"
   private val startTaxYear = TaxYear().start.getYear
+
+  private val mockWebChatClient = mock[WebChatClient]
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .overrides(

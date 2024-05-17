@@ -26,7 +26,6 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.{CalculatedPay, PayDetails}
-import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{BaseSpec, WireMockHelper}
 
 import scala.concurrent.Await
@@ -37,7 +36,6 @@ class TaiConnectorTestSpec extends BaseSpec with WireMockHelper with ScalaFuture
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure("microservice.services.tai.port" -> server.port())
     .overrides(
-      bind[WebChatClient].toInstance(mockWebChatClient),
       bind[FeatureFlagService].toInstance(mockFeatureFlagService)
     )
     .build()

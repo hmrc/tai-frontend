@@ -22,21 +22,16 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
 import org.mockito.ArgumentMatchers.anyString
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
-import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
-import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{BaseSpec, WireMockHelper}
 
 class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .configure("microservice.services.coronavirus-jrs-published-employees.port" -> server.port)
-    .overrides(
-      bind[WebChatClient].toInstance(mockWebChatClient)
-    )
     .build()
 
   lazy val httpClient = inject[HttpClient]
