@@ -18,9 +18,11 @@ package controllers.benefits
 
 import com.google.inject.name.Named
 import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -51,7 +53,9 @@ class RemoveCompanyBenefitController @Inject() (
   benefitsService: BenefitsService,
   trackingService: TrackingService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
+  langUtils: LanguageUtils,
   removeCompanyBenefitCheckYourAnswers: RemoveCompanyBenefitCheckYourAnswersView,
   removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
   removeBenefitTotalValue: RemoveBenefitTotalValueView,

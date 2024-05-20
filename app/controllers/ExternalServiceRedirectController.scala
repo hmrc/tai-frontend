@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.service.{AuditService, SessionService}
@@ -27,6 +28,7 @@ class ExternalServiceRedirectController @Inject() (
   sessionService: SessionService,
   auditService: AuditService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)

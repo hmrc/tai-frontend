@@ -18,6 +18,7 @@ package controllers.income.estimatedPay.update
 
 import cats.implicits._
 import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
@@ -34,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdatePayslipAmountController @Inject() (
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   payslipAmount: PayslipAmountView,
   taxablePayslipAmount: TaxablePayslipAmountView,

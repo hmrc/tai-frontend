@@ -18,6 +18,7 @@ package controllers.income.estimatedPay.update
 
 import cats.implicits._
 import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
@@ -32,6 +33,7 @@ import scala.concurrent.ExecutionContext
 
 class IncomeUpdateWorkingHoursController @Inject() (
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService

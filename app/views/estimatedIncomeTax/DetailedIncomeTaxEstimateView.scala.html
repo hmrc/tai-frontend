@@ -78,7 +78,8 @@
             @taxBandTable(
             tableClass = "employmentIncomeTaxDetails",
             taxBands = viewModel.nonSavings,
-            taxRegion = viewModel.taxRegion)
+            taxRegion = viewModel.taxRegion,
+            appConfig = appConfig)
         </div>
 
         @if(viewModel.dividends.nonEmpty){
@@ -91,7 +92,7 @@
                 MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
             </p>
             @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion =
-            viewModel.taxRegion)
+            viewModel.taxRegion, appConfig = appConfig)
         </div>
         }
 
@@ -111,7 +112,7 @@
             </p>
             }
             @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion =
-            viewModel.taxRegion)
+            viewModel.taxRegion, appConfig = appConfig)
 
         </div>
         }

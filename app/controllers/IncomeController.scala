@@ -19,6 +19,7 @@ package controllers
 import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.data.Form
@@ -51,6 +52,7 @@ class IncomeController @Inject() (
   incomeService: IncomeService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   confirmAmountEntered: ConfirmAmountEnteredView,
   editSuccess: EditSuccessView,
@@ -83,7 +85,8 @@ class IncomeController @Inject() (
         editIncome(
           EditIncomeForm.create(employmentAmount),
           hasMultipleIncomes = false,
-          employmentAmount.employmentId
+          employmentAmount.employmentId,
+          amountYearToDate.toString
         )
       )
     }).fold(errorPagesHandler.internalServerError(_, None), identity _)
@@ -209,6 +212,7 @@ class IncomeController @Inject() (
                       val vm =
                         ConfirmAmountEnteredViewModel(
                           employment.name,
+                          employmentAmount.oldAmount,
                           cachedData,
                           controllers.routes.IncomeController.regularIncome(empId).url,
                           empId
@@ -295,6 +299,7 @@ class IncomeController @Inject() (
       Ok(
         editPension(
           EditIncomeForm.create(employmentAmount),
+          hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()
         )
@@ -359,7 +364,7 @@ class IncomeController @Inject() (
                 formWithErrors =>
                   Future.successful(
                     BadRequest(
-                      editPension(formWithErrors, mandatorySeq(1).toInt, mandatorySeq.head)
+                      editPension(formWithErrors, hasMultipleIncomes = false, mandatorySeq(1).toInt, mandatorySeq.head)
                     )
                   ),
                 (income: EditIncomeForm) =>
@@ -391,6 +396,7 @@ class IncomeController @Inject() (
 
                       val vm = ConfirmAmountEnteredViewModel(
                         employment.name,
+                        employmentAmount.oldAmount,
                         newAmountKey.toInt,
                         "#",
                         empId

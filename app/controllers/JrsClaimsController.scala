@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
+import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -30,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class JrsClaimsController @Inject() (
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,

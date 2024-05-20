@@ -18,6 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import cats.data.EitherT
+import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -558,6 +559,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         auditService,
         jrsService,
         mockAuthJourney,
+        FakeValidatePerson,
         mockAppConfig,
         mcc,
         inject[WhatDoYouWantToDoTileView],

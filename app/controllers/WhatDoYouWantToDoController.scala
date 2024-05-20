@@ -18,6 +18,7 @@ package controllers
 
 import cats.data.{EitherT, OptionT}
 import cats.implicits._
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest}
 import play.api.Logging
 import play.api.mvc._
@@ -27,6 +28,7 @@ import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -46,6 +48,7 @@ class WhatDoYouWantToDoController @Inject() (
   auditService: AuditService,
   jrsService: JrsService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,
@@ -153,6 +156,7 @@ class WhatDoYouWantToDoController @Inject() (
       _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
     } yield Ok(
       whatDoYouWantToDoTileView(
+        WhatDoYouWantToDoForm.createForm,
         model,
         applicationConfig,
         incomeTaxHistoryToggle.isEnabled,

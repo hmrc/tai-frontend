@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
-@this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
+@this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 

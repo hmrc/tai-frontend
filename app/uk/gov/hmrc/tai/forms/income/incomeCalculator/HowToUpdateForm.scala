@@ -30,8 +30,8 @@ object HowToUpdateForm {
   def createForm()(implicit messages: Messages): Form[HowToUpdateForm] = {
 
     val howToUpdateValidation = Constraint[Option[String]]("Choose how to update") {
-      case Some(_) => Valid
-      case _       => Invalid(messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
+      case Some(txt) => Valid
+      case _         => Invalid(messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[HowToUpdateForm](

@@ -171,7 +171,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         Future.successful(expected)
       )
 
-      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId)
+      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino)
 
       result.futureValue mustBe expected
 

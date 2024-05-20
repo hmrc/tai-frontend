@@ -21,8 +21,6 @@ import play.api.mvc._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
-import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
-import views.html.print.HistoricIncomePrintView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -17,6 +17,7 @@
 package controllers
 
 import cats.implicits._
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -34,6 +35,7 @@ class PayeControllerHistoric @Inject() (
   taxCodeChangeService: TaxCodeChangeService,
   employmentService: EmploymentService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   RtiDisabledHistoricPayAsYouEarnView: RtiDisabledHistoricPayAsYouEarnView,
   historicPayAsYouEarnView: HistoricPayAsYouEarnView,

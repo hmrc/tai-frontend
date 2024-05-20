@@ -16,6 +16,7 @@
 
 package controllers.income.previousYears
 
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
@@ -42,6 +43,7 @@ import scala.util.control.NonFatal
 class UpdateIncomeDetailsController @Inject() (
   previousYearsIncomeService: PreviousYearsIncomeService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   canWeContactByPhone: CanWeContactByPhoneView,
   CheckYourAnswers: CheckYourAnswersView,

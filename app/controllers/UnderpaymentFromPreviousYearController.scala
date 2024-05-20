@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -30,6 +31,7 @@ import scala.concurrent.ExecutionContext
 class UnderpaymentFromPreviousYearController @Inject() (
   codingComponentService: CodingComponentService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   previousYearUnderpayment: PreviousYearUnderpaymentView
 )(implicit ec: ExecutionContext)

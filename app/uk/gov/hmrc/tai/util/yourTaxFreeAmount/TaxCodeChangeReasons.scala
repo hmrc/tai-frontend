@@ -64,7 +64,7 @@ class TaxCodeChangeReasons @Inject() () {
       (current, previous) match {
         case (Some(current), Some(previous)) if current != previous =>
           removeEmployerMessage(List(previous)) ++ addSingleEmployerMessage(primaryPair.current)
-        case (Some(_), Some(_)) if isDifferentPayRollWithSameEmployerName(primaryPair) =>
+        case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) =>
           genericMessage
         case _ => List.empty[String]
       }

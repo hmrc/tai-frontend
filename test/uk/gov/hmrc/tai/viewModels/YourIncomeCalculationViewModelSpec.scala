@@ -543,48 +543,48 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
   "payFreqIncomeCalculationEstimateMessage" must {
     "return messages for start date before start of tax year" when {
       "payment frequency is monthly" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Annually" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Annually), 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Annually), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is OneOff" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Irregular" in {
         PaymentFrequencyIncomeMessages
-          .payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), 1000) mustBe
+          .payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
       }
     }
 
     "return messages for start date after tax of start year" when {
       "payment frequency is monthly" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is OneOff" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Irregular" in {
         PaymentFrequencyIncomeMessages
-          .payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), 1000) mustBe
+          .payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), None, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
       }
     }
 
     "return none" when {
       "payment frequency is none" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", None, 1000) mustBe None
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", None, None, 1000) mustBe None
       }
     }
   }

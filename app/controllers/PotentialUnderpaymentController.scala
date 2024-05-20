@@ -17,9 +17,10 @@
 package controllers
 
 import cats.implicits._
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
-import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.Logging
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.Referral
@@ -35,6 +36,7 @@ class PotentialUnderpaymentController @Inject() (
   codingComponentService: CodingComponentService,
   auditService: AuditService,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   potentialUnderpayment: PotentialUnderpaymentView,
   implicit val errorPagesHandler: ErrorPagesHandler

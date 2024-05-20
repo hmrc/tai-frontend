@@ -53,6 +53,6 @@ object FormHelper {
     try
       stripNumber(value).getOrElse("0").toInt
     catch {
-      case _: Exception => 0
+      case e: Exception => 0
     }
 }

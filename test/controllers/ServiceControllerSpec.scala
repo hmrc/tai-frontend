@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthJourney
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -88,6 +89,7 @@ class ServiceControllerSpec extends BaseSpec {
   class SUT(authAction: AuthJourney = mockAuthJourney)
       extends ServiceController(
         authAction,
+        FakeValidatePerson,
         appConfig,
         mcc,
         inject[TimeoutView],

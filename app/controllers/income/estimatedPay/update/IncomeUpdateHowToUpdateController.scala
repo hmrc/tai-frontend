@@ -16,6 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.mvc._
@@ -37,6 +38,7 @@ import scala.util.control.NonFatal
 
 class IncomeUpdateHowToUpdateController @Inject() (
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   employmentService: EmploymentService,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,

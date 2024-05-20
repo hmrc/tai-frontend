@@ -18,6 +18,7 @@ package controllers.income.estimatedPay.update
 
 import cats.implicits._
 import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,6 +35,7 @@ import scala.concurrent.ExecutionContext
 
 class IncomeUpdatePayPeriodController @Inject() (
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   payPeriodView: PayPeriodView,
   @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
@@ -49,7 +51,7 @@ class IncomeUpdatePayPeriodController @Inject() (
         .optionalValues(Seq(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey))
     ).mapN {
       case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
-        val form: Form[PayPeriodForm] = PayPeriodForm.createForm().fill(PayPeriodForm(payPeriod, payPeriodInDays))
+        val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
       case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
@@ -62,7 +64,7 @@ class IncomeUpdatePayPeriodController @Inject() (
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
 
     PayPeriodForm
-      .createForm(payPeriod)
+      .createForm(None, payPeriod)
       .bindFromRequest()
       .fold(
         formWithErrors =>

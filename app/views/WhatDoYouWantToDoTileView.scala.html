@@ -24,7 +24,8 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(model: WhatDoYouWantToDoViewModel,
+@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
+        model: WhatDoYouWantToDoViewModel,
         appConfig: ApplicationConfig,
         incomeTaxHistoryEnabled: Boolean,
         cyPlusOneEnabled: Boolean)(implicit request: AuthenticatedRequest[_],

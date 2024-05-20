@@ -28,7 +28,7 @@ case class PayPeriodForm(payPeriod: Option[String], otherInDays: Option[String] 
 object PayPeriodForm {
   implicit val formats: OFormat[PayPeriodForm] = Json.format[PayPeriodForm]
 
-  def createForm(payPeriod: Option[String] = None)(implicit
+  def createForm(howOftenError: Option[String], payPeriod: Option[String] = None)(implicit
     messages: Messages
   ): Form[PayPeriodForm] = {
 

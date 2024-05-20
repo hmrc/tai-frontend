@@ -254,7 +254,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         when(
           updateNextYearsIncomeService
-            .setNewAmount(meq(newEstPay), meq(employmentID))(any())
+            .setNewAmount(meq(newEstPay), meq(employmentID), meq(nino))(any())
         )
           .thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -374,7 +374,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result: Future[Result] = testController.same(employmentID)(request)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, currentEstPay)(
+          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, employmentID, currentEstPay)(
             request,
             messages,
             authedUser
@@ -451,6 +451,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val vm = ConfirmAmountEnteredViewModel(
             employmentID,
             employerName,
+            currentAmount,
             newAmount,
             NextYearPay,
             "#"

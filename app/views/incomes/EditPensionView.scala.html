@@ -21,7 +21,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukErrorSummary: GovukErrorSummary, govukInput : GovukInput)
 
-@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
+@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser)
 
 
@@ -44,7 +44,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">
 
-        @income.errors(income("newAmount").name).map{ _ =>
+        @income.errors(income("newAmount").name).map{ error =>
             @govukErrorSummary(ErrorSummary(errorList = income.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 

@@ -231,6 +231,7 @@ object BandedGraph {
         val percentage =
           if (taxViewType == ZeroTaxView) {
             percentageForZeroTaxBar(
+              totalTaxBandIncome,
               taxBands,
               personalAllowance,
               taxFreeAllowanceBandSum,
@@ -243,6 +244,7 @@ object BandedGraph {
     }
 
   private def percentageForZeroTaxBar(
+    totalTaxBandIncome: BigDecimal,
     taxBands: List[TaxBand],
     personalAllowance: Option[BigDecimal],
     taxFreeAllowanceBandSum: BigDecimal,

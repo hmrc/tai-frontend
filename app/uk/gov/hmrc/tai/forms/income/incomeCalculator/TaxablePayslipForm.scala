@@ -35,8 +35,8 @@ object TaxablePayslipForm {
   )(implicit messages: Messages): Form[TaxablePayslipForm] = {
 
     val validateErrorMessage = netSalary match {
-      case Some(_) => TaxablePayPeriod.errorMessage(payPeriod, payPeriodInDays)
-      case _       => messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
+      case Some(salary) => TaxablePayPeriod.errorMessage(payPeriod, payPeriodInDays)
+      case _            => messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
     }
 
     Form[TaxablePayslipForm](

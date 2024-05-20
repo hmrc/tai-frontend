@@ -23,7 +23,7 @@
 @(model: YourIncomeCalculationViewModel)(implicit request: AuthenticatedRequest[_],
 messages: Messages)
 
-@printWrapper(title = Messages("tai.yourIncome.heading")){
+@printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
     <p><strong>@request.fullName</strong></p>
     <div class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></div>

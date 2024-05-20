@@ -16,6 +16,7 @@
 
 package controllers.employments
 
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
@@ -46,6 +47,7 @@ class UpdateEmploymentController @Inject() (
   employmentService: EmploymentService,
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
+  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
   canWeContactByPhone: CanWeContactByPhoneView,
