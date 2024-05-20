@@ -1,4 +1,3 @@
-import play.core.PlayVersion
 import play.sbt.PlayImport.*
 import sbt.*
 
@@ -18,12 +17,11 @@ private object AppDependencies {
   )
 
   val test: Seq[ModuleID] = Seq(
-    "org.jsoup"          % "jsoup"                         % "1.17.2",
-    "org.mockito"       %% "mockito-scala-scalatest"       % "1.17.31",
-    "com.typesafe.play" %% "play-test"                     % PlayVersion.current,
     "uk.gov.hmrc"       %% s"bootstrap-test-$playVersion"  % bootstrapVersion,
+    "org.mockito"       %% "mockito-scala-scalatest"       % "1.17.31",
     "org.scalatestplus" %% "scalacheck-1-17"               % "3.2.18.0",
-    "uk.gov.hmrc.mongo" %% s"hmrc-mongo-test-$playVersion" % hmrcMongoVersion
+    "uk.gov.hmrc.mongo" %% s"hmrc-mongo-test-$playVersion" % hmrcMongoVersion,
+    "org.jsoup"          % "jsoup"                         % "1.17.2"
   ).map(_ % "test")
 
   val all: Seq[ModuleID] =
