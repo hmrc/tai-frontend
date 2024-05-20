@@ -40,7 +40,7 @@ import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 import scala.util.Random
 
-class NewCachingBaseSpec
+trait NewCachingBaseSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach {
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
