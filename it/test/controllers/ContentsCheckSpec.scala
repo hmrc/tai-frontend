@@ -1081,7 +1081,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         reportIssueText must include("Is this page not working properly? (opens in new tab)")
         reportIssueLink must include("/contact/report-technical-problem")
 
-        val serviceName = content.getElementsByClass("hmrc-header__service-name").get(0).text()
+        val serviceName = content.getElementsByClass("govuk-header__service-name").get(0).text()
         serviceName mustBe expectedData.headerTitle
       }
     }
