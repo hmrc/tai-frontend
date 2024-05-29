@@ -83,7 +83,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
-        .optionalValues(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey)
+        .optionalValues(Seq(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey))
     ).mapN { case (incomeSourceEither, payPeriod :: payPeriodInDays :: _) =>
       val errorMessage = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
       PayslipForm
@@ -139,9 +139,11 @@ class IncomeUpdatePayslipAmountController @Inject() (
       IncomeSource.create(journeyCacheService),
       journeyCacheService
         .optionalValues(
-          UpdateIncomeConstants.PayPeriodKey,
-          UpdateIncomeConstants.OtherInDaysKey,
-          UpdateIncomeConstants.TotalSalaryKey
+          Seq(
+            UpdateIncomeConstants.PayPeriodKey,
+            UpdateIncomeConstants.OtherInDaysKey,
+            UpdateIncomeConstants.TotalSalaryKey
+          )
         )
     ).mapN { case (incomeSourceEither, payPeriod :: payPeriodInDays :: totalSalary :: _) =>
       TaxablePayslipForm

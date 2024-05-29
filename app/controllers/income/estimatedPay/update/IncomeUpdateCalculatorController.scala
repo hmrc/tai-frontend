@@ -96,10 +96,12 @@ class IncomeUpdateCalculatorController @Inject() (
       implicit val user = request.taiUser
 
       journeyCacheService.mandatoryJourneyValues(
-        UpdateIncomeConstants.NameKey,
-        UpdateIncomeConstants.IdKey,
-        s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
-        UpdateIncomeConstants.IncomeTypeKey
+        Seq(
+          UpdateIncomeConstants.NameKey,
+          UpdateIncomeConstants.IdKey,
+          s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
+          UpdateIncomeConstants.IncomeTypeKey
+        )
       ) map {
         case Right(mandatoryValues) =>
           val incomeName :: incomeId :: previouslyUpdatedAmount :: incomeType :: Nil = mandatoryValues.toList
@@ -119,9 +121,11 @@ class IncomeUpdateCalculatorController @Inject() (
 
       journeyCacheService
         .mandatoryJourneyValues(
-          UpdateIncomeConstants.NameKey,
-          s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
-          UpdateIncomeConstants.IncomeTypeKey
+          Seq(
+            UpdateIncomeConstants.NameKey,
+            s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId",
+            UpdateIncomeConstants.IncomeTypeKey
+          )
         )
         .getOrFail
         .map { mandatoryJourneyValues =>
@@ -218,7 +222,7 @@ class IncomeUpdateCalculatorController @Inject() (
     (for {
       mandatoryValues <- EitherT(
                            journeyCacheService
-                             .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IdKey)
+                             .mandatoryJourneyValues(Seq(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IdKey))
                          )
       employmentName :: idStr :: _ = mandatoryValues.toList
       id = idStr.toInt

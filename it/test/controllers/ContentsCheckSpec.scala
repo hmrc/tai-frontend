@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
-import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneQuestionPage}
+import pages.AddEmployment._
 import pages.EndEmployment._
 import pages._
 import play.api.Application
@@ -44,8 +44,8 @@ import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import utils.{FileHelper, IntegrationSpec}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
+import utils.{FileHelper, IntegrationSpec}
 
 import java.time.LocalDate
 import java.util.UUID
@@ -53,11 +53,11 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Random
 
-class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with MockitoSugar with Matchers {
+class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
 
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
-  private val startTaxYear: Int = TaxYear().start.getYear
+  private val startTaxYear = TaxYear().start.getYear
 
   case class ExpectedData(
     title: String,
@@ -527,6 +527,7 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
     )
     .configure(
       "microservice.services.auth.port"                                -> server.port(),
+      "microservice.services.pertax.port"                              -> server.port(),
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
@@ -674,17 +675,11 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
     when(mockFeatureFlagService.get(CyPlusOneToggle))
       .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
-      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = false))
+      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = true))
     )
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
-
-    server.stubFor(
-      get(urlEqualTo(s"/messages/count?read=No"))
-        .willReturn(ok(s"""{"count": 0}"""))
-    )
-
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))
         .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
@@ -880,22 +875,6 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
     )
 
     server.stubFor(
-      get(urlEqualTo("/tai/journey-cache/add-employment")).willReturn(
-        ok(
-          """{
-            |"employmentName":"H M Revenue and Customs",
-            |"employmentStartDate":"2022-07-10",
-            |"employmentStartDateWithinSixWeeks":"No",
-            |"employmentFirstPayReceived":"2022-08-10",
-            |"employmentPayrollNumberKnown":"No",
-            |"employmentPayrollNumber":"I do not know",
-            |"employmentTelephoneContactAllowed":"No",
-            |"employmentTelephoneNumber":""}""".stripMargin
-        )
-      )
-    )
-
-    server.stubFor(
       get(urlEqualTo("/tai/journey-cache/update-employment")).willReturn(
         ok(
           """{
@@ -972,10 +951,12 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
                           |"update-next-years-successful":"Yes"}""".stripMargin))
     )
 
-    server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/tax-code/latest"))
-        .willReturn(ok(s"""{"data":$taxCodeRecordJson}"""))
-    )
+    (startTaxYear - 2 to startTaxYear + 1).foreach { year =>
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${year + 1}/tax-code/latest"))
+          .willReturn(ok(s"""{"data":$taxCodeRecordJson}"""))
+      )
+    }
 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/income"))
@@ -1022,10 +1003,19 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
         .willReturn(ok(taxCodeComparisonJson.toString()))
     )
   }
+  server.stubFor(
+    get(urlMatching("/messages/count.*"))
+      .willReturn(ok(s"""{"count": 0}"""))
+  )
 
   "/check-income-tax/" must {
     urls.foreach { case (url, expectedData: ExpectedData) =>
       s"pass content checks at url $url" in {
+
+        server.stubFor(
+          get(urlMatching("/messages/count.*"))
+            .willReturn(ok(s"""{"count": 0}"""))
+        )
 
         server.stubFor(
           WireMock
@@ -1091,7 +1081,7 @@ class ContentsCheckPertaxBackendToggleOffSpec extends IntegrationSpec with Mocki
         reportIssueText must include("Is this page not working properly? (opens in new tab)")
         reportIssueLink must include("/contact/report-technical-problem")
 
-        val serviceName = content.getElementsByClass("hmrc-header__service-name").get(0).text()
+        val serviceName = content.getElementsByClass("govuk-header__service-name").get(0).text()
         serviceName mustBe expectedData.headerTitle
       }
     }

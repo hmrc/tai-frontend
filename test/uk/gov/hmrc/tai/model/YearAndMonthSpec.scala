@@ -54,7 +54,7 @@ class YearAndMonthSpec extends BaseSpec {
         invalidJson.as[YearAndMonth]
       }
 
-      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),ArraySeq())))))"
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(Invalid date parsed),List())))))"
 
     }
 
@@ -67,9 +67,7 @@ class YearAndMonthSpec extends BaseSpec {
       val ex = intercept[JsResultException] {
         invalidJson.as[YearAndMonth]
       }
-
-      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),ArraySeq())))))"
-
+      ex.getMessage mustBe "JsResultException(errors:List((/yearAndMonth,List(JsonValidationError(List(error.path.missing),List())))))"
     }
 
     "serialise to json" in {

@@ -134,7 +134,9 @@ class UpdateEmploymentController @Inject() (
       employmentId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateEmploymentConstants.EmploymentIdKey)
       telephoneCache <-
         journeyCacheService
-          .optionalValues(UpdateEmploymentConstants.TelephoneQuestionKey, UpdateEmploymentConstants.TelephoneNumberKey)
+          .optionalValues(
+            Seq(UpdateEmploymentConstants.TelephoneQuestionKey, UpdateEmploymentConstants.TelephoneNumberKey)
+          )
     } yield {
       implicit val user: AuthedUser = request.taiUser
       employmentId match {

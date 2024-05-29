@@ -181,9 +181,11 @@ class IncomeUpdateIrregularHoursController @Inject() (
       (for {
         cache <- journeyCacheService
                    .mandatoryJourneyValues(
-                     UpdateIncomeConstants.NameKey,
-                     UpdateIncomeConstants.IrregularAnnualPayKey,
-                     UpdateIncomeConstants.IdKey
+                     Seq(
+                       UpdateIncomeConstants.NameKey,
+                       UpdateIncomeConstants.IrregularAnnualPayKey,
+                       UpdateIncomeConstants.IdKey
+                     )
                    )
                    .getOrFail
         incomeName :: newPay :: incomeId :: Nil = cache.toList

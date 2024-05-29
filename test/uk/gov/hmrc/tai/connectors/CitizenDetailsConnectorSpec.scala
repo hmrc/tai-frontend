@@ -18,9 +18,9 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.Application
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.Helpers.{CONTENT_TYPE, JSON}
 import uk.gov.hmrc.http.client.HttpClientV2

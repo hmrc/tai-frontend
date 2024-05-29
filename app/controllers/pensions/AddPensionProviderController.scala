@@ -245,8 +245,7 @@ class AddPensionProviderController @Inject() (
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     journeyCacheService
       .optionalValues(
-        AddPensionProviderConstants.TelephoneQuestionKey,
-        AddPensionProviderConstants.TelephoneNumberKey
+        Seq(AddPensionProviderConstants.TelephoneQuestionKey, AddPensionProviderConstants.TelephoneNumberKey)
       ) map { seq =>
       val telephoneNo = seq.head match {
         case Some(FormValuesConstants.YesValue) => seq(1)

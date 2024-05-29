@@ -97,6 +97,6 @@ class MainTemplateImpl @Inject() (
       fullWidth = true,
       hideMenuBar = !showPtaAccountNav,
       disableSessionExpired = disableSessionExpired
-    )(messages, HeaderCarrierConverter.fromRequest(request), request)
+    )(messages, request)
   }
 }

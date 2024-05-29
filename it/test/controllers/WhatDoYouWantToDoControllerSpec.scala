@@ -17,30 +17,45 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo, urlMatching}
-import play.api.cache.AsyncCacheApi
+import org.mockito.ArgumentMatchers.any
+import org.mockito.MockitoSugar.{mock, when}
+import play.api.Application
 import play.api.http.Status.OK
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
+import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
-import utils.{FakeAsyncCacheApi, FileHelper, IntegrationSpec}
+import utils.{FileHelper, IntegrationSpec}
 
 import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
-
-  lazy val fakeAsyncCacheApi = new FakeAsyncCacheApi()
-
   val url = "/check-income-tax/what-do-you-want-to-do"
   private val personUrl = s"/citizen-details/$generatedNino/designatory-details"
   private val startTaxYear = TaxYear().start.getYear
+
+  private val mockWebChatClient = mock[WebChatClient]
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .overrides(
+      bind[WebChatClient].toInstance(mockWebChatClient)
+    )
+    .build()
+
+  override def beforeEach() = {
+    super.beforeEach()
+    when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(Some(Html("webchat-test")))
+    when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("webchat-test")))
+  }
 
   "What do you want to do page" must {
     "show the webchat" when {
@@ -54,7 +69,9 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             "microservice.services.citizen-details.port"                      -> server.port(),
             "feature.web-chat.enabled"                                        -> true
           )
-          .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
+          .overrides(
+            bind[WebChatClient].toInstance(mockWebChatClient)
+          )
           .build()
 
         server.stubFor(
@@ -98,7 +115,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
         val result = route(app, request).get
-        contentAsString(result) must include("HMRC_Anchored_1")
+        contentAsString(result) must include("webchat-test")
       }
     }
   }
@@ -114,7 +131,9 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           "microservice.services.citizen-details.port"                      -> server.port(),
           "feature.web-chat.enabled"                                        -> false
         )
-        .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
+        .overrides(
+          bind[WebChatClient].toInstance(mockWebChatClient)
+        )
         .build()
 
       server.stubFor(
@@ -158,7 +177,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
       val result = route(app, request).get
-      contentAsString(result) mustNot include("HMRC_Anchored_1")
+      contentAsString(result) mustNot include("webchat-test")
     }
   }
   "show the WhatDoYouWantToDo page" should {
@@ -171,7 +190,9 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         "microservice.services.citizen-details.port" -> server.port(),
         "feature.web-chat.enabled"                   -> false
       )
-      .overrides(bind[AsyncCacheApi].toInstance(fakeAsyncCacheApi))
+      .overrides(
+        bind[WebChatClient].toInstance(mockWebChatClient)
+      )
       .build()
 
     server.stubFor(

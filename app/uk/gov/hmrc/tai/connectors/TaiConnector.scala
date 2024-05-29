@@ -16,29 +16,30 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import play.api.libs.json.Reads
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.tai.model._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaiConnector @Inject() (http: DefaultHttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) {
+class TaiConnector @Inject() (httpClientV2: HttpClientV2, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
+) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
   def url(path: String): String = s"$serviceUrl$path"
 
-  def responseTo[T](uri: String)(response: HttpResponse)(implicit rds: Reads[T]): T = response.json.as[T]
-
-  val STATUS_OK = 200
-  val STATUS_EMAIL_RESPONSE = 201
-
   def calculateEstimatedPay(payDetails: PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
     val postUrl = url(s"/tai/calculator/calculate-estimated-pay")
-    http.POST[PayDetails, HttpResponse](postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))
+
+    httpClientV2
+      .post(url"$postUrl")
+      .withBody(Json.toJson(payDetails))
+      .execute[CalculatedPay]
   }
 }

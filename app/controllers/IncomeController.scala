@@ -100,9 +100,11 @@ class IncomeController @Inject() (
       (for {
         cachedData <- journeyCacheService
                         .mandatoryJourneyValues(
-                          UpdateIncomeConstants.NameKey,
-                          UpdateIncomeConstants.IdKey,
-                          s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"
+                          Seq(
+                            UpdateIncomeConstants.NameKey,
+                            UpdateIncomeConstants.IdKey,
+                            s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"
+                          )
                         )
                         .getOrFail
       } yield {
@@ -121,7 +123,7 @@ class IncomeController @Inject() (
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    lazy val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(UpdateIncomeConstants.NameKey).getOrFail
+    lazy val cachedDataFuture = journeyCacheService.mandatoryJourneyValues(Seq(UpdateIncomeConstants.NameKey)).getOrFail
 
     lazy val idFuture = journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey).getOrFail
     val nino = request.taiUser.nino
@@ -253,10 +255,12 @@ class IncomeController @Inject() (
 
       val collectedValues = journeyCacheService
         .mandatoryJourneyValues(
-          UpdateIncomeConstants.NameKey,
-          UpdateIncomeConstants.NewAmountKey,
-          UpdateIncomeConstants.IdKey,
-          UpdateIncomeConstants.IncomeTypeKey
+          Seq(
+            UpdateIncomeConstants.NameKey,
+            UpdateIncomeConstants.NewAmountKey,
+            UpdateIncomeConstants.IdKey,
+            UpdateIncomeConstants.IncomeTypeKey
+          )
         )
 
       collectedValues

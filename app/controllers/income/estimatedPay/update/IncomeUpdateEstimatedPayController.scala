@@ -60,9 +60,8 @@ class IncomeUpdateEstimatedPayController @Inject() (
   def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-
       journeyCacheService
-        .mandatoryJourneyValues(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IncomeTypeKey)
+        .mandatoryJourneyValues(Seq(UpdateIncomeConstants.NameKey, UpdateIncomeConstants.IncomeTypeKey))
         .flatMap {
           case Left(errorMessage) =>
             logger.warn(errorMessage)

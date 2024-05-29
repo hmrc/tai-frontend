@@ -17,13 +17,13 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.OptionT
+import com.codahale.metrics.MetricRegistry
 import com.google.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.http.Status._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HttpClient, _}
-import uk.gov.hmrc.play.bootstrap.metrics.Metrics
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.metrics.HasMetrics
 import uk.gov.hmrc.tai.model.JrsClaims
@@ -32,8 +32,12 @@ import java.util.UUID.randomUUID
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JrsConnector @Inject() (httpClient: HttpClient, val metrics: Metrics, applicationConfig: ApplicationConfig)(
-  implicit ec: ExecutionContext
+class JrsConnector @Inject() (
+  httpClient: HttpClient,
+  val metrics: MetricRegistry,
+  applicationConfig: ApplicationConfig
+)(implicit
+  ec: ExecutionContext
 ) extends HasMetrics with Logging {
 
   def getJrsClaimsForIndividual(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = {

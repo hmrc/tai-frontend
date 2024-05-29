@@ -17,12 +17,12 @@
 package controllers.employments
 
 import com.google.inject.name.Named
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.{AuthJourney, AuthedUser}
-import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentPayrollNumberPage, AddEmploymentPayrollQuestionPage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDatePage, AddEmploymentStartDateWithinSixWeeksPage, AddEmploymentTelephoneNumberPage, AddEmploymentTelephoneQuestionPage}
+import controllers.{ErrorPagesHandler, TaiBaseController}
+import pages.AddEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
