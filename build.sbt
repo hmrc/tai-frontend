@@ -9,7 +9,7 @@ import uk.gov.hmrc.DefaultBuildSettings.defaultSettings
 
 val appName = "tai-frontend"
 
-ThisBuild / majorVersion := 1
+ThisBuild / majorVersion := 2
 ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / scalafmtOnCompile := true
 
