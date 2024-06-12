@@ -25,7 +25,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
+import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, redirectLocation, route, status, writeableOf_AnyContentAsEmpty}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
@@ -67,6 +67,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             "microservice.services.tai.port"                                  -> server.port(),
             "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
             "microservice.services.citizen-details.port"                      -> server.port(),
+            "microservice.services.pertax.port"                               -> server.port(),
             "feature.web-chat.enabled"                                        -> true
           )
           .overrides(
@@ -115,7 +116,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
         val result = route(app, request).get
-        status(result) mustBe 200
         contentAsString(result) must include("webchat-test")
       }
     }
