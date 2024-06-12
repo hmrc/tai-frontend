@@ -16,22 +16,20 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, AuthedUser, InternalAuthenticatedRequest}
+import controllers.auth.{AuthRetrievals, AuthedUser, InternalAuthenticatedRequest}
 import play.api.mvc._
 import play.api.test.Helpers.stubControllerComponents
-import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.{Generator, Nino}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-object FakeAuthAction extends AuthAction {
+object FakeAuthRetrievals extends AuthRetrievals {
   val nino = new Generator(new Random).nextNino
   val user =
     AuthedUser(
       Nino(nino.toString()),
       Some("saUtr"),
-      ConfidenceLevel.L200,
       None
     )
   val cc: ControllerComponents = stubControllerComponents()

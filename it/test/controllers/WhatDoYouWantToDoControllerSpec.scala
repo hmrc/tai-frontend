@@ -115,6 +115,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
         val result = route(app, request).get
+        status(result) mustBe 200
         contentAsString(result) must include("webchat-test")
       }
     }

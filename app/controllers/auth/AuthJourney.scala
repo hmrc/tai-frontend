@@ -28,7 +28,7 @@ trait AuthJourney {
 }
 
 class AuthJourneyImpl @Inject() (
-  authAction: AuthAction,
+  authAction: AuthRetrievals,
   pertaxAuthAction: PertaxAuthAction,
   defaultActionBuilder: DefaultActionBuilder,
   validatePerson: ValidatePerson,

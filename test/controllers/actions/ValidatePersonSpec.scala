@@ -33,7 +33,7 @@
 package controllers.actions
 
 import cats.data.EitherT
-import controllers.{ErrorPagesHandler, FakeAuthAction, routes}
+import controllers.{ErrorPagesHandler, FakeAuthRetrievals, routes}
 import org.mockito.ArgumentMatchers.any
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
@@ -52,7 +52,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   val cc: ControllerComponents = stubControllerComponents()
 
   class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
-    def onPageLoad(): Action[AnyContent] = (FakeAuthAction andThen deceased) { request =>
+    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { request =>
       Ok
     }
   }

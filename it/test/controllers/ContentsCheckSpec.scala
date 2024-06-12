@@ -38,7 +38,7 @@ import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, PertaxBackendToggle}
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -674,9 +674,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
     when(mockFeatureFlagService.get(CyPlusOneToggle))
       .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
-    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
-      Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = true))
-    )
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))

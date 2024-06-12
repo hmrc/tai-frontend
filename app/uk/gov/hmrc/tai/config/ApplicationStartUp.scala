@@ -17,14 +17,13 @@
 package uk.gov.hmrc.tai.config
 
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagNamesLibrary
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle, PertaxBackendToggle}
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 
 class ApplicationStartUp {
   FeatureFlagNamesLibrary.addFlags(
     List(
       CyPlusOneToggle,
-      IncomeTaxHistoryToggle,
-      PertaxBackendToggle
+      IncomeTaxHistoryToggle
     )
   )
 }

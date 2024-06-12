@@ -16,14 +16,12 @@
 
 package controllers.auth
 
-import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
 case class AuthedUser(
   nino: Nino,
   utr: Option[String],
-  confidenceLevel: ConfidenceLevel,
   trustedHelper: Option[TrustedHelper]
 )
 
@@ -31,13 +29,11 @@ object AuthedUser {
 
   def apply(
     trustedHelper: TrustedHelper,
-    saUtr: Option[String],
-    confidenceLevel: ConfidenceLevel
+    saUtr: Option[String]
   ): AuthedUser =
     AuthedUser(
       nino = Nino(trustedHelper.principalNino),
       utr = saUtr,
-      confidenceLevel = confidenceLevel,
       trustedHelper = Some(trustedHelper)
     )
 }
