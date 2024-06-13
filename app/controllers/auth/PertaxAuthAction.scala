@@ -72,7 +72,7 @@ class PertaxAuthActionImpl @Inject() (
         case Right(PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect))) =>
           Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(continueUrl).encodedUrl}")))
         case Right(PertaxResponse("CONFIDENCE_LEVEL_UPLIFT_REQUIRED", _, _, Some(redirect))) =>
-          Future.successful(Some(upliftJourney(redirect)))
+          Future.successful(Some(upliftJourney(redirect, request)))
         case Right(PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(_))) =>
           val ex =
             new RuntimeException(
@@ -118,13 +118,13 @@ class PertaxAuthActionImpl @Inject() (
       )
     )
 
-  private def upliftJourney(redirect: String): Result =
+  private def upliftJourney(redirect: String, request: Request[_]): Result =
     Redirect(
       redirect,
       Map(
         "origin"          -> Seq("TAI"),
         "confidenceLevel" -> Seq(ConfidenceLevel.L200.toString),
-        "completionURL"   -> Seq(s"${appConfig.taiHomePageUrl}"),
+        "completionURL"   -> Seq(s"${appConfig.taiRootUri}${request.uri}"),
         "failureURL"      -> Seq(s"${appConfig.pertaxServiceUpliftFailedUrl}?continueUrl=${appConfig.taiHomePageUrl}")
       )
     )
