@@ -64,7 +64,9 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
             Seq.empty
           )
 
-        when(describedYourTaxFreeAmountService.taxFreeAmountComparison(meq(FakeAuthAction.nino))(any(), any(), any()))
+        when(
+          describedYourTaxFreeAmountService.taxFreeAmountComparison(meq(FakeAuthRetrievals.nino))(any(), any(), any())
+        )
           .thenReturn(Future.successful(expectedViewModel))
 
         val result = createController().yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -94,7 +96,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
       when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
-      when(taxAccountService.totalTax(meq(FakeAuthAction.nino), any())(any()))
+      when(taxAccountService.totalTax(meq(FakeAuthRetrievals.nino), any())(any()))
         .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
       when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
       when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any(), any()))

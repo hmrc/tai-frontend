@@ -62,7 +62,7 @@ val wartRemovedExcludedClasses = Seq(
 )
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(

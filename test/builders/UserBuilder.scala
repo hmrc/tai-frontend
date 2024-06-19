@@ -17,7 +17,6 @@
 package builders
 
 import controllers.auth.AuthedUser
-import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.{Generator, Nino}
 
@@ -25,13 +24,12 @@ object UserBuilder {
   val nino: Nino = new Generator().nextNino
 
   def apply(utr: String = "utr"): AuthedUser =
-    AuthedUser(Nino(nino.toString()), Some(utr), ConfidenceLevel.L200, None)
+    AuthedUser(Nino(nino.toString()), Some(utr), None)
 
   def apply(utr: String, principalName: String, principalNino: String): AuthedUser =
     AuthedUser(
       Nino(nino.toString()),
       Some(utr),
-      ConfidenceLevel.L200,
       Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", principalNino))
     )
 

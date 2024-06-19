@@ -108,7 +108,7 @@ class ApplicationConfig @Inject() (
   private lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
   lazy val unauthorisedSignOutUrl: String = decorateUrlForLocalDev("company-auth.unauthorised-url")
   private lazy val dfsFrontendHost: String = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
-  private lazy val taiRootUri: String = decorateUrlForLocalDev("tai-frontend.host")
+  lazy val taiRootUri: String = decorateUrlForLocalDev("tai-frontend.host")
   private lazy val pertaxFrontendHost: String = decorateUrlForLocalDev("pertax-frontend.host")
   private lazy val cocarFrontendHost: String = decorateUrlForLocalDev("cocar-frontend.host")
   private lazy val tamcFrontendHost: String = decorateUrlForLocalDev("tamc-frontend.host")

@@ -18,7 +18,6 @@ package controllers.auth
 
 import cats.data.EitherT
 import com.google.inject.Inject
-import controllers.routes
 import org.mockito.ArgumentMatchers.any
 import play.api.Application
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER, UNAUTHORIZED}
@@ -26,16 +25,14 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status, stubMessagesControllerComponents}
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, redirectLocation, status}
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.PertaxConnector
-import uk.gov.hmrc.tai.model.admin.PertaxBackendToggle
 import uk.gov.hmrc.tai.model.{ErrorView, PertaxResponse}
 import uk.gov.hmrc.tai.service.URLService
 import utils.BaseSpec
@@ -76,8 +73,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     .overrides(
       bind[PertaxConnector].toInstance(mockPertaxConnector),
       bind[AuthConnector].toInstance(mockAuthConnector),
-      bind[FeatureFlagService].toInstance(mockFeatureFlagService),
-      bind[MessagesControllerComponents].toInstance(stubMessagesControllerComponents())
+      bind[FeatureFlagService].toInstance(mockFeatureFlagService)
     )
     .build()
 
@@ -89,6 +85,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     when(testAppConfig.pertaxUrl).thenReturn("PERTAX_URL")
     when(testAppConfig.pertaxServiceUpliftFailedUrl).thenReturn("/failed")
     when(testAppConfig.taiHomePageUrl).thenReturn("/home")
+    when(testAppConfig.taiRootUri).thenReturn("/taiRoot")
     when(mockURLService.localFriendlyUrl(any(), any())).thenReturn("/localfriendlyurl")
     super.beforeEach()
   }
@@ -101,9 +98,6 @@ class PertaxAuthActionSpec extends BaseSpec {
   "Pertax auth action" when {
     "the pertax API returns an ACCESS_GRANTED response" must {
       "load the request" in {
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))).thenReturn(
-          Future.successful(FeatureFlag(PertaxBackendToggle, isEnabled = true))
-        )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -121,10 +115,6 @@ class PertaxAuthActionSpec extends BaseSpec {
 
     "the pertax API response returns a NO_HMRC_PT_ENROLMENT response" must {
       "redirect to the returned location" in {
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -141,11 +131,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     }
 
     "the pertax API response returns a CREDENTIAL_STRENGTH_UPLIFT_REQUIRED response" must {
-      "redirect to the returned location" in {
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
+      "return an error page" in {
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -160,20 +146,15 @@ class PertaxAuthActionSpec extends BaseSpec {
 
         val result = fakeController.onPageLoad()(FakeRequest())
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=TAI&continueUrl=%2Flocalfriendlyurl"
-        )
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(
+          result
+        ) must include("Sorry, the service is unavailable")
       }
     }
 
     "the pertax API response returns a CONFIDENCE_LEVEL_UPLIFT_REQUIRED response" must {
       "redirect to the returned location" in {
-
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -184,22 +165,17 @@ class PertaxAuthActionSpec extends BaseSpec {
             )
           )
 
-        val result = fakeController.onPageLoad()(FakeRequest())
+        val result = fakeController.onPageLoad()(FakeRequest(method = "GET", path = "/redirectUri"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          "redirectLocation?origin=TAI&confidenceLevel=200&completionURL=%2Flocalfriendlyurl&failureURL=%2Ffailed"
+          "redirectLocation?origin=TAI&confidenceLevel=200&completionURL=%2FtaiRoot%2FredirectUri&failureURL=%2Ffailed%3FcontinueUrl%3D%2Fhome"
         )
       }
     }
 
     "the pertax API response returns an error view" must {
       "show the corresponding view" in {
-
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -228,11 +204,6 @@ class PertaxAuthActionSpec extends BaseSpec {
 
       "failed to show the corresponding view" in {
 
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
-
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, PertaxResponse](
@@ -260,11 +231,6 @@ class PertaxAuthActionSpec extends BaseSpec {
 
     "the pertax API returns an Unauthorised error response" must {
       "redirect to gg login" in {
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
-
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
             EitherT[Future, UpstreamErrorResponse, PertaxResponse](
@@ -282,17 +248,12 @@ class PertaxAuthActionSpec extends BaseSpec {
         val result = fakeController.onPageLoad()(FakeRequest())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().url)
+        redirectLocation(result) mustBe Some("?continue_url=%2Fhome&origin=tai-frontend&accountType=individual")
       }
     }
 
     "the pertax API response returns an unexpected response" must {
       "throw an internal server error" in {
-
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(PertaxBackendToggle))) thenReturn Future
-          .successful(
-            FeatureFlag(PertaxBackendToggle, isEnabled = true)
-          )
 
         when(mockPertaxConnector.pertaxPostAuthorise()(any(), any()))
           .thenReturn(
@@ -305,7 +266,7 @@ class PertaxAuthActionSpec extends BaseSpec {
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
-        contentAsString(result) must include("global.error.InternalServerError500.tai.title")
+        contentAsString(result) must include("Sorry, the service is unavailable")
       }
     }
 

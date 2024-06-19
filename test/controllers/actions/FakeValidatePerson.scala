@@ -15,7 +15,7 @@
  */
 
 package controllers.actions
-import controllers.FakeAuthAction
+import controllers.FakeAuthRetrievals
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import play.api.mvc.Result
 import play.api.test.Helpers.stubControllerComponents
@@ -28,7 +28,7 @@ object FakeValidatePerson extends ValidatePerson {
     request: InternalAuthenticatedRequest[A]
   ): Future[Either[Result, AuthenticatedRequest[A]]] = {
     val address: Address = Address("line1", "line2", "line3", "postcode", "country")
-    def fakePerson: Person = Person(FakeAuthAction.nino, "Firstname", "Surname", isDeceased = false, address)
+    def fakePerson: Person = Person(FakeAuthRetrievals.nino, "Firstname", "Surname", isDeceased = false, address)
     Future.successful(Right(AuthenticatedRequest(request, request.taiUser, fakePerson)))
   }
 

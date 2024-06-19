@@ -17,7 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.{ErrorPagesHandler, FakeAuthAction}
+import controllers.{ErrorPagesHandler, FakeAuthRetrievals}
 import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -213,7 +213,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
           new TestIncomeUpdateHowToUpdateController()
             .processHowToUpdatePage(1, "name", employmentAmount, Right(Seq.empty[TaxCodeIncome]))(
               RequestBuilder.buildFakeGetRequestWithAuth(),
-              FakeAuthAction.user
+              FakeAuthRetrievals.user
             )
       }
 
