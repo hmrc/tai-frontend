@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -182,12 +183,12 @@ class IncomeUpdateCalculatorController @Inject() (
         case Right((mandatorySeq, optionalSeq)) =>
           val employer = IncomeSource(id = mandatorySeq(5).toInt, name = mandatorySeq.head)
           val payPeriodFrequency = mandatorySeq(1)
-          val totalSalaryAmount = mandatorySeq(2)
+          val totalSalaryAmount = FormHelper.stripNumber(mandatorySeq(2))
           val hasPayslipDeductions = mandatorySeq(3)
-          val hasBonusPayments = mandatorySeq(4)
+          val hasBonusPayments = FormHelper.stripNumber(mandatorySeq(4))
 
-          val taxablePay = optionalSeq.head
-          val bonusPaymentAmount = optionalSeq(1)
+          val taxablePay = optionalSeq.head.map(FormHelper.stripNumber)
+          val bonusPaymentAmount = optionalSeq(1).map(FormHelper.stripNumber)
           val payPeriodInDays = optionalSeq(2)
 
           val backUrl = bonusPaymentAmount match {
