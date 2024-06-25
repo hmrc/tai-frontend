@@ -17,7 +17,6 @@
 package controllers
 
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
@@ -36,7 +35,6 @@ class EstimatedIncomeTaxController @Inject() (
   partialService: HasFormPartialService,
   taxAccountService: TaxAccountService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   noCurrentIncome: NoCurrentIncomeView,
   complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
   simpleEstimatedIncomeTax: SimpleEstimatedIncomeTaxView,

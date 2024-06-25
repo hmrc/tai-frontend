@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
-import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
+import views.html.incomes.DuplicateSubmissionWarningView
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -80,7 +80,6 @@ class IncomeUpdateCalculatorControllerSpec
         mcc,
         inject[DuplicateSubmissionWarningView],
         inject[CheckYourAnswersView],
-        inject[ConfirmAmountEnteredView],
         journeyCacheService,
         inject[ErrorPagesHandler]
       ) {}
@@ -407,7 +406,7 @@ class IncomeUpdateCalculatorControllerSpec
       "cache is empty" in {
 
         val result = HandleCalculationResultHarness
-          .setup(Some("1"), true)
+          .setup(Some("1"), cacheEmpty = true)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER

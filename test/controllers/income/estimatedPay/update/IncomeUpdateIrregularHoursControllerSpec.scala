@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import akka.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -53,7 +52,6 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
   class TestIncomeUpdateIrregularHoursController
       extends IncomeUpdateIrregularHoursController(
         mockAuthJourney,
-        FakeValidatePerson,
         incomeService,
         taxAccountService,
         estimatedPayJourneyCompletionService,
@@ -139,7 +137,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
       sealed class HandleIncomeIrregularHoursHarness() {
 
-        val cacheMap = Map(
+        val cacheMap: Map[String, String] = Map(
           UpdateIncomeConstants.NameKey      -> "name",
           UpdateIncomeConstants.PayToDateKey -> "123",
           UpdateIncomeConstants.DateKey      -> LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear))

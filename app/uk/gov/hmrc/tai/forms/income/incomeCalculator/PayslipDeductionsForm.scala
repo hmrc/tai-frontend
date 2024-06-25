@@ -30,8 +30,8 @@ object PayslipDeductionsForm {
   def createForm()(implicit messages: Messages): Form[PayslipDeductionsForm] = {
 
     val payslipDeductionsValidation = Constraint[Option[String]]("Your working hours") {
-      case Some(txt) => Valid
-      case _         => Invalid(messages("tai.payslipDeductions.error.form.incomes.radioButton.mandatory"))
+      case Some(_) => Valid
+      case _       => Invalid(messages("tai.payslipDeductions.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[PayslipDeductionsForm](

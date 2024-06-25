@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.{RequestBuilder, UserBuilder}
-import controllers.actions.FakeValidatePerson
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Request
@@ -46,10 +45,34 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
   implicit val request: Request[_] = FakeRequest()
   implicit val fakeAuthenticatedRequest: AuthenticatedRequest[Any] =
     AuthenticatedRequest(request, authedUser, fakePerson(nino))
+
   private val noCurrentIncomeView = inject[NoCurrentIncomeView]
   private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
   private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]
   private val zeroTaxEstimatedIncomeTaxView = inject[ZeroTaxEstimatedIncomeTaxView]
+
+  implicit val user: AuthedUser = UserBuilder()
+
+  private def createSUT = new SUT
+
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val partialService: HasFormPartialService = mock[HasFormPartialService]
+
+  class SUT
+      extends EstimatedIncomeTaxController(
+        codingComponentService,
+        partialService,
+        taxAccountService,
+        mockAuthJourney,
+        noCurrentIncomeView,
+        complexEstimatedIncomeTaxView,
+        simpleEstimatedIncomeTaxView,
+        zeroTaxEstimatedIncomeTaxView,
+        appConfig,
+        mcc,
+        inject[ErrorPagesHandler]
+      )
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {
@@ -423,29 +446,5 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
       }
     }
   }
-
-  implicit val user: AuthedUser = UserBuilder()
-
-  private def createSUT = new SUT
-
-  val codingComponentService = mock[CodingComponentService]
-  val taxAccountService = mock[TaxAccountService]
-  val partialService = mock[HasFormPartialService]
-
-  class SUT
-      extends EstimatedIncomeTaxController(
-        codingComponentService,
-        partialService,
-        taxAccountService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        noCurrentIncomeView,
-        complexEstimatedIncomeTaxView,
-        simpleEstimatedIncomeTaxView,
-        zeroTaxEstimatedIncomeTaxView,
-        appConfig,
-        mcc,
-        inject[ErrorPagesHandler]
-      )
 
 }

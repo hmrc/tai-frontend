@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import akka.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -49,7 +48,6 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   class TestIncomeUpdatePayslipAmountController
       extends IncomeUpdatePayslipAmountController(
         mockAuthJourney,
-        FakeValidatePerson,
         mcc,
         payslipAmountView,
         taxablePayslipAmountView,
@@ -203,8 +201,8 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     object TaxablePayslipAmountPageHarness {
       sealed class TaxablePayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
 
-        val mandatoryKeys = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
-        val optionalKeys = Seq(
+        val mandatoryKeys: Seq[String] = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
+        val optionalKeys: Seq[String] = Seq(
           UpdateIncomeConstants.PayPeriodKey,
           UpdateIncomeConstants.OtherInDaysKey,
           UpdateIncomeConstants.TaxablePayKey
