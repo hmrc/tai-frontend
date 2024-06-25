@@ -195,12 +195,12 @@ class UpdateIncomeNextYearController @Inject() (
             .map { case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue) =>
               val vm =
                 ConfirmAmountEnteredViewModel(
-                  employmentId,
-                  employmentName,
-                  currentValue,
-                  newAmount,
-                  NextYearPay,
-                  "#"
+                  employmentId = employmentId,
+                  empName = employmentName,
+                  currentAmount = currentValue,
+                  estIncome = newAmount,
+                  payType = NextYearPay,
+                  backUrl = "#"
                 )
               Ok(updateIncomeCYPlus1Confirm(vm))
             }

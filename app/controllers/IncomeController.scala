@@ -209,11 +209,11 @@ class IncomeController @Inject() (
 
                       val vm =
                         ConfirmAmountEnteredViewModel(
-                          employment.name,
-                          employmentAmount.oldAmount,
-                          cachedData,
-                          controllers.routes.IncomeController.regularIncome(empId).url,
-                          empId
+                          empName = employment.name,
+                          currentAmount = employmentAmount.oldAmount,
+                          estIncome = cachedData,
+                          backUrl = controllers.routes.IncomeController.regularIncome(empId).url,
+                          empId = empId
                         )
                       Ok(confirmAmountEntered(vm))
 
@@ -393,11 +393,11 @@ class IncomeController @Inject() (
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
                       val vm = ConfirmAmountEnteredViewModel(
-                        employment.name,
-                        employmentAmount.oldAmount,
-                        newAmountKey.toInt,
-                        "#",
-                        empId
+                        empName = employment.name,
+                        currentAmount = employmentAmount.oldAmount,
+                        estIncome = newAmountKey.toInt,
+                        backUrl = "#",
+                        empId = empId
                       )
 
                       Ok(confirmAmountEntered(vm))
