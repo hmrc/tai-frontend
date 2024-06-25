@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 @import controllers.auth.AuthenticatedRequest
 @import includes.{link, printBanner}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.model.domain.Person
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
@@ -26,7 +25,7 @@
 
 @this(main: MainTemplate, govukDetails : GovukDetails)
 
-@(appConfig: ApplicationConfig, person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
+@(person: Person, incomeTaxYears: List[IncomeTaxYear])(implicit request: AuthenticatedRequest[_],
 messages: Messages)
 
 @address = @{

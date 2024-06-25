@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,9 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.config.ApplicationConfig
 @import views.html.helper.CSPNonce
 
-@(title: String, header: String, appConfig: ApplicationConfig)(content: Html)(implicit request: Request[_], messages: Messages)
-
-
+@(title: String, header: String)(content: Html)(implicit request: Request[_], messages: Messages)
 
 @fullTitle = @{
     s"${title} - ${Messages("tai.service.navTitle")} - GOV.UK"

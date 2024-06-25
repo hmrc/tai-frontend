@@ -19,7 +19,6 @@ package controllers
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
@@ -36,7 +35,6 @@ class DetailedIncomeTaxEstimateController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
-  appConfig: ApplicationConfig,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -66,7 +64,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
           codingComponents,
           nonTaxCodeIncome
         )
-        Ok(detailedIncomeTaxEstimate(model, appConfig))
+        Ok(detailedIncomeTaxEstimate(model))
     } recover { case NonFatal(e) =>
       errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))
     }

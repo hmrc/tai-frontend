@@ -55,6 +55,6 @@ class ServiceController @Inject() (
   }
 
   def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(sessionExpired(applicationConfig)).withNewSession)
+    Future.successful(Ok(sessionExpired()).withNewSession)
   }
 }

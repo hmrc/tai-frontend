@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.forms.formValidator
 
 import play.api.data.Forms._
 import play.api.data.Mapping
-import uk.gov.hmrc.tai.forms.formValidator.DateFields._
+import uk.gov.hmrc.tai.forms.formValidator.DateValidator._
 import uk.gov.hmrc.tai.model.TaxYear
 
 import java.time.LocalDate
@@ -26,10 +26,8 @@ import scala.util.Try
 
 trait DateValidator {
 
-  val dateTuple: Mapping[Option[LocalDate]] = dateTuple(validate = true)
-
   // scalastyle:off cyclomatic.complexity
-  def dateTuple(validate: Boolean): Mapping[Option[LocalDate]] =
+  def dateTuple: Mapping[Option[LocalDate]] =
     tuple(
       year  -> optional(text),
       month -> optional(text),
@@ -73,7 +71,7 @@ trait DateValidator {
     )
 }
 
-object DateFields {
+object DateValidator {
   val day = "day"
   val month = "month"
   val year = "year"

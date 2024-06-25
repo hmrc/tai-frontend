@@ -139,7 +139,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       employmentService,
       paymentsService,
       mockAuthJourney,
-      appConfig,
       mcc,
       inject[HistoricIncomeCalculationView],
       inject[YourIncomeCalculationView],

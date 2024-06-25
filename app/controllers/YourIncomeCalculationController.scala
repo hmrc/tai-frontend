@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers
 
 import controllers.auth._
 import play.api.mvc._
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
@@ -33,7 +32,6 @@ class YourIncomeCalculationController @Inject() (
   employmentService: EmploymentService,
   paymentsService: PaymentsService,
   authenticate: AuthJourney,
-  appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
@@ -47,7 +45,7 @@ class YourIncomeCalculationController @Inject() (
       incomeCalculationPage(empId)
   }
 
-  private def incomeCalculationPage(empId: Int)(implicit request: AuthenticatedRequest[AnyContent]) = {
+  private def incomeCalculationPage(empId: Int)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
     lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -92,7 +90,7 @@ class YourIncomeCalculationController @Inject() (
                 "Employment contains stub annual account data found meaning payment information can't be displayed"
               )
             case (true, _) =>
-              Ok(historicIncomePrintView(historicIncomeCalculationViewModel, appConfig))
+              Ok(historicIncomePrintView(historicIncomeCalculationViewModel))
             case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
           }
         }
