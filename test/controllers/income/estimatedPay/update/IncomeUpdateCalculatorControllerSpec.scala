@@ -17,7 +17,6 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -64,7 +63,6 @@ class IncomeUpdateCalculatorControllerSpec
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
@@ -73,10 +71,8 @@ class IncomeUpdateCalculatorControllerSpec
       extends IncomeUpdateCalculatorController(
         incomeService,
         employmentService,
-        taxAccountService,
         estimatedPayJourneyCompletionService,
         mockAuthJourney,
-        FakeValidatePerson,
         mcc,
         inject[DuplicateSubmissionWarningView],
         inject[CheckYourAnswersView],

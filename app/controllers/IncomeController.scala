@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers
 import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.data.Form
@@ -52,7 +51,6 @@ class IncomeController @Inject() (
   incomeService: IncomeService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   confirmAmountEntered: ConfirmAmountEnteredView,
   editSuccess: EditSuccessView,
@@ -89,7 +87,7 @@ class IncomeController @Inject() (
           amountYearToDate.toString
         )
       )
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+    }).fold(errorPagesHandler.internalServerError(_, None), identity)
       .recover { case NonFatal(e) =>
         errorPagesHandler.internalServerError(e.getMessage)
       }

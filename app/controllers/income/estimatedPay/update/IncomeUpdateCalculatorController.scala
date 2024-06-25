@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package controllers.income.estimatedPay.update
 
 import cats.data.EitherT
 import cats.implicits._
-import controllers.actions.ValidatePerson
-import controllers.auth.AuthJourney
+import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -45,10 +44,8 @@ import scala.util.control.NonFatal
 class IncomeUpdateCalculatorController @Inject() (
   incomeService: IncomeService,
   employmentService: EmploymentService,
-  taxAccountService: TaxAccountService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   checkYourAnswers: CheckYourAnswersView,
@@ -92,7 +89,7 @@ class IncomeUpdateCalculatorController @Inject() (
 
   def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       journeyCacheService.mandatoryJourneyValues(
         Seq(
@@ -116,7 +113,7 @@ class IncomeUpdateCalculatorController @Inject() (
 
   def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       journeyCacheService
         .mandatoryJourneyValues(
@@ -153,9 +150,10 @@ class IncomeUpdateCalculatorController @Inject() (
         }
   }
 
+  // scalastyle:off method.length
   def checkYourAnswersPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
-      implicit val user = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
 
       val collectedValues = journeyCacheService
         .collectedJourneyValues(
@@ -213,7 +211,7 @@ class IncomeUpdateCalculatorController @Inject() (
   }
 
   def handleCalculationResult: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    implicit val user = request.taiUser
+    implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
     val netAmountFuture = journeyCacheService.currentValue(UpdateIncomeConstants.NewAmountKey)

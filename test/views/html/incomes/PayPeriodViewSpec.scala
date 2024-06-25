@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,6 @@ class PayPeriodViewSpec extends TaiViewSpec {
     )
   }
 
-  private def payPeriod = inject[PayPeriodView]
-  override def view: Html = payPeriod(PayPeriodForm.createForm(None), id, employerName, true)
+  private def payPeriod: PayPeriodView = inject[PayPeriodView]
+  override def view: Html = payPeriod(PayPeriodForm.createForm(None), id, employerName, isNotDaysError = true)
 }

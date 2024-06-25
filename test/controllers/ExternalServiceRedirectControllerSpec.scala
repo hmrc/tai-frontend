@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -29,6 +28,22 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class ExternalServiceRedirectControllerSpec extends BaseSpec {
+
+  private val redirectUri = "redirectUri"
+
+  def createSut = new SUT
+
+  val sessionService: SessionService = mock[SessionService]
+  val auditService: AuditService = mock[AuditService]
+
+  class SUT
+      extends ExternalServiceRedirectController(
+        sessionService,
+        auditService,
+        mockAuthJourney,
+        mcc,
+        inject[ErrorPagesHandler]
+      )
 
   "External Service Redirect controller - auditInvalidateCacheAndRedirectService" must {
     "redirect to external url" when {
@@ -104,20 +119,4 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
     }
   }
 
-  private val redirectUri = "redirectUri"
-
-  def createSut = new SUT
-
-  val sessionService = mock[SessionService]
-  val auditService = mock[AuditService]
-
-  class SUT
-      extends ExternalServiceRedirectController(
-        sessionService,
-        auditService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[ErrorPagesHandler]
-      )
 }

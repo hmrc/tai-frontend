@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,8 @@ import play.api.data.Mapping
 
 import java.time.LocalDate
 
-/** Created by user02 on 6/9/14.
-  */
 object TaiValidator extends BaseValidator {
 
   def validateOptionalDate(): Mapping[Option[LocalDate]] =
-    dateTuple(true)
+    dateTuple(validate = true)
 }

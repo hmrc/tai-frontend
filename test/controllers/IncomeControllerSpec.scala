@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.{I18nSupport, Messages}
@@ -27,7 +26,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
@@ -61,13 +59,96 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
   val payToDate = "100"
   val employerId = 1
-  val cachePayToDate = Future.successful(Right(100))
-
-  val cachedData = Future.successful(Right(Seq(employerId.toString, payToDate)))
-  val cachedUpdateIncomeNewAmountKey: Future[Either[String, String]] = Future.successful(Right("700"))
-  val emptyCache = Future.successful(Left("empty cache"))
-
+  val cachePayToDate: Future[Right[Nothing, Int]] = Future.successful(Right(100))
   val cacheKey = s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId"
+
+  val cachedData: Future[Right[Nothing, Seq[String]]] = Future.successful(Right(Seq(employerId.toString, payToDate)))
+  val cachedUpdateIncomeNewAmountKey: Future[Either[String, String]] = Future.successful(Right("700"))
+  val emptyCache: Future[Left[String, Nothing]] = Future.successful(Left("empty cache"))
+
+  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
+    Employment(
+      "ABCD",
+      Live,
+      Some("ABC123"),
+      Some(LocalDate.of(2000, 5, 20)),
+      None,
+      accounts,
+      "",
+      "",
+      8,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+
+  def paymentOnDate(date: LocalDate): Payment =
+    Payment(
+      date = date,
+      amountYearToDate = 2000,
+      taxAmountYearToDate = 200,
+      nationalInsuranceAmountYearToDate = 100,
+      amount = 1000,
+      taxAmount = 100,
+      nationalInsuranceAmount = 50,
+      payFrequency = Monthly
+    )
+
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val employmentAmount: EmploymentAmount = EmploymentAmount(
+    "employment",
+    "(Current employer)",
+    1,
+    1111,
+    1111,
+    None,
+    None,
+    Some(LocalDate.of(2000, 5, 20)),
+    None
+  )
+
+  private def createTestIncomeController() = new TestIncomeController()
+
+  private val editSuccessView = inject[EditSuccessView]
+  private val editPensionSuccessView = inject[EditPensionSuccessView]
+
+  private class TestIncomeController()
+      extends IncomeController(
+        journeyCacheService,
+        taxAccountService,
+        employmentService,
+        incomeService,
+        estimatedPayJourneyCompletionService,
+        mockAuthJourney,
+        mcc,
+        inject[ConfirmAmountEnteredView],
+        editSuccessView,
+        inject[EditPensionView],
+        editPensionSuccessView,
+        inject[EditIncomeView],
+        inject[SameEstimatedPayView],
+        inject[ErrorPagesHandler]
+      ) {
+
+    when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+    when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+
+    def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
+      implicit request: FakeRequest[_] =>
+        editSuccessView(employerName, employerId)
+    }
+
+    def renderPensionSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
+      implicit request: FakeRequest[_] =>
+        editPensionSuccessView(employerName, employerId)
+    }
+
+    val editIncomeForm: EditIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)
+  }
 
   "cancel" must {
     "flush the journey cache and redirect to the employer id's income details page" in {
@@ -899,7 +980,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val testController = createTestIncomeController()
 
         val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, true, false)
+          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None)
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -914,7 +995,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val testController = createTestIncomeController()
 
         val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, false, false)
+          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, isLive = false)
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -929,7 +1010,19 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val testController = createTestIncomeController()
 
         val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, false, true)
+          EmploymentAmount(
+            "employment",
+            "(Current employer)",
+            1,
+            11,
+            11,
+            None,
+            None,
+            None,
+            None,
+            isLive = false,
+            isOccupationalPension = true
+          )
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -988,94 +1081,4 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     }
 
   }
-
-  def employmentWithAccounts(accounts: List[AnnualAccount]) =
-    Employment(
-      "ABCD",
-      Live,
-      Some("ABC123"),
-      Some(LocalDate.of(2000, 5, 20)),
-      None,
-      accounts,
-      "",
-      "",
-      8,
-      None,
-      false,
-      false
-    )
-
-  def paymentOnDate(date: LocalDate) =
-    Payment(
-      date = date,
-      amountYearToDate = 2000,
-      taxAmountYearToDate = 200,
-      nationalInsuranceAmountYearToDate = 100,
-      amount = 1000,
-      taxAmount = 100,
-      nationalInsuranceAmount = 50,
-      payFrequency = Monthly
-    )
-
-  val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val employmentAmount = EmploymentAmount(
-    "employment",
-    "(Current employer)",
-    1,
-    1111,
-    1111,
-    None,
-    None,
-    Some(LocalDate.of(2000, 5, 20)),
-    None,
-    true,
-    false
-  )
-
-  private def createTestIncomeController() = new TestIncomeController()
-
-  private val editSuccessView = inject[EditSuccessView]
-  private val editPensionSuccessView = inject[EditPensionSuccessView]
-
-  private class TestIncomeController()
-      extends IncomeController(
-        journeyCacheService,
-        taxAccountService,
-        employmentService,
-        incomeService,
-        estimatedPayJourneyCompletionService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[ConfirmAmountEnteredView],
-        editSuccessView,
-        inject[EditPensionView],
-        editPensionSuccessView,
-        inject[EditIncomeView],
-        inject[SameEstimatedPayView],
-        inject[ErrorPagesHandler]
-      ) {
-
-    when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-    when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
-
-    def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
-      implicit request: FakeRequest[_] =>
-        editSuccessView(employerName, employerId)
-    }
-
-    def renderPensionSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
-      implicit request: FakeRequest[_] =>
-        editPensionSuccessView(employerName, employerId)
-    }
-
-    val editIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)
-
-    val employmentStartDateForm = EmploymentAddDateForm("employer")
-  }
-
 }

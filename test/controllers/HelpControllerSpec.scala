@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -25,6 +24,13 @@ import utils.BaseSpec
 import views.html.help.GetHelpView
 
 class HelpControllerSpec extends BaseSpec with JsoupMatchers {
+
+  def sut = new HelpController(
+    mockAuthJourney,
+    appConfig,
+    mcc,
+    inject[GetHelpView]
+  )
 
   "show help page" must {
     "call getHelpPage() successfully with an authorized session" in {
@@ -36,11 +42,4 @@ class HelpControllerSpec extends BaseSpec with JsoupMatchers {
     }
   }
 
-  def sut = new HelpController(
-    mockAuthJourney,
-    FakeValidatePerson,
-    appConfig,
-    mcc,
-    inject[GetHelpView]
-  )
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,84 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplication {
+
+  private def employment(name: String): Employment =
+    Employment(
+      name = name,
+      employmentStatus = Live,
+      payrollNumber = None,
+      startDate = Some(TaxYear().start),
+      endDate = None,
+      annualAccounts = Seq.empty,
+      taxDistrictNumber = "123",
+      payeNumber = "321",
+      sequenceNumber = 1,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false,
+      cessationPay = None
+    )
+
+  private def taxCodeIncome(name: String, id: Int, amount: Int): TaxCodeIncome =
+    TaxCodeIncome(EmploymentIncome, Some(id), amount, "description", "1185L", name, OtherBasisOfOperation, Live)
+
+  private def expectedMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] =
+    Map(
+      UpdateNextYearsIncomeConstants.EmploymentName -> name,
+      UpdateNextYearsIncomeConstants.EmploymentId   -> id.toString,
+      UpdateNextYearsIncomeConstants.IsPension      -> isPension.toString,
+      UpdateNextYearsIncomeConstants.CurrentAmount  -> amount.toString
+    )
+
+  private def fullMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] =
+    expectedMap(name, id, isPension, amount) ++ Map(UpdateNextYearsIncomeConstants.NewAmount -> amount.toString)
+
+  private val employmentName = "employmentName"
+  private val employmentId = 1
+  private val isPension = false
+  private val employmentAmount = 1000
+
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  class UpdateNextYearsIncomeServiceTest
+      extends UpdateNextYearsIncomeService(
+        journeyCacheService,
+        successfulJourneyCacheService,
+        employmentService,
+        taxAccountService
+      )
+
+  val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
+
+  class SubmitSetup {
+    when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+      .thenReturn(Future.successful(Some(employment(employmentName))))
+
+    when(
+      taxAccountService
+        .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+    )
+      .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+
+    when(successfulJourneyCacheService.cache(any())(any()))
+      .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
+
+    when(successfulJourneyCacheService.cache(any())(any()))
+      .thenReturn(Future.successful(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true")))
+
+    when(
+      taxAccountService.updateEstimatedIncome(
+        meq(nino),
+        meq(employmentAmount),
+        meq(TaxYear().next),
+        meq(employmentId)
+      )(any())
+    ).thenReturn(
+      Future.successful(Done)
+    )
+  }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -171,7 +249,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         Future.successful(expected)
       )
 
-      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino)
+      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId)
 
       result.futureValue mustBe expected
 
@@ -246,83 +324,5 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
       service.isEstimatedPayJourneyComplete.futureValue mustBe false
     }
-  }
-
-  private def employment(name: String): Employment =
-    Employment(
-      name = name,
-      employmentStatus = Live,
-      payrollNumber = None,
-      startDate = Some(TaxYear().start),
-      endDate = None,
-      annualAccounts = Seq.empty,
-      taxDistrictNumber = "123",
-      payeNumber = "321",
-      sequenceNumber = 1,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false,
-      cessationPay = None
-    )
-
-  private def taxCodeIncome(name: String, id: Int, amount: Int): TaxCodeIncome =
-    TaxCodeIncome(EmploymentIncome, Some(id), amount, "description", "1185L", name, OtherBasisOfOperation, Live)
-
-  private def expectedMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] =
-    Map(
-      UpdateNextYearsIncomeConstants.EmploymentName -> name,
-      UpdateNextYearsIncomeConstants.EmploymentId   -> id.toString,
-      UpdateNextYearsIncomeConstants.IsPension      -> isPension.toString,
-      UpdateNextYearsIncomeConstants.CurrentAmount  -> amount.toString
-    )
-
-  private def fullMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] =
-    expectedMap(name, id, isPension, amount) ++ Map(UpdateNextYearsIncomeConstants.NewAmount -> amount.toString)
-
-  private val employmentName = "employmentName"
-  private val employmentId = 1
-  private val isPension = false
-  private val employmentAmount = 1000
-
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService = mock[JourneyCacheService]
-
-  class UpdateNextYearsIncomeServiceTest
-      extends UpdateNextYearsIncomeService(
-        journeyCacheService,
-        successfulJourneyCacheService,
-        employmentService,
-        taxAccountService
-      )
-
-  val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
-
-  class SubmitSetup {
-    when(employmentService.employment(meq(nino), meq(employmentId))(any()))
-      .thenReturn(Future.successful(Some(employment(employmentName))))
-
-    when(
-      taxAccountService
-        .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
-    )
-      .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
-
-    when(successfulJourneyCacheService.cache(any())(any()))
-      .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
-
-    when(successfulJourneyCacheService.cache(any())(any()))
-      .thenReturn(Future.successful(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true")))
-
-    when(
-      taxAccountService.updateEstimatedIncome(
-        meq(nino),
-        meq(employmentAmount),
-        meq(TaxYear().next),
-        meq(employmentId)
-      )(any())
-    ).thenReturn(
-      Future.successful(Done)
-    )
   }
 }

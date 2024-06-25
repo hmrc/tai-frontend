@@ -62,7 +62,7 @@ class IncomeUpdatePayPeriodController @Inject() (
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
 
     PayPeriodForm
-      .createForm(None, payPeriod)
+      .createForm(payPeriod)
       .bindFromRequest()
       .fold(
         formWithErrors =>
@@ -83,7 +83,7 @@ class IncomeUpdatePayPeriodController @Inject() (
             case Some(days) =>
               Map(
                 UpdateIncomeConstants.PayPeriodKey   -> formData.payPeriod.getOrElse(""),
-                UpdateIncomeConstants.OtherInDaysKey -> days.toString
+                UpdateIncomeConstants.OtherInDaysKey -> days
               )
             case _ => Map(UpdateIncomeConstants.PayPeriodKey -> formData.payPeriod.getOrElse(""))
           }

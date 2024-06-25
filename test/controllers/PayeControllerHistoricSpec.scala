@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -38,6 +37,161 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
+
+  def createTestController(employments: Seq[Employment] = Nil, showTaxCodeDescriptionLink: Boolean = false) =
+    new PayeControllerHistoricTest(employments, showTaxCodeDescriptionLink)
+
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+
+  class PayeControllerHistoricTest(employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)
+      extends PayeControllerHistoric(
+        appConfig,
+        taxCodeChangeService,
+        employmentService,
+        mockAuthJourney,
+        mcc,
+        inject[RtiDisabledHistoricPayAsYouEarnView],
+        inject[HistoricPayAsYouEarnView],
+        inject[ErrorPagesHandler]
+      ) {
+
+    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
+      .thenReturn(Future.successful(showTaxCodeDescriptionLink))
+  }
+
+  val sampleEmptyEmployment: Seq[Nothing] = Seq(
+  )
+
+  val sampleEmploymentForEmptyAnnualAccounts: Seq[Employment] = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 6, 9)),
+      None,
+      Seq(),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 7, 9)),
+      None,
+      Seq(),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
+
+  val sampleEmploymentForRtiUnavailable: Seq[Employment] = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 6, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 7, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
+
+  val sampleEmployment: Seq[Employment] = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2018, 6, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      Some(LocalDate.of(2017, 7, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
+
+  val payment1: Payment = Payment(LocalDate.parse("2019-04-05"), 333333, 111, 111, 111, 111, 111, Monthly)
+  val payment2: Payment = Payment(LocalDate.parse("2019-04-05"), 444444, 111, 111, 111, 111, 111, Monthly)
+  val payment3: Payment = Payment(LocalDate.parse("2019-04-05"), 555555, 111, 111, 111, 111, 111, Monthly)
+  val payments: Seq[Payment] = Seq(payment1, payment2, payment3)
+
+  val sampleEmploymentWithSameDatFpsSubmissions: Seq[Employment] = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2018, 6, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      Some(LocalDate.of(2017, 7, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -217,161 +371,5 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       }
     }
   }
-
-  def createTestController(employments: Seq[Employment] = Nil, showTaxCodeDescriptionLink: Boolean = false) =
-    new PayeControllerHistoricTest(employments, showTaxCodeDescriptionLink)
-
-  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-
-  class PayeControllerHistoricTest(employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)
-      extends PayeControllerHistoric(
-        appConfig,
-        taxCodeChangeService,
-        employmentService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[RtiDisabledHistoricPayAsYouEarnView],
-        inject[HistoricPayAsYouEarnView],
-        inject[ErrorPagesHandler]
-      ) {
-
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
-    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
-      .thenReturn(Future.successful(showTaxCodeDescriptionLink))
-  }
-
-  val sampleEmptyEmployment = Seq(
-  )
-
-  val sampleEmploymentForEmptyAnnualAccounts = Seq(
-    Employment(
-      "employer1",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 6, 9)),
-      None,
-      Seq(),
-      "taxNumber",
-      "payeNumber",
-      1,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "employer2",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 7, 9)),
-      None,
-      Seq(),
-      "taxNumber",
-      "payeNumber",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
-
-  val sampleEmploymentForRtiUnavailable = Seq(
-    Employment(
-      "employer1",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 6, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      1,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "employer2",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 7, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
-
-  val sampleEmployment = Seq(
-    Employment(
-      "employer1",
-      Live,
-      None,
-      Some(LocalDate.of(2018, 6, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      1,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "employer2",
-      Live,
-      None,
-      Some(LocalDate.of(2017, 7, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
-
-  val payment1 = Payment(LocalDate.parse("2019-04-05"), 333333, 111, 111, 111, 111, 111, Monthly)
-  val payment2 = Payment(LocalDate.parse("2019-04-05"), 444444, 111, 111, 111, 111, 111, Monthly)
-  val payment3 = Payment(LocalDate.parse("2019-04-05"), 555555, 111, 111, 111, 111, 111, Monthly)
-  val payments = Seq(payment1, payment2, payment3)
-
-  val sampleEmploymentWithSameDatFpsSubmissions = Seq(
-    Employment(
-      "employer1",
-      Live,
-      None,
-      Some(LocalDate.of(2018, 6, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
-      "taxNumber",
-      "payeNumber",
-      1,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "employer2",
-      Live,
-      None,
-      Some(LocalDate.of(2017, 7, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, Available, payments, Nil)),
-      "taxNumber",
-      "payeNumber",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
 
 }
