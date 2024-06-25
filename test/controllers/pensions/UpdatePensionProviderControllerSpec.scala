@@ -40,9 +40,7 @@ import scala.concurrent.Future
 class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   private def createController = new UpdatePensionProviderTestController
-
   private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
-
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val pensionName = "Pension 1"

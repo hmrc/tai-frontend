@@ -38,11 +38,9 @@ import scala.concurrent.Future
 class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private val payslipAmountView = inject[PayslipAmountView]
-
   private val taxablePayslipAmountView = inject[TaxablePayslipAmountView]
 
   class TestIncomeUpdatePayslipAmountController

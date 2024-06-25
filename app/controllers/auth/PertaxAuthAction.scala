@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, ConfidenceLevel}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.play.partials.HtmlPartial
@@ -42,7 +41,6 @@ trait PertaxAuthAction extends ActionFilter[Request]
 class PertaxAuthActionImpl @Inject() (
   override val authConnector: AuthConnector,
   pertaxConnector: PertaxConnector,
-  featureFlagService: FeatureFlagService,
   internalServerErrorView: InternalServerErrorView,
   mainTemplate: MainTemplate,
   cc: ControllerComponents,
@@ -53,6 +51,7 @@ class PertaxAuthActionImpl @Inject() (
   override def messagesApi: MessagesApi = cc.messagesApi
 
   // scalastyle:off method.length
+  // scalastyle:off cyclomatic.complexity
   override def filter[A](request: Request[A]): Future[Option[Result]] = {
     implicit val implicitRequest: Request[A] = request
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)

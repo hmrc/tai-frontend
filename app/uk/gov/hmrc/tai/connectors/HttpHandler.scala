@@ -31,6 +31,7 @@ import scala.util.chaining.scalaUtilChainingOps
 import scala.util.{Failure, Success, Try}
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
+
   private val logErrorResponses: PartialFunction[Try[Either[UpstreamErrorResponse, HttpResponse]], Unit] = {
     case Success(Left(error))
         if Set(NOT_FOUND, LOCKED, UNPROCESSABLE_ENTITY, UNAUTHORIZED).contains(error.statusCode) =>
@@ -64,7 +65,11 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
           case UNAUTHORIZED => response
-          case _            => handleResponse(http, url)(response)
+          case _ =>
+            handleResponseEither(http, url)(response).fold(
+              error => throw new Exception(error.message),
+              identity
+            )
         }
 
       def read(http: String, url: String, res: HttpResponse): HttpResponse = customRead(http, url, res)

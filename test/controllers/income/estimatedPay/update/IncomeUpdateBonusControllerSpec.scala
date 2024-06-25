@@ -265,7 +265,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
       status(result) mustBe OK
 
-      val expectedForm = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(Some(cachedAmount)))
+      val expectedForm = BonusOvertimeAmountForm.createForm.fill(BonusOvertimeAmountForm(Some(cachedAmount)))
       result rendersTheSameViewAs bonusPaymentAmountView(expectedForm, employer)(
         fakeRequest,
         messages,
@@ -338,7 +338,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         status(result) mustBe BAD_REQUEST
 
         result rendersTheSameViewAs bonusPaymentAmountView(
-          BonusOvertimeAmountForm.createForm().bindFromRequest(),
+          BonusOvertimeAmountForm.createForm.bindFromRequest(),
           employer
         )(fakeRequest, messages, authedUser)
       }

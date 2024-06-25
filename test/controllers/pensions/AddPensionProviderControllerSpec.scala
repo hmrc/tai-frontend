@@ -69,10 +69,7 @@ class AddPensionProviderControllerSpec extends BaseSpec {
         addPensionProviderJourneyCacheService,
         trackSuccessJourneyCacheService,
         inject[ErrorPagesHandler]
-      ) {
-
-    val pensionStartDateForm: PensionAddDateForm = PensionAddDateForm("pension provider")
-  }
+      ) {}
 
   override def beforeEach(): Unit = {
     super.beforeEach()

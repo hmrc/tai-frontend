@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.employments
 import akka.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
@@ -40,6 +39,43 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class UpdateEmploymentControllerSpec extends BaseSpec {
+
+  private val employment = Employment(
+    "company name",
+    Live,
+    Some("123"),
+    Some(LocalDate.parse("2016-05-26")),
+    Some(LocalDate.parse("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
+
+  private def createSUT = new SUT
+
+  val personService: PersonService = mock[PersonService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+
+  private class SUT
+      extends UpdateEmploymentController(
+        employmentService,
+        mock[AuditConnector],
+        mockAuthJourney,
+        mcc,
+        inject[WhatDoYouWantToTellUsView],
+        inject[CanWeContactByPhoneView],
+        inject[UpdateEmploymentCheckYourAnswersView],
+        inject[ConfirmationView],
+        journeyCacheService,
+        successfulJourneyCacheService,
+        inject[ErrorPagesHandler]
+      )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -495,43 +531,5 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
     }
   }
-
-  private val employment = Employment(
-    "company name",
-    Live,
-    Some("123"),
-    Some(LocalDate.parse("2016-05-26")),
-    Some(LocalDate.parse("2016-05-26")),
-    Nil,
-    "",
-    "",
-    2,
-    None,
-    hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
-  )
-
-  private def createSUT = new SUT
-
-  val personService: PersonService = mock[PersonService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-
-  private class SUT
-      extends UpdateEmploymentController(
-        employmentService,
-        mock[AuditConnector],
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[WhatDoYouWantToTellUsView],
-        inject[CanWeContactByPhoneView],
-        inject[UpdateEmploymentCheckYourAnswersView],
-        inject[ConfirmationView],
-        journeyCacheService,
-        successfulJourneyCacheService,
-        inject[ErrorPagesHandler]
-      )
 
 }

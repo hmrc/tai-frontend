@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.i18n.Messages
@@ -39,6 +38,136 @@ import scala.concurrent.Future
 class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+  val employment: Employment =
+    Employment(
+      "employment1",
+      Live,
+      None,
+      Some(LocalDate.now),
+      None,
+      Nil,
+      "",
+      "",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+
+  val employment2: Employment =
+    Employment(
+      "employment2",
+      Live,
+      None,
+      Some(LocalDate.now),
+      None,
+      Nil,
+      "",
+      "",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+
+  val pension: Employment =
+    Employment(
+      "employment3",
+      Live,
+      None,
+      Some(LocalDate.now),
+      None,
+      Nil,
+      "",
+      "",
+      3,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = true
+    )
+
+  val pension2: Employment =
+    Employment(
+      "employment4",
+      Live,
+      None,
+      Some(LocalDate.now),
+      None,
+      Nil,
+      "",
+      "",
+      4,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = true
+    )
+
+  val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
+
+  val taxCodeIncomesNoEmpId: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, None, 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodeIncomesMultiple: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(EmploymentIncome, Some(2), 3234, "employment2", "1050L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(3), 1234, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(4), 4321, "employment4", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodeIncomesCYPlusOneMultiple: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(EmploymentIncome, Some(2), 4000, "employment2", "1050L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(3), 3333, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(4), 4444, "employment4", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodeIncomesCYPlusOne2: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
+
+  class TestController()
+      extends IncomeTaxComparisonController(
+        mock[AuditConnector],
+        taxAccountService,
+        employmentService,
+        codingComponentService,
+        updateNextYearsIncomeService,
+        mockAuthJourney,
+        appConfig,
+        mcc,
+        inject[MainView],
+        inject[ErrorPagesHandler]
+      ) {
+
+    when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+      .thenReturn(Future.successful(Right(taxCodeIncomes)))
+    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      .thenReturn(Future.successful(taxAccountSummary))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+      .thenReturn(Future.successful(Seq.empty[CodingComponent]))
+    when(employmentService.employments(any(), meq(TaxYear()))(any()))
+      .thenReturn(Future.successful(Seq(employment)))
+    when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
+  }
 
   "onPageLoad" must {
     "display the cy plus one page" in {
@@ -145,76 +274,5 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       val doc = Jsoup.parse(contentAsString(result))
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
-  }
-
-  val employment = Employment("employment1", Live, None, Some(LocalDate.now), None, Nil, "", "", 1, None, false, false)
-  val employment2 = Employment("employment2", Live, None, Some(LocalDate.now), None, Nil, "", "", 2, None, false, false)
-  val pension = Employment("employment3", Live, None, Some(LocalDate.now), None, Nil, "", "", 3, None, false, true)
-  val pension2 = Employment("employment4", Live, None, Some(LocalDate.now), None, Nil, "", "", 4, None, false, true)
-  val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
-
-  val taxCodeIncomesNoEmpId = Seq(
-    TaxCodeIncome(EmploymentIncome, None, 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodeIncomesMultiple = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(EmploymentIncome, Some(2), 3234, "employment2", "1050L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(3), 1234, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(4), 4321, "employment4", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodeIncomesCYPlusOne = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodeIncomesCYPlusOneMultiple = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(EmploymentIncome, Some(2), 4000, "employment2", "1050L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(3), 3333, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(4), 4444, "employment4", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodeIncomesCYPlusOne2 = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val codingComponentService = mock[CodingComponentService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
-  val updateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
-
-  class TestController()
-      extends IncomeTaxComparisonController(
-        mock[AuditConnector],
-        taxAccountService,
-        employmentService,
-        codingComponentService,
-        updateNextYearsIncomeService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        appConfig,
-        mcc,
-        inject[MainView],
-        inject[ErrorPagesHandler]
-      ) {
-
-    when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-      .thenReturn(Future.successful(Right(taxCodeIncomes)))
-    when(taxAccountService.taxAccountSummary(any(), any())(any()))
-      .thenReturn(Future.successful(taxAccountSummary))
-    when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
-      .thenReturn(Future.successful(Seq.empty[CodingComponent]))
-    when(employmentService.employments(any(), meq(TaxYear()))(any()))
-      .thenReturn(Future.successful(Seq(employment)))
-    when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
   }
 }

@@ -94,7 +94,7 @@ class IncomeUpdateBonusController @Inject() (
     )
       .mapN {
         case (Right(incomeSource), bonusOvertimeAmount) =>
-          val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
+          val form = BonusOvertimeAmountForm.createForm.fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
           Ok(bonusPaymentAmount(form, incomeSource))
         case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
@@ -104,8 +104,7 @@ class IncomeUpdateBonusController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
-      BonusOvertimeAmountForm
-        .createForm()
+      BonusOvertimeAmountForm.createForm
         .bindFromRequest()
         .fold(
           formWithErrors =>
