@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
-import java.time.LocalDate
-
 class SameEstimatedPayViewSpec extends TaiViewSpec {
 
   val amount = "£20,000"
@@ -32,9 +30,9 @@ class SameEstimatedPayViewSpec extends TaiViewSpec {
 
   private val template = inject[SameEstimatedPayView]
 
-  override def view: Html = template(createViewModel())
+  override def view: Html = template(createViewModel)
 
-  def createViewModel(employmentStartDate: Option[LocalDate] = None) =
+  def createViewModel: SameEstimatedPayViewModel =
     SameEstimatedPayViewModel(employerName, employerId, amount = amountAsInt, isPension = false, url)
 
   "Same estimated pay page" must {

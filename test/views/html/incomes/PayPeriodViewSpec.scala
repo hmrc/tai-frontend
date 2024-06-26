@@ -38,5 +38,5 @@ class PayPeriodViewSpec extends TaiViewSpec {
   }
 
   private def payPeriod: PayPeriodView = inject[PayPeriodView]
-  override def view: Html = payPeriod(PayPeriodForm.createForm(None), id, employerName, isNotDaysError = true)
+  override def view: Html = payPeriod(PayPeriodForm.createForm(None), id, employerName)
 }

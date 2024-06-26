@@ -69,7 +69,6 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         complexEstimatedIncomeTaxView,
         simpleEstimatedIncomeTaxView,
         zeroTaxEstimatedIncomeTaxView,
-        appConfig,
         mcc,
         inject[ErrorPagesHandler]
       )
@@ -187,7 +186,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual simpleEstimatedIncomeTaxView(viewModel, Html("<title/>"), appConfig)
+        contentAsString(result) mustEqual simpleEstimatedIncomeTaxView(viewModel, Html("<title/>"))
           .toString()
       }
 
