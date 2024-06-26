@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import scala.annotation.nowarn
 
-@this(main: MainTemplate, form: FormWithCSRF, govukErrorSummary: GovukErrorSummary, govukInput : GovukInput)
+@this(main: MainTemplate, form: FormWithCSRF, govukInput : GovukInput)
 
-@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
+@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], @nowarn hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0")(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser)
 
 
@@ -44,12 +45,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
 <div class = "govuk-grid-row">
     <div class = "govuk-grid-column-two-thirds">
 
-        @income.errors(income("newAmount").name).map{ error =>
-            @govukErrorSummary(ErrorSummary(errorList = income.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
-        }
-
         @header()
-
 
         <h2 class="govuk-heading-s">@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
         <p class="govuk-body">@messages("tai.incomes.monetaryAmount.format.valid")</p>

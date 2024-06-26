@@ -168,7 +168,7 @@ class UpdateIncomeNextYearController @Inject() (
       val nino = user.nino
 
       updateNextYearsIncomeService.get(employmentId, nino) map { model =>
-        Ok(updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+        Ok(updateIncomeCYPlus1Same(model.employmentName, model.currentValue))
       }
     }
   }

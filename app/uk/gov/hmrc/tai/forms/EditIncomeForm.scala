@@ -45,7 +45,7 @@ case class EditIncomeForm(
   payToDate: Option[String] = None
 ) {
 
-  def toEmploymentAmount(): EmploymentAmount =
+  def toEmploymentAmount: EmploymentAmount =
     new EmploymentAmount(
       name = name,
       description = description,

@@ -333,7 +333,7 @@ class IncomeController @Inject() (
     hc: HeaderCarrier
   ): Future[Result] =
     journeyCacheService
-      .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
+      .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount.newAmount.toString)
       .map(_ => Redirect(confirmationCallback))
 
   def editPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {

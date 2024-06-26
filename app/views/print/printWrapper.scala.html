@@ -15,8 +15,9 @@
  *@
 
 @import views.html.helper.CSPNonce
+@import scala.annotation.nowarn
 
-@(title: String, header: String)(content: Html)(implicit request: Request[_], messages: Messages)
+@(title: String, @nowarn header: String)(content: Html)(implicit request: Request[_], messages: Messages)
 
 @fullTitle = @{
     s"${title} - ${Messages("tai.service.navTitle")} - GOV.UK"

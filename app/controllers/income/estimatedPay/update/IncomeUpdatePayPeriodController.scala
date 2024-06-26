@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCach
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.PayPeriodConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes.PayPeriodView
 
@@ -68,15 +67,10 @@ class IncomeUpdatePayPeriodController @Inject() (
         formWithErrors =>
           for {
             incomeSourceEither <- IncomeSource.create(journeyCacheService)
-          } yield {
-            val isDaysError = formWithErrors.errors.exists { error =>
-              error.key == PayPeriodConstants.OtherInDaysKey
-            }
-            incomeSourceEither match {
-              case Right(incomeSource) =>
-                BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name, !isDaysError))
-              case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-            }
+          } yield incomeSourceEither match {
+            case Right(incomeSource) =>
+              BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name))
+            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         formData => {
           val cacheMap = formData.otherInDays match {
