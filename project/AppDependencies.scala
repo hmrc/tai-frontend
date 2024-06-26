@@ -5,7 +5,7 @@ private object AppDependencies {
   private val playVersion = "play-29"
   private val hmrcMongoVersion = "1.9.0"
   private val bootstrapVersion = "8.6.0"
-  private val webChatVersion = "1.4.0"
+  private val webChatVersion = "1.6.0"
 
   val compile: Seq[ModuleID] = Seq(
     filters,
