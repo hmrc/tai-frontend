@@ -54,7 +54,7 @@ user: controllers.auth.AuthedUser)
                         <h3 class="govuk-notification-banner__heading">
                         @messages("tai.WhatDoYouWantToDo.ChangedTaxCode", HtmlFormatter.htmlNonBroken(Dates.formatDate(mostRecentTaxCodeChangeDate)))
                         </h3>
-                        <a href="@controllers.routes.TaxCodeChangeController.taxCodeComparison()" class="govuk-body">
+                        <a href="@controllers.routes.TaxCodeChangeController.taxCodeComparison()" class="govuk-link">
                         @messages("tai.WhatDoYouWantToDo.ViewChangedTaxCode")
                         </a>
                     </div>
