@@ -91,7 +91,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return errors with text field content that does not meet requirements of an additional constraint" in {
-      val extraConstraint = Constraint[String]((textContent: String) => Invalid("bang"))
+      val extraConstraint = Constraint[String]((_: String) => Invalid("bang"))
       val formWithExtraConstraint =
         YesNoTextEntryForm.form("select yes or no", "enter some text", Some(extraConstraint))
 

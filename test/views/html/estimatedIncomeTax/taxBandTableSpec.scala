@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,13 +74,13 @@ class taxBandTableSpec extends TaiViewSpec {
     }
   }
 
-  val taxBands = List(
+  val taxBands: List[TaxBand] = List(
     TaxBand(BandTypesConstants.DividendZeroRate, "", 11500, 0, None, None, 0),
     TaxBand(BandTypesConstants.DividendBasicRate, "", 32010, 6402, None, None, 20),
     TaxBand(BandTypesConstants.DividendHigherRate, "", 36466, 14586.4, None, None, 40),
     TaxBand(BandTypesConstants.DividendAdditionalRate, "", 40000, 15000, None, None, 50)
   )
 
-  override def view: Html = views.html.estimatedIncomeTax.taxBandTable("table-id", taxBands, UkTaxRegion, appConfig)
+  override def view: Html = views.html.estimatedIncomeTax.taxBandTable("table-id", taxBands, UkTaxRegion)
 
 }

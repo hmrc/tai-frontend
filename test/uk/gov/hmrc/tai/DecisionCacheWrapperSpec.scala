@@ -82,10 +82,10 @@ class DecisionCacheWrapperSpec extends BaseSpec with Results {
         when(journeyCacheService.mandatoryJourneyValue(any())(any()))
           .thenReturn(Future.successful(Right(Telephone.name)))
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map("" -> "")))
-        val function = (a: String, b: Result) => b
+        val function = (_: String, b: Result) => b
         val result = wrapper.cacheDecision(YesIGetThisBenefit, function)
 
-        whenReady(result) { r =>
+        whenReady(result) { _ =>
           verify(journeyCacheService).cache(any(), any())(any())
         }
       }
@@ -95,7 +95,7 @@ class DecisionCacheWrapperSpec extends BaseSpec with Results {
         when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
         val result =
-          wrapper.cacheDecision(YesIGetThisBenefit, (a: String, b: Result) => b)
+          wrapper.cacheDecision(YesIGetThisBenefit, (_: String, b: Result) => b)
 
         whenReady(result) { r =>
           r mustBe Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)

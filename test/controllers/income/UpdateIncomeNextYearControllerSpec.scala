@@ -386,7 +386,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result: Future[Result] = testController.same(employmentID)(request)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, employmentID, currentEstPay)(
+          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, currentEstPay)(
             request,
             messages,
             authedUser

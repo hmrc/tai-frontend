@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import akka.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
-import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
@@ -39,19 +38,16 @@ import scala.concurrent.Future
 class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
 
   private val bonusPaymentsView = inject[BonusPaymentsView]
-
   private val bonusPaymentAmountView = inject[BonusPaymentAmountView]
 
   class TestIncomeUpdateBonusController(maybeTaxablePayKey: Option[String] = Some("taxablePay"))
       extends IncomeUpdateBonusController(
         mockAuthJourney,
-        FakeValidatePerson,
         mcc,
         bonusPaymentsView,
         bonusPaymentAmountView,

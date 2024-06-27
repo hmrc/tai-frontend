@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package views.html.incomeTaxHistory
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
@@ -26,6 +27,102 @@ import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, I
 import scala.jdk.CollectionConverters.ListHasAsScala
 
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
+
+  val incomeTaxHistoryView: IncomeTaxHistoryView = inject[IncomeTaxHistoryView]
+  val taxYear: TaxYear = TaxYear()
+  val historyViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = true,
+    "ern",
+    Some("pension-number"),
+    Some(taxYear.start),
+    None,
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val historyViewModel1: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = true,
+    "ern-for-pension",
+    None,
+    Some(taxYear.start.minusYears(1)),
+    Some(taxYear.end.minusYears(1)),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val historyViewModel2: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = false,
+    "ern",
+    None,
+    Some(taxYear.start.minusYears(2)),
+    Some(taxYear.end.minusYears(2)),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    None
+  )
+
+  val historyViewModel3: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = false,
+    "ern",
+    None,
+    Some(taxYear.start.minusYears(3)),
+    Some(taxYear.end.minusYears(3)),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    None
+  )
+
+  val historyViewModel4: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = false,
+    "ern",
+    None,
+    Some(taxYear.start.minusYears(4)),
+    Some(taxYear.end.minusYears(4)),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val historyViewModel5: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
+    "employerName",
+    isPension = false,
+    "ern",
+    None,
+    Some(taxYear.start.minusYears(5)),
+    Some(taxYear.end.minusYears(5)),
+    Some("taxableIncome"),
+    Some("incomeTaxPaid"),
+    Some(s"taxCode-${taxYear.start}")
+  )
+
+  val incomeTaxYears: List[IncomeTaxYear] = List(
+    IncomeTaxYear(taxYear, List(historyViewModel)),
+    IncomeTaxYear(TaxYear(taxYear.year - 1), List(historyViewModel1)),
+    IncomeTaxYear(TaxYear(taxYear.year - 2), List(historyViewModel2)),
+    IncomeTaxYear(TaxYear(taxYear.year - 3), List(historyViewModel4)),
+    IncomeTaxYear(TaxYear(taxYear.year - 4), List(historyViewModel5))
+  )
+
+  val person: Person = fakePerson(nino)
+  val personWithNoAddress: Person = fakePersonWithNoAddress(nino)
+  val personWithPartialAddress: Person = fakePersonWithPartialAddress(nino)
+
+  override def view: Html =
+    incomeTaxHistoryView(person, incomeTaxYears)
+
+  lazy val viewWithMissingStartDate: Html = incomeTaxHistoryView(
+    personWithNoAddress,
+    List(IncomeTaxYear(taxYear, List(historyViewModel.copy(startDate = None))))
+  )
+  lazy val viewWithNoAddress: Html = incomeTaxHistoryView(personWithNoAddress, incomeTaxYears)
+  lazy val viewWithPartialAddress: Html = incomeTaxHistoryView(personWithPartialAddress, incomeTaxYears)
 
   "Income tax history view" must {
     behave like pageWithTitle(messages("tai.incomeTax.history.pageTitle"))
@@ -115,102 +212,5 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     }
 
   }
-
-  val incomeTaxHistoryView = inject[IncomeTaxHistoryView]
-  val taxYear: TaxYear = TaxYear()
-  val historyViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    isPension = true,
-    "ern",
-    Some("pension-number"),
-    Some(taxYear.start),
-    None,
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    Some(s"taxCode-${taxYear.start}")
-  )
-
-  val historyViewModel1: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    isPension = true,
-    "ern-for-pension",
-    None,
-    Some(taxYear.start.minusYears(1)),
-    Some(taxYear.end.minusYears(1)),
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    Some(s"taxCode-${taxYear.start}")
-  )
-
-  val historyViewModel2: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    isPension = false,
-    "ern",
-    None,
-    Some(taxYear.start.minusYears(2)),
-    Some(taxYear.end.minusYears(2)),
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    None
-  )
-
-  val historyViewModel3: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    isPension = false,
-    "ern",
-    None,
-    Some(taxYear.start.minusYears(3)),
-    Some(taxYear.end.minusYears(3)),
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    None
-  )
-
-  val historyViewModel4: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    isPension = false,
-    "ern",
-    None,
-    Some(taxYear.start.minusYears(4)),
-    Some(taxYear.end.minusYears(4)),
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    Some(s"taxCode-${taxYear.start}")
-  )
-
-  val historyViewModel5: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
-    "employerName",
-    isPension = false,
-    "ern",
-    None,
-    Some(taxYear.start.minusYears(5)),
-    Some(taxYear.end.minusYears(5)),
-    Some("taxableIncome"),
-    Some("incomeTaxPaid"),
-    Some(s"taxCode-${taxYear.start}")
-  )
-
-  val incomeTaxYears: List[IncomeTaxYear] = List(
-    IncomeTaxYear(taxYear, List(historyViewModel)),
-    IncomeTaxYear(TaxYear(taxYear.year - 1), List(historyViewModel1)),
-    IncomeTaxYear(TaxYear(taxYear.year - 2), List(historyViewModel2)),
-    IncomeTaxYear(TaxYear(taxYear.year - 3), List(historyViewModel4)),
-    IncomeTaxYear(TaxYear(taxYear.year - 4), List(historyViewModel5))
-  )
-
-  val person = fakePerson(nino)
-  val personWithNoAddress = fakePersonWithNoAddress(nino)
-  val personWithPartialAddress = fakePersonWithPartialAddress(nino)
-
-  override def view: Html =
-    incomeTaxHistoryView(appConfig, person, incomeTaxYears)
-
-  lazy val viewWithMissingStartDate: Html = incomeTaxHistoryView(
-    appConfig,
-    personWithNoAddress,
-    List(IncomeTaxYear(taxYear, List(historyViewModel.copy(startDate = None))))
-  )
-  lazy val viewWithNoAddress: Html = incomeTaxHistoryView(appConfig, personWithNoAddress, incomeTaxYears)
-  lazy val viewWithPartialAddress: Html = incomeTaxHistoryView(appConfig, personWithPartialAddress, incomeTaxYears)
 
 }

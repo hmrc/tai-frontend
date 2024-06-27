@@ -42,7 +42,6 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       mockAuthJourney,
       mcc,
       inject[DetailedIncomeTaxEstimateView],
-      appConfig,
       inject[ErrorPagesHandler]
     )
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,37 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{BandedGraph, SimpleEstimat
 import views.html.includes.link
 
 class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
+
+  val bandedGraph: BandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None, None)
+
+  val ukTaxBands: List[TaxBand] = List(
+    TaxBand("pa", "", 11500, 0, None, None, 0),
+    TaxBand("B", "", 32010, 6402, None, None, 20),
+    TaxBand("D0", "", 36466, 14586.4, None, None, 40)
+  )
+
+  val ukViewModel: SimpleEstimatedIncomeTaxViewModel = SimpleEstimatedIncomeTaxViewModel(
+    20988.40,
+    68476,
+    11500,
+    bandedGraph,
+    "UK",
+    ukTaxBands,
+    messages("tax.on.your.employment.income"),
+    messages(
+      "your.total.income.from.employment.desc",
+      "47,835",
+      messages("tai.estimatedIncome.taxFree.link"),
+      "£11,500"
+    )
+  )
+
+  private val template = inject[SimpleEstimatedIncomeTaxView]
+
+  def view(vm: SimpleEstimatedIncomeTaxViewModel): Html =
+    template(vm, Html("<Html><head></head><body>Test</body></Html>"))
+
+  override def view: Html = view(ukViewModel)
 
   "Estimated Income Tax Page" must {
     behave like pageWithCombinedHeaderNewFormatNew(
@@ -66,7 +97,7 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           "tai.estimatedIncome.howYouPay.desc",
           link(
             id = Some("taxCodesLink"),
-            url = routes.YourTaxCodeController.taxCodes().url.toString,
+            url = routes.YourTaxCodeController.taxCodes().url,
             copy = Messages("tai.estimatedIncome.taxCodes.link")
           )
         )
@@ -221,36 +252,5 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       )
     }
   }
-
-  val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None, None)
-
-  val ukTaxBands = List(
-    TaxBand("pa", "", 11500, 0, None, None, 0),
-    TaxBand("B", "", 32010, 6402, None, None, 20),
-    TaxBand("D0", "", 36466, 14586.4, None, None, 40)
-  )
-
-  val ukViewModel = SimpleEstimatedIncomeTaxViewModel(
-    20988.40,
-    68476,
-    11500,
-    bandedGraph,
-    "UK",
-    ukTaxBands,
-    messages("tax.on.your.employment.income"),
-    messages(
-      "your.total.income.from.employment.desc",
-      "47,835",
-      messages("tai.estimatedIncome.taxFree.link"),
-      "£11,500"
-    )
-  )
-
-  private val template = inject[SimpleEstimatedIncomeTaxView]
-
-  def view(vm: SimpleEstimatedIncomeTaxViewModel): Html =
-    template(vm, Html("<Html><head></head><body>Test</body></Html>"), appConfig)
-
-  override def view: Html = view(ukViewModel)
 
 }

@@ -88,7 +88,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       }
 
       "pension data is returned" in {
-        for (taxYear <- taxYears) {
+        for (_ <- taxYears) {
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome))
@@ -171,7 +171,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
     "display the income tax history page with no tax history message" when {
       "given taxYear returns no data" in {
 
-        for (taxYear <- taxYears) {
+        for (_ <- taxYears) {
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
           when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(

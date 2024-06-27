@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ class PensionProviderConnectorSpec extends BaseSpec {
           .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider), any())(
             any(),
             any(),
-            any(),
             any()
           )
       )
@@ -63,7 +62,6 @@ class PensionProviderConnectorSpec extends BaseSpec {
       when(
         httpHandler
           .postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider), any())(
-            any(),
             any(),
             any(),
             any()

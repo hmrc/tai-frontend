@@ -54,7 +54,6 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
   val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
 
   def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
-    employmentService,
     taxAccountService,
     taxAccountSummaryService,
     auditService,

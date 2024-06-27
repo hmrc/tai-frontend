@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{Employment, Person}
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.NoCYIncomeTaxErrorView
@@ -37,14 +37,12 @@ import scala.language.postfixOps
 
 class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
-  val defaultPerson: Person = fakePerson(nino)
-
-  def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) =
-    new SUT(person, employmentDataFailure)
+  def createSUT(employmentDataFailure: Option[Throwable] = None) =
+    new SUT(employmentDataFailure)
 
   val employmentService: EmploymentService = mock[EmploymentService]
 
-  class SUT(person: Person, employmentDataFailure: Option[Throwable])
+  class SUT(employmentDataFailure: Option[Throwable])
       extends NoCYIncomeTaxErrorController(
         employmentService,
         mock[AuditConnector],
