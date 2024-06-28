@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,11 +64,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
           case UNAUTHORIZED => response
-          case _ =>
-            handleResponseEither(http, url)(response).fold(
-              error => throw new Exception(error.message),
-              identity
-            )
+          case _            => handleResponse(http, url)(response)
         }
 
       def read(http: String, url: String, res: HttpResponse): HttpResponse = customRead(http, url, res)

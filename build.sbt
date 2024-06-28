@@ -92,7 +92,7 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
 
-Test / scalacOptions --= Seq("-Wvalue-discard")
+Test / scalacOptions --= Seq("-Wdead-code", "-Wvalue-discard")
 
 lazy val it = project
   .enablePlugins(play.sbt.PlayScala)
