@@ -35,36 +35,30 @@
     showCancel = false
 ){
 
-    <div>
-
-        <p class="govuk-body">
-            @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
-            <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
-                @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
-            </span>
-        </p>
-        <div class="govuk-details__text">
-            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
-            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
-        </div>
-
+    <p class="govuk-body">
+        @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
+        <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark">
+            @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
+        </span>
+    </p>
+    <div class="govuk-details__text">
+        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
+        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
     </div>
 
-    <div class="govuk-!-padding-top-5">
-        <p class="govuk-body">
-            @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
-        </p>
-    </div>
+    <p class="govuk-body govuk-!-margin-top-5">
+        @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
+    </p>
 
-    <div class="govuk-!-padding-top-5">
-        <a id="confirmAndSend" class="govuk-button" role="button" href="@viewModel.onConfirm">
-            @messages("tai.confirmAndSend")
-        </a>
-    </div>
 
-    <div class="govuk-body">
-        <a href="@viewModel.onCancel">
+    <a id="confirmAndSend" class="govuk-button" role="button" href="@viewModel.onConfirm">
+        @messages("tai.confirmAndSend")
+    </a>
+
+
+    <p class="govuk-body">
+        <a class="govuk-link" href="@viewModel.onCancel">
             @messages("tai.cancel")
         </a>
-    </div>
+    </p>
 }

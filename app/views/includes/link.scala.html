@@ -40,7 +40,9 @@
         }
     } else {
         @if(linkClasses){
-            class="@linkClasses.mkString(" ")"
+            class="govuk-link @linkClasses.mkString(" ")"
+        } else {
+            class="govuk-link"
         }
     }
 
