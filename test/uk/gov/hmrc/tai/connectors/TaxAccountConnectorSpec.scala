@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,211 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   lazy val taxAccountSummaryUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/summary"
   lazy val nonTaxCodeIncomeUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/income"
   lazy val totalTaxUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"
+
+  private val income = uk.gov.hmrc.tai.model.domain.income.Incomes(
+    Seq.empty[TaxCodeIncome],
+    NonTaxCodeIncome(
+      None,
+      Seq(
+        OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
+      )
+    )
+  )
+
+  val taxCodeIncome: TaxCodeIncome =
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)
+  val employment: Employment = Employment(
+    "company name",
+    Live,
+    Some("888"),
+    Some(LocalDate.of(2019, 5, 26)),
+    None,
+    Seq.empty[AnnualAccount],
+    "",
+    "",
+    1,
+    Some(BigDecimal(100)),
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = true
+  )
+  val codingComponentSeq: Seq[CodingComponent] = Seq(
+    CodingComponent(EmployerProvidedServices, Some(12), 12321, "Some Description"),
+    CodingComponent(GiftsSharesCharity, Some(31), 12345, "Some Description Some")
+  )
+  val incomeSource: TaxedIncome = TaxedIncome(taxCodeIncome, employment)
+
+  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
+
+  private val currentTaxYear = TaxYear()
+
+  def ninoAsString: String = nino.value
+
+  val taxCodeIncomeJson: JsValue = Json.obj(
+    "data" -> JsArray(
+      Seq(
+        Json.obj(
+          "componentType"  -> "EmploymentIncome",
+          "employmentId"   -> 1,
+          "amount"         -> 1111,
+          "description"    -> "employment",
+          "taxCode"        -> "1150L",
+          "name"           -> "Employer1",
+          "basisOperation" -> "OtherBasisOperation",
+          "status"         -> "Live"
+        )
+      )
+    ),
+    "links" -> JsArray(Seq())
+  )
+
+  val incomeSourceJson: JsValue = Json.obj(
+    "data" -> Json.arr(
+      Json.obj(
+        "taxCodeIncome" -> Json.obj(
+          "componentType"                 -> "EmploymentIncome",
+          "employmentId"                  -> 1,
+          "amount"                        -> 1111,
+          "description"                   -> "employment",
+          "taxCode"                       -> "1150L",
+          "name"                          -> "Employer1",
+          "basisOperation"                -> "OtherBasisOperation",
+          "status"                        -> "Live",
+          "inYearAdjustmentIntoCY"        -> 0,
+          "totalInYearAdjustment"         -> 0,
+          "inYearAdjustmentIntoCYPlusOne" -> 0
+        ),
+        "employment" -> Json.obj(
+          "name"                         -> "company name",
+          "employmentStatus"             -> "Live",
+          "payrollNumber"                -> "888",
+          "startDate"                    -> "2019-05-26",
+          "annualAccounts"               -> Json.arr(),
+          "taxDistrictNumber"            -> "",
+          "payeNumber"                   -> "",
+          "sequenceNumber"               -> 1,
+          "cessationPay"                 -> 100,
+          "hasPayrolledBenefit"          -> false,
+          "receivingOccupationalPension" -> true
+        )
+      )
+    )
+  )
+
+  val incomeSourceEmpty: JsValue = Json.obj(
+    "data" -> Json.arr()
+  )
+
+  val codingComponentSampleJson: JsValue = Json.obj(
+    "data" -> Json.arr(
+      Json.obj(
+        "componentType" -> "EmployerProvidedServices",
+        "employmentId"  -> 12,
+        "amount"        -> 12321,
+        "description"   -> "Some Description",
+        "iabdCategory"  -> "Benefit"
+      ),
+      Json.obj(
+        "componentType" -> "GiftsSharesCharity",
+        "employmentId"  -> 31,
+        "amount"        -> 12345,
+        "description"   -> "Some Description Some",
+        "iabdCategory"  -> "Allowance"
+      )
+    ),
+    "links" -> Json.arr()
+  )
+
+  val corruptJsonResponse: JsValue = Json.obj(
+    "data" -> JsArray(
+      Seq(
+        Json.obj(
+          "employmentId"   -> 1,
+          "amount"         -> 1111,
+          "description"    -> "employment",
+          "taxCode"        -> "1150L",
+          "name"           -> "Employer1",
+          "basisOperation" -> "OtherBasisOperation"
+        )
+      )
+    ),
+    "links" -> JsArray(Seq())
+  )
+
+  val incomeJson: JsValue = Json.obj(
+    "data" -> Json.obj(
+      "taxCodeIncomes" -> JsArray(),
+      "nonTaxCodeIncomes" -> Json.obj(
+        "otherNonTaxCodeIncomes" -> Json.arr(
+          Json.obj(
+            "incomeComponentType" -> "Profit",
+            "amount"              -> 100,
+            "description"         -> "Profit"
+          )
+        )
+      )
+    ),
+    "links" -> Json.arr()
+  )
+
+  private val totalTaxJson = Json.obj(
+    "data" -> Json.obj(
+      "amount" -> 1000,
+      "incomeCategories" -> Json.arr(
+        Json.obj(
+          "incomeCategoryType" -> "UkDividendsIncomeCategory",
+          "totalTax"           -> 10,
+          "totalTaxableIncome" -> 20,
+          "totalIncome"        -> 30,
+          "taxBands" -> Json.arr(
+            Json.obj(
+              "bandType" -> "",
+              "code"     -> "",
+              "income"   -> 0,
+              "tax"      -> 0,
+              "rate"     -> 0
+            ),
+            Json.obj(
+              "bandType"  -> "B",
+              "code"      -> "BR",
+              "income"    -> 10000,
+              "tax"       -> 500,
+              "lowerBand" -> 5000,
+              "upperBand" -> 20000,
+              "rate"      -> 10
+            )
+          )
+        )
+      ),
+      "reliefsGivingBackTax" -> Json.obj(
+        "amount" -> 100,
+        "taxAdjustmentComponents" -> Json.arr(
+          Json.obj(
+            "taxAdjustmentType"   -> "EnterpriseInvestmentSchemeRelief",
+            "taxAdjustmentAmount" -> 100
+          )
+        )
+      ),
+      "otherTaxDue" -> Json.obj(
+        "amount" -> 100,
+        "taxAdjustmentComponents" -> Json.arr(
+          Json.obj(
+            "taxAdjustmentType"   -> "ExcessGiftAidTax",
+            "taxAdjustmentAmount" -> 100
+          )
+        )
+      ),
+      "alreadyTaxedAtSource" -> Json.obj(
+        "amount" -> 100,
+        "taxAdjustmentComponents" -> Json.arr(
+          Json.obj(
+            "taxAdjustmentType"   -> "TaxOnBankBSInterest",
+            "taxAdjustmentAmount" -> 100
+          )
+        )
+      )
+    ),
+    "links" -> Json.arr()
+  )
 
   "tax account url" must {
     "fetch the url to connect to TAI to retrieve tax codes" in {
@@ -461,208 +666,4 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     }
   }
 
-  private val currentTaxYear = TaxYear()
-
-  def ninoAsString: String = nino.value
-
-  val taxCodeIncomeJson: JsValue = Json.obj(
-    "data" -> JsArray(
-      Seq(
-        Json.obj(
-          "componentType"  -> "EmploymentIncome",
-          "employmentId"   -> 1,
-          "amount"         -> 1111,
-          "description"    -> "employment",
-          "taxCode"        -> "1150L",
-          "name"           -> "Employer1",
-          "basisOperation" -> "OtherBasisOperation",
-          "status"         -> "Live"
-        )
-      )
-    ),
-    "links" -> JsArray(Seq())
-  )
-
-  val incomeSourceJson: JsValue = Json.obj(
-    "data" -> Json.arr(
-      Json.obj(
-        "taxCodeIncome" -> Json.obj(
-          "componentType"                 -> "EmploymentIncome",
-          "employmentId"                  -> 1,
-          "amount"                        -> 1111,
-          "description"                   -> "employment",
-          "taxCode"                       -> "1150L",
-          "name"                          -> "Employer1",
-          "basisOperation"                -> "OtherBasisOperation",
-          "status"                        -> "Live",
-          "inYearAdjustmentIntoCY"        -> 0,
-          "totalInYearAdjustment"         -> 0,
-          "inYearAdjustmentIntoCYPlusOne" -> 0
-        ),
-        "employment" -> Json.obj(
-          "name"                         -> "company name",
-          "employmentStatus"             -> "Live",
-          "payrollNumber"                -> "888",
-          "startDate"                    -> "2019-05-26",
-          "annualAccounts"               -> Json.arr(),
-          "taxDistrictNumber"            -> "",
-          "payeNumber"                   -> "",
-          "sequenceNumber"               -> 1,
-          "cessationPay"                 -> 100,
-          "hasPayrolledBenefit"          -> false,
-          "receivingOccupationalPension" -> true
-        )
-      )
-    )
-  )
-
-  val incomeSourceEmpty: JsValue = Json.obj(
-    "data" -> Json.arr()
-  )
-
-  val codingComponentSampleJson: JsValue = Json.obj(
-    "data" -> Json.arr(
-      Json.obj(
-        "componentType" -> "EmployerProvidedServices",
-        "employmentId"  -> 12,
-        "amount"        -> 12321,
-        "description"   -> "Some Description",
-        "iabdCategory"  -> "Benefit"
-      ),
-      Json.obj(
-        "componentType" -> "GiftsSharesCharity",
-        "employmentId"  -> 31,
-        "amount"        -> 12345,
-        "description"   -> "Some Description Some",
-        "iabdCategory"  -> "Allowance"
-      )
-    ),
-    "links" -> Json.arr()
-  )
-
-  val corruptJsonResponse: JsValue = Json.obj(
-    "data" -> JsArray(
-      Seq(
-        Json.obj(
-          "employmentId"   -> 1,
-          "amount"         -> 1111,
-          "description"    -> "employment",
-          "taxCode"        -> "1150L",
-          "name"           -> "Employer1",
-          "basisOperation" -> "OtherBasisOperation"
-        )
-      )
-    ),
-    "links" -> JsArray(Seq())
-  )
-
-  val incomeJson: JsValue = Json.obj(
-    "data" -> Json.obj(
-      "taxCodeIncomes" -> JsArray(),
-      "nonTaxCodeIncomes" -> Json.obj(
-        "otherNonTaxCodeIncomes" -> Json.arr(
-          Json.obj(
-            "incomeComponentType" -> "Profit",
-            "amount"              -> 100,
-            "description"         -> "Profit"
-          )
-        )
-      )
-    ),
-    "links" -> Json.arr()
-  )
-
-  private val totalTaxJson = Json.obj(
-    "data" -> Json.obj(
-      "amount" -> 1000,
-      "incomeCategories" -> Json.arr(
-        Json.obj(
-          "incomeCategoryType" -> "UkDividendsIncomeCategory",
-          "totalTax"           -> 10,
-          "totalTaxableIncome" -> 20,
-          "totalIncome"        -> 30,
-          "taxBands" -> Json.arr(
-            Json.obj(
-              "bandType" -> "",
-              "code"     -> "",
-              "income"   -> 0,
-              "tax"      -> 0,
-              "rate"     -> 0
-            ),
-            Json.obj(
-              "bandType"  -> "B",
-              "code"      -> "BR",
-              "income"    -> 10000,
-              "tax"       -> 500,
-              "lowerBand" -> 5000,
-              "upperBand" -> 20000,
-              "rate"      -> 10
-            )
-          )
-        )
-      ),
-      "reliefsGivingBackTax" -> Json.obj(
-        "amount" -> 100,
-        "taxAdjustmentComponents" -> Json.arr(
-          Json.obj(
-            "taxAdjustmentType"   -> "EnterpriseInvestmentSchemeRelief",
-            "taxAdjustmentAmount" -> 100
-          )
-        )
-      ),
-      "otherTaxDue" -> Json.obj(
-        "amount" -> 100,
-        "taxAdjustmentComponents" -> Json.arr(
-          Json.obj(
-            "taxAdjustmentType"   -> "ExcessGiftAidTax",
-            "taxAdjustmentAmount" -> 100
-          )
-        )
-      ),
-      "alreadyTaxedAtSource" -> Json.obj(
-        "amount" -> 100,
-        "taxAdjustmentComponents" -> Json.arr(
-          Json.obj(
-            "taxAdjustmentType"   -> "TaxOnBankBSInterest",
-            "taxAdjustmentAmount" -> 100
-          )
-        )
-      )
-    ),
-    "links" -> Json.arr()
-  )
-
-  private val income = uk.gov.hmrc.tai.model.domain.income.Incomes(
-    Seq.empty[TaxCodeIncome],
-    NonTaxCodeIncome(
-      None,
-      Seq(
-        OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
-      )
-    )
-  )
-
-  val taxCodeIncome =
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)
-  val employment = Employment(
-    "company name",
-    Live,
-    Some("888"),
-    Some(LocalDate.of(2019, 5, 26)),
-    None,
-    Seq.empty[AnnualAccount],
-    "",
-    "",
-    1,
-    Some(BigDecimal(100)),
-    hasPayrolledBenefit = false,
-    receivingOccupationalPension = true
-  )
-  val codingComponentSeq = Seq(
-    CodingComponent(EmployerProvidedServices, Some(12), 12321, "Some Description"),
-    CodingComponent(GiftsSharesCharity, Some(31), 12345, "Some Description Some")
-  )
-  val incomeSource = TaxedIncome(taxCodeIncome, employment)
-
-  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
 }

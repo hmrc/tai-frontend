@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import uk.gov.hmrc.http.{BadRequestException, _}
 import javax.inject.Inject
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.runtime.universe.TypeTag
 import scala.util.chaining.scalaUtilChainingOps
 import scala.util.{Failure, Success, Try}
 
 class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions with Logging {
+
   private val logErrorResponses: PartialFunction[Try[Either[UpstreamErrorResponse, HttpResponse]], Unit] = {
     case Success(Left(error))
         if Set(NOT_FOUND, LOCKED, UNPROCESSABLE_ENTITY, UNAUTHORIZED).contains(error.statusCode) =>
@@ -106,7 +106,15 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       }
   }
 
-  def putToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
+  trait DataConverter[I] {
+    def convert(data: I): JsValue
+  }
+
+  implicit val stringDataConverter: DataConverter[String] = new DataConverter[String] {
+    def convert(data: String): JsValue = Json.toJson(data)
+  }
+
+  def putToApi[I](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     writes: Writes[I]
@@ -138,7 +146,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
         }
       }
 
-  def postToApi[I: TypeTag](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
+  def postToApi[I](url: String, data: I, timeoutInSec: Option[DurationInt] = None)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     writes: Writes[I]

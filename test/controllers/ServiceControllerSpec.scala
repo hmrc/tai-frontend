@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.FakeValidatePerson
 import controllers.auth.AuthJourney
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -26,6 +25,18 @@ import utils.BaseSpec
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
 class ServiceControllerSpec extends BaseSpec {
+
+  def createSut(authAction: AuthJourney = mockAuthJourney) = new SUT(authAction)
+
+  class SUT(authAction: AuthJourney = mockAuthJourney)
+      extends ServiceController(
+        authAction,
+        appConfig,
+        mcc,
+        inject[TimeoutView],
+        inject[SessionExpiredView],
+        inject[ManualCorrespondenceView]
+      )
 
   "Time Out page" should {
     "return page when called" in {
@@ -83,18 +94,5 @@ class ServiceControllerSpec extends BaseSpec {
       doc.title() must include(Messages("mci.title"))
     }
   }
-
-  def createSut(authAction: AuthJourney = mockAuthJourney) = new SUT(authAction)
-
-  class SUT(authAction: AuthJourney = mockAuthJourney)
-      extends ServiceController(
-        authAction,
-        FakeValidatePerson,
-        appConfig,
-        mcc,
-        inject[TimeoutView],
-        inject[SessionExpiredView],
-        inject[ManualCorrespondenceView]
-      )
 
 }

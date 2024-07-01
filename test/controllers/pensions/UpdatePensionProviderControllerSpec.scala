@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.pensions
 import akka.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -40,13 +39,45 @@ import scala.concurrent.Future
 
 class UpdatePensionProviderControllerSpec extends BaseSpec {
 
+  private def createController = new UpdatePensionProviderTestController
+  private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+  private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+
+  val pensionName = "Pension 1"
+  val pensionId = "1"
+
+  val pensionTaxCodeIncome: TaxCodeIncome =
+    TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
+  val empTaxCodeIncome: TaxCodeIncome =
+    TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
+
+  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  class UpdatePensionProviderTestController
+      extends UpdatePensionProviderController(
+        taxAccountService,
+        pensionProviderService,
+        mockAuthJourney,
+        mcc,
+        appConfig,
+        inject[CanWeContactByPhoneView],
+        inject[DoYouGetThisPensionIncomeView],
+        inject[WhatDoYouWantToTellUsView],
+        inject[UpdatePensionCheckYourAnswersView],
+        inject[ConfirmationView],
+        inject[DuplicateSubmissionWarningView],
+        journeyCacheService,
+        successfulJourneyCacheService,
+        inject[ErrorPagesHandler]
+      )
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     Mockito.reset(journeyCacheService)
   }
-
-  val pensionName = "Pension 1"
-  val pensionId = "1"
 
   "doYouGetThisPension" must {
     "show the doYouGetThisPension view" in {
@@ -644,39 +675,4 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       }
     }
   }
-
-  private def createController = new UpdatePensionProviderTestController
-
-  private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
-  private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
-
-  val pensionTaxCodeIncome: TaxCodeIncome =
-    TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
-  val empTaxCodeIncome: TaxCodeIncome =
-    TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
-
-  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-
-  class UpdatePensionProviderTestController
-      extends UpdatePensionProviderController(
-        taxAccountService,
-        pensionProviderService,
-        mock[AuditService],
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        appConfig,
-        inject[CanWeContactByPhoneView],
-        inject[DoYouGetThisPensionIncomeView],
-        inject[WhatDoYouWantToTellUsView],
-        inject[UpdatePensionCheckYourAnswersView],
-        inject[ConfirmationView],
-        inject[DuplicateSubmissionWarningView],
-        journeyCacheService,
-        successfulJourneyCacheService,
-        inject[ErrorPagesHandler]
-      )
 }

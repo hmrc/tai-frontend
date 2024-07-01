@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -41,6 +40,61 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeSourceSummaryControllerSpec extends BaseSpec {
+
+  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+
+  val annualAccount: AnnualAccount = AnnualAccount(
+    uk.gov.hmrc.tai.model.TaxYear(),
+    Available,
+    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
+    Nil
+  )
+  val employment: Employment = Employment(
+    "test employment",
+    Live,
+    Some("EMPLOYER-1122"),
+    Some(LocalDate.now()),
+    None,
+    Seq(annualAccount),
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
+
+  private val taxCodeIncomes = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
+
+  private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
+
+  val personService: PersonService = mock[PersonService]
+  val benefitsService: BenefitsService = mock[BenefitsService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
+    mock[EstimatedPayJourneyCompletionService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  def sut = new IncomeSourceSummaryController(
+    mock[AuditConnector],
+    journeyCacheService,
+    taxAccountService,
+    employmentService,
+    benefitsService,
+    estimatedPayJourneyCompletionService,
+    mockAuthJourney,
+    appConfig,
+    mcc,
+    inject[IncomeSourceSummaryView],
+    inject[ErrorPagesHandler]
+  )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -186,59 +240,4 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       }
     }
   }
-
-  val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  val annualAccount = AnnualAccount(
-    uk.gov.hmrc.tai.model.TaxYear(),
-    Available,
-    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
-    Nil
-  )
-  val employment = Employment(
-    "test employment",
-    Live,
-    Some("EMPLOYER-1122"),
-    Some(LocalDate.now()),
-    None,
-    Seq(annualAccount),
-    "",
-    "",
-    2,
-    None,
-    false,
-    false
-  )
-
-  private val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
-  )
-
-  private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
-
-  val personService: PersonService = mock[PersonService]
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-
-  def sut = new IncomeSourceSummaryController(
-    mock[AuditConnector],
-    journeyCacheService,
-    taxAccountService,
-    employmentService,
-    benefitsService,
-    estimatedPayJourneyCompletionService,
-    mockAuthJourney,
-    FakeValidatePerson,
-    appConfig,
-    mcc,
-    inject[IncomeSourceSummaryView],
-    inject[ErrorPagesHandler]
-  )
 }

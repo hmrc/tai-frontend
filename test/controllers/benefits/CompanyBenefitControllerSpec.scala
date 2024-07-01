@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.benefits
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -47,6 +46,42 @@ import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
+
+  def createSUT = new SUT
+
+  val employment: Employment = Employment(
+    "company name",
+    Live,
+    Some("123"),
+    Some(LocalDate.parse("2016-05-26")),
+    Some(LocalDate.parse("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
+
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
+
+  private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
+
+  class SUT
+      extends CompanyBenefitController(
+        employmentService,
+        new DecisionCacheWrapper(journeyCacheService, ec),
+        journeyCacheService,
+        mockAuthJourney,
+        mcc,
+        updateOrRemoveCompanyBenefitDecisionView,
+        inject[ErrorPagesHandler]
+      ) {
+    when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+  }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -320,40 +355,4 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     }
   }
 
-  def createSUT = new SUT
-
-  val employment: Employment = Employment(
-    "company name",
-    Live,
-    Some("123"),
-    Some(LocalDate.parse("2016-05-26")),
-    Some(LocalDate.parse("2016-05-26")),
-    Nil,
-    "",
-    "",
-    2,
-    None,
-    hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
-  )
-
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
-
-  private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
-
-  class SUT
-      extends CompanyBenefitController(
-        employmentService,
-        new DecisionCacheWrapper(journeyCacheService, ec),
-        journeyCacheService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        updateOrRemoveCompanyBenefitDecisionView,
-        inject[ErrorPagesHandler]
-      ) {
-    when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -50,7 +49,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   class TestIncomeUpdateEstimatedPayController
       extends IncomeUpdateEstimatedPayController(
         mockAuthJourney,
-        FakeValidatePerson,
         incomeService,
         appConfig,
         mcc,
@@ -121,7 +119,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "return to /income-details when nothing is present in the cache" in {
       val testController = new IncomeUpdateEstimatedPayController(
         mockAuthJourney,
-        FakeValidatePerson,
         incomeService,
         appConfig,
         mcc,

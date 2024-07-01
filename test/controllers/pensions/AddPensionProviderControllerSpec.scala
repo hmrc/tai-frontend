@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.pensions
 import akka.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -43,6 +42,34 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class AddPensionProviderControllerSpec extends BaseSpec {
+
+  private def createSUT = new SUT
+
+  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
+  val auditService: AuditService = mock[AuditService]
+  val personService: PersonService = mock[PersonService]
+  val addPensionProviderJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  private class SUT
+      extends AddPensionProviderController(
+        pensionProviderService,
+        auditService,
+        mock[AuditConnector],
+        mockAuthJourney,
+        mcc,
+        inject[CanWeContactByPhoneView],
+        inject[AddPensionConfirmationView],
+        inject[AddPensionCheckYourAnswersView],
+        inject[AddPensionNumberView],
+        inject[AddPensionErrorView],
+        inject[AddPensionReceivedFirstPayView],
+        inject[AddPensionNameView],
+        inject[AddPensionStartDateView],
+        addPensionProviderJourneyCacheService,
+        trackSuccessJourneyCacheService,
+        inject[ErrorPagesHandler]
+      ) {}
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -1005,38 +1032,6 @@ class AddPensionProviderControllerSpec extends BaseSpec {
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
     }
-  }
-
-  private def createSUT = new SUT
-
-  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
-  val auditService: AuditService = mock[AuditService]
-  val personService: PersonService = mock[PersonService]
-  val addPensionProviderJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-
-  private class SUT
-      extends AddPensionProviderController(
-        pensionProviderService,
-        auditService,
-        mock[AuditConnector],
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[CanWeContactByPhoneView],
-        inject[AddPensionConfirmationView],
-        inject[AddPensionCheckYourAnswersView],
-        inject[AddPensionNumberView],
-        inject[AddPensionErrorView],
-        inject[AddPensionReceivedFirstPayView],
-        inject[AddPensionNameView],
-        inject[AddPensionStartDateView],
-        addPensionProviderJourneyCacheService,
-        trackSuccessJourneyCacheService,
-        inject[ErrorPagesHandler]
-      ) {
-
-    val pensionStartDateForm: PensionAddDateForm = PensionAddDateForm("pension provider")
   }
 
 }

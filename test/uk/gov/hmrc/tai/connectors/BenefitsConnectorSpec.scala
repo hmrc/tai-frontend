@@ -129,7 +129,7 @@ class BenefitsConnectorSpec extends BaseSpec {
           ),
           meq(endedCompanyBenefit),
           any()
-        )(any(), any(), any(), any())
+        )(any(), any(), any())
       ).thenReturn(Future.successful(HttpResponse.apply(200, json.toString())))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
@@ -35,7 +34,6 @@ class NoCYIncomeTaxErrorController @Inject() (
   employmentService: EmploymentService,
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   noCYIncomeTaxErrorView: NoCYIncomeTaxErrorView
 )(implicit ec: ExecutionContext)

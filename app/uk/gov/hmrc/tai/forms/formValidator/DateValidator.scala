@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,16 @@ package uk.gov.hmrc.tai.forms.formValidator
 
 import play.api.data.Forms._
 import play.api.data.Mapping
-import uk.gov.hmrc.tai.forms.formValidator.DateFields._
+import uk.gov.hmrc.tai.forms.formValidator.DateValidator._
 import uk.gov.hmrc.tai.model.TaxYear
 
 import java.time.LocalDate
 import scala.util.Try
 
-/** Created by user02 on 7/4/14.
-  */
 trait DateValidator {
-  val dateTuple: Mapping[Option[LocalDate]] = dateTuple(validate = true)
 
-  def dateTuple(validate: Boolean = true): Mapping[Option[LocalDate]] =
+  // scalastyle:off cyclomatic.complexity
+  def dateTuple: Mapping[Option[LocalDate]] =
     tuple(
       year  -> optional(text),
       month -> optional(text),
@@ -63,7 +61,7 @@ trait DateValidator {
     ).transform(
       {
         case (Some(y), Some(m), Some(d)) => Try(LocalDate.of(y.trim.toInt, m.toInt, d.toInt)).toOption
-        case (a, b, c)                   => None
+        case _                           => None
       },
       (date: Option[LocalDate]) =>
         date match {
@@ -73,7 +71,7 @@ trait DateValidator {
     )
 }
 
-object DateFields {
+object DateValidator {
   val day = "day"
   val month = "month"
   val year = "year"

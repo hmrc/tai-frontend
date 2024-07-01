@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,118 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class YourIncomeCalculationControllerSpec extends BaseSpec {
+
+  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+
+  val annualAccount: AnnualAccount = AnnualAccount(
+    uk.gov.hmrc.tai.model.TaxYear(),
+    Available,
+    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
+    Nil
+  )
+  val employment: Employment = Employment(
+    "test employment",
+    Live,
+    Some("EMPLOYER1"),
+    Some(LocalDate.now()),
+    None,
+    Seq(annualAccount),
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
+
+  val sampleEmployment: Seq[Employment] = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 6, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 7, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
+
+  val sampleEmploymentForRtiUnavailable: Seq[Employment] = Seq(
+    Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 6, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    ),
+    Employment(
+      "employer2",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 7, 9)),
+      None,
+      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      "taxNumber",
+      "payeNumber",
+      2,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
+    )
+  )
+
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
+
+  val personService: PersonService = mock[PersonService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+
+  lazy val paymentsService: PaymentsService = inject[PaymentsService]
+
+  def sut: YourIncomeCalculationController =
+    new YourIncomeCalculationController(
+      taxAccountService,
+      employmentService,
+      paymentsService,
+      mockAuthJourney,
+      mcc,
+      inject[HistoricIncomeCalculationView],
+      inject[YourIncomeCalculationView],
+      inject[HistoricIncomePrintView],
+      inject[ErrorPagesHandler]
+    )
 
   "Your Income Calculation" must {
     "return rti details page" when {
@@ -160,116 +272,4 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     }
 
   }
-
-  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-
-  val annualAccount: AnnualAccount = AnnualAccount(
-    uk.gov.hmrc.tai.model.TaxYear(),
-    Available,
-    Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
-    Nil
-  )
-  val employment: Employment = Employment(
-    "test employment",
-    Live,
-    Some("EMPLOYER1"),
-    Some(LocalDate.now()),
-    None,
-    Seq(annualAccount),
-    "",
-    "",
-    2,
-    None,
-    hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
-  )
-
-  val sampleEmployment = Seq(
-    Employment(
-      "employer1",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 6, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      1,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "employer2",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 7, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
-  val sampleEmploymentForRtiUnavailable = Seq(
-    Employment(
-      "employer1",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 6, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      1,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    ),
-    Employment(
-      "employer2",
-      Live,
-      None,
-      Some(LocalDate.of(2016, 7, 9)),
-      None,
-      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
-      "taxNumber",
-      "payeNumber",
-      2,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
-    )
-  )
-
-  val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
-  )
-
-  val personService: PersonService = mock[PersonService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-
-  lazy val paymentsService: PaymentsService = inject[PaymentsService]
-
-  def sut: YourIncomeCalculationController =
-    new YourIncomeCalculationController(
-      taxAccountService,
-      employmentService,
-      paymentsService,
-      mockAuthJourney,
-      appConfig,
-      mcc,
-      inject[HistoricIncomeCalculationView],
-      inject[YourIncomeCalculationView],
-      inject[HistoricIncomePrintView],
-      inject[ErrorPagesHandler]
-    )
 }

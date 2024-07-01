@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers.income.estimatedPay.update
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.mvc._
@@ -38,7 +37,6 @@ import scala.util.control.NonFatal
 
 class IncomeUpdateHowToUpdateController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   employmentService: EmploymentService,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,

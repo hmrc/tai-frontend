@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package uk.gov.hmrc.tai.viewModels.income
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
+import scala.annotation.nowarn
+
 sealed trait PayType
 case object IrregularPay extends PayType
 case object NextYearPay extends PayType
@@ -35,8 +37,15 @@ case class ConfirmAmountEnteredViewModel(
 
 object ConfirmAmountEnteredViewModel {
 
-  def apply(employmentId: Int, empName: String, currentAmount: Int, estIncome: Int, payType: PayType, backUrl: String)(
-    implicit messages: Messages
+  def apply(
+    employmentId: Int,
+    empName: String,
+    @nowarn currentAmount: Int,
+    estIncome: Int,
+    payType: PayType,
+    backUrl: String
+  )(implicit
+    messages: Messages
   ): ConfirmAmountEnteredViewModel = {
 
     val irregularPayCurrentYear =
@@ -69,7 +78,7 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(implicit
+  def apply(empName: String, @nowarn currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(implicit
     messages: Messages
   ): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(

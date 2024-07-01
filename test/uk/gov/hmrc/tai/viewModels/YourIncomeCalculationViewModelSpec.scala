@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "tai.income.calculation.rti.midYear.weekly",
           uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1).format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
           firstPayment.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
-          MoneyPounds(firstPayment.amountYearToDate, 2).quantity
+          MoneyPounds(firstPayment.amountYearToDate).quantity
         )
         model.incomeCalculationEstimateMessage mustBe Some(Messages("tai.income.calculation.rti.emp.estimate", 1111))
       }
@@ -123,7 +123,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "tai.income.calculation.rti.ceased.emp",
           model.endDate.get.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
           firstPayment.date.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
-          MoneyPounds(firstPayment.amountYearToDate, 2).quantity
+          MoneyPounds(firstPayment.amountYearToDate).quantity
         )
         model.incomeCalculationEstimateMessage mustBe None
       }
@@ -154,8 +154,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
             "",
             2,
             None,
-            false,
-            false
+            hasPayrolledBenefit = false,
+            receivingOccupationalPension = false
           )
 
         YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 1000, "emp", None) mustBe None
@@ -176,8 +176,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
             "",
             2,
             None,
-            false,
-            false
+            hasPayrolledBenefit = false,
+            receivingOccupationalPension = false
           )
 
         YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 100, "emp", None) mustBe
@@ -207,8 +207,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           Some(100),
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(Ceased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension", Dates.formatDate(TaxYear().end)))
@@ -226,8 +226,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(Ceased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
@@ -248,8 +248,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
             "",
             2,
             None,
-            false,
-            false
+            hasPayrolledBenefit = false,
+            receivingOccupationalPension = false
           )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(PotentiallyCeased, employment, "pension") mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
@@ -269,8 +269,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         CeasedIncomeMessages.ceasedIncomeCalculationMessage(Live, employment, "pension") mustBe None
       }
@@ -291,8 +291,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(Ceased, employment, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
@@ -313,8 +313,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
             "",
             2,
             None,
-            false,
-            false
+            hasPayrolledBenefit = false,
+            receivingOccupationalPension = false
           )
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(PotentiallyCeased, employment, 1000) mustBe
           Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
@@ -334,8 +334,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(Live, employment, 1000) mustBe None
       }
@@ -356,8 +356,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Monthly), 1000, None) mustBe
@@ -376,8 +376,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Annually), 1000, None) mustBe
@@ -396,8 +396,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(OneOff), 1000, None) mustBe
@@ -416,8 +416,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Irregular), 1000, None) mustBe None
@@ -437,8 +437,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Monthly), 1000, None) mustBe
@@ -464,8 +464,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Annually), 1000, None) mustBe
@@ -491,8 +491,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(OneOff), 1000, None) mustBe
@@ -511,8 +511,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages
           .payFreqIncomeCalculationMessage(employment, "emp", Some(Irregular), 1000, None) mustBe None
@@ -532,8 +532,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", None, 1000, None) mustBe None
       }
@@ -543,48 +543,80 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
   "payFreqIncomeCalculationEstimateMessage" must {
     "return messages for start date before start of tax year" when {
       "payment frequency is monthly" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage(
+          pensionOrEmployment = "emp",
+          paymentFrequency = Some(Monthly),
+          amount = 1000
+        ) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Annually" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Annually), None, 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage(
+          pensionOrEmployment = "emp",
+          paymentFrequency = Some(Annually),
+          amount = 1000
+        ) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is OneOff" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), None, 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage(
+          pensionOrEmployment = "emp",
+          paymentFrequency = Some(OneOff),
+          amount = 1000
+        ) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Irregular" in {
         PaymentFrequencyIncomeMessages
-          .payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), None, 1000) mustBe
+          .payFreqIncomeCalculationEstimateMessage(
+            pensionOrEmployment = "emp",
+            paymentFrequency = Some(Irregular),
+            amount = 1000
+          ) mustBe
           Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
       }
     }
 
     "return messages for start date after tax of start year" when {
       "payment frequency is monthly" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage(
+          pensionOrEmployment = "emp",
+          paymentFrequency = Some(Monthly),
+          amount = 1000
+        ) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is OneOff" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), None, 1000) mustBe
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage(
+          pensionOrEmployment = "emp",
+          paymentFrequency = Some(OneOff),
+          amount = 1000
+        ) mustBe
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Irregular" in {
         PaymentFrequencyIncomeMessages
-          .payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), None, 1000) mustBe
+          .payFreqIncomeCalculationEstimateMessage(
+            pensionOrEmployment = "emp",
+            paymentFrequency = Some(Irregular),
+            amount = 1000
+          ) mustBe
           Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
       }
     }
 
     "return none" when {
       "payment frequency is none" in {
-        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", None, None, 1000) mustBe None
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage(
+          pensionOrEmployment = "emp",
+          paymentFrequency = None,
+          amount = 1000
+        ) mustBe None
       }
     }
   }
@@ -1126,8 +1158,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1161,8 +1193,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           Some(100),
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1200,8 +1232,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1242,8 +1274,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
             "",
             2,
             None,
-            false,
-            false
+            hasPayrolledBenefit = false,
+            receivingOccupationalPension = false
           )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1283,8 +1315,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1318,8 +1350,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1354,8 +1386,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           "",
           2,
           None,
-          false,
-          false
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false
         )
         val taxCodeIncome = TaxCodeIncome(
           EmploymentIncome,
@@ -1379,10 +1411,10 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     }
   }
 
-  lazy val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  lazy val latestPayment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  lazy val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  lazy val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
-  val paymentDetails = Seq(
+  val paymentDetails: Seq[PaymentDetailsViewModel] = Seq(
     PaymentDetailsViewModel(latestPayment),
     PaymentDetailsViewModel(firstPayment)
   )
@@ -1409,8 +1441,8 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       "",
       2,
       cessationPay,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
     val taxCodeIncome = if (hasTaxCodeIncome) {
       Some(

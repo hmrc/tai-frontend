@@ -77,6 +77,8 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions ++= Seq(
       "-feature",
       "-Werror",
+      "-Wdead-code",
+      "-Wunused:_",
       "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
       "-Wconf:cat=unused-imports&site=<empty>:s",
       "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
@@ -89,6 +91,8 @@ lazy val microservice = Project(appName, file("."))
     )
   )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
+
+Test / scalacOptions --= Seq("-Wdead-code", "-Wvalue-discard")
 
 lazy val it = project
   .enablePlugins(play.sbt.PlayScala)

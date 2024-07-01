@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers
 
 import builders.RequestBuilder
 import cats.data.EitherT
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -52,6 +51,35 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
   val jrsService: JrsService = mock[JrsService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
+  private def createTestController() =
+    new WhatDoYouWantToDoControllerTest()
+
+  class WhatDoYouWantToDoControllerTest()
+      extends WhatDoYouWantToDoController(
+        employmentService,
+        taxCodeChangeService,
+        taxAccountService,
+        mock[AuditConnector],
+        auditService,
+        jrsService,
+        mockAuthJourney,
+        mockAppConfig,
+        mcc,
+        inject[WhatDoYouWantToDoTileView],
+        mockFeatureFlagService,
+        inject[ErrorPagesHandler]
+      ) {
+
+    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
+    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))
+      .thenReturn(Future.successful(AuditResult.Success))
+    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      .thenReturn(Future.successful(taxAccountSummary))
+    when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
+      .thenReturn(Future.successful(false))
+  }
+
   val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
     TaxCodeIncome(
       EmploymentIncome,
@@ -545,35 +573,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
       employments mustBe Nil
     }
-  }
-
-  private def createTestController() =
-    new WhatDoYouWantToDoControllerTest()
-
-  class WhatDoYouWantToDoControllerTest()
-      extends WhatDoYouWantToDoController(
-        employmentService,
-        taxCodeChangeService,
-        taxAccountService,
-        mock[AuditConnector],
-        auditService,
-        jrsService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mockAppConfig,
-        mcc,
-        inject[WhatDoYouWantToDoTileView],
-        mockFeatureFlagService,
-        inject[ErrorPagesHandler]
-      ) {
-
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))
-      .thenReturn(Future.successful(AuditResult.Success))
-    when(taxAccountService.taxAccountSummary(any(), any())(any()))
-      .thenReturn(Future.successful(taxAccountSummary))
-    when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
-      .thenReturn(Future.successful(false))
   }
 
 }

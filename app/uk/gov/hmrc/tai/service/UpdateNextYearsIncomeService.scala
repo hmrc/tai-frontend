@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class UpdateNextYearsIncomeService @Inject() (
   def amountKey(employmentId: Int): String =
     s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
-  def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(implicit
+  def setNewAmount(newValue: String, employmentId: Int)(implicit
     hc: HeaderCarrier
   ): Future[Map[String, String]] =
     journeyCacheService.cache(amountKey(employmentId), convertCurrencyToInt(Some(newValue)).toString)

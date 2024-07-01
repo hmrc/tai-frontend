@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers.income
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -29,7 +28,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
@@ -46,6 +44,23 @@ import scala.concurrent.Future
 
 class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
+  private class TestUpdateIncomeNextYearController()
+      extends UpdateIncomeNextYearController(
+        updateNextYearsIncomeService,
+        mock[AuditConnector],
+        mockAuthJourney,
+        mcc,
+        updateIncomeCYPlus1SuccessView,
+        updateIncomeCYPlus1ConfirmView,
+        updateIncomeCYPlus1WarningView,
+        updateIncomeCYPlus1StartView,
+        updateIncomeCYPlus1EditView,
+        updateIncomeCYPlus1SameView,
+        inject[SameEstimatedPayView],
+        mockFeatureFlagService,
+        inject[ErrorPagesHandler]
+      )
+
   private val updateIncomeCYPlus1ConfirmView = inject[UpdateIncomeCYPlus1ConfirmView]
   private val updateIncomeCYPlus1SuccessView = inject[UpdateIncomeCYPlus1SuccessView]
   private val updateIncomeCYPlus1SameView = inject[UpdateIncomeCYPlus1SameView]
@@ -59,12 +74,9 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val isPension = false
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     super.beforeEach()
-    reset(mockAppConfig)
-  }
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -254,7 +266,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         when(
           updateNextYearsIncomeService
-            .setNewAmount(meq(newEstPay), meq(employmentID), meq(nino))(any())
+            .setNewAmount(meq(newEstPay), meq(employmentID))(any())
         )
           .thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -374,7 +386,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result: Future[Result] = testController.same(employmentID)(request)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, employmentID, currentEstPay)(
+          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, currentEstPay)(
             request,
             messages,
             authedUser
@@ -539,23 +551,4 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       when(updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any()))
         .thenReturn(Future.successful(Right(newEstPay)))
     }
-
-  private class TestUpdateIncomeNextYearController()
-      extends UpdateIncomeNextYearController(
-        updateNextYearsIncomeService,
-        mock[AuditConnector],
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        mockAppConfig,
-        updateIncomeCYPlus1SuccessView,
-        updateIncomeCYPlus1ConfirmView,
-        updateIncomeCYPlus1WarningView,
-        updateIncomeCYPlus1StartView,
-        updateIncomeCYPlus1EditView,
-        updateIncomeCYPlus1SameView,
-        inject[SameEstimatedPayView],
-        mockFeatureFlagService,
-        inject[ErrorPagesHandler]
-      )
 }

@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 @import includes.printBanner
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import scala.annotation.nowarn
 
 @(formForErrorSummary: Option[Form[_]] = None,
   mainHeadingText: String,
   preHeadingText: String,
   maybeUserName: Option[String] = None,
-  headerWidthClasses: Option[String] = Some("column-two-thirds"),
   preHeadingAccessibleAnnouncement: String = "",
-  customBackLinkContent: Option[Html] = None,
-  additionalTopLinkContent: Option[Html] = None,
+  @nowarn customBackLinkContent: Option[Html] = None,
   govukErrorSummary: Option[GovukErrorSummary] = None
 )(implicit m: Messages)
 

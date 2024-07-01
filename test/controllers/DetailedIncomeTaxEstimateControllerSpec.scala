@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.BadRequestException
@@ -41,10 +40,8 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
       taxAccountService,
       codingComponentService,
       mockAuthJourney,
-      FakeValidatePerson,
       mcc,
       inject[DetailedIncomeTaxEstimateView],
-      appConfig,
       inject[ErrorPagesHandler]
     )
 

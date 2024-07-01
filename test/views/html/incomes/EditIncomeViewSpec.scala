@@ -39,8 +39,6 @@ class EditIncomeViewSpec extends TaiViewSpec {
     editIncome(
       EditIncomeForm.create(preFillData = EmploymentAmount(employerName, "", 1, 1, 1)),
       hasMultipleIncomes = false,
-      empId,
-      "0",
-      None
+      empId
     )
 }

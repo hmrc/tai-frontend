@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -37,6 +36,33 @@ import views.html.IncomeTaxSummaryView
 import scala.concurrent.Future
 
 class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTestData {
+
+  private val testAmount: BigDecimal = 100
+  override val nonTaxCodeIncome: NonTaxCodeIncome = NonTaxCodeIncome(
+    Some(
+      uk.gov.hmrc.tai.model.domain.income
+        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest")
+    ),
+    Seq(
+      OtherNonTaxCodeIncome(Profit, None, testAmount, "Profit")
+    )
+  )
+
+  val auditService: AuditService = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
+
+  def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
+    taxAccountService,
+    taxAccountSummaryService,
+    auditService,
+    mockAuthJourney,
+    appConfig,
+    mcc,
+    inject[IncomeTaxSummaryView],
+    inject[ErrorPagesHandler]
+  )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -232,34 +258,5 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     }
 
   }
-
-  private val testAmount: BigDecimal = 100
-  override val nonTaxCodeIncome = NonTaxCodeIncome(
-    Some(
-      uk.gov.hmrc.tai.model.domain.income
-        .UntaxedInterest(UntaxedInterestIncome, None, testAmount, "Untaxed Interest")
-    ),
-    Seq(
-      OtherNonTaxCodeIncome(Profit, None, testAmount, "Profit")
-    )
-  )
-
-  val auditService: AuditService = mock[AuditService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
-
-  def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
-    employmentService,
-    taxAccountService,
-    taxAccountSummaryService,
-    auditService,
-    mockAuthJourney,
-    FakeValidatePerson,
-    appConfig,
-    mcc,
-    inject[IncomeTaxSummaryView],
-    inject[ErrorPagesHandler]
-  )
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,10 +50,10 @@ class PertaxAuthActionSpec extends BaseSpec {
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
   private val mainTemplateView: MainTemplate = inject[MainTemplate]
   private val testAppConfig: ApplicationConfig = mock[ApplicationConfig]
+
   val testAction: PertaxAuthActionImpl = new PertaxAuthActionImpl(
     mockAuthConnector,
     mockPertaxConnector,
-    mockFeatureFlagService,
     internalServerErrorView,
     mainTemplateView,
     mcc,

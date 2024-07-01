@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import play.api.data.FormError
 
 class FormValidatorSpec extends PlaySpec {
 
+  private val formErrorKey: String = "testFormErrorKey"
+
   "FormValidator" should {
 
     "return Nil" when {
@@ -34,7 +36,7 @@ class FormValidatorSpec extends PlaySpec {
 
       "a supplied validator returns true" in {
 
-        val validator = ((x: String) => true, "invalid")
+        val validator = ((_: String) => true, "invalid")
 
         val result = FormValidator.validate[String]("", Seq(validator), formErrorKey)
 
@@ -46,8 +48,8 @@ class FormValidatorSpec extends PlaySpec {
 
       "one validator returns true and another validator returns false" in {
 
-        val validator1 = ((x: String) => true, "invalid1")
-        val validator2 = ((x: String) => false, "invalid2")
+        val validator1 = ((_: String) => true, "invalid1")
+        val validator2 = ((_: String) => false, "invalid2")
 
         val result = FormValidator.validate[String]("", Seq(validator1, validator2), formErrorKey)
 
@@ -56,5 +58,4 @@ class FormValidatorSpec extends PlaySpec {
     }
   }
 
-  private val formErrorKey: String = "testFormErrorKey"
 }

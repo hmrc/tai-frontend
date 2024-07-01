@@ -18,11 +18,10 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.util.Money.pounds
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleTaxView
-@import uk.gov.hmrc.tai.config.ApplicationConfig
 
 @this(main: MainTemplate)
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html, appConfig: ApplicationConfig)(implicit
+@(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 
@@ -87,7 +86,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
                 <p class="govuk-body" id="taxOnEmploymentIncomeDesc">
                     @Html(viewModel.taxOnIncomeTypeDescription)
                 </p>
-                @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion, appConfig = appConfig)
+                @taxBandTable(tableClass = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
 
                 @whyThisIsAnEstimateDesc()
                 @howYouPayYourTaxDesc()
