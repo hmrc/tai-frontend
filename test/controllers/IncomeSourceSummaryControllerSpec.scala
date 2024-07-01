@@ -16,7 +16,7 @@
 
 package controllers
 
-import akka.Done
+import org.apache.pekko.Done
 import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import akka.Done
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import play.api.http.Status._
 import play.api.libs.json._
