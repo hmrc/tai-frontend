@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -36,7 +35,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
-import views.html.incomes.{ConfirmAmountEnteredView, DuplicateSubmissionWarningView}
+import views.html.incomes.DuplicateSubmissionWarningView
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -64,7 +63,6 @@ class IncomeUpdateCalculatorControllerSpec
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
@@ -73,14 +71,11 @@ class IncomeUpdateCalculatorControllerSpec
       extends IncomeUpdateCalculatorController(
         incomeService,
         employmentService,
-        taxAccountService,
         estimatedPayJourneyCompletionService,
         mockAuthJourney,
-        FakeValidatePerson,
         mcc,
         inject[DuplicateSubmissionWarningView],
         inject[CheckYourAnswersView],
-        inject[ConfirmAmountEnteredView],
         journeyCacheService,
         inject[ErrorPagesHandler]
       ) {}
@@ -407,7 +402,7 @@ class IncomeUpdateCalculatorControllerSpec
       "cache is empty" in {
 
         val result = HandleCalculationResultHarness
-          .setup(Some("1"), true)
+          .setup(Some("1"), cacheEmpty = true)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER

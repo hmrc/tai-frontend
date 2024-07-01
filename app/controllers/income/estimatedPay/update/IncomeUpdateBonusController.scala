@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers.income.estimatedPay.update
 
 import cats.implicits._
 import controllers.TaiBaseController
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -36,7 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateBonusController @Inject() (
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
   bonusPaymentAmount: BonusPaymentAmountView,
@@ -96,7 +94,7 @@ class IncomeUpdateBonusController @Inject() (
     )
       .mapN {
         case (Right(incomeSource), bonusOvertimeAmount) =>
-          val form = BonusOvertimeAmountForm.createForm().fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
+          val form = BonusOvertimeAmountForm.createForm.fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
           Ok(bonusPaymentAmount(form, incomeSource))
         case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
       }
@@ -106,8 +104,7 @@ class IncomeUpdateBonusController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
-      BonusOvertimeAmountForm
-        .createForm()
+      BonusOvertimeAmountForm.createForm
         .bindFromRequest()
         .fold(
           formWithErrors =>

@@ -42,7 +42,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       appConfig
     )
 
-  def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =
+  def createSut(vm: HistoricPayAsYouEarnViewModel): Html =
     historicPayAsYouEarn(vm, appConfig)
 
   "historicPayAsYouEarn view" should {
@@ -632,7 +632,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm, 1)
+      val sut: Html = createSut(vm)
 
       val doc: Document = Jsoup.parse(sut.toString)
 
@@ -650,7 +650,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm, 0)
+      val sut: Html = createSut(vm)
 
       val doc: Document = Jsoup.parse(sut.toString)
 

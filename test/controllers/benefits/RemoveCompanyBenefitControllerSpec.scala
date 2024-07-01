@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.benefits
 import akka.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -50,6 +49,54 @@ import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
 class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
+
+  val employment: Employment = Employment(
+    "company name",
+    Live,
+    Some("123"),
+    Some(LocalDate.parse("2016-05-26")),
+    Some(LocalDate.parse("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false
+  )
+
+  val startOfTaxYear: String = Dates.formatDate(TaxYear().start)
+  val stopDate: String = LocalDate.now().toString
+  val stopDateFormatted: String = LocalDate.parse(stopDate).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
+
+  def createSUT = new SUT
+
+  val benefitsService: BenefitsService = mock[BenefitsService]
+  val removeCompanyBenefitJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  private val removeCompanyBenefitCheckYourAnswersView = inject[RemoveCompanyBenefitCheckYourAnswersView]
+
+  private val removeBenefitTotalValueView = inject[RemoveBenefitTotalValueView]
+
+  private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
+
+  private val trackingService = mock[TrackingService]
+
+  class SUT
+      extends RemoveCompanyBenefitController(
+        removeCompanyBenefitJourneyCacheService,
+        trackSuccessJourneyCacheService,
+        benefitsService,
+        trackingService,
+        mockAuthJourney,
+        mcc,
+        removeCompanyBenefitCheckYourAnswersView,
+        removeCompanyBenefitStopDateView,
+        removeBenefitTotalValueView,
+        inject[CanWeContactByPhoneView],
+        inject[RemoveCompanyBenefitConfirmationView]
+      )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -807,55 +854,5 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       }
     }
   }
-
-  val employment: Employment = Employment(
-    "company name",
-    Live,
-    Some("123"),
-    Some(LocalDate.parse("2016-05-26")),
-    Some(LocalDate.parse("2016-05-26")),
-    Nil,
-    "",
-    "",
-    2,
-    None,
-    hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
-  )
-
-  val startOfTaxYear: String = Dates.formatDate(TaxYear().start)
-  val stopDate = LocalDate.now().toString
-  val stopDateFormatted = LocalDate.parse(stopDate).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
-
-  def createSUT = new SUT
-
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  val removeCompanyBenefitJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-
-  private val removeCompanyBenefitCheckYourAnswersView = inject[RemoveCompanyBenefitCheckYourAnswersView]
-
-  private val removeBenefitTotalValueView = inject[RemoveBenefitTotalValueView]
-
-  private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
-
-  private val trackingService = mock[TrackingService]
-
-  class SUT
-      extends RemoveCompanyBenefitController(
-        removeCompanyBenefitJourneyCacheService,
-        trackSuccessJourneyCacheService,
-        benefitsService,
-        trackingService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        langUtils,
-        removeCompanyBenefitCheckYourAnswersView,
-        removeCompanyBenefitStopDateView,
-        removeBenefitTotalValueView,
-        inject[CanWeContactByPhoneView],
-        inject[RemoveCompanyBenefitConfirmationView]
-      )
 
 }

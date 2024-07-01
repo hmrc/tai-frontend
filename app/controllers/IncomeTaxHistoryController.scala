@@ -74,10 +74,10 @@ class IncomeTaxHistoryController @Inject() (
           startDate = employment.startDate,
           maybeEndDate = employment.endDate,
           maybeTaxableIncome = maybeLastPayment.map { payment =>
-            withPoundPrefix(MoneyPounds(payment.amountYearToDate, 2, roundUp = false))
+            withPoundPrefix(MoneyPounds(payment.amountYearToDate))
           },
           maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
-            withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate, 2, roundUp = false))
+            withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
           },
           maybeTaxCode = maybeTaxCode.map(_.taxCode)
         )
@@ -103,7 +103,7 @@ class IncomeTaxHistoryController @Inject() (
         }
       )
       .map { taxCodeIncome =>
-        Ok(incomeTaxHistoryView(config, request.person, taxCodeIncome))
+        Ok(incomeTaxHistoryView(request.person, taxCodeIncome))
       }
   }
 }

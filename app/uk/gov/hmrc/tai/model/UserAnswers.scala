@@ -43,7 +43,7 @@ final case class UserAnswers(
 
     updatedData.flatMap { d =>
       val updatedAnswers: UserAnswers = UserAnswers(sessionId, nino, d)
-      page.cleanup(Some(value), updatedAnswers)
+      page.cleanup(updatedAnswers)
     }
   }
 

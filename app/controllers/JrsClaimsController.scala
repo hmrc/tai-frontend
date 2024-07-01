@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.mvc._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -31,7 +30,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class JrsClaimsController @Inject() (
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   jrsService: JrsService,
   mcc: MessagesControllerComponents,
   appConfig: ApplicationConfig,

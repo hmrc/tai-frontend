@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers
 import builders.{RequestBuilder, UserBuilder}
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
-import controllers.actions.FakeValidatePerson
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -44,7 +43,6 @@ class JrsClaimsControllerSpec extends BaseSpec {
   val jrsClaimsController = new JrsClaimsController(
     inject[AuditConnector],
     mockAuthJourney,
-    FakeValidatePerson,
     jrsService,
     mcc,
     mockAppConfig,
@@ -53,7 +51,7 @@ class JrsClaimsControllerSpec extends BaseSpec {
     inject[NoJrsClaimView]
   )
 
-  val jrsClaimsServiceResponse = JrsClaims(
+  val jrsClaimsServiceResponse: JrsClaims = JrsClaims(
     List(
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))

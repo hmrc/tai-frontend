@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,30 @@ import java.time.LocalDate
 
 class DateFormSpec extends BaseSpec {
 
-  val errorMsgs = DateForm.errorMsgs
+  private val blankDateErrorMessage: String = "blank date error message"
+
+  private val dateForm = DateForm(Nil, blankDateErrorMessage)
+  private val form = dateForm.form
+
+  private val DayTag: String = DateForm.DateFormDay
+  private val MonthTag: String = DateForm.DateFormMonth
+  private val YearTag: String = DateForm.DateFormYear
+
+  private val validDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> "2015")
+  private val validFutureDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> s"${LocalDate.now().getYear + 1}")
+  private val validLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2016")
+
+  private val invalidDay = Map(DayTag -> "Bar", MonthTag -> "4", YearTag -> "2015")
+  private val invalidMonth = Map(DayTag -> "1", MonthTag -> "Foo", YearTag -> "2015")
+  private val invalidYear = Map(DayTag -> "1", MonthTag -> "4", YearTag -> "Baz")
+  private val invalidLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2015")
+
+  private val invalidNoDayValue = Map(DayTag -> "", MonthTag -> "4", YearTag -> "2015")
+  private val invalidNoMonthValue = Map(DayTag -> "4", MonthTag -> "", YearTag -> "2015")
+  private val invalidNoYearValue = Map(DayTag -> "4", MonthTag -> "12", YearTag -> "")
+  private val invalidNoDayNoYearValue = Map(DayTag -> "", MonthTag -> "12", YearTag -> "")
+
+  val errorMsgs: LocalDateFormatter.ErrorMessages = DateForm.errorMsgs
 
   "DateForm" must {
 
@@ -42,7 +65,7 @@ class DateFormSpec extends BaseSpec {
 
         val validatorErrorMessage = "test error message"
 
-        val customValidator = ((x: LocalDate) => true, validatorErrorMessage)
+        val customValidator = ((_: LocalDate) => true, validatorErrorMessage)
 
         val dateFormWithCustomValidator = DateForm(Seq(customValidator), blankDateErrorMessage)
 
@@ -108,26 +131,4 @@ class DateFormSpec extends BaseSpec {
     }
   }
 
-  private val blankDateErrorMessage: String = "blank date error message"
-
-  private val dateForm = DateForm(Nil, blankDateErrorMessage)
-  private val form = dateForm.form
-
-  private val DayTag: String = DateForm.DateFormDay
-  private val MonthTag: String = DateForm.DateFormMonth
-  private val YearTag: String = DateForm.DateFormYear
-
-  private val validDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> "2015")
-  private val validFutureDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> s"${LocalDate.now().getYear + 1}")
-  private val validLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2016")
-
-  private val invalidDay = Map(DayTag -> "Bar", MonthTag -> "4", YearTag -> "2015")
-  private val invalidMonth = Map(DayTag -> "1", MonthTag -> "Foo", YearTag -> "2015")
-  private val invalidYear = Map(DayTag -> "1", MonthTag -> "4", YearTag -> "Baz")
-  private val invalidLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2015")
-
-  private val invalidNoDayValue = Map(DayTag -> "", MonthTag -> "4", YearTag -> "2015")
-  private val invalidNoMonthValue = Map(DayTag -> "4", MonthTag -> "", YearTag -> "2015")
-  private val invalidNoYearValue = Map(DayTag -> "4", MonthTag -> "12", YearTag -> "")
-  private val invalidNoDayNoYearValue = Map(DayTag -> "", MonthTag -> "12", YearTag -> "")
 }

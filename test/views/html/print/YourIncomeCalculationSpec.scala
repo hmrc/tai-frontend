@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package views.html.print
 
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -42,7 +42,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
           employmentStatus = PotentiallyCeased
         )
 
-        def potentiallyCeasedView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def potentiallyCeasedView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(potentiallyCeasedView) must haveStrongWithText(
           messages(
@@ -56,7 +56,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "payments are present" in {
         val model = incomeCalculationViewModel(employmentStatus = PotentiallyCeased)
 
-        def potentiallyCeasedView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def potentiallyCeasedView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(potentiallyCeasedView) must haveStrongWithText(
           messages(
@@ -74,7 +74,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "payments are empty" in {
         val model = incomeCalculationViewModel(payments = Seq.empty[PaymentDetailsViewModel], employmentStatus = Ceased)
 
-        def ceasedView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def ceasedView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(ceasedView) must haveStrongWithText(
           messages(
@@ -88,7 +88,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "payments are present" in {
         val model = incomeCalculationViewModel(employmentStatus = Ceased)
 
-        def ceasedView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def ceasedView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(ceasedView) must haveStrongWithText(
           messages(
@@ -106,7 +106,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "payments are empty" in {
         val model = incomeCalculationViewModel(payments = Seq.empty[PaymentDetailsViewModel])
 
-        def liveView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def liveView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(liveView) must haveStrongWithText(
           messages(
@@ -151,7 +151,8 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
     "show total not equal message" when {
       "total not equal message is present" in {
         val model = incomeCalculationViewModel(totalNotEqualMessage = Some("Test"))
-        def totalNotEqualView = views.html.print.yourIncomeCalculation(model, appConfig)
+
+        def totalNotEqualView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(totalNotEqualView) must haveParagraphWithText(model.messageWhenTotalNotEqual.get)
         doc(totalNotEqualView) must haveParagraphWithText(messages("tai.income.calculation.totalNotMatching.message"))
@@ -166,7 +167,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
           incomeCalculationEstimateMessage = Some("ESTIMATE")
         )
 
-        def incomeMessagesView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def incomeMessagesView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(incomeMessagesView) must haveHeadingH4WithText(model.incomeCalculationEstimateMessage.get)
       }
@@ -178,7 +179,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
           incomeCalculationEstimateMessage = Some("ESTIMATE")
         )
 
-        def incomeMessagesView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def incomeMessagesView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(incomeMessagesView) must haveHeadingH4WithText(model.incomeCalculationEstimateMessage.get)
       }
@@ -188,7 +189,7 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
       "hasPayrolled benefit is true" in {
         val model = incomeCalculationViewModel(hasPayrolledBenefit = true)
 
-        def payrolledView = views.html.print.yourIncomeCalculation(model, appConfig)
+        def payrolledView: HtmlFormat.Appendable = views.html.print.yourIncomeCalculation(model)
 
         doc(payrolledView) must haveParagraphWithText(messages("tai.income.calculation.payrollingBik.message1"))
         doc(payrolledView) must haveParagraphWithText(messages("tai.income.calculation.payrollingBik.message2"))
@@ -200,16 +201,16 @@ class YourIncomeCalculationSpec extends TaiViewSpec {
     }
   }
 
-  lazy val defaultPayments = Seq(
+  lazy val defaultPayments: Seq[PaymentDetailsViewModel] = Seq(
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(1), 100, 50, 25),
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(2), 100, 50, 25),
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(3), 100, 50, 25),
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(4), 100, 50, 25)
   )
-  lazy val dateFormatPattern = "d MMMM yyyy"
-  lazy val model = incomeCalculationViewModel()
+  lazy val dateFormatPattern: String = "d MMMM yyyy"
+  lazy val model: YourIncomeCalculationViewModel = incomeCalculationViewModel()
 
-  override def view: Html = views.html.print.yourIncomeCalculation(model, appConfig)
+  override def view: Html = views.html.print.yourIncomeCalculation(model)
 
   private def incomeCalculationViewModel(
     payments: Seq[PaymentDetailsViewModel] = defaultPayments,

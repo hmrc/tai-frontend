@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
-@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
+@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),

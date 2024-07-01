@@ -57,7 +57,7 @@ class ErrorHandlerSpec extends BaseSpec {
     doc.getElementsByTag("p").get(1).toString must include(
       messages(
         "tai.errorMessage.frontend400.message2",
-        "<a href=\"#report-name\" class=\"report-error__toggle\"> " + messages(
+        "<a href=\"#report-name\" class=\"govuk-link report-error__toggle\"> " + messages(
           "tai.errorMessage.reportAProblem"
         ) + " </a> "
       )
@@ -72,7 +72,7 @@ class ErrorHandlerSpec extends BaseSpec {
     doc.getElementsByTag("p").get(2).toString must include(
       messages(
         "tai.errorMessage.pageNotFound.contactHelpline.text",
-        "<a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\"> " + messages(
+        "<a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\" class=\"govuk-link\"> " + messages(
           "tai.errorMessage.pageNotFound.contactHelpline.link"
         ) + " </a>"
       )
@@ -86,7 +86,7 @@ class ErrorHandlerSpec extends BaseSpec {
     doc.getElementsByTag("p").toString must include(
       messages(
         "global.error.InternalServerError500.tai.message.you.can"
-      ) + " <a href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\">" + messages(
+      ) + " <a class=\"govuk-link\" href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\">" + messages(
         "global.error.InternalServerError500.tai.message.contact.hmrc"
       ) + "</a> " + messages("global.error.InternalServerError500.tai.message.by.phone.post")
     )

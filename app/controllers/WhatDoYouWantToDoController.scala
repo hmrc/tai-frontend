@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers
 
 import cats.data.{EitherT, OptionT}
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest}
 import play.api.Logging
 import play.api.mvc._
@@ -48,7 +47,6 @@ class WhatDoYouWantToDoController @Inject() (
   auditService: AuditService,
   jrsService: JrsService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   whatDoYouWantToDoTileView: WhatDoYouWantToDoTileView,

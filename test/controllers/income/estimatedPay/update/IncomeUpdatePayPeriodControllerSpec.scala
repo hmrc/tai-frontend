@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -40,7 +39,6 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
   class TestIncomeUpdatePayPeriodController
       extends IncomeUpdatePayPeriodController(
         mockAuthJourney,
-        FakeValidatePerson,
         mcc,
         inject[PayPeriodView],
         journeyCacheService

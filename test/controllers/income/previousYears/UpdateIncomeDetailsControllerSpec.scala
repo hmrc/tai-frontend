@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers.income.previousYears
 import akka.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -38,6 +37,29 @@ import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetai
 import scala.concurrent.Future
 
 class UpdateIncomeDetailsControllerSpec extends BaseSpec {
+
+  private val previousTaxYear = TaxYear().prev
+
+  private def createSUT = new SUT
+
+  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val trackingjourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
+
+  private class SUT
+      extends UpdateIncomeDetailsController(
+        previousYearsIncomeService,
+        mockAuthJourney,
+        mcc,
+        inject[CanWeContactByPhoneView],
+        inject[CheckYourAnswersView],
+        inject[UpdateIncomeDetailsDecisionView],
+        inject[UpdateIncomeDetailsView],
+        inject[UpdateIncomeDetailsConfirmationView],
+        trackingjourneyCacheService,
+        journeyCacheService,
+        inject[ErrorPagesHandler]
+      )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -420,27 +442,4 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
     }
   }
 
-  private val previousTaxYear = TaxYear().prev
-
-  private def createSUT = new SUT
-
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val trackingjourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
-
-  private class SUT
-      extends UpdateIncomeDetailsController(
-        previousYearsIncomeService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[CanWeContactByPhoneView],
-        inject[CheckYourAnswersView],
-        inject[UpdateIncomeDetailsDecisionView],
-        inject[UpdateIncomeDetailsView],
-        inject[UpdateIncomeDetailsConfirmationView],
-        trackingjourneyCacheService,
-        journeyCacheService,
-        inject[ErrorPagesHandler]
-      )
 }

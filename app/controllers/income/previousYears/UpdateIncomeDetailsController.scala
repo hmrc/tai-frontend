@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers.income.previousYears
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
@@ -43,7 +42,6 @@ import scala.util.control.NonFatal
 class UpdateIncomeDetailsController @Inject() (
   previousYearsIncomeService: PreviousYearsIncomeService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   canWeContactByPhone: CanWeContactByPhoneView,
   CheckYourAnswers: CheckYourAnswersView,

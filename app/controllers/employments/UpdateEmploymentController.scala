@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers.employments
 
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import play.api.i18n.Messages
@@ -47,7 +46,6 @@ class UpdateEmploymentController @Inject() (
   employmentService: EmploymentService,
   val auditConnector: AuditConnector,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   whatDoYouWantToTellUs: WhatDoYouWantToTellUsView,
   canWeContactByPhone: CanWeContactByPhoneView,

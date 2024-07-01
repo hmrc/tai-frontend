@@ -17,7 +17,7 @@
 package controllers.auth
 
 import org.mockito.ArgumentMatchers.any
-import play.api.mvc.AbstractController
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
@@ -26,15 +26,16 @@ import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.BaseSpec
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthRetrievalsSpec extends BaseSpec {
 
-  val cc = stubControllerComponents()
+  val cc: ControllerComponents = stubControllerComponents()
 
   abstract class Harness(AuthRetrievals: AuthRetrievals) extends AbstractController(cc) {
 
-    def onPageLoad() = AuthRetrievals { request =>
+    def onPageLoad(): Action[AnyContent] = AuthRetrievals { request =>
       Ok(request.taiUser.toString)
     }
   }

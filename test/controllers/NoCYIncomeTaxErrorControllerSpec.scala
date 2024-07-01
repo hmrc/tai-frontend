@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -26,7 +25,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{Employment, Person}
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.NoCYIncomeTaxErrorView
@@ -37,6 +36,46 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
+
+  def createSUT(employmentDataFailure: Option[Throwable] = None) =
+    new SUT(employmentDataFailure)
+
+  val employmentService: EmploymentService = mock[EmploymentService]
+
+  class SUT(employmentDataFailure: Option[Throwable])
+      extends NoCYIncomeTaxErrorController(
+        employmentService,
+        mock[AuditConnector],
+        mockAuthJourney,
+        mcc,
+        inject[NoCYIncomeTaxErrorView]
+      ) {
+
+    val sampleEmployment: Seq[Employment] = Seq(
+      Employment(
+        "empName",
+        Live,
+        None,
+        Some(LocalDate.of(2017, 6, 9)),
+        None,
+        Nil,
+        "taxNumber",
+        "payeNumber",
+        1,
+        None,
+        hasPayrolledBenefit = false,
+        receivingOccupationalPension = false
+      )
+    )
+
+    employmentDataFailure match {
+      case None =>
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+      case Some(throwable) =>
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
+    }
+
+  }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -78,49 +117,6 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         status(result) mustBe OK
       }
     }
-  }
-
-  val defaultPerson: Person = fakePerson(nino)
-
-  def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) =
-    new SUT(person, employmentDataFailure)
-
-  val employmentService: EmploymentService = mock[EmploymentService]
-
-  class SUT(person: Person, employmentDataFailure: Option[Throwable])
-      extends NoCYIncomeTaxErrorController(
-        employmentService,
-        mock[AuditConnector],
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[NoCYIncomeTaxErrorView]
-      ) {
-
-    val sampleEmployment = Seq(
-      Employment(
-        "empName",
-        Live,
-        None,
-        Some(LocalDate.of(2017, 6, 9)),
-        None,
-        Nil,
-        "taxNumber",
-        "payeNumber",
-        1,
-        None,
-        hasPayrolledBenefit = false,
-        receivingOccupationalPension = false
-      )
-    )
-
-    employmentDataFailure match {
-      case None =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-      case Some(throwable) =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
-    }
-
   }
 
 }

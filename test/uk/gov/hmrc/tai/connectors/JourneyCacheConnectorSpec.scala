@@ -122,7 +122,7 @@ class JourneyCacheConnectorSpec extends BaseSpec {
       val newValuesToCache = Map("key1" -> "value1", "key2" -> "value2")
       val updatedCacheJson = """{"key1":"value1","key2":"value2","key7":"value7"}"""
       val updatedCacheMap = Map("key1" -> "value1", "key2" -> "value2", "key7" -> "value7")
-      when(httpHandler.postToApi(any(), any(), any())(any(), any(), any(), any()))
+      when(httpHandler.postToApi(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, updatedCacheJson)))
 
       val result = Await.result(sut.cache(journeyName, newValuesToCache), 5 seconds)

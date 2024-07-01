@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ class AuditService @Inject() (
     hc: HeaderCarrier,
     request: Request[AnyContent]
   ): Future[String] = {
-    def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String) = {
+    def sendIformRedirectUriAuditEvent(nino: Nino, path: String, auditEvent: String): Future[AuditResult] = {
       val details = Map(
         "nino" -> nino.nino
       )
@@ -131,7 +131,7 @@ class AuditService @Inject() (
     }
   }
 
-  private def fetchPath(request: Request[AnyContent]) =
+  private def fetchPath(request: Request[AnyContent]): String =
     request.headers.get("Referer").getOrElse("NA")
 
 }

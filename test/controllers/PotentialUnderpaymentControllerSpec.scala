@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -36,6 +35,34 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
+
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val auditService: AuditService = mock[AuditService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val referralMap: (String, String) = "Referer" -> "http://somelocation/somePageResource"
+
+  private class SUT()
+      extends PotentialUnderpaymentController(
+        taxAccountService,
+        codingComponentService,
+        auditService,
+        mockAuthJourney,
+        mcc,
+        inject[PotentialUnderpaymentView],
+        inject[ErrorPagesHandler]
+      ) {
+    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
+
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
+      Future.successful(
+        Seq(
+          CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
+          CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
+        )
+      )
+    )
+  }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -91,35 +118,6 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
       val doc = Jsoup.parse(contentAsString(res))
       doc.title() must include("Sorry, there is a problem with the service")
     }
-  }
-
-  val codingComponentService = mock[CodingComponentService]
-  val auditService = mock[AuditService]
-  val taxAccountService = mock[TaxAccountService]
-  val referralMap = "Referer" -> "http://somelocation/somePageResource"
-
-  private class SUT()
-      extends PotentialUnderpaymentController(
-        taxAccountService,
-        codingComponentService,
-        auditService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc,
-        inject[PotentialUnderpaymentView],
-        inject[ErrorPagesHandler]
-      ) {
-    when(taxAccountService.taxAccountSummary(any(), any())(any()))
-      .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
-
-    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
-      Future.successful(
-        Seq(
-          CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
-          CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
-        )
-      )
-    )
   }
 
 }

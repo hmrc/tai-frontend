@@ -52,7 +52,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   val cc: ControllerComponents = stubControllerComponents()
 
   class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
-    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { request =>
+    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { _ =>
       Ok
     }
   }

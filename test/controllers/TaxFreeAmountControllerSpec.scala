@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers.{status, _}
@@ -34,6 +33,31 @@ import views.html.TaxFreeAmountView
 import scala.concurrent.Future
 
 class TaxFreeAmountControllerSpec extends BaseSpec {
+
+  private def createSUT() = new SUT()
+
+  val codingComponents: Seq[CodingComponent] = Seq(
+    CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+    CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
+  )
+
+  val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val companyCarService: CompanyCarService = mock[CompanyCarService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+
+  private class SUT()
+      extends TaxFreeAmountController(
+        codingComponentService,
+        employmentService,
+        taxAccountService,
+        companyCarService,
+        mockAuthJourney,
+        appConfig,
+        mcc,
+        inject[TaxFreeAmountView],
+        inject[ErrorPagesHandler]
+      )
 
   "taxFreeAmount" must {
     "show tax free amount page" in {
@@ -93,29 +117,4 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
     }
   }
 
-  private def createSUT() = new SUT()
-
-  val codingComponents: Seq[CodingComponent] = Seq(
-    CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
-    CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
-  )
-
-  val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val companyCarService: CompanyCarService = mock[CompanyCarService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-
-  private class SUT()
-      extends TaxFreeAmountController(
-        codingComponentService,
-        employmentService,
-        taxAccountService,
-        companyCarService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        appConfig,
-        mcc,
-        inject[TaxFreeAmountView],
-        inject[ErrorPagesHandler]
-      )
 }

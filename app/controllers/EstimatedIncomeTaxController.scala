@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 package controllers
 
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
@@ -36,12 +34,10 @@ class EstimatedIncomeTaxController @Inject() (
   partialService: HasFormPartialService,
   taxAccountService: TaxAccountService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   noCurrentIncome: NoCurrentIncomeView,
   complexEstimatedIncomeTax: ComplexEstimatedIncomeTaxView,
   simpleEstimatedIncomeTax: SimpleEstimatedIncomeTaxView,
   zeroTaxEstimatedIncomeTax: ZeroTaxEstimatedIncomeTaxView,
-  appConfig: ApplicationConfig,
   implicit val
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler
@@ -89,7 +85,7 @@ class EstimatedIncomeTaxController @Inject() (
             case SimpleTaxView =>
               val model =
                 SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
-              Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html(""), appConfig))
+              Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
             case ZeroTaxView =>
               val model =
                 ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)

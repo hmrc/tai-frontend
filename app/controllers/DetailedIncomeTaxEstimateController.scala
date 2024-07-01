@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 package controllers
 
 import cats.implicits._
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
@@ -35,10 +33,8 @@ class DetailedIncomeTaxEstimateController @Inject() (
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
-  appConfig: ApplicationConfig,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -68,7 +64,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
           codingComponents,
           nonTaxCodeIncome
         )
-        Ok(detailedIncomeTaxEstimate(model, appConfig))
+        Ok(detailedIncomeTaxEstimate(model))
     } recover { case NonFatal(e) =>
       errorPagesHandler.internalServerError("Failed to fetch total tax details", Some(e))
     }

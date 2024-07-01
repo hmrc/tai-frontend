@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package controllers
 import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
-import controllers.actions.ValidatePerson
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.data.Form
@@ -52,7 +51,6 @@ class IncomeController @Inject() (
   incomeService: IncomeService,
   estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   mcc: MessagesControllerComponents,
   confirmAmountEntered: ConfirmAmountEnteredView,
   editSuccess: EditSuccessView,
@@ -89,7 +87,7 @@ class IncomeController @Inject() (
           amountYearToDate.toString
         )
       )
-    }).fold(errorPagesHandler.internalServerError(_, None), identity _)
+    }).fold(errorPagesHandler.internalServerError(_, None), identity)
       .recover { case NonFatal(e) =>
         errorPagesHandler.internalServerError(e.getMessage)
       }
@@ -211,11 +209,11 @@ class IncomeController @Inject() (
 
                       val vm =
                         ConfirmAmountEnteredViewModel(
-                          employment.name,
-                          employmentAmount.oldAmount,
-                          cachedData,
-                          controllers.routes.IncomeController.regularIncome(empId).url,
-                          empId
+                          empName = employment.name,
+                          currentAmount = employmentAmount.oldAmount,
+                          estIncome = cachedData,
+                          backUrl = controllers.routes.IncomeController.regularIncome(empId).url,
+                          empId = empId
                         )
                       Ok(confirmAmountEntered(vm))
 
@@ -335,7 +333,7 @@ class IncomeController @Inject() (
     hc: HeaderCarrier
   ): Future[Result] =
     journeyCacheService
-      .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount().newAmount.toString)
+      .cache(UpdateIncomeConstants.NewAmountKey, income.toEmploymentAmount.newAmount.toString)
       .map(_ => Redirect(confirmationCallback))
 
   def editPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
@@ -395,11 +393,11 @@ class IncomeController @Inject() (
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
 
                       val vm = ConfirmAmountEnteredViewModel(
-                        employment.name,
-                        employmentAmount.oldAmount,
-                        newAmountKey.toInt,
-                        "#",
-                        empId
+                        empName = employment.name,
+                        currentAmount = employmentAmount.oldAmount,
+                        estIncome = newAmountKey.toInt,
+                        backUrl = "#",
+                        empId = empId
                       )
 
                       Ok(confirmAmountEntered(vm))

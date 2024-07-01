@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     request: Request[AnyContent],
     messages: Messages,
     rl: RecoveryLocation
-  ): PartialFunction[Throwable, Future[Result]] = { case e: NotFoundException =>
+  ): PartialFunction[Throwable, Future[Result]] = { case _: NotFoundException =>
     logger.warn(s"<Not found response received from rti> - for nino $nino @${rl.getName}")
     Future.successful(NotFound(error4xxPageWithLink(messages("global.error.pageNotFound404.title"))))
   }
@@ -103,7 +103,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages,
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Future[Result]] = { case e @ (_: InternalServerException | _: HttpException) =>
-    logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
+    logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}", e)
     Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 
@@ -124,7 +124,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages,
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Future[Result]] = { case e =>
-    logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass()}", e)
+    logger.warn(s"<Exception returned from HOD call for nino $nino @${rl.getName} with exception: ${e.getClass}", e)
     Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 

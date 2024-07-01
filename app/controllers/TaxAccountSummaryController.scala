@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.ValidatePerson
 import controllers.auth.AuthJourney
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,12 +33,10 @@ import scala.util.control.NonFatal
 
 @Singleton
 class TaxAccountSummaryController @Inject() (
-  employmentService: EmploymentService,
   taxAccountService: TaxAccountService,
   taxAccountSummaryService: TaxAccountSummaryService,
   auditService: AuditService,
   authenticate: AuthJourney,
-  validatePerson: ValidatePerson,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,

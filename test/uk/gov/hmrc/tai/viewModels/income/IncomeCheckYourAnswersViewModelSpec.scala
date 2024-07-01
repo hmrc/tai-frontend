@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
+
+  private val empId = 1
+  private val endEmploymentJourneyCacheService = mock[JourneyCacheService]
 
   "companion apply method" must {
     "generate four confirmation lines when telephone contact not approved" in {
@@ -108,7 +111,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
   "companion apply method for end employment" must {
     "generate two confirmation lines when telephone contact not approved" in {
       val sut = IncomeCheckYourAnswersViewModel(
-        0,
         "pre heading",
         "2017-06-13",
         "No",
@@ -137,7 +139,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
 
     "generate five confirmation lines when telephone contact is approved" in {
       val sut = IncomeCheckYourAnswersViewModel(
-        0,
         "pre heading",
         "2017-06-13",
         "Yes",
@@ -169,6 +170,5 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
     }
   }
-  private val empId = 1
-  private val endEmploymentJourneyCacheService = mock[JourneyCacheService]
+
 }

@@ -16,6 +16,7 @@
 
 package views.html.incomes
 
+import play.api.data.Form
 import play.api.mvc.Call
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.BonusOvertimeAmountForm
@@ -25,8 +26,8 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
-  val employer = IncomeSource(id = 1, name = "Employer")
-  val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
+  val employer: IncomeSource = IncomeSource(id = 1, name = "Employer")
+  val bonusPaymentsAmountForm: Form[BonusOvertimeAmountForm] = BonusOvertimeAmountForm.createForm
   private val bonusPaymentAmount = inject[BonusPaymentAmountView]
 
   override def view: Html = bonusPaymentAmount(bonusPaymentsAmountForm, employer)

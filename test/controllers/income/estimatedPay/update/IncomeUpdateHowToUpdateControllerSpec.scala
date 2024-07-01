@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.{ErrorPagesHandler, FakeAuthRetrievals}
-import controllers.actions.FakeValidatePerson
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
@@ -66,7 +65,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
   class TestIncomeUpdateHowToUpdateController
       extends IncomeUpdateHowToUpdateController(
         mockAuthJourney,
-        FakeValidatePerson,
         employmentService,
         incomeService,
         taxAccountService,

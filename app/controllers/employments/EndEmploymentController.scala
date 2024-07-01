@@ -445,7 +445,6 @@ class EndEmploymentController @Inject() (
       ) match {
         case (Some(empId), Some(endDate), Some(telephoneQuestion), telephoneNumber) =>
           val model = IncomeCheckYourAnswersViewModel(
-            employmentId = empId,
             preHeading = Messages("tai.endEmployment.preHeadingText"),
             incomeSourceEnd = endDate.toString,
             contactableByPhone = telephoneQuestion,

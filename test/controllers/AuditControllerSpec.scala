@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.any
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.AuditService
@@ -26,6 +25,21 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class AuditControllerSpec extends BaseSpec {
+
+  private val redirectUri = "redirectUri"
+
+  val auditService: AuditService = mock[AuditService]
+
+  class TestAuditController
+      extends AuditController(
+        auditService,
+        mockAuthJourney,
+        mcc
+      ) {
+
+    when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))
+      .thenReturn(Future.successful(redirectUri))
+  }
 
   "Audit Controller" must {
     "send specific audit event and redirect" when {
@@ -49,22 +63,6 @@ class AuditControllerSpec extends BaseSpec {
         }
       }
     }
-  }
-
-  private val redirectUri = "redirectUri"
-
-  val auditService: AuditService = mock[AuditService]
-
-  class TestAuditController
-      extends AuditController(
-        auditService,
-        mockAuthJourney,
-        FakeValidatePerson,
-        mcc
-      ) {
-
-    when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))
-      .thenReturn(Future.successful(redirectUri))
   }
 
 }

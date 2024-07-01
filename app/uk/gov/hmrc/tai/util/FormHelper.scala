@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,6 @@ object FormHelper {
     try
       stripNumber(value).getOrElse("0").toInt
     catch {
-      case e: Exception => 0
+      case _: Exception => 0
     }
 }

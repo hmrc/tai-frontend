@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package views.html.print
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -54,7 +54,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     nationalInsuranceAmountYearToDate = 200,
     payFrequency = Annually
   )
-  val samplePayments = Seq(samplePaymentWithoutNic, samplePaymentWithNic)
+  val samplePayments: Seq[Payment] = Seq(samplePaymentWithoutNic, samplePaymentWithNic)
 
   def createHistoricIncomeCalculationVM(
     payments: Seq[Payment],
@@ -76,15 +76,15 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     eyuMessage: Seq[String] = Nil,
     realTimeStatus: RealTimeStatus = Available,
     year: TaxYear = TaxYear().prev
-  ) = {
+  ): HtmlFormat.Appendable = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
       createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)
-    historicIncomePrintView(historicIncomeCalculationVM, appConfig)
+    historicIncomePrintView(historicIncomeCalculationVM)
   }
 
   val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel =
     createHistoricIncomeCalculationVM(Nil, Nil, Unavailable, TaxYear().prev)
-  override def view: Html = historicIncomePrintView(historicIncomeCalculationVM, appConfig)
+  override def view: Html = historicIncomePrintView(historicIncomeCalculationVM)
 
   "The previous year income calculation print page" should {
 

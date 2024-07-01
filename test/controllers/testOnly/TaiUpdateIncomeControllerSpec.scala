@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package controllers.testOnly
 
 import akka.Done
 import builders.RequestBuilder
-import controllers.actions.FakeValidatePerson
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import play.api.http.Status.SEE_OTHER
@@ -46,7 +45,6 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
   private def sut = new TaiUpdateIncomeController(
     journeyCacheService,
     mockAuthJourney,
-    FakeValidatePerson,
     mcc
   )
 
