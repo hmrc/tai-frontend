@@ -1,7 +1,5 @@
-import com.typesafe.sbt.web.Import.*
 import com.typesafe.sbt.web.SbtWeb
 import play.sbt.routes.RoutesKeys.*
-import sbt.GlobFilter
 import sbt.Keys.*
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings
@@ -9,7 +7,7 @@ import uk.gov.hmrc.DefaultBuildSettings.defaultSettings
 
 val appName = "tai-frontend"
 
-ThisBuild / majorVersion := 1
+ThisBuild / majorVersion := 2
 ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / scalafmtOnCompile := true
 
@@ -72,11 +70,13 @@ lazy val microservice = Project(appName, file("."))
     PlayKeys.playDefaultPort := 9230
   )
   .settings(resolvers ++= Seq(Resolver.jcenterRepo))
-  .settings(Test / Keys.fork := true)
   .settings(
     scalacOptions ++= Seq(
       "-feature",
       "-Werror",
+      "-Wdead-code",
+      "-Wunused:_",
+      "-Wextra-implicit",
       "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
       "-Wconf:cat=unused-imports&site=<empty>:s",
       "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
@@ -89,6 +89,9 @@ lazy val microservice = Project(appName, file("."))
     )
   )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
+
+Test / Keys.fork := true
+Test / scalacOptions --= Seq("-Wdead-code", "-Wvalue-discard")
 
 lazy val it = project
   .enablePlugins(play.sbt.PlayScala)
