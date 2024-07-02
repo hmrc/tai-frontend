@@ -16,7 +16,7 @@
 
 package controllers.income.estimatedPay.update
 
-import akka.Done
+import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
 import org.mockito.ArgumentMatchers.{any, eq => meq}

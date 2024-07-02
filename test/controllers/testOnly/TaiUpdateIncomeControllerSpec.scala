@@ -16,7 +16,7 @@
 
 package controllers.testOnly
 
-import akka.Done
+import org.apache.pekko.Done
 import builders.RequestBuilder
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito

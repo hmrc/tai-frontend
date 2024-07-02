@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service.journeyCache
 
-import akka.Done
+import org.apache.pekko.Done
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector

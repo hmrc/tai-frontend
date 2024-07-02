@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service.journeyCache
 
-import akka.Done
+import org.apache.pekko.Done
 import cats.implicits.catsSyntaxEitherId
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
