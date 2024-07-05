@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import akka.Done
+import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
 import org.jsoup.Jsoup

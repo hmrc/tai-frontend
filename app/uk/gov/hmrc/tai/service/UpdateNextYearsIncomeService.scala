@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import akka.Done
+import org.apache.pekko.Done
 import cats.implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier

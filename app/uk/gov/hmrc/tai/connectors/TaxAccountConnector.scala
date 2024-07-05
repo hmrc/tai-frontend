@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import akka.Done
+import org.apache.pekko.Done
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
