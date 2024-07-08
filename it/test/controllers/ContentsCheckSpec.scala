@@ -23,6 +23,7 @@ import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
 import pages.AddEmployment._
 import pages.EndEmployment._
+import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
 import play.api.Application
 import play.api.http.ContentTypes
@@ -666,8 +667,10 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(AddEmploymentPayrollNumberPage, "")
     .setOrException(AddEmploymentReceivedFirstPayPage, "Yes")
     .setOrException(AddEmploymentStartDatePage, LocalDate.of(2022, 7, 10))
-    .setOrException(AddEmploymentStartDateWithinSixWeeksPage, "Yes")
-    .setOrException(AddEmploymentTelephoneQuestionPage, "No")
+    .setOrException(UpdateEmploymentIdPage, 1)
+    .setOrException(UpdateEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(UpdateEmploymentTelephoneQuestionPage, "No")
+    .setOrException(UpdateEmploymentDetailsPage, "Details")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -677,6 +680,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockJourneyCacheNewRepository.set(any)).thenReturn(Future.successful(true))
+
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))
         .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
