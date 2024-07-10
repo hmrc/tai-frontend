@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject() (
@@ -41,7 +41,7 @@ class CompanyBenefitController @Inject() (
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
   journeyCacheNewRepository: JourneyCacheNewRepository,
-  errorPagesHandler: ErrorPagesHandler,
+  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
@@ -49,31 +49,22 @@ class CompanyBenefitController @Inject() (
     authenticate.authWithDataRetrieval.async { implicit request =>
       for {
         _ <- journeyCacheNewRepository.set(
-          request.userAnswers
-            .setOrException(EndCompanyBenefitsIdPage, empId)
-            .setOrException(EndCompanyBenefitsTypePage, benefitType.toString)
-        )
+               request.userAnswers
+                 .setOrException(EndCompanyBenefitsIdPage, empId)
+                 .setOrException(EndCompanyBenefitsTypePage, benefitType.toString)
+             )
       } yield Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
     }
 
-  // scalastyle:off cyclomatic.complexity
   def decision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (for {
-      currentCache <- journeyCacheNewRepository.get(request.userAnswers.sessionId, request.userAnswers.nino)
-
-      employmentId <- currentCache.flatMap(_.get(EndCompanyBenefitsIdPage)) match {
-        case Some(id) => Future.successful(id)
-        case None => Future.failed(new RuntimeException("Employment ID not found in cache"))
-      }
-
-      employment <- employmentService.employment(user.nino, employmentId)
-      decision <- decisionCacheWrapper.getDecision()
-
+      employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
+      decision   <- decisionCacheWrapper.getDecision()
     } yield employment match {
       case Some(employment) =>
-        val referer = currentCache.flatMap(_.get(EndCompanyBenefitNamePage)) match {
+        val referer = request.userAnswers.get(EndCompanyBenefitNamePage) match {
           case Some(value) => value
           case None =>
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -82,13 +73,8 @@ class CompanyBenefitController @Inject() (
         val form =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
-        val benefitType = currentCache.flatMap(_.get(EndCompanyBenefitsTypePage)) match {
-          case Some(benefit) => benefit
-          case None => throw new RuntimeException("Benefit type not found in cache")
-        }
-
         val viewModel = CompanyBenefitDecisionViewModel(
-          benefitType,
+          request.userAnswers.get(EndCompanyBenefitsTypePage).get,
           employment.name,
           form,
           employment.sequenceNumber
@@ -96,11 +82,11 @@ class CompanyBenefitController @Inject() (
 
         for {
           _ <- journeyCacheNewRepository.set(
-            request.userAnswers
-              .setOrException(EndCompanyBenefitEmploymentNamePage, employment.name)
-              .setOrException(EndCompanyBenefitsTypePage, viewModel.benefitName)
-              .setOrException(EndCompanyBenefitNamePage, referer)
-          )
+                 request.userAnswers
+                   .setOrException(EndCompanyBenefitEmploymentNamePage, employment.name)
+                   .setOrException(EndCompanyBenefitsTypePage, viewModel.benefitName)
+                   .setOrException(EndCompanyBenefitNamePage, referer)
+               )
         } yield Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
 
       case None => throw new RuntimeException("No employment found")
@@ -130,12 +116,12 @@ class CompanyBenefitController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          journeyCacheNewRepository.get(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+          journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).map { _ =>
             val viewModel = CompanyBenefitDecisionViewModel(
-              EndCompanyBenefitsTypePage,
-              EndCompanyBenefitEmploymentNamePage,
+              request.userAnswers.get(EndCompanyBenefitsTypePage).get,
+              request.userAnswers.get(EndCompanyBenefitEmploymentNamePage).get,
               formWithErrors,
-              EndCompanyBenefitsIdPage
+              request.userAnswers.get(EndCompanyBenefitsIdPage).get
             )
             BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
           },

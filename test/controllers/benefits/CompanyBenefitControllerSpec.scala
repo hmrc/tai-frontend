@@ -26,6 +26,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -67,17 +68,18 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
   val employmentService: EmploymentService = mock[EmploymentService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
 
   class SUT
       extends CompanyBenefitController(
         employmentService,
-        new DecisionCacheWrapper(journeyCacheService, ec),
-        journeyCacheService,
+        new (journeyCacheService, ec),
         mockAuthJourney,
         mcc,
         updateOrRemoveCompanyBenefitDecisionView,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
     when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
