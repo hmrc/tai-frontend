@@ -117,7 +117,7 @@ class UpdateEmploymentController @Inject() (
             Future.successful(
               BadRequest(
                 whatDoYouWantToTellUs(
-                  EmploymentViewModel(request.userAnswers.get(UpdateEmploymentNamePage).get, empId),
+                  EmploymentViewModel(request.userAnswers.get(UpdateEmploymentNamePage).getOrElse(""), empId),
                   formWithErrors
                 )
               )
@@ -152,6 +152,13 @@ class UpdateEmploymentController @Inject() (
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    def setNoValueForTelephoneQuestion(form: YesNoTextEntryForm) =
+      request.userAnswers
+        .setOrException(
+          UpdateEmploymentTelephoneQuestionPage,
+          Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
+        )
+
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -171,20 +178,12 @@ class UpdateEmploymentController @Inject() (
           val yesNoTask = form.yesNoChoice match {
             case Some(yn) if yn == FormValuesConstants.YesValue =>
               journeyCacheNewRepository.set(
-                request.userAnswers
-                  .setOrException(
-                    UpdateEmploymentTelephoneQuestionPage,
-                    Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
-                  )
+                setNoValueForTelephoneQuestion(form)
                   .setOrException(UpdateEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
               )
             case _ =>
               journeyCacheNewRepository.set(
-                request.userAnswers
-                  .setOrException(
-                    UpdateEmploymentTelephoneQuestionPage,
-                    Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
-                  )
+                setNoValueForTelephoneQuestion(form)
                   .setOrException(UpdateEmploymentTelephoneNumberPage, "")
               )
           }
@@ -206,15 +205,15 @@ class UpdateEmploymentController @Inject() (
 
       (employmentId, employmentName, employmentDetails, employmentTelephoneQuestion, employmentTelephoneNumber) match {
 
-        case (Some(_), Some(_), Some(_), Some(_), _) =>
+        case (Some(empId), Some(empName), Some(empDetails), Some(empTelQuestion), _) =>
           Future.successful(
             Ok(
               updateEmploymentCheckYourAnswers(
                 UpdateEmploymentCheckYourAnswersViewModel(
-                  employmentId.get,
-                  employmentName.get,
-                  employmentDetails.get,
-                  employmentTelephoneQuestion.get,
+                  empId,
+                  empName,
+                  empDetails,
+                  empTelQuestion,
                   employmentTelephoneNumber
                 )
               )
@@ -232,18 +231,23 @@ class UpdateEmploymentController @Inject() (
     val employmentTelephoneQuestion = request.userAnswers.get(UpdateEmploymentTelephoneQuestionPage)
     val employmentTelephoneNumber = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
 
-    val model = IncorrectIncome(employmentDetails.get, employmentTelephoneQuestion.get, employmentTelephoneNumber)
-    val journeyTask = for {
-      _ <- employmentService.incorrectEmployment(user.nino, employmentId.get, model)
-    } yield successfulJourneyCacheService
-      .cache(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${employmentId.get}", true.toString)
-      .map(_ =>
-        journeyCacheNewRepository
-          .clear(request.userAnswers.sessionId, request.userAnswers.nino)
-          .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation()))
-      )
+    (employmentId, employmentDetails, employmentTelephoneQuestion) match {
 
-    journeyTask.flatten.flatten
+      case (Some(empId), Some(empDetails), Some(empTelQuestion)) =>
+        val model = IncorrectIncome(empDetails, empTelQuestion, employmentTelephoneNumber)
+        val journeyTask = for {
+          _ <- employmentService.incorrectEmployment(user.nino, empId, model)
+        } yield successfulJourneyCacheService
+          .cache(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId", true.toString)
+          .map(_ =>
+            journeyCacheNewRepository
+              .clear(request.userAnswers.sessionId, request.userAnswers.nino)
+              .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation()))
+          )
+        journeyTask.flatten.flatten
+      case _ =>
+        Future.successful(Redirect(taxAccountSummaryRedirect))
+    }
   }
 
   def confirmation: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
