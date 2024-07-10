@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import akka.Done
+import org.apache.pekko.Done
 import controllers.FakeTaiPlayApplication
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
