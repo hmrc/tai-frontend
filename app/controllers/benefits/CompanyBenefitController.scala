@@ -16,60 +16,64 @@
 
 package controllers.benefits
 
-import com.google.inject.name.Named
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import pages.benefits.{EndCompanyBenefitEmploymentNamePage, EndCompanyBenefitNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.EmploymentService
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject() (
   employmentService: EmploymentService,
   decisionCacheWrapper: DecisionCacheWrapper,
-  @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
-  implicit val errorPagesHandler: ErrorPagesHandler
+  journeyCacheNewRepository: JourneyCacheNewRepository,
+  errorPagesHandler: ErrorPagesHandler,
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
-    authenticate.authWithValidatePerson.async { implicit request =>
-      val cacheValues = Map(
-        EndCompanyBenefitConstants.EmploymentIdKey -> empId.toString,
-        EndCompanyBenefitConstants.BenefitTypeKey  -> benefitType.toString
-      )
-
-      journeyCacheService.cache(cacheValues) map { _ =>
-        Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
-      }
-
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      for {
+        _ <- journeyCacheNewRepository.set(
+          request.userAnswers
+            .setOrException(EndCompanyBenefitsIdPage, empId)
+            .setOrException(EndCompanyBenefitsTypePage, benefitType.toString)
+        )
+      } yield Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
     }
 
-  def decision: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  // scalastyle:off cyclomatic.complexity
+  def decision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (for {
-      currentCache <- journeyCacheService.currentCache
-      employment <- employmentService
-                      .employment(user.nino, currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt)
+      currentCache <- journeyCacheNewRepository.get(request.userAnswers.sessionId, request.userAnswers.nino)
+
+      employmentId <- currentCache.flatMap(_.get(EndCompanyBenefitsIdPage)) match {
+        case Some(id) => Future.successful(id)
+        case None => Future.failed(new RuntimeException("Employment ID not found in cache"))
+      }
+
+      employment <- employmentService.employment(user.nino, employmentId)
       decision <- decisionCacheWrapper.getDecision()
+
     } yield employment match {
       case Some(employment) =>
-        val referer = currentCache.get(EndCompanyBenefitConstants.RefererKey) match {
+        val referer = currentCache.flatMap(_.get(EndCompanyBenefitNamePage)) match {
           case Some(value) => value
           case None =>
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -78,22 +82,26 @@ class CompanyBenefitController @Inject() (
         val form =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
+        val benefitType = currentCache.flatMap(_.get(EndCompanyBenefitsTypePage)) match {
+          case Some(benefit) => benefit
+          case None => throw new RuntimeException("Benefit type not found in cache")
+        }
+
         val viewModel = CompanyBenefitDecisionViewModel(
-          currentCache(EndCompanyBenefitConstants.BenefitTypeKey),
+          benefitType,
           employment.name,
           form,
           employment.sequenceNumber
         )
 
-        val cache = Map(
-          EndCompanyBenefitConstants.EmploymentNameKey -> employment.name,
-          EndCompanyBenefitConstants.BenefitNameKey    -> viewModel.benefitName,
-          EndCompanyBenefitConstants.RefererKey        -> referer
-        )
-
-        journeyCacheService.cache(cache).map { _ =>
-          Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
-        }
+        for {
+          _ <- journeyCacheNewRepository.set(
+            request.userAnswers
+              .setOrException(EndCompanyBenefitEmploymentNamePage, employment.name)
+              .setOrException(EndCompanyBenefitsTypePage, viewModel.benefitName)
+              .setOrException(EndCompanyBenefitNamePage, referer)
+          )
+        } yield Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
 
       case None => throw new RuntimeException("No employment found")
     }).flatten recover { case NonFatal(e) =>
@@ -115,23 +123,24 @@ class CompanyBenefitController @Inject() (
         failureRoute
     }
 
-  def submitDecision: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitDecision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     UpdateOrRemoveCompanyBenefitDecisionForm.form
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          journeyCacheService.currentCache.map { currentCache =>
+          journeyCacheNewRepository.get(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
             val viewModel = CompanyBenefitDecisionViewModel(
-              currentCache(EndCompanyBenefitConstants.BenefitTypeKey),
-              currentCache(EndCompanyBenefitConstants.EmploymentNameKey),
+              EndCompanyBenefitsTypePage,
+              EndCompanyBenefitEmploymentNamePage,
               formWithErrors,
-              currentCache(EndCompanyBenefitConstants.EmploymentIdKey).toInt
+              EndCompanyBenefitsIdPage
             )
             BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
           },
         success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect)
       )
   }
+
 }
