@@ -155,7 +155,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val empName = "company name"
         val benefitType = "Expenses"
-        val referer = "/check-income-tax/income-summary"
+        val referer = "referer"
         val SUT = createSUT
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
@@ -189,7 +189,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val empName = "company name"
         val benefitType = "Expenses"
-        val referer = "/check-income-tax/income-summary"
+        val referer = "referer"
 
         val SUT = createSUT
 
@@ -263,6 +263,9 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
         reset(mockJourneyCacheNewRepository)
 
+        when(journeyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty))
+
         val SUT = createSUT
 
         ensureBenefitTypeInCache()
@@ -294,6 +297,9 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     "redirect to the appropriate IFORM update page" when {
       "the form has the value yesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
         reset(mockJourneyCacheNewRepository)
+
+        when(journeyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty))
 
         val SUT = createSUT
 
@@ -327,6 +333,10 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     "redirect to the Tax Account Summary Page (start of journey)" when {
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         val SUT = createSUT
+
+        when(journeyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty))
+
         ensureBenefitTypeOutOfCache()
 
         val result = SUT.submitDecision(
@@ -343,6 +353,10 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
       "the form has the value YesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         val SUT = createSUT
+
+        when(journeyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty))
+
         ensureBenefitTypeOutOfCache()
 
         val result = SUT.submitDecision(
@@ -359,6 +373,10 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
       "the form has no valid value" in {
         val SUT = createSUT
+
+        when(journeyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty))
+
         ensureBenefitTypeInCache()
 
         val result = SUT.submitDecision(
@@ -379,11 +397,14 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form submission is having blank value" in {
         val SUT = createSUT
 
+        when(journeyCacheService.cache(any(), any())(any()))
+          .thenReturn(Future.successful(Map.empty))
+
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, "Expenses")
           .setOrException(EndCompanyBenefitEmploymentNamePage, "Employer A")
-          .setOrException(EndCompanyBenefitNamePage, "/check-income-tax/income-summary")
+          .setOrException(EndCompanyBenefitNamePage, "referer")
 
         setup(mockUserAnswers)
 
@@ -400,10 +421,14 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     }
 
     "cache the DecisionChoice value" when {
+
       "it is a NoIDontGetThisBenefit" in {
         val SUT = createSUT
 
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
         val benefitType = ensureBenefitTypeInCache()
+
         val result = SUT.submitDecision(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")

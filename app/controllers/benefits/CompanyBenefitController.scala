@@ -61,7 +61,7 @@ class CompanyBenefitController @Inject() (
 
     (for {
       employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
-      decision   <- decisionCacheWrapper.getDecision
+      decision   <- decisionCacheWrapper.getDecision()
     } yield employment match {
       case Some(employment) =>
         val referer = request.userAnswers.get(EndCompanyBenefitNamePage) match {
