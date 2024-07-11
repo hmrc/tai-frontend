@@ -160,7 +160,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
-          .setOrException(EndCompanyBenefitNamePage, empName)
+          .setOrException(EndCompanyBenefitEmploymentNamePage, empName)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitNamePage, referer)
 
@@ -258,6 +258,45 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     def ensureBenefitTypeOutOfCache(): Unit =
       when(journeyCacheService.mandatoryJourneyValue(meq(EndCompanyBenefitConstants.BenefitTypeKey))(any()))
         .thenReturn(Future.successful(Left("")))
+
+    "cache the DecisionChoice value" when {
+
+      when(journeyCacheService.cache(any(), any())(any()))
+        .thenReturn(Future.successful(Map.empty))
+
+      "it is a NoIDontGetThisBenefit" in {
+        val SUT = createSUT
+
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val benefitType = ensureBenefitTypeInCache()
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
+
+        Await.result(result, 5.seconds)
+
+        verify(journeyCacheService, times(1))
+          .cache(meq(s"$benefitType $DecisionChoice"), meq(NoIDontGetThisBenefit))(any())
+      }
+
+      "it is a YesIGetThisBenefit" in {
+        val SUT = createSUT
+
+        val benefitType = ensureBenefitTypeInCache()
+
+        val result = SUT.submitDecision(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
+
+        Await.result(result, 5.seconds)
+        verify(journeyCacheService, times(1))
+          .cache(meq(s"$benefitType $DecisionChoice"), meq(YesIGetThisBenefit))(any())
+      }
+    }
 
     "redirect to the 'When did you stop getting benefits from company?' page" when {
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
@@ -417,42 +456,6 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         status(result) mustBe BAD_REQUEST
 
-      }
-    }
-
-    "cache the DecisionChoice value" when {
-
-      "it is a NoIDontGetThisBenefit" in {
-        val SUT = createSUT
-
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-
-        val benefitType = ensureBenefitTypeInCache()
-
-        val result = SUT.submitDecision(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
-        )
-
-        Await.result(result, 5.seconds)
-
-        verify(journeyCacheService, times(1))
-          .cache(meq(s"$benefitType $DecisionChoice"), meq(NoIDontGetThisBenefit))(any())
-      }
-
-      "it is a YesIGetThisBenefit" in {
-        val SUT = createSUT
-
-        val benefitType = ensureBenefitTypeInCache()
-
-        val result = SUT.submitDecision(
-          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
-        )
-
-        Await.result(result, 5.seconds)
-        verify(journeyCacheService, times(1))
-          .cache(meq(s"$benefitType $DecisionChoice"), meq(YesIGetThisBenefit))(any())
       }
     }
   }
