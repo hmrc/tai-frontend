@@ -25,7 +25,7 @@ import pages.AddEmployment._
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
-import pages.benefits.{EndCompanyBenefitEmploymentNamePage, EndCompanyBenefitNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -679,8 +679,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(UpdateEmploymentDetailsPage, "Details")
     .setOrException(EndCompanyBenefitsIdPage, 1)
     .setOrException(EndCompanyBenefitsTypePage, "Telephone")
-    .setOrException(EndCompanyBenefitNamePage, "referer")
-    .setOrException(EndCompanyBenefitEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(EndCompanyBenefitsRefererPage, "referer")
+    .setOrException(EndCompanyBenefitsEmploymentNamePage, "H M Revenue and Customs")
 
   override def beforeEach(): Unit = {
     super.beforeEach()

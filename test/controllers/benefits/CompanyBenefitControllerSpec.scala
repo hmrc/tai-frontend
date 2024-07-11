@@ -22,12 +22,12 @@ import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.stubbing.ScalaOngoingStubbing
-import pages.benefits.{EndCompanyBenefitEmploymentNamePage, EndCompanyBenefitNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, status, _}
+import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.DecisionCacheWrapper
@@ -160,9 +160,9 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
-          .setOrException(EndCompanyBenefitEmploymentNamePage, empName)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
-          .setOrException(EndCompanyBenefitNamePage, referer)
+          .setOrException(EndCompanyBenefitsRefererPage, referer)
 
         setup(mockUserAnswers)
 
@@ -196,7 +196,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
-          .setOrException(EndCompanyBenefitNamePage, referer)
+          .setOrException(EndCompanyBenefitsRefererPage, referer)
 
         setup(mockUserAnswers)
 
@@ -230,7 +230,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
-          .setOrException(EndCompanyBenefitNamePage, "referrer")
+          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
 
         setup(mockUserAnswers)
 
@@ -312,7 +312,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
-          .setOrException(EndCompanyBenefitNamePage, "referrer")
+          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
 
         setup(mockUserAnswers)
 
@@ -347,7 +347,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
-          .setOrException(EndCompanyBenefitEmploymentNamePage, "company name")
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
 
         setup(mockUserAnswers)
 
@@ -442,8 +442,8 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, "Expenses")
-          .setOrException(EndCompanyBenefitEmploymentNamePage, "Employer A")
-          .setOrException(EndCompanyBenefitNamePage, "referer")
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "Employer A")
+          .setOrException(EndCompanyBenefitsRefererPage, "referer")
 
         setup(mockUserAnswers)
 

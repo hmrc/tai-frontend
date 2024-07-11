@@ -18,7 +18,7 @@ package controllers.benefits
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.benefits.{EndCompanyBenefitEmploymentNamePage, EndCompanyBenefitNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheNewRepository
@@ -64,7 +64,7 @@ class CompanyBenefitController @Inject() (
       decision   <- decisionCacheWrapper.getDecision()
     } yield employment match {
       case Some(employment) =>
-        val referer = request.userAnswers.get(EndCompanyBenefitNamePage) match {
+        val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
           case Some(value) => value
           case None =>
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -83,9 +83,9 @@ class CompanyBenefitController @Inject() (
         for {
           _ <- journeyCacheNewRepository.set(
                  request.userAnswers
-                   .setOrException(EndCompanyBenefitEmploymentNamePage, employment.name)
+                   .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
                    .setOrException(EndCompanyBenefitsTypePage, viewModel.benefitName)
-                   .setOrException(EndCompanyBenefitNamePage, referer)
+                   .setOrException(EndCompanyBenefitsRefererPage, referer)
                )
         } yield Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
 
@@ -119,7 +119,7 @@ class CompanyBenefitController @Inject() (
           journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).map { _ =>
             val viewModel = CompanyBenefitDecisionViewModel(
               request.userAnswers.get(EndCompanyBenefitsTypePage).get,
-              request.userAnswers.get(EndCompanyBenefitEmploymentNamePage).get,
+              request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
               formWithErrors,
               request.userAnswers.get(EndCompanyBenefitsIdPage).get
             )

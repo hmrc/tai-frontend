@@ -19,8 +19,10 @@ package controllers.benefits
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsNamePage, EndCompanyBenefitsStopDatePage}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -37,7 +39,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
-import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
+import views.html.benefits._
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -56,77 +58,83 @@ class RemoveCompanyBenefitController @Inject() (
   removeCompanyBenefitStopDate: RemoveCompanyBenefitStopDateView,
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
   canWeContactByPhone: CanWeContactByPhoneView,
-  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView
-)(implicit ec: ExecutionContext)
+  removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
+  journeyCacheNewRepository: JourneyCacheNewRepository
+                                               )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def stopDate: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def stopDate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.currentCache map { currentCache =>
-      val currentBenefitName = currentCache(EndCompanyBenefitConstants.BenefitNameKey)
-      val currentEmploymentName = currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
+    journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).flatMap { userAnswersOption =>
+      userAnswersOption.map { userAnswers =>
+        val currentBenefitName = userAnswers.get(EndCompanyBenefitsNamePage).get
+        val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get
+        val removeCompanyBenefitForm = RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName)
 
-      val removeCompanyBenefitForm = RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName)
+        val form = userAnswers.get(EndCompanyBenefitsStopDatePage)
+          .map(dateString => removeCompanyBenefitForm.form.fill(LocalDate.parse(dateString)))
+          .getOrElse(removeCompanyBenefitForm.form)
 
-      val form = currentCache
-        .get(EndCompanyBenefitConstants.BenefitStopDateKey)
-        .map(dateString => removeCompanyBenefitForm.form.fill(LocalDate.parse(dateString)))
-        .getOrElse(removeCompanyBenefitForm.form)
-
-      Ok(
-        removeCompanyBenefitStopDate(
-          form,
-          currentCache(EndCompanyBenefitConstants.BenefitNameKey),
-          currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
+        Future.successful(
+          Ok(
+            removeCompanyBenefitStopDate(
+              form,
+              request.userAnswers.get(EndCompanyBenefitsNamePage).get,
+              request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get
+            )
+          )
         )
-      )
+      }.getOrElse(Future.successful(InternalServerError("UserAnswers not found")))
     }
   }
 
-  def submitStopDate: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitStopDate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val taxYear = TaxYear()
 
-    journeyCacheService.currentCache.flatMap { currentCache =>
-      val currentBenefitName = currentCache(EndCompanyBenefitConstants.BenefitNameKey)
-      val currentEmploymentName = currentCache(EndCompanyBenefitConstants.EmploymentNameKey)
-      RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            journeyCacheService
-              .mandatoryJourneyValues(
-                Seq(EndCompanyBenefitConstants.BenefitNameKey, EndCompanyBenefitConstants.EmploymentNameKey)
-              )
-              .getOrFail
-              .map { mandatoryJourneyValues =>
-                BadRequest(
-                  removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1))
-                )
-              },
-          { date =>
-            val dateString = date.toString
-            if (date isBefore taxYear.start) {
-              // BeforeTaxYearEnd
-              for {
-                current <- journeyCacheService.currentCache
-                _       <- journeyCacheService.flush()
-                filtered = current.filter(_._1 != EndCompanyBenefitConstants.BenefitValueKey)
-                _ <-
-                  journeyCacheService
-                    .cache(filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))
-              } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
-            } else {
-              // OnOrAfterTaxYearEnd
+    journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).flatMap { userAnswersOption =>
+      userAnswersOption.map { userAnswers =>
+        val currentBenefitName = userAnswers.get(EndCompanyBenefitsNamePage).get
+        val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get
+
+        RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
               journeyCacheService
-                .cache(EndCompanyBenefitConstants.BenefitStopDateKey, dateString)
-                .map { _ =>
-                  Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
-                }
+                .mandatoryJourneyValues(
+                  Seq(EndCompanyBenefitConstants.BenefitNameKey, EndCompanyBenefitConstants.EmploymentNameKey)
+                )
+                .getOrFail
+                .map { mandatoryJourneyValues =>
+                  BadRequest(
+                    removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1))
+                  )
+                },
+            { date =>
+              val dateString = date.toString
+              if (date isBefore taxYear.start) {
+                // BeforeTaxYearEnd
+                for {
+                  current <- journeyCacheService.currentCache
+                  _       <- journeyCacheService.flush()
+                  filtered = current.filter(_._1 != EndCompanyBenefitConstants.BenefitValueKey)
+                  _ <-
+                    journeyCacheService
+                      .cache(filtered ++ Map(EndCompanyBenefitConstants.BenefitStopDateKey -> dateString))
+                } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
+              } else {
+                // OnOrAfterTaxYearEnd
+                journeyCacheNewRepository.set(request.userAnswers
+                  .setOrException(EndCompanyBenefitsStopDatePage,dateString))
+                  .map { _ =>
+                    Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
+                  }
+              }
             }
-          }
-        )
+          )
+      }
     }
   }
 
