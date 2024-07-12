@@ -159,49 +159,52 @@ class RemoveCompanyBenefitController @Inject() (
     implicit val user: AuthedUser = request.taiUser
 
     journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).flatMap { userAnswersOption =>
-      userAnswersOption.map { userAnswers =>
-        val mandatoryJourneyValues = Seq(
-          userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
-          userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get
-        )
-        val optionalValue = userAnswers.get(EndCompanyBenefitsValuePage)
+      userAnswersOption
+        .map { userAnswers =>
+          val mandatoryJourneyValues = Seq(
+            userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
+            userAnswers.get(EndCompanyBenefitsNamePage).get
+          )
+          val optionalValue = userAnswers.get(EndCompanyBenefitsValuePage)
 
-        val form = CompanyBenefitTotalValueForm.form.fill(optionalValue.getOrElse(""))
-        Future.successful(
-          Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)), form))
-        )
-      }.getOrElse(Future.failed(new Exception("UserAnswers not found")))
+          val form = CompanyBenefitTotalValueForm.form.fill(optionalValue.getOrElse(""))
+          Future.successful(
+            Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)), form))
+          )
+        }
+        .getOrElse(Future.failed(new Exception("UserAnswers not found")))
     }
   }
 
-  def submitBenefitValue(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitBenefitValue(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     CompanyBenefitTotalValueForm.form
       .bindFromRequest()
       .fold(
         formWithErrors =>
-
-          journeyCacheService
-            .mandatoryJourneyValues(
-              Seq(EndCompanyBenefitConstants.EmploymentNameKey, EndCompanyBenefitConstants.BenefitNameKey)
-            )
-            .getOrFail
-
-
-            .flatMap { mandatoryJourneyValues =>
-              Future.successful(
-                BadRequest(
-                  removeBenefitTotalValue(
-                    BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)),
-                    formWithErrors
+          journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).flatMap { userAnswersOption =>
+            userAnswersOption
+              .map { userAnswers =>
+                val mandatoryJourneyValues = Seq(
+                  userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
+                  userAnswers.get(EndCompanyBenefitsNamePage).get
+                )
+                Future.successful(
+                  BadRequest(
+                    removeBenefitTotalValue(
+                      BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)),
+                      formWithErrors
+                    )
                   )
                 )
-              )
-            },
+              }
+              .getOrElse(Future.failed(new Exception("UserAnswers not found")))
+          },
         totalValue => {
           val rounded = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
-          journeyCacheService
-            .cache(Map(EndCompanyBenefitConstants.BenefitValueKey -> rounded.toString()))
+          val updatedUserAnswers = request.userAnswers.setOrException(EndCompanyBenefitsValuePage, rounded.toString)
+          journeyCacheNewRepository
+            .set(updatedUserAnswers)
             .map(_ => Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber()))
         }
       )
