@@ -678,7 +678,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(UpdateEmploymentTelephoneQuestionPage, "No")
     .setOrException(UpdateEmploymentDetailsPage, "Details")
     .setOrException(EndCompanyBenefitsIdPage, 1)
-    .setOrException(EndCompanyBenefitsEmploymentNamePage, "employmentName")
     .setOrException(EndCompanyBenefitsNamePage, "benefitName")
     .setOrException(EndCompanyBenefitsTypePage, "Telephone")
     .setOrException(EndCompanyBenefitsRefererPage, "referer")
@@ -686,6 +685,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(EndCompanyBenefitsStopDatePage, LocalDate.of(2022, 2, 2).toString)
     .setOrException(EndCompanyBenefitsTelephoneNumberPage, "999")
     .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "999")
+    .setOrException(EndCompanyBenefitsEmploymentNamePage, "employmentName")
 
   override def beforeEach(): Unit = {
     super.beforeEach()

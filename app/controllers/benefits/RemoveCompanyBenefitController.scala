@@ -281,37 +281,37 @@ class RemoveCompanyBenefitController @Inject() (
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(
-          EndCompanyBenefitConstants.EmploymentNameKey,
-          EndCompanyBenefitConstants.BenefitNameKey,
-          EndCompanyBenefitConstants.BenefitStopDateKey,
-          EndCompanyBenefitConstants.TelephoneQuestionKey,
-          EndCompanyBenefitConstants.RefererKey
-        ),
-        Seq(
-          EndCompanyBenefitConstants.BenefitValueKey,
-          EndCompanyBenefitConstants.TelephoneNumberKey
-        )
-      )
+    journeyCacheNewRepository
+      .get(request.userAnswers.sessionId, user.nino.nino)
       .map {
-        case Left(_) =>
+        case None =>
           Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-        case Right((mandatoryJourneyValues, optionalSeq)) =>
-          val stopDate = LocalDate.parse(mandatoryJourneyValues(2))
+        case Some(userAnswers) =>
+          val mandatoryJourneyValues = Seq(
+            userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
+            userAnswers.get(EndCompanyBenefitsNamePage),
+            userAnswers.get(EndCompanyBenefitsStopDatePage),
+            userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage),
+            userAnswers.get(EndCompanyBenefitsRefererPage)
+          )
+          val optionalSeq = Seq(
+            userAnswers.get(EndCompanyBenefitsValuePage),
+            userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
+          )
+
+          val stopDate = LocalDate.parse(mandatoryJourneyValues(2).getOrElse(""))
 
           Ok(
             removeCompanyBenefitCheckYourAnswers(
               RemoveCompanyBenefitsCheckYourAnswersViewModel(
-                mandatoryJourneyValues.head,
-                mandatoryJourneyValues(1),
+                mandatoryJourneyValues.head.getOrElse(""),
+                mandatoryJourneyValues(1).getOrElse(""),
                 stopDate,
                 optionalSeq.head,
-                mandatoryJourneyValues(3),
+                mandatoryJourneyValues(3).getOrElse(""),
                 optionalSeq(1)
               )
             )
@@ -319,7 +319,48 @@ class RemoveCompanyBenefitController @Inject() (
       }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+
+    for {
+      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheNewRepository
+        .get(request.userAnswers.sessionId, user.nino.nino)
+        .map {
+          case Some(userAnswers) =>
+            (
+              Seq(
+                userAnswers.get(EndCompanyBenefitsIdPage),
+                userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
+                userAnswers.get(EndCompanyBenefitsTypePage),
+                userAnswers.get(EndCompanyBenefitsStopDatePage),
+                userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage)
+              ).flatten,
+              Seq(
+                userAnswers.get(EndCompanyBenefitsValuePage),
+                userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
+              ).flatten
+            )
+          case None => throw new RuntimeException("Failed to retrieve data from cache")
+        }
+
+      val stopDate = LocalDate.parse(mandatoryCacheSeq(3)).getOrElse("").format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
+
+      model = EndedCompanyBenefit(
+        benefitType = mandatoryCacheSeq(2),
+        stopDate = stopDate,
+        valueOfBenefit = optionalCacheSeq.head,
+        contactByPhone = mandatoryCacheSeq(4),
+        phoneNumber = optionalCacheSeq(1)
+      )
+
+      _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toInt, model)
+      _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey, true.toString)
+      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+    } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
+  }
+
+
+  def submitYourAnswers2(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     for {
