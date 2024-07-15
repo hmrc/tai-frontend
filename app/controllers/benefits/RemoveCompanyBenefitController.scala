@@ -22,6 +22,7 @@ import controllers.auth.{AuthJourney, AuthedUser}
 import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsNamePage, EndCompanyBenefitsStopDatePage, EndCompanyBenefitsValuePage}
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
+import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository

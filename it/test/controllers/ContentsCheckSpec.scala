@@ -25,7 +25,7 @@ import pages.AddEmployment._
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}

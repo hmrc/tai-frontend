@@ -22,7 +22,7 @@ import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.stubbing.ScalaOngoingStubbing
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsIdPage, EndCompanyBenefitsTypePage}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
