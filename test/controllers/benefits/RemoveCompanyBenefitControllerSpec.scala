@@ -24,8 +24,9 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, argThat, eq => meq}
 import org.mockito.{ArgumentMatcher, Mockito}
 import org.mockito.stubbing.ScalaOngoingStubbing
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsStopDatePage, EndCompanyBenefitsValuePage}
+import pages.benefits._
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -47,7 +48,7 @@ import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
-import views.html.benefits.{RemoveBenefitTotalValueView, RemoveCompanyBenefitCheckYourAnswersView, RemoveCompanyBenefitConfirmationView, RemoveCompanyBenefitStopDateView}
+import views.html.benefits._
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -558,18 +559,37 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
     "show the contact by telephone page" when {
       "navigating from 'when did you stop getting benefits' page" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val telephoneNumber = "85256651"
+
+        val mockUserAnswers = UserAnswers(
+          sessionId = "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
+          )
+        ).setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "amazing")
+          .setOrException(EndCompanyBenefitsStopDatePage, "before6April2017")
+          .setOrException(EndCompanyBenefitsRefererPage, "Test")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, telephoneNumber)
+
         val SUT = createSUT
-        val cache = Map(
-          EndCompanyBenefitConstants.EmploymentIdKey    -> "1",
-          EndCompanyBenefitConstants.EmploymentNameKey  -> employment.name,
-          EndCompanyBenefitConstants.BenefitTypeKey     -> "amazing",
-          EndCompanyBenefitConstants.BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefitConstants.RefererKey         -> "Test"
-        )
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
+
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
         doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
@@ -582,21 +602,32 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       }
 
       "has the yes field and telephone number prepopulated from the cache" in {
-        val SUT = createSUT
+        reset(mockJourneyCacheNewRepository)
 
         val telephoneNumber = "85256651"
 
-        val cache = Map(
-          EndCompanyBenefitConstants.EmploymentIdKey      -> "1",
-          EndCompanyBenefitConstants.EmploymentNameKey    -> employment.name,
-          EndCompanyBenefitConstants.BenefitTypeKey       -> "amazing",
-          EndCompanyBenefitConstants.BenefitStopDateKey   -> "before6April2017",
-          EndCompanyBenefitConstants.RefererKey           -> "Test",
-          EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
-        )
+        val mockUserAnswers = UserAnswers(
+          sessionId = "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
+          )
+        ).setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "amazing")
+          .setOrException(EndCompanyBenefitsStopDatePage, "before6April2017")
+          .setOrException(EndCompanyBenefitsRefererPage, "Test")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, telephoneNumber)
 
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        setup(mockUserAnswers)
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.telephoneNumber()(fakeRequest)
         status(result) mustBe OK
@@ -610,19 +641,32 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
     "show the contact by telephone page" when {
       "navigating from 'total value of benefit' page" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val telephoneNumber = "85256651"
+
+        val mockUserAnswers = UserAnswers(sessionId = "testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "amazing")
+          .setOrException(EndCompanyBenefitsStopDatePage, "before6April2017")
+          .setOrException(EndCompanyBenefitsValuePage, "12345")
+          .setOrException(EndCompanyBenefitsRefererPage, "Test")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, telephoneNumber)
+
+        setup(mockUserAnswers)
         val SUT = createSUT
-        val cache = Map(
-          EndCompanyBenefitConstants.EmploymentIdKey    -> "1",
-          EndCompanyBenefitConstants.EmploymentNameKey  -> employment.name,
-          EndCompanyBenefitConstants.BenefitTypeKey     -> "amazing",
-          EndCompanyBenefitConstants.BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefitConstants.BenefitValueKey    -> "12345",
-          EndCompanyBenefitConstants.RefererKey         -> "Test"
-        )
-        when(removeCompanyBenefitJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         val doc = Jsoup.parse(contentAsString(result))
+
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
         doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
@@ -638,14 +682,34 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
   "submitTelephoneNumber" must {
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
-        val SUT = createSUT
-        val expectedCache =
-          Map(
+        reset(mockJourneyCacheNewRepository)
+
+        val telephoneNumber = "12345678"
+
+        val mockUserAnswers = UserAnswers(
+          sessionId = "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            EndCompanyBenefitConstants.TelephoneNumberKey   -> "12345678"
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
           )
-        when(removeCompanyBenefitJourneyCacheService.cache(meq(expectedCache))(any()))
-          .thenReturn(Future.successful(expectedCache))
+        ).setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "amazing")
+          .setOrException(EndCompanyBenefitsStopDatePage, "before6April2017")
+          .setOrException(EndCompanyBenefitsValuePage, "12345")
+          .setOrException(EndCompanyBenefitsRefererPage, "Test")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, telephoneNumber)
+
+        setup(mockUserAnswers)
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -662,14 +726,32 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
-        val SUT = createSUT
-        val expectedCacheWithErasingNumber =
-          Map(
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers(
+          sessionId = "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> ""
           )
-        when(removeCompanyBenefitJourneyCacheService.cache(meq(expectedCacheWithErasingNumber))(any()))
-          .thenReturn(Future.successful(expectedCacheWithErasingNumber))
+        ).setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "amazing")
+          .setOrException(EndCompanyBenefitsStopDatePage, "before6April2017")
+          .setOrException(EndCompanyBenefitsValuePage, "12345")
+          .setOrException(EndCompanyBenefitsRefererPage, "Test")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, "")
+
+        setup(mockUserAnswers)
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")

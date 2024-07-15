@@ -19,7 +19,7 @@ package controllers.benefits
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsNamePage, EndCompanyBenefitsStopDatePage, EndCompanyBenefitsValuePage}
+import pages.benefits._
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
@@ -29,7 +29,7 @@ import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -211,24 +211,36 @@ class RemoveCompanyBenefitController @Inject() (
       )
   }
 
-  def telephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    val user = request.taiUser
-    journeyCacheService.currentCache map { currentCache =>
-      val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
-      val form = YesNoTextEntryForm
-        .form()
-        .fill(
-          YesNoTextEntryForm(
-            currentCache.get(EndCompanyBenefitConstants.TelephoneQuestionKey),
-            currentCache.get(EndCompanyBenefitConstants.TelephoneNumberKey)
-          )
+  def telephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+    journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino) flatMap {
+      case Some(userAnswers) =>
+        val cache: Map[String, String] = Map(
+          EndCompanyBenefitsValuePage.toString -> userAnswers.get(EndCompanyBenefitsValuePage).getOrElse(""),
+          EndCompanyBenefitsTelephoneQuestionPage.toString ->
+            userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage).getOrElse(""),
+          EndCompanyBenefitsTelephoneNumberPage.toString -> userAnswers
+            .get(EndCompanyBenefitsTelephoneNumberPage)
+            .getOrElse("")
         )
 
-      Ok(canWeContactByPhone(Some(user), telephoneNumberViewModel, form))
+        val telephoneNumberViewModel = extractViewModelFromCache(cache)
+        val form = YesNoTextEntryForm
+          .form()
+          .fill(
+            YesNoTextEntryForm(
+              request.userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage),
+              request.userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
+            )
+          )
+        Future.successful(Ok(canWeContactByPhone(Some(user), telephoneNumberViewModel, form)))
+
+      case None =>
+        Future.successful(InternalServerError("No user answers found"))
     }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val user = request.taiUser
     YesNoTextEntryForm
       .form(
@@ -239,8 +251,9 @@ class RemoveCompanyBenefitController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          journeyCacheService.currentCache map { currentCache =>
-            val telephoneNumberViewModel = extractViewModelFromCache(currentCache)
+          journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino) map { userAnswersOption =>
+            val cache: Map[String, String] = userAnswersOption.map(_.data.as[Map[String, String]]).getOrElse(Map.empty)
+            val telephoneNumberViewModel = extractViewModelFromCache(cache)
             BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors))
           },
         form => {
@@ -255,8 +268,14 @@ class RemoveCompanyBenefitController @Inject() (
             case _ => mandatoryData ++ Map(EndCompanyBenefitConstants.TelephoneNumberKey -> "")
           }
 
-          journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers())
+          Json.toJson(dataForCache) match {
+            case jsObject: JsObject =>
+              val userAnswers = UserAnswers(request.userAnswers.sessionId, user.nino.nino, data = jsObject)
+              journeyCacheNewRepository.set(userAnswers) map { _ =>
+                Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers())
+              }
+            case _ =>
+              Future.failed(new Exception("Updated data is not a JSON object"))
           }
         }
       )
@@ -353,7 +372,9 @@ class RemoveCompanyBenefitController @Inject() (
     }
   }
 
-  private def extractViewModelFromCache(cache: Map[String, String])(implicit messages: Messages) = {
+  private def extractViewModelFromCache(
+    cache: Map[String, String]
+  )(implicit messages: Messages): CanWeContactByPhoneViewModel = {
     val backUrl =
       if (cache.contains(EndCompanyBenefitConstants.BenefitValueKey)) {
         controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url

@@ -25,7 +25,7 @@ import pages.AddEmployment._
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
+import pages.benefits._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -678,9 +678,14 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(UpdateEmploymentTelephoneQuestionPage, "No")
     .setOrException(UpdateEmploymentDetailsPage, "Details")
     .setOrException(EndCompanyBenefitsIdPage, 1)
+    .setOrException(EndCompanyBenefitsEmploymentNamePage, "employmentName")
+    .setOrException(EndCompanyBenefitsNamePage, "benefitName")
     .setOrException(EndCompanyBenefitsTypePage, "Telephone")
     .setOrException(EndCompanyBenefitsRefererPage, "referer")
-    .setOrException(EndCompanyBenefitsEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(EndCompanyBenefitsValuePage, "1234")
+    .setOrException(EndCompanyBenefitsStopDatePage, LocalDate.of(2022, 2, 2).toString)
+    .setOrException(EndCompanyBenefitsTelephoneNumberPage, "999")
+    .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "999")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -1015,6 +1020,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         .willReturn(ok(taxCodeComparisonJson.toString()))
     )
   }
+
   server.stubFor(
     get(urlMatching("/messages/count.*"))
       .willReturn(ok(s"""{"count": 0}"""))
