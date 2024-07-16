@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
@@ -93,10 +93,9 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   def sut = new CompanyBenefitsSummaryController(
-    mock[AuditConnector],
-    journeyCacheService,
     taxAccountService,
     employmentService,
     benefitsService,
@@ -104,7 +103,9 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     mockAuthJourney,
     appConfig,
     mcc,
+    personService,
     inject[CompanyBenefitsView],
+    mockJourneyCacheNewRepository,
     inject[ErrorPagesHandler]
   )
 

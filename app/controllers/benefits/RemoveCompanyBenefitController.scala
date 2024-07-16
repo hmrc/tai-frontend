@@ -46,7 +46,6 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
-import scala.util.Try
 
 class RemoveCompanyBenefitController @Inject() (
   benefitsService: BenefitsService,
@@ -320,38 +319,42 @@ class RemoveCompanyBenefitController @Inject() (
 
     for {
       (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheNewRepository
-        .get(request.userAnswers.sessionId, user.nino.nino)
-        .map {
-          case Some(userAnswers) =>
-            (
-              Seq(
-                userAnswers.get(EndCompanyBenefitsIdPage),
-                userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
-                userAnswers.get(EndCompanyBenefitsTypePage),
-                userAnswers.get(EndCompanyBenefitsStopDatePage),
-                userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage)
-              ).flatten,
-              Seq(
-                userAnswers.get(EndCompanyBenefitsValuePage),
-                userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
-              ).flatten
-            )
-          case None => throw new RuntimeException("Failed to retrieve data from cache")
-        }
+                                                 .get(request.userAnswers.sessionId, user.nino.nino)
+                                                 .map {
+                                                   case Some(userAnswers) =>
+                                                     (
+                                                       Seq(
+                                                         userAnswers.get(EndCompanyBenefitsIdPage),
+                                                         userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
+                                                         userAnswers.get(EndCompanyBenefitsTypePage),
+                                                         userAnswers.get(EndCompanyBenefitsStopDatePage),
+                                                         userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage)
+                                                       ).flatten,
+                                                       Seq(
+                                                         userAnswers.get(EndCompanyBenefitsValuePage),
+                                                         userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
+                                                       ).flatten
+                                                     )
+                                                   case None =>
+                                                     throw new RuntimeException("Failed to retrieve data from cache")
+                                                 }
 
-      stopDate = LocalDate.parse(mandatoryCacheSeq(3).toString).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
+      stopDate =
+        LocalDate.parse(mandatoryCacheSeq(3).toString).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
 
       model = EndedCompanyBenefit(
-        benefitType = mandatoryCacheSeq(2).toString,
-        stopDate = stopDate,
-        valueOfBenefit = Some(optionalCacheSeq.head),
-        contactByPhone = mandatoryCacheSeq(4).toString,
-        phoneNumber = Some(optionalCacheSeq(1))
-      )
+                benefitType = mandatoryCacheSeq(2).toString,
+                stopDate = stopDate,
+                valueOfBenefit = Some(optionalCacheSeq.head),
+                contactByPhone = mandatoryCacheSeq(4).toString,
+                phoneNumber = Some(optionalCacheSeq(1))
+              )
 
       _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toString.toInt, model)
-      _ <- journeyCacheNewRepository.set(UserAnswers(request.userAnswers.sessionId, user.nino.nino)
-        .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true.toString))
+      _ <- journeyCacheNewRepository.set(
+             UserAnswers(request.userAnswers.sessionId, user.nino.nino)
+               .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true.toString)
+           )
       _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
     } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
   }
@@ -359,12 +362,11 @@ class RemoveCompanyBenefitController @Inject() (
   def cancel: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     for {
       mandatoryJourneyValues <- journeyCacheNewRepository
-        .get(request.userAnswers.sessionId, request.userAnswers.nino)
-        .map(_.flatMap(_.get(EndCompanyBenefitsRefererPage)))
+                                  .get(request.userAnswers.sessionId, request.userAnswers.nino)
+                                  .map(_.flatMap(_.get(EndCompanyBenefitsRefererPage)))
       _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
     } yield Redirect(mandatoryJourneyValues.head)
   }
-
 
   def confirmation(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser

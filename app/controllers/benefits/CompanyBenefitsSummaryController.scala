@@ -16,14 +16,12 @@
 
 package controllers.benefits
 
-
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{Person, TemporarilyUnavailable}
@@ -38,7 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyBenefitsSummaryController @Inject() (
-  val auditConnector: AuditConnector,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
@@ -49,11 +46,9 @@ class CompanyBenefitsSummaryController @Inject() (
   personService: PersonService,
   companyBenefits: CompanyBenefitsView,
   journeyCacheNewRepository: JourneyCacheNewRepository,
-  errorPagesHandler: ErrorPagesHandler,
-  implicit val messages: Messages
+  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with I18nSupport {
-
+    extends TaiBaseController(mcc) {
 
   // scalastyle:off method.length
   def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -70,37 +65,47 @@ class CompanyBenefitsSummaryController @Inject() (
       cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
     } yield (taxCodeIncomes, employment, benefitsDetails, estimatedPayCompletion, cacheUpdatedIncomeAmount)
 
-    incomeDetailsResult.flatMap {
-      case (Right(taxCodeIncomes), Some(employment), benefitsDetails, estimatedPayCompletion, cacheUpdatedIncomeAmount) =>
-        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+    incomeDetailsResult
+      .flatMap {
+        case (
+              Right(taxCodeIncomes),
+              Some(employment),
+              benefitsDetails,
+              estimatedPayCompletion,
+              cacheUpdatedIncomeAmount
+            ) =>
+          val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-        val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-          empId,
-          request.fullName,
-          taxCodeIncomes,
-          employment,
-          benefitsDetails,
-          estimatedPayCompletion,
-          rtiAvailable,
-          applicationConfig,
-          cacheUpdatedIncomeAmount
-        )
-        val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
-          journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
-        } else {
-          Future.successful((): Unit)
-        }
-        val person: Future[Person] = personService.personDetailsFuture(nino)
-        person.flatMap { person =>
-          val authRequest = AuthenticatedRequest(request.request, request.taiUser, person)
-          result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)(authRequest, messages)))
-        }
+          val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+            empId,
+            request.fullName,
+            taxCodeIncomes,
+            employment,
+            benefitsDetails,
+            estimatedPayCompletion,
+            rtiAvailable,
+            applicationConfig,
+            cacheUpdatedIncomeAmount
+          )
+          val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
+            journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
+          } else {
+            Future.successful((): Unit)
+          }
+          val person: Future[Person] = personService.personDetailsFuture(nino)
+          person.flatMap { person =>
+            implicit val messages: Messages = request2Messages(request)
+            implicit val authRequest: AuthenticatedRequest[AnyContent] =
+              AuthenticatedRequest(request.request, request.taiUser, person)
+            result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
+          }
 
-      case _ =>
-        Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
-    }.recover { case NonFatal(e) =>
-     errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
-    }
+        case _ =>
+          Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
+      }
+      .recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
+      }
   }
 
 }

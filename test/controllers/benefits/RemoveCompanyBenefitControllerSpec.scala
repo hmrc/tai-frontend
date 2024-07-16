@@ -93,8 +93,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
   class SUT
       extends RemoveCompanyBenefitController(
-        removeCompanyBenefitJourneyCacheService,
-        trackSuccessJourneyCacheService,
         benefitsService,
         trackingService,
         mockAuthJourney,
@@ -990,31 +988,44 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       }
 
       "the request has an authorised session and telephone number has been provided but benefit value has not been provided" in {
-        val SUT = createSUT
+        reset(mockJourneyCacheNewRepository)
+
+        val stopDate: String = LocalDate.now().toString
+        val stopDateFormatted: String =
+          LocalDate.parse(stopDate).toString.format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
+
         val employmentId: String = "1234"
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", stopDateFormatted, None, "Yes", Some("0123456789"))
 
-        when(removeCompanyBenefitJourneyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String](employmentId, "TestCompany", "Accommodation", stopDate, "Yes"),
-                Seq[Option[String]](None, Some("0123456789"))
-              )
-            )
+        val testNino = "KH139703B"
+        val mockUserAnswers = UserAnswers(
+          sessionId = "testSessionId",
+          testNino,
+          data = Json.obj(
+            EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> ""
           )
         )
+          .setOrException(EndCompanyBenefitsIdPage, 1234)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "employment")
+          .setOrException(EndCompanyBenefitsTypePage, "Accommodation")
+          .setOrException(EndCompanyBenefitsStopDatePage, stopDateFormatted)
+          .setOrException(EndCompanyBenefitsValuePage, "")
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, "0123456789")
+
+        setup(mockUserAnswers)
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+
         when(
           benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
         )
           .thenReturn(Future.successful("1"))
-        when(
-          trackSuccessJourneyCacheService
-            .cache(meq(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")))
-        when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -1022,25 +1033,33 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
           .confirmation()
           .url
-        verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
       }
     }
   }
 
   "cancel" must {
     "flush the cache and redirect to start of journey" in {
+      reset(mockJourneyCacheNewRepository)
+
+      val testNino = "KH139703B"
+      val mockUserAnswers = UserAnswers(sessionId = "testSessionId", testNino)
+        .setOrException(EndCompanyBenefitsRefererPage, "Test")
+
+      setup(mockUserAnswers)
       val SUT = createSUT
 
-      when(removeCompanyBenefitJourneyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Right(Seq("Url"))))
-      when(removeCompanyBenefitJourneyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+      when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
 
       val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result).get mustBe "Url"
-      verify(removeCompanyBenefitJourneyCacheService, times(1)).flush()(any())
-      verify(removeCompanyBenefitJourneyCacheService, times(1)).mandatoryJourneyValues(any())(any(), any())
+      redirectLocation(result).get mustBe "Test"
+      verify(mockJourneyCacheNewRepository, times(1)).clear(sessionId, testNino)
     }
   }
 

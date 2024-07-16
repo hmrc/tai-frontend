@@ -35,12 +35,11 @@ class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector)
       .map(_.json.as[Person])
 
   def personDetailsFuture(
-                           nino: Nino
-                         )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Person] = {
+    nino: Nino
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Person] =
     personDetails(nino).value.flatMap {
       case Right(person) => Future.successful(person)
-      case Left(error) => Future.failed(new Exception(error))
+      case Left(error)   => Future.failed(new Exception(error))
     }
-  }
 
 }
