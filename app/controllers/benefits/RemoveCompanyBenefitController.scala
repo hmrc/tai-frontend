@@ -345,9 +345,9 @@ class RemoveCompanyBenefitController @Inject() (
       model = EndedCompanyBenefit(
                 benefitType = mandatoryCacheSeq(2).toString,
                 stopDate = stopDate,
-                valueOfBenefit = Some(optionalCacheSeq.head),
+                valueOfBenefit = optionalCacheSeq.headOption,
                 contactByPhone = mandatoryCacheSeq(4).toString,
-                phoneNumber = Some(optionalCacheSeq(1))
+                phoneNumber = optionalCacheSeq.lift(1)
               )
 
       _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toString.toInt, model)
