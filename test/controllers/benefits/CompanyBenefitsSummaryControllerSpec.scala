@@ -281,7 +281,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         doc.title() must include(
           Messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
-        // verify(journeyCacheService, times(1)).flushWithEmpId(meq(employmentId))(any())
       }
     }
 

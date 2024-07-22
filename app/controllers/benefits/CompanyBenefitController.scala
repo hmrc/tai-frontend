@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject() (
@@ -115,16 +115,15 @@ class CompanyBenefitController @Inject() (
     UpdateOrRemoveCompanyBenefitDecisionForm.form
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          journeyCacheNewRepository.get(request.userAnswers.sessionId, user.nino.nino).map { _ =>
-            val viewModel = CompanyBenefitDecisionViewModel(
-              request.userAnswers.get(EndCompanyBenefitsTypePage).get,
-              request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
-              formWithErrors,
-              request.userAnswers.get(EndCompanyBenefitsIdPage).get
-            )
-            BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel))
-          },
+        formWithErrors => {
+          val viewModel = CompanyBenefitDecisionViewModel(
+            request.userAnswers.get(EndCompanyBenefitsTypePage).get,
+            request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
+            formWithErrors,
+            request.userAnswers.get(EndCompanyBenefitsIdPage).get
+          )
+          Future.successful(BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel)))
+        },
         success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect)
       )
   }

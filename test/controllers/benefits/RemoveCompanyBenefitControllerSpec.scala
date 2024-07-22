@@ -154,8 +154,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       status(result) mustBe OK
 
-      verify(mockJourneyCacheNewRepository, times(1)).get(any(), any())
-
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.benefits.ended.stopDate.heading", "Test", "Test"))
 
@@ -194,8 +192,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
           mockUserAnswers.get(EndCompanyBenefitsEmploymentNamePage).get
         )
       }
-
-      verify(mockJourneyCacheNewRepository, times(1)).get(any(), any())
 
       result rendersTheSameViewAs expectedView
     }
@@ -322,9 +318,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         )
 
         status(result) mustBe BAD_REQUEST
-
-        verify(mockJourneyCacheNewRepository, times(1)).get(any(), any())
-
       }
     }
   }
@@ -764,14 +757,13 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers(
           sessionId = "testSessionId",
           nino.nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-            EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789",
+            EndCompanyBenefitConstants.EmploymentIdKey      -> "1234"
           )
         )
           .setOrException(EndCompanyBenefitsIdPage, 1234)
@@ -803,8 +795,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       }
 
       "there is a form validation error (additional, controller specific constraint)" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers(
           sessionId = "testSessionId",
           nino.nino,
