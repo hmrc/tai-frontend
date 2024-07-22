@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
 import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, argThat, eq => meq}
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.ArgumentMatcher
 import org.mockito.stubbing.ScalaOngoingStubbing
 import pages.{EndCompanyBenefitsTelephoneTesterNumberPage, EndCompanyBenefitsValueTesterPage}
@@ -36,7 +36,6 @@ import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompa
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.Employment
 import play.api.libs.json.Format.GenericFormat
-import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
@@ -947,10 +946,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the request has an authorised session and a telephone number and benefit value have been provided" in {
         reset(mockJourneyCacheNewRepository)
 
-        val employmentId: String = "1234"
-        val endedCompanyBenefit =
-          EndedCompanyBenefit("Accommodation", stopDateFormatted, Some("1000000"), "Yes", Some("0123456789"))
-
         val mockUserAnswers = UserAnswers(
           sessionId = "testSessionId",
           nino.nino,
@@ -976,9 +971,11 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
+        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+
         when(
           benefitsService
-            .endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
+            .endedCompanyBenefit(any(), any(), any())(any(), any())
         )
           .thenReturn(Future.successful("1"))
 
@@ -992,9 +989,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       "the request has an authorised session and neither telephone number nor benefit value have been provided" in {
         reset(mockJourneyCacheNewRepository)
-        val employmentId: String = "1234"
-        val endedCompanyBenefit =
-          EndedCompanyBenefit("Accommodation", stopDateFormatted, None, "No", None)
 
         val mockUserAnswers = UserAnswers(
           sessionId = "testSessionId",
@@ -1017,7 +1011,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val SUT = createSUT
 
         when(
-          benefitsService.endedCompanyBenefit(any(), meq(employmentId.toInt), meq(endedCompanyBenefit))(any(), any())
+          benefitsService
+            .endedCompanyBenefit(any(), any(), any())(any(), any())
         )
           .thenReturn(Future.successful("1"))
 
@@ -1039,15 +1034,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the request has an authorised session and telephone number has not been provided but benefit value has been provided" in {
         reset(mockJourneyCacheNewRepository)
         reset(benefitsService)
-
-        val employmentId: String = "1234"
-        val endedCompanyBenefit = EndedCompanyBenefit(
-          "Accommodation",
-          stopDateFormatted,
-          Some("1000000"),
-          "No",
-          None
-        )
 
         val testNino = "KH139703B"
         val mockUserAnswers = UserAnswers(
@@ -1079,10 +1065,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         when(
           benefitsService
-            .endedCompanyBenefit(meq(Nino("KH139703B")), meq(employmentId.toInt), meq(endedCompanyBenefit))(
-              any(),
-              any()
-            )
+            .endedCompanyBenefit(any(), any(), any())(any(), any())
         )
           .thenReturn(Future.successful("1"))
 

@@ -20,7 +20,7 @@ object EndCompanyBenefitConstants {
 
   val JourneyKey = "end-company-benefit"
   val EmploymentIdKey = "employmentId"
-  val EmploymentNameKey = "employmentName"
+  val EmploymentNameKey = "benefitEmploymentName"
   val BenefitTypeKey = "benefitType"
   val BenefitStopDateKey = "stopDate"
   val BenefitValueKey = "benefitValue"

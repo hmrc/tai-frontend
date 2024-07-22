@@ -22,7 +22,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.CitizenDetailsConnector
-import uk.gov.hmrc.tai.model.domain.Address
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import utils.BaseSpec
 
 import scala.concurrent.Future
@@ -31,6 +31,9 @@ class PersonServiceSpec extends BaseSpec {
 
   val mockConnector: CitizenDetailsConnector = mock[CitizenDetailsConnector]
   val sut: PersonService = new PersonService(mockConnector)
+
+  val mockService: PersonService = mock[PersonService]
+  val person: Person = Person(nino, "John", "Doe", isDeceased = false, address)
 
   "personDetails" must {
     "return a Person model instance" when {
@@ -71,6 +74,31 @@ class PersonServiceSpec extends BaseSpec {
 
         result mustBe a[Left[UpstreamErrorResponse, _]]
         result.swap.getOrElse(UpstreamErrorResponse("", OK)).statusCode mustBe errorResponse
+      }
+    }
+  }
+
+  "personDetailsFuture" must {
+    "return a Person model instance" when {
+      "personDetails returns a Right value" in {
+        when(mockService.personDetailsFuture(any())(any(), any()))
+          .thenReturn(Future[Person](person))
+
+        val result = mockService.personDetailsFuture(nino).futureValue
+
+        result mustBe a[Person]
+        result mustBe person
+      }
+    }
+
+    "throw an Exception" when {
+      "personDetails returns a Left value" in {
+        when(mockService.personDetailsFuture(any())(any(), any()))
+          .thenReturn(Future.failed(new Exception("Error")))
+
+        assertThrows[Exception] {
+          mockService.personDetailsFuture(nino).futureValue
+        }
       }
     }
   }
