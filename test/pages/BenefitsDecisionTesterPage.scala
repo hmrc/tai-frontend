@@ -17,12 +17,11 @@
 package pages
 
 import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.util.constants.journeyCache.EndCompanyBenefitConstants
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants
 
-case object EndCompanyBenefitsTypeTesterPage extends QuestionPage[Option[Int]] {
+case object BenefitsDecisionTesterPage extends QuestionPage[Option[String]] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = EndCompanyBenefitConstants.BenefitTypeKey
-
+  override def toString: String = UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice
 }

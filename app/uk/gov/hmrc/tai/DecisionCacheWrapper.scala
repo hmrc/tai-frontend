@@ -36,26 +36,26 @@ class DecisionCacheWrapper @Inject() (
 
   private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
-  def getDecision: Future[Option[String]] = {
-    val benefitType: Option[String] = Some(EndCompanyBenefitsTypePage.toString)
+  def getDecision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    val benefitType: Option[String] = request.userAnswers.get(EndCompanyBenefitsTypePage)
 
     benefitType match {
       case Some(bt) =>
         getBenefitDecisionKey(Some(bt)) match {
           case Some(_) =>
-            Future.successful(Some(benefitType.getOrElse("No benefit type")))
-          case _ =>
+            Future.successful(Ok(request.userAnswers.get(EndCompanyBenefitsTypePage).toString))
+          case None =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
-            Future.successful(None)
+            Future.successful(NotFound("Unable to form compound key"))
         }
       case None =>
-        Future.successful(None)
+        Future.successful(NotFound("Benefit type not found"))
     }
   }
 
   def cacheDecision(decision: String, f: (String, Result) => Result): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
-      val benefitTypeFuture: Option[String] = Some(EndCompanyBenefitsTypePage)
+      val benefitTypeFuture: Option[String] = request.userAnswers.get(EndCompanyBenefitsTypePage)
 
       benefitTypeFuture match {
         case Some(bt) =>
@@ -74,5 +74,5 @@ class DecisionCacheWrapper @Inject() (
     }
 
   private def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =
-    benefitType.map(x => s"$x $DecisionChoice")
+    benefitType.map(x => s"$x ${BenefitDecisionPage.toString}")
 }

@@ -22,7 +22,7 @@ import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.stubbing.ScalaOngoingStubbing
-//import pages.EndCompanyBenefitsTypeTesterPage
+import pages.{BenefitDecisionPage, EndCompanyBenefitsTypeTesterPage}
 import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
 import play.api.data.Form
 import play.api.i18n.Messages
@@ -200,12 +200,13 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
+          .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
 
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -214,7 +215,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm, 2)
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-        val result = SUT.decision()(request)
+        val result = SUT.decision(request)
 
         result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
       }
@@ -315,7 +316,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
         val result = SUT.submitDecision(
           RequestBuilder
@@ -346,7 +347,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
         val result = SUT.submitDecision()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
@@ -368,13 +369,15 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
+          .setOrException(EndCompanyBenefitsTypeTesterPage, None)
         setup(mockUserAnswers)
 
         val SUT = createSUT
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
@@ -393,12 +396,17 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form has the value YesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         reset(mockJourneyCacheNewRepository)
 
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
+          .setOrException(EndCompanyBenefitsTypeTesterPage, None)
+        setup(mockUserAnswers)
+
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(false)
-
         when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
         val result = SUT.submitDecision(
           RequestBuilder

@@ -61,7 +61,7 @@ class CompanyBenefitController @Inject() (
 
     (for {
       employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
-      decision   <- decisionCacheWrapper.getDecision
+      decision   <- Future.successful(decisionCacheWrapper.getDecision)
     } yield employment match {
       case Some(employment) =>
         val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
@@ -72,7 +72,7 @@ class CompanyBenefitController @Inject() (
         }
 
         val form =
-          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(decision.toString))
 
         val viewModel = CompanyBenefitDecisionViewModel(
           request.userAnswers.get(EndCompanyBenefitsTypePage).get,
