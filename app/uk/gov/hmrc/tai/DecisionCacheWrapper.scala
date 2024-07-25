@@ -16,63 +16,62 @@
 
 package uk.gov.hmrc.tai
 
+import controllers.auth.AuthJourney
+import pages.BenefitDecisionPage
+import pages.benefits.EndCompanyBenefitsTypePage
 import play.api.Logging
 import play.api.mvc._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 
-import javax.inject.{Inject, Named, Singleton}
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DecisionCacheWrapper @Inject() (
-  @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
+  authenticate: AuthJourney,
+  journeyCacheNewRepository: JourneyCacheNewRepository,
   implicit val ec: ExecutionContext
 ) extends Results with Logging {
 
   private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
-  def getDecision()(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getDecision: Future[Option[String]] = {
+    val benefitType: Option[String] = Some(EndCompanyBenefitsTypePage.toString)
 
-    val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
-
-    benefitType.flatMap[Option[String]] {
-      case Right(bt) =>
+    benefitType match {
+      case Some(bt) =>
         getBenefitDecisionKey(Some(bt)) match {
-          case Some(bdk) =>
-            journeyCacheService.currentValue(bdk)
+          case Some(_) =>
+            Future.successful(Some(benefitType.getOrElse("No benefit type")))
           case _ =>
             logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
             Future.successful(None)
         }
-      case Left(_) =>
-        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
+      case None =>
         Future.successful(None)
     }
   }
 
-  def cacheDecision(decision: String, f: (String, Result) => Result)(implicit
-    hc: HeaderCarrier
-  ): Future[Result] = {
-    val benefitType = journeyCacheService.mandatoryJourneyValue(EndCompanyBenefitConstants.BenefitTypeKey)
-    benefitType.flatMap[Result] {
-      case Right(bt) =>
-        getBenefitDecisionKey(Some(bt)) match {
-          case Some(bdk) =>
-            journeyCacheService.cache(bdk, decision).map { _ =>
-              f(decision, journeyStartRedirection)
-            }
-          case _ =>
-            logger.error(s"Unable to form compound key for $DecisionChoice using $benefitType")
-            Future.successful(journeyStartRedirection)
-        }
-      case Left(_) =>
-        logger.error(s"Unable to find ${EndCompanyBenefitConstants.BenefitTypeKey} when retrieving decision")
-        Future.successful(journeyStartRedirection)
+  def cacheDecision(decision: String, f: (String, Result) => Result): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      val benefitTypeFuture: Option[String] = Some(EndCompanyBenefitsTypePage)
+
+      benefitTypeFuture match {
+        case Some(bt) =>
+          getBenefitDecisionKey(Some(bt)) match {
+            case Some(_) =>
+              journeyCacheNewRepository.set(request.userAnswers.setOrException(BenefitDecisionPage, decision)).map {
+                _ =>
+                  f(decision, journeyStartRedirection)
+              }
+            case _ =>
+              Future.successful(journeyStartRedirection)
+          }
+        case None =>
+          Future.successful(journeyStartRedirection)
+      }
     }
-  }
 
   private def getBenefitDecisionKey(benefitType: Option[String]): Option[String] =
     benefitType.map(x => s"$x $DecisionChoice")

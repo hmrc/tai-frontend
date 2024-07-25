@@ -18,7 +18,7 @@ package controllers.benefits
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
+import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheNewRepository
@@ -61,11 +61,12 @@ class CompanyBenefitController @Inject() (
 
     (for {
       employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
-      decision   <- decisionCacheWrapper.getDecision()
+      decision   <- decisionCacheWrapper.getDecision
     } yield employment match {
       case Some(employment) =>
         val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
-          case Some(value) => value
+          case Some(value) =>
+            value
           case None =>
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
         }
@@ -79,12 +80,11 @@ class CompanyBenefitController @Inject() (
           form,
           employment.sequenceNumber
         )
-
         for {
           _ <- journeyCacheNewRepository.set(
                  request.userAnswers
                    .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
-                   .setOrException(EndCompanyBenefitsTypePage, viewModel.benefitName)
+                   .setOrException(EndCompanyBenefitsNamePage, viewModel.benefitName)
                    .setOrException(EndCompanyBenefitsRefererPage, referer)
                )
         } yield Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
@@ -124,7 +124,7 @@ class CompanyBenefitController @Inject() (
           )
           Future.successful(BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel)))
         },
-        success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect)
+        success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect).apply(request)
       )
   }
 

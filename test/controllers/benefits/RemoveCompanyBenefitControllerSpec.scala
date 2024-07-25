@@ -150,7 +150,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       when(mockJourneyCacheNewRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-      val result = SUT.stopDate()(fakeRequest)
+      val result = SUT.stopDate(fakeRequest)
 
       status(result) mustBe OK
 
@@ -926,7 +926,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-
     }
 
   }
