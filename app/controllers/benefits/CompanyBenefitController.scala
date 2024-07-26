@@ -70,7 +70,6 @@ class CompanyBenefitController @Inject() (
           case None =>
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
         }
-
         val form =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(decision.toString))
 

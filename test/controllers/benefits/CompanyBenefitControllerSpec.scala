@@ -23,7 +23,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.stubbing.ScalaOngoingStubbing
 import pages.{BenefitDecisionPage, EndCompanyBenefitsTypeTesterPage}
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
+import pages.benefits._
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
@@ -37,7 +37,6 @@ import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, Telephone}
 import uk.gov.hmrc.tai.service.EmploymentService
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{DecisionChoice, NoIDontGetThisBenefit, YesIGetThisBenefit}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -74,7 +73,6 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
   )
 
   val employmentService: EmploymentService = mock[EmploymentService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
@@ -166,17 +164,13 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
           .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
-
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(Future.successful(Left("")))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -196,18 +190,19 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-          .setOrException(EndCompanyBenefitsIdPage, 1)
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino
+        ).setOrException(EndCompanyBenefitsIdPage, 2)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
           .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
-
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val expectedForm: Form[Option[String]] =
@@ -216,6 +211,10 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
         val result = SUT.decision(request)
+
+        verify(mockJourneyCacheNewRepository).set(any())
+        verify(employmentService).employment(any(), any())(any())
+        verify(mockJourneyCacheNewRepository).get(any(), any())
 
         result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
       }
@@ -231,15 +230,14 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, "referrer")
-
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
