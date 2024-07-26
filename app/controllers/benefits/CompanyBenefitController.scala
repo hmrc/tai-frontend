@@ -64,6 +64,7 @@ class CompanyBenefitController @Inject() (
       decision   <- Future.successful(decisionCacheWrapper.getDecision)
     } yield employment match {
       case Some(employment) =>
+
         val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
           case Some(value) =>
             value
@@ -79,6 +80,7 @@ class CompanyBenefitController @Inject() (
           form,
           employment.sequenceNumber
         )
+        
         for {
           _ <- journeyCacheNewRepository.set(
                  request.userAnswers
