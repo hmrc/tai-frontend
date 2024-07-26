@@ -18,12 +18,13 @@ package controllers.benefits
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.benefits.{EndCompanyBenefitsEmploymentNamePage, EndCompanyBenefitsIdPage, EndCompanyBenefitsNamePage, EndCompanyBenefitsRefererPage, EndCompanyBenefitsTypePage}
+import pages.BenefitDecisionPage
+import pages.benefits._
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.constants.{TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
@@ -36,7 +37,6 @@ import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject() (
   employmentService: EmploymentService,
-  decisionCacheWrapper: DecisionCacheWrapper,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
@@ -44,6 +44,8 @@ class CompanyBenefitController @Inject() (
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
+
+  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
@@ -56,15 +58,23 @@ class CompanyBenefitController @Inject() (
       } yield Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
     }
 
+  private def getDecision(userAnswers: UserAnswers): Future[Option[String]] = {
+    val benefitType: Option[String] = userAnswers.get(EndCompanyBenefitsTypePage)
+
+    benefitType match {
+      case Some(_) => Future.successful(userAnswers.get(BenefitDecisionPage))
+      case None    => Future.successful(None)
+    }
+  }
+
   def decision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     (for {
       employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
-      decision   <- Future.successful(decisionCacheWrapper.getDecision)
+      decision   <- getDecision(request.userAnswers)
     } yield employment match {
       case Some(employment) =>
-
         val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
           case Some(value) =>
             value
@@ -72,7 +82,7 @@ class CompanyBenefitController @Inject() (
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
         }
         val form =
-          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(decision.toString))
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
         val viewModel = CompanyBenefitDecisionViewModel(
           request.userAnswers.get(EndCompanyBenefitsTypePage).get,
@@ -80,7 +90,7 @@ class CompanyBenefitController @Inject() (
           form,
           employment.sequenceNumber
         )
-        
+
         for {
           _ <- journeyCacheNewRepository.set(
                  request.userAnswers
@@ -106,9 +116,26 @@ class CompanyBenefitController @Inject() (
             .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
         )
       case _ =>
-        logger.error(s"Bad Option provided in submitDecision form: $decision")
         failureRoute
     }
+
+  private def cacheDecision(
+    decision: String,
+    userAnswers: UserAnswers,
+    f: (String, Result) => Result
+  ): Future[Result] = {
+
+    val benefitTypeFuture: Option[String] = userAnswers.get(EndCompanyBenefitsTypePage)
+
+    benefitTypeFuture match {
+      case Some(_) =>
+        journeyCacheNewRepository.set(userAnswers.setOrException(BenefitDecisionPage, decision)).map { _ =>
+          f(decision, journeyStartRedirection)
+        }
+      case None =>
+        Future.successful(journeyStartRedirection)
+    }
+  }
 
   def submitDecision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -125,7 +152,7 @@ class CompanyBenefitController @Inject() (
           )
           Future.successful(BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel)))
         },
-        success => decisionCacheWrapper.cacheDecision(success.getOrElse(""), submitDecisionRedirect).apply(request)
+        success => cacheDecision(success.getOrElse(""), request.userAnswers, submitDecisionRedirect)
       )
   }
 

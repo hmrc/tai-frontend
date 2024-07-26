@@ -17,28 +17,27 @@
 package controllers.benefits
 
 import builders.RequestBuilder
-import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
+import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.stubbing.ScalaOngoingStubbing
-import pages.{BenefitDecisionPage, EndCompanyBenefitsTypeTesterPage}
 import pages.benefits._
+import pages._
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.tai.DecisionCacheWrapper
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment, Telephone}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.{DecisionChoice, NoIDontGetThisBenefit, YesIGetThisBenefit}
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import utils.BaseSpec
@@ -48,7 +47,7 @@ import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper {
+class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with Results {
 
   def createSUT = new SUT
   def randomNino(): Nino = new Generator(new Random()).nextNino
@@ -73,7 +72,6 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
   )
 
   val employmentService: EmploymentService = mock[EmploymentService]
-  val decisionCacheWrapper: DecisionCacheWrapper = mock[DecisionCacheWrapper]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
@@ -81,11 +79,6 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
   class SUT
       extends CompanyBenefitController(
         employmentService = employmentService,
-        decisionCacheWrapper = new DecisionCacheWrapper(
-          mockAuthJourney,
-          mockJourneyCacheNewRepository,
-          ec
-        ),
         authenticate = mockAuthJourney,
         mcc = mcc,
         updateOrRemoveCompanyBenefitDecision = updateOrRemoveCompanyBenefitDecisionView,
@@ -126,82 +119,78 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     reset(mockJourneyCacheNewRepository)
   }
 
-//  "redirectCompanyBenefitSelection" must {
-//    "redirect to decision page" in {
-//      reset(mockJourneyCacheNewRepository)
-//
-//      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//        .setOrException(EndCompanyBenefitsIdPage, empId)
-//        .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//      val SUT = createSUT
-//      setup(mockUserAnswers)
-//
-//      when(mockJourneyCacheNewRepository.get(any(), any()))
-//        .thenReturn(Future.successful(Some(mockUserAnswers)))
-//
-//      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-//
-//      val result =
-//        SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//
-//      status(result) mustBe SEE_OTHER
-//      redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
-//    }
-//  }
+  "redirectCompanyBenefitSelection" must {
+    "redirect to decision page" in {
+      reset(mockJourneyCacheNewRepository)
+
+      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(EndCompanyBenefitsIdPage, empId)
+        .setOrException(EndCompanyBenefitsTypePage, benefitType)
+      val SUT = createSUT
+      setup(mockUserAnswers)
+
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+      val result =
+        SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
+    }
+  }
 
   "decision" must {
     "show 'Do you currently get benefitType from Company?' page" when {
-//      "the request has an authorised session" in {
-//        reset(mockJourneyCacheNewRepository)
-//
-//        val empName = "company name"
-//        val benefitType = "Expenses"
-//        val referer = "referer"
-//        val SUT = createSUT
-//
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//          .setOrException(EndCompanyBenefitsRefererPage, referer)
-//        setup(mockUserAnswers)
-//
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-//
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-//
-//        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//        status(result) mustBe OK
-//
-//        val doc = Jsoup.parse(contentAsString(result))
-//        doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
-//
-//        verify(employmentService, times(1)).employment(any(), any())(any())
-//      }
-
-      "prepopulate the decision selection" in {
+      "the request has an authorised session" in {
         reset(mockJourneyCacheNewRepository)
 
         val empName = "company name"
         val benefitType = "Expenses"
         val referer = "referer"
-
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers(
-          "testSessionId",
-          randomNino().nino
-        ).setOrException(EndCompanyBenefitsIdPage, 2)
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
-          .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+
+        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
+
+        verify(employmentService, times(1)).employment(any(), any())(any())
+      }
+
+      "prepopulate the decision selection" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val empName = "company name"
+        val referer = "referer"
+
+        val SUT = createSUT
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsRefererPage, referer)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
+          .setOrException(EndCompanyBenefitsNamePage, "tester")
+          .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
+        setup(mockUserAnswers)
+
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -214,262 +203,371 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         status(result) mustBe OK
 
-        verify(mockJourneyCacheNewRepository).set(any())
-        verify(employmentService).employment(any(), any())(any())
-        verify(mockJourneyCacheNewRepository).get(any(), any())
-
         result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
+
+        verify(mockJourneyCacheNewRepository).set(any())
+        verify(employmentService, times(2)).employment(any(), any())(any())
+
       }
     }
 
-//    "throw exception" when {
-//      "employment not found" in {
+    "throw exception" when {
+      "employment not found" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val SUT = createSUT
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+
+        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "submit decision" must {
+    val benefitType = Telephone.name
+
+    "cache the DecisionChoice value" when {
+      "it is a NoIDontGetThisBenefit" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+        setup(mockUserAnswers)
+
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+
+      }
+
+      "it is a YesIGetThisBenefit" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+        setup(mockUserAnswers)
+
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitDecision(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe
+          controllers.routes.ExternalServiceRedirectController
+            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+            .url
+      }
+    }
+
+    "redirect to the 'When did you stop getting benefits from company?' page" when {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
+        setup(mockUserAnswers)
+
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+      }
+    }
+
+    "redirect to the appropriate IFORM update page" when {
+      "the form has the value yesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val SUT = createSUT
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        val result = SUT.submitDecision()(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.ExternalServiceRedirectController
+          .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+          .url
+
+      }
+    }
+
+    "redirect to the Tax Account Summary Page (start of journey)" when {
+      "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
+          .setOrException(EndCompanyBenefitsTypeTesterPage, None)
+        setup(mockUserAnswers)
+
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
+        )
+
+        val redirectUrl = redirectLocation(result)
+
+        redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+
+      }
+
+      "the form has the value YesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
+          .setOrException(EndCompanyBenefitsTypeTesterPage, None)
+        setup(mockUserAnswers)
+
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
+        )
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+      }
+
+      "the form has no valid value" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+        setup(mockUserAnswers)
+
+        val SUT = createSUT
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(false)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitDecision(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString)
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      }
+    }
+
+    "return Bad Request" when {
+      "the form submission is having blank value" in {
+        val SUT = createSUT
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, "Expenses")
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "Employer A")
+          .setOrException(EndCompanyBenefitsRefererPage, "referer")
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitDecision(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> "")
+        )
+
+        status(result) mustBe BAD_REQUEST
+
+      }
+    }
+  }
+
+//  "getDecision" must {
+//    "return a None" when {
+//      "there is no cached BenefitType" in {
 //        reset(mockJourneyCacheNewRepository)
 //
-//        val SUT = createSUT
-//
 //        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
+//          .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
 //        setup(mockUserAnswers)
 //
 //        when(mockJourneyCacheNewRepository.get(any(), any()))
 //          .thenReturn(Future.successful(Some(mockUserAnswers)))
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 //
-//        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
+//        val SUT = createSUT
 //
-//        status(result) mustBe INTERNAL_SERVER_ERROR
+//        val result = SUT.decision(FakeRequest())
+//
+//        status(result) mustBe Future.successful(None)
+//        // contentAsString(result) mustBe "Benefit type not found"
 //      }
 //    }
 //  }
 //
-//  "submit decision" must {
-//    val benefitType = Telephone.name
-//
-//    "cache the DecisionChoice value" when {
-//      "it is a NoIDontGetThisBenefit" in {
+//      "there there is no cached Decision and can't form a compound key using benefit type" in {
 //        reset(mockJourneyCacheNewRepository)
 //
 //        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+//          .setOrException(EndCompanyBenefitsTypeTesterPage, Some(123))
+//          .setOrException(BenefitsDecisionTesterPage, None)
 //        setup(mockUserAnswers)
-//
-//        val SUT = createSUT
-//
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 //
 //        when(mockJourneyCacheNewRepository.get(any(), any()))
 //          .thenReturn(Future.successful(Some(mockUserAnswers)))
 //
-//        val result = SUT.submitDecision(
-//          RequestBuilder
-//            .buildFakeRequestWithAuth("POST")
-//            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
-//        )
+//        val result = wrapper.getDecision(FakeRequest())
 //
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
-//
+//        status(result) mustBe NOT_FOUND
 //      }
 //
-//      "it is a YesIGetThisBenefit" in {
-//        reset(mockJourneyCacheNewRepository)
+//      "return the cached decision" when {
+//        "there is a cached value for the key given" in {
+//          reset(mockJourneyCacheNewRepository)
 //
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//        setup(mockUserAnswers)
+//          val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+//            .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
+//            .setOrException(EndCompanyBenefitsTypePage, Telephone.name)
+//          setup(mockUserAnswers)
 //
-//        val SUT = createSUT
+//          when(mockJourneyCacheNewRepository.get(any(), any()))
+//            .thenReturn(Future.successful(Some(mockUserAnswers)))
 //
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+//          when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 //
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
+//          val result = wrapper.getDecision(FakeRequest())
 //
-//        val result = SUT.submitDecision(
-//          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
-//        )
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).get mustBe
-//          controllers.routes.ExternalServiceRedirectController
-//            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
-//            .url
+//          status(result) mustBe OK
+//        }
 //      }
 //    }
 //
-//    "redirect to the 'When did you stop getting benefits from company?' page" when {
-//      "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
-//        reset(mockJourneyCacheNewRepository)
+//    "cacheDecision" must {
+//      "cache the result and return the function" when {
+//        "we are able to generate a benefitDecisionKey" in {
+//          reset(mockJourneyCacheNewRepository)
 //
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
-//        setup(mockUserAnswers)
+//          val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+//            .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
+//            .setOrException(EndCompanyBenefitsTypePage, Telephone.name)
+//          setup(mockUserAnswers)
 //
-//        val SUT = createSUT
+//          when(mockJourneyCacheNewRepository.get(any(), any()))
+//            .thenReturn(Future.successful(Some(mockUserAnswers)))
 //
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
+//          when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 //
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+//          val function = (_: String, b: Result) => b
+//          val result = wrapper.cacheDecision(YesIGetThisBenefit, function)(FakeRequest())
 //
-//        val result = SUT.submitDecision(
-//          RequestBuilder
-//            .buildFakeRequestWithAuth("POST")
-//            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
-//        )
+//          status(result) mustBe SEE_OTHER
 //
-//        status(result) mustBe SEE_OTHER
-//
-//        val redirectUrl = redirectLocation(result).getOrElse("")
-//
-//        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+//          redirectLocation(
+//            result
+//          ).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+//        }
 //      }
 //    }
-//
-//    "redirect to the appropriate IFORM update page" when {
-//      "the form has the value yesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
-//        reset(mockJourneyCacheNewRepository)
-//
-//        val SUT = createSUT
-//
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
-//        setup(mockUserAnswers)
-//
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
-//
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-//
-//        val result = SUT.submitDecision()(
-//          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
-//        )
-//
-//        status(result) mustBe SEE_OTHER
-//
-//        val redirectUrl = redirectLocation(result).getOrElse("")
-//
-//        redirectUrl mustBe controllers.routes.ExternalServiceRedirectController
-//          .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
-//          .url
-//
-//      }
-//    }
-//
-//    "redirect to the Tax Account Summary Page (start of journey)" when {
-//      "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
+//    "return the default redirection" when {
+//      "we have no benefit type cached" in {
 //        reset(mockJourneyCacheNewRepository)
 //
 //        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
+//          .setOrException(BenefitDecisionPage, YesIGetThisBenefit)
 //          .setOrException(EndCompanyBenefitsTypeTesterPage, None)
 //        setup(mockUserAnswers)
 //
-//        val SUT = createSUT
-//
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
-//
-//        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-//
-//        val result = SUT.submitDecision(
-//          RequestBuilder
-//            .buildFakeRequestWithAuth("POST")
-//            .withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit)
-//        )
-//
-//        val redirectUrl = redirectLocation(result)
-//
-//        redirectUrl mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-//
-//      }
-//
-//      "the form has the value YesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
-//        reset(mockJourneyCacheNewRepository)
-//
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
-//          .setOrException(EndCompanyBenefitsTypeTesterPage, None)
-//        setup(mockUserAnswers)
-//
-//        val SUT = createSUT
-//
 //        when(mockJourneyCacheNewRepository.get(any(), any()))
 //          .thenReturn(Future.successful(Some(mockUserAnswers)))
 //        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 //
-//        val result = SUT.submitDecision(
-//          RequestBuilder
-//            .buildFakeRequestWithAuth("POST")
-//            .withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit)
-//        )
-//
-//        val redirectUrl = redirectLocation(result).getOrElse("")
-//
-//        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-//
-//      }
-//
-//      "the form has no valid value" in {
-//        reset(mockJourneyCacheNewRepository)
-//
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsTypePage, benefitType)
-//        setup(mockUserAnswers)
-//
-//        val SUT = createSUT
-//
-//        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(false)
-//
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
-//
-//        val result = SUT.submitDecision(
-//          RequestBuilder
-//            .buildFakeRequestWithAuth("POST")
-//            .withFormUrlEncodedBody(DecisionChoice -> Random.alphanumeric.take(10).mkString)
-//        )
+//        val result = controller.cacheDecision(YesIGetThisBenefit, (_: String, b: Result) => b)(FakeRequest())
 //
 //        status(result) mustBe SEE_OTHER
 //
-//        val redirectUrl = redirectLocation(result).getOrElse("")
-//
-//        redirectUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+//        redirectLocation(
+//          result
+//        ).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
 //      }
 //    }
-//
-//    "return Bad Request" when {
-//      "the form submission is having blank value" in {
-//        val SUT = createSUT
-//
-//        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-//          .setOrException(EndCompanyBenefitsIdPage, 1)
-//          .setOrException(EndCompanyBenefitsTypePage, "Expenses")
-//          .setOrException(EndCompanyBenefitsEmploymentNamePage, "Employer A")
-//          .setOrException(EndCompanyBenefitsRefererPage, "referer")
-//        setup(mockUserAnswers)
-//
-//        when(mockJourneyCacheNewRepository.get(any(), any()))
-//          .thenReturn(Future.successful(Some(mockUserAnswers)))
-//
-//        val result = SUT.submitDecision(
-//          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> "")
-//        )
-//
-//        status(result) mustBe BAD_REQUEST
-//
-//      }
-//    }
-  }
+//  }
 
 }
