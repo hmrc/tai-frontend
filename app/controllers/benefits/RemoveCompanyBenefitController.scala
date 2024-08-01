@@ -313,7 +313,6 @@ class RemoveCompanyBenefitController @Inject() (
           )
         )
       case _ =>
-        println("\n WHY HERE?")
         Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
     }
   }
