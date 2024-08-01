@@ -30,8 +30,7 @@ import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
 import utils.{FakeAuthJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
 import views.html.pensions._
@@ -48,7 +47,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   val auditService: AuditService = mock[AuditService]
   val personService: PersonService = mock[PersonService]
-  val addPensionProviderJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class SUT(
@@ -81,7 +79,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(addPensionProviderJourneyCacheService, mockRepository)
+    reset(mockRepository)
     when(mockRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(userAnswers)))
   }
@@ -179,9 +177,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
           ),
           5 seconds
         )
-
-//        verify(mockRepository, times(1))
-//          .set(userAnswers.copy(data = Json.obj(AddPensionProviderNamePage.toString -> pensionProviderName)))
       }
     }
   }
@@ -301,13 +296,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "return BadRequest" when {
       "there is a form validation error" in {
         val sut = createSUT(Some(userAnswers))
-        val pensionProviderName = "TEST-Pension-Provider"
-        when(
-          addPensionProviderJourneyCacheService.mandatoryJourneyValue(meq(AddPensionProviderConstants.NameKey))(
-            any()
-          )
-        )
-          .thenReturn(Future.successful(Right(pensionProviderName)))
 
         val result = sut.submitFirstPay()(
           RequestBuilder
@@ -323,13 +311,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "raise an audit event" when {
       "no is selected" in {
         val sut = createSUT(Some(userAnswers))
-        val pensionProviderName = "TEST-Pension-Provider"
-        when(
-          addPensionProviderJourneyCacheService.mandatoryJourneyValue(meq(AddPensionProviderConstants.NameKey))(
-            any()
-          )
-        )
-          .thenReturn(Future.successful(Right(pensionProviderName)))
 
         Await.result(
           sut.cantAddPension()(
@@ -339,11 +320,14 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
           ),
           5 seconds
         )
-//
-//        verify(auditService, times(1)).createAndSendAuditEvent(
-//          meq(AuditConstants.AddPensionCantAddPensionProvider),
-//          meq(Map("nino" -> nino))
-//        )(any(), any())
+
+        println(s"aaaaaa $nino")
+        println(s"bbbbbb ${authedUser.nino.nino}")
+
+        verify(auditService, times(1)).createAndSendAuditEvent(
+          meq(AuditConstants.AddPensionCantAddPensionProvider),
+          meq(Map("nino" -> authedUser.nino.nino))
+        )(any(), any())
       }
     }
   }
@@ -352,16 +336,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "show the pension start date form page" when {
       "the request has an authorised session and no previously cached date present" in {
         val sut = createSUT(Some(userAnswers))
-
-        val pensionProviderName = "TEST"
-        val mandatorySequence = List(AddPensionProviderConstants.NameKey)
-        val optionalSequence = List(AddPensionProviderConstants.StartDateKey)
-
-        when(
-          addPensionProviderJourneyCacheService
-            .collectedJourneyValues(meq(mandatorySequence), meq(optionalSequence))(any(), any())
-        )
-          .thenReturn(Future.successful(Right((Seq(pensionProviderName), Seq(None)))))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -433,9 +407,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       "form is invalid" in {
         val sut = createSUT(Some(userAnswers))
 
-        when(addPensionProviderJourneyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(AddPensionProviderConstants.NameKey -> "Test")))
-
         val result =
           sut.submitPensionProviderStartDate()(
             RequestBuilder
@@ -491,9 +462,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "show the add pension number page" when {
       "the request has an authorised session and no previously cached pension number present" in {
         val sut = createSUT(Some(userAnswers))
-        val pensionProviderName = "TEST"
-        val cache = Map(AddPensionProviderConstants.NameKey -> pensionProviderName)
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -697,13 +665,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "return BadRequest" when {
       "there is a form validation error" in {
         val sut = createSUT(Some(userAnswers))
-        val pensionName = "TEST"
-        val cache =
-          Map(
-            AddPensionProviderConstants.NameKey                 -> pensionName,
-            AddPensionProviderConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
-          )
-        when(addPensionProviderJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitPensionNumber()(
           RequestBuilder
@@ -722,8 +683,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "show the contact by telephone page" when {
       "the request has an authorised session and no previously cached pension number present" in {
         val sut = createSUT(Some(userAnswers))
-        when(addPensionProviderJourneyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(None, None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -962,14 +921,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "redirect to the tax summary page if a value is missing from the cache " in {
 
       val sut = createSUT(Some(userAnswers))
-      when(
-        addPensionProviderJourneyCacheService.collectedJourneyValues(
-          any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]])
-        )(any(), any())
-      ).thenReturn(
-        Future.successful(Left("An error has occurred"))
-      )
 
       val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
