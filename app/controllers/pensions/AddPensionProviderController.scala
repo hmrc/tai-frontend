@@ -17,9 +17,11 @@
 package controllers.pensions
 
 import controllers.auth.{AuthJourney, AuthedUser}
-import controllers.{ErrorPagesHandler, TaiBaseController}
+import controllers.TaiBaseController
+import pages.AddPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -27,7 +29,6 @@ import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensio
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
-import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
@@ -39,7 +40,6 @@ import views.html.pensions._
 import java.time.LocalDate
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class AddPensionProviderController @Inject() (
   pensionProviderService: PensionProviderService,
@@ -55,9 +55,8 @@ class AddPensionProviderController @Inject() (
   addPensionReceivedFirstPayView: AddPensionReceivedFirstPayView,
   addPensionNameView: AddPensionNameView,
   addPensionStartDateView: AddPensionStartDateView,
-  @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  errorPagesHandler: ErrorPagesHandler
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
@@ -70,198 +69,202 @@ class AddPensionProviderController @Inject() (
       controllers.pensions.routes.AddPensionProviderController.cancel().url
     )
 
-  def cancel(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    journeyCacheService.flush() map { _ =>
+  def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
-  def addPensionProviderName(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    journeyCacheService.currentValue(AddPensionProviderConstants.NameKey) map { pensionName =>
-      implicit val user: AuthedUser = request.taiUser
-      Ok(addPensionNameView(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
-    }
+  def addPensionProviderName(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+    Ok(
+      addPensionNameView(
+        PensionProviderNameForm.form.fill(request.userAnswers.get(AddPensionProviderNamePage).getOrElse(""))
+      )
+    )
   }
 
-  def submitPensionProviderName(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitPensionProviderName(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     PensionProviderNameForm.form
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(addPensionNameView(formWithErrors))),
         pensionProviderName =>
-          journeyCacheService
-            .cache(Map(AddPensionProviderConstants.NameKey -> pensionProviderName))
-            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()))
+          for {
+            _ <- journeyCacheNewRepository
+                   .set(request.userAnswers.setOrException(AddPensionProviderNamePage, pensionProviderName))
+          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay())
       )
   }
 
-  def receivedFirstPay(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def receivedFirstPay(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(AddPensionProviderConstants.NameKey),
-        Seq(AddPensionProviderConstants.FirstPaymentKey)
-      ) map {
-      case Right((mandatoryValues, optionalVals)) =>
+
+    (
+      request.userAnswers.get(AddPensionProviderNamePage),
+      request.userAnswers.get(AddPensionProviderFirstPaymentPage)
+    ) match {
+      case (Some(mandatoryValues), optionalVals) =>
         Ok(
           addPensionReceivedFirstPayView(
-            AddPensionProviderFirstPayForm.form.fill(optionalVals.head),
-            mandatoryValues.head
+            AddPensionProviderFirstPayForm.form.fill(optionalVals),
+            mandatoryValues
           )
         )
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
+      case (None, _) => Redirect(taxAccountSummaryRedirect)
     }
   }
 
-  def submitFirstPay(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitFirstPay(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     AddPensionProviderFirstPayForm.form
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          journeyCacheService.mandatoryJourneyValue(AddPensionProviderConstants.NameKey).map {
-            case Right(pensionProviderName) =>
-              BadRequest(addPensionReceivedFirstPayView(formWithErrors, pensionProviderName))
-            case Left(err) =>
-              InternalServerError(err)
+          request.userAnswers.get(AddPensionProviderNamePage) match {
+            case Some(pensionProviderName) =>
+              Future.successful(
+                BadRequest(
+                  addPensionReceivedFirstPayView(
+                    formWithErrors,
+                    pensionProviderName
+                  )
+                )
+              )
+            case None =>
+              Future.successful(InternalServerError("No pension Data present in cache"))
           },
         yesNo =>
-          journeyCacheService.cache(AddPensionProviderConstants.FirstPaymentKey, yesNo.getOrElse("")) map { _ =>
-            yesNo match {
-              case Some(FormValuesConstants.YesValue) =>
-                journeyCacheService.cache("", "")
-                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
-              case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
-            }
+          for {
+            _ <- journeyCacheNewRepository
+                   .set(request.userAnswers.setOrException(AddPensionProviderFirstPaymentPage, yesNo.getOrElse("")))
+          } yield yesNo match {
+            case Some(FormValuesConstants.YesValue) =>
+              Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
+            case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
           }
       )
   }
 
-  def cantAddPension(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    journeyCacheService.mandatoryJourneyValue(AddPensionProviderConstants.NameKey) map {
-      case Right(pensionProviderName) =>
+  def cantAddPension(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    request.userAnswers.get(AddPensionProviderNamePage) match {
+      case Some(pensionProviderName) =>
         auditService
           .createAndSendAuditEvent(
             AuditConstants.AddPensionCantAddPensionProvider,
             Map("nino" -> request.taiUser.nino.toString())
           )
         implicit val user: AuthedUser = request.taiUser
-
         Ok(addPensionErrorView(pensionProviderName))
-      case Left(err) =>
-        InternalServerError(err)
+      case None => InternalServerError("Pension provider name missing from cache")
     }
   }
 
-  def addPensionProviderStartDate(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .collectedJourneyValues(Seq(AddPensionProviderConstants.NameKey), Seq(AddPensionProviderConstants.StartDateKey))
-        .map {
-          case Right((mandatorySequence, optionalVals)) =>
-            val form = optionalVals.head match {
-              case Some(userDateString) =>
-                PensionAddDateForm(mandatorySequence.head).form.fill(LocalDate.parse(userDateString))
-              case _ => PensionAddDateForm(mandatorySequence.head).form
-            }
-            Ok(addPensionStartDateView(form, mandatorySequence.head))
-          case Left(_) => Redirect(taxAccountSummaryRedirect)
-        }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
-  }
-
-  def submitPensionProviderStartDate(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      journeyCacheService.currentCache flatMap { currentCache =>
-        PensionAddDateForm(currentCache(AddPensionProviderConstants.NameKey)).form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(addPensionStartDateView(formWithErrors, currentCache(AddPensionProviderConstants.NameKey)))
-              ),
-            date =>
-              journeyCacheService.cache(AddPensionProviderConstants.StartDateKey, date.toString) map { _ =>
-                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber())
-              }
-          )
-      }
-  }
-
-  def addPensionNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def addPensionProviderStartDate(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    journeyCacheService.currentCache map { cache =>
-      val viewModel = PensionNumberViewModel(cache)
-
-      val payrollNo = cache.get(AddPensionProviderConstants.PayrollNumberChoice) match {
-        case Some(FormValuesConstants.YesValue) => cache.get(AddPensionProviderConstants.PayrollNumberKey)
-        case _                                  => None
-      }
-
-      Ok(
-        addPensionNumber(
-          AddPensionProviderNumberForm.form.fill(
-            AddPensionProviderNumberForm(cache.get(AddPensionProviderConstants.PayrollNumberChoice), payrollNo)
-          ),
-          viewModel
-        )
-      )
+    (
+      request.userAnswers.get(AddPensionProviderNamePage),
+      request.userAnswers.get(AddPensionProviderStartDatePage)
+    ) match {
+      case (Some(name), Some(startDate)) =>
+        Ok(addPensionStartDateView(PensionAddDateForm(name).form.fill(LocalDate.parse(startDate)), name))
+      case (Some(name), None) => Ok(addPensionStartDateView(PensionAddDateForm(name).form, name))
+      case (None, _)          => Redirect(taxAccountSummaryRedirect)
     }
   }
 
-  def submitPensionNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitPensionProviderStartDate(): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      PensionAddDateForm(request.userAnswers.get(AddPensionProviderNamePage).getOrElse("")).form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(
+                addPensionStartDateView(
+                  formWithErrors,
+                  request.userAnswers.get(AddPensionProviderNamePage).getOrElse("")
+                )
+              )
+            ),
+          date =>
+            for {
+              _ <- journeyCacheNewRepository
+                     .set(request.userAnswers.setOrException(AddPensionProviderStartDatePage, date.toString))
+            } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber())
+        )
+  }
+
+  def addPensionNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+
+    val viewModel = PensionNumberViewModel(request.userAnswers)
+
+    val payrollChoice = request.userAnswers.get(AddPensionProviderPayrollNumberChoicePage)
+
+    val payrollNo = payrollChoice match {
+      case Some(FormValuesConstants.YesValue) => request.userAnswers.get(AddPensionProviderPayrollNumberPage)
+      case _                                  => None
+    }
+
+    Ok(
+      addPensionNumber(
+        AddPensionProviderNumberForm.form.fill(
+          AddPensionProviderNumberForm(payrollChoice, payrollNo)
+        ),
+        viewModel
+      )
+    )
+  }
+
+  def submitPensionNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     AddPensionProviderNumberForm.form
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          journeyCacheService.currentCache map { cache =>
-            val viewModel = PensionNumberViewModel(cache)
-            BadRequest(addPensionNumber(formWithErrors, viewModel))
-          },
-        form => {
-          val payrollNumberToCache = Map(
-            AddPensionProviderConstants.PayrollNumberChoice -> form.payrollNumberChoice
-              .getOrElse(Messages("tai.label.no")),
-            AddPensionProviderConstants.PayrollNumberKey -> form.payrollNumberEntry
-              .getOrElse(Messages("tai.notKnown.response"))
-          )
-          journeyCacheService
-            .cache(payrollNumberToCache)
-            .map(_ => Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber()))
-        }
+        formWithErrors => {
+          val viewModel = PensionNumberViewModel(request.userAnswers)
+          Future.successful(BadRequest(addPensionNumber(formWithErrors, viewModel)))
+        },
+        form =>
+          for {
+            _ <- journeyCacheNewRepository.set(
+                   request.userAnswers
+                     .setOrException(
+                       AddPensionProviderPayrollNumberChoicePage,
+                       form.payrollNumberChoice.getOrElse(Messages("tai.label.no"))
+                     )
+                     .setOrException(
+                       AddPensionProviderPayrollNumberPage,
+                       form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response"))
+                     )
+                 )
+          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber())
       )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    journeyCacheService
-      .optionalValues(
-        Seq(AddPensionProviderConstants.TelephoneQuestionKey, AddPensionProviderConstants.TelephoneNumberKey)
-      ) map { seq =>
-      val telephoneNo = seq.head match {
-        case Some(FormValuesConstants.YesValue) => seq(1)
-        case _                                  => None
-      }
-      val user = Some(request.taiUser)
-
-      Ok(
-        canWeContactByPhone(
-          user,
-          contactPhonePensionProvider,
-          YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq.head, telephoneNo))
-        )
-      )
+  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    val telephoneQuestion = request.userAnswers.get(AddPensionProviderTelephoneQuestionPage)
+    val telephoneNo = request.userAnswers.get(AddPensionProviderTelephoneQuestionPage) match {
+      case Some(FormValuesConstants.YesValue) => request.userAnswers.get(AddPensionProviderTelephoneNumberPage)
+      case _                                  => None
     }
+    val user = Some(request.taiUser)
+
+    Ok(
+      canWeContactByPhone(
+        user,
+        contactPhonePensionProvider,
+        YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneQuestion, telephoneNo))
+      )
+    )
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     YesNoTextEntryForm
       .form(
         Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -275,79 +278,66 @@ class AddPensionProviderController @Inject() (
           Future.successful(BadRequest(canWeContactByPhone(user, contactPhonePensionProvider, formWithErrors)))
         },
         form => {
-          val mandatoryData = Map(
-            AddPensionProviderConstants.TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
-            )
-          )
-          val dataForCache = form.yesNoChoice match {
-            case Some(yn) if yn == FormValuesConstants.YesValue =>
-              mandatoryData ++ Map(AddPensionProviderConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-            case _ => mandatoryData ++ Map(AddPensionProviderConstants.TelephoneNumberKey -> "")
+          val telephoneNumberValue = form.yesNoChoice match {
+            case Some(yn) if yn == FormValuesConstants.YesValue => form.yesNoTextEntry.getOrElse("")
+            case _                                              => ""
           }
-          journeyCacheService.cache(dataForCache) map { _ =>
-            Redirect(controllers.pensions.routes.AddPensionProviderController.checkYourAnswers())
-          }
+
+          for {
+            _ <- journeyCacheNewRepository.set(
+                   request.userAnswers
+                     .setOrException(
+                       AddPensionProviderTelephoneQuestionPage,
+                       Messages(s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}")
+                     )
+                     .setOrException(AddPensionProviderTelephoneNumberPage, telephoneNumberValue)
+                 )
+          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.checkYourAnswers())
         }
       )
   }
 
-  def checkYourAnswers: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def checkYourAnswers: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(
-          AddPensionProviderConstants.NameKey,
-          AddPensionProviderConstants.StartDateKey,
-          AddPensionProviderConstants.PayrollNumberKey,
-          AddPensionProviderConstants.TelephoneQuestionKey
-        ),
-        Seq(AddPensionProviderConstants.TelephoneNumberKey)
-      )
-      .map {
-        case Right((mandatoryValues, optionalVals)) =>
-          val model = CheckYourAnswersViewModel(
-            mandatoryValues.head,
-            mandatoryValues(1),
-            mandatoryValues(2),
-            mandatoryValues(3),
-            optionalVals.head
-          )
-          Ok(addPensionCheckYourAnswersView(model))
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
-      .recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage)
-      }
+    val uA = request.userAnswers
+    (
+      uA.get(AddPensionProviderNamePage),
+      uA.get(AddPensionProviderStartDatePage),
+      uA.get(AddPensionProviderPayrollNumberPage),
+      uA.get(AddPensionProviderTelephoneQuestionPage),
+      uA.get(AddPensionProviderTelephoneNumberPage)
+    ) match {
+      case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
+        val model = CheckYourAnswersViewModel(name, startDate, payrollNumber, telephoneQuestion, telephoneNumber)
+        Ok(addPensionCheckYourAnswersView(model))
+      case _ => Redirect(taxAccountSummaryRedirect)
+    }
   }
 
-  def submitYourAnswers: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def submitYourAnswers: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
-    for {
-      (mandatoryVals, optionalVals) <- journeyCacheService
-                                         .collectedJourneyValues(
-                                           Seq(
-                                             AddPensionProviderConstants.NameKey,
-                                             AddPensionProviderConstants.StartDateKey,
-                                             AddPensionProviderConstants.PayrollNumberKey,
-                                             AddPensionProviderConstants.TelephoneQuestionKey
-                                           ),
-                                           Seq(AddPensionProviderConstants.TelephoneNumberKey)
-                                         )
-                                         .getOrFail
-      model = AddPensionProvider(
-                mandatoryVals.head,
-                LocalDate.parse(mandatoryVals(1)),
-                mandatoryVals(2),
-                mandatoryVals.last,
-                optionalVals.head
-              )
-      _ <- pensionProviderService.addPensionProvider(user.nino, model)
-      _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddPensionProviderKey, "true")
-      _ <- journeyCacheService.flush()
-    } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
+    val uA = request.userAnswers
+    (
+      uA.get(AddPensionProviderNamePage),
+      uA.get(AddPensionProviderStartDatePage),
+      uA.get(AddPensionProviderPayrollNumberPage),
+      uA.get(AddPensionProviderTelephoneQuestionPage),
+      uA.get(AddPensionProviderTelephoneNumberPage)
+    ) match {
+      case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
+        val model = AddPensionProvider(
+          name,
+          LocalDate.parse(startDate),
+          payrollNumber,
+          telephoneQuestion,
+          telephoneNumber
+        )
+        for {
+          _ <- pensionProviderService.addPensionProvider(user.nino, model)
+          _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddPensionProviderKey, "true")
+          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+        } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
+    }
   }
 
   def confirmation: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>

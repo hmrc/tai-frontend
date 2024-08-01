@@ -22,6 +22,7 @@ import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
 import pages.AddEmployment._
+import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
@@ -654,23 +655,33 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
   )
 
-  private val userAnswers = UserAnswers("", "", Json.obj("test" -> "test"))
-    .setOrException(EndEmploymentIdPage, 1)
-    .setOrException(EmploymentDecisionPage, "company name")
-    .setOrException(EndEmploymentLatestPaymentPage, LocalDate.of(2022, 2, 2))
-    .setOrException(EndEmploymentEndDatePage, LocalDate.of(2022, 2, 2))
-    .setOrException(EndEmploymentTelephoneQuestionPage, "999")
-    .setOrException(EndEmploymentTelephoneNumberPage, "999")
-    .setOrException(AddEmploymentNamePage, "H M Revenue and Customs")
-    .setOrException(AddEmploymentPayrollNumberPage, "1234")
-    .setOrException(AddEmploymentPayrollQuestionPage, "I don't know")
-    .setOrException(AddEmploymentPayrollNumberPage, "")
-    .setOrException(AddEmploymentReceivedFirstPayPage, "Yes")
-    .setOrException(AddEmploymentStartDatePage, LocalDate.of(2022, 7, 10))
-    .setOrException(UpdateEmploymentIdPage, 1)
-    .setOrException(UpdateEmploymentNamePage, "H M Revenue and Customs")
-    .setOrException(UpdateEmploymentTelephoneQuestionPage, "No")
-    .setOrException(UpdateEmploymentDetailsPage, "Details")
+  private val userAnswers = UserAnswers(
+    "",
+    "",
+    Json.obj(
+      EndEmploymentIdPage.toString                     -> 1,
+      EmploymentDecisionPage.toString                  -> "company name",
+      EndEmploymentLatestPaymentPage.toString          -> LocalDate.of(2022, 2, 2),
+      EndEmploymentEndDatePage.toString                -> LocalDate.of(2022, 2, 2),
+      EndEmploymentTelephoneQuestionPage.toString      -> "999",
+      EndEmploymentTelephoneNumberPage.toString        -> "999",
+      AddEmploymentNamePage.toString                   -> "H M Revenue and Customs",
+      AddEmploymentPayrollNumberPage.toString          -> "1234",
+      AddEmploymentPayrollQuestionPage.toString        -> "I don't know",
+      AddEmploymentPayrollNumberPage.toString          -> "",
+      AddEmploymentReceivedFirstPayPage.toString       -> "Yes",
+      AddEmploymentStartDatePage.toString              -> LocalDate.of(2022, 7, 10),
+      UpdateEmploymentIdPage.toString                  -> 1,
+      UpdateEmploymentNamePage.toString                -> "H M Revenue and Customs",
+      UpdateEmploymentTelephoneQuestionPage.toString   -> "No",
+      UpdateEmploymentDetailsPage.toString             -> "Details",
+      AddPensionProviderNamePage.toString              -> "Pension Provider",
+      AddPensionProviderStartDatePage.toString         -> "2017-06-09",
+      AddPensionProviderPayrollNumberPage.toString     -> "pension-ref-1234",
+      AddPensionProviderTelephoneQuestionPage.toString -> "Yes",
+      AddPensionProviderTelephoneNumberPage.toString   -> "123456789"
+    )
+  )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
