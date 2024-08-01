@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, Gener
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKey
 import utils.BaseSpec
@@ -89,7 +89,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
 
-  val personService: PersonService = mock[PersonService]
   val benefitsService: BenefitsService = mock[BenefitsService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
@@ -106,7 +105,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     mockAuthJourney,
     appConfig,
     mcc,
-    personService,
     inject[CompanyBenefitsView],
     mockJourneyCacheNewRepository,
     inject[ErrorPagesHandler]
@@ -163,8 +161,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
-        when(personService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future.successful(mockPerson))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -194,8 +190,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any()))
           .thenReturn(Future.successful(true))
-        when(personService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future.successful(mockPerson))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -224,8 +218,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(personService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future.successful(mockPerson))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -244,8 +236,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-        when(personService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future.successful(mockPerson))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -270,8 +260,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
-        when(personService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future.successful(mockPerson))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

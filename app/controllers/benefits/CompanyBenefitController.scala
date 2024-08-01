@@ -45,7 +45,7 @@ class CompanyBenefitController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  private val journeyStartRedirection = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+  lazy val journeyStartRedirection: Result = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
@@ -119,24 +119,6 @@ class CompanyBenefitController @Inject() (
         failureRoute
     }
 
-  private def cacheDecision(
-    decision: String,
-    userAnswers: UserAnswers,
-    f: (String, Result) => Result
-  ): Future[Result] = {
-
-    val benefitTypeFuture: Option[String] = userAnswers.get(EndCompanyBenefitsTypePage)
-
-    benefitTypeFuture match {
-      case Some(_) =>
-        journeyCacheNewRepository.set(userAnswers.setOrException(BenefitDecisionPage, decision)).map { _ =>
-          f(decision, journeyStartRedirection)
-        }
-      case None =>
-        Future.successful(journeyStartRedirection)
-    }
-  }
-
   def submitDecision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
@@ -152,7 +134,20 @@ class CompanyBenefitController @Inject() (
           )
           Future.successful(BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel)))
         },
-        success => cacheDecision(success.getOrElse(""), request.userAnswers, submitDecisionRedirect)
+        success => {
+          val decision = success.getOrElse("")
+          val benefitTypeFuture: Option[String] = request.userAnswers.get(EndCompanyBenefitsTypePage)
+
+          benefitTypeFuture match {
+            case Some(_) =>
+              journeyCacheNewRepository.set(request.userAnswers.setOrException(BenefitDecisionPage, decision)).map {
+                _ =>
+                  submitDecisionRedirect(decision, journeyStartRedirection)
+              }
+            case None =>
+              Future.successful(journeyStartRedirection)
+          }
+        }
       )
   }
 

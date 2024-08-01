@@ -78,28 +78,4 @@ class PersonServiceSpec extends BaseSpec {
     }
   }
 
-  "personDetailsFuture" must {
-    "return a Person model instance" when {
-      "personDetails returns a Right value" in {
-        when(mockService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future[Person](person))
-
-        val result = mockService.personDetailsFuture(nino).futureValue
-
-        result mustBe a[Person]
-        result mustBe person
-      }
-    }
-
-    "throw an Exception" when {
-      "personDetails returns a Left value" in {
-        when(mockService.personDetailsFuture(any())(any(), any()))
-          .thenReturn(Future.failed(new Exception("Error")))
-
-        assertThrows[Exception] {
-          mockService.personDetailsFuture(nino).futureValue
-        }
-      }
-    }
-  }
 }

@@ -17,17 +17,16 @@
 package controllers.benefits
 
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import controllers.auth.{AuthJourney, AuthenticatedRequest}
+import controllers.auth.AuthJourney
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
-import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Person, TemporarilyUnavailable}
+import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
 
@@ -43,7 +42,6 @@ class CompanyBenefitsSummaryController @Inject() (
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  personService: PersonService,
   companyBenefits: CompanyBenefitsView,
   journeyCacheNewRepository: JourneyCacheNewRepository,
   errorPagesHandler: ErrorPagesHandler
@@ -92,13 +90,7 @@ class CompanyBenefitsSummaryController @Inject() (
           } else {
             Future.successful((): Unit)
           }
-          val person: Future[Person] = personService.personDetailsFuture(nino)
-          person.flatMap { person =>
-            implicit val messages: Messages = request2Messages(request)
-            implicit val authRequest: AuthenticatedRequest[AnyContent] =
-              AuthenticatedRequest(request.request, request.taiUser, person)
-            result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
-          }
+          result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
 
         case _ =>
           Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))

@@ -24,7 +24,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
@@ -65,29 +65,63 @@ class RemoveCompanyBenefitController @Inject() (
   def stopDate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val userAnswers = request.userAnswers
+    val benefitNameOption = userAnswers.get(EndCompanyBenefitsNamePage)
+    val employmentNameOption = userAnswers.get(EndCompanyBenefitsEmploymentNamePage)
 
-    val currentBenefitName = userAnswers.get(EndCompanyBenefitsNamePage).toString
-    val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).toString
-    val removeCompanyBenefitForm = RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName)
+    (benefitNameOption, employmentNameOption) match {
+      case (Some(benefitName), Some(employmentName)) =>
+        val currentBenefitName = benefitName
+        val currentEmploymentName = employmentName
+        val removeCompanyBenefitForm = RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName)
 
-    val form = userAnswers
-      .get(EndCompanyBenefitsStopDatePage)
-      .map(dateString => removeCompanyBenefitForm.form.fill(LocalDate.parse(dateString)))
-      .getOrElse(removeCompanyBenefitForm.form)
-    Future.successful {
-      val benefitName = request.userAnswers.get(EndCompanyBenefitsNamePage).get
-      val employmentName = request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get
-      Ok(
-        removeCompanyBenefitStopDate(
-          form,
-          benefitName,
-          employmentName
-        )
-      )
+        val form = userAnswers
+          .get(EndCompanyBenefitsStopDatePage)
+          .map(dateString => removeCompanyBenefitForm.form.fill(LocalDate.parse(dateString)))
+          .getOrElse(removeCompanyBenefitForm.form)
+
+        Future.successful {
+          Ok(
+            removeCompanyBenefitStopDate(
+              form,
+              benefitName,
+              employmentName
+            )
+          )
+        }
+      case _ => throw new Exception("Benefit name or employment name not found")
     }
   }
 
-  // scalastyle:off method.length
+  private def checkDate(
+    date: LocalDate,
+    userAnswers: UserAnswers,
+    user: AuthedUser,
+    taxYear: TaxYear
+  ): Future[Result] = {
+    val dateString = date.toString
+    if (date isBefore taxYear.start) {
+      for {
+        _ <- journeyCacheNewRepository.clear(userAnswers.sessionId, user.nino.nino)
+        _ <- {
+          val updatedData = userAnswers.data - EndCompanyBenefitsValuePage.toString
+          val updatedUserAnswers = userAnswers
+            .copy(data = updatedData)
+            .setOrException(EndCompanyBenefitsStopDatePage, dateString)
+          journeyCacheNewRepository.set(updatedUserAnswers)
+        }
+      } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
+    } else {
+      journeyCacheNewRepository
+        .set {
+          val updatedUserAnswers = userAnswers.setOrException(EndCompanyBenefitsStopDatePage, dateString)
+          updatedUserAnswers
+        }
+        .map { _ =>
+          Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
+        }
+    }
+  }
+
   def submitStopDate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val taxYear = TaxYear()
@@ -110,34 +144,7 @@ class RemoveCompanyBenefitController @Inject() (
             )
           )
         },
-        { date =>
-          val dateString = date.toString
-          if (date isBefore taxYear.start) {
-            for {
-              _ <- journeyCacheNewRepository.clear(userAnswers.sessionId, user.nino.nino)
-              _ <- {
-                val current = userAnswers.data.as[Map[String, JsValue]]
-                val filtered = current.filterNot(_._1 == EndCompanyBenefitsValuePage.toString)
-                val updatedData = filtered ++ Map(EndCompanyBenefitsStopDatePage.toString -> JsString(dateString))
-
-                Json.toJson(updatedData) match {
-                  case jsObject: JsObject => journeyCacheNewRepository.set(userAnswers.copy(data = jsObject))
-                  case _                  => Future.failed(new Exception("Updated data is not a JSON object"))
-                }
-              }
-            } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
-          } else {
-            // OnOrAfterTaxYearEnd
-            journeyCacheNewRepository
-              .set {
-                val updatedUserAnswers = userAnswers.setOrException(EndCompanyBenefitsStopDatePage, dateString)
-                updatedUserAnswers
-              }
-              .map { _ =>
-                Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
-              }
-          }
-        }
+        date => checkDate(date, userAnswers, user, taxYear)
       )
   }
 
@@ -147,15 +154,25 @@ class RemoveCompanyBenefitController @Inject() (
     val userAnswers = request.userAnswers
 
     val mandatoryJourneyValues = Seq(
-      userAnswers.get(EndCompanyBenefitsEmploymentNamePage).get,
-      userAnswers.get(EndCompanyBenefitsNamePage).get
+      userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
+      userAnswers.get(EndCompanyBenefitsNamePage)
     )
     val optionalValue = userAnswers.get(EndCompanyBenefitsValuePage)
 
-    val form = CompanyBenefitTotalValueForm.form.fill(optionalValue.getOrElse(""))
-    Future.successful(
-      Ok(removeBenefitTotalValue(BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)), form))
-    )
+    (mandatoryJourneyValues, optionalValue) match {
+      case (mandatory, _) if mandatory.forall(_.isDefined) =>
+        val form = CompanyBenefitTotalValueForm.form.fill(optionalValue.getOrElse(""))
+        Future.successful(
+          Ok(
+            removeBenefitTotalValue(
+              BenefitViewModel(mandatoryJourneyValues.head.getOrElse(""), mandatoryJourneyValues(1).getOrElse("")),
+              form
+            )
+          )
+        )
+      case _ =>
+        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+    }
   }
 
   def submitBenefitValue(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -273,12 +290,10 @@ class RemoveCompanyBenefitController @Inject() (
       userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage),
       userAnswers.get(EndCompanyBenefitsRefererPage)
     )
-
     val optionalSeq = Seq(
       userAnswers.get(EndCompanyBenefitsValuePage),
       userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
     )
-
     (mandatoryJourneyValues, optionalSeq) match {
       case (mandatory, _) if mandatory.forall(_.isDefined) =>
         val stopDate = LocalDate.parse(mandatoryJourneyValues(2).getOrElse(""))
@@ -298,6 +313,7 @@ class RemoveCompanyBenefitController @Inject() (
           )
         )
       case _ =>
+        println("\n WHY HERE?")
         Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
     }
   }
