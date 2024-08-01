@@ -321,9 +321,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
           5 seconds
         )
 
-        println(s"aaaaaa $nino")
-        println(s"bbbbbb ${authedUser.nino.nino}")
-
         verify(auditService, times(1)).createAndSendAuditEvent(
           meq(AuditConstants.AddPensionCantAddPensionProvider),
           meq(Map("nino" -> authedUser.nino.nino))
