@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util.constants.journeyCache
+package pages.benefits
 
-object EndCompanyBenefitConstants {
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.journeyCache.EndCompanyBenefitConstants
 
-  val JourneyKey = "end-company-benefit"
-  val EmploymentIdKey = "employmentId"
-  val EmploymentNameKey = "benefitEmploymentName"
-  val BenefitTypeKey = "benefitType"
-  val BenefitStopDateKey = "stopDate"
-  val BenefitValueKey = "benefitValue"
-  val TelephoneQuestionKey = "telephoneContactAllowed"
-  val TelephoneNumberKey = "telephoneNumber"
-  val BenefitNameKey = "benefitName"
-  val RefererKey = "referer"
+case object EndCompanyBenefitsIdPage extends QuestionPage[Int] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = EndCompanyBenefitConstants.EmploymentIdKey
+
 }

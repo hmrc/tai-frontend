@@ -16,20 +16,17 @@
 
 package controllers.benefits
 
-import cats.implicits._
-import com.google.inject.name.Named
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.AuthJourney
+import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKey
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
 
@@ -38,8 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class CompanyBenefitsSummaryController @Inject() (
-  val auditConnector: AuditConnector,
-  @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
@@ -48,57 +43,61 @@ class CompanyBenefitsSummaryController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   companyBenefits: CompanyBenefitsView,
-  implicit val errorPagesHandler: ErrorPagesHandler
+  journeyCacheNewRepository: JourneyCacheNewRepository,
+  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  // scalastyle:off method.length
+  def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =
-      journeyCacheService.currentValueAsInt(s"$UpdateIncomeConfirmedAmountKey-$empId")
+      request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
-    val incomeDetailsResult = (
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employment(nino, empId),
-      benefitsService.benefits(nino, TaxYear().year),
-      estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
-      cacheUpdatedIncomeAmountFuture
-    ).mapN {
-      case (
-            Right(taxCodeIncomes),
-            Some(employment),
+    val incomeDetailsResult = for {
+      taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      employment               <- employmentService.employment(nino, empId)
+      benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
+      estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+      cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
+    } yield (taxCodeIncomes, employment, benefitsDetails, estimatedPayCompletion, cacheUpdatedIncomeAmount)
+
+    incomeDetailsResult
+      .flatMap {
+        case (
+              Right(taxCodeIncomes),
+              Some(employment),
+              benefitsDetails,
+              estimatedPayCompletion,
+              cacheUpdatedIncomeAmount
+            ) =>
+          val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+
+          val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+            empId,
+            request.fullName,
+            taxCodeIncomes,
+            employment,
             benefitsDetails,
             estimatedPayCompletion,
+            rtiAvailable,
+            applicationConfig,
             cacheUpdatedIncomeAmount
-          ) =>
-        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+          )
+          val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
+            journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
+          } else {
+            Future.successful((): Unit)
+          }
+          result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
 
-        val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-          empId,
-          request.fullName,
-          taxCodeIncomes,
-          employment,
-          benefitsDetails,
-          estimatedPayCompletion,
-          rtiAvailable,
-          applicationConfig,
-          cacheUpdatedIncomeAmount
-        )
-
-        val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
-          journeyCacheService.flushWithEmpId(empId).map(_ => (): Unit)
-        } else {
-          Future.successful((): Unit)
-        }
-        result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
-
-      case _ =>
-        Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
-    } recover { case NonFatal(e) =>
-      Future.successful(errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e)))
-    }
-    incomeDetailsResult.flatten
+        case _ =>
+          Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
+      }
+      .recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
+      }
   }
 
 }
