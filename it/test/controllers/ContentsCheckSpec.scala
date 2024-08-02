@@ -26,6 +26,7 @@ import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderP
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
+import pages.benefits._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -36,6 +37,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
@@ -60,6 +62,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
   private val startTaxYear = TaxYear().start.getYear
+
+  def randomNino(): Nino = new Generator(new Random()).nextNino
 
   case class ExpectedData(
     title: String,
@@ -655,33 +659,34 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
   )
 
-  private val userAnswers = UserAnswers(
-    "",
-    "",
-    Json.obj(
-      EndEmploymentIdPage.toString                     -> 1,
-      EmploymentDecisionPage.toString                  -> "company name",
-      EndEmploymentLatestPaymentPage.toString          -> LocalDate.of(2022, 2, 2),
-      EndEmploymentEndDatePage.toString                -> LocalDate.of(2022, 2, 2),
-      EndEmploymentTelephoneQuestionPage.toString      -> "999",
-      EndEmploymentTelephoneNumberPage.toString        -> "999",
-      AddEmploymentNamePage.toString                   -> "H M Revenue and Customs",
-      AddEmploymentPayrollNumberPage.toString          -> "1234",
-      AddEmploymentPayrollQuestionPage.toString        -> "I don't know",
-      AddEmploymentPayrollNumberPage.toString          -> "",
-      AddEmploymentReceivedFirstPayPage.toString       -> "Yes",
-      AddEmploymentStartDatePage.toString              -> LocalDate.of(2022, 7, 10),
-      UpdateEmploymentIdPage.toString                  -> 1,
-      UpdateEmploymentNamePage.toString                -> "H M Revenue and Customs",
-      UpdateEmploymentTelephoneQuestionPage.toString   -> "No",
-      UpdateEmploymentDetailsPage.toString             -> "Details",
-      AddPensionProviderNamePage.toString              -> "Pension Provider",
-      AddPensionProviderStartDatePage.toString         -> "2017-06-09",
-      AddPensionProviderPayrollNumberPage.toString     -> "pension-ref-1234",
-      AddPensionProviderTelephoneQuestionPage.toString -> "Yes",
-      AddPensionProviderTelephoneNumberPage.toString   -> "123456789"
-    )
-  )
+  private val userAnswers = UserAnswers("", "", Json.obj("test" -> "test"))
+    .setOrException(EndEmploymentIdPage, 1)
+    .setOrException(EmploymentDecisionPage, "company name")
+    .setOrException(EndEmploymentLatestPaymentPage, LocalDate.of(2022, 2, 2))
+    .setOrException(EndEmploymentEndDatePage, LocalDate.of(2022, 2, 2))
+    .setOrException(EndEmploymentTelephoneQuestionPage, "999")
+    .setOrException(EndEmploymentTelephoneNumberPage, "999")
+    .setOrException(AddEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(AddEmploymentPayrollNumberPage, "1234")
+    .setOrException(AddEmploymentPayrollQuestionPage, "I don't know")
+    .setOrException(AddEmploymentPayrollNumberPage, "")
+    .setOrException(AddEmploymentReceivedFirstPayPage, "Yes")
+    .setOrException(AddEmploymentStartDatePage, LocalDate.of(2022, 7, 10))
+    .setOrException(AddEmploymentStartDateWithinSixWeeksPage, "Yes")
+    .setOrException(AddEmploymentTelephoneQuestionPage, "No")
+    .setOrException(UpdateEmploymentIdPage, 1)
+    .setOrException(UpdateEmploymentNamePage, "H M Revenue and Customs")
+    .setOrException(UpdateEmploymentTelephoneQuestionPage, "No")
+    .setOrException(UpdateEmploymentDetailsPage, "Details")
+    .setOrException(EndCompanyBenefitsIdPage, 1)
+    .setOrException(EndCompanyBenefitsNamePage, "benefitName")
+    .setOrException(EndCompanyBenefitsTypePage, "Telephone")
+    .setOrException(EndCompanyBenefitsRefererPage, "referer")
+    .setOrException(EndCompanyBenefitsValuePage, "1234")
+    .setOrException(EndCompanyBenefitsStopDatePage, LocalDate.of(2022, 2, 2).toString)
+    .setOrException(EndCompanyBenefitsTelephoneNumberPage, "999")
+    .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "999")
+    .setOrException(EndCompanyBenefitsEmploymentNamePage, "employmentName")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -1016,6 +1021,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         .willReturn(ok(taxCodeComparisonJson.toString()))
     )
   }
+
   server.stubFor(
     get(urlMatching("/messages/count.*"))
       .willReturn(ok(s"""{"count": 0}"""))

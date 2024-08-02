@@ -16,15 +16,35 @@
 
 package views.html.benefits
 
+import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContent, Request}
+import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.CompanyBenefitViewModel
 
+import java.time.Instant
+
 class CompanyBenefitsViewSpec extends TaiViewSpec {
+
+  implicit val request: Request[AnyContent] = FakeRequest()
+  implicit val dataRequest: DataRequest[AnyContent] = DataRequest[AnyContent](
+    request,
+    AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    "",
+    UserAnswers("session-id-1", "nino", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
+  )
 
   private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)
   private val template: CompanyBenefitsView = inject[CompanyBenefitsView]
