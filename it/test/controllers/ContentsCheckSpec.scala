@@ -22,6 +22,7 @@ import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
 import pages.AddEmployment._
+import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
@@ -686,6 +687,11 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(EndCompanyBenefitsTelephoneNumberPage, "999")
     .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "999")
     .setOrException(EndCompanyBenefitsEmploymentNamePage, "employmentName")
+    .setOrException(AddPensionProviderNamePage, "Pension Provider")
+    .setOrException(AddPensionProviderStartDatePage, "2017-06-09")
+    .setOrException(AddPensionProviderPayrollNumberPage, "pension-ref-1234")
+    .setOrException(AddPensionProviderTelephoneQuestionPage, "Yes")
+    .setOrException(AddPensionProviderTelephoneNumberPage, "123456789")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
