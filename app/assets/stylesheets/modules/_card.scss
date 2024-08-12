@@ -5,7 +5,6 @@ $black: #0b0c0c;
 .card {
   flex-grow: 0;
   flex-basis: 100%;
-  margin-bottom: 2em;
   position: relative;
 }
 
@@ -31,19 +30,6 @@ $black: #0b0c0c;
 .card-heading a {
   text-decoration: none;
 }
-
-@media screen and (min-width:360px) and (max-width:600px) {
-  .card {
-    height:100px;
-    margin-bottom: 100px;
-    border-bottom: 0;
-  }
-
-  .card-body {
-    border-bottom: 1px solid #dee0e2;
-  }
-}
-
 
 @media screen and (min-width:600px) and (max-width:900px) {
   .card {
