@@ -6,6 +6,16 @@ $black: #0b0c0c;
   flex-grow: 0;
   flex-basis: 100%;
   margin-bottom: 2em;
+  position: relative;
+}
+
+.card-link::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 .card p {
