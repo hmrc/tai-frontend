@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,15 +95,11 @@ class ApplicationConfig @Inject() (
   lazy val basGatewayFrontendSignOutUrl: String =
     s"$basGatewayHost/bas-gateway/sign-out-without-state?continue=$feedbackSurveyUrl"
 
-  lazy val taxReliefExpenseClaimLink: String =
-    taxReliefExpenseClaimHost + "/claim-tax-relief-expenses/only-claiming-working-from-home-tax-relief"
-
   lazy val basGatewayFrontendSignInUrl: String = s"$basGatewayHost/bas-gateway/sign-in"
 
   lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
 
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
-  private lazy val taxReliefExpenseClaimHost: String = decorateUrlForLocalDev("p87-frontend.host")
   private lazy val basGatewayHost: String = decorateUrlForLocalDev("bas-gateway-frontend.host")
   private lazy val feedbackHost: String = decorateUrlForLocalDev("feedback-survey-frontend.host")
   lazy val unauthorisedSignOutUrl: String = decorateUrlForLocalDev("company-auth.unauthorised-url")

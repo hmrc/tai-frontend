@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package views.html
 
-import builders.UserBuilder
-import controllers.auth.AuthedUser
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
@@ -27,7 +25,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 
 import java.time.LocalDate
-import scala.util.Random
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
@@ -39,11 +36,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
-    behave like haveInternalLink(
-      appConfig.taxReliefExpenseClaimLink,
-      messages("claim.tax.relief.claimOtherExpense"),
-      "other-expense-link"
-    )
 
     "display cards correctly" when {
       "CY+1 is not enabled" in {

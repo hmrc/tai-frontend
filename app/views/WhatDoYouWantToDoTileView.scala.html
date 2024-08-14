@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,11 +107,6 @@ user: controllers.auth.AuthedUser)
 
             </div>
 
-            <p class="govuk-body-m govuk-!-margin-bottom-3">
-                <a href=@{appConfig.taxReliefExpenseClaimLink} class="govuk-link" id="other-expense-link">
-                    @messages("claim.tax.relief.claimOtherExpense")
-                </a>
-            </p>
             @if(model.showJrsLink) {
                 <p class="govuk-body-m govuk-!-margin-bottom-3">
                     <a href=@{controllers.routes.JrsClaimsController.onPageLoad()} class="govuk-link" id="jrs-link">
