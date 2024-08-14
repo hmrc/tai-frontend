@@ -22,7 +22,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.CitizenDetailsConnector
-import uk.gov.hmrc.tai.model.domain.Address
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import utils.BaseSpec
 
 import scala.concurrent.Future
@@ -31,6 +31,9 @@ class PersonServiceSpec extends BaseSpec {
 
   val mockConnector: CitizenDetailsConnector = mock[CitizenDetailsConnector]
   val sut: PersonService = new PersonService(mockConnector)
+
+  val mockService: PersonService = mock[PersonService]
+  val person: Person = Person(nino, "John", "Doe", isDeceased = false, address)
 
   "personDetails" must {
     "return a Person model instance" when {
@@ -74,4 +77,5 @@ class PersonServiceSpec extends BaseSpec {
       }
     }
   }
+
 }

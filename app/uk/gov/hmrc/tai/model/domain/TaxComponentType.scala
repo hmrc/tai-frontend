@@ -122,6 +122,7 @@ case object VouchersAndCreditCards extends BenefitComponentType { val name = "Vo
 case object NonCashBenefit extends BenefitComponentType { val name = "NonCashBenefit" }
 case object EmployerProvidedServices extends BenefitComponentType { val name = "EmployerProvidedServices" }
 
+// scalastyle:off cyclomatic.complexity
 object BenefitComponentType {
   def apply(name: String): Option[BenefitComponentType] = name match {
     case BenefitInKind.name                            => Some(BenefitInKind)
@@ -203,10 +204,11 @@ object TaxComponentType {
       case "OtherIncome"              => JsSuccess(OtherIncome)
       case _                          => JsError("Invalid Tax component type")
     }
-    override def writes(taxComponentType: TaxComponentType) = JsString(taxComponentType.toString)
+    override def writes(taxComponentType: TaxComponentType): JsString = JsString(taxComponentType.toString)
   }
 }
 
+// scalastyle:off cyclomatic.complexity
 object NonTaxCodeIncomeComponentType {
   implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] =
     new Format[NonTaxCodeIncomeComponentType] {
@@ -242,7 +244,7 @@ object NonTaxCodeIncomeComponentType {
         case "EmploymentAndSupportAllowance"  => JsSuccess(EmploymentAndSupportAllowance)
         case _                                => JsError("Invalid Non tax code component type")
       }
-      override def writes(nonTaxCodeIncomeComponentType: NonTaxCodeIncomeComponentType) =
+      override def writes(nonTaxCodeIncomeComponentType: NonTaxCodeIncomeComponentType): JsString =
         JsString(nonTaxCodeIncomeComponentType.toString)
     }
 }
