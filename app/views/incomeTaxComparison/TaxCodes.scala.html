@@ -34,16 +34,16 @@
     </div>
 }
 
-<table class="govuk-table table--font-reset flush--bottom responsive" id="taxCodeComparisonTable" role="table">
+<table class="govuk-table govuk-!-margin-top-4 govuk-!-margin-bottom-0 responsive" id="taxCodeComparisonTable" role="table">
     <caption class="govuk-visually-hidden">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</caption>
     <thead id="taxCodeComparisonTableHeader">
     <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header govuk-!-width-one-half">@messages("tai.incomeTaxComparison.taxCodes.table.employer.or.pension")</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
         </th>
-        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter taxCodeComparisonTableHeaderCol1">
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter">
             @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
         </th>
