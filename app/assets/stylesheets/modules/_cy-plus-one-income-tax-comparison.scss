@@ -2,18 +2,6 @@
   $mobile: 768px;
   $mobile-small: 641px;
   width: 100%;
-  margin-top: 20px;
-
-  caption.tax-free-amount-table-heading{
-    font-weight: 700;
-
-    @media (max-width: $mobile) {
-      font-size: 22px;
-    }
-    @media (max-width: $mobile-small) {
-      font-size: 19px;
-    }
-  }
 
   thead {
     border: 0;
@@ -61,23 +49,6 @@
         @media (max-width:$mobile) {
           font-weight: 700;
         }
-      }
-
-      &.table-title-mobile{
-        font-weight: 700;
-        text-align: left;
-        padding-right: 1em;
-        display: block;
-        @media (min-width: $mobile) {
-          display: none;
-        }
-      }
-    }
-
-    .tax-free-amount-table-heading{
-      font-weight: 700;
-      @media (max-width: 768px) {
-        font-size: 19px;
       }
     }
 
@@ -132,28 +103,6 @@
             width: 27.5%;
           }
         }
-
-        &.tax-free-amount-table-heading {
-          font-weight: 700;
-
-          @media (max-width: $mobile) {
-            font-size: 22px;
-          }
-          @media (max-width: $mobile-small) {
-            font-size: 19px;
-          }
-        }
-
-        &.link-update{
-          @media (min-width: $mobile) {
-            padding: 10px 10px 0 20px;
-            width: 20%;
-          }
-          & a{
-            @media (min-width: $mobile) {
-            }
-          }
-        }
       }
     }
     .total {
@@ -163,22 +112,3 @@
     }
   }
 }
-
-
-.tax-free-amount-dates{
-  text-align: right;
-}
-
-
-
-.table-foot {
-  border-bottom: 1px solid #bfc1c3;
-  display: flex;
-  font-weight: 700;
-  justify-content: space-between;
-  padding: 1em 0 0.75em;
-}
-
-
-
-
