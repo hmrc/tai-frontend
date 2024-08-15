@@ -22,9 +22,11 @@ import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
 import pages.AddEmployment._
+import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
 import pages.EndEmployment._
 import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
+import pages.benefits._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -35,6 +37,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
@@ -59,6 +62,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
   private val startTaxYear = TaxYear().start.getYear
+
+  def randomNino(): Nino = new Generator(new Random()).nextNino
 
   case class ExpectedData(
     title: String,
@@ -667,10 +672,26 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(AddEmploymentPayrollNumberPage, "")
     .setOrException(AddEmploymentReceivedFirstPayPage, "Yes")
     .setOrException(AddEmploymentStartDatePage, LocalDate.of(2022, 7, 10))
+    .setOrException(AddEmploymentStartDateWithinSixWeeksPage, "Yes")
+    .setOrException(AddEmploymentTelephoneQuestionPage, "No")
     .setOrException(UpdateEmploymentIdPage, 1)
     .setOrException(UpdateEmploymentNamePage, "H M Revenue and Customs")
     .setOrException(UpdateEmploymentTelephoneQuestionPage, "No")
     .setOrException(UpdateEmploymentDetailsPage, "Details")
+    .setOrException(EndCompanyBenefitsIdPage, 1)
+    .setOrException(EndCompanyBenefitsNamePage, "benefitName")
+    .setOrException(EndCompanyBenefitsTypePage, "Telephone")
+    .setOrException(EndCompanyBenefitsRefererPage, "referer")
+    .setOrException(EndCompanyBenefitsValuePage, "1234")
+    .setOrException(EndCompanyBenefitsStopDatePage, LocalDate.of(2022, 2, 2).toString)
+    .setOrException(EndCompanyBenefitsTelephoneNumberPage, "999")
+    .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "999")
+    .setOrException(EndCompanyBenefitsEmploymentNamePage, "employmentName")
+    .setOrException(AddPensionProviderNamePage, "Pension Provider")
+    .setOrException(AddPensionProviderStartDatePage, "2017-06-09")
+    .setOrException(AddPensionProviderPayrollNumberPage, "pension-ref-1234")
+    .setOrException(AddPensionProviderTelephoneQuestionPage, "Yes")
+    .setOrException(AddPensionProviderTelephoneNumberPage, "123456789")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -1005,6 +1026,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         .willReturn(ok(taxCodeComparisonJson.toString()))
     )
   }
+
   server.stubFor(
     get(urlMatching("/messages/count.*"))
       .willReturn(ok(s"""{"count": 0}"""))
