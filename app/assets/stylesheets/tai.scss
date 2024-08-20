@@ -69,24 +69,10 @@ body.printable-page.js-enabled .print-this {
   border-bottom: 1px solid #b1b4b6;
 }
 
-
-
 .only-visible-on-print {
     display:none;
     visibility: hidden
 
-}
-
-
-.custom-align .govuk-grid-column-one-quarter {
-  width: 25%!important;
-  float:left!important;
-}
-
-
-.custom-align .govuk-grid-column-three-quarters {
-  width: 75%!important;
-  float:right!important;
 }
 
 header + .hmrc-user-research-banner {
@@ -114,8 +100,6 @@ header + .hmrc-user-research-banner {
 .print-this__link:hover {
   text-decoration-thickness: max(3px);
 }
-
-
 
 #iForms  h2 {
   font-family: GDS Transport,arial,sans-serif;
@@ -146,8 +130,6 @@ header + .hmrc-user-research-banner {
   }
 
 }
-
-
 
 .flex-container {
   display: -ms-flexbox;
