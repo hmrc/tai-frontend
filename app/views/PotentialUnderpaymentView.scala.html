@@ -53,9 +53,9 @@
 
                 @if(viewModel.iyaCYAmount > 0){
                     <div class="section soft--top">
-                        <p id="iya-cy-how-much" class="govuk-body flush--bottom">@messages("tai.iya.paidTooLittle.cy.text")</p>
+                        <p id="iya-cy-how-much" class="govuk-body govuk-!-margin-bottom-0">@messages("tai.iya.paidTooLittle.cy.text")</p>
 
-                        <h2 class="govuk-heading-l flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYAmount, 2))</h2>
+                        <h2 class="govuk-heading-l">@withPoundPrefix(MoneyPounds(viewModel.iyaCYAmount, 2))</h2>
 
                         <h2 class="govuk-heading-m">@Messages("tai.iya.how.collected.heading")</h2>
 
@@ -88,7 +88,7 @@
                 @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0) {
                     <div class="section soft--top">
                         <p id="iya-cy-plus-one-how-much">@messages("tai.iya.paidTooLittle.cy.text")</p>
-                        <p class="govuk-body flush--top">@withPoundPrefix(MoneyPounds(viewModel.iyaCYPlusOneAmount, 2))</p>
+                        <p class="govuk-body">@withPoundPrefix(MoneyPounds(viewModel.iyaCYPlusOneAmount, 2))</p>
 
                         <h2 class="govuk-heading-m">@messages("tai.iya.what.next.heading")</h2>
 

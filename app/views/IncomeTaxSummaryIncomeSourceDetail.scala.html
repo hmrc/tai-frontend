@@ -30,17 +30,17 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
 
     @for((incomeSource, idx) <- pair zip (LazyList.from(pidx))) {
     <div id="@typeLabel@idx"
-         class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
+         class="subsection @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
 
-        <h3 id="@{typeLabel}@{idx}Heading" class="govuk-heading-l flush break-word">
+        <h3 id="@{typeLabel}@{idx}Heading" class="govuk-heading-l govuk-!-margin-0 break-word">
             @incomeSource.name</h3>
 
-        <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark flush--top ">
+        <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
             <span class="govuk-visually-hidden ">@accessibleAmountPrefix </span>
-            <span class="faded-text-dark flush--top">@incomeSource.amount</span>
+            <span class="faded-text-dark">@incomeSource.amount</span>
         </p>
 
-        <p class="govuk-body flush--top">
+        <p class="govuk-body">
             @if(incomeSource.displayTaxCode) {
                 @incomeSource.taxCodeUrl.map { taxCodeUrl =>
                     @link(
@@ -92,7 +92,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
         }
 
         @if(incomeSource.displayDetailsLink){
-        <p class="govuk-body flush--top">
+        <p class="govuk-body">
             @link(
                 id=Some(s"${typeLabel}${idx}DetailsLink"),
                 url=incomeSource.detailsLinkUrl,
@@ -102,7 +102,7 @@ accessibleAmountPrefix: String, taxCodeViewModel: Map[String, TaxCodeViewModel])
         </p>
         }
         @if(typeLabel != "pension"){
-        <p class="govuk-body flush--top">
+        <p class="govuk-body">
             @link(
                 id=Some(s"${typeLabel}${idx}CompanyLink"),
                 url=incomeSource.companyBenefitLinkUrl,

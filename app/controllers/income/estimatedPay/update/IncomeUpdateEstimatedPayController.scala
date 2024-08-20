@@ -28,10 +28,9 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
-import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.{FormHelper, MoneyPounds}
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
@@ -67,16 +66,13 @@ class IncomeUpdateEstimatedPayController @Inject() (
           case Right(journeyValues) =>
             taxAccountService
               .taxAccountSummary(user.nino, TaxYear())
-              .map { taxAccountSummary =>
-                val totalEstimatedIncome =
-                  withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+              .map { _ =>
                 val incomeName = journeyValues.head
                 val incomeType = journeyValues.last
                 Ok(
                   estimatedPayLandingPage(
                     incomeName,
                     empId,
-                    totalEstimatedIncome,
                     incomeType == TaiConstants.IncomeTypePension,
                     appConfig
                   )

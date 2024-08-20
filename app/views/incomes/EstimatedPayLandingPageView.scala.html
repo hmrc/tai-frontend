@@ -18,7 +18,7 @@
 
 @this(main: MainTemplate)
 
-@(incomeName: String, id: Int, totalEstimatedIncome: String, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
+@(incomeName: String, id: Int, isPension: Boolean, appConfig: ApplicationConfig)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.AuthedUser)
 
 
@@ -40,8 +40,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
         </div>
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">@messages("tai.incomes.landing.intro")</p>
-            <a id="updateEstimatedPayTotalIncome" class="govuk-link" aria-hidden="true">@messages("tai.incomes.landing.employment.totalIncome", totalEstimatedIncome)</a>
-            <p id="updateEstimatedPayLink" class="govuk-link" aria-hidden="true" ><a href="@routes.EstimatedIncomeTaxController.estimatedIncomeTax().url">@messages("tai.incomes.landing.employment.affect")</a></p>
+
             <p class="govuk-body carry-over">
                 @if(isPension) {
                     @messages("tai.incomes.landing.pension.ended", incomeName)

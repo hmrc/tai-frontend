@@ -54,7 +54,7 @@ messages: Messages)
     <div class="govuk-grid-column-two-thirds">
         <div class="inner-block" id="lastTaxYear">
             @if(!viewModel.hasEmploymentsOrPensions) {
-                <div class="flush--bottom soft--bottom" id="rtiDown">
+                <div class="govuk-!-margin-bottom-0 soft--bottom" id="rtiDown">
                     <p id="rtiDownMessage" class="govuk-body">@messages("tai.rti_down_message")</p>
                     <p id="rtiDownContact" class="govuk-body">@messages("tai.rti_down_message_contact")</p>
                 </div>
@@ -121,8 +121,8 @@ messages: Messages)
 
             @for((employment, idx) <- pair zip (LazyList.from(pidx))) {
 
-                <div id="@incomeType@idx" class="govuk-!-padding-bottom-5 flush--top @if(pair.length==1){govuk-grid-column-full}else{govuk-grid-column-one-half}">
-                    <h3 class="govuk-heading-l flush break-word-only">@employment.name</h3>
+                <div id="@incomeType@idx" class="govuk-!-padding-bottom-5 @if(pair.length==1){govuk-grid-column-full}else{govuk-grid-column-one-half}">
+                    <h3 class="govuk-heading-l govuk-!-margin-0 break-word-only">@employment.name</h3>
                     <p class="govuk-inset-text govuk-!-margin-top-0">
                         @messages("tai.rti.down")
                     </p>
