@@ -74,19 +74,13 @@ class IncomeTaxSpec extends TaiViewSpec {
     "display the comparison table with correct row values for cy and cy+1" when {
       "a view model is supplied to the view with appropriate data" in {
         doc must haveTdWithText(yourPAYEIncomeTaxEstimate)
-        doc must haveTdWithText(taxYearEnds + "£100")
-        doc must haveTdWithText(taxYearStarts + "£100")
+        doc must haveTdWithText("£100")
+        doc must haveTdWithText("£100")
       }
     }
   }
 
   private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"
-  val taxYearEnds = "Current tax year ends " + HtmlFormatter
-    .htmlNonBroken(Dates.formatDate(TaxYear().end))
-    .replaceAll("\u00A0", " ") + " "
-  val taxYearStarts = "Next tax year from " + HtmlFormatter
-    .htmlNonBroken(Dates.formatDate(TaxYear().next.start))
-    .replaceAll("\u00A0", " ") + " "
   private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100.83)
   private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100.83)
 

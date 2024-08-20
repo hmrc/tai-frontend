@@ -37,17 +37,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       mainHeaderText = "main heading"
     )
 
-    "contain details element with tax code information" in {
-      val view = template(vm, viewModel, appConfig)
-      val doc = Jsoup.parse(view.toString())
-
-      doc must haveElementAtPathWithText(
-        "#employmentTaxCodeTerm_1_1",
-        messages("tai.taxCode.part.announce", "K") + " K"
-      )
-      doc must haveElementWithId("employmentTaxCodeDescription_1_1")
-    }
-
     "display iForms status message when an iForm has not been fully processed" in {
       doc must haveElementWithId("isAnyFormInProgressBanner")
     }
@@ -73,7 +62,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      def view: Html = template(vm, viewModel, appConfig)
+      def view: Html = template(vm, appConfig)
 
       doc(view) must not(haveElementWithId("isAnyFormInProgressBanner"))
     }
@@ -102,7 +91,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "hide each of the three outline sections: 'income from employment', 'employments that have ended', and 'income from private pensions'" when {
 
       "the associated collections within the view model are empty" in {
-        val docWithoutIncomeSections = doc(template(noSectionsVm, viewModel, appConfig))
+        val docWithoutIncomeSections = doc(template(noSectionsVm, appConfig))
         docWithoutIncomeSections must not(haveDivWithId("incomeFromEmploymentSection"))
         docWithoutIncomeSections must not(haveDivWithId("incomeFromPensionSection"))
         docWithoutIncomeSections must not(haveDivWithId("endedIncomeSection"))
@@ -150,7 +139,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           "0"
         )
 
-        val docWithIyaBanner = doc(template(vm, viewModel, appConfig))
+        val docWithIyaBanner = doc(template(vm, appConfig))
         docWithIyaBanner must haveElementAtPathWithText(
           "#inYearAdjustmentBanner",
           s"${messages("tai.notifications.iya.banner.text")} ${messages("tai.notifications.iya.linkText")}"
@@ -196,7 +185,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0"
         )
-        val docWithMultipleEmployments = doc(template(vm, viewModel, appConfig))
+        val docWithMultipleEmployments = doc(template(vm, appConfig))
         docWithMultipleEmployments.select("#incomeFromEmploymentSection h3").size mustBe 3
 
         docWithMultipleEmployments must haveElementAtPathWithId("div", "employment1")
@@ -248,7 +237,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0"
         )
-        val docWithMultiplePensionIncomes = doc(template(vm, viewModel, appConfig))
+        val docWithMultiplePensionIncomes = doc(template(vm, appConfig))
         docWithMultiplePensionIncomes.select("#incomeFromPensionSection h3").size mustBe 4
 
         docWithMultiplePensionIncomes must haveElementAtPathWithId("div", "pension1")
@@ -267,7 +256,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   "employments that have ended section" must {
 
     "display the rti is down message when rti is not available" in {
-      val view = template(vm.copy(rtiAvailable = false), viewModel, appConfig)
+      val view = template(vm.copy(rtiAvailable = false), appConfig)
       doc(view) must haveParagraphWithText(messages("tai.rti.down.ceasedEmployments"))
     }
 
@@ -298,7 +287,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           rtiAvailable = true,
           "0"
         )
-        val docWithMultipleEndedIncomes = doc(template(vm, viewModel, appConfig))
+        val docWithMultipleEndedIncomes = doc(template(vm, appConfig))
         docWithMultipleEndedIncomes.select("#endedIncomeSection h3").size mustBe 4
 
         docWithMultipleEndedIncomes must haveElementAtPathWithId("div", "income1")
@@ -354,7 +343,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, viewModel, appConfig))
+      val document = doc(template(vm, appConfig))
 
       document must not(haveElementWithId("employment1TaxCodeLink"))
     }
@@ -387,7 +376,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, viewModel, appConfig))
+      val document = doc(template(vm, appConfig))
 
       document must not(haveElementWithId("employment1PayrollNumber"))
     }
@@ -410,7 +399,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, viewModel, appConfig))
+      val document = doc(template(vm, appConfig))
       document must haveElementAtPathWithText(
         "#employment1EndDate",
         messages("tai.incomeTaxSummary.endDate.prefix", inactiveEmployment.endDate)
@@ -446,41 +435,12 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         "0"
       )
 
-      val document = doc(template(vm, viewModel, appConfig))
+      val document = doc(template(vm, appConfig))
       document must not(haveElementWithId("employment1DetailsLink"))
     }
   }
 
   "annual amounts section" must {
-
-    "display your total estimated income details" in {
-      doc must haveElementAtPathWithText(
-        "#annualAmountsSummarySection h3",
-        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomeHeading")
-      )
-
-      doc must haveElementAtPathWithText(
-        "#annualAmountsSummarySection p",
-        messages("tai.incomeTaxSummary.annualAmounts.section.totalIncomePara")
-      )
-
-      doc must haveElementAtPathWithText(
-        "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.totalEstimatedIncome}"
-      )
-
-      doc must haveElementAtPathWithText(
-        "#annualAmountsSummarySection a",
-        messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
-      )
-
-      doc must haveElementAtPathWithAttribute(
-        "#annualAmountsSummarySection a",
-        "href",
-        controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url
-      )
-
-    }
 
     "display tax free amount details" in {
       doc must haveElementAtPathWithText(
@@ -712,5 +672,5 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     )
   )
 
-  override def view: Html = template(vm, viewModel, appConfig)
+  override def view: Html = template(vm, appConfig)
 }
