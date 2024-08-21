@@ -504,7 +504,7 @@ tr.print-pension-contributions-data td {
     visibility: hidden;
   }
 
-  body.printable-page .display-tax-code-for-print {
+  body.govuk-template__body .display-tax-code-for-print {
       display: inline!important;
       visibility: visible!important;
       text-decoration: none;
