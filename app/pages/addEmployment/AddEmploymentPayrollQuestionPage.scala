@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package pages
+package pages.addEmployment
 
-import pages.endEmployment.EndEmploymentEndDatePage
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.journeyCache.AddEmploymentConstants
 
-import java.time.LocalDate
+object AddEmploymentPayrollQuestionPage extends QuestionPage[String] {
 
-class EndEmploymentEndDatePageSpec extends PageBehaviours {
+  override def path: JsPath = JsPath \ toString
 
-  "EmploymentEndDatePage" must {
+  override def toString: String = AddEmploymentConstants.PayrollNumberQuestionKey
 
-    beRetrievable[LocalDate](EndEmploymentEndDatePage)
-
-    beSettable[LocalDate](EndEmploymentEndDatePage)
-  }
 }

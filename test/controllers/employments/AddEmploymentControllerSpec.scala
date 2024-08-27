@@ -20,7 +20,7 @@ import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import pages.AddEmployment._
+import pages.addEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded

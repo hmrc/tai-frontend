@@ -20,10 +20,10 @@ import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneNumberPage, UpdateEmploymentTelephoneQuestionPage}
+import pages.updateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneNumberPage, UpdateEmploymentTelephoneQuestionPage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers

@@ -21,7 +21,7 @@ import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchersSugar.eqTo
-import pages.EndEmployment._
+import pages.endEmployment._
 import pages._
 import play.api.i18n.Messages
 import play.api.inject.bind

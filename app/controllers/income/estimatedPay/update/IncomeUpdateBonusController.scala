@@ -23,7 +23,6 @@ import pages.income.{UpdateIncomeBonusOvertimeAmountPage, UpdateIncomeBonusPayme
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -42,7 +41,7 @@ class IncomeUpdateBonusController @Inject() (
   bonusPaymentAmount: BonusPaymentAmountView,
   journeyCacheNewRepository: JourneyCacheNewRepository,
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) {
 
   def bonusPaymentsPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -76,7 +75,7 @@ class IncomeUpdateBonusController @Inject() (
             },
           formData => {
             val bonusPaymentsAnswer = formData.yesNoChoice.fold(Map.empty[String, String]) { bonusPayments =>
-              Map(UpdateIncomeConstants.BonusPaymentsKey -> bonusPayments)
+              Map(UpdateIncomeBonusPaymentsPage.toString -> bonusPayments)
             }
 
             journeyCacheNewRepository.set(
@@ -125,7 +124,7 @@ class IncomeUpdateBonusController @Inject() (
               case Some(amount) =>
                 journeyCacheNewRepository.set(
                   request.userAnswers.copy(data =
-                    request.userAnswers.data ++ Json.obj(UpdateIncomeConstants.BonusOvertimeAmountKey -> amount)
+                    request.userAnswers.data ++ Json.obj(UpdateIncomeBonusOvertimeAmountPage.toString -> amount)
                   )
                 ) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))

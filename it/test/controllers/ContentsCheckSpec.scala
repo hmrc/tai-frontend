@@ -21,10 +21,10 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.must.Matchers
-import pages.AddEmployment._
-import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
-import pages.EndEmployment._
-import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
+import pages.addEmployment._
+import pages.addPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import pages.endEmployment._
+import pages.updateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
 import pages._
 import pages.benefits._
 import play.api.Application

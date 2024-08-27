@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import pages.AddEmployment.{AddEmploymentNamePage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDateWithinSixWeeksPage}
+import pages.addEmployment.{AddEmploymentNamePage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDateWithinSixWeeksPage}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.AddEmploymentConstants

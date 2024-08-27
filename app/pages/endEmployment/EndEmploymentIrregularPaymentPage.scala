@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package pages.endEmployment
 
-import pages.endEmployment.EndEmploymentEndDatePage
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 
-import java.time.LocalDate
+case object EndEmploymentIrregularPaymentPage extends QuestionPage[String] {
 
-class EndEmploymentEndDatePageSpec extends PageBehaviours {
+  override def path: JsPath = JsPath \ toString
 
-  "EmploymentEndDatePage" must {
-
-    beRetrievable[LocalDate](EndEmploymentEndDatePage)
-
-    beSettable[LocalDate](EndEmploymentEndDatePage)
-  }
+  override def toString: String = IrregularPayConstants.IrregularPayDecision
 }
