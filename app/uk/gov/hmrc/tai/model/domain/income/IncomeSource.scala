@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 package uk.gov.hmrc.tai.model.domain.income
 
 import cats.data.EitherT
-import cats.implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.tai.model.UserAnswers
+import pages.income._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,12 +28,17 @@ final case class IncomeSource(id: Int, name: String)
 object IncomeSource {
 
   def create(
-    journeyCacheService: JourneyCacheService
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[String, IncomeSource]] =
+    journeyCacheNewRepository: JourneyCacheNewRepository,
+    userAnswers: UserAnswers
+  )(implicit ec: ExecutionContext): Future[Either[String, IncomeSource]] =
     EitherT(
-      journeyCacheService.mandatoryJourneyValues(Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey))
-    ).map { seq =>
-      val id :: name :: _ = seq.toList
-      IncomeSource(id.toInt, name)
-    }.value
+      journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).map {
+        case Some(userAnswers) =>
+          val id = userAnswers.get(UpdateIncomeIdPage).getOrElse(throw new Exception("Id not found"))
+          val name = userAnswers.get(UpdateIncomeNamePage).getOrElse(throw new Exception("Name not found"))
+          Right(IncomeSource(id, name))
+        case None => Left("UserAnswers not found")
+      }
+    ).value
+
 }
