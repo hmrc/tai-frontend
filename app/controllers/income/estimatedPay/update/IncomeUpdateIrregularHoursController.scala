@@ -19,24 +19,25 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import pages.TrackingJourneyConstantsEstimatedPayPage
+import pages.income._
 import play.api.Logger
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
-import uk.gov.hmrc.tai.util.FutureOps.FutureEitherStringOps
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
 import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursView, EditSuccessView}
 
 import java.time.format.DateTimeFormatter
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -49,7 +50,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   editSuccess: EditSuccessView,
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
   confirmAmountEntered: ConfirmAmountEnteredView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+  journeyCacheNewRepository: JourneyCacheNewRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -59,18 +60,18 @@ class IncomeUpdateIrregularHoursController @Inject() (
   private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] =
     (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
       val defaultCaching = Map[String, String](
-        UpdateIncomeConstants.NameKey      -> taxCodeIncome.name,
-        UpdateIncomeConstants.PayToDateKey -> taxCodeIncome.amount.toString
+        UpdateIncomeNamePage.toString      -> taxCodeIncome.name,
+        UpdateIncomePayToDatePage.toString -> taxCodeIncome.amount.toString
       )
 
       payment.fold(defaultCaching)(payment =>
-        defaultCaching + (UpdateIncomeConstants.DateKey -> payment.date.format(
+        defaultCaching + (UpdatedIncomeDatePage.toString -> payment.date.format(
           DateTimeFormatter.ofPattern(MonthAndYear)
         ))
       )
     }
 
-  def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
+  def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
@@ -83,7 +84,11 @@ class IncomeUpdateIrregularHoursController @Inject() (
           logger.error(value)
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
         case (maybePayment, Right(Some(tci))) =>
-          journeyCacheService.cache(taxCodeIncomeInfoToCache(tci, maybePayment)).map { _ =>
+          val cacheMap = taxCodeIncomeInfoToCache(tci, maybePayment)
+          val updatedAnswers =
+            request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
+
+          journeyCacheNewRepository.set(updatedAnswers).map { _ =>
             val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
             Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
           }
@@ -92,108 +97,94 @@ class IncomeUpdateIrregularHoursController @Inject() (
       }.flatten
   }
 
-  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
+  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
-      val collectedValues = journeyCacheService
-        .collectedJourneyValues(
-          Seq(
-            UpdateIncomeConstants.NameKey,
-            UpdateIncomeConstants.IrregularAnnualPayKey,
-            UpdateIncomeConstants.PayToDateKey
-          ),
-          Seq(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employmentId")
-        )
+      val userAnswers = request.userAnswers
 
-      collectedValues
-        .map {
-          case Left(errorMessage) =>
-            logger.warn(errorMessage)
-            Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId))
-          case Right((mandatoryCache, optionalCache)) =>
-            val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
-            val confirmedNewAmount = optionalCache.head
+      val name = userAnswers.get(UpdateIncomeNamePage)
+      val newIrregularPay = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
+      val paymentToDate = userAnswers.get(UpdateIncomePayToDatePage)
+      val confirmedNewAmount = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(employmentId))
 
-            if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
-            } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-            } else {
-              val vm =
-                ConfirmAmountEnteredViewModel(
-                  employmentId,
-                  name,
-                  paymentToDate.toInt,
-                  newIrregularPay.toInt,
-                  IrregularPay,
-                  controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
-                    .editIncomeIrregularHours(employmentId)
-                    .url
-                )
-              Ok(confirmAmountEntered(vm))
-            }
-        }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
-  }
-
-  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
-    implicit request =>
-      journeyCacheService.currentCache flatMap { cache =>
-        val name = cache(UpdateIncomeConstants.NameKey)
-        val paymentToDate: String = cache(UpdateIncomeConstants.PayToDateKey)
-        val latestPayDate = cache.get(UpdateIncomeConstants.DateKey)
-
-        AmountComparatorForm
-          .createForm(latestPayDate, Some(paymentToDate.toInt))
-          .bindFromRequest()
-          .fold(
-            formWithErrors => {
-
-              val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
-              Future.successful(BadRequest(editIncomeIrregularHours(formWithErrors, viewModel)))
-            },
-            validForm =>
-              validForm.income.fold(throw new RuntimeException) { income =>
-                journeyCacheService.cache(UpdateIncomeConstants.IrregularAnnualPayKey, income) map { _ =>
-                  Redirect(routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(employmentId))
-                }
-              }
-          )
+      (name, newIrregularPay, paymentToDate) match {
+        case (Some(name), Some(newIrregularPay), Some(paymentToDate)) =>
+          if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
+            Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId)))
+          } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
+            Future.successful(Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay()))
+          } else {
+            val vm = ConfirmAmountEnteredViewModel(
+              employmentId,
+              name,
+              paymentToDate.toInt,
+              newIrregularPay.toInt,
+              IrregularPay,
+              controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
+                .editIncomeIrregularHours(employmentId)
+                .url
+            )
+            Future.successful(Ok(confirmAmountEntered(vm)))
+          }
+        case _ =>
+          logger.warn("Required values not found in user answers")
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId)))
       }
+
   }
 
-  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
+  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
+    implicit request =>
+      val userAnswers: UserAnswers = request.userAnswers
+      val name: String = userAnswers.get(UpdateIncomeNamePage).toString
+      val paymentToDate: String = userAnswers.get(UpdateIncomePayToDatePage).getOrElse("")
+      val latestPayDate: Option[String] = userAnswers.get(UpdatedIncomeDatePage)
+
+      AmountComparatorForm
+        .createForm(latestPayDate, Some(paymentToDate.toInt))
+        .bindFromRequest()
+        .fold(
+          formWithErrors => {
+            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
+            Future.successful(BadRequest(editIncomeIrregularHours(formWithErrors, viewModel)))
+          },
+          validForm =>
+            validForm.income.fold(throw new RuntimeException) { income =>
+              journeyCacheNewRepository.set(userAnswers.set(UpdateIncomeIrregularAnnualPayPage, income).get) map { _ =>
+                Redirect(routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(employmentId))
+              }
+            }
+        )
+  }
+
+  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
       val updateJourneyCompletion: String => Future[Map[String, String]] =
-        (incomeId: String) => estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+        (_: String) => journeyCacheNewRepository.set(
+          request.userAnswers.set(TrackingJourneyConstantsEstimatedPayPage, "true").get
+        ).map(_ => Map.empty[String, String])
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) =>
-        journeyCacheService.cache(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employmentId", newPay) map { _ =>
+        journeyCacheNewRepository.set(
+          request.userAnswers.set(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay).get
+        ).map { _ =>
           Ok(editSuccess(incomeName, incomeId.toInt))
         }
 
+      val userAnswers = request.userAnswers
+      val incomeName = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
+      val newPay = userAnswers.get(UpdateIncomeIrregularAnnualPayPage).getOrElse("")
+      val incomeId = userAnswers.get(UpdateIncomeIdPage).getOrElse("")
+
       (for {
-        cache <- journeyCacheService
-                   .mandatoryJourneyValues(
-                     Seq(
-                       UpdateIncomeConstants.NameKey,
-                       UpdateIncomeConstants.IrregularAnnualPayKey,
-                       UpdateIncomeConstants.IdKey
-                     )
-                   )
-                   .getOrFail
-        incomeName :: newPay :: incomeId :: Nil = cache.toList
-        _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
-        _      <- updateJourneyCompletion(incomeId)
-        result <- cacheAndRespond(incomeName, incomeId, newPay)
+        _ <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
+        _ <- updateJourneyCompletion(incomeId.toString)
+        result <- cacheAndRespond(incomeName, incomeId.toString, newPay)
       } yield result).recover { case NonFatal(e) =>
         errorPagesHandler.internalServerError(e.getMessage)
       }
-
   }
 
 }
