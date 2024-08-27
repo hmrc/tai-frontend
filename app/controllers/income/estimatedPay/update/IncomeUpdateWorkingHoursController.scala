@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,43 +19,45 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
+import pages.income.{UpdateIncomeIdPage, UpdateIncomeWorkingHoursPage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes.WorkingHoursView
 
-import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateWorkingHoursController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def workingHoursPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def workingHoursPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    (IncomeSource.create(journeyCacheService), journeyCacheService.currentValue(UpdateIncomeConstants.WorkingHoursKey))
-      .mapN {
-        case (Right(incomeSource), workingHours) =>
-          Ok(
-            workingHoursView(
-              HoursWorkedForm.createForm().fill(HoursWorkedForm(workingHours)),
-              incomeSource.id,
-              incomeSource.name
-            )
+    val userAnswers = request.userAnswers
+    val workingHours = userAnswers.get(UpdateIncomeWorkingHoursPage)
+
+    (IncomeSource.create(journeyCacheNewRepository, userAnswers), Future.successful(workingHours)).mapN {
+      case (Right(incomeSource), Some(hours)) =>
+        Ok(
+          workingHoursView(
+            HoursWorkedForm.createForm().fill(HoursWorkedForm(Some(hours))),
+            incomeSource.id,
+            incomeSource.name
           )
-        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      }
+        )
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    }
   }
 
-  def handleWorkingHours: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def handleWorkingHours: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     HoursWorkedForm
@@ -63,24 +65,24 @@ class IncomeUpdateWorkingHoursController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          IncomeSource.create(journeyCacheService).map {
+          IncomeSource.create(journeyCacheNewRepository, request.userAnswers).map {
             case Right(incomeSource) =>
               BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         (formData: HoursWorkedForm) =>
           for {
-            id <- journeyCacheService.mandatoryJourneyValueAsInt(UpdateIncomeConstants.IdKey)
-            _  <- journeyCacheService.cache(UpdateIncomeConstants.WorkingHoursKey, formData.workingHours.getOrElse(""))
+            id <- Future.successful(request.userAnswers.get(UpdateIncomeIdPage))
+            _  <- Future.fromTry(request.userAnswers.set(UpdateIncomeWorkingHoursPage, formData.workingHours.getOrElse("")))
           } yield id match {
-            case Right(id) =>
+            case Some(id) =>
               formData.workingHours match {
                 case Some(EditIncomeIrregularPayConstants.RegularHours) =>
                   Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
                 case Some(EditIncomeIrregularPayConstants.IrregularHours) =>
                   Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
               }
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case None => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
       )
   }
