@@ -28,7 +28,6 @@ import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, B
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes._
 
 import javax.inject.Inject
