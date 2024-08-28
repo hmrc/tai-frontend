@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -63,7 +63,7 @@ class IncomeUpdateCalculatorControllerSpec
 
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
 
@@ -76,7 +76,7 @@ class IncomeUpdateCalculatorControllerSpec
         mcc,
         inject[DuplicateSubmissionWarningView],
         inject[CheckYourAnswersView],
-        journeyCacheService,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {}
 

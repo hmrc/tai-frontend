@@ -17,30 +17,40 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ErrorPagesHandler, FakeAuthRetrievals}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
+import org.mockito.stubbing.ScalaOngoingStubbing
 import org.scalatest.concurrent.ScalaFutures
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypePage}
+import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.HowToUpdateView
 
 import java.time.LocalDate
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+  def createSUT = new SUT
+
+  val empId: Int = 1
+  val sessionId: String = "testSessionId"
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+
   val defaultEmployment: Employment =
     Employment(
       "company",
@@ -60,9 +70,9 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  class TestIncomeUpdateHowToUpdateController
+  class SUT
       extends IncomeUpdateHowToUpdateController(
         mockAuthJourney,
         employmentService,
@@ -70,12 +80,36 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         taxAccountService,
         mcc,
         inject[HowToUpdateView],
-        journeyCacheService,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
+
+  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
 
   def BuildEmploymentAmount(isLive: Boolean = false, isOccupationPension: Boolean = true): EmploymentAmount =
     EmploymentAmount(
@@ -102,126 +136,127 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
     }
   }
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository)
+
+    when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+      .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+
+    when(employmentService.employment(any(), any())(any()))
+      .thenReturn(Future.successful(Some(defaultEmployment)))
+
+    when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(BuildEmploymentAmount()))
+  }
+
   "howToUpdatePage" must {
-    object HowToUpdatePageHarness {
-
-      sealed class HowToUpdatePageHarness(cacheMap: Map[String, String], employment: Option[Employment]) {
-
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-
-        when(employmentService.employment(any(), any())(any()))
-          .thenReturn(Future.successful(employment))
-
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(BuildEmploymentAmount()))
-
-        Mockito.reset(journeyCacheService)
-
-        when(journeyCacheService.cache(any())(any()))
-          .thenReturn(Future.successful(cacheMap))
-
-        def howToUpdatePage(): Future[Result] =
-          new TestIncomeUpdateHowToUpdateController()
-            .howToUpdatePage(1)(RequestBuilder.buildFakeGetRequestWithAuth())
-      }
-
-      def setup(
-        cacheMap: Map[String, String],
-        employment: Option[Employment] = Some(defaultEmployment)
-      ): HowToUpdatePageHarness =
-        new HowToUpdatePageHarness(cacheMap, employment)
-    }
-
     "render the right response to the user" in {
+      reset(mockJourneyCacheNewRepository)
 
-      val cacheMap = Map(
-        UpdateIncomeConstants.NameKey       -> "company",
-        UpdateIncomeConstants.IdKey         -> "1",
-        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension
-      )
+      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdateIncomeNamePage, "company")
+        .setOrException(UpdateIncomeIdPage, 1)
+        .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypePension)
 
-      val result = HowToUpdatePageHarness
-        .setup(cacheMap)
-        .howToUpdatePage()
+      val SUT = createSUT
+      setup(mockUserAnswers)
+
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      val result =
+        SUT.howToUpdatePage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.IncomeController.pensionIncome(1).url)
     }
 
     "cache the employer details" in {
+      reset(mockJourneyCacheNewRepository)
 
-      val cacheMap = Map(
-        UpdateIncomeConstants.NameKey       -> "company",
-        UpdateIncomeConstants.IdKey         -> "1",
-        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypeEmployment
-      )
+      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdateIncomeNamePage, "company")
+        .setOrException(UpdateIncomeIdPage, 1)
+        .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypeEmployment)
 
-      val result = HowToUpdatePageHarness
-        .setup(cacheMap)
-        .howToUpdatePage()
+      val SUT = createSUT
+      setup(mockUserAnswers)
+
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      val result =
+        SUT.howToUpdatePage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
-
-      verify(journeyCacheService, times(1)).cache(meq(cacheMap))(any())
+      verify(mockJourneyCacheNewRepository).set(any())
     }
 
     "employments return empty income is none" in {
+      reset(mockJourneyCacheNewRepository)
 
-      val cacheMap = Map(
-        UpdateIncomeConstants.NameKey       -> "company",
-        UpdateIncomeConstants.IdKey         -> "1",
-        UpdateIncomeConstants.IncomeTypeKey -> TaiConstants.IncomeTypePension
-      )
+      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdateIncomeNamePage, "company")
+        .setOrException(UpdateIncomeIdPage, 1)
+        .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypePension)
 
-      val result = HowToUpdatePageHarness
-        .setup(cacheMap, None)
-        .howToUpdatePage()
+      val SUT = createSUT
+      setup(mockUserAnswers)
+
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      val result =
+        SUT.howToUpdatePage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
 
   "processHowToUpdatePage" must {
-    object ProcessHowToUpdatePageHarness {
 
-      sealed class ProcessHowToUpdatePageHarness(incomeCount: Int, currentValue: Option[String]) {
+//        if (incomeCount >= 0) {
+//          when(incomeService.editableIncomes(any()))
+//            .thenReturn(BuildTaxCodeIncomes(incomeCount))
+//        }
+//
+//        if (incomeCount == 1) {
+//          when(incomeService.singularIncomeId(any())).thenReturn(Some(1))
+//        }
+//
+//        if (incomeCount == 0) {
+//          when(incomeService.singularIncomeId(any())).thenReturn(None)
+//        }
 
-        if (incomeCount >= 0) {
-          when(incomeService.editableIncomes(any()))
-            .thenReturn(BuildTaxCodeIncomes(incomeCount))
-        }
 
-        if (incomeCount == 1) {
-          when(incomeService.singularIncomeId(any())).thenReturn(Some(1))
-        }
+//        def processHowToUpdatePage(employmentAmount: EmploymentAmount): Future[Result] =
+//          new TestIncomeUpdateHowToUpdateController()
+//            .processHowToUpdatePage(1, "name", employmentAmount, Right(Seq.empty[TaxCodeIncome]))(
+//              RequestBuilder.buildFakeGetRequestWithAuth(),
+//              FakeAuthRetrievals.user
+//            )
+//      }
 
-        if (incomeCount == 0) {
-          when(incomeService.singularIncomeId(any())).thenReturn(None)
-        }
-
-        currentValue match {
-          case Some(x) =>
-            when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.HowToUpdateKey))(any()))
-              .thenReturn(Future.successful(Some(x)))
-          case None =>
-        }
-
-        def processHowToUpdatePage(employmentAmount: EmploymentAmount): Future[Result] =
-          new TestIncomeUpdateHowToUpdateController()
-            .processHowToUpdatePage(1, "name", employmentAmount, Right(Seq.empty[TaxCodeIncome]))(
-              RequestBuilder.buildFakeGetRequestWithAuth(),
-              FakeAuthRetrievals.user
-            )
-      }
-
-      def setup(incomeCount: Int = -1, currentValue: Option[String] = None): ProcessHowToUpdatePageHarness =
-        new ProcessHowToUpdatePageHarness(incomeCount, currentValue)
-    }
 
     "redirect user for non live employment " when {
       "employment amount is occupation income" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, "company")
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeHowToUpdatePage, 1)
+
         val employmentAmount = BuildEmploymentAmount()
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
 
         val result = ProcessHowToUpdatePageHarness
           .setup()

@@ -56,17 +56,17 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   class SUT
-    extends IncomeUpdateIrregularHoursController(
-      mockAuthJourney,
-      incomeService,
-      taxAccountService,
-      mcc,
-      inject[EditSuccessView],
-      inject[EditIncomeIrregularHoursView],
-      inject[ConfirmAmountEnteredView],
-      mockJourneyCacheNewRepository,
-      inject[ErrorPagesHandler]
-    ) {
+      extends IncomeUpdateIrregularHoursController(
+        mockAuthJourney,
+        incomeService,
+        taxAccountService,
+        mcc,
+        inject[EditSuccessView],
+        inject[EditIncomeIrregularHoursView],
+        inject[ConfirmAmountEnteredView],
+        mockJourneyCacheNewRepository,
+        inject[ErrorPagesHandler]
+      ) {
     when(mockJourneyCacheNewRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
@@ -74,9 +74,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
   private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
     when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
       override def invokeBlock[A](
-                                   request: Request[A],
-                                   block: DataRequest[A] => Future[Result]
-                                 ): Future[Result] =
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
         block(
           DataRequest(
             request,

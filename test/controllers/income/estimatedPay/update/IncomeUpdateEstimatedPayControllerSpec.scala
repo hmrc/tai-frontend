@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateIncomeConstants
@@ -43,7 +43,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val incomeService: IncomeService = mock[IncomeService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
   val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
 
   class TestIncomeUpdateEstimatedPayController
@@ -56,11 +56,11 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         inject[EstimatedPayLandingPageView],
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
-        journeyCacheService,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   "estimatedPayLandingPage" must {
@@ -126,7 +126,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         inject[EstimatedPayLandingPageView],
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
-        journeyCacheService,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       )
 

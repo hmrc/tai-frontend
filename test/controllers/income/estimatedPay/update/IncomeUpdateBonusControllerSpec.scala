@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
 
@@ -51,7 +51,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         mcc,
         bonusPaymentsView,
         bonusPaymentAmountView,
-        journeyCacheService
+        mockJourneyCacheNewRepository.get
       ) {
     when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
       .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))

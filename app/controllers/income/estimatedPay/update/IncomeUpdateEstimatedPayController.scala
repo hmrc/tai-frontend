@@ -20,19 +20,17 @@ import cats.data._
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.income.{UpdateIncomeGrossAnnualPayPage, UpdateIncomeNamePage, UpdateIncomeNewAmountPage, UpdateIncomeTypePage}
-import play.api.Logger
+import pages.income._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
-import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefixAndSign
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.{FormHelper, MoneyPounds}
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
@@ -54,41 +52,28 @@ class IncomeUpdateEstimatedPayController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  private val logger = Logger(this.getClass)
-
   def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers: UserAnswers = request.userAnswers
+      val userAnswers = request.userAnswers
 
-      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
-
-      (incomeNameOpt, incomeTypeOpt) match {
-        case (Some(incomeName), Some(incomeType)) =>
-          taxAccountService
-            .taxAccountSummary(user.nino, TaxYear())
-            .map { taxAccountSummary =>
-              val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-              Ok(
-                estimatedPayLandingPage(
-                  incomeName,
-                  empId,
-                  totalEstimatedIncome,
-                  incomeType == TaiConstants.IncomeTypePension,
-                  appConfig
-                )
-              )
-            }
-            .recover { case e: Exception =>
-              errorPagesHandler.internalServerError(e.getMessage)
-            }
-
-        case _ =>
-          val errorMessage = "Mandatory journey values missing"
-          logger.warn(errorMessage)
-          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-      }
+      val incomeName = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
+      val incomeType = userAnswers.get(UpdateIncomeTypePage).getOrElse("")
+      taxAccountService
+        .taxAccountSummary(user.nino, TaxYear())
+        .map { _ =>
+          Ok(
+            estimatedPayLandingPage(
+              incomeName,
+              empId,
+              incomeType == TaiConstants.IncomeTypePension,
+              appConfig
+            )
+          )
+        }
+        .recover { case e: Exception =>
+          errorPagesHandler.internalServerError(e.getMessage)
+        }
   }
 
   private def isCachedAmountSameAsEnteredAmount(
