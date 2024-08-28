@@ -73,7 +73,8 @@ class IncomeUpdateWorkingHoursController @Inject() (
         (formData: HoursWorkedForm) =>
           for {
             id <- Future.successful(request.userAnswers.get(UpdateIncomeIdPage))
-            _  <- Future.fromTry(request.userAnswers.set(UpdateIncomeWorkingHoursPage, formData.workingHours.getOrElse("")))
+            _ <-
+              Future.fromTry(request.userAnswers.set(UpdateIncomeWorkingHoursPage, formData.workingHours.getOrElse("")))
           } yield id match {
             case Some(id) =>
               formData.workingHours match {

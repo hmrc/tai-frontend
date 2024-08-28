@@ -16,80 +16,113 @@
 
 package controllers.income.estimatedPay.update
 
-import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
+import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.stubbing.ScalaOngoingStubbing
+import pages.income._
+import play.api.libs.json.Json
+import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipForm, TaxablePayslipForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
 import utils.BaseSpec
 import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePayslipAmountView}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val sessionId = "testSessionId"
+
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+  def createSUT = new SUT
 
   private val payslipAmountView = inject[PayslipAmountView]
   private val taxablePayslipAmountView = inject[TaxablePayslipAmountView]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  class TestIncomeUpdatePayslipAmountController
+  class SUT
       extends IncomeUpdatePayslipAmountController(
         mockAuthJourney,
         mcc,
         payslipAmountView,
         taxablePayslipAmountView,
         inject[PayslipDeductionsView],
-        journeyCacheService
+        mockJourneyCacheNewRepository
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+  }
+
+  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository)
   }
 
   "payslipAmountPage" must {
-    object PayslipAmountPageHarness {
-      sealed class PayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
-
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-          .thenReturn(
-            Future.successful(
-              Right(
-                (
-                  Seq[String](employer.id.toString, employer.name),
-                  Seq[Option[String]](payPeriod, None, cachedAmount)
-                )
-              )
-            )
-          )
-
-        def payslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdatePayslipAmountController()
-            .payslipAmountPage()(request)
-      }
-
-      def setup(payPeriod: Option[String], cachedAmount: Option[String]): PayslipAmountPageHarness =
-        new PayslipAmountPageHarness(payPeriod, cachedAmount)
-    }
 
     "display payslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
+        reset(mockJourneyCacheNewRepository)
 
-        val cachedAmount = None
-        val payPeriod = Some(Monthly)
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> None,
+            UpdateIncomePayPeriodPage.toString   -> Some(Monthly)
+          )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "1234")
 
-        val result = PayslipAmountPageHarness
-          .setup(payPeriod, cachedAmount)
-          .payslipAmountPage(RequestBuilder.buildFakeGetRequestWithAuth())
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result =
+          SUT.payslipAmountPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -98,14 +131,34 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
       }
 
       "journey cache returns a prepopulated pay slip amount" in {
+        reset(mockJourneyCacheNewRepository)
+
         val cachedAmount = Some("998787")
         val payPeriod = Some(Monthly)
 
-        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> cachedAmount,
+            UpdateIncomePayPeriodPage.toString   -> payPeriod
+          )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "998787")
 
-        val result = PayslipAmountPageHarness
-          .setup(payPeriod, cachedAmount)
-          .payslipAmountPage(request)
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        val result =
+          SUT.payslipAmountPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
         status(result) mustBe OK
 
@@ -122,20 +175,35 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "Redirect user to /income-summary" when {
       "there is no data in the cache" in {
-        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
+        reset(mockJourneyCacheNewRepository)
 
         val cachedAmount = None
         val payPeriod = None
 
-        val controller = PayslipAmountPageHarness
-          .setup(payPeriod, cachedAmount)
-
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-          .thenReturn(
-            Future.successful(Left("failed"))
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> cachedAmount,
+            UpdateIncomePayPeriodPage.toString   -> payPeriod
           )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "998787")
 
-        val result = controller.payslipAmountPage(request)
+        val SUT = createSUT
+        setup(mockUserAnswers)
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
+
+        val result =
+          SUT.payslipAmountPage(request)
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
@@ -143,33 +211,30 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   }
 
   "handlePayslipAmount" must {
-    object HandlePayslipAmountHarness {
-      sealed class HandlePayslipAmountHarness(salary: String) {
-        when(journeyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(Some(Monthly), None)))
-        when(
-          journeyCacheService.cache(
-            meq(Map(UpdateIncomeConstants.TotalSalaryKey -> salary))
-          )(any())
-        )
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        def handlePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdatePayslipAmountController()
-            .handlePayslipAmount()(request)
-      }
-
-      def setup(salary: String = ""): HandlePayslipAmountHarness =
-        new HandlePayslipAmountHarness(salary)
-    }
 
     "redirect the user to payslipDeductionsPage page" when {
       "user entered valid pay" in {
+        reset(mockJourneyCacheNewRepository)
 
         val salary = "£3,000"
-        val result = HandlePayslipAmountHarness
-          .setup(salary)
-          .handlePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth("totalSalary" -> salary))
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "£3,000")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        val result = SUT.handlePayslipAmount(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("totalSalary" -> salary)
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -180,10 +245,24 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect user back to how to payslip page with an error form" when {
       "user input has error" in {
+        reset(mockJourneyCacheNewRepository)
 
-        val result = HandlePayslipAmountHarness
-          .setup()
-          .handlePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "£3,000")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(false)
+
+        val result = SUT.handlePayslipAmount(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -196,47 +275,37 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   }
 
   "taxablePayslipAmountPage" must {
-    object TaxablePayslipAmountPageHarness {
-      sealed class TaxablePayslipAmountPageHarness(payPeriod: Option[String], cachedAmount: Option[String]) {
-
-        val mandatoryKeys: Seq[String] = Seq(UpdateIncomeConstants.IdKey, UpdateIncomeConstants.NameKey)
-        val optionalKeys: Seq[String] = Seq(
-          UpdateIncomeConstants.PayPeriodKey,
-          UpdateIncomeConstants.OtherInDaysKey,
-          UpdateIncomeConstants.TaxablePayKey
-        )
-
-        when(journeyCacheService.collectedJourneyValues(meq(mandatoryKeys), meq(optionalKeys))(any(), any()))
-          .thenReturn(
-            Future.successful(
-              Right(
-                (
-                  Seq[String](employer.id.toString, employer.name),
-                  Seq[Option[String]](payPeriod, None, cachedAmount)
-                )
-              )
-            )
-          )
-
-        def taxablePayslipAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdatePayslipAmountController()
-            .taxablePayslipAmountPage()(request)
-      }
-
-      def setup(payPeriod: Option[String], cachedAmount: Option[String]): TaxablePayslipAmountPageHarness =
-        new TaxablePayslipAmountPageHarness(payPeriod, cachedAmount)
-    }
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
-
-        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
+        reset(mockJourneyCacheNewRepository)
 
         val cachedAmount = Some("9888787")
         val payPeriod = Some(Monthly)
 
-        val result = TaxablePayslipAmountPageHarness
-          .setup(payPeriod, cachedAmount)
-          .taxablePayslipAmountPage(request)
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> cachedAmount,
+            UpdateIncomePayPeriodPage.toString   -> payPeriod
+          )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "998787")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
+
+        val result =
+          SUT.taxablePayslipAmountPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -248,15 +317,17 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val SUT = createSUT
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val controller = new TestIncomeUpdatePayslipAmountController
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Left("failed")))
-
-        val result = controller.taxablePayslipAmountPage(request)
+        val result =
+          SUT.taxablePayslipAmountPage(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -265,39 +336,42 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   }
 
   "handleTaxablePayslipAmount" must {
-    object HandleTaxablePayslipAmountPageHarness {
-      sealed class HandleTaxablePayslipAmountPageHarness() {
-
-        when(journeyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(Some(Monthly), None, Some("4000"))))
-
-        when(
-          journeyCacheService
-            .cache(meq[Map[String, String]](Map(UpdateIncomeConstants.TaxablePayKey -> "3000")))(any())
-        )
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-          Future.successful(
-            Right((Seq[String](employer.id.toString, employer.name), Seq[Option[String]](Some(Monthly), None)))
-          )
-        )
-
-        def handleTaxablePayslipAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdatePayslipAmountController()
-            .handleTaxablePayslipAmount()(request)
-      }
-
-      def setup(): HandleTaxablePayslipAmountPageHarness =
-        new HandleTaxablePayslipAmountPageHarness()
-    }
 
     "redirect the user to bonusPaymentsPage page" when {
       "user entered valid taxable pay" in {
+        reset(mockJourneyCacheNewRepository)
 
-        val result = HandleTaxablePayslipAmountPageHarness
-          .setup()
-          .handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth("taxablePay" -> "3000"))
+        val cachedAmount = Some("4000")
+        val payPeriod = Some(Monthly)
+
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> cachedAmount,
+            UpdateIncomePayPeriodPage.toString   -> payPeriod
+          )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeTaxablePayPage, "3000")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "998787")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        val result = SUT.handleTaxablePayslipAmount(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("taxablePay" -> "3000")
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -308,10 +382,35 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect user back to how to taxablePayslip page" when {
       "user input has error" in {
+        reset(mockJourneyCacheNewRepository)
 
-        val result = HandleTaxablePayslipAmountPageHarness
-          .setup()
-          .handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
+        val cachedAmount = Some("4000")
+        val payPeriod = Some(Monthly)
+
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> cachedAmount,
+            UpdateIncomePayPeriodPage.toString   -> payPeriod
+          )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeTaxablePayPage, "3000")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "998787")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        val result = SUT.handleTaxablePayslipAmount(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -322,12 +421,35 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
-        val controller = new TestIncomeUpdatePayslipAmountController
+        reset(mockJourneyCacheNewRepository)
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("")))
+        val cachedAmount = Some("4000")
+        val payPeriod = Some(Monthly)
 
-        val result = controller.handleTaxablePayslipAmount(RequestBuilder.buildFakePostRequestWithAuth())
+        val mockUserAnswers = UserAnswers(
+          "testSessionId",
+          randomNino().nino,
+          data = Json.obj(
+            UpdateIncomeTotalSalaryPage.toString -> cachedAmount,
+            UpdateIncomePayPeriodPage.toString   -> payPeriod
+          )
+        )
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayPeriodPage, "monthly")
+          .setOrException(UpdateIncomeTaxablePayPage, "3000")
+          .setOrException(UpdateIncomeOtherInDaysPage, "12")
+          .setOrException(UpdateIncomeTotalSalaryPage, "998787")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(false)
+
+        val result = SUT.handleTaxablePayslipAmount(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -336,25 +458,23 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   }
 
   "payslipDeductionsPage" must {
-    object PayslipDeductionsPageHarness {
-      sealed class PayslipDeductionsPageHarness() {
-
-        when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.PayslipDeductionsKey))(any()))
-          .thenReturn(Future.successful(Some("Yes")))
-
-        def payslipDeductionsPage(): Future[Result] =
-          new TestIncomeUpdatePayslipAmountController()
-            .payslipDeductionsPage()(RequestBuilder.buildFakeGetRequestWithAuth())
-      }
-
-      def setup(): PayslipDeductionsPageHarness =
-        new PayslipDeductionsPageHarness()
-    }
     "display payslipDeductions" when {
       "journey cache returns employment name and id" in {
-        val result = PayslipDeductionsPageHarness
-          .setup()
-          .payslipDeductionsPage()
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayslipDeductionsPage, "Yes")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result =
+          SUT.payslipDeductionsPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -365,33 +485,31 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   }
 
   "handlePayslipDeductions" must {
-    object HandlePayslipDeductionsHarness {
-      sealed class HandlePayslipDeductionsHarness() {
-
-        when(journeyCacheService.cache(any())(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(journeyCacheService.flush()(any()))
-          .thenReturn(Future.successful(Done))
-
-        def handlePayslipDeductions(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdatePayslipAmountController()
-            .handlePayslipDeductions()(request)
-      }
-
-      def setup(): HandlePayslipDeductionsHarness =
-        new HandlePayslipDeductionsHarness()
-    }
 
     "redirect the user to taxablePayslipAmountPage page" when {
       "user selected yes" in {
+        reset(mockJourneyCacheNewRepository)
 
-        val result = HandlePayslipDeductionsHarness
-          .setup()
-          .handlePayslipDeductions(RequestBuilder.buildFakePostRequestWithAuth("payslipDeductions" -> "Yes"))
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayslipDeductionsPage, "Yes")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+
+        val result = SUT.handlePayslipDeductions(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payslipDeductions" -> "Yes")
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -404,9 +522,28 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect the user to bonusPaymentsPage page" when {
       "user selected no" in {
-        val result = HandlePayslipDeductionsHarness
-          .setup()
-          .handlePayslipDeductions(RequestBuilder.buildFakePostRequestWithAuth("payslipDeductions" -> "No"))
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayslipDeductionsPage, "No")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+
+        val result = SUT.handlePayslipDeductions(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payslipDeductions" -> "No")
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -417,9 +554,20 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect user back to how to payslipDeductions page" when {
       "user input has error" in {
-        val result = HandlePayslipDeductionsHarness
-          .setup()
-          .handlePayslipDeductions(RequestBuilder.buildFakePostRequestWithAuth())
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, 1)
+          .setOrException(UpdateIncomeNamePage, "name")
+          .setOrException(UpdateIncomePayslipDeductionsPage, "No")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        val result = SUT.handlePayslipDeductions(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+        )
 
         status(result) mustBe BAD_REQUEST
 

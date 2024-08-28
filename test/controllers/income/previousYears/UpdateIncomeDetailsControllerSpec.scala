@@ -16,35 +16,40 @@
 
 package controllers.income.previousYears
 
-import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
+import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito
+import org.mockito.stubbing.ScalaOngoingStubbing
+import pages.TrackSuccessfulJourneyConstantsUpdatePreviousYearPage
+import pages.income._
 import play.api.i18n.Messages
+import play.api.mvc.{ActionBuilder, AnyContent, BodyParser, Request, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.model.TaxYear
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateHistoricIncomeChoiceConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
-import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetailsConfirmationView, UpdateIncomeDetailsDecisionView, UpdateIncomeDetailsView}
+import views.html.incomes.previousYears._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
   private val previousTaxYear = TaxYear().prev
+  val sessionId = "testSessionId"
 
   private def createSUT = new SUT
+  def randomNino(): Nino = new Generator(new Random()).nextNino
 
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val trackingjourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   private class SUT
       extends UpdateIncomeDetailsController(
@@ -56,20 +61,50 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         inject[UpdateIncomeDetailsDecisionView],
         inject[UpdateIncomeDetailsView],
         inject[UpdateIncomeDetailsConfirmationView],
-        trackingjourneyCacheService,
-        journeyCacheService,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
-      )
+      ) {
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+  }
+
+  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    Mockito.reset(journeyCacheService, trackingjourneyCacheService)
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository)
   }
 
   "decision" must {
     "return ok" in {
+      reset(mockJourneyCacheNewRepository)
+
       val SUT = createSUT
-      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
       val result = SUT.decision(previousTaxYear)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -135,12 +170,22 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "details" must {
     "show 'What Do You Want To Tell Us' Page" when {
       "the request has an authorised session with Tax Year" in {
-        val SUT = createSUT
+        reset(mockJourneyCacheNewRepository)
+
         val taxYear = TaxYear().prev.year.toString
-        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomePage, "123")
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, taxYear)
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.previousYears.details.title"))
@@ -151,8 +196,11 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submitDetails" must {
     "redirect to the 'Add Telephone Number' page" when {
       "the form submission is valid" in {
+        reset(mockJourneyCacheNewRepository)
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
         val SUT = createSUT
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitDetails()(
           RequestBuilder
@@ -169,12 +217,13 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "add income details to the journey cache" when {
       "the form submission is valid" in {
+        reset(mockJourneyCacheNewRepository)
+
         val SUT = createSUT
 
         val incomeDetailsFormData = ("employmentDetails", "test details")
-        val incomeDetails = Map("incomeDetails" -> "test details")
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.submitDetails()(
           RequestBuilder
@@ -183,18 +232,26 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         )
 
         status(result) mustBe SEE_OTHER
-        verify(journeyCacheService, times(1)).cache(meq(incomeDetails))(any())
+        verify(mockJourneyCacheNewRepository).set(any())
       }
     }
 
     "return Bad Request" when {
       "the form submission is invalid" in {
-        val SUT = createSUT
-        val employmentDetailsFormData = ("employmentDetails", "")
+        reset(mockJourneyCacheNewRepository)
 
-        when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")))
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomePage, "123")
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        val employmentDetailsFormData = ("employmentDetails", "")
 
         val result = SUT.submitDetails()(
           RequestBuilder
@@ -210,13 +267,22 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "telephoneNumber" must {
     "show the contact by telephone page" when {
       "valid details have been passed" in {
-        val sut = createSUT
+        reset(mockJourneyCacheNewRepository)
 
         val taxYear = TaxYear().prev.year.toString
-        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> taxYear)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
-        val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, taxYear)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "12345678")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
@@ -228,14 +294,19 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submitTelephoneNumber" must {
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
-        val sut = createSUT
-        val expectedCache = Map(
-          UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> "12345678"
-        )
-        when(journeyCacheService.cache(meq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+        reset(mockJourneyCacheNewRepository)
 
-        val result = sut.submitTelephoneNumber()(
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "12345678")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
@@ -251,16 +322,19 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
-        val sut = createSUT
+        reset(mockJourneyCacheNewRepository)
 
-        val expectedCacheWithErasingNumber = Map(
-          UpdatePreviousYearsIncomeConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-          UpdatePreviousYearsIncomeConstants.TelephoneNumberKey   -> ""
-        )
-        when(journeyCacheService.cache(meq(expectedCacheWithErasingNumber))(any()))
-          .thenReturn(Future.successful(expectedCacheWithErasingNumber))
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.NoValue)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "")
 
-        val result = sut.submitTelephoneNumber()(
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
@@ -278,11 +352,19 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
-        val sut = createSUT
-        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        reset(mockJourneyCacheNewRepository)
 
-        val result = sut.submitTelephoneNumber()(
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
@@ -295,12 +377,22 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
-      "there is a form validation error (additional, controller specific constraint)" in {
-        val sut = createSUT
-        val cache = Map(UpdatePreviousYearsIncomeConstants.TaxYearKey -> "2016")
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
-        val tooFewCharsResult = sut.submitTelephoneNumber()(
+      "there is a form validation error (additional, controller specific constraint)" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "1234123412341234123412341234123")
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val tooFewCharsResult = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
@@ -312,7 +404,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
-        val tooManyCharsResult = sut.submitTelephoneNumber()(
+        val tooManyCharsResult = SUT.submitTelephoneNumber()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
@@ -329,10 +421,20 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
+      reset(mockJourneyCacheNewRepository)
+
+      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+        .setOrException(UpdatePreviousYearsIncomePage, "whatYouToldUs")
+        .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "123456789")
+        .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
+
       val SUT = createSUT
-      when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-        Future.successful(Right((Seq[String]("2016", "whatYouToldUs", "Yes"), Seq[Option[String]](Some("123456789")))))
-      )
+      setup(mockUserAnswers)
+
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
 
@@ -341,17 +443,12 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
     }
 
     "redirect to the summary page if a value is missing from the cache " in {
+      reset(mockJourneyCacheNewRepository)
 
       val SUT = createSUT
 
-      when(
-        journeyCacheService.collectedJourneyValues(
-          any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]])
-        )(any(), any())
-      ).thenReturn(
-        Future.successful(Left("An error has occurred"))
-      )
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(None))
 
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -364,59 +461,53 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submit your answers" must {
     "invoke the back end 'previous years income details' service and redirect to the confirmation page" when {
       "the request has an authorised session and a telephone number has been provided" in {
+        reset(mockJourneyCacheNewRepository)
 
-        val sut = createSUT
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(UpdatePreviousYearsIncomePage, "whatYouToldUs")
+          .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "123456789")
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
+          .setOrException(TrackSuccessfulJourneyConstantsUpdatePreviousYearPage, "true")
+
         val incorrectIncome = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String]("1", "whatYouToldUs", "Yes"),
-                Seq[Option[String]](Some("123456789"))
-              )
-            )
-          )
-        )
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
         when(previousYearsIncomeService.incorrectIncome(any(), meq(1), meq(incorrectIncome))(any(), any()))
           .thenReturn(Future.successful("1"))
-        when(
-          trackingjourneyCacheService
-            .cache(meq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
-        val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
         ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation().url
-        verify(journeyCacheService, times(1)).flush()(any())
+        verify(mockJourneyCacheNewRepository).set(any())
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.NoValue)
+          .setOrException(UpdatePreviousYearsIncomePage, "whatYouToldUs")
+          .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
+          .setOrException(TrackSuccessfulJourneyConstantsUpdatePreviousYearPage, "true")
+
+        val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
 
         val sut = createSUT
-        val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String]("1", "whatYouToldUs", "No"),
-                Seq[Option[String]](None)
-              )
-            )
-          )
-        )
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
         when(previousYearsIncomeService.incorrectIncome(any(), meq(1), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
-        when(
-          trackingjourneyCacheService
-            .cache(meq(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -424,7 +515,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         redirectLocation(
           result
         ).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation().url
-        verify(journeyCacheService, times(1)).flush()(any())
+        verify(mockJourneyCacheNewRepository).set(any())
       }
     }
   }

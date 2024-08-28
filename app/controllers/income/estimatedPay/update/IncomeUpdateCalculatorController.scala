@@ -25,7 +25,6 @@ import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -73,7 +72,7 @@ class IncomeUpdateCalculatorController @Inject() (
   private def cacheEmploymentDetails(
     id: Int,
     userAnswers: UserAnswers
-  )(maybeEmployment: Option[Employment])(implicit hc: HeaderCarrier): Future[Map[String, String]] =
+  )(maybeEmployment: Option[Employment]): Future[Map[String, String]] =
     maybeEmployment match {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
@@ -216,19 +215,21 @@ class IncomeUpdateCalculatorController @Inject() (
     (netAmountOpt, employmentNameOpt, idStrOpt) match {
       case (Some(netAmount), Some(_), Some(idStr)) =>
         val id = idStr.toString.toInt
-        incomeService.employmentAmount(nino, id).map { income =>
-          val convertedNetAmount = BigDecimal(netAmount).intValue
-          val employmentAmount = income.copy(newAmount = convertedNetAmount)
+        incomeService
+          .employmentAmount(nino, id)
+          .map { income =>
+            val convertedNetAmount = BigDecimal(netAmount).intValue
+            val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
-          if (employmentAmount.newAmount == income.oldAmount) {
-            Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-          } else {
-            Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
+            if (employmentAmount.newAmount == income.oldAmount) {
+              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+            } else {
+              Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
+            }
           }
-        }.recover {
-          case NonFatal(e) =>
+          .recover { case NonFatal(e) =>
             errorPagesHandler.internalServerError(e.getMessage)
-        }
+          }
 
       case _ =>
         Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url))

@@ -22,7 +22,6 @@ import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypeP
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
@@ -54,8 +53,10 @@ class IncomeUpdateHowToUpdateController @Inject() (
       TaiConstants.IncomeTypeEmployment
     }
 
-  private def cacheEmploymentDetails(id: Int, employmentFuture: Future[Option[Employment]], userAnswers: UserAnswers)(
-    implicit hc: HeaderCarrier
+  private def cacheEmploymentDetails(
+    id: Int,
+    employmentFuture: Future[Option[Employment]],
+    userAnswers: UserAnswers
   ): Future[Map[String, String]] =
     employmentFuture flatMap {
       case Some(employment) =>
@@ -143,7 +144,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
         formData => {
           val updatedAnswers = request.userAnswers.copy(
             data = request.userAnswers.data ++ Json
-              .obj(UpdateIncomeUpdateKeyPage.toString -> formData.howToUpdate.getOrElse(""))
+              .obj(UpdateIncomeUpdateKeyPage.toString -> formData.howToUpdate)
           )
 
           journeyCacheNewRepository.set(updatedAnswers).map { _ =>

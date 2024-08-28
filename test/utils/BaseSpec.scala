@@ -15,7 +15,7 @@
  */
 
 package utils
-import builders.UserBuilder
+import builders.{RequestBuilder, UserBuilder}
 import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.{FakeAuthRetrievals, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
@@ -24,12 +24,14 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
+import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -53,6 +55,14 @@ trait BaseSpec
   protected lazy val mockAuthJourney: AuthJourney = mock[AuthJourney]
 
   val nino: Nino = FakeAuthRetrievals.nino
+
+  val userAnswers: UserAnswers = UserAnswers(
+    RequestBuilder.uuid,
+    nino.nino,
+    Json.obj(
+      "end-employment-employmentId" -> 1
+    )
+  )
 
   protected implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()

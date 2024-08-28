@@ -29,7 +29,6 @@ import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
@@ -45,7 +44,6 @@ class IncomeUpdateIrregularHoursController @Inject() (
   authenticate: AuthJourney,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   mcc: MessagesControllerComponents,
   editSuccess: EditSuccessView,
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
@@ -162,25 +160,30 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val nino = user.nino
 
       val updateJourneyCompletion: String => Future[Map[String, String]] =
-        (_: String) => journeyCacheNewRepository.set(
-          request.userAnswers.set(TrackingJourneyConstantsEstimatedPayPage, "true").get
-        ).map(_ => Map.empty[String, String])
+        (_: String) =>
+          journeyCacheNewRepository
+            .set(
+              request.userAnswers.set(TrackingJourneyConstantsEstimatedPayPage, "true").get
+            )
+            .map(_ => Map.empty[String, String])
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) =>
-        journeyCacheNewRepository.set(
-          request.userAnswers.set(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay).get
-        ).map { _ =>
-          Ok(editSuccess(incomeName, incomeId.toInt))
-        }
+        journeyCacheNewRepository
+          .set(
+            request.userAnswers.set(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay).get
+          )
+          .map { _ =>
+            Ok(editSuccess(incomeName, incomeId.toInt))
+          }
 
       val userAnswers = request.userAnswers
       val incomeName = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
       val newPay = userAnswers.get(UpdateIncomeIrregularAnnualPayPage).getOrElse("")
-      val incomeId = userAnswers.get(UpdateIncomeIdPage).getOrElse("")
+      val incomeId = userAnswers.get(UpdateIncomeIdPage)
 
       (for {
-        _ <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
-        _ <- updateJourneyCompletion(incomeId.toString)
+        _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
+        _      <- updateJourneyCompletion(incomeId.toString)
         result <- cacheAndRespond(incomeName, incomeId.toString, newPay)
       } yield result).recover { case NonFatal(e) =>
         errorPagesHandler.internalServerError(e.getMessage)

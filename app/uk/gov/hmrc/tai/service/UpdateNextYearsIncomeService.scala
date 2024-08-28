@@ -33,20 +33,18 @@ import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateNextYearsIncomeService @Inject() (
-                                               journeyCacheNewRepository: JourneyCacheNewRepository,
-
-                                               @Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
+  journeyCacheNewRepository: JourneyCacheNewRepository,
+  @Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService
 )(implicit ec: ExecutionContext) {
 
-  def isEstimatedPayJourneyCompleteForEmployer(id: Int, userAnswers: UserAnswers): Future[Boolean] = {
+  def isEstimatedPayJourneyCompleteForEmployer(id: Int, userAnswers: UserAnswers): Future[Boolean] =
     journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).map {
       case Some(userAnswers) => userAnswers.data.keys.contains(UpdateNextYearsIncomeSuccessPage(id))
-      case None => false
+      case None              => false
     }
-  }
 
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
     successfulJourneyCacheService.currentCache.map(_ contains UpdateNextYearsIncomeConstants.Successful)
@@ -75,31 +73,34 @@ class UpdateNextYearsIncomeService @Inject() (
   def amountKey(employmentId: Int): String =
     s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
-  def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Boolean] = {
     val value = convertCurrencyToInt(Some(newValue)).toString
     val updatedAnswers = userAnswers.setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), value)
     journeyCacheNewRepository.set(updatedAnswers)
   }
 
-  def getNewAmount(employmentId: Int, userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[String, Int]] = {
+  def getNewAmount(employmentId: Int, userAnswers: UserAnswers): Future[Either[String, Int]] = {
     val key = amountKey(employmentId)
 
     userAnswers.get(UpdateNextYearsIncomeNewAmountPage(employmentId)) match {
       case Some(value) => Future.successful(Right(value.toInt))
-      case None => Future.successful(Left(s"Value for $key not found"))
+      case None        => Future.successful(Left(s"Value for $key not found"))
     }
   }
 
-  def submit(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Done] =
+  def submit(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Done] =
     for {
-      _         <- get(employmentId, nino)
+      _ <- get(employmentId, nino)
       newAmount <- getNewAmount(employmentId, userAnswers).flatMap {
-        case Right(amount) => Future.successful(amount)
-        case Left(error) => Future.failed(new Exception(error))
-      }
+                     case Right(amount) => Future.successful(amount)
+                     case Left(error)   => Future.failed(new Exception(error))
+                   }
       _ <- journeyCacheNewRepository.set(
-        userAnswers.setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
-      )
+             userAnswers.setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
+           )
       _ <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
     } yield Done
 

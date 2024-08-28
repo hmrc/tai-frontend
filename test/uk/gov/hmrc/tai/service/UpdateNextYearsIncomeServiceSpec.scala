@@ -20,6 +20,7 @@ import org.apache.pekko.Done
 import controllers.FakeTaiPlayApplication
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
@@ -72,9 +73,11 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   class UpdateNextYearsIncomeServiceTest
       extends UpdateNextYearsIncomeService(
+        mockJourneyCacheNewRepository,
         journeyCacheService,
         successfulJourneyCacheService,
         employmentService,
@@ -249,7 +252,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         Future.successful(expected)
       )
 
-      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId)
+      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, userAnswers)
 
       result.futureValue mustBe expected
 
@@ -267,7 +270,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
         .thenReturn(Future.successful(Right(employmentAmount)))
 
-      service.submit(employmentId, nino).futureValue mustBe Done
+      service.submit(employmentId, nino, userAnswers).futureValue mustBe Done
 
       verify(
         taxAccountService,
@@ -286,7 +289,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
         .thenReturn(Future.successful(Right(employmentAmount)))
 
-      service.submit(employmentId, nino).futureValue mustBe Done
+      service.submit(employmentId, nino, userAnswers).futureValue mustBe Done
 
       verify(successfulJourneyCacheService, times(1)).cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
       verify(successfulJourneyCacheService, times(1))
@@ -301,7 +304,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
         .thenReturn(Future.successful(Left(errorMessage)))
 
-      whenReady(service.submit(employmentId, nino).failed) { err =>
+      whenReady(service.submit(employmentId, nino, userAnswers).failed) { err =>
         err.getMessage mustBe errorMessage
       }
     }

@@ -38,7 +38,7 @@ class IncomeUpdateBonusController @Inject() (
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
   bonusPaymentAmount: BonusPaymentAmountView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -48,7 +48,7 @@ class IncomeUpdateBonusController @Inject() (
       IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
       Future.successful(request.userAnswers.get(UpdateIncomeBonusPaymentsPage)),
       bonusPaymentBackUrl(request.userAnswers)
-      ).mapN {
+    ).mapN {
       case (Right(incomeSource), Some(bonusPayment), backUrl) =>
         val form = BonusPaymentsForm.createForm.fill(YesNoForm(Some(bonusPayment)))
         Ok(bonusPayments(form, incomeSource, backUrl))
@@ -95,7 +95,7 @@ class IncomeUpdateBonusController @Inject() (
     (
       IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
       Future.successful(request.userAnswers.get(UpdateIncomeBonusOvertimeAmountPage))
-      ).mapN {
+    ).mapN {
       case (Right(incomeSource), bonusOvertimeAmount) =>
         val form = BonusOvertimeAmountForm.createForm.fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
         Ok(bonusPaymentAmount(form, incomeSource))
@@ -133,15 +133,16 @@ class IncomeUpdateBonusController @Inject() (
         )
   }
 
-  private def bonusPaymentBackUrl(userAnswers: UserAnswers): Future[String] = {
+  private def bonusPaymentBackUrl(userAnswers: UserAnswers): Future[String] =
     Future.successful {
       userAnswers.get(UpdateIncomeTaxablePayPage) match {
         case None =>
           controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
         case _ =>
-          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .taxablePayslipAmountPage()
+            .url
       }
     }
-  }
 
 }

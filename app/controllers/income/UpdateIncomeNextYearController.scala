@@ -59,14 +59,13 @@ class UpdateIncomeNextYearController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with I18nSupport with Logging {
 
-  def onPageLoad(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
-    implicit request =>
-      preAction {
-        updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(employmentId, request.userAnswers).map {
-          case true  => Redirect(routes.UpdateIncomeNextYearController.duplicateWarning(employmentId).url)
-          case false => Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url)
-        }
+  def onPageLoad(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    preAction {
+      updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(employmentId, request.userAnswers).map {
+        case true  => Redirect(routes.UpdateIncomeNextYearController.duplicateWarning(employmentId).url)
+        case false => Redirect(routes.UpdateIncomeNextYearController.start(employmentId).url)
       }
+    }
   }
 
   def duplicateWarning(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
@@ -86,11 +85,11 @@ class UpdateIncomeNextYearController @Inject() (
   }
 
   private def duplicateWarningGet(
-                                   employmentId: Int,
-                                   nino: Nino,
-                                   userAnswers: UserAnswers,
-                                   resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result
-                                 )(implicit hc: HeaderCarrier, messages: Messages): Future[Result] =
+    employmentId: Int,
+    nino: Nino,
+    userAnswers: UserAnswers,
+    resultFunc: (Int, DuplicateSubmissionEstimatedPay) => Result
+  )(implicit hc: HeaderCarrier, messages: Messages): Future[Result] =
     updateNextYearsIncomeService.getNewAmount(employmentId, userAnswers).flatMap {
       case Right(newAmount) =>
         updateNextYearsIncomeService.get(employmentId, nino) map { model =>

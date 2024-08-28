@@ -19,16 +19,19 @@ package controllers.income.estimatedPay.update
 import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
+import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import org.mockito.stubbing.ScalaOngoingStubbing
+import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -37,60 +40,82 @@ import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursVie
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val sessionId = "testSessionId"
+
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+  def createSUT = new SUT
 
   val incomeService: IncomeService = mock[IncomeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  class TestIncomeUpdateIrregularHoursController
-      extends IncomeUpdateIrregularHoursController(
-        mockAuthJourney,
-        incomeService,
-        taxAccountService,
-        estimatedPayJourneyCompletionService,
-        mcc,
-        inject[EditSuccessView],
-        inject[EditIncomeIrregularHoursView],
-        inject[ConfirmAmountEnteredView],
-        journeyCacheService,
-        inject[ErrorPagesHandler]
-      ) {
-    when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
-      .thenReturn(Future.successful(Right(employer.id)))
-    when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
-      .thenReturn(Future.successful(Right(employer.name)))
+  class SUT
+    extends IncomeUpdateIrregularHoursController(
+      mockAuthJourney,
+      incomeService,
+      taxAccountService,
+      mcc,
+      inject[EditSuccessView],
+      inject[EditIncomeIrregularHoursView],
+      inject[ConfirmAmountEnteredView],
+      mockJourneyCacheNewRepository,
+      inject[ErrorPagesHandler]
+    ) {
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
-  "editIncomeIrregularHours" must {
-    object EditIncomeIrregularHoursHarness {
+  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+                                   request: Request[A],
+                                   block: DataRequest[A] => Future[Result]
+                                 ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
 
-      sealed class EditIncomeIrregularHoursHarness(taxCodeIncome: Option[TaxCodeIncome]) {
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
 
-        when(incomeService.latestPayment(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(Right(taxCodeIncome)))
-
-        def editIncomeIrregularHours(
-          incomeNumber: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]
-        ): Future[Result] =
-          new TestIncomeUpdateIrregularHoursController()
-            .editIncomeIrregularHours(incomeNumber)(request)
-      }
-
-      def setup(taxCodeIncome: Option[TaxCodeIncome]): EditIncomeIrregularHoursHarness =
-        new EditIncomeIrregularHoursHarness(taxCodeIncome)
+      override protected def executionContext: ExecutionContext = ec
     }
+
+  private val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository)
+
+    when(incomeService.latestPayment(any(), any())(any(), any()))
+      .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
+    when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
+      .thenReturn(Future.successful(Right(taxCodeIncomes)))
+  }
+
+  private val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+  )
+
+  "editIncomeIrregularHours" must {
     "respond with OK and show the irregular hours edit page" in {
 
       val result = EditIncomeIrregularHoursHarness

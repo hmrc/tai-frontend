@@ -56,35 +56,39 @@ class IncomeUpdateEstimatedPayController @Inject() (
 
   private val logger = Logger(this.getClass)
 
-  def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val userAnswers: UserAnswers = request.userAnswers
+  def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
+    implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val userAnswers: UserAnswers = request.userAnswers
 
-    val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-    val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
+      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
 
-    (incomeNameOpt, incomeTypeOpt) match {
-      case (Some(incomeName), Some(incomeType)) =>
-        taxAccountService.taxAccountSummary(user.nino, TaxYear()).map { taxAccountSummary =>
-          val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-          Ok(
-            estimatedPayLandingPage(
-              incomeName,
-              empId,
-              totalEstimatedIncome,
-              incomeType == TaiConstants.IncomeTypePension,
-              appConfig
-            )
-          )
-        }.recover { case e: Exception =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
+      (incomeNameOpt, incomeTypeOpt) match {
+        case (Some(incomeName), Some(incomeType)) =>
+          taxAccountService
+            .taxAccountSummary(user.nino, TaxYear())
+            .map { taxAccountSummary =>
+              val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+              Ok(
+                estimatedPayLandingPage(
+                  incomeName,
+                  empId,
+                  totalEstimatedIncome,
+                  incomeType == TaiConstants.IncomeTypePension,
+                  appConfig
+                )
+              )
+            }
+            .recover { case e: Exception =>
+              errorPagesHandler.internalServerError(e.getMessage)
+            }
 
-      case _ =>
-        val errorMessage = "Mandatory journey values missing"
-        logger.warn(errorMessage)
-        Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-    }
+        case _ =>
+          val errorMessage = "Mandatory journey values missing"
+          logger.warn(errorMessage)
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      }
   }
 
   private def isCachedAmountSameAsEnteredAmount(
@@ -121,7 +125,8 @@ class IncomeUpdateEstimatedPayController @Inject() (
           )
 
           val isBonusPayment = cacheMap.getOrElse(UpdateIncomeConstants.BonusPaymentsKey, "") == "Yes"
-          val updatedAnswers = request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
+          val updatedAnswers =
+            request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
 
           journeyCacheNewRepository.set(updatedAnswers) map { _ =>
             val viewModel = EstimatedPayViewModel(
