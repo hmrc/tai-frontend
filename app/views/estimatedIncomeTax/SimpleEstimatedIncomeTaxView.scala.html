@@ -57,12 +57,12 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-!-display-inline-block inner-block">
-                <div class="soft--top flush--bottom">
+                <div class="soft--top govuk-!-margin-bottom-0">
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-one-half">
                             <h2 class="govuk-heading-m govuk-!-margin-bottom-8">
                                 @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                                <span id="total-estimated-income" class="govuk-!-display-block govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
+                                <span id="total-estimated-income" class="govuk-!-display-block govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-body govuk-!-margin-top-5">
                                     @pounds(viewModel.incomeEstimate)
                                 </span>
                             </h2>
@@ -70,7 +70,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
                         <div class="govuk-grid-column-one-half">
                             <h2 class="govuk-heading-m">
                                 @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                <span id="income-tax-estimate" class="govuk-!-display-block govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark govuk-body govuk-!-margin-top-5">
+                                <span id="income-tax-estimate" class="govuk-!-display-block govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-body govuk-!-margin-top-5">
                                     @pounds(viewModel.incomeTaxEstimate)
                                 </span>
                             </h2>

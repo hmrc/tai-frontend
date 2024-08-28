@@ -57,7 +57,7 @@
         <div>
             @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeChangeReasons)
         </div>
-        <div class="tax-code-change margin-bottom-xlarge">
+        <div class="tax-code-change govuk-grid-row">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
         </div>
         <div class="govuk-!-margin-bottom-5">
@@ -119,15 +119,15 @@
 }
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
-    <div class="column-half tax-code-change__previous">
-        <h2 class="govuk-heading-m section-title ">@messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
+    <div class="govuk-grid-column-one-half tax-code-change__previous">
+        <h2 class="govuk-heading-m border-bottom-1px govuk-!-padding-bottom-2">@messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
         @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.previous, "previous")
         }
     </div>
 
-    <div class="column-half tax-code-change__current">
-        <h2 class="govuk-heading-m section-title ">@messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
+    <div class="govuk-grid-column-one-half tax-code-change__current">
+        <h2 class="govuk-heading-m border-bottom-1px govuk-!-padding-bottom-2">@messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
         @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.current, "current")
         }

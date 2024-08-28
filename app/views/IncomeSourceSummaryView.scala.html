@@ -42,7 +42,7 @@
     }
 }
 @backLinkToTaxAccountSummary= {
-    <p class="flush--bottom">
+    <p class="govuk-!-margin-bottom-0">
     @link(
         id=Some("taxableIncomeLink"),
         url=routes.TaxAccountSummaryController.onPageLoad().url,
@@ -128,7 +128,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-                <h2 class="govuk-heading-m flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
+                <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="govuk-body break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
 
             @if(model.isUpdateInProgress){
@@ -148,7 +148,7 @@
         </div>
 
         <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-m flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
+            <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.incomeReceivedToDate")</h2>
 
                 @if(model.rtiAvailable) {
                         <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
@@ -172,7 +172,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-m flush--top">@messages("tai.taxCode")</h2>
+            <h2 class="govuk-heading-m">@messages("tai.taxCode")</h2>
             <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.taxCode</span>
             <p>
                 @link(
@@ -183,7 +183,7 @@
         </div>
 
         <div class="govuk-grid-column-one-half">
-            <h3 class="govuk-heading-m flush--top">@messages("tai.income.details.ERN")</h3>
+            <h3 class="govuk-heading-m">@messages("tai.income.details.ERN")</h3>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
                 @{model.taxDistrictNumber}/@{model.payeNumber}
             </p>
@@ -195,10 +195,10 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             @if(model.isPension){
-            <h2 class="govuk-heading-m flush--top">@messages("tai.pensionNumber")</h2>
+            <h2 class="govuk-heading-m">@messages("tai.pensionNumber")</h2>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.pensionOrPayrollNumber</p>
             } else {
-            <h2 class="govuk-heading-m flush--top">@messages("tai.payRollNumber")</h2>
+            <h2 class="govuk-heading-m">@messages("tai.payRollNumber")</h2>
             <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.pensionOrPayrollNumber</p>
             }
         </div>

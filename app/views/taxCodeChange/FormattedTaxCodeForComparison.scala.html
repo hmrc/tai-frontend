@@ -21,11 +21,11 @@
 
 @(taxCodeRecord: TaxCodeRecord, identifier: String, scottishTaxRateBands: Map[String, BigDecimal], appConfig: ApplicationConfig)(implicit messages: Messages)
 
-<div class="tax-code-change__pod">
-    <h3 class="tax-code-change__employment-heading govuk-heading-l flush--top flush--bottom carry-over">@taxCodeRecord.employerName</h3>
+<div class="border-bottom-1px govuk-!-margin-bottom-6">
+    <h3 class="govuk-heading-l govuk-!-margin-top-0 govuk-!-margin-bottom-0 carry-over">@taxCodeRecord.employerName</h3>
 
-    <div class="tax-code-change__payroll break-word govuk-body"> @taxCodeRecordPayrollHtml(taxCodeRecord)</div>
-    <div class="tax-code-change__date govuk-heading-s flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
+    <div class="tax-code-change__payroll govuk-body"> @taxCodeRecordPayrollHtml(taxCodeRecord)</div>
+    <div class="tax-code-change__date govuk-heading-s">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
     <div class="tax-code-change__tax-code govuk-heading-l">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
 
     @taxCodeRecordExplanation(taxCodeRecord, identifier)

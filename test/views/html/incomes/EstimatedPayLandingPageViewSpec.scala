@@ -47,7 +47,7 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
   }
 
   "contain the correct content when income is from pension" in {
-    val testView: Html = estimatedPayLandingPage(employerName, empId, "", isPension = true, appConfig)
+    val testView: Html = estimatedPayLandingPage(employerName, empId, isPension = true, appConfig)
     doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
     doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
     doc(testView) must haveLinkWithUrlWithID("updatePension", appConfig.incomeFromEmploymentPensionLinkUrl)
@@ -56,5 +56,5 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
     )
   }
 
-  override def view: Html = estimatedPayLandingPage(employerName, empId, "", isPension = false, appConfig)
+  override def view: Html = estimatedPayLandingPage(employerName, empId, isPension = false, appConfig)
 }

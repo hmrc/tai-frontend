@@ -112,7 +112,7 @@
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYear().next.start)}")</p>
 
 
-                <ul class="list list-bullet margin-bottom-large">
+                <ul class="list list-bullet govuk-!-margin-bottom-6">
                     <li>
                         @link(
                             id = Some("companyBenefitsLink"),
@@ -142,7 +142,7 @@
                 </ul>
             </div>
 
-            <p class="flush--top govuk-body">
+            <p class="govuk-body govuk-!-margin-bottom-8">
                 @link(
                 id=Some("returnToPAYEIncomeOverviewLink"),
                 url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url,

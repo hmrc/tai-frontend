@@ -60,7 +60,7 @@ messages: Messages)
 
         <div class="govuk-!-display-inline-block inner-block" id="lastTaxYear">
             @if(!viewModel.hasEmploymentsOrPensions) {
-                <div class="flush--bottom soft--bottom" id="rtiDown">
+                <div class="govuk-!-margin-bottom-0 soft--bottom" id="rtiDown">
                     <p id="rtiDownMessage">@messages("tai.rti_down_message")</p>
                     <p id="rtiDownContact">@messages("tai.rti_down_message_contact")</p>
                 </div>
@@ -131,9 +131,9 @@ messages: Messages)
 
             @for((employment, idx) <- pair zip (LazyList.from(pidx))) {
 
-                <div id="@incomeType@idx" class="subsection flush--top @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
+                <div id="@incomeType@idx" class="subsection @if(pair.length==1){column-full govuk-grid-column-full}else{column-one-half govuk-grid-column-one-half}">
                     <h3 class="govuk-heading-l carry-over">@employment.name</h3>
-                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold faded-text-dark ">
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold ">
                         <span>@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
 
@@ -162,7 +162,7 @@ messages: Messages)
                         }
                     </p>
 
-                    <p class="flush--top govuk-body">
+                    <p class="govuk-body">
                         @link(
                             id = Some(s"${incomeType}${idx}-checkDetailsLink"),
                             url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),

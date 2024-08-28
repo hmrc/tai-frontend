@@ -24,7 +24,6 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 import views.html.IncomeTaxSummaryView
 
 import javax.inject.{Inject, Singleton}
@@ -47,7 +46,6 @@ class TaxAccountSummaryController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
-    val year = TaxYear()
 
     auditService
       .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
@@ -56,17 +54,8 @@ class TaxAccountSummaryController @Inject() (
       .taxAccountSummary(nino, TaxYear())
       .flatMap { taxAccountSummary =>
         for {
-          Right(taxCodeIncomes) <- taxAccountService.taxCodeIncomes(nino, year)
-          scottishTaxRateBands  <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
-          vm                    <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
-        } yield {
-          val taxCodeIncomesByTaxCode =
-            taxCodeIncomes.groupBy(seq => (seq.taxCode, seq.employmentId)).map { case ((taxCode, maybeEmpId), seq) =>
-              taxCode -> TaxCodeViewModel(seq, scottishTaxRateBands, maybeEmpId, appConfig)
-            }
-
-          Ok(incomeTaxSummary(vm, taxCodeIncomesByTaxCode, appConfig))
-        }
+          vm <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
+        } yield Ok(incomeTaxSummary(vm, appConfig))
       }
       .recover {
         case _: NotFoundException =>

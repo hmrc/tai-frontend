@@ -36,7 +36,7 @@ user: controllers.auth.AuthedUser)
         </header>
 
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-            <h2 class="govuk-error-summary__title flush--top" >
+            <h2 class="govuk-error-summary__title" >
                 @messages("tai.estimatedPay.error.incorrectTaxableIncome.errorTitle")
             </h2>
             <p class="govuk-body">@messages("tai.estimatedPay.error.incorrectTaxableIncome.description", MoneyPounds(payYTD, 0, true).quantity, DateHelper.monthOfYear(Dates.formatDate(payDate))) </p>

@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountComparisonViewModel
 @(model: TaxFreeAmountComparisonViewModel)(implicit messages: Messages)
 
-<h2 class="govuk-heading-l govuk-!-margin-top-8" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
+<h2 class="govuk-heading-l govuk-!-margin-top-8">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
 
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
 
@@ -205,7 +205,7 @@
         <tbody class="govuk-table__body">
             @for(row <- model.deductions.deductions) {
                 <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__cell table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</th>
+                    <th scope="row" class="govuk-table__cell">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</th>
                     @for((deduction, itemIndex) <- row.values zip (LazyList.from(1))) {
                         @{itemIndex match {
                             case 1 =>

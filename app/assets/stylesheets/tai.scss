@@ -3,60 +3,10 @@ $govuk-include-default-font-face: false;
 @import 'base/layout';
 @import 'modules/print';
 @import 'modules/printSCA';
-@import 'modules/navigation';
 @import 'modules/tax_bar';
 @import 'modules/card';
-@import 'modules/tax_code_change';
-@import "modules/cy-plus-one-income-tax-comparison";
 
 
-.income-data {
-  .income-data-input {
-     width: 100%
-   }
-}
-
-.grid-wrapper{
-  margin-left:-15px;
-  margin-right:-15px;
-}
-
-.light-grey-change{
-  background-color: #dee0e2;
-  margin: 0 0 35px 0;
-  padding:15px 20px;
-}
-
-.button--link-style:disabled:hover{
-  background-color: #fff;
-  opacity: 1;
-}
-
-.margin-bottom-medium {
-  margin-bottom: 20px;
-}
-
-.margin-bottom-large {
-  margin-bottom: 30px;
-}
-
-.heading-xlarge.heading-mobile-responsive{
-  $mobile: 768px;
-  $mobile-small: 641px;
-
-  @media(min-width: $mobile-small){
-    margin-top: .125em;
-    font-size: 48px;
-    line-height: 1.04167;
-  }
-
-  @media (max-width: $mobile) {
-    font-size: 36px;
-  }
-  @media (max-width: $mobile-small) {
-    font-size: 25px;
-  }
-}
 
 
 @media (max-width: 768px) {
@@ -65,31 +15,11 @@ $govuk-include-default-font-face: false;
  }
 }
 
-.govuk-box-highlight {
-  .heading-large {
-    font-size: 36px;
-    margin: 0;
 
-    $tablet: 955px;
-    $mobile: 768px;
-    $mobile-small: 641px;
-    @media (max-width: $tablet) {
-      font-size: 28px;
-    }
-    @media (max-width: $mobile) {
-      font-size: 22px;
-    }
-    @media (max-width: $mobile-small) {
-      font-size: 19px;
-    }
-    @media(max-width: 355px){
-      font-size: 17px
-    }
+@media(min-width:641px) {
+  .side-navigation {
+    margin-left:40px;
   }
-}
-
-.validation-error__inline-error {
-    font-size: 16px;
 }
 
 .carry-over{
@@ -104,51 +34,10 @@ $govuk-include-default-font-face: false;
   hyphens: none;
 }
 
-.banner-panel-close {
-    display: none;
+.border-bottom-1px {
+  border-bottom: 1px solid #ccc;
 }
 
-@media (max-width: 640px) {
-    #full-width-banner {
-        display: none;
-    }
-}
-
-.tai-progress-panel {
-  background-color: #005ea5;
-  color: #fff;
-  margin: 15px 0 20px 0;
-  padding: 10px 5px 5px 10px;
-  clear: both;
-}
-
-.tai-progress-panel a {
-  color: #fff;
-}
-
-.tai-progress-panel a:hover {
-  text-decoration: none;
-}
-
-.tai-progress-panel p {
-  margin-bottom: 0;
-}
-
-#incomeSummary-banner-heading{
-  margin-bottom: 0;
-}
-
-.tai-detail-large {
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 32px;
-  color: #4B5053;
-}
-
-.govuk-details {
-    padding: 1px;
-    margin: 1px;
-}
 
 .anchor-webchat {
   position: fixed;
@@ -157,60 +46,6 @@ $govuk-include-default-font-face: false;
   z-index: 9999;
 }
 
-.tax-code-heading {
-  font-size: 30px;
-}
-
-.tax-free-amount-table-heading, .tax-free-amount-table-heading {
-    font-weight: normal;
-}
-
-#updateEstimatedPayTotalIncome {
-    display: none;
-}
-
-#updateEstimatedPayLink {
-    display: none;
-}
-
-#incomeTaxSummaryTotalEstimatedIncome {
-    display: none;
-}
-
-#radioGroupLegendMain {
-    margin-bottom: 0;
-    margin-top: 0.25em;
-}
-
-#howOftenPanel {
- margin-left: 1em;
-}
-
-.banner-links {
-    color: #005ea5;
-}
-
-#headingInLabel {
-    display: table;
-    table-layout: fixed;
-    width: 100%;
-
-    .form-label{
-        font-weight: 700;
-        text-transform: none;
-        margin-top: 0.125em;
-        font-size: 48px;
-        line-height: 1.04167;
-    }
-
-    .heading-secondary {
-        display: table-header-group;
-        @media (min-width: 641px) {
-            font-size: 27px;
-            line-height: 1.11111;
-        }
-    }
-}
 
 div.print-banner {
   display: none;
@@ -234,81 +69,11 @@ body.printable-page.js-enabled .print-this {
   border-bottom: 1px solid #b1b4b6;
 }
 
-
-.flush {
-
-  margin: 0!important;
-}
-
-
-
-.flush--bottom {
-  margin-bottom: 0 !important;
-}
-
-#attorneyBanner {
-
-  z-index: 999;
-  border-left: 3px solid #005ea5;
-  background-color: #def;
-  margin: 0;
-  padding: 0.6em 0em 0.5em 0em;
-  max-width: 960px;
-  padding-left: 1em;
-
-}
-
-
-div.pta-attorney-banner__text {
-display: inline-block;
-}
-
- a.pta-attorney-banner__link {
-  float: right;
-   padding-right: 1em;
-
-}
-
 .only-visible-on-print {
     display:none;
     visibility: hidden
 
 }
-
-
-.js-visible-back {
-
-display: none;
-visibility: hidden;
-}
-
-
-body.js-enabled .js-visible-back {
-
-  display: block;
-  visibility: visible;
-  }
-
-
-
-
-.custom-align .govuk-grid-column-one-quarter {
-  width: 25%!important;
-  float:left!important;
-}
-
-
-.custom-align .govuk-grid-column-three-quarters {
-  width: 75%!important;
-  float:right!important;
-}
-
-#pensionSuccessConfirmationTitle {
-  font-size: 2.3rem!important;
-  text-align: center!important;
-}
-
-
 
 header + .hmrc-user-research-banner {
   top: -10px;
@@ -335,11 +100,6 @@ header + .hmrc-user-research-banner {
 .print-this__link:hover {
   text-decoration-thickness: max(3px);
 }
-
-.govuk-input--width-12 {
-    width:170px;
-}
-
 
 #iForms  h2 {
   font-family: GDS Transport,arial,sans-serif;
@@ -369,64 +129,7 @@ header + .hmrc-user-research-banner {
     font-size: 16px;
   }
 
-
-
 }
-
-
-html:lang(en) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li,
-html:lang(cy) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li {
-
-  a {
-    color: #B1B4B6;
-  }
-}
-
-html:lang(en) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a[lang=en] {
-  color: #fff;
-  &:focus {
-    color: #000;
-  }
-
-}
-
-html:lang(cy) .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a[lang=cy] {
-  color: #fff;
-  &:focus {
-    color: #000;
-  }
-}
-
-html .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  color: #fff;
-}
-
-html .hmrc-header.hmrc-header--with-additional-navigation .hmrc-language-select ul.hmrc-language-select__items li a:focus {
-  color:#000;
-}
-
-//
-//// underline on hover
-//html:lang(en) ul.hmrc-language-select__items li a[lang=en]:hover,
-//html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:hover {
-//  text-decoration: underline!important;
-//  text-decoration-thickness: 3px!important;
-//}
-
-// background on focus
-html:lang(en) ul.hmrc-language-select__items li a[lang=en]:focus,
-html:lang(cy) ul.hmrc-language-select__items li a[lang=en]:focus {
-  background-color: #fd0;
-  color: #000;
-  box-shadow: 0 -2px #fd0,0 4px #0b0c0c;
-  text-decoration: none!important;
-  outline: 3px solid rgba(0,0,0,0);
-}
-
-
-
 
 .flex-container {
   display: -ms-flexbox;
