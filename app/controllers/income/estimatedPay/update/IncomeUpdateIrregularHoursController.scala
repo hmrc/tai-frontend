@@ -163,7 +163,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
         (_: String) =>
           journeyCacheNewRepository
             .set(
-              request.userAnswers.set(TrackingJourneyConstantsEstimatedPayPage, "true").get
+              request.userAnswers.set(TrackingJourneyConstantsEstimatedPayPage(employmentId), "true").get
             )
             .map(_ => Map.empty[String, String])
 

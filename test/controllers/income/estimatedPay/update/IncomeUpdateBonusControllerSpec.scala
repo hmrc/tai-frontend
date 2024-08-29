@@ -16,27 +16,35 @@
 
 package controllers.income.estimatedPay.update
 
-import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import controllers.auth.{AuthedUser, DataRequest}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.stubbing.ScalaOngoingStubbing
+import pages.income.{UpdateIncomeBonusOvertimeAmountPage, UpdateIncomeBonusPaymentsPage, UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTaxablePayPage}
 import play.api.data.FormBinding.Implicits.formBinding
-import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.{BonusPaymentAmountView, BonusPaymentsView}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+
+  val empId: Int = 1
+  val sessionId: String = "testSessionId"
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
@@ -45,44 +53,78 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
   private val bonusPaymentsView = inject[BonusPaymentsView]
   private val bonusPaymentAmountView = inject[BonusPaymentAmountView]
 
-  class TestIncomeUpdateBonusController(maybeTaxablePayKey: Option[String] = Some("taxablePay"))
+  class SUT
       extends IncomeUpdateBonusController(
         mockAuthJourney,
         mcc,
         bonusPaymentsView,
         bonusPaymentAmountView,
-        mockJourneyCacheNewRepository.get
+        mockJourneyCacheNewRepository
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
-    when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.TaxablePayKey))(any()))
-      .thenReturn(Future.successful(maybeTaxablePayKey))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+  }
+
+  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository)
   }
 
   "bonusPaymentsPage" must {
     object BonusPaymentsPageHarness {
-      sealed class BonusPaymentsPageHarness(cachedAmount: String) {
-        when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.BonusPaymentsKey))(any()))
-          .thenReturn(Future.successful(Some(cachedAmount)))
+      sealed class BonusPaymentsPageHarness {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeTaxablePayPage, "taxablePay")
+          .setOrException(UpdateIncomeBonusPaymentsPage, "1231231")
+
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def bonusPaymentsPage(
-          request: FakeRequest[AnyContentAsFormUrlEncoded],
-          maybeTaxablePayKey: Option[String] = Some("taxablePay")
+          request: FakeRequest[AnyContentAsFormUrlEncoded]
         ): Future[Result] =
-          new TestIncomeUpdateBonusController(maybeTaxablePayKey)
+          new SUT()
             .bonusPaymentsPage()(request)
       }
 
-      def setup(cachedAmount: String): BonusPaymentsPageHarness =
-        new BonusPaymentsPageHarness(cachedAmount)
+      def harnessSetup: BonusPaymentsPageHarness =
+        new BonusPaymentsPageHarness
     }
 
     "display bonusPayments with back link to deductions page" in {
       val cachedAmount = "1231231"
 
-      val result = BonusPaymentsPageHarness
-        .setup(cachedAmount)
-        .bonusPaymentsPage(fakeRequest.asInstanceOf[FakeRequest[AnyContentAsFormUrlEncoded]], None)
+      val result = BonusPaymentsPageHarness.harnessSetup
+        .bonusPaymentsPage(fakeRequest.asInstanceOf[FakeRequest[AnyContentAsFormUrlEncoded]])
 
       status(result) mustBe OK
 
@@ -101,8 +143,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
       val cachedAmount = "1231231"
 
-      val result = BonusPaymentsPageHarness
-        .setup(cachedAmount)
+      val result = BonusPaymentsPageHarness.harnessSetup
         .bonusPaymentsPage(fakeRequest.asInstanceOf[FakeRequest[AnyContentAsFormUrlEncoded]])
 
       status(result) mustBe OK
@@ -123,10 +164,10 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        val controller = new TestIncomeUpdateBonusController
+        val controller = new SUT
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("empty cache")))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
         val result = controller.bonusPaymentsPage(fakeRequest)
         status(result) mustBe SEE_OTHER
@@ -138,24 +179,27 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
   "handleBonusPayments" must {
     object HandleBonusPaymentsHarness {
       sealed class HandleBonusPaymentsHarness() {
+        reset(mockJourneyCacheNewRepository)
 
-        when(journeyCacheService.cache(any())(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.currentCache(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.cache(any(), any())(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-        when(journeyCacheService.flush()(any()))
-          .thenReturn(Future.successful(Done))
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+        val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
 
         def handleBonusPayments(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateBonusController()
+          new SUT()
             .handleBonusPayments(employer.id)(request)
       }
 
-      def setup(): HandleBonusPaymentsHarness =
+      def harnessSetup(): HandleBonusPaymentsHarness =
         new HandleBonusPaymentsHarness()
     }
 
@@ -163,7 +207,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
       "user selected yes" in {
 
         val result = HandleBonusPaymentsHarness
-          .setup()
+          .harnessSetup()
           .handleBonusPayments(
             RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
           )
@@ -178,7 +222,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
     "redirect the user to checkYourAnswers page" when {
       "user selected no" in {
         val result = HandleBonusPaymentsHarness
-          .setup()
+          .harnessSetup()
           .handleBonusPayments(
             RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
           )
@@ -199,7 +243,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
           RequestBuilder.buildFakePostRequestWithAuth()
 
         val result = HandleBonusPaymentsHarness
-          .setup()
+          .harnessSetup()
           .handleBonusPayments(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
@@ -222,10 +266,10 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val controller = new TestIncomeUpdateBonusController
+        val controller = new SUT
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("empty cache")))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
         val result = controller.handleBonusPayments(employer.id)(fakeRequest)
 
@@ -238,16 +282,22 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
   "bonusOvertimeAmountPage" must {
     object BonusOvertimeAmountPageHarness {
       sealed class BonusOvertimeAmountPageHarness() {
+        reset(mockJourneyCacheNewRepository)
 
-        when(journeyCacheService.currentValue(any())(any()))
-          .thenReturn(Future.successful(Some("313321")))
+        val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeBonusOvertimeAmountPage, "313321")
+
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def bonusOvertimeAmountPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateBonusController()
+          new SUT()
             .bonusOvertimeAmountPage()(request)
       }
 
-      def setup(): BonusOvertimeAmountPageHarness =
+      def harnessSetup(): BonusOvertimeAmountPageHarness =
         new BonusOvertimeAmountPageHarness()
     }
 
@@ -256,7 +306,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
       implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
       val result = BonusOvertimeAmountPageHarness
-        .setup()
+        .harnessSetup()
         .bonusOvertimeAmountPage(fakeRequest)
 
       status(result) mustBe OK
@@ -274,10 +324,10 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        val controller = new TestIncomeUpdateBonusController
+        val controller = new SUT
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("empty cache")))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
         val result = controller.bonusOvertimeAmountPage(fakeRequest)
 
@@ -289,28 +339,33 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
   "handleBonusOvertimeAmount" must {
     object HandleBonusOvertimeAmountHarness {
-
       sealed class HandleBonusOvertimeAmountHarness() {
+        reset(mockJourneyCacheNewRepository)
 
-        when(journeyCacheService.cache(any())(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
+        val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeIdPage, employer.id)
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         def handleBonusOvertimeAmount(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateBonusController()
+          new SUT()
             .handleBonusOvertimeAmount(employer.id)(request)
       }
 
-      def setup(): HandleBonusOvertimeAmountHarness =
+      def harnsesSetup(): HandleBonusOvertimeAmountHarness =
         new HandleBonusOvertimeAmountHarness()
     }
 
     "redirect the user to checkYourAnswers page" in {
 
       val result = HandleBonusOvertimeAmountHarness
-        .setup()
+        .harnsesSetup()
         .handleBonusOvertimeAmount(RequestBuilder.buildFakePostRequestWithAuth("amount" -> "£3,000"))
 
       status(result) mustBe SEE_OTHER
@@ -328,7 +383,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
           RequestBuilder.buildFakePostRequestWithAuth("amount" -> "")
 
         val result = HandleBonusOvertimeAmountHarness
-          .setup()
+          .harnsesSetup()
           .handleBonusOvertimeAmount(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
@@ -346,10 +401,10 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakePostRequestWithAuth("" -> "")
 
-        val controller = new TestIncomeUpdateBonusController
+        val controller = new SUT
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("")))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
         val result = controller.handleBonusOvertimeAmount(employer.id)(fakeRequest)
 

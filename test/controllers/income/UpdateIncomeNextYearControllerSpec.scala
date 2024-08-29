@@ -84,7 +84,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         val testController = createTestIncomeController()
 
-        when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(meq(employmentID))(any()))
+        when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(any(), any()))
           .thenReturn(Future.successful(true))
 
         val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -97,7 +97,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     "redirect to the estimatedPayLanding url" in {
       val testController = createTestIncomeController()
 
-      when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(meq(employmentID))(any()))
+      when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(any(), any()))
         .thenReturn(Future.successful(false))
 
       val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -129,7 +129,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val testController = createTestIncomeController()
 
       when(
-        updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+        updateNextYearsIncomeService.getNewAmount(any(), any())
       ).thenReturn(
         Future.successful(Left("error"))
       )
@@ -173,7 +173,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       val testController = createTestIncomeController()
 
       when(
-        updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+        updateNextYearsIncomeService.getNewAmount(any(), any())
       ).thenReturn(
         Future.successful(Left("error"))
       )
@@ -266,9 +266,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         when(
           updateNextYearsIncomeService
-            .setNewAmount(meq(newEstPay), meq(employmentID))(any())
+            .setNewAmount(meq(newEstPay), meq(employmentID), any())
         )
-          .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.update(employmentID)(
           RequestBuilder
@@ -299,7 +298,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val newEstPay = "1234"
 
           when(
-            updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+            updateNextYearsIncomeService.getNewAmount(any(), any())
           ).thenReturn(
             Future.successful(Left("no amount entered"))
           )
@@ -319,7 +318,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val newEstPay = "999"
 
           when(
-            updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+            updateNextYearsIncomeService.getNewAmount(any(), any())
           ).thenReturn(
             Future.successful(Right(newEstPay.toInt))
           )
@@ -488,7 +487,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val controller = createTestIncomeController()
 
           when(
-            updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any())
+            updateNextYearsIncomeService.getNewAmount(any(), any())
           ).thenReturn(
             Future.successful(Left("error"))
           )
@@ -509,7 +508,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(meq(employmentID), meq(nino))(any())
+          updateNextYearsIncomeService.submit(any(), any(), any())
         ).thenReturn(
           Future.successful(Done)
         )
@@ -525,7 +524,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(meq(employmentID), meq(nino))(any())
+          updateNextYearsIncomeService.submit(any(), any(), any())
         ).thenReturn(
           Future.failed(new Exception("Error"))
         )
@@ -548,7 +547,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       when(updateNextYearsIncomeService.get(meq(employmentID), any())(any()))
         .thenReturn(Future.successful(model))
 
-      when(updateNextYearsIncomeService.getNewAmount(meq(employmentID))(any()))
+      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
         .thenReturn(Future.successful(Right(newEstPay)))
     }
 }

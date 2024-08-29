@@ -63,7 +63,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
   val employmentService: EmploymentService = mock[EmploymentService]
   lazy val mockRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  val userAnswers: UserAnswers = UserAnswers(
+  override val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
     nino.nino,
     Json.obj(

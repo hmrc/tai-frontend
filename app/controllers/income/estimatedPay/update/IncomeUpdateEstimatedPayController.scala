@@ -109,7 +109,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
             UpdateIncomeNewAmountPage.toString      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
           )
 
-          val isBonusPayment = cacheMap.getOrElse(UpdateIncomeConstants.BonusPaymentsKey, "") == "Yes"
+          val isBonusPayment = cacheMap.getOrElse(UpdateIncomeBonusPaymentsPage, "") == "Yes"
           val updatedAnswers =
             request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
 

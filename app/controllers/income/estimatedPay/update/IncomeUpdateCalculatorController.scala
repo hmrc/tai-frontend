@@ -19,6 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import pages.TrackingJourneyConstantsEstimatedPayPage
 import pages.income.{UpdateIncomeNamePage, _}
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
@@ -30,7 +31,6 @@ import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
@@ -43,7 +43,6 @@ import scala.util.control.NonFatal
 class IncomeUpdateCalculatorController @Inject() (
   incomeService: IncomeService,
   employmentService: EmploymentService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
@@ -56,8 +55,11 @@ class IncomeUpdateCalculatorController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    val journeyCompleted =
+      Future.successful(request.userAnswers.get(TrackingJourneyConstantsEstimatedPayPage(id)).contains("true"))
+
     (
-      estimatedPayJourneyCompletionService.hasJourneyCompleted(id.toString),
+      journeyCompleted,
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id, request.userAnswers))
     ).mapN {
       case (true, _) =>
