@@ -26,10 +26,12 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
@@ -74,6 +76,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val isPension = false
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   override def beforeEach(): Unit =
     super.beforeEach()
@@ -322,6 +325,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           ).thenReturn(
             Future.successful(Right(newEstPay.toInt))
           )
+
+          when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
           val result = testController.update(employmentID)(
             RequestBuilder

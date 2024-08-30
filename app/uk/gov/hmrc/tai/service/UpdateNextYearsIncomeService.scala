@@ -73,14 +73,18 @@ class UpdateNextYearsIncomeService @Inject() (
   def amountKey(employmentId: Int): String =
     s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
 
-  def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Boolean] = {
+  def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
     val value = convertCurrencyToInt(Some(newValue)).toString
+    val amountKey = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
     val updatedAnswers = userAnswers.setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), value)
-    journeyCacheNewRepository.set(updatedAnswers)
+
+    journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+      Map(amountKey -> value)
+    }
   }
 
   def getNewAmount(employmentId: Int, userAnswers: UserAnswers): Future[Either[String, Int]] = {
-    val key = amountKey(employmentId)
+    val key = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
 
     userAnswers.get(UpdateNextYearsIncomeNewAmountPage(employmentId)) match {
       case Some(value) => Future.successful(Right(value.toInt))

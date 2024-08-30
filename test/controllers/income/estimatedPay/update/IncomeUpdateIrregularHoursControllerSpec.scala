@@ -229,6 +229,9 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         new HandleIncomeIrregularHoursHarness()
     }
     "respond with Redirect to Confirm page" in {
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
       val result = HandleIncomeIrregularHoursHarness
         .harnessSetup()
         .handleIncomeIrregularHours(1, RequestBuilder.buildFakePostRequestWithAuth("income" -> "999"))

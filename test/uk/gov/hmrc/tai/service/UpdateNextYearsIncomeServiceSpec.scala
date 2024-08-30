@@ -20,8 +20,10 @@ import org.apache.pekko.Done
 import controllers.FakeTaiPlayApplication
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
+import pages.income.{UpdateIncomeNewAmountPage, UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage}
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
@@ -31,6 +33,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstant
 import utils.BaseSpec
 
 import scala.concurrent.Future
+import scala.util.Random
 
 class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplication {
 
@@ -49,6 +52,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       receivingOccupationalPension = false,
       cessationPay = None
     )
+
+  def randomNino(): Nino = new Generator(new Random()).nextNino
 
   private def taxCodeIncome(name: String, id: Int, amount: Int): TaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(id), amount, "description", "1185L", name, OtherBasisOfOperation, Live)
@@ -96,12 +101,6 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     )
       .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
-    when(successfulJourneyCacheService.cache(any())(any()))
-      .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
-
-    when(successfulJourneyCacheService.cache(any())(any()))
-      .thenReturn(Future.successful(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true")))
-
     when(
       taxAccountService.updateEstimatedIncome(
         meq(nino),
@@ -117,6 +116,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   override def beforeEach(): Unit = {
     super.beforeEach()
     Mockito.reset(successfulJourneyCacheService)
+    reset(mockJourneyCacheNewRepository)
   }
 
   "get" must {
@@ -240,37 +240,46 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   }
 
   "setNewAmount" must {
-    "caches the amount with the employment id key" in {
+    "cache the amount with the employment ID key" in {
+      reset(mockJourneyCacheNewRepository)
 
-      val key = s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
+      val key = s"${UpdateNextYearsIncomeConstants.NewAmount}"
       val amount = convertCurrencyToInt(Some(employmentAmount.toString)).toString
       val expected = Map(key -> amount)
 
-      when(
-        journeyCacheService.cache(any(), any())(any())
-      ).thenReturn(
-        Future.successful(expected)
-      )
+      val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), amount)
 
-      val result = updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, userAnswers)
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+      val result: Future[Map[String, String]] =
+        updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, userAnswers)
 
       result.futureValue mustBe expected
 
-      verify(
-        journeyCacheService,
-        times(1)
-      ).cache(any(), any())(any())
+      verify(mockJourneyCacheNewRepository).set(any())
     }
   }
 
   "submit" must {
     "post the values from cache to the tax account" in new SubmitSetup {
-      val service = new UpdateNextYearsIncomeServiceTest
+      reset(mockJourneyCacheNewRepository)
 
-      when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
-        .thenReturn(Future.successful(Right(employmentAmount)))
+      val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), UpdateNextYearsIncomeConstants.NewAmount)
+        .setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
 
-      service.submit(employmentId, nino, userAnswers).futureValue mustBe Done
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+      val result: Future[Done] = updateNextYearsIncomeService.submit(employmentId, nino, userAnswers)
+
+      result.futureValue mustBe Done
 
       verify(
         taxAccountService,
@@ -284,25 +293,27 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
 
     "cache as a successful journey" in new SubmitSetup {
-      val service = new UpdateNextYearsIncomeServiceTest
+      reset(mockJourneyCacheNewRepository)
 
-      when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
-        .thenReturn(Future.successful(Right(employmentAmount)))
+      val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), UpdateNextYearsIncomeConstants.NewAmount)
+        .setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
+        .setOrException(UpdateIncomeNewAmountPage, employmentAmount.toString)
+
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+      val service = new UpdateNextYearsIncomeServiceTest
 
       service.submit(employmentId, nino, userAnswers).futureValue mustBe Done
 
-      verify(successfulJourneyCacheService, times(1)).cache(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
-      verify(successfulJourneyCacheService, times(1))
-        .cache(Map(s"${UpdateNextYearsIncomeConstants.Successful}-$employmentId" -> "true"))
+      verify(mockJourneyCacheNewRepository).set(any())
     }
 
     "return a TaiCacheError if there is a cache error" in new SubmitSetup {
       val service = new UpdateNextYearsIncomeServiceTest
 
       val errorMessage = "cache error"
-
-      when(journeyCacheService.mandatoryJourneyValueAsInt(service.amountKey(employmentId)))
-        .thenReturn(Future.successful(Left(errorMessage)))
 
       whenReady(service.submit(employmentId, nino, userAnswers).failed) { err =>
         err.getMessage mustBe errorMessage

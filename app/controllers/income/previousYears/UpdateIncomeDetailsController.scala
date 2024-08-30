@@ -18,10 +18,10 @@ package controllers.income.previousYears
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.TrackSuccessfulJourneyConstantsUpdatePreviousYearPage
+import pages.{QuestionPage, TrackSuccessfulJourneyConstantsUpdatePreviousYearPage}
 import pages.income._
 import play.api.i18n.Messages
-import play.api.libs.json.JsBoolean
+import play.api.libs.json.{JsBoolean, JsObject, JsString}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -64,6 +64,12 @@ class UpdateIncomeDetailsController @Inject() (
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
 
+  def extractTaxYearString(currentCache: JsObject, page: QuestionPage[String]): String =
+    (currentCache \ page.toString).asOpt[JsString] match {
+      case Some(JsString(value)) => value
+      case _                     => throw new IllegalArgumentException("Expected a JsString")
+    }
+
   def decision(taxYear: TaxYear): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val updatedAnswers = request.userAnswers.setOrException(UpdatePreviousYearsIncomeTaxYearPage, taxYear.year.toString)
@@ -90,17 +96,18 @@ class UpdateIncomeDetailsController @Inject() (
 
   def details(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
     val userAnswers = request.userAnswers
 
     val userSuppliedDetails = userAnswers.get(UpdatePreviousYearsIncomePage)
     val currentCache = userAnswers.data
 
+    val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
+
     Future
       .successful(
         Ok(
           UpdateIncomeDetails(
-            UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncomeTaxYearPage).toString.toInt),
+            UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
             UpdateIncomeDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))
           )
         )
@@ -120,10 +127,12 @@ class UpdateIncomeDetailsController @Inject() (
           val userAnswers = request.userAnswers
           val currentCache = userAnswers.data
 
+          val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
+
           Future.successful(
             BadRequest(
               UpdateIncomeDetails(
-                UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncomeTaxYearPage).toString.toInt),
+                UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
                 formWithErrors
               )
             )
@@ -157,12 +166,14 @@ class UpdateIncomeDetailsController @Inject() (
     val telephoneNumber = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
     val currentCache = userAnswers.data
 
+    val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
+
     Future
       .successful(
         Ok(
           canWeContactByPhone(
             Some(user),
-            telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncomeTaxYearPage).toString.toInt),
+            telephoneNumberViewModel(taxYearString.toInt),
             YesNoTextEntryForm.form().fill(YesNoTextEntryForm(isTelephone, telephoneNumber))
           )
         )
@@ -186,12 +197,13 @@ class UpdateIncomeDetailsController @Inject() (
         formWithErrors => {
           val userAnswers = request.userAnswers
           val currentCache = userAnswers.data
+          val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
 
           Future.successful(
             BadRequest(
               canWeContactByPhone(
                 Some(user),
-                telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncomeTaxYearPage).toString.toInt),
+                telephoneNumberViewModel(taxYearString.toInt),
                 formWithErrors
               )
             )
