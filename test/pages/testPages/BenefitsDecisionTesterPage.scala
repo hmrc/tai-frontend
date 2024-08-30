@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package pages
+package pages.testPages
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants
 

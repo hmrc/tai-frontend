@@ -24,6 +24,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.stubbing.ScalaOngoingStubbing
 import pages.benefits._
 import pages._
+import pages.testPages.EndCompanyBenefitsTypeTesterPage
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc._

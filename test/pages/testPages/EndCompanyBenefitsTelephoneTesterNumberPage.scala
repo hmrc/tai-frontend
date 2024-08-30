@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package pages
+package pages.testPages
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndCompanyBenefitConstants
 
-case object EndCompanyBenefitsValueTesterPage extends QuestionPage[Option[String]] {
+case object EndCompanyBenefitsTelephoneTesterNumberPage extends QuestionPage[Option[String]] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = EndCompanyBenefitConstants.BenefitValueKey
+  override def toString: String = EndCompanyBenefitConstants.TelephoneNumberKey
 
 }

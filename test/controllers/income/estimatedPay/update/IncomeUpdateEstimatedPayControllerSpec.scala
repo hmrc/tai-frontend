@@ -191,20 +191,15 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   "estimatedPayPage" must {
     object EstimatedPayPageHarness {
-      sealed class EstimatedPayPageHarness(payment: Option[Payment]) {
+      sealed class EstimatedPayPageHarness(payment: Option[Payment], userAnswers: Option[UserAnswers]) {
         reset(mockJourneyCacheNewRepository)
 
-        val userAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
-          .setOrException(UpdateIncomeGrossAnnualPayPage, "company")
-          .setOrException(UpdateIncomeNewAmountPage, "123")
-          .setOrException(UpdateIncomeBonusPaymentsPage, "")
-          .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "100")
-
-        setup(userAnswers)
+        setup(userAnswers.getOrElse(UserAnswers("testSessionId", randomNino().nino)))
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(Some(userAnswers)))
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+          .thenReturn(Future.successful(userAnswers))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers]))
+          .thenReturn(Future.successful(true))
 
         when(incomeService.latestPayment(any(), any())(any(), any()))
           .thenReturn(Future.successful(payment))
@@ -219,9 +214,10 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       }
 
       def harnessSetup(
-        payment: Option[Payment] = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
+        payment: Option[Payment] = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly)),
+        userAnswers: Option[UserAnswers] = None
       ): EstimatedPayPageHarness =
-        new EstimatedPayPageHarness(payment)
+        new EstimatedPayPageHarness(payment, userAnswers)
     }
 
     "display estimatedPay page" when {
@@ -268,9 +264,23 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "redirect to sameEstimatedPay page" when {
       "the pay is the same" in {
+        reset(mockJourneyCacheNewRepository)
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdateIncomeGrossAnnualPayPage, "company")
+          .setOrException(UpdateIncomeNewAmountPage, "123")
+          .setOrException(UpdateIncomeBonusPaymentsPage, "")
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "100")
+
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
 
         val result = EstimatedPayPageHarness
-          .harnessSetup()
+          .harnessSetup(payment, Some(mockUserAnswers))
           .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
@@ -280,6 +290,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         )
       }
     }
+
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 

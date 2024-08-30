@@ -23,8 +23,8 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.ArgumentMatcher
 import org.mockito.stubbing.ScalaOngoingStubbing
-import pages.{EndCompanyBenefitsTelephoneTesterNumberPage, EndCompanyBenefitsValueTesterPage}
-import pages.benefits.{EndCompanyBenefitsStopDatePage, _}
+import pages.benefits._
+import pages.testPages.{EndCompanyBenefitsTelephoneTesterNumberPage, EndCompanyBenefitsValueTesterPage}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
