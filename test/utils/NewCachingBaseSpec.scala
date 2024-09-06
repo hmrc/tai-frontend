@@ -21,8 +21,8 @@ import controllers.FakeTaiPlayApplication
 import controllers.actions.{DataRetrievalAction, IdentifierAction}
 import controllers.auth.{AuthJourney, AuthedUser}
 import org.jsoup.nodes.Element
-import org.mockito.MockitoSugar
 import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.inject.bind

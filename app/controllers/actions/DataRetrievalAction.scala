@@ -31,8 +31,8 @@ class DataRetrievalActionImpl @Inject() (
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
     val nino: String = (request.request.taiUser.nino, request.request.taiUser.trustedHelper) match {
-      case (thisUserNino, None) => thisUserNino.nino
-      case (_, Some(th))        => th.principalNino
+      case (thisUserNino, None)     => thisUserNino.nino
+      case (thisUserNino, Some(th)) => th.principalNino.getOrElse(thisUserNino.nino)
     }
 
     journeyCacheNewRepository

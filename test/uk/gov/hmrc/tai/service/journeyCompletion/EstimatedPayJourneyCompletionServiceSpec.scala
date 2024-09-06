@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service.journeyCompletion
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
+import org.mockito.Mockito.{times, verify, when}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec

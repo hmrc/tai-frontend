@@ -20,6 +20,7 @@ import com.codahale.metrics.Timer.Context
 import com.codahale.metrics.{Counter, MetricRegistry, Timer}
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get}
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder

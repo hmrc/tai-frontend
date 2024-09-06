@@ -28,11 +28,12 @@ case class AuthedUser(
 object AuthedUser {
 
   def apply(
+    nino: Nino,
     trustedHelper: TrustedHelper,
     saUtr: Option[String]
   ): AuthedUser =
     AuthedUser(
-      nino = Nino(trustedHelper.principalNino),
+      nino = Nino(trustedHelper.principalNino.getOrElse(nino.nino)),
       utr = saUtr,
       trustedHelper = Some(trustedHelper)
     )

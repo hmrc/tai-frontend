@@ -20,6 +20,7 @@ import org.apache.pekko.Done
 import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.{never, reset, times, verify, when}
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -55,6 +56,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(incomeService, journeyCacheService)
+
   }
 
   val payToDate = "100"

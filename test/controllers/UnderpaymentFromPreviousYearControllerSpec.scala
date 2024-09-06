@@ -18,6 +18,7 @@ package controllers
 
 import builders.RequestBuilder
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service._
 import utils.BaseSpec

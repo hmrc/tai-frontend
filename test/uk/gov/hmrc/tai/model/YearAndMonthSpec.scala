@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
+import org.mockito.Mockito.when
 import play.api.i18n.Lang
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.tai.config.ApplicationConfig

@@ -85,7 +85,10 @@ lazy val microservice = Project(appName, file("."))
       "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
       "-Wconf:cat=deprecation&msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
       "-Wconf:cat=deprecation&msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
-      "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s"
+      "-Wconf:cat=deprecation&msg=trait HttpClient in package http is deprecated \\(since 15.0.0\\).*:s",
+      "-Wconf:cat=deprecation&msg=trait HttpGet in package http is deprecated \\(since 15.0.0\\).*:s",
+      "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s",
+      "-Wconf:msg=a type was inferred to be `Object`; this may indicate a programming error\\.:s"
     )
   )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))

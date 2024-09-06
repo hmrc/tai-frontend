@@ -50,8 +50,8 @@ class AuthRetrievalsImpl @Inject() (
     authorised().retrieve(
       Retrievals.nino and Retrievals.saUtr and Retrievals.trustedHelper
     ) {
-      case _ ~ saUtr ~ Some(helper) =>
-        val user = AuthedUser(helper, saUtr)
+      case optNino ~ saUtr ~ Some(helper) =>
+        val user = AuthedUser(uk.gov.hmrc.domain.Nino(optNino.getOrElse("")), helper, saUtr)
         block(InternalAuthenticatedRequest(request, user))
 
       case optNino ~ saUtr ~ _ =>

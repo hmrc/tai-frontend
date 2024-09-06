@@ -17,6 +17,7 @@
 package controllers.auth
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -102,7 +103,7 @@ class AuthRetrievalsSpec extends BaseSpec {
       "trusted helper data is returned" in {
 
         val nino = new Generator().nextNino
-        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", nino.nino)
+        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
         val controller = Harness.successful(baseRetrieval ~ Some(trustedHelper))
         val result = controller.onPageLoad()(fakeRequest)
 

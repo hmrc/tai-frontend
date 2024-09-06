@@ -20,6 +20,7 @@ import org.apache.pekko.Done
 import cats.implicits.catsSyntaxEitherId
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import utils.BaseSpec

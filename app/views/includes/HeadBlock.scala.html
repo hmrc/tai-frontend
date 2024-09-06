@@ -17,7 +17,7 @@
 @import views.html.helper.CSPNonce
 
 @this()
-@()(implicit request: Request[_])
+@()(implicit requestHeader: RequestHeader)
 
     <meta name="format-detection" content="telephone=no"/>
     <link @CSPNonce.attr rel="stylesheet" href='@controllers.routes.AssetsController.versioned("stylesheets/tai.css")'/>

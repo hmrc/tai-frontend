@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.config
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.Configuration
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.BaseSpec
@@ -31,7 +30,6 @@ class ErrorHandlerSpec extends BaseSpec {
     appConfig,
     inject[ErrorTemplateNoauth],
     messagesApi,
-    inject[Configuration],
     inject[InternalServerErrorView]
   )
 

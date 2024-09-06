@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.model.TaxYear
