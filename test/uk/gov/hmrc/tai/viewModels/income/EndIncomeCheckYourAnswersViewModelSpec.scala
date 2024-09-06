@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine

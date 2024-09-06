@@ -16,53 +16,55 @@
 
 package uk.gov.hmrc.tai.config
 
-import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.Request
+import play.api.mvc.RequestHeader
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.{ErrorTemplateNoauth, InternalServerErrorView}
 import views.html.includes.link
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorHandler @Inject() (
   applicationConfig: ApplicationConfig,
   errorTemplateNoauth: ErrorTemplateNoauth,
   val messagesApi: MessagesApi,
-  val configuration: Configuration,
   internalServerError: InternalServerErrorView
-) extends FrontendErrorHandler {
+)(implicit val ec: ExecutionContext)
+    extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
-    request: Request[_]
-  ): Html = errorTemplateNoauth(pageTitle, heading, message, List.empty)
+    requestHeader: RequestHeader
+  ): Future[Html] = Future.successful(errorTemplateNoauth(pageTitle, heading, message, List.empty))
 
   def badRequestErrorTemplate(
     pageTitle: String,
     heading: String,
     message1: String,
     additionalMessages: List[String] = List.empty
-  )(implicit request: Request[_]): Html =
+  )(implicit requestHeader: RequestHeader): Html =
     errorTemplateNoauth(pageTitle, heading, message1, additionalMessages)
 
-  override def badRequestTemplate(implicit request: Request[_]): Html = badRequestErrorTemplate(
-    Messages("global.error.badRequest400.title"),
-    Messages("tai.errorMessage.heading"),
-    Messages("tai.errorMessage.frontend400.message1"),
-    List(
-      Messages(
-        "tai.errorMessage.frontend400.message2",
-        link(
-          url = "#report-name",
-          copy = Messages("tai.errorMessage.reportAProblem"),
-          linkClasses = Seq("report-error__toggle")
+  override def badRequestTemplate(implicit requestHeader: RequestHeader): Future[Html] = Future.successful(
+    badRequestErrorTemplate(
+      Messages("global.error.badRequest400.title"),
+      Messages("tai.errorMessage.heading"),
+      Messages("tai.errorMessage.frontend400.message1"),
+      List(
+        Messages(
+          "tai.errorMessage.frontend400.message2",
+          link(
+            url = "#report-name",
+            copy = Messages("tai.errorMessage.reportAProblem"),
+            linkClasses = Seq("report-error__toggle")
+          )
         )
       )
     )
   )
 
-  override def notFoundTemplate(implicit request: Request[_]): Html = {
+  override def notFoundTemplate(implicit requestHeader: RequestHeader): Future[Html] = Future.successful {
 
     val contactUrl = request2Messages.lang.code match {
       case "cy" => applicationConfig.contactHelplineWelshUrl
@@ -86,5 +88,6 @@ class ErrorHandler @Inject() (
     )
   }
 
-  override def internalServerErrorTemplate(implicit request: Request[_]): Html = internalServerError(applicationConfig)
+  override def internalServerErrorTemplate(implicit requestHeader: RequestHeader): Future[Html] =
+    Future.successful(internalServerError(applicationConfig))
 }

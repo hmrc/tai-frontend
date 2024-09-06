@@ -19,6 +19,7 @@ package controllers
 import builders.RequestBuilder
 import controllers.auth.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}

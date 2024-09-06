@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
+import org.mockito.Mockito.{times, verify, when}
 import uk.gov.hmrc.http.HttpResponse
 import utils.BaseSpec
 

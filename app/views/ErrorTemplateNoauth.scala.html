@@ -16,7 +16,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(pageTitle: String, heading: String, message1: String, additionalMessages: List[String])(implicit request: Request[_],
+@(pageTitle: String, heading: String, message1: String, additionalMessages: List[String])(implicit requestHeader: RequestHeader,
         messages: Messages)
 
 @mainTemplate(

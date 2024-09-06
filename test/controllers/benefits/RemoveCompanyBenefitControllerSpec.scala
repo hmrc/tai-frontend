@@ -22,7 +22,8 @@ import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.ArgumentMatcher
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.stubbing.OngoingStubbing
 import pages.{EndCompanyBenefitsTelephoneTesterNumberPage, EndCompanyBenefitsValueTesterPage}
 import pages.benefits.{EndCompanyBenefitsStopDatePage, _}
 import play.api.i18n.Messages
@@ -105,7 +106,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
-  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
     when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
       override def invokeBlock[A](
         request: Request[A],

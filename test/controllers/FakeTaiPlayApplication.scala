@@ -16,9 +16,9 @@
 
 package controllers
 
-import org.mockito.MockitoSugar.mock
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.{Args, Status, Suite, TestSuite}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.bind

@@ -20,7 +20,8 @@ import builders.RequestBuilder.uuid
 import builders.UserBuilder
 import controllers.auth.{AuthedUser, AuthenticatedRequest, DataRequest, IdentifierRequest}
 import org.mockito.ArgumentMatchers
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -33,7 +34,7 @@ import utils.BaseSpec
 import java.time.Instant
 import scala.concurrent.Future
 
-class DataRetrievalActionSpec extends BaseSpec with MockitoSugar with ScalaFutures {
+class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
 
   class Harness(repository: JourneyCacheNewRepository) extends DataRetrievalActionImpl(repository) {
     def callTransform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = transform(request)

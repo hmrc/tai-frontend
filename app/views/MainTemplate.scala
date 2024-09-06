@@ -21,10 +21,9 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.mvc.Request
+import play.api.mvc.RequestHeader
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.ServiceURLs
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.sca.models.BannerConfig
 import uk.gov.hmrc.sca.services.WrapperService
 import views.html.includes.{AdditionalJavascript, HeadBlock}
@@ -43,7 +42,7 @@ trait MainTemplate {
     pagePrintName: Option[String] = None,
     showPtaAccountNav: Boolean = true,
     formForErrorSummary: Option[Form[_]] = None
-  )(content: Html)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable
+  )(content: Html)(implicit requestHeader: RequestHeader, messages: Messages): HtmlFormat.Appendable
 }
 
 class MainTemplateImpl @Inject() (
@@ -64,7 +63,7 @@ class MainTemplateImpl @Inject() (
     pagePrintName: Option[String] = None,
     showPtaAccountNav: Boolean = true,
     formForErrorSummary: Option[Form[_]] = None
-  )(content: Html)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable = {
+  )(content: Html)(implicit requestHeader: RequestHeader, messages: Messages): HtmlFormat.Appendable = {
 
     val prefix =
       if (formForErrorSummary.exists(_.errors.nonEmpty)) {
@@ -74,7 +73,7 @@ class MainTemplateImpl @Inject() (
       }
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
-    logger.debug(s"SCA Wrapper layout used for request `${request.uri}``")
+    logger.debug(s"SCA Wrapper layout used for request `${requestHeader.uri}``")
     wrapperService.standardScaLayout(
       content = content,
       pageTitle = Some(fullPageTitle),
@@ -82,7 +81,7 @@ class MainTemplateImpl @Inject() (
       serviceURLs = ServiceURLs(
         serviceUrl = Some(appConfig.taiHomePageUrl),
         signOutUrl = Some(controllers.routes.ServiceController.serviceSignout().url),
-        accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl(request.uri))
+        accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl(requestHeader.uri))
       ),
 //    sidebarContent: Option[Html] = None,
       timeOutUrl = Some(controllers.routes.ServiceController.sessionExpiredPage().url),
@@ -97,6 +96,6 @@ class MainTemplateImpl @Inject() (
       fullWidth = true,
       hideMenuBar = !showPtaAccountNav,
       disableSessionExpired = disableSessionExpired
-    )(messages, request)
+    )(messages, requestHeader)
   }
 }

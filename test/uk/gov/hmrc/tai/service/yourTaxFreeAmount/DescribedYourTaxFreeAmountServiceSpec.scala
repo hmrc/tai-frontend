@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}

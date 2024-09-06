@@ -22,6 +22,7 @@ import cats.implicits.catsStdInstancesForFuture
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest

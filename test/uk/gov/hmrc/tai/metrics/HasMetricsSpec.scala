@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.metrics
 import com.codahale.metrics.{MetricRegistry, Timer}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
+import org.mockito.Mockito.{times, verifyNoMoreInteractions, when}
 import org.scalatest.compatible.Assertion
 import org.scalatest.{BeforeAndAfterAll, OptionValues}
 import play.api.mvc.{BaseController, ControllerComponents, Results}

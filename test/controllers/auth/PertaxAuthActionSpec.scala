@@ -19,6 +19,7 @@ package controllers.auth
 import cats.data.EitherT
 import com.google.inject.Inject
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import play.api.Application
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER, UNAUTHORIZED}
 import play.api.inject.bind
@@ -86,6 +87,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     when(testAppConfig.pertaxServiceUpliftFailedUrl).thenReturn("/failed")
     when(testAppConfig.taiHomePageUrl).thenReturn("/home")
     when(testAppConfig.taiRootUri).thenReturn("/taiRoot")
+    when(testAppConfig.basGatewayFrontendSignInUrl).thenReturn("/signin")
     when(mockURLService.localFriendlyUrl(any(), any())).thenReturn("/localfriendlyurl")
     super.beforeEach()
   }
@@ -248,7 +250,7 @@ class PertaxAuthActionSpec extends BaseSpec {
         val result = fakeController.onPageLoad()(FakeRequest())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("?continue_url=%2Fhome&origin=tai-frontend&accountType=individual")
+        redirectLocation(result) mustBe Some("/signin?continue_url=%2Fhome&origin=tai-frontend&accountType=individual")
       }
     }
 

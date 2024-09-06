@@ -35,6 +35,7 @@ package controllers.actions
 import cats.data.EitherT
 import controllers.{ErrorPagesHandler, FakeAuthRetrievals, routes}
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
