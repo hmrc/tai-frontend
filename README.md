@@ -1,8 +1,6 @@
 Tax Account for Individuals
 =================
 
-[![Build Status](https://travis-ci.org/hmrc/tai-frontend.svg)](https://travis-ci.org/hmrc/tai-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/tai-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/tai-frontend/_latestVersion)
-
 This service Allows users to view and edit their paye tax information
 
 Summary
@@ -18,14 +16,7 @@ This service covers the current tax year. Use the service to:
 Requirements
 ------------
 
-This service is written in [Scala 2.11](http://www.scala-lang.org/) and [Play 2.5](http://playframework.com/), so needs at least a [JRE 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index.html) to run.
-
-
-Optional
-------------
-Assets compilation can be done quickly by specifying sbt-web plugin to use NodeJS (if it is installed) by adding the following environment variable.
-export SBT_OPTS="$SBT_OPTS -Dsbt.jse.engineType=Node"
-For more information see: https://www.playframework.com/documentation/2.8.x/AssetsOverview#Managed-assets
+This service is written in [Scala 2.13](http://www.scala-lang.org/) and [Play 3.0](http://playframework.com/), so needs at least a [JRE 21](http://www.oracle.com/technetwork/java/javase/downloads/index.html) to run.
 
 Acronyms
 --------
