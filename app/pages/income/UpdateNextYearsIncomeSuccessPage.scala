@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstant
 
 case class UpdateNextYearsIncomeSuccessPage(id: Int) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ s"$toString-$id"
 
   override def toString: String = UpdateNextYearsIncomeConstants.Successful
 
