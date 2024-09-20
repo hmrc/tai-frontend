@@ -318,6 +318,7 @@ tai.confirmation.threeWeeks.paraTwo=If no further information is needed your rec
 tai.confirmation.paraTwo=If we do not need any more information, your record will be updated within 15 days.
 tai.confirmation.sectionOne.heading=What happens next
 tai.currentYearSummary.heading=Check your Income Tax
+outage-page.serviceDisplayName=Check your Income Tax
 tai.date.error.blank=Enter the date you finished working for {0}
 tai.date.error.future=Date cannot be in the future
 tai.date.error.invalid=Enter a valid date

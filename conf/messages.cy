@@ -311,6 +311,7 @@ tai.confirmation.paraTwo=Os nad oes angen rhagor o wybodaeth arnom, bydd eich co
 tai.confirmation.threeWeeks.paraTwo=Os nad oes angen rhagor o wybodaeth, bydd eich cofnodion yn cael eu diweddaru cyn pen 3 wythnos a byddwch yn cael cadarnhad.
 tai.confirmation.sectionOne.heading=Yr hyn sy’n digwydd nesaf
 tai.currentYearSummary.heading=Gwirio’ch Treth Incwm
+outage-page.serviceDisplayName=Gwirio’ch Treth Incwm
 tai.date.error.blank=Rhowch y dyddiad pan wnaethoch orffen gweithio i {0}
 tai.date.error.future=Ni all y dyddiad fod yn y dyfodol
 tai.date.error.invalid=Nodwch ddyddiad dilys
