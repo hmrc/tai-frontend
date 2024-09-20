@@ -23,8 +23,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.stubbing.ScalaOngoingStubbing
 import pages.income._
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
-import play.api.test.FakeRequest
+import play.api.mvc.{ActionBuilder, AnyContent, BodyParser, Request, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.model._
@@ -51,14 +50,14 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   def randomNino(): Nino = new Generator(new Random()).nextNino
   def createSUT = new SUT
 
-  val incomeService: IncomeService = mock[IncomeService]
+  val mockIncomeService: IncomeService = mock[IncomeService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
   val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
 
   class SUT
       extends IncomeUpdateEstimatedPayController(
         mockAuthJourney,
-        incomeService,
+        mockIncomeService,
         appConfig,
         mcc,
         mockTaxAccountService,
@@ -98,32 +97,29 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId, randomNino().nino))
     reset(mockJourneyCacheNewRepository)
   }
 
   "estimatedPayLandingPage" must {
-    reset(mockJourneyCacheNewRepository)
 
-    val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+    val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
       .setOrException(UpdateIncomeNamePage, employer.name)
       .setOrException(UpdateIncomeIdPage, employer.id)
       .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypeEmployment)
 
-    setup(mockUserAnswers)
-
     when(mockJourneyCacheNewRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(mockUserAnswers)))
-
-    val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-
-    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
 
     def estimatedPayLandingPage(): Future[Result] =
       new SUT()
         .estimatedPayLandingPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
     "display the estimatedPayLandingPage view" in {
+
+      setup(mockUserAnswers)
+
+      val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
 
       val result = estimatedPayLandingPage()
 
@@ -135,26 +131,30 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
 
+      setup(mockUserAnswers)
+
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
         new NotFoundException("")
       )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
-
     }
     "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
 
+      setup(mockUserAnswers)
+
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
         new NotFoundException("")
       )
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
-
     }
 
     "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
+
+      setup(mockUserAnswers)
 
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
         new RuntimeException("")
@@ -162,26 +162,15 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
-
     }
     "return to /income-details when nothing is present in the cache" in {
-      val testController = new IncomeUpdateEstimatedPayController(
-        mockAuthJourney,
-        incomeService,
-        appConfig,
-        mcc,
-        mockTaxAccountService,
-        inject[EstimatedPayLandingPageView],
-        inject[EstimatedPayView],
-        inject[IncorrectTaxableIncomeView],
-        mockJourneyCacheNewRepository,
-        inject[ErrorPagesHandler]
-      )
+
+      setup(UserAnswers(sessionId, randomNino().nino))
 
       when(mockJourneyCacheNewRepository.get(any(), any()))
         .thenReturn(Future.successful(None))
 
-      val result = testController.estimatedPayLandingPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = estimatedPayLandingPage()
 
       status(result) mustBe SEE_OTHER
 
@@ -190,42 +179,28 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   }
 
   "estimatedPayPage" must {
-    object EstimatedPayPageHarness {
-      sealed class EstimatedPayPageHarness(payment: Option[Payment], userAnswers: Option[UserAnswers]) {
-        reset(mockJourneyCacheNewRepository)
-
-        setup(userAnswers.getOrElse(UserAnswers("testSessionId", randomNino().nino)))
-
-        when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(userAnswers))
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers]))
-          .thenReturn(Future.successful(true))
-
-        when(incomeService.latestPayment(any(), any())(any(), any()))
-          .thenReturn(Future.successful(payment))
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
-        when(incomeService.calculateEstimatedPay(any(), any())(any()))
-          .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
-
-        def estimatedPayPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new SUT()
-            .estimatedPayPage(employer.id)(request)
-      }
-
-      def harnessSetup(
-        payment: Option[Payment] = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly)),
-        userAnswers: Option[UserAnswers] = None
-      ): EstimatedPayPageHarness =
-        new EstimatedPayPageHarness(payment, userAnswers)
-    }
-
     "display estimatedPay page" when {
       "payYearToDate is less than gross annual pay" in {
 
-        val result = EstimatedPayPageHarness
-          .harnessSetup(Some(Payment(LocalDate.now, 50, 1, 1, 1, 1, 1, Monthly)))
-          .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+        val payment = Some(Payment(LocalDate.now, 50, 1, 1, 1, 1, 1, Monthly))
+
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+
+        val controller = createSUT
+
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+        when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
+          .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe OK
 
@@ -237,9 +212,21 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       "payYearToDate is None" in {
 
-        val result = EstimatedPayPageHarness
-          .harnessSetup(None)
-          .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+
+        val controller = createSUT
+
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+        when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
+
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe OK
 
@@ -251,9 +238,25 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "display incorrectTaxableIncome page" when {
       "payYearToDate is greater than gross annual pay" in {
 
-        val result = EstimatedPayPageHarness
-          .harnessSetup()
-          .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+
+        val controller = createSUT
+
+        setup(mockUserAnswers)
+
+        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+        when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
+        when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
+          .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe OK
 
@@ -264,24 +267,29 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
     "redirect to sameEstimatedPay page" when {
       "the pay is the same" in {
-        reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
-          .setOrException(UpdateIncomeGrossAnnualPayPage, "company")
+        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeGrossAnnualPayPage, "100")
           .setOrException(UpdateIncomeNewAmountPage, "123")
           .setOrException(UpdateIncomeBonusPaymentsPage, "")
-          .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "100")
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "150")
+
+        val controller = createSUT
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+        when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
+        when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
+          .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(150)), Some(BigDecimal(100)))))
 
-        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
-
-        val result = EstimatedPayPageHarness
-          .harnessSetup(payment, Some(mockUserAnswers))
-          .estimatedPayPage(RequestBuilder.buildFakeGetRequestWithAuth())
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
 
@@ -294,10 +302,11 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        val controller = new SUT
+        val controller = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(None))
+        setup(UserAnswers(sessionId, randomNino().nino))
+
+        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 

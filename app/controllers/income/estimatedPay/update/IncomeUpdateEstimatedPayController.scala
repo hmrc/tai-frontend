@@ -21,7 +21,7 @@ import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.income._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsNumber, JsObject, JsString, Json}
 import play.api.mvc._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -57,23 +57,29 @@ class IncomeUpdateEstimatedPayController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
 
-      val incomeName = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
-      val incomeType = userAnswers.get(UpdateIncomeTypePage).getOrElse("")
-      taxAccountService
-        .taxAccountSummary(user.nino, TaxYear())
-        .map { _ =>
-          Ok(
-            estimatedPayLandingPage(
-              incomeName,
-              empId,
-              incomeType == TaiConstants.IncomeTypePension,
-              appConfig
-            )
-          )
-        }
-        .recover { case e: Exception =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
+      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
+      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+      (incomeNameOpt, incomeTypeOpt) match {
+        case (Some(incomeName), Some(incomeType)) =>
+          taxAccountService
+            .taxAccountSummary(user.nino, TaxYear())
+            .map { _ =>
+              Ok(
+                estimatedPayLandingPage(
+                  incomeName,
+                  empId,
+                  incomeType == TaiConstants.IncomeTypePension,
+                  appConfig
+                )
+              )
+            }
+            .recover { case e: Exception =>
+              errorPagesHandler.internalServerError(e.getMessage)
+            }
+
+        case _ =>
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      }
   }
 
   private def isCachedAmountSameAsEnteredAmount(
@@ -91,9 +97,15 @@ class IncomeUpdateEstimatedPayController @Inject() (
     val employerFuture = IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
 
     val result = for {
-      incomeSource  <- OptionT(employerFuture.map(_.toOption))
-      income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
-      cache         <- OptionT.liftF(Future.successful(request.userAnswers.data.as[Map[String, String]]))
+      incomeSource <- OptionT(employerFuture.map(_.toOption))
+      income       <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
+      cache <- {
+        val cacheMap = request.userAnswers.data.fields.collect {
+          case (key, JsString(value)) => key -> value
+          case (key, JsNumber(value)) => key -> value.toString
+        }.toMap
+        OptionT.liftF(Future.successful(cacheMap))
+      }
       calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
       payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
     } yield {
