@@ -162,31 +162,33 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val updateJourneyCompletion: String => Future[Map[String, String]] =
         (_: String) =>
           journeyCacheNewRepository
-            .set(
-              request.userAnswers.set(TrackingJourneyConstantsEstimatedPayPage(employmentId), "true").get
-            )
+            .set(request.userAnswers.setOrException(TrackingJourneyConstantsEstimatedPayPage(employmentId), "true"))
             .map(_ => Map.empty[String, String])
 
       val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) =>
         journeyCacheNewRepository
-          .set(
-            request.userAnswers.set(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay).get
-          )
+          .set(request.userAnswers.setOrException(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay))
           .map { _ =>
             Ok(editSuccess(incomeName, incomeId.toInt))
           }
 
       val userAnswers = request.userAnswers
-      val incomeName = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
-      val newPay = userAnswers.get(UpdateIncomeIrregularAnnualPayPage).getOrElse("")
-      val incomeId = userAnswers.get(UpdateIncomeIdPage)
+      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
+      val newPayOpt = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
+      val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
 
-      (for {
-        _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
-        _      <- updateJourneyCompletion(incomeId.toString)
-        result <- cacheAndRespond(incomeName, incomeId.toString, newPay)
-      } yield result).recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage)
+      (incomeNameOpt, newPayOpt, incomeIdOpt) match {
+        case (Some(incomeName), Some(newPay), Some(incomeId)) =>
+          (for {
+            _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
+            _      <- updateJourneyCompletion(incomeId.toString)
+            result <- cacheAndRespond(incomeName, incomeId.toString, newPay)
+          } yield result).recover { case NonFatal(e) =>
+            errorPagesHandler.internalServerError(e.getMessage)
+          }
+        case _ =>
+          logger.warn("Mandatory values missing from user answers")
+          Future.successful(errorPagesHandler.internalServerError("Mandatory values missing from user answers"))
       }
   }
 

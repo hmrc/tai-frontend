@@ -154,7 +154,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     "respond with OK and show the irregular hours edit page" in {
       reset(mockJourneyCacheNewRepository)
 
-      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+      val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateIncomeIdPage, 1)
         .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
 
@@ -207,13 +207,15 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       sealed class HandleIncomeIrregularHoursHarness() {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeNamePage, "name")
           .setOrException(UpdateIncomePayToDatePage, "123")
           .setOrException(UpdatedIncomeDatePage, LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear)))
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
         setup(mockUserAnswers)
 
@@ -229,8 +231,6 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         new HandleIncomeIrregularHoursHarness()
     }
     "respond with Redirect to Confirm page" in {
-
-      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
       val result = HandleIncomeIrregularHoursHarness
         .harnessSetup()
@@ -309,18 +309,22 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     object ConfirmIncomeIrregularHoursHarness {
 
       sealed class ConfirmIncomeIrregularHoursHarness(
-        failure: Boolean,
-        newAmount: Int,
+        newIrregularPay: Int,
         confirmedNewAmount: Int,
         payToDate: Int,
-        futureFailed: Boolean = false
+        isEmptyCache: Boolean
       ) {
 
-        val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
-          .setOrException(UpdateIncomeIrregularAnnualPayPage, failure.toString)
-          .setOrException(UpdateIncomeNewAmountPage, newAmount.toString)
-          .setOrException(UpdateIncomePayToDatePage, payToDate.toString)
-          .setOrException(UpdateIncomeConfirmedNewAmountPage(1), confirmedNewAmount.toString)
+        val defaultUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = if (isEmptyCache) {
+          defaultUserAnswers
+        } else {
+          defaultUserAnswers
+            .setOrException(UpdateIncomeNamePage, employer.name)
+            .setOrException(UpdateIncomeIrregularAnnualPayPage, newIrregularPay.toString)
+            .setOrException(UpdateIncomePayToDatePage, payToDate.toString)
+            .setOrException(UpdateIncomeConfirmedNewAmountPage(1), confirmedNewAmount.toString)
+        }
 
         setup(mockUserAnswers)
 
@@ -329,22 +333,17 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         def confirmIncomeIrregularHours(
           employmentId: Int,
           request: FakeRequest[AnyContentAsFormUrlEncoded]
-        ): Future[Result] =
-          if (futureFailed) {
-            Future.failed(new Exception("Future failed"))
-          } else {
-            new SUT().confirmIncomeIrregularHours(employmentId)(request)
-          }
+        ): Future[Result] = new SUT().confirmIncomeIrregularHours(employmentId)(request)
+
       }
 
       def harnessSetup(
-        failure: Boolean = false,
-        newAmount: Int = 1235,
+        newIrregularPay: Int = 1235,
         confirmedNewAmount: Int = 1234,
         payToDate: Int = 123,
-        futureFailed: Boolean = false
+        isEmptyCache: Boolean = false
       ): ConfirmIncomeIrregularHoursHarness =
-        new ConfirmIncomeIrregularHoursHarness(failure, newAmount, confirmedNewAmount, payToDate, futureFailed)
+        new ConfirmIncomeIrregularHoursHarness(newIrregularPay, confirmedNewAmount, payToDate, isEmptyCache)
     }
 
     "respond with Ok" in {
@@ -358,20 +357,12 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
     }
 
-    "respond with INTERNAL_SERVER_ERROR for a future failed when we call the cache" in {
-
-      val result = ConfirmIncomeIrregularHoursHarness
-        .harnessSetup(futureFailed = true)
-        .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
-
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-
     "redirect to SameEstimatedPayPage" when {
       "the same amount of pay has been entered" in {
+        val amount = 123
 
         val result = ConfirmIncomeIrregularHoursHarness
-          .harnessSetup(confirmedNewAmount = 123, newAmount = 123)
+          .harnessSetup(confirmedNewAmount = amount, newIrregularPay = amount)
           .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
@@ -384,7 +375,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     "redirect to IrregularSameEstimatedPayPage" when {
       "the same amount of payment to date has been entered" in {
         val result = ConfirmIncomeIrregularHoursHarness
-          .harnessSetup(newAmount = 123)
+          .harnessSetup(newIrregularPay = 123)
           .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
@@ -395,7 +386,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     "redirect to /income-details" when {
       "no value is present in the cache" in {
         val result = ConfirmIncomeIrregularHoursHarness
-          .harnessSetup(failure = true)
+          .harnessSetup(isEmptyCache = true)
           .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
@@ -407,57 +398,33 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
   }
 
   "submitIncomeIrregularHours" must {
-    object SubmitIncomeIrregularHoursHarness {
 
-      sealed class SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture: Future[Either[String, Seq[String]]]) {
-        reset(mockJourneyCacheNewRepository)
+    "respond with INTERNAL_SERVER_ERROR when mandatory values are missing" in {
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+      val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
 
-        when(
-          taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
-        ).thenReturn(
-          Future.successful(Done)
-        )
+      setup(userAnswers)
 
-        val userAnswers: UserAnswers = UserAnswers("testSessionId", randomNino().nino)
-          .setOrException(UpdateIncomeNamePage, "company")
-          .setOrException(UpdateIncomeIdPage, 1)
-          .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
-
-        when(mockJourneyCacheNewRepository.get(any(), any()))
-          .thenReturn(Future.successful(Some(userAnswers)))
-
-        setup(userAnswers)
-
-        def checkMandatoryValues(): Future[Either[String, Seq[String]]] = mandatoryValuesFuture
-
-        def submitIncomeIrregularHours(
-          employmentId: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]
-        ): Future[Result] =
-          new SUT()
-            .submitIncomeIrregularHours(employmentId)(request)
-      }
-
-      def harnessSetup(mandatoryValuesFuture: Future[Either[String, Seq[String]]]): SubmitIncomeIrregularHoursHarness =
-        new SubmitIncomeIrregularHoursHarness(mandatoryValuesFuture)
-    }
-
-    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
-
-      val result: Future[Result] = SubmitIncomeIrregularHoursHarness
-        .harnessSetup(Future.failed(new Exception))
-        .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = new SUT().submitIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
 
     "sends Ok on successful submit" in {
 
-      val result = SubmitIncomeIrregularHoursHarness
-        .harnessSetup(Future.successful(Right(Seq(employer.name, "123", employer.id.toString))))
-        .submitIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
+      val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeNamePage, "company")
+        .setOrException(UpdateIncomeIdPage, 1)
+        .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
+
+      setup(userAnswers)
+
+      when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+
+      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+      val result = new SUT().submitIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
 
