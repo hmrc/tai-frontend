@@ -155,6 +155,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.clear(any(), any()))
+          .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -184,6 +186,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.clear(any(), any()))
+          .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
