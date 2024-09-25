@@ -18,15 +18,19 @@ package controllers.income
 
 import org.apache.pekko.Done
 import builders.RequestBuilder
+import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.stubbing.ScalaOngoingStubbing
+import pages.income.UpdateNextYearsIncomeNewAmountPage
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
@@ -42,7 +46,8 @@ import utils.BaseSpec
 import views.html.incomes.SameEstimatedPayView
 import views.html.incomes.nextYear._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
@@ -74,12 +79,41 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val currentEstPay = 1234
   val newEstPay = 9999
   val isPension = false
+  val sessionId = "testSessionId"
+  def randomNino(): Nino = new Generator(new Random()).nextNino
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  override def beforeEach(): Unit =
+  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
+
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
+
+  override def beforeEach(): Unit = {
     super.beforeEach()
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository, updateNextYearsIncomeService, mockFeatureFlagService)
+  }
 
   "onPageLoad" must {
     "redirect to the duplicateSubmissionWarning url" when {
@@ -267,10 +301,12 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val testController = createTestIncomeController()
         val newEstPay = "999"
 
-        when(
-          updateNextYearsIncomeService
-            .setNewAmount(meq(newEstPay), meq(employmentID), any())
-        )
+        val expectedResult = Map(UpdateNextYearsIncomeNewAmountPage(employmentID).toString -> newEstPay)
+
+        when(updateNextYearsIncomeService.setNewAmount(meq(newEstPay), meq(employmentID), any()))
+          .thenReturn(Future.successful(expectedResult))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = testController.update(employmentID)(
           RequestBuilder
@@ -459,7 +495,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, 1)
           when(
-            updateNextYearsIncomeService.get(meq(employmentID), meq(nino))(any())
+            updateNextYearsIncomeService.get(meq(employmentID), meq(nino), any[UserAnswers])(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -513,7 +549,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(any(), any(), any())
+          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
         ).thenReturn(
           Future.successful(Done)
         )
@@ -529,7 +565,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(any(), any(), any())
+          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
         ).thenReturn(
           Future.failed(new Exception("Error"))
         )
@@ -549,7 +585,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
 
-      when(updateNextYearsIncomeService.get(meq(employmentID), any())(any()))
+      when(updateNextYearsIncomeService.get(meq(employmentID), any(), any[UserAnswers])(any()))
         .thenReturn(Future.successful(model))
 
       when(updateNextYearsIncomeService.getNewAmount(any(), any()))

@@ -100,8 +100,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
   "decision" must {
     "return ok" in {
-      reset(mockJourneyCacheNewRepository)
-
       val SUT = createSUT
 
       when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -170,8 +168,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "details" must {
     "show 'What Do You Want To Tell Us' Page" when {
       "the request has an authorised session with Tax Year" in {
-        reset(mockJourneyCacheNewRepository)
-
         val taxYear = TaxYear().prev.year.toString
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
@@ -196,8 +192,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submitDetails" must {
     "redirect to the 'Add Telephone Number' page" when {
       "the form submission is valid" in {
-        reset(mockJourneyCacheNewRepository)
-
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val SUT = createSUT
@@ -217,8 +211,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "add income details to the journey cache" when {
       "the form submission is valid" in {
-        reset(mockJourneyCacheNewRepository)
-
         val SUT = createSUT
 
         val incomeDetailsFormData = ("employmentDetails", "test details")
@@ -238,8 +230,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "return Bad Request" when {
       "the form submission is invalid" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomePage, "123")
           .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
@@ -267,8 +257,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "telephoneNumber" must {
     "show the contact by telephone page" when {
       "valid details have been passed" in {
-        reset(mockJourneyCacheNewRepository)
-
         val taxYear = TaxYear().prev.year.toString
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
@@ -294,8 +282,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submitTelephoneNumber" must {
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
           .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "12345678")
@@ -324,8 +310,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
       }
 
       "the request has an authorised session, and telephone number contact has not been approved" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.NoValue)
           .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "$$$$")
@@ -356,8 +340,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
           .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2016")
@@ -383,8 +365,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
       }
 
       "there is a form validation error (too few characters)" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
           .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "1234")
@@ -410,8 +390,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
       }
 
       "there is a form validation error (too many characters)" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
           .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "1234123412341234123412341234123")
@@ -441,8 +419,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
   "checkYourAnswers" must {
     "display check your answers containing populated values from the journey cache" in {
-      reset(mockJourneyCacheNewRepository)
-
       val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
         .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
         .setOrException(UpdatePreviousYearsIncomePage, "whatYouToldUs")
@@ -463,8 +439,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
     }
 
     "redirect to the summary page if a value is missing from the cache " in {
-      reset(mockJourneyCacheNewRepository)
-
       val SUT = createSUT
 
       when(mockJourneyCacheNewRepository.get(any(), any()))
@@ -481,8 +455,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submit your answers" must {
     "invoke the back end 'previous years income details' service and redirect to the confirmation page" when {
       "the request has an authorised session and a telephone number has been provided" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2020")
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
@@ -517,8 +489,6 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
-        reset(mockJourneyCacheNewRepository)
-
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.NoValue)
           .setOrException(UpdatePreviousYearsIncomePage, "whatYouToldUs")
@@ -528,6 +498,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
 
         val sut = createSUT
+        setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
