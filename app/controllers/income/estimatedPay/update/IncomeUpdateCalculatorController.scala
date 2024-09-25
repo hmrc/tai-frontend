@@ -23,7 +23,6 @@ import pages.TrackingJourneyConstantsEstimatedPayPage
 import pages.income.{UpdateIncomeNamePage, _}
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
@@ -74,18 +73,17 @@ class IncomeUpdateCalculatorController @Inject() (
   private def cacheEmploymentDetails(
     id: Int,
     userAnswers: UserAnswers
-  )(maybeEmployment: Option[Employment]): Future[Map[String, String]] =
+  )(maybeEmployment: Option[Employment]): Future[UserAnswers] =
     maybeEmployment match {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
-        val updatedData = userAnswers.data ++ Json.obj(
-          UpdateIncomeNamePage.toString -> employment.name,
-          UpdateIncomeIdPage.toString   -> id.toString,
-          UpdateIncomeTypePage.toString -> incomeType
-        )
-        journeyCacheNewRepository
-          .set(userAnswers.copy(data = updatedData))
-          .map(_ => updatedData.as[Map[String, String]])
+        val updatedUserAnswers = userAnswers
+          .setOrException(UpdateIncomeNamePage, employment.name)
+          .setOrException(UpdateIncomeIdPage, id)
+          .setOrException(UpdateIncomeTypePage, incomeType)
+
+        journeyCacheNewRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
+
       case _ =>
         Future.failed(new RuntimeException("Not able to find employment"))
     }

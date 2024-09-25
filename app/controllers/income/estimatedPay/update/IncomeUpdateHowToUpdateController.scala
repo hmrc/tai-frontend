@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypePage, UpdateIncomeUpdateKeyPage}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
@@ -57,19 +57,16 @@ class IncomeUpdateHowToUpdateController @Inject() (
     id: Int,
     employmentFuture: Future[Option[Employment]],
     userAnswers: UserAnswers
-  ): Future[Map[String, String]] =
+  ): Future[UserAnswers] =
     employmentFuture flatMap {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
-        val cacheMap = Map(
-          UpdateIncomeNamePage.toString -> employment.name,
-          UpdateIncomeIdPage.toString   -> id.toString,
-          UpdateIncomeTypePage.toString -> incomeType
-        )
+        val updatedUserAnswers = userAnswers
+          .setOrException(UpdateIncomeNamePage, employment.name)
+          .setOrException(UpdateIncomeIdPage, id)
+          .setOrException(UpdateIncomeTypePage, incomeType)
 
-        val updatedAnswers = userAnswers.copy(data = userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
-
-        journeyCacheNewRepository.set(updatedAnswers).map(_ => cacheMap)
+        journeyCacheNewRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
 
       case _ => throw new RuntimeException("Not able to find employment")
     }
