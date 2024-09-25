@@ -34,7 +34,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateNextYearsIncomeService @Inject() (
   journeyCacheNewRepository: JourneyCacheNewRepository,
-  @Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService
@@ -65,13 +64,10 @@ class UpdateNextYearsIncomeService @Inject() (
         )
     }
 
-  def get(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheService.currentCache flatMap { _ =>
-      setup(employmentId, nino)
-    }
-
-  def amountKey(employmentId: Int): String =
-    s"${UpdateNextYearsIncomeConstants.NewAmount}-$employmentId"
+  def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
+    hc: HeaderCarrier
+  ): Future[UpdateNextYearsIncomeCacheModel] =
+    journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
 
   def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
     val value = convertCurrencyToInt(Some(newValue)).toString
@@ -97,7 +93,7 @@ class UpdateNextYearsIncomeService @Inject() (
     ec: ExecutionContext
   ): Future[Done] =
     for {
-      _ <- get(employmentId, nino)
+      _ <- get(employmentId, nino, userAnswers)
       newAmount <- getNewAmount(employmentId, userAnswers).flatMap {
                      case Right(amount) => Future.successful(amount)
                      case Left(error)   => Future.failed(new Exception(error))
@@ -107,5 +103,4 @@ class UpdateNextYearsIncomeService @Inject() (
            )
       _ <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
     } yield Done
-
 }
