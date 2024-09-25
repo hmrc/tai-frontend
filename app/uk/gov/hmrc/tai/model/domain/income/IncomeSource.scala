@@ -34,12 +34,12 @@ object IncomeSource {
     EitherT(
       journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).map {
         case Some(userAnswers) =>
-          val idOpt = (userAnswers.data \ UpdateIncomeIdPage).asOpt[String]
+          val idOpt = (userAnswers.data \ UpdateIncomeIdPage).asOpt[Int]
           val nameOpt = (userAnswers.data \ UpdateIncomeNamePage).asOpt[String]
 
           (idOpt, nameOpt) match {
             case (Some(id), Some(name)) =>
-              Right(IncomeSource(id.toInt, name))
+              Right(IncomeSource(id, name))
             case _ =>
               Left("Mandatory journey values not found")
           }
