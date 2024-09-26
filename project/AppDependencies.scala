@@ -6,7 +6,7 @@ private object AppDependencies {
   private val hmrcMongoVersion = "1.9.0"
   private val bootstrapVersion = "8.6.0"
   private val webChatVersion = "1.6.0"
-  private val scaWrapperVersion = "1.12.0"
+  private val scaWrapperVersion = "1.13.0"
   private val mongoFeatureToggleVersion = "1.6.0"
 
   val compile: Seq[ModuleID] = Seq(
