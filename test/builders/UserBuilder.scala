@@ -30,7 +30,7 @@ object UserBuilder {
     AuthedUser(
       Nino(nino.toString()),
       Some(utr),
-      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", principalNino))
+      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", Some(principalNino)))
     )
 
 }

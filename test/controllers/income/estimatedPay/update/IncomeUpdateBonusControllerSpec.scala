@@ -20,7 +20,8 @@ import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
 import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.Mockito.{reset, when}
+import org.mockito.stubbing.OngoingStubbing
 import pages.income._
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
@@ -67,7 +68,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
   val sut = new TestIncomeUpdateBonusController
 
-  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
     when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
       override def invokeBlock[A](
         request: Request[A],

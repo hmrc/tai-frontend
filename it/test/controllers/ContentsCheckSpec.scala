@@ -17,14 +17,15 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, matching, ok, post, put, urlEqualTo, urlMatching}
 import org.jsoup.Jsoup
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.ArgumentMatchers.any
 import org.scalatest.matchers.must.Matchers
+import org.scalatestplus.mockito.MockitoSugar
 import pages.addEmployment._
-import pages.addPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import pages.addPensionProvider._
 import pages.endEmployment._
-import pages.updateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
+import pages.updateEmployment._
 import pages._
 import pages.benefits._
 import pages.income._
@@ -37,6 +38,7 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
+import org.mockito.Mockito.when
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
@@ -558,7 +560,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           MenuItemConfig("id", "NewLayout Item", "link", leftAligned = false, 0, None, None),
           MenuItemConfig("signout", "Sign out", "link", leftAligned = false, 0, None, None)
         ),
-        PtaMinMenuConfig("MenuName", "BackName")
+        PtaMinMenuConfig("MenuName", "BackName"),
+        List.empty
       )
     )
     .toString
@@ -721,8 +724,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
-    when(mockJourneyCacheNewRepository.get(any, any)).thenReturn(Future.successful(Some(userAnswers)))
-    when(mockJourneyCacheNewRepository.set(any)).thenReturn(Future.successful(true))
+    when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))

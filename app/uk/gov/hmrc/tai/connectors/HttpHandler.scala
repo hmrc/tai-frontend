@@ -64,7 +64,17 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
           case UNAUTHORIZED => response
-          case _            => handleResponse(http, url)(response)
+          case _ =>
+            handleResponseEither(http, url)(response)
+              .fold(
+                err =>
+                  err.statusCode match {
+                    case 400 => throw new BadRequestException(badRequestMessage("GET", url, response.body))
+                    case 404 => throw new NotFoundException(notFoundMessage("GET", url, response.body))
+                    case _   => throw err
+                  },
+                identity
+              )
         }
 
       def read(http: String, url: String, res: HttpResponse): HttpResponse = customRead(http, url, res)

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.PreviousYearsIncomeConnector
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import utils.BaseSpec

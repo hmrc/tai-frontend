@@ -21,6 +21,7 @@ import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
+import org.mockito.Mockito.{times, verify, when}
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaxAccountCalculator

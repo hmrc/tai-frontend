@@ -21,7 +21,8 @@ import controllers.ControllerViewTestHelper
 import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.Mockito.{reset, when}
+import org.mockito.stubbing.OngoingStubbing
 import pages.income._
 import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
 import play.api.test.FakeRequest
@@ -64,7 +65,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
-  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
     when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
       override def invokeBlock[A](
         request: Request[A],

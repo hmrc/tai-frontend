@@ -20,7 +20,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@(applicationConfig: ApplicationConfig)(implicit request: Request[_], messages: Messages)
+@(applicationConfig: ApplicationConfig)(implicit requestHeader: RequestHeader, messages: Messages)
 
 @mainTemplate(
     title = messages("global.error.InternalServerError500.tai.title"),

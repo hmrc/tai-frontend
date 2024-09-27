@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._

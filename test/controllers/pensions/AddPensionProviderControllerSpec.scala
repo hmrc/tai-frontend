@@ -19,7 +19,8 @@ package controllers.pensions
 import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import pages.addPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import org.mockito.Mockito.{reset, times, verify, when}
+import pages.addPensionProvider._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers._

@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http.{HttpException, HttpResponse, InternalServerException}

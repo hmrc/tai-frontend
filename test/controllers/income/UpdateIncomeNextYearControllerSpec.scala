@@ -22,7 +22,8 @@ import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.stubbing.ScalaOngoingStubbing
+import org.mockito.Mockito.{reset, when}
+import org.mockito.stubbing.OngoingStubbing
 import pages.income.UpdateNextYearsIncomeNewAmountPage
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
@@ -85,7 +86,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  private def setup(ua: UserAnswers): ScalaOngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
     when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
       override def invokeBlock[A](
         request: Request[A],

@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.OptionT
 import cats.implicits.catsStdInstancesForFuture
+import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service.benefits
 
 import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, EndedCompanyBenefit, GenericBenefit}
 import utils.BaseSpec

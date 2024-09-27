@@ -19,8 +19,8 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchersSugar.eqTo
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{never, reset, times, verify, when}
 import pages.endEmployment._
 import pages._
 import play.api.i18n.Messages

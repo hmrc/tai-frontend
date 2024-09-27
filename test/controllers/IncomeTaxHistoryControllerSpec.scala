@@ -19,6 +19,7 @@ package controllers
 import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
 import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded

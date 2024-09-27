@@ -19,9 +19,10 @@ import builders.{RequestBuilder, UserBuilder}
 import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.{FakeAuthRetrievals, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
-import org.mockito.MockitoSugar
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
 import play.api.libs.json.Json

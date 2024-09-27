@@ -17,16 +17,14 @@
 package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.MockitoSugar.{mock, reset, when}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.scalatest.{BeforeAndAfterEach, OptionValues}
+import org.mockito.Mockito.{reset, when}
 import play.api.{Environment, Mode}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import utils.BaseSpec
 
 import java.io.File
 
-class URLServiceSpec extends AnyWordSpecLike with Matchers with OptionValues with BeforeAndAfterEach {
+class URLServiceSpec extends BaseSpec {
 
   private val testEnv: Environment = Environment(new File(""), classOf[URLServiceSpec].getClassLoader, Mode.Test)
   private val devEnv: Environment = Environment(new File(""), classOf[URLServiceSpec].getClassLoader, Mode.Dev)
@@ -40,25 +38,25 @@ class URLServiceSpec extends AnyWordSpecLike with Matchers with OptionValues wit
   "localFriendlyUrl" should {
     "return the original url if it is in the test environment" in {
       val service = new URLService(mockApplicationConfig, testEnv)
-      service.localFriendlyUrl("A", "B") shouldBe "A"
+      service.localFriendlyUrl("A", "B") mustBe "A"
     }
 
     "return url string with localhost and port if is in development (local/ jenkins) environment" in {
       val service = new URLService(mockApplicationConfig, devEnv)
       when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Dev"))
-      service.localFriendlyUrl("A", "B") shouldBe "http://BA"
+      service.localFriendlyUrl("A", "B") mustBe "http://BA"
     }
 
     "return the original url if is in production environment" in {
       val service = new URLService(mockApplicationConfig, devEnv)
       when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Prod"))
-      service.localFriendlyUrl("A", "B") shouldBe "A"
+      service.localFriendlyUrl("A", "B") mustBe "A"
     }
 
     "if url is absolute then return the original url regardless of environment" in {
       val service = new URLService(mockApplicationConfig, devEnv)
       when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Prod"))
-      service.localFriendlyUrl("http://A", "B") shouldBe "http://A"
+      service.localFriendlyUrl("http://A", "B") mustBe "http://A"
     }
 
   }
