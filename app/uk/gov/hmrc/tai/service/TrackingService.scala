@@ -17,6 +17,8 @@
 package uk.gov.hmrc.tai.service
 
 import cats.implicits._
+import controllers.auth.DataRequest
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
@@ -41,7 +43,11 @@ class TrackingService @Inject() (
 
   def isAnyIFormInProgress(
     nino: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[TimeToProcess] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[TimeToProcess] =
     (
       trackingConnector.getUserTracking(nino),
       successfulJourneyCacheService.currentCache

@@ -20,7 +20,7 @@ import controllers.auth.DataRequest
 import org.apache.pekko.Done
 import pages.QuestionPage
 import play.api.Logging
-import play.api.libs.json.{JsNumber, JsPath, JsString}
+import play.api.libs.json.{JsBoolean, JsNumber, JsPath, JsString, JsValue, Reads}
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
@@ -34,42 +34,62 @@ import scala.concurrent.{ExecutionContext, Future}
 class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnector: JourneyCacheConnector)
     extends Logging {
 
-  def currentValue(key: String)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Option[String]] =
-    currentValueAs[String](key, identity) // if not found in cache , look in userANswers
+  def currentValue(key: String)(implicit
+    hc: HeaderCarrier,
+    request: DataRequest[AnyContent],
+    ec: ExecutionContext,
+    reads: Reads[String]
+  ): Future[Option[String]] =
+    currentValueAs[String](key, identity)
 
   def currentValueAsInt(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Option[Int]] =
+  )(implicit
+    hc: HeaderCarrier,
+    request: DataRequest[AnyContent],
+    ec: ExecutionContext,
+    reads: Reads[Int]
+  ): Future[Option[Int]] =
     currentValueAs[Int](key, string => string.toInt)
 
   def currentValueAsBoolean(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Option[Boolean]] =
+  )(implicit
+    hc: HeaderCarrier,
+    request: DataRequest[AnyContent],
+    ec: ExecutionContext,
+    reads: Reads[Boolean]
+  ): Future[Option[Boolean]] =
     currentValueAs[Boolean](key, string => string.toBoolean)
 
   def currentValueAsDate(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Option[LocalDate]] =
+  )(implicit
+    hc: HeaderCarrier,
+    request: DataRequest[AnyContent],
+    ec: ExecutionContext,
+    reads: Reads[LocalDate]
+  ): Future[Option[LocalDate]] =
     currentValueAs[LocalDate](key, string => LocalDate.parse(string))
 
   def mandatoryJourneyValue(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Either[String, String]] =
+  )(implicit hc: HeaderCarrier): Future[Either[String, String]] =
     mandatoryJourneyValueAs[String](key, identity)
 
   def mandatoryJourneyValueAsInt(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Either[String, Int]] =
+  )(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
     mandatoryJourneyValueAs[Int](key, string => string.toInt)
 
   def mandatoryValueAsBoolean(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Either[String, Boolean]] =
+  )(implicit hc: HeaderCarrier): Future[Either[String, Boolean]] =
     mandatoryJourneyValueAs[Boolean](key, string => string.toBoolean)
 
   def mandatoryValueAsDate(
     key: String
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Either[String, LocalDate]] =
+  )(implicit hc: HeaderCarrier): Future[Either[String, LocalDate]] =
     mandatoryJourneyValueAs[LocalDate](key, string => LocalDate.parse(string))
 
   //
@@ -89,7 +109,11 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
 
   def optionalValues(
     keys: Seq[String]
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Seq[Option[String]]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Seq[Option[String]]] =
     currentCache.map(cache => mappedOptional(cache, keys).toList)
 
   def collectedJourneyValues(mandatoryJourneyValues: Seq[String], optionalValues: Seq[String])(implicit
@@ -141,32 +165,14 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
         println("\n -----> User Answers --- : " + request.userAnswers)
         val a = request.userAnswers.data \ key
         val result = a.toOption map {
-          case JsString(x) => x
-          case JsNumber(y) => y.toInt.toString
-          case _           => throw new RuntimeException("Invalid Type :")
+          case JsString(s)  => s
+          case JsNumber(n)  => n.toInt.toString
+          case JsBoolean(b) => b.toString
+          case _            => throw new RuntimeException("Invalid Value Type")
         }
         result
     }
   }
-  private def valueOrElseUA[A](oldCacheValue: Option[A], key: String)(implicit
-    request: DataRequest[AnyContent]
-  ): Option[A] = {
-    println("\n INSIDE  getValue ------ key " + key)
-    oldCacheValue match {
-      case x @ Some(_) => x
-      case _ =>
-        println("\n ----> Key Not Found in JourneyCache. Trying to retrive from userAnswers")
-        println("\n -----> User Answers --- : " + request.userAnswers)
-        val a = request.userAnswers.data \ key
-        val result = a.toOption map {
-          case JsString(x) => x
-          case JsNumber(y) => y.toInt.toString
-          case _           => throw new RuntimeException("Invalid Type :")
-        }
-        result
-    }
-  }
-
 
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
     optionalValues map { key =>
@@ -176,11 +182,43 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
       }
     }
 
-  def currentCache(implicit hc: HeaderCarrier): Future[Map[String, String]] =
-    journeyCacheConnector.currentCache(journeyName)
+  private def valueOrElseUA[A](oldCacheValue: Option[A], key: String)(implicit
+    request: DataRequest[AnyContent],
+    reads: Reads[A]
+  ): Option[A] =
+    oldCacheValue match {
+      case x @ Some(_) => x
+      case _ =>
+        val page = new QuestionPage[A] {
+          override def path: JsPath = JsPath \ key
+        }
+        request.userAnswers.get(page)
+    }
 
-  def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] =
-    journeyCacheConnector.currentValueAs[T](journeyName, key, convert).map(x => )
+  def currentCache(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Map[String, String]] = {
+
+    val result = journeyCacheConnector.currentCache(journeyName).map {
+      case m if m.isEmpty => request.userAnswers.data.as[Map[String, JsValue]].view.mapValues(_.as[String]).toMap
+      case m              => m
+    }
+    result.map { x =>
+      println("\n ------ CURENT CACHE RESULT  : " + x)
+
+    }
+    result
+  }
+
+  def currentValueAs[T](key: String, convert: String => T)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    request: DataRequest[AnyContent],
+    reads: Reads[T]
+  ): Future[Option[T]] =
+    journeyCacheConnector.currentValueAs[T](journeyName, key, convert).map(x => valueOrElseUA(x, key))
 
   def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit
     hc: HeaderCarrier

@@ -18,7 +18,9 @@ package uk.gov.hmrc.tai.service
 
 import org.apache.pekko.Done
 import cats.implicits._
+import controllers.auth.DataRequest
 import pages.income.{UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage}
+import play.api.mvc.AnyContent
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -45,7 +47,7 @@ class UpdateNextYearsIncomeService @Inject() (
       case None              => false
     }
 
-  def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] =
+  def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Boolean] =
     successfulJourneyCacheService.currentCache.map(_ contains UpdateNextYearsIncomeConstants.Successful)
 
   private def setup(employmentId: Int, nino: Nino)(implicit

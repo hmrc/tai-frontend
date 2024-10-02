@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.cacheResolver.estimatedPay
 
+import controllers.auth.DataRequest
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -27,7 +29,8 @@ trait UpdatedEstimatedPayJourneyCache {
   def journeyCache(key: String = "defaultCacheUpdate", cacheMap: Map[String, String])(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext,
-    journeyCacheService: JourneyCacheService
+    journeyCacheService: JourneyCacheService,
+    request: DataRequest[AnyContent]
   ): Future[Map[String, String]] = {
 
     def yesNoAnswerResponse(cacheToUpdate: Map[String, String], keysToEmpty: List[String]) =

@@ -44,7 +44,7 @@ class TaxAccountSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  def onPageLoad: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def onPageLoad: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val nino = request.taiUser.nino
 
     auditService

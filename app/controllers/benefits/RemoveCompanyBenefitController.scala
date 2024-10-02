@@ -372,7 +372,7 @@ class RemoveCompanyBenefitController @Inject() (
     } yield Redirect(mandatoryJourneyValues.head)
   }
 
-  def confirmation(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     trackingService.isAnyIFormInProgress(user.nino.nino).map { timeToProcess =>
       val (title, summary) = timeToProcess match {

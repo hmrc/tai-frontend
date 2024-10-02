@@ -20,16 +20,15 @@ import cats.implicits._
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
 import pages.income.{UpdateIncomeIdPage, UpdateIncomeWorkingHoursPage}
+import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateIncomeConstants
 import views.html.incomes.WorkingHoursView
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateWorkingHoursController @Inject() (
@@ -83,7 +82,11 @@ class IncomeUpdateWorkingHoursController @Inject() (
             id <- Future.successful(request.userAnswers.get(UpdateIncomeIdPage))
             _ <- {
               println("\n ----- SETTING UpdateIncomeWorkingHoursPage to UserANSWERS ")
-              Future.fromTry(request.userAnswers.set(UpdateIncomeWorkingHoursPage, formData.workingHours.getOrElse("")))
+              val updatedAnswers = request.userAnswers.copy(
+                data = request.userAnswers.data ++ Json
+                  .obj(UpdateIncomeWorkingHoursPage.toString -> JsString(formData.workingHours.getOrElse("")))
+              )
+              journeyCacheNewRepository.set(updatedAnswers)
             }
           } yield id match {
             case Some(id) =>

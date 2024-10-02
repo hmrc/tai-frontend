@@ -323,7 +323,8 @@ class IncomeController @Inject() (
   }
 
   private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call, empId: Int)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: DataRequest[AnyContent]
   ): Future[Result] =
     for {
       currentCache <- journeyCacheService.currentCache
