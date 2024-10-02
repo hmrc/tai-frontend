@@ -49,10 +49,13 @@ class IncomeUpdateWorkingHoursController @Inject() (
     println("\n ====== workingHours :  " + workingHours)
 
     (IncomeSource.create(journeyCacheNewRepository, userAnswers), Future.successful(workingHours)).mapN {
-      case (Right(incomeSource), Some(hours)) =>
+      case (Right(incomeSource), hours) =>
+        println("\n--------------- INSIDE OK ------------- ")
+        println("\n--------------- incomeSource  ------------- " + incomeSource)
+        println("\n--------------- workingHours  ------------- " + hours)
         Ok(
           workingHoursView(
-            HoursWorkedForm.createForm().fill(HoursWorkedForm(Some(hours))),
+            HoursWorkedForm.createForm().fill(HoursWorkedForm(hours)),
             incomeSource.id,
             incomeSource.name
           )

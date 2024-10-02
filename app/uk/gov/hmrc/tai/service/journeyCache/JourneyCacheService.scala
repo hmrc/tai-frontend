@@ -202,13 +202,18 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
   ): Future[Map[String, String]] = {
 
     val result = journeyCacheConnector.currentCache(journeyName).map {
-      case m if m.isEmpty => request.userAnswers.data.as[Map[String, JsValue]].view.mapValues{
-        case JsString(s) => s
-        case JsNumber(s) => s.toInt.toString()
-        case JsBoolean(s) => s.toString()
-        case e => throw new RuntimeException("Error" + e)
-      }.toMap
-      case m              => m
+      case m if m.isEmpty =>
+        request.userAnswers.data
+          .as[Map[String, JsValue]]
+          .view
+          .mapValues {
+            case JsString(s)  => s
+            case JsNumber(s)  => s.toInt.toString()
+            case JsBoolean(s) => s.toString()
+            case e            => throw new RuntimeException("Error" + e)
+          }
+          .toMap
+      case m => m
     }
     result.map { x =>
       println("\n ------ CURENT CACHE RESULT  : " + x)
