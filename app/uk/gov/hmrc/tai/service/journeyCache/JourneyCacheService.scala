@@ -20,7 +20,7 @@ import controllers.auth.DataRequest
 import org.apache.pekko.Done
 import pages.QuestionPage
 import play.api.Logging
-import play.api.libs.json.{JsBoolean, JsNumber, JsPath, JsString, JsValue, Reads}
+import play.api.libs.json._
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
@@ -202,7 +202,12 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
   ): Future[Map[String, String]] = {
 
     val result = journeyCacheConnector.currentCache(journeyName).map {
-      case m if m.isEmpty => request.userAnswers.data.as[Map[String, JsValue]].view.mapValues(_.as[String]).toMap
+      case m if m.isEmpty => request.userAnswers.data.as[Map[String, JsValue]].view.mapValues{
+        case JsString(s) => s
+        case JsNumber(s) => s.toInt.toString()
+        case JsBoolean(s) => s.toString()
+        case e => throw new RuntimeException("Error" + e)
+      }.toMap
       case m              => m
     }
     result.map { x =>
