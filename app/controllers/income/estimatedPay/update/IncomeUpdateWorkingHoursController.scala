@@ -24,10 +24,12 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateIncomeConstants
 import views.html.incomes.WorkingHoursView
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateWorkingHoursController @Inject() (
@@ -41,8 +43,11 @@ class IncomeUpdateWorkingHoursController @Inject() (
   def workingHoursPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
+    println("\n ====== INSIDE IncomeUpdateWorkingHoursController.workingHoursPage (GET) -------")
     val userAnswers = request.userAnswers
+    println("\n ====== USERanswers in workingHoursPage :  " + userAnswers)
     val workingHours = userAnswers.get(UpdateIncomeWorkingHoursPage)
+    println("\n ====== workingHours :  " + workingHours)
 
     (IncomeSource.create(journeyCacheNewRepository, userAnswers), Future.successful(workingHours)).mapN {
       case (Right(incomeSource), Some(hours)) =>
@@ -53,13 +58,16 @@ class IncomeUpdateWorkingHoursController @Inject() (
             incomeSource.name
           )
         )
-      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      case _ =>
+        println("\n--------- GOING DEFAULT onPageLoad")
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
   def handleWorkingHours: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
+    println("\n ====== INSIDE IncomeUpdateWorkingHoursController.handleWorkingHours (POST) -------")
     HoursWorkedForm
       .createForm()
       .bindFromRequest()
@@ -73,8 +81,10 @@ class IncomeUpdateWorkingHoursController @Inject() (
         (formData: HoursWorkedForm) =>
           for {
             id <- Future.successful(request.userAnswers.get(UpdateIncomeIdPage))
-            _ <-
+            _ <- {
+              println("\n ----- SETTING UpdateIncomeWorkingHoursPage to UserANSWERS ")
               Future.fromTry(request.userAnswers.set(UpdateIncomeWorkingHoursPage, formData.workingHours.getOrElse("")))
+            }
           } yield id match {
             case Some(id) =>
               formData.workingHours match {

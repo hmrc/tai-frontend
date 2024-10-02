@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import controllers.auth.AuthenticatedRequest
+@import controllers.auth.DataRequest
 @import includes.{link, ptaHeader}
 @import uk.gov.hmrc.tai.util.Money.pounds
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -24,7 +24,7 @@
 
 @this(main: MainTemplate)
 
-@(model: IncomeSourceSummaryViewModel)(implicit request: AuthenticatedRequest[_], messages: Messages)
+@(model: IncomeSourceSummaryViewModel)(implicit request: DataRequest[_], messages: Messages)
 
 @mainHeading = @{
     if(model.isPension){

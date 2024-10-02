@@ -51,7 +51,7 @@ class IncomeSourceSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =

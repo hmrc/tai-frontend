@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.tai.service.journeyCompletion
 
+import controllers.auth.DataRequest
 import play.api.Logging
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -37,7 +39,7 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
 
   protected def currentValue(
     key: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Boolean] =
+  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext, request: DataRequest[AnyContent]): Future[Boolean] =
     successfulJourneyCacheService.currentValue(key) map (_.isDefined) recover { case NonFatal(exception) =>
       logger.warn(
         s"Failed to retrieve Journey Completion service value for key:$key caused by ${exception.getStackTrace}"
@@ -47,9 +49,15 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
 
   def journeyCompleted(
     incomeId: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Map[String, String]]
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Map[String, String]]
 
-  def hasJourneyCompleted(id: String)(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Boolean]
+  def hasJourneyCompleted(
+    id: String
+  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext, request: DataRequest[AnyContent]): Future[Boolean]
 
 }
 
@@ -59,11 +67,15 @@ class EstimatedPayJourneyCompletionService @Inject() (
 
   override def journeyCompleted(
     incomeId: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Map[String, String]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Map[String, String]] =
     cache(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId")
 
   override def hasJourneyCompleted(
     id: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Boolean] =
+  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext, request: DataRequest[AnyContent]): Future[Boolean] =
     currentValue(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$id")
 }

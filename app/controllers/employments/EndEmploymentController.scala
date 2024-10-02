@@ -125,7 +125,7 @@ class EndEmploymentController @Inject() (
         )(_ => checkDuplicateSubmission(empId))
     }
 
-  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier) =
+  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]) =
     successfulJourneyCacheService
       .currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
       .map {

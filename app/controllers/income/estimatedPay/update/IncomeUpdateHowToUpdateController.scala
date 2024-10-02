@@ -57,7 +57,11 @@ class IncomeUpdateHowToUpdateController @Inject() (
     id: Int,
     employmentFuture: Future[Option[Employment]],
     userAnswers: UserAnswers
-  ): Future[UserAnswers] =
+  ): Future[UserAnswers] = {
+
+    println("------------ inside cacheEmploymentDetails --------")
+    println("------------ Employment id: " + id)
+
     employmentFuture flatMap {
       case Some(employment) =>
         val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
@@ -66,19 +70,23 @@ class IncomeUpdateHowToUpdateController @Inject() (
           .setOrException(UpdateIncomeIdPage, id)
           .setOrException(UpdateIncomeTypePage, incomeType)
 
+        println("\n ---- USERANSWERS BEFORE----" + updatedUserAnswers)
+
         journeyCacheNewRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
 
       case _ => throw new RuntimeException("Not able to find employment")
     }
+  }
 
   def howToUpdatePage(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
-
+    println(" ------------ inside howToUpdate -------- id " + id)
     (employmentService.employment(nino, id) flatMap {
       case Some(employment: Employment) =>
         val incomeToEditFuture = incomeService.employmentAmount(nino, id)
         val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+        println("------- CALLING cacheEmploymentDetails - SAVING emp details to useranswers")
         val cacheEmploymentDetailsFuture =
           cacheEmploymentDetails(id, employmentService.employment(nino, id), request.userAnswers)
 
@@ -101,7 +109,10 @@ class IncomeUpdateHowToUpdateController @Inject() (
     incomeToEdit: EmploymentAmount,
     maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]],
     userAnswers: UserAnswers
-  )(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
+  )(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
+
+    println("\n INSIDE  processHowToUpdatePage --------------------------------")
+    println("\n ID " + id + "----- employmentName-----" + employmentName)
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {
       case (true, false, Right(taxCodeIncomes)) =>
         val howToUpdateFuture = Future.successful(userAnswers.get(UpdateIncomeUpdateKeyPage))
@@ -122,10 +133,11 @@ class IncomeUpdateHowToUpdateController @Inject() (
       case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
       case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome(id)))
     }
+  }
 
   def handleChooseHowToUpdate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
+    println("\n ------- INSIDE  handleChooseHowToUpdate -------------")
     HowToUpdateForm
       .createForm()
       .bindFromRequest()
@@ -147,6 +159,8 @@ class IncomeUpdateHowToUpdateController @Inject() (
           journeyCacheNewRepository.set(updatedAnswers).map { _ =>
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
+                println("\n ------ USERANSWERS in handleChooseHowToUpdate  : " + request.userAnswers)
+                println("----- MOVING TO workingHoursPage >>>>>>>>")
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())
               case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
             }
