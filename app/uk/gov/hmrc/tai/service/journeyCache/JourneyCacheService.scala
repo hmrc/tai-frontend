@@ -148,6 +148,25 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
         result
     }
   }
+  private def valueOrElseUA[A](oldCacheValue: Option[A], key: String)(implicit
+    request: DataRequest[AnyContent]
+  ): Option[A] = {
+    println("\n INSIDE  getValue ------ key " + key)
+    oldCacheValue match {
+      case x @ Some(_) => x
+      case _ =>
+        println("\n ----> Key Not Found in JourneyCache. Trying to retrive from userAnswers")
+        println("\n -----> User Answers --- : " + request.userAnswers)
+        val a = request.userAnswers.data \ key
+        val result = a.toOption map {
+          case JsString(x) => x
+          case JsNumber(y) => y.toInt.toString
+          case _           => throw new RuntimeException("Invalid Type :")
+        }
+        result
+    }
+  }
+
 
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
     optionalValues map { key =>
@@ -161,7 +180,7 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     journeyCacheConnector.currentCache(journeyName)
 
   def currentValueAs[T](key: String, convert: String => T)(implicit hc: HeaderCarrier): Future[Option[T]] =
-    journeyCacheConnector.currentValueAs[T](journeyName, key, convert)
+    journeyCacheConnector.currentValueAs[T](journeyName, key, convert).map(x => )
 
   def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit
     hc: HeaderCarrier
