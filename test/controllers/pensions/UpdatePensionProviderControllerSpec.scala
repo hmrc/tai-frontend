@@ -88,6 +88,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       when(
         journeyCacheService.collectedJourneyValues(Seq(any()), Seq(any()))(
           any(),
+          any(),
           any()
         )
       )
@@ -104,6 +105,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
       when(
         journeyCacheService.collectedJourneyValues(Seq(any()), Seq(any()))(
+          any(),
           any(),
           any()
         )
@@ -123,7 +125,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "return bad request" when {
       "no options are selected" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
@@ -137,7 +139,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to tes-1 iform" when {
       "option NO is selected" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         val result = createController.handleDoYouGetThisPension()(
@@ -154,7 +156,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
 
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
@@ -182,7 +184,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
           journeyCacheService.collectedJourneyValues(
             meq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
             meq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any(), any())
+          )(any(), any(), any())
         )
           .thenReturn(Future.successful(Right((Seq(pensionName, pensionId), Seq(None)))))
 
@@ -200,7 +202,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
           journeyCacheService.collectedJourneyValues(
             meq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
             meq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any(), any())
+          )(any(), any(), any())
         )
           .thenReturn(Future.successful(Right((cache, optionalCache))))
 
@@ -217,7 +219,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
           journeyCacheService.collectedJourneyValues(
             meq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
             meq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any(), any())
+          )(any(), any(), any())
         )
           .thenReturn(Future.successful(Left("Data missing from cache")))
 
@@ -252,7 +254,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         val pensionDetailsFormData = ("pensionDetails", "")
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
         val result = createController.submitWhatDoYouWantToTellUs(
@@ -272,7 +274,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
           .thenReturn(Future.successful(Right(pensionId.toInt)))
-        when(journeyCacheService.optionalValues(any())(any(), any()))
+        when(journeyCacheService.optionalValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Seq(None, None)))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
@@ -284,7 +286,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
           .thenReturn(Future.successful(Right(pensionId.toInt)))
-        when(journeyCacheService.optionalValues(any())(any(), any()))
+        when(journeyCacheService.optionalValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
@@ -298,7 +300,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
           .thenReturn(Future.successful(Left("Data missing from the cache")))
-        when(journeyCacheService.optionalValues(any())(any(), any()))
+        when(journeyCacheService.optionalValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
@@ -361,7 +363,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       "there is a form validation error (standard form validation)" in {
 
         val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any(), any())).thenReturn(Future.successful(cache))
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -379,7 +381,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         val controller = createController
 
         val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any(), any(), any())).thenReturn(Future.successful(cache))
 
         val tooFewCharsResult = controller.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -409,7 +411,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "show summary page" when {
       "valid details are present in journey cache" in {
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any(), any())).thenReturn(
           Future.successful(
             Right(
               (
@@ -434,7 +436,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         journeyCacheService.collectedJourneyValues(
           any(classOf[scala.collection.immutable.List[String]]),
           any(classOf[scala.collection.immutable.List[String]])
-        )(any(), any())
+        )(any(), any(), any())
       ).thenReturn(
         Future.successful(Left("An error has occurred"))
       )
@@ -453,7 +455,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "Yes", Some("123456789"))
         val empId = 1
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any(), any())).thenReturn(
           Future.successful(
             Right(
               (
@@ -487,7 +489,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "No", None)
         val empId = 1
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any())).thenReturn(
+        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any(), any())).thenReturn(
           Future.successful(
             Right(
               (
@@ -549,7 +551,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       when(
         successfulJourneyCacheService.currentValue(
           meq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId")
-        )(any())
+        )(any(), any(), any(), any())
       )
         .thenReturn(Future.successful(None))
       journeyCacheCall
@@ -566,7 +568,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       when(
         successfulJourneyCacheService.currentValue(
           meq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId")
-        )(any())
+        )(any(), any(), any(), any())
       )
         .thenReturn(Future.successful(Some("true")))
       journeyCacheCall
@@ -601,7 +603,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
   "duplicateSubmissionWarning" must {
     "show duplicateSubmissionWarning view" in {
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
         .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
@@ -613,7 +615,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
     "redirect to the summary page if a value is missing from the cache " in {
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
         .thenReturn(Future.successful(Left("Data missing from cache")))
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
@@ -626,7 +628,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
   "submitDuplicateSubmissionWarning" must {
 
     def journeyCacheCall =
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
         .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
     "redirect to the update remove employment decision page" when {
@@ -664,7 +666,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
+        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
 
         val result =

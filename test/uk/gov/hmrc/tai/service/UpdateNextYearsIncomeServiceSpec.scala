@@ -16,17 +16,19 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.apache.pekko.Done
 import controllers.FakeTaiPlayApplication
+import controllers.auth.{AuthedUser, DataRequest}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
 import pages.income.{UpdateIncomeNewAmountPage, UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage}
+import play.api.mvc.AnyContent
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
@@ -322,11 +324,22 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
   }
 
+  protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
+    fakeRequest,
+    taiUser = AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
+
   "isEstimatedPayJourneyComplete" must {
     "be true when a journey is successful" in {
       val service = new UpdateNextYearsIncomeServiceTest
 
-      when(successfulJourneyCacheService.currentCache(any()))
+      when(successfulJourneyCacheService.currentCache(any(), any(), any()))
         .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
 
       service.isEstimatedPayJourneyComplete.futureValue mustBe true
@@ -335,7 +348,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     "be false when a journey is incomplete" in {
       val service = new UpdateNextYearsIncomeServiceTest
 
-      when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(successfulJourneyCacheService.currentCache(any(), any(), any()))
+        .thenReturn(Future.successful(Map.empty[String, String]))
 
       service.isEstimatedPayJourneyComplete.futureValue mustBe false
     }

@@ -16,9 +16,12 @@
 
 package views.html.incomeTaxComparison
 
+import controllers.auth.{AuthedUser, DataRequest}
 import play.api.i18n.{Lang, Messages}
+import play.api.mvc.AnyContent
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
@@ -232,11 +235,22 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
   private lazy val incomeTaxComparisonViewModelSame =
     buildIncomeTaxComparisonViewModel(currentYearItem, currentYearItem)
 
+  private val dataRequest: DataRequest[AnyContent] = DataRequest(
+    fakeRequest,
+    taiUser = AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
+
   def viewWithMore(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelMore, appConfig)(authRequest, currMessages)
+    main(incomeTaxComparisonViewModelMore, appConfig)(dataRequest, currMessages)
   def viewWithLess(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelLess, appConfig)(authRequest, currMessages)
+    main(incomeTaxComparisonViewModelLess, appConfig)(dataRequest, currMessages)
   def viewWithSame(implicit currMessages: Messages): Html =
-    main(incomeTaxComparisonViewModelSame, appConfig)(authRequest, currMessages)
+    main(incomeTaxComparisonViewModelSame, appConfig)(dataRequest, currMessages)
   override def view: Html = viewWithSame
 }

@@ -16,14 +16,16 @@
 
 package uk.gov.hmrc.tai.service
 
+import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.when
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
+import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 
@@ -37,6 +39,17 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with TaxAccountSummaryTestDa
     Mockito.reset(taxAccountService)
     Mockito.reset(employmentService)
   }
+
+  protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
+    fakeRequest,
+    taiUser = AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
 
   "TaxAccountSummaryServiceSpec" should {
     "return a RuntimeException if ceasedEmployments fails" in {
@@ -238,7 +251,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with TaxAccountSummaryTestDa
       Future.successful(nonTaxCodeIncome)
     )
 
-    when(trackingService.isAnyIFormInProgress(any())(any(), any())).thenReturn(Future.successful(ThreeWeeks))
+    when(trackingService.isAnyIFormInProgress(any())(any(), any(), any())).thenReturn(Future.successful(ThreeWeeks))
   }
 
 }

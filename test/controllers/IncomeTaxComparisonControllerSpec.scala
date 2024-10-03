@@ -167,7 +167,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(Seq.empty[CodingComponent]))
     when(employmentService.employments(any(), meq(TaxYear()))(any()))
       .thenReturn(Future.successful(Seq(employment)))
-    when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
+    when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any(), any())).thenReturn(Future.successful(false))
   }
 
   "onPageLoad" must {

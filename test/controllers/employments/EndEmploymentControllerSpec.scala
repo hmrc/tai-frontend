@@ -837,7 +837,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
   }
   "onPageLoad is called" must {
     "redirect to employmentUpdateRemove when there is no employment id in the user answers and no tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(None))
       val empId = 1
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
@@ -855,7 +855,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to employmentUpdateRemove when there is an employment id in the user answers and no tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(None))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
@@ -874,7 +874,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to duplicateSubmissionWarning when there is no employment id in the user answers and a tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(Some("test")))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
@@ -892,7 +892,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to duplicateSubmissionWarning when there is an employment id in the user answers and a tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any()))
+      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(Some("test")))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]

@@ -16,9 +16,11 @@
 
 package views.html
 
-import org.jsoup.Jsoup
-import play.api.mvc.Call
+import controllers.auth.DataRequest
+import play.api.mvc.{AnyContent, Call}
+import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.service.{NoTimeToProcess, ThreeWeeks}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, IncomeSourceViewModel, TaxAccountSummaryViewModel, TaxCodeViewModel}
@@ -26,7 +28,12 @@ import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, IncomeSourceViewMod
 import scala.collection.immutable.ListMap
 
 class IncomeTaxSummaryViewSpec extends TaiViewSpec {
-
+  protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
+    FakeRequest(),
+    taiUser = authedUser,
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
   "Income tax summary page" must {
 
     behave like pageWithTitle("title")

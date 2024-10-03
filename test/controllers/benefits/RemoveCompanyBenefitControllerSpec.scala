@@ -1095,7 +1095,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the request has an authorised session" in {
         val sut = createSUT
 
-        when(trackingService.isAnyIFormInProgress(any())(any(), any()))
+        when(trackingService.isAnyIFormInProgress(any())(any(), any(), any()))
           .thenReturn(Future.successful(ThreeWeeks))
 
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
