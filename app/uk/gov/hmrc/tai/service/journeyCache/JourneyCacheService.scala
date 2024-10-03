@@ -74,25 +74,40 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
 
   def mandatoryJourneyValue(
     key: String
-  )(implicit hc: HeaderCarrier): Future[Either[String, String]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Either[String, String]] =
     mandatoryJourneyValueAs[String](key, identity)
 
   def mandatoryJourneyValueAsInt(
     key: String
-  )(implicit hc: HeaderCarrier): Future[Either[String, Int]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Either[String, Int]] =
     mandatoryJourneyValueAs[Int](key, string => string.toInt)
 
   def mandatoryValueAsBoolean(
     key: String
-  )(implicit hc: HeaderCarrier): Future[Either[String, Boolean]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Either[String, Boolean]] =
     mandatoryJourneyValueAs[Boolean](key, string => string.toBoolean)
 
   def mandatoryValueAsDate(
     key: String
-  )(implicit hc: HeaderCarrier): Future[Either[String, LocalDate]] =
+  )(implicit
+    hc: HeaderCarrier,
+    executionContext: ExecutionContext,
+    request: DataRequest[AnyContent]
+  ): Future[Either[String, LocalDate]] =
     mandatoryJourneyValueAs[LocalDate](key, string => LocalDate.parse(string))
 
-  //
   def mandatoryJourneyValues(
     keys: Seq[String]
   )(implicit
@@ -208,8 +223,8 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
           .view
           .mapValues {
             case JsString(s)  => s
-            case JsNumber(s)  => s.toInt.toString()
-            case JsBoolean(s) => s.toString()
+            case JsNumber(s)  => s.toInt.toString
+            case JsBoolean(s) => s.toString
             case e            => throw new RuntimeException("Error" + e)
           }
           .toMap
@@ -231,9 +246,23 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     journeyCacheConnector.currentValueAs[T](journeyName, key, convert).map(x => valueOrElseUA(x, key))
 
   def mandatoryJourneyValueAs[T](key: String, convert: String => T)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    ec: ExecutionContext,
+    request: DataRequest[AnyContent],
+    reads: Reads[T]
   ): Future[Either[String, T]] =
-    journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert)
+    journeyCacheConnector.mandatoryJourneyValueAs[T](journeyName, key, convert).flatMap {
+      case Right(value) =>
+        Future.successful(Right(value))
+
+      case Left(errorMessage) =>
+        Future.successful {
+          valueOrElseUA(None, key) match {
+            case Some(value) => Right(value)
+            case None        => Left(errorMessage)
+          }
+        }
+    }
 
   def cache(key: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String, String]] =
     journeyCacheConnector.cache(journeyName, Map(key -> value))

@@ -272,7 +272,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "show the contact by telephone page" when {
       "an authorised request is received" in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(pensionId.toInt)))
         when(journeyCacheService.optionalValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Seq(None, None)))
@@ -284,7 +284,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       }
       "an authorised request is received and we have cached data" in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(pensionId.toInt)))
         when(journeyCacheService.optionalValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
@@ -298,7 +298,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
       "redirect to the tax summary page if a value is missing from the cache " in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
           .thenReturn(Future.successful(Left("Data missing from the cache")))
         when(journeyCacheService.optionalValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))

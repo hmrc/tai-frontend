@@ -172,7 +172,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "valid inputs are passed" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -211,7 +211,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -227,7 +227,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
       "employment return None" in {
         val testController = createTestIncomeController()
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -444,7 +444,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -458,7 +458,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "pay to date cannot be determined, due to no annual account records on the income source" in {
         val testController = createTestIncomeController()
         val employment = employmentWithAccounts(Nil)
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -477,7 +477,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
@@ -485,7 +485,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(
           journeyCacheService.mandatoryJourneyValueAsInt(
             meq(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId")
-          )(any())
+          )(any(), any(), any())
         )
           .thenReturn(Future.successful(Left("Error")))
 
@@ -500,7 +500,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(cachePayToDate)
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -508,7 +508,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(
           journeyCacheService.mandatoryJourneyValueAsInt(
             meq(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId")
-          )(any())
+          )(any(), any(), any())
         )
           .thenReturn(Future.successful(Left("Error")))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -522,7 +522,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
       "employment return None" in {
         val testController = createTestIncomeController()
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -540,12 +540,12 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     "user navigates backwards" in {
       val testController = createTestIncomeController()
 
-      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.NewAmountKey))(any()))
+      when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.NewAmountKey))(any(), any(), any()))
         .thenReturn(Future.failed(new RuntimeException))
       when(
         journeyCacheService.mandatoryJourneyValueAsInt(
           meq(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId")
-        )(any())
+        )(any(), any(), any())
       )
         .thenReturn(cachePayToDate)
       when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
@@ -560,7 +560,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
     "Redirect to /Income-details" when {
       "cache is empty" in {
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
           .thenReturn(Future.successful(Left("empty cache")))
         val testController = createTestIncomeController()
         val result =
@@ -680,7 +680,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "valid inputs are passed" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -901,7 +901,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(cachedUpdateIncomeNewAmountKey)
+        when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
+          .thenReturn(cachedUpdateIncomeNewAmountKey)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -922,7 +923,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(cachedUpdateIncomeNewAmountKey)
+        when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
+          .thenReturn(cachedUpdateIncomeNewAmountKey)
 
         val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -935,7 +937,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(cachedUpdateIncomeNewAmountKey)
+        when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
+          .thenReturn(cachedUpdateIncomeNewAmountKey)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -947,7 +950,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
       "employment return None" in {
         val testController = createTestIncomeController()
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(cachedUpdateIncomeNewAmountKey)
+        when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
+          .thenReturn(cachedUpdateIncomeNewAmountKey)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -962,7 +966,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "nohing is present in the cache" in {
 
         val testController = createTestIncomeController()
-        when(journeyCacheService.mandatoryJourneyValue(any())(any())).thenReturn(emptyCache)
+        when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any())).thenReturn(emptyCache)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -985,7 +989,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         val employmentAmount =
           EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None)
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -1000,7 +1004,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         val employmentAmount =
           EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, isLive = false)
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -1027,7 +1031,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
             isLive = false,
             isOccupationalPension = true
           )
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -1074,7 +1078,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
           .thenReturn(Future.successful(Right(Seq("1"))))
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any())).thenReturn(Future.successful(Right(1)))
+        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
+          .thenReturn(Future.successful(Right(1)))
 
         val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
