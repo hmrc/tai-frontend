@@ -72,17 +72,18 @@ class IncomeSourceSummaryController @Inject() (
             cacheUpdatedIncomeAmount
           ) =>
         val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-
+        println("\nRTI AVAIL=" + rtiAvailable)
+        println("\nRTI ddd=" + employment)
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-          empId,
-          request.fullName,
-          taxCodeIncomes,
-          employment,
-          benefitsDetails,
-          estimatedPayCompletion,
-          rtiAvailable,
-          applicationConfig,
-          cacheUpdatedIncomeAmount
+          empId = empId,
+          displayName = request.fullName,
+          taxCodeIncomeSources = taxCodeIncomes,
+          employment = employment,
+          benefits = benefitsDetails,
+          estimatedPayJourneyCompleted = estimatedPayCompletion,
+          rtiAvailable = rtiAvailable,
+          applicationConfig = applicationConfig,
+          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {

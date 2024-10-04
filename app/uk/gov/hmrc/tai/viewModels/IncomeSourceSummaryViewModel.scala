@@ -59,10 +59,14 @@ object IncomeSourceSummaryViewModel {
     applicationConfig: ApplicationConfig,
     cacheUpdatedIncomeAmount: Option[Int]
   )(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment       <- latestAnnualAccount.latestPayment
-    } yield latestPayment.amountYearToDate
+    } yield {
+      println("\nPAYMENTS:" + latestAnnualAccount.payments)
+      latestPayment.amountYearToDate
+    }
 
     val taxCodeIncomeSource = taxCodeIncomeSources
       .find(_.employmentId.contains(empId))

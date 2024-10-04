@@ -22,7 +22,9 @@ import uk.gov.hmrc.domain.Nino
 case class AuthedUser(
   nino: Nino,
   utr: Option[String],
-  trustedHelper: Option[TrustedHelper]
+  trustedHelper: Option[TrustedHelper],
+  firstName: Option[String],
+  lastName: Option[String]
 )
 
 object AuthedUser {
@@ -30,11 +32,15 @@ object AuthedUser {
   def apply(
     nino: Nino,
     trustedHelper: TrustedHelper,
-    saUtr: Option[String]
+    saUtr: Option[String],
+    firstName: Option[String] = None,
+    lastName: Option[String] = None
   ): AuthedUser =
     AuthedUser(
       nino = Nino(trustedHelper.principalNino.getOrElse(nino.nino)),
       utr = saUtr,
-      trustedHelper = Some(trustedHelper)
+      trustedHelper = Some(trustedHelper),
+      firstName = firstName,
+      lastName = lastName
     )
 }

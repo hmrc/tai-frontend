@@ -77,6 +77,8 @@ trait BaseSpec
         AuthedUser(
           Nino(nino.toString()),
           Some("saUtr"),
+          None,
+          None,
           None
         )
       override def invokeBlock[A](
@@ -96,6 +98,8 @@ trait BaseSpec
           AuthedUser(
             Nino(nino.toString()),
             Some("saUtr"),
+            None,
+            None,
             None
           )
 

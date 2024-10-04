@@ -17,14 +17,14 @@
 package controllers.benefits
 
 import builders.RequestBuilder
-import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import controllers.auth.{AuthedUser, DataRequest}
+import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.mockito.stubbing.OngoingStubbing
-import pages.benefits._
 import pages._
+import pages.benefits._
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc._
@@ -34,8 +34,8 @@ import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
@@ -102,6 +102,8 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
             taiUser = AuthedUser(
               Nino(nino.toString()),
               Some("saUtr"),
+              None,
+              None,
               None
             ),
             fullName = "",

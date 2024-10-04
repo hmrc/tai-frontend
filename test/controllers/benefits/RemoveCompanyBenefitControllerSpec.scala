@@ -20,24 +20,24 @@ import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
 import controllers.auth.{AuthedUser, DataRequest}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.ArgumentMatcher
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.mockito.stubbing.OngoingStubbing
+import pages.benefits._
 import pages.{EndCompanyBenefitsTelephoneTesterNumberPage, EndCompanyBenefitsValueTesterPage}
-import pages.benefits.{EndCompanyBenefitsStopDatePage, _}
 import play.api.i18n.Messages
+import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.Json
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
-import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.Employment
-import play.api.libs.json.Format.GenericFormat
 import uk.gov.hmrc.tai.model.domain.income.Live
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
@@ -118,6 +118,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
             taiUser = AuthedUser(
               Nino(nino.toString()),
               Some("saUtr"),
+              None,
+              None,
               None
             ),
             fullName = "",

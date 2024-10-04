@@ -24,13 +24,15 @@ object UserBuilder {
   val nino: Nino = new Generator().nextNino
 
   def apply(utr: String = "utr"): AuthedUser =
-    AuthedUser(Nino(nino.toString()), Some(utr), None)
+    AuthedUser(Nino(nino.toString()), Some(utr), None, None, None)
 
   def apply(utr: String, principalName: String, principalNino: String): AuthedUser =
     AuthedUser(
       Nino(nino.toString()),
       Some(utr),
-      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", Some(principalNino)))
+      Some(TrustedHelper(principalName, "attorneyName", "returnLinkUrl", Some(principalNino))),
+      None,
+      None
     )
 
 }

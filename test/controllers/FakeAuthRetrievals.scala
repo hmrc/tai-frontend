@@ -31,7 +31,9 @@ object FakeAuthRetrievals extends AuthRetrievals {
     AuthedUser(
       Nino(nino.toString()),
       Some("saUtr"),
-      None
+      None,
+      Some("First"),
+      Some("Last")
     )
   val cc: ControllerComponents = stubControllerComponents()
 
