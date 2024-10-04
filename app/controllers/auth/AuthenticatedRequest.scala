@@ -24,4 +24,5 @@ case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser, per
   def fullName: String = person.name
 }
 
-case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
+case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUserWithName)
+    extends WrappedRequest[A](request)

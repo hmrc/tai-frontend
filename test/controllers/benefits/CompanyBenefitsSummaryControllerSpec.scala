@@ -126,8 +126,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
             taiUser = AuthedUser(
               Nino(nino.toString()),
               Some("saUtr"),
-              None,
-              None,
               None
             ),
             fullName = "",

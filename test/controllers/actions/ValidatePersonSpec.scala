@@ -68,7 +68,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](deceasedPerson))
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi /*, errorPagesHandler*/ )
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi)
 
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
@@ -86,7 +86,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi /*, errorPagesHandler*/ )
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi)
 
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
@@ -94,7 +94,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         status(result) mustBe OK
       }
 
-      "the person details retrieval fails" must {
+      "the person details retrieval fails with 5xx error" must {
         "return a default person details object" in {
           when(personService.personDetails(any())(any(), any()))
             .thenReturn(
@@ -103,11 +103,28 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
               )
             )
 
-          val validatePerson = new ValidatePersonImpl(personService, messagesApi /*, errorPagesHandler*/ )
+          val validatePerson = new ValidatePersonImpl(personService, messagesApi)
           val controller = new Harness(validatePerson)
           val result = controller.onPageLoad()(fakeRequest)
           status(result) mustBe OK
-          contentAsString(result) mustBe "First Last/"
+          contentAsString(result) mustBe "first last/"
+        }
+      }
+
+      "the person details retrieval fails with 4xx error" must {
+        "return a default person details object" in {
+          when(personService.personDetails(any())(any(), any()))
+            .thenReturn(
+              EitherT.leftT[Future, Person](
+                UpstreamErrorResponse("Failed to get person designatory details", BAD_REQUEST)
+              )
+            )
+
+          val validatePerson = new ValidatePersonImpl(personService, messagesApi)
+          val controller = new Harness(validatePerson)
+          val result = controller.onPageLoad()(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result) mustBe "first last/"
         }
       }
     }

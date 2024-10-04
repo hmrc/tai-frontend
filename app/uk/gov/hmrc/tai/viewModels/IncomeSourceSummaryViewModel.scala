@@ -63,10 +63,7 @@ object IncomeSourceSummaryViewModel {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment       <- latestAnnualAccount.latestPayment
-    } yield {
-      println("\nPAYMENTS:" + latestAnnualAccount.payments)
-      latestPayment.amountYearToDate
-    }
+    } yield latestPayment.amountYearToDate
 
     val taxCodeIncomeSource = taxCodeIncomeSources
       .find(_.employmentId.contains(empId))

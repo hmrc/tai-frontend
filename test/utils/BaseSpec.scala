@@ -16,7 +16,7 @@
 
 package utils
 import builders.UserBuilder
-import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest, InternalAuthenticatedRequest}
+import controllers.auth._
 import controllers.{FakeAuthRetrievals, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.Mockito.{reset, when}
@@ -77,8 +77,6 @@ trait BaseSpec
         AuthedUser(
           Nino(nino.toString()),
           Some("saUtr"),
-          None,
-          None,
           None
         )
       override def invokeBlock[A](
@@ -95,7 +93,7 @@ trait BaseSpec
     when(mockAuthJourney.authWithoutValidatePerson).thenReturn(
       new ActionBuilder[InternalAuthenticatedRequest, AnyContent] {
         private val user =
-          AuthedUser(
+          AuthedUserWithName(
             Nino(nino.toString()),
             Some("saUtr"),
             None,

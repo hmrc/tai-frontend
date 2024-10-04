@@ -68,7 +68,7 @@ class FakeAuthJourney(
       block(
         InternalAuthenticatedRequest(
           authRequest.request,
-          authRequest.taiUser
+          authRequest.taiUser.toAuthedUserWithName(None, None)
         )
       )
     }

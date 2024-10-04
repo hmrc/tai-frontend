@@ -39,8 +39,6 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
     AuthedUser(
       Nino(nino.toString()),
       Some("saUtr"),
-      None,
-      None,
       None
     ),
     "",

@@ -102,8 +102,6 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
             taiUser = AuthedUser(
               Nino(nino.toString()),
               Some("saUtr"),
-              None,
-              None,
               None
             ),
             fullName = "",

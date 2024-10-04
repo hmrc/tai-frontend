@@ -37,7 +37,6 @@ trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, Authent
 class ValidatePersonImpl @Inject() (
   personService: PersonService,
   val messagesApi: MessagesApi
-//  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends ValidatePerson with I18nSupport {
 
@@ -50,17 +49,16 @@ class ValidatePersonImpl @Inject() (
 
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
-    println("\nHERE name:" + request.taiUser.firstName)
     // TODO: PertaxAuthAction is already checking MCI_RECORD. isDeceased check can also be removed once DDCNL-8734 is complete
     person.transform {
       case Right(person) if person.isDeceased =>
         Left(Redirect(routes.DeceasedController.deceased()))
-      case Right(person) => Right(AuthenticatedRequest(request, request.taiUser, person))
+      case Right(person) => Right(AuthenticatedRequest(request, request.taiUser.toAuthedUser, person))
       case Left(_) =>
         Right(
           AuthenticatedRequest(
             request,
-            request.taiUser,
+            request.taiUser.toAuthedUser,
             Person(
               nino = personNino,
               firstName = request.taiUser.firstName.getOrElse(""),
@@ -70,12 +68,6 @@ class ValidatePersonImpl @Inject() (
             )
           )
         )
-//        Left(
-//          errorPagesHandler.internalServerError("Failed to get person designatory details")(
-//            request,
-//            request2Messages(request)
-//          )
-//        )
     }.value
   }
   override protected def executionContext: ExecutionContext = ec

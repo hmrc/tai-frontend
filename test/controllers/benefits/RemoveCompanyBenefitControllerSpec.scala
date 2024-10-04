@@ -118,8 +118,6 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
             taiUser = AuthedUser(
               Nino(nino.toString()),
               Some("saUtr"),
-              None,
-              None,
               None
             ),
             fullName = "",
