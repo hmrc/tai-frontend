@@ -55,7 +55,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
 
   class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
     def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { r =>
-      Ok(Html(r.person.name + "/" + r.person.address.line1.getOrElse("")))
+      Ok(Html(r.person.name + "/" + r.person.address.line1.getOrElse("empty")))
     }
   }
 
@@ -95,7 +95,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
       }
 
       "the person details retrieval fails with 5xx error" must {
-        "return a default person details object" in {
+        "return auth name, empty address and nino" in {
           when(personService.personDetails(any())(any(), any()))
             .thenReturn(
               EitherT.leftT[Future, Person](
@@ -107,12 +107,12 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
           val controller = new Harness(validatePerson)
           val result = controller.onPageLoad()(fakeRequest)
           status(result) mustBe OK
-          contentAsString(result) mustBe "first last/"
+          contentAsString(result) mustBe "first last/empty"
         }
       }
 
       "the person details retrieval fails with 4xx error" must {
-        "return a default person details object" in {
+        "return auth name, empty address and nino" in {
           when(personService.personDetails(any())(any(), any()))
             .thenReturn(
               EitherT.leftT[Future, Person](
@@ -124,7 +124,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
           val controller = new Harness(validatePerson)
           val result = controller.onPageLoad()(fakeRequest)
           status(result) mustBe OK
-          contentAsString(result) mustBe "first last/"
+          contentAsString(result) mustBe "first last/empty"
         }
       }
     }

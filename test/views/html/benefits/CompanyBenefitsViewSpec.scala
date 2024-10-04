@@ -27,7 +27,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
+import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+import uk.gov.hmrc.tai.viewModels.CompanyBenefitViewModel
 
 import java.time.Instant
 
