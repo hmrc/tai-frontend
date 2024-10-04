@@ -50,23 +50,23 @@ class AuthRetrievalsImpl @Inject() (
     authorised().retrieve(
       Retrievals.nino and Retrievals.saUtr and Retrievals.trustedHelper and Retrievals.name
     ) {
-      case optNino ~ saUtr ~ Some(helper) ~ Some(name) =>
+      case optNino ~ saUtr ~ Some(helper) ~ name =>
         val user = AuthedUser.applyWithName(
           uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
           helper,
           saUtr,
-          name.name,
-          name.lastName
+          name.flatMap(_.name),
+          name.flatMap(_.lastName)
         )
         block(InternalAuthenticatedRequest(request, user))
 
-      case optNino ~ saUtr ~ _ ~ Some(name) =>
+      case optNino ~ saUtr ~ _ ~ name =>
         lazy val user = AuthedUserWithName(
           uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
           saUtr,
           None,
-          name.name,
-          name.lastName
+          name.flatMap(_.name),
+          name.flatMap(_.lastName)
         )
         block(InternalAuthenticatedRequest(request, user))
       case _ => throw new RuntimeException("Can't find credentials for user")
