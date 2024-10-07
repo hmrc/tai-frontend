@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.{AuthRetrievals, AuthedUser, InternalAuthenticatedRequest}
+import controllers.auth.{AuthRetrievals, AuthedUser, AuthedUserWithName, InternalAuthenticatedRequest}
 import play.api.mvc._
 import play.api.test.Helpers.stubControllerComponents
 import uk.gov.hmrc.domain.{Generator, Nino}
@@ -33,13 +33,23 @@ object FakeAuthRetrievals extends AuthRetrievals {
       Some("saUtr"),
       None
     )
+
+  val userWithName: AuthedUserWithName =
+    AuthedUserWithName(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None,
+      Some("first"),
+      Some("last")
+    )
+
   val cc: ControllerComponents = stubControllerComponents()
 
   override def invokeBlock[A](
     request: Request[A],
     block: InternalAuthenticatedRequest[A] => Future[Result]
   ): Future[Result] =
-    block(InternalAuthenticatedRequest(request, user))
+    block(InternalAuthenticatedRequest(request, userWithName))
   override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = cc.executionContext
 }

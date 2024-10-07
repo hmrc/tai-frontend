@@ -33,5 +33,4 @@ class PersonService @Inject() (citizenDetailsConnector: CitizenDetailsConnector)
     citizenDetailsConnector
       .retrieveCitizenDetails(nino)
       .map(_.json.as[Person])
-
 }

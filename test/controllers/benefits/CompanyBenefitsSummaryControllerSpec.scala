@@ -25,7 +25,7 @@ import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
-import play.api.mvc.{ActionBuilder, AnyContent, BodyParser, Request, Result}
+import play.api.mvc._
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
