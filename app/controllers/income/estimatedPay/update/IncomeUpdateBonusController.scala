@@ -49,8 +49,8 @@ class IncomeUpdateBonusController @Inject() (
       Future.successful(request.userAnswers.get(UpdateIncomeBonusPaymentsPage)),
       bonusPaymentBackUrl(request.userAnswers)
     ).mapN {
-      case (Right(incomeSource), Some(bonusPayment), backUrl) =>
-        val form = BonusPaymentsForm.createForm.fill(YesNoForm(Some(bonusPayment)))
+      case (Right(incomeSource), bonusPayment, backUrl) =>
+        val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
         Ok(bonusPayments(form, incomeSource, backUrl))
       case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }

@@ -46,7 +46,7 @@ class IncomeUpdatePayPeriodController @Inject() (
     val payPeriodInDays = userAnswers.get(UpdateIncomeOtherInDaysPage)
 
     IncomeSource.create(journeyCacheNewRepository, userAnswers).map {
-      case Right(incomeSource) if payPeriod.isDefined && payPeriodInDays.isDefined =>
+      case Right(incomeSource) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
       case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())

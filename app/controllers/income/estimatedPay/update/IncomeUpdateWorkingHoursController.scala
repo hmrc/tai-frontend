@@ -42,17 +42,11 @@ class IncomeUpdateWorkingHoursController @Inject() (
   def workingHoursPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    println("\n ====== INSIDE IncomeUpdateWorkingHoursController.workingHoursPage (GET) -------")
     val userAnswers = request.userAnswers
-    println("\n ====== USERanswers in workingHoursPage :  " + userAnswers)
     val workingHours = userAnswers.get(UpdateIncomeWorkingHoursPage)
-    println("\n ====== workingHours :  " + workingHours)
 
     (IncomeSource.create(journeyCacheNewRepository, userAnswers), Future.successful(workingHours)).mapN {
       case (Right(incomeSource), hours) =>
-        println("\n--------------- INSIDE OK ------------- ")
-        println("\n--------------- incomeSource  ------------- " + incomeSource)
-        println("\n--------------- workingHours  ------------- " + hours)
         Ok(
           workingHoursView(
             HoursWorkedForm.createForm().fill(HoursWorkedForm(hours)),
@@ -61,7 +55,6 @@ class IncomeUpdateWorkingHoursController @Inject() (
           )
         )
       case _ =>
-        println("\n--------- GOING DEFAULT onPageLoad")
         Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -69,7 +62,6 @@ class IncomeUpdateWorkingHoursController @Inject() (
   def handleWorkingHours: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    println("\n ====== INSIDE IncomeUpdateWorkingHoursController.handleWorkingHours (POST) -------")
     HoursWorkedForm
       .createForm()
       .bindFromRequest()
@@ -84,7 +76,6 @@ class IncomeUpdateWorkingHoursController @Inject() (
           for {
             id <- Future.successful(request.userAnswers.get(UpdateIncomeIdPage))
             _ <- {
-              println("\n ----- SETTING UpdateIncomeWorkingHoursPage to UserANSWERS ")
               val updatedAnswers = request.userAnswers.copy(
                 data = request.userAnswers.data ++ Json
                   .obj(UpdateIncomeWorkingHoursPage.toString -> JsString(formData.workingHours.getOrElse("")))

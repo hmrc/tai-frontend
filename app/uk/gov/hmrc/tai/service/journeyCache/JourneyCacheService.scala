@@ -148,36 +148,28 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     mandatoryJourneyValues: Seq[String]
   )(implicit request: DataRequest[AnyContent]): Either[String, Seq[String]] = {
 
-    println("\n ----->  INSIDE mappedMandatory ---")
-    println("\n ----->  cache :" + cache)
-    println("\n ----->  mandatoryJourneyValue KEYS :" + mandatoryJourneyValues)
     val allPresentValues = mandatoryJourneyValues flatMap { key =>
       getValue(key, cache) match {
         case Some(str) if str.trim.nonEmpty => Some(str)
         case _ =>
-          println(
-            s"\nJourneyCacheService.mappedMandatory------> The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
-          )
+          logger.warn(s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'")
           None
       }
     }
 
-    if (allPresentValues.size == mandatoryJourneyValues.size) Right(allPresentValues)
-    else {
-      println("\n---------> The mandatory values MISSING")
+    if (allPresentValues.size == mandatoryJourneyValues.size) {
+      Right(allPresentValues)
+    } else {
       Left("Mandatory values missing from cache")
     }
   }
 
   private def getValue(key: String, cache: Map[String, String])(implicit
     request: DataRequest[AnyContent]
-  ): Option[String] = {
-    println("\n INSIDE  getValue ------ key " + key)
+  ): Option[String] =
     cache.get(key) match {
       case x @ Some(_) => x
       case _ =>
-        println("\n ----> Key Not Found in JourneyCache. Trying to retrive from userAnswers")
-        println("\n -----> User Answers --- : " + request.userAnswers)
         val a = request.userAnswers.data \ key
         val result = a.toOption map {
           case JsString(s)  => s
@@ -187,7 +179,6 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
         }
         result
     }
-  }
 
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] =
     optionalValues map { key =>
@@ -214,9 +205,8 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     hc: HeaderCarrier,
     ec: ExecutionContext,
     request: DataRequest[AnyContent]
-  ): Future[Map[String, String]] = {
-
-    val result = journeyCacheConnector.currentCache(journeyName).map {
+  ): Future[Map[String, String]] =
+    journeyCacheConnector.currentCache(journeyName).map {
       case m if m.isEmpty =>
         request.userAnswers.data
           .as[Map[String, JsValue]]
@@ -230,12 +220,6 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
           .toMap
       case m => m
     }
-    result.map { x =>
-      println("\n ------ CURENT CACHE RESULT  : " + x)
-
-    }
-    result
-  }
 
   def currentValueAs[T](key: String, convert: String => T)(implicit
     hc: HeaderCarrier,
@@ -272,9 +256,6 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
 
   def flush()(implicit hc: HeaderCarrier): Future[Done] =
     journeyCacheConnector.flush(journeyName)
-
-  def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
-    journeyCacheConnector.flushWithEmpId(journeyName, empId)
 
   def delete()(implicit hc: HeaderCarrier): Future[TaiResponse] =
     journeyCacheConnector.delete(UpdateIncomeConstants.DeleteJourneyKey)
