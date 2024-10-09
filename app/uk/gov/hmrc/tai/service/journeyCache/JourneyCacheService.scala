@@ -263,7 +263,6 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
   def flush()(implicit hc: HeaderCarrier): Future[Done] =
     journeyCacheConnector.flush(journeyName)
 
-  // TODO: TO BE REMOVED IN - DDCNL-9373
   def flushWithEmpId(empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
     journeyCacheConnector.flushWithEmpId(journeyName, empId)
 

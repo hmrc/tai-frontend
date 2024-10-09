@@ -52,9 +52,6 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpHandler, servicesConfig:
     hc: HeaderCarrier
   ): Future[Either[String, T]] = {
     val url = s"${cacheUrl(journeyName)}/values/$key"
-
-    println("\n --> INSIDE mandatoryJourneyValueAs for fetch--" + journeyName)
-    println("\n --> KEY:  " + key)
     httpHandler.getFromApiV2(url).map(value => Right(convert(value.as[String]))) recover {
       case e: HttpException if e.responseCode == NO_CONTENT =>
         val errorMessage = s"The mandatory value under key '$key' was not found in the journey cache for '$journeyName'"
@@ -74,11 +71,10 @@ class JourneyCacheConnector @Inject() (httpHandler: HttpHandler, servicesConfig:
   def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => Done)
 
-  // TODO: TO BE REMOVED IN - DDCNL-9373
   def flushWithEmpId(journeyName: String, empId: Int)(implicit hc: HeaderCarrier): Future[Done] =
     httpHandler.deleteFromApi(cacheUrl(s"$journeyName/$empId")).map(_ => Done)
 
-  def testOnlyCacheUrl(journeyName: String): String = s"$serviceUrl/tai/test-only/journey-cache/$journeyName"
+  private def testOnlyCacheUrl(journeyName: String): String = s"$serviceUrl/tai/test-only/journey-cache/$journeyName"
 
   def delete(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] =
     httpHandler.deleteFromApi(testOnlyCacheUrl(journeyName)).map(_ => TaiSuccessResponse)

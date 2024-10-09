@@ -76,7 +76,6 @@ class IncomeController @Inject() (
   def regularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
-    println("\n\n ----------INSIDE - regularIncome -------------------- id :" + empId)
     (for {
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
       latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
@@ -100,9 +99,6 @@ class IncomeController @Inject() (
 
   def sameEstimatedPayInCache(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
-      println("\n ==============INSIDE sameEstimatedPayInCache ===== ")
-      println("\n ============= UA in  sameEstimatedPayInCache : " + request.userAnswers)
-
       (for {
         cachedData <- journeyCacheService
                         .mandatoryJourneyValues(
@@ -114,11 +110,7 @@ class IncomeController @Inject() (
                         )
                         .getOrFail
       } yield {
-        println("\n ------------------INSIDE sameEstimatedPayInCache  YIELD-  cachedData : " + cachedData)
         val employerId = cachedData(1).toInt
-        println("\n ------------------cachedData.head  : " + cachedData.head)
-        println("\n ------------------employer ID  : " + employerId)
-        println("\n ------------------cachedData(2).toInt : " + cachedData(2).toInt)
         val model = SameEstimatedPayViewModel(
           cachedData.head,
           employerId,
@@ -127,10 +119,8 @@ class IncomeController @Inject() (
           routes.IncomeSourceSummaryController.onPageLoad(employerId).url
         )
 
-        println("\n --------GOING TO RENDER sameEstimatedPay ----------" + sameEstimatedPay)
         Ok(sameEstimatedPay(model))
       }).recover { case NonFatal(e) =>
-        println("\n ------------------ INSIDE sameEstimatedPayInCache YIELD RECOVER --------")
         errorPagesHandler.internalServerError(e.getMessage)
       }
   }
@@ -160,7 +150,6 @@ class IncomeController @Inject() (
   def editRegularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    println("\n\n -------- INSIDE editRegularIncome ------ empId  :" + empId)
     journeyCacheService
       .collectedJourneyValues(
         Seq(UpdateIncomeConstants.PayToDateKey, UpdateIncomeConstants.NameKey),
@@ -169,11 +158,8 @@ class IncomeController @Inject() (
       .flatMap {
         case Left(errorMessage) =>
           logger.warn(errorMessage)
-          println("\n\n -------------- ERROR: " + errorMessage)
-          println("\n -=------- editRegularIncome LEFT --- GOING TO ONLOAD ")
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
         case Right((mandatorySeq, optionalSeq)) =>
-          println("------- editRegularIncome RIGHT ---------------------")
           val date = Try(optionalSeq.head.map(date => LocalDate.parse(date))) match {
             case Success(optDate) => optDate
             case Failure(exception) =>
@@ -183,9 +169,6 @@ class IncomeController @Inject() (
 
           val employerName = mandatorySeq(1)
           val payToDate = BigDecimal(mandatorySeq.head)
-
-          println("\n ----employerName  " + employerName)
-          println("\n ----payToDate  " + payToDate)
 
           EditIncomeForm
             .bind(employerName, payToDate, date)
@@ -210,10 +193,6 @@ class IncomeController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
-      println("\n\n --------- INSIDE confirmRegularIncome ----empiD " + empId)
-      journeyCacheService.currentCache.map { currentCache =>
-        println("\n CURRENT CACHE ---- " + currentCache)
-      }
 
       journeyCacheService
         .mandatoryJourneyValueAsInt(UpdateIncomeConstants.NewAmountKey)
@@ -270,17 +249,14 @@ class IncomeController @Inject() (
         user: AuthedUser,
         request: DataRequest[AnyContent]
       ): Result = {
+
         journeyCacheService.cache(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId", newAmount)
-
-        println("\n -------BEFORE:  USERANSWERS IN IncomeController.respondWithSuccess ---------" + request.userAnswers)
-
         val updatedUserAnswers =
           request.userAnswers
             .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), newAmount)
-            .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), "true") // TODO: CHECK THE PLACE
+            .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), "true")
 
         journeyCacheNewRepository.set(updatedUserAnswers)
-        println("\n -------AFTER:  USERANSWERS IN IncomeController.respondWithSuccess ---------" + updatedUserAnswers)
 
         incomeType match {
           case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
@@ -288,7 +264,6 @@ class IncomeController @Inject() (
         }
       }
 
-      println("\n ----> invoking collectedValues-> mandatoryJourneyValues check ")
       val collectedValues = journeyCacheService
         .mandatoryJourneyValues(
           Seq(
@@ -360,31 +335,23 @@ class IncomeController @Inject() (
     income: EditIncomeForm,
     confirmationCallback: Call,
     empId: Int
-  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
-    println("\n --------pickRedirectLocation- empId --------" + empId)
-    println("\n --------currentCache --------" + currentCache)
-    println("\n --------pickRedirectLocation- income.newAmount --------" + income.newAmount)
+  )(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] =
     if (isCachedIncomeTheSame(currentCache, income.newAmount, empId)) {
-      println("\n -----IF - GOING TO sameEstimatedPayInCache ----")
       Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache(empId)))
     } else if (isIncomeTheSame(income)) {
-      println("\n -----ELSE IF GOING TO sameAnnualEstimatedPay ----")
       Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay()))
     } else {
-      println("\n -----ELSE GOING TO cacheAndRedirect ----")
       cacheAndRedirect(income, confirmationCallback)
     }
-  }
 
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
     hc: HeaderCarrier,
     request: DataRequest[AnyContent]
   ): Future[Result] = {
-    println("\n ---> inside cacheAndRedirect -- newmamount -" + income.toEmploymentAmount.newAmount.toString)
     val newAmount = income.toEmploymentAmount.newAmount.toString
 
     for {
-      _ <- journeyCacheService.cache(UpdateIncomeConstants.NewAmountKey, newAmount) // TODO: to be removed
+      _ <- journeyCacheService.cache(UpdateIncomeConstants.NewAmountKey, newAmount)
 
       _ <- journeyCacheNewRepository.set(request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount))
 
