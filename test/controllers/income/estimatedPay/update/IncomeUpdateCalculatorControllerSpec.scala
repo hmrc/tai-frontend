@@ -17,32 +17,30 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
-import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.concurrent.ScalaFutures
 import pages.TrackingJourneyConstantsEstimatedPayPage
 import pages.income._
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
 import uk.gov.hmrc.tai.service._
-import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.DuplicateSubmissionWarningView
+import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
@@ -88,29 +86,6 @@ class IncomeUpdateCalculatorControllerSpec
     when(mockJourneyCacheNewRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
-
-  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
-    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
-      override def invokeBlock[A](
-        request: Request[A],
-        block: DataRequest[A] => Future[Result]
-      ): Future[Result] =
-        block(
-          DataRequest(
-            request,
-            taiUser = AuthedUser(
-              Nino(nino.toString()),
-              Some("saUtr"),
-              None
-            ),
-            fullName = "",
-            userAnswers = ua
-          )
-        )
-      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
-
-      override protected def executionContext: ExecutionContext = ec
-    }
 
   override def beforeEach(): Unit = {
     super.beforeEach()

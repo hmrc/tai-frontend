@@ -16,18 +16,16 @@
 
 package controllers.income
 
-import org.apache.pekko.Done
 import builders.RequestBuilder
-import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
+import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
-import org.mockito.stubbing.OngoingStubbing
 import pages.income.UpdateNextYearsIncomeNewAmountPage
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
@@ -47,7 +45,7 @@ import utils.BaseSpec
 import views.html.incomes.SameEstimatedPayView
 import views.html.incomes.nextYear._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
@@ -85,30 +83,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
-
-  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
-    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
-      override def invokeBlock[A](
-        request: Request[A],
-        block: DataRequest[A] => Future[Result]
-      ): Future[Result] =
-        block(
-          DataRequest(
-            request,
-            taiUser = AuthedUser(
-              Nino(nino.toString()),
-              Some("saUtr"),
-              None
-            ),
-            fullName = "",
-            userAnswers = ua
-          )
-        )
-
-      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
-
-      override protected def executionContext: ExecutionContext = ec
-    }
 
   override def beforeEach(): Unit = {
     super.beforeEach()

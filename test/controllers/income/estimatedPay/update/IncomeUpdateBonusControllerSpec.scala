@@ -18,26 +18,24 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
-import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import org.mockito.stubbing.OngoingStubbing
 import pages.income._
 import play.api.data.FormBinding.Implicits.formBinding
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
+import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
-import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.forms._
+import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
 import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants._
 import utils.BaseSpec
 import views.html.incomes.{BonusPaymentAmountView, BonusPaymentsView}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHelper {
@@ -67,30 +65,6 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
   }
 
   val sut = new TestIncomeUpdateBonusController
-
-  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
-    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
-      override def invokeBlock[A](
-        request: Request[A],
-        block: DataRequest[A] => Future[Result]
-      ): Future[Result] =
-        block(
-          DataRequest(
-            request,
-            taiUser = AuthedUser(
-              Nino(nino.toString()),
-              Some("saUtr"),
-              None
-            ),
-            fullName = "",
-            userAnswers = ua
-          )
-        )
-
-      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
-
-      override protected def executionContext: ExecutionContext = ec
-    }
 
   val baseUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
     .setOrException(UpdateIncomeIdPage, employer.id)

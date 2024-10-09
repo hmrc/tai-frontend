@@ -16,16 +16,14 @@
 
 package controllers.income.estimatedPay.update
 
-import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import controllers.auth.{AuthedUser, DataRequest}
+import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
-import org.mockito.stubbing.OngoingStubbing
 import pages.income._
-import play.api.mvc.{ActionBuilder, AnyContent, AnyContentAsFormUrlEncoded, BodyParser, Request, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
@@ -41,7 +39,7 @@ import views.html.incomes.{ConfirmAmountEnteredView, EditIncomeIrregularHoursVie
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
@@ -71,30 +69,6 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     when(mockJourneyCacheNewRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
-
-  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
-    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
-      override def invokeBlock[A](
-        request: Request[A],
-        block: DataRequest[A] => Future[Result]
-      ): Future[Result] =
-        block(
-          DataRequest(
-            request,
-            taiUser = AuthedUser(
-              Nino(nino.toString()),
-              Some("saUtr"),
-              None
-            ),
-            fullName = "",
-            userAnswers = ua
-          )
-        )
-
-      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
-
-      override protected def executionContext: ExecutionContext = ec
-    }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
