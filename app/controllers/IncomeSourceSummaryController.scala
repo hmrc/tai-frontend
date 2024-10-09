@@ -89,8 +89,13 @@ class IncomeSourceSummaryController @Inject() (
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
-          val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
-          journeyCacheNewRepository.set(updatedUserAnswers)
+          for {
+            _ <- journeyCacheService.flushWithEmpId(empId) // TODO: TO BE REMOVED IN - DDCNL-9373
+            _ <- {
+              val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
+              journeyCacheNewRepository.set(updatedUserAnswers)
+            }
+          } yield ()
         }
 
         Ok(incomeSourceSummary(incomeDetailsViewModel))

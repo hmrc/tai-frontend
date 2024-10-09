@@ -159,19 +159,18 @@ class IncomeUpdateIrregularHoursController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
 
-      val updateJourneyCompletion: String => Future[Map[String, String]] =
-        (_: String) =>
-          journeyCacheNewRepository
-            .set(request.userAnswers.setOrException(TrackingJourneyConstantsEstimatedPayPage(employmentId), "true"))
-            .map(_ => Map.empty[String, String])
+      val cacheAndRespond = (incomeName: String, incomeId: Int, newPay: String) => {
 
-      val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) =>
+        val updatedUserAnswers = request.userAnswers
+          .setOrException(TrackingJourneyConstantsEstimatedPayPage(employmentId), "true")
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay)
+
         journeyCacheNewRepository
-          .set(request.userAnswers.setOrException(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay))
+          .set(updatedUserAnswers)
           .map { _ =>
-            Ok(editSuccess(incomeName, incomeId.toInt))
+            Ok(editSuccess(incomeName, incomeId))
           }
-
+      }
       val userAnswers = request.userAnswers
       val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
       val newPayOpt = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
@@ -181,8 +180,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
         case (Some(incomeName), Some(newPay), Some(incomeId)) =>
           (for {
             _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
-            _      <- updateJourneyCompletion(incomeId.toString)
-            result <- cacheAndRespond(incomeName, incomeId.toString, newPay)
+            result <- cacheAndRespond(incomeName, incomeId, newPay)
           } yield result).recover { case NonFatal(e) =>
             errorPagesHandler.internalServerError(e.getMessage)
           }

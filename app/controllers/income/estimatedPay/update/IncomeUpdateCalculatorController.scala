@@ -55,17 +55,25 @@ class IncomeUpdateCalculatorController @Inject() (
 
   def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val journeyCompleted =
-      Future.successful(request.userAnswers.get(TrackingJourneyConstantsEstimatedPayPage(id)).contains("true"))
+      request.userAnswers.get(TrackingJourneyConstantsEstimatedPayPage(id)).contains("true")
+
+    println("\n -------------INSIDE onPageLoad ------ IncomeUpdateCalculatorController ---------")
+    println(
+      "\n -------------request.userAnswers inside IncomeUpdateCalculatorController ---------" + request.userAnswers
+    )
 
     (
-      journeyCompleted,
+      Future.successful(journeyCompleted),
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id, request.userAnswers))
     ).mapN {
       case (true, _) =>
+        println("\n ------ ------TRUE moving to duplicateSubmissionWarningPage ------ ")
         Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
       case _ =>
+        println("\n ------ ------DEFUALT moving to estimatedPayLandingPage ------ ")
         Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
     }.recover { case NonFatal(e) =>
+      println("\n ------ ------IncomeUpdateCalculatorController - onpage load recover ------ ")
       errorPagesHandler.internalServerError(e.getMessage)
     }
   }
@@ -92,11 +100,19 @@ class IncomeUpdateCalculatorController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
+      println("\n ----------INSIDE ---- duplicateSubmissionWarningPage ------GET------")
+      println("\n ----------USERaNSWERS ------------" + userAnswers)
 
       val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
       val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
       val previouslyUpdatedAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
       val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+
+      println("\n ----------incomeNameOpt ------------" + incomeNameOpt)
+      println("\n ----------incomeIdOpt ------------" + incomeIdOpt)
+      // THIS IS AVAILABLE IN JOURNEY CACHE NOT USERANSWERS - UPDATED TO USE IN UA
+      println("\n ----------previouslyUpdatedAmountOpt ------------" + previouslyUpdatedAmountOpt)
+      println("\n ----------incomeTypeOpt ------------" + incomeTypeOpt)
 
       (incomeNameOpt, incomeIdOpt, previouslyUpdatedAmountOpt, incomeTypeOpt) match {
         case (Some(incomeName), Some(incomeId), Some(previouslyUpdatedAmount), Some(incomeType)) =>
@@ -105,8 +121,11 @@ class IncomeUpdateCalculatorController @Inject() (
           } else {
             DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
           }
+          println("\n ------------------------ MOVIGN TO OK duplicateSubmissionWarning -----")
           Future.successful(Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId)))
-        case _ => Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
+        case _ =>
+          println("\n ----------ERROR:--duplicateSubmissionWarningPage case DEFAULT-----------")
+          Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
       }
   }
 
@@ -115,9 +134,15 @@ class IncomeUpdateCalculatorController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
 
+      println("\n ----------INSIDE ---- submitDuplicateSubmissionWarning ------POST------")
+
       val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
       val newAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
       val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+
+      println("\n ----------incomeNameOpt ------------" + incomeNameOpt)
+      println("\n ----------newAmountOpt ------------" + newAmountOpt)
+      println("\n ----------incomeTypeOpt ------------" + incomeTypeOpt)
 
       (incomeNameOpt, newAmountOpt, incomeTypeOpt) match {
         case (Some(incomeName), Some(newAmount), Some(incomeType)) =>
@@ -151,6 +176,8 @@ class IncomeUpdateCalculatorController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
 
+      println("\n -----ISNIDE -----checkYourAnswersPage  ------ GET ")
+
       val mandatoryJourneyValues = Seq(
         userAnswers.get(UpdateIncomeNamePage),
         userAnswers.get(UpdateIncomePayPeriodPage),
@@ -167,6 +194,7 @@ class IncomeUpdateCalculatorController @Inject() (
 
       (mandatoryJourneyValues, optionalSeq) match {
         case (mandatory, _) if mandatory.forall(_.isDefined) =>
+          println("\n============== CHECK PASSED ======================")
           val employer =
             IncomeSource(id = mandatory(5).getOrElse("").toString.toInt, name = mandatory.head.getOrElse("").toString)
           val payPeriodFrequency = mandatory(1).getOrElse("")
@@ -199,6 +227,7 @@ class IncomeUpdateCalculatorController @Inject() (
 
           Future.successful(Ok(checkYourAnswers(viewModel)))
         case _ =>
+          println("------ INSIDE checkYourAnswersPage CASE DAFAULT --- GOIND TO ONLOAD --")
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }
   }
@@ -207,6 +236,8 @@ class IncomeUpdateCalculatorController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
     val userAnswers: UserAnswers = request.userAnswers
+
+    println("\n ----------INSIDE ---- handleCalculationResult ------ GET------")
 
     val netAmountOpt = userAnswers.get(UpdateIncomeNewAmountPage)
     val employmentNameOpt = userAnswers.get(UpdateIncomeNamePage)
