@@ -21,15 +21,17 @@ import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito._
+import pages.income.UpdateIncomeIdPage
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import play.twirl.api.HtmlFormat
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
@@ -50,13 +52,14 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   val personService: PersonService = mock[PersonService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
   val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
     mock[EstimatedPayJourneyCompletionService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(incomeService, journeyCacheService)
-
+    setup(UserAnswers("testSessionId", nino.nino))
+    reset(incomeService, journeyCacheService, mockJourneyCacheNewRepository)
   }
 
   val payToDate = "100"
@@ -133,6 +136,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         editPensionSuccessView,
         inject[EditIncomeView],
         inject[SameEstimatedPayView],
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
 
@@ -157,6 +161,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       val testController = createTestIncomeController()
 
       when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = testController.cancel(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -257,6 +262,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.currentCache(any(), any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
@@ -288,6 +294,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(journeyCacheService.currentCache(any(), any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
@@ -549,6 +556,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       )
         .thenReturn(cachePayToDate)
       when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result =
         testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -594,6 +602,9 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employerId.toString))(any(), any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
 
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
+
         val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
 
         status(result) mustBe OK
@@ -617,6 +628,9 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employerId.toString))(any(), any(), any()))
           .thenReturn(Future.successful(Map.empty[String, String]))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
 
@@ -759,6 +773,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
             )
         )
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("201"))
         val formData = Json.toJson(editIncomeForm)
 
@@ -780,6 +796,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
             .successful(Right((Seq(payToDate, employerId.toString, employerName), Seq(Some("May 2020")))))
         )
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("201"))
         val formData = Json.toJson(editIncomeForm)
 
@@ -803,6 +821,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
             )
         )
         when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(""))
         val formData = Json.toJson(editIncomeForm)
 
@@ -987,6 +1007,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "employment is live and is not occupational pension" in {
         val testController = createTestIncomeController()
 
+        val userAnswers = UserAnswers("testSessionId", nino.nino).setOrException(UpdateIncomeIdPage, 1)
+
+        setup(userAnswers)
+
         val employmentAmount =
           EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None)
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
@@ -1002,6 +1026,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "employment is not live and is not occupational pension" in {
         val testController = createTestIncomeController()
 
+        val userAnswers = UserAnswers("testSessionId", nino.nino).setOrException(UpdateIncomeIdPage, 1)
+
+        setup(userAnswers)
+
         val employmentAmount =
           EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, isLive = false)
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
@@ -1016,6 +1044,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
       "employment is not live and is occupational pension" in {
         val testController = createTestIncomeController()
+
+        val userAnswers = UserAnswers("testSessionId", nino.nino).setOrException(UpdateIncomeIdPage, 1)
+
+        setup(userAnswers)
 
         val employmentAmount =
           EmploymentAmount(

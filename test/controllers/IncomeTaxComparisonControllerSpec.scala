@@ -25,10 +25,10 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService, UpdateNextYearsIncomeService}
 import utils.BaseSpec
 import views.html.incomeTaxComparison.MainView
@@ -168,6 +168,11 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     when(employmentService.employments(any(), meq(TaxYear()))(any()))
       .thenReturn(Future.successful(Seq(employment)))
     when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any(), any())).thenReturn(Future.successful(false))
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(UserAnswers("testSessionId", nino.nino))
   }
 
   "onPageLoad" must {

@@ -16,15 +16,16 @@
 
 package controllers.pensions
 
-import org.apache.pekko.Done
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
+import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
@@ -77,6 +78,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+    setup(UserAnswers("testSessionId", nino.nino))
     Mockito.reset(journeyCacheService)
   }
 

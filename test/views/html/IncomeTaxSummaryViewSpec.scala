@@ -31,8 +31,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
     FakeRequest(),
     taiUser = authedUser,
-    fullName = "",
-    userAnswers = UserAnswers("", "")
+    fullName = "Firstname Surname",
+    userAnswers = UserAnswers("testSessionId", nino.nino)
   )
   "Income tax summary page" must {
 

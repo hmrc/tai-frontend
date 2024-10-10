@@ -71,12 +71,12 @@ trait BaseSpec
   override implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   implicit class ElemUtil(elem: Element) {
-    def toStringBreak = elem.toString.replaceAll("&nbsp;", " ")
+    def toStringBreak: String = elem.toString.replaceAll("&nbsp;", " ")
   }
 
   implicit class StringUtils(str: String) {
-    def replaceU00A0 = str.replace("\u00A0", " ")
-    def replaceNbsp = str.replaceAll("&nbsp;", " ")
+    def replaceU00A0: String = str.replace("\u00A0", " ")
+    def replaceNbsp: String = str.replaceAll("&nbsp;", " ")
   }
 
   override def beforeEach(): Unit = {
