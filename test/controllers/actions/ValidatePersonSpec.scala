@@ -39,6 +39,7 @@ import org.mockito.Mockito.when
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
+import play.twirl.api.Html
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
@@ -53,8 +54,8 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   val cc: ControllerComponents = stubControllerComponents()
 
   class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
-    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { _ =>
-      Ok
+    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { r =>
+      Ok(Html(r.person.name + "/" + r.person.address.line1.getOrElse("empty")))
     }
   }
 
@@ -67,7 +68,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](deceasedPerson))
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi, errorPagesHandler)
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi)
 
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
@@ -85,7 +86,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi, errorPagesHandler)
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi)
 
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
@@ -93,8 +94,8 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         status(result) mustBe OK
       }
 
-      "the person details retrieval fails" must {
-        "return an internal server error" in {
+      "the person details retrieval fails with 5xx error" must {
+        "return auth name, empty address and nino" in {
           when(personService.personDetails(any())(any(), any()))
             .thenReturn(
               EitherT.leftT[Future, Person](
@@ -102,11 +103,28 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
               )
             )
 
-          val validatePerson = new ValidatePersonImpl(personService, messagesApi, errorPagesHandler)
+          val validatePerson = new ValidatePersonImpl(personService, messagesApi)
           val controller = new Harness(validatePerson)
           val result = controller.onPageLoad()(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result) mustBe "first last/empty"
+        }
+      }
 
-          status(result) mustBe INTERNAL_SERVER_ERROR
+      "the person details retrieval fails with 4xx error" must {
+        "return auth name, empty address and nino" in {
+          when(personService.personDetails(any())(any(), any()))
+            .thenReturn(
+              EitherT.leftT[Future, Person](
+                UpstreamErrorResponse("Failed to get person designatory details", BAD_REQUEST)
+              )
+            )
+
+          val validatePerson = new ValidatePersonImpl(personService, messagesApi)
+          val controller = new Harness(validatePerson)
+          val result = controller.onPageLoad()(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result) mustBe "first last/empty"
         }
       }
     }
