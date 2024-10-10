@@ -18,60 +18,68 @@ package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.when
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
+import pages.income.{UpdateIncomeIdPage, UpdateIncomeIrregularAnnualPayPage, UpdateIncomeNamePage, UpdateIncomeWorkingHoursPage}
 import play.api.test.Helpers._
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 import views.html.incomes.WorkingHoursView
 
 import scala.concurrent.Future
+import scala.util.Random
 
 class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val sessionId = "testSessionId"
 
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+  def createSUT = new SUT
 
-  class TestIncomeUpdateWorkingHoursController
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+
+  class SUT
       extends IncomeUpdateWorkingHoursController(
         mockAuthJourney,
         mcc,
         inject[WorkingHoursView],
-        journeyCacheService
+        mockJourneyCacheNewRepository
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(UserAnswers(sessionId, randomNino().nino))
+    reset(mockJourneyCacheNewRepository)
   }
 
   "workingHoursPage" must {
 
-    object WorkingHoursPageHarness {
-      sealed class WorkingHoursPageHarness() {
-
-        when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.WorkingHoursKey))(any()))
-          .thenReturn(Future.successful(Option(EditIncomeIrregularPayConstants.RegularHours)))
-
-        def workingHoursPage(): Future[Result] =
-          new TestIncomeUpdateWorkingHoursController()
-            .workingHoursPage()(RequestBuilder.buildFakeGetRequestWithAuth())
-      }
-
-      def setup(): WorkingHoursPageHarness =
-        new WorkingHoursPageHarness()
-    }
-
     "display workingHours page" when {
       "journey cache returns employment name and id" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeWorkingHoursPage, "work")
+          .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
 
-        val result = WorkingHoursPageHarness
-          .setup()
-          .workingHoursPage()
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        val result =
+          SUT.workingHoursPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -82,13 +90,16 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
 
-        val controller = new TestIncomeUpdateWorkingHoursController
+        val SUT = createSUT
+        setup(mockUserAnswers)
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("empty cache")))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
-        val result = controller.workingHoursPage(fakeRequest)
+        val result =
+          SUT.workingHoursPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -98,32 +109,27 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
   "handleWorkingHours" must {
 
-    object HandleWorkingHoursHarness {
-      sealed class HandleWorkingHoursHarness() {
-
-        when(journeyCacheService.cache(meq(UpdateIncomeConstants.WorkingHoursKey), any())(any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
-          .thenReturn(Future.successful(Right(1)))
-
-        def handleWorkingHours(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateWorkingHoursController()
-            .handleWorkingHours()(request)
-      }
-
-      def setup(): HandleWorkingHoursHarness =
-        new HandleWorkingHoursHarness()
-    }
-
     "redirect the user to workingHours page" when {
       "user selected income calculator" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeWorkingHoursPage, "work")
+          .setOrException(UpdateIncomeIrregularAnnualPayPage, "workingHours")
 
-        val result = HandleWorkingHoursHarness
-          .setup()
-          .handleWorkingHours(
-            RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> EditIncomeIrregularPayConstants.RegularHours)
-          )
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.handleWorkingHours(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("workingHours" -> EditIncomeIrregularPayConstants.RegularHours)
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -134,10 +140,25 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
     "redirect user back to workingHours page" when {
       "user input has error" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeWorkingHoursPage, "work")
+          .setOrException(UpdateIncomeIrregularAnnualPayPage, "workingHours")
 
-        val result = HandleWorkingHoursHarness
-          .setup()
-          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> ""))
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.handleWorkingHours(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("workingHours" -> "")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -148,10 +169,25 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
     "redirect user back to workingHours page" when {
       "bad data submitted in form" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeWorkingHoursPage, "work")
+          .setOrException(UpdateIncomeIrregularAnnualPayPage, "workingHours")
 
-        val result = HandleWorkingHoursHarness
-          .setup()
-          .handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth("workingHours" -> "anything"))
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.handleWorkingHours(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("workingHours" -> "anything")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -163,17 +199,20 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
   "Redirect to /income-summary page" when {
     "IncomeSource.create returns a left" in {
+      val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeWorkingHoursPage, "work")
+        .setOrException(UpdateIncomeIrregularAnnualPayPage, "workingHours")
 
-      val controller = new TestIncomeUpdateWorkingHoursController()
+      val SUT = createSUT
+      setup(mockUserAnswers)
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-        .thenReturn(Future.successful(Left("")))
+      when(mockJourneyCacheNewRepository.get(any(), any()))
+        .thenReturn(Future.successful(None))
 
-      val result = controller.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
+      val result = SUT.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-
     }
   }
 }

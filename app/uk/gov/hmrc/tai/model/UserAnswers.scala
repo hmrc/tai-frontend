@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.model
 
+import pages.QuestionPage
 import play.api.libs.json._
 import queries.{Gettable, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -46,6 +47,12 @@ final case class UserAnswers(
       page.cleanup(updatedAnswers)
     }
   }
+
+  def remove[A](page: QuestionPage[A]): UserAnswers =
+    data.removeObject(page.path) match {
+      case JsSuccess(jsValue, _) => this copy (data = jsValue)
+      case JsError(_)            => this
+    }
 
   def setOrException[A](page: Settable[A], value: A)(implicit writes: Writes[A]): UserAnswers =
     set(page, value) match {

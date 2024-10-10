@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import controllers.auth.AuthenticatedRequest
+@import controllers.auth.DataRequest
 @import includes.{link, ptaHeader}
 @import incomeTaxComparison._
 @import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -25,7 +25,7 @@
 @this(main: MainTemplate)
 
 
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: AuthenticatedRequest[_], messages: Messages)
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, appConfig: ApplicationConfig)(implicit request: DataRequest[_], messages: Messages)
 
 @headingText = @{
     incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel.taxComparison.fold(

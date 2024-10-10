@@ -16,7 +16,7 @@
 
 package pages
 
-import pages.EndEmployment.EndEmploymentIdPage
+import pages.endEmployment.EndEmploymentIdPage
 
 class EndEmploymentIdPageSpec extends PageBehaviours {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import controllers.auth.AuthenticatedRequest
+@import controllers.auth.DataRequest
 @import includes.{link, ptaHeader}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.{IFormInProgressBannerViewModel, TaxAccountSummaryViewModel, TaxCodeViewModel}
@@ -22,7 +22,7 @@
 @this(main: MainTemplate)
 
 @(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
-)(implicit request: AuthenticatedRequest[_],
+)(implicit request: DataRequest[_],
   messages: Messages)
 
 

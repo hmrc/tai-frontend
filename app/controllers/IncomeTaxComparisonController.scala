@@ -18,7 +18,7 @@ package controllers
 
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
-import controllers.auth.{AuthJourney, AuthenticatedRequest}
+import controllers.auth.{AuthJourney, DataRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -49,7 +49,7 @@ class IncomeTaxComparisonController @Inject() (
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val nino = request.taiUser.nino
     val currentTaxYear = TaxYear()
     val nextTaxYear = currentTaxYear.next
@@ -82,7 +82,7 @@ class IncomeTaxComparisonController @Inject() (
     codingComponentsCYPlusOne: Seq[CodingComponent],
     employmentsCY: Seq[Employment],
     isEstimatedPayJourneyComplete: Boolean
-  )(implicit request: AuthenticatedRequest[AnyContent]) = {
+  )(implicit request: DataRequest[AnyContent]) = {
     val estimatedIncomeTaxComparisonViewModel = {
       val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
       val cyPlusOneEstimatedTax =

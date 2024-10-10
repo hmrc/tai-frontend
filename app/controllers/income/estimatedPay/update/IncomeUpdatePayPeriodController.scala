@@ -16,46 +16,44 @@
 
 package controllers.income.estimatedPay.update
 
-import cats.implicits._
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
+import pages.income.{UpdateIncomeOtherInDaysPage, UpdateIncomePayPeriodPage}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes.PayPeriodView
 
-import javax.inject.{Inject, Named}
-import scala.concurrent.ExecutionContext
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 class IncomeUpdatePayPeriodController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   payPeriodView: PayPeriodView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
+    extends TaiBaseController(mcc) {
 
-  def payPeriodPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def payPeriodPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    (
-      IncomeSource.create(journeyCacheService),
-      journeyCacheService
-        .optionalValues(Seq(UpdateIncomeConstants.PayPeriodKey, UpdateIncomeConstants.OtherInDaysKey))
-    ).mapN {
-      case (Right(incomeSource), payPeriod :: payPeriodInDays :: _) =>
+    val userAnswers = request.userAnswers
+    val payPeriod = userAnswers.get(UpdateIncomePayPeriodPage)
+    val payPeriodInDays = userAnswers.get(UpdateIncomeOtherInDaysPage)
+
+    IncomeSource.create(journeyCacheNewRepository, userAnswers).map {
+      case Right(incomeSource) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
       case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
-
   }
 
-  def handlePayPeriod: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def handlePayPeriod: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
@@ -66,24 +64,29 @@ class IncomeUpdatePayPeriodController @Inject() (
       .fold(
         formWithErrors =>
           for {
-            incomeSourceEither <- IncomeSource.create(journeyCacheService)
+            incomeSourceEither <- IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
           } yield incomeSourceEither match {
             case Right(incomeSource) =>
               BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         formData => {
-          val cacheMap = formData.otherInDays match {
+          val updatedUserAnswers = formData.otherInDays match {
             case Some(days) =>
-              Map(
-                UpdateIncomeConstants.PayPeriodKey   -> formData.payPeriod.getOrElse(""),
-                UpdateIncomeConstants.OtherInDaysKey -> days
-              )
-            case _ => Map(UpdateIncomeConstants.PayPeriodKey -> formData.payPeriod.getOrElse(""))
+              request.userAnswers
+                .set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
+                .flatMap(_.set(UpdateIncomeOtherInDaysPage, days))
+            case _ =>
+              request.userAnswers.set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
           }
 
-          journeyCache(cacheMap = cacheMap) map { _ =>
-            Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
+          updatedUserAnswers match {
+            case Success(newUserAnswers) =>
+              journeyCacheNewRepository.set(newUserAnswers).map { _ =>
+                Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
+              }
+            case Failure(_) =>
+              Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
           }
         }
       )

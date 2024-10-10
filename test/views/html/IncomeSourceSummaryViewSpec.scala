@@ -16,10 +16,14 @@
 
 package views.html
 
+import controllers.auth.{AuthedUser, DataRequest}
 import controllers.routes
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.mvc.AnyContent
 import play.twirl.api.Html
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
@@ -90,6 +94,17 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
   private val template: IncomeSourceSummaryView = inject[IncomeSourceSummaryView]
+
+  protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
+    fakeRequest,
+    taiUser = AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
 
   override def view: Html = template(model)
 

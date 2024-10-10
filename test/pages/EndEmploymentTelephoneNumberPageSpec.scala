@@ -16,7 +16,7 @@
 
 package pages
 
-import pages.EndEmployment.EndEmploymentTelephoneNumberPage
+import pages.endEmployment.EndEmploymentTelephoneNumberPage
 
 class EndEmploymentTelephoneNumberPageSpec extends PageBehaviours {
 

@@ -18,11 +18,15 @@ package uk.gov.hmrc.tai.service.journeyCache
 
 import org.apache.pekko.Done
 import cats.implicits.catsSyntaxEitherId
+import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.when
+import play.api.mvc.AnyContent
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.model.UserAnswers
 import utils.BaseSpec
 
 import java.time.LocalDate
@@ -36,7 +40,16 @@ class JourneyCacheServiceSpec extends BaseSpec {
     super.beforeEach()
     Mockito.reset(journeyCacheConnector)
   }
-
+  protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
+    fakeRequest,
+    taiUser = AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
   "current value methods" must {
 
     "return the cached value as an instance of the relevant type" in {

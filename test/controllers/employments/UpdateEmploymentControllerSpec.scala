@@ -21,10 +21,10 @@ import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneNumberPage, UpdateEmploymentTelephoneQuestionPage}
+import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -64,7 +64,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
   val employmentService: EmploymentService = mock[EmploymentService]
   lazy val mockRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  val userAnswers: UserAnswers = UserAnswers(
+  override val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
     nino.nino,
     Json.obj(
