@@ -114,13 +114,10 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     request: DataRequest[AnyContent]
-  ): Future[Either[String, Seq[String]]] = {
-    println("\n ----> INSIDE JourneyCachService.mandatoryJourneyValues--- ")
-    println("\n ----> GOING TO MAPPEDMANDATORY ----")
+  ): Future[Either[String, Seq[String]]] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, keys)
-  }
 
   def optionalValues(
     keys: Seq[String]
@@ -135,25 +132,18 @@ class JourneyCacheService @Inject() (val journeyName: String, journeyCacheConnec
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     request: DataRequest[AnyContent]
-  ): Future[Either[String, (Seq[String], Seq[Option[String]])]] = {
-    println("\n ====== INSIDE JourneyCacheService.collectedJourneyValues  ===")
-
+  ): Future[Either[String, (Seq[String], Seq[Option[String]])]] =
     for {
       cache <- currentCache
     } yield mappedMandatory(cache, mandatoryJourneyValues).map { mandatoryResult =>
       val optionalResult = mappedOptional(cache, optionalValues)
       (mandatoryResult, optionalResult)
     }
-  }
 
   private def mappedMandatory(
     cache: Map[String, String],
     mandatoryJourneyValues: Seq[String]
   )(implicit request: DataRequest[AnyContent]): Either[String, Seq[String]] = {
-    println("\n ====== INSIDE JourneyCacheService.mappedMandatory  ===")
-    println("\n ----->  mandatoryJourneyValues :" + mandatoryJourneyValues)
-    println("\n -----> DATA IN CACHE : " + cache)
-    println("\n -----> DATA IN REQ.USERANSWERS : " + request.userAnswers)
     val allPresentValues = mandatoryJourneyValues flatMap { key =>
       getValue(key, cache) match {
         case Some(str) if str.trim.nonEmpty => Some(str)

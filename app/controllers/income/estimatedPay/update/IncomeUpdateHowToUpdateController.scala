@@ -124,7 +124,6 @@ class IncomeUpdateHowToUpdateController @Inject() (
 
   def handleChooseHowToUpdate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    println("\n ------- INSIDE  handleChooseHowToUpdate -------------")
     HowToUpdateForm
       .createForm()
       .bindFromRequest()
@@ -146,8 +145,6 @@ class IncomeUpdateHowToUpdateController @Inject() (
           journeyCacheNewRepository.set(updatedAnswers).map { _ =>
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
-                println("\n ------ USERANSWERS in handleChooseHowToUpdate  : " + request.userAnswers)
-                println("----- MOVING TO workingHoursPage >>>>>>>>")
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())
               case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
             }
