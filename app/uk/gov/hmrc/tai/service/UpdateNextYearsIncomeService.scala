@@ -42,10 +42,9 @@ class UpdateNextYearsIncomeService @Inject() (
 )(implicit ec: ExecutionContext) {
 
   def isEstimatedPayJourneyCompleteForEmployer(id: Int, userAnswers: UserAnswers): Future[Boolean] =
-    journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).map {
-      case Some(userAnswers) => userAnswers.data.keys.contains(UpdateNextYearsIncomeSuccessPage(id))
-      case None              => false
-    }
+    journeyCacheNewRepository
+      .get(userAnswers.sessionId, userAnswers.nino)
+      .map(_.exists(_.data.keys.contains(UpdateNextYearsIncomeSuccessPage(id))))
 
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Boolean] =
     successfulJourneyCacheService.currentCache.map(_ contains UpdateNextYearsIncomeConstants.Successful)
@@ -84,9 +83,11 @@ class UpdateNextYearsIncomeService @Inject() (
   def getNewAmount(employmentId: Int, userAnswers: UserAnswers): Future[Either[String, Int]] = {
     val key = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
 
-    userAnswers.get(UpdateNextYearsIncomeNewAmountPage(employmentId)) match {
-      case Some(value) => Future.successful(Right(value.toInt))
-      case None        => Future.successful(Left(s"Value for $key not found"))
+    Future.successful {
+      userAnswers
+        .get(UpdateNextYearsIncomeNewAmountPage(employmentId))
+        .map(value => Right(value.toInt))
+        .getOrElse(Left(s"Value for $key not found"))
     }
   }
 
