@@ -165,12 +165,11 @@ class IncomeUpdateCalculatorController @Inject() (
 
       (mandatoryJourneyValues, optionalSeq) match {
         case (mandatory, _) if mandatory.forall(_.isDefined) =>
-          val employer =
-            IncomeSource(id = mandatory(5).getOrElse("").toString.toInt, name = mandatory.head.getOrElse("").toString)
-          val payPeriodFrequency = mandatory(1).getOrElse("")
-          val totalSalaryAmount = mandatory(2).getOrElse("")
-          val hasPayslipDeductions = mandatory(3).getOrElse("")
-          val hasBonusPayments = mandatory(4).getOrElse("")
+          val employer = IncomeSource(id = mandatory(5).get.toString.toInt, name = mandatory.head.get.toString)
+          val payPeriodFrequency = mandatory(1).get
+          val totalSalaryAmount = mandatory(2).get
+          val hasPayslipDeductions = mandatory(3).get
+          val hasBonusPayments = mandatory(4).get
 
           val taxablePay = optionalSeq.head
           val bonusPaymentAmount = optionalSeq(1)
