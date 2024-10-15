@@ -16,7 +16,7 @@
 
 package pages
 
-import pages.EndEmployment.EndEmploymentLatestPaymentPage
+import pages.endEmployment.EndEmploymentLatestPaymentPage
 
 import java.time.LocalDate
 

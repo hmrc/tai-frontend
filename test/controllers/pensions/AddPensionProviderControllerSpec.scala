@@ -20,10 +20,10 @@ import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages.AddPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import pages.addPensionProvider._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.test.Helpers.{contentAsString, status, _}
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
 import uk.gov.hmrc.tai.model.UserAnswers

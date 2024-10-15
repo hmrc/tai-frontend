@@ -18,7 +18,7 @@ package controllers.employments
 
 import controllers._
 import controllers.auth.{AuthJourney, AuthedUser, DataRequest}
-import pages.EndEmployment._
+import pages.endEmployment._
 import pages._
 import play.api.Logging
 import play.api.i18n.Messages
@@ -125,7 +125,7 @@ class EndEmploymentController @Inject() (
         )(_ => checkDuplicateSubmission(empId))
     }
 
-  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier) =
+  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]) =
     successfulJourneyCacheService
       .currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
       .map {

@@ -18,7 +18,7 @@ package controllers.pensions
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.TaiBaseController
-import pages.AddPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import pages.addPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository

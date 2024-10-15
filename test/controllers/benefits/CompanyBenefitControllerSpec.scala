@@ -17,14 +17,13 @@
 package controllers.benefits
 
 import builders.RequestBuilder
-import controllers.auth.{AuthedUser, DataRequest}
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
-import org.mockito.stubbing.OngoingStubbing
 import pages._
 import pages.benefits._
+import pages.testPages.EndCompanyBenefitsTypeTesterPage
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc._
@@ -45,7 +44,7 @@ import utils.BaseSpec
 import views.html.benefits.UpdateOrRemoveCompanyBenefitDecisionView
 
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with Results {
@@ -89,30 +88,6 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     when(mockJourneyCacheNewRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
-
-  private def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
-    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
-      override def invokeBlock[A](
-        request: Request[A],
-        block: DataRequest[A] => Future[Result]
-      ): Future[Result] =
-        block(
-          DataRequest(
-            request,
-            taiUser = AuthedUser(
-              Nino(nino.toString()),
-              Some("saUtr"),
-              None
-            ),
-            fullName = "",
-            userAnswers = ua
-          )
-        )
-
-      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
-
-      override protected def executionContext: ExecutionContext = ec
-    }
 
   override def beforeEach(): Unit = {
     super.beforeEach()

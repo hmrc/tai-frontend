@@ -165,7 +165,7 @@ class RemoveCompanyBenefitController @Inject() (
         Future.successful(
           Ok(
             removeBenefitTotalValue(
-              BenefitViewModel(mandatoryJourneyValues.head.getOrElse(""), mandatoryJourneyValues(1).getOrElse("")),
+              BenefitViewModel(mandatoryJourneyValues.head.get, mandatoryJourneyValues(1).get),
               form
             )
           )
@@ -296,17 +296,17 @@ class RemoveCompanyBenefitController @Inject() (
     )
     (mandatoryJourneyValues, optionalSeq) match {
       case (mandatory, _) if mandatory.forall(_.isDefined) =>
-        val stopDate = LocalDate.parse(mandatoryJourneyValues(2).getOrElse(""))
+        val stopDate = LocalDate.parse(mandatoryJourneyValues(2).get)
 
         Future.successful(
           Ok(
             removeCompanyBenefitCheckYourAnswers(
               RemoveCompanyBenefitsCheckYourAnswersViewModel(
-                mandatoryJourneyValues.head.getOrElse(""),
-                mandatoryJourneyValues(1).getOrElse(""),
+                mandatoryJourneyValues.head.get,
+                mandatoryJourneyValues(1).get,
                 stopDate,
                 optionalSeq.head,
-                mandatoryJourneyValues(3).getOrElse(""),
+                mandatoryJourneyValues(3).get,
                 optionalSeq(1)
               )
             )
@@ -372,7 +372,7 @@ class RemoveCompanyBenefitController @Inject() (
     } yield Redirect(mandatoryJourneyValues.head)
   }
 
-  def confirmation(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     trackingService.isAnyIFormInProgress(user.nino.nino).map { timeToProcess =>
       val (title, summary) = timeToProcess match {

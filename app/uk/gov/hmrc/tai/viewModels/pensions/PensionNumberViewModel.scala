@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.pensions
 
-import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderStartWithinSixWeeksPage}
+import pages.addPensionProvider.{AddPensionProviderNamePage, AddPensionProviderStartWithinSixWeeksPage}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.AddPensionProviderConstants

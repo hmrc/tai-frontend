@@ -19,7 +19,7 @@ package controllers.employments
 import com.google.inject.name.Named
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.AddEmployment._
+import pages.addEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc._

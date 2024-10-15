@@ -19,33 +19,39 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
+import pages.TrackingJourneyConstantsEstimatedPayPage
+import pages.income._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.constants._
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.BaseSpec
-import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.DuplicateSubmissionWarningView
+import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 
 import java.time.LocalDate
 import scala.concurrent.Future
+import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
     extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with ScalaFutures {
 
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+
   val employerId = 1
+  val sessionId: String = "testSessionId"
   val employer: IncomeSource = IncomeSource(id = employerId, name = "sample employer")
+
   val defaultEmployment: Employment =
     Employment(
       "company",
@@ -62,54 +68,58 @@ class IncomeUpdateCalculatorControllerSpec
       receivingOccupationalPension = false
     )
 
-  val incomeService: IncomeService = mock[IncomeService]
+  val mockIncomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  class TestIncomeUpdateCalculatorController
+  class SUT
       extends IncomeUpdateCalculatorController(
-        incomeService,
+        mockIncomeService,
         employmentService,
-        estimatedPayJourneyCompletionService,
         mockAuthJourney,
         mcc,
         inject[DuplicateSubmissionWarningView],
         inject[CheckYourAnswersView],
-        journeyCacheService,
+        mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
-      ) {}
+      ) {
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockJourneyCacheNewRepository)
+  }
 
   "onPageLoad" must {
     object OnPageLoadHarness {
       sealed class OnPageLoadHarness(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]) {
+
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), hasJourneyCompleted.toString)
+        setup(mockUserAnswers)
+
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(returnedEmployment))
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq("1"))(any(), any()))
-          .thenReturn(Future.successful(hasJourneyCompleted))
-
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
-          .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
-          .thenReturn(Future.successful(Right(employer.name)))
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         def onPageLoad(employerId: Int = employerId): Future[Result] =
-          new TestIncomeUpdateCalculatorController()
+          new SUT()
             .onPageLoad(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
-      def setup(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]): OnPageLoadHarness =
+      def harnessSetup(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]): OnPageLoadHarness =
         new OnPageLoadHarness(hasJourneyCompleted, returnedEmployment)
     }
 
     "redirect to the duplicateSubmissionWarning url" when {
       "an income update has already been performed" in {
         val result = OnPageLoadHarness
-          .setup(hasJourneyCompleted = true, Some(defaultEmployment))
+          .harnessSetup(hasJourneyCompleted = true, Some(defaultEmployment))
           .onPageLoad()
 
         status(result) mustBe SEE_OTHER
@@ -125,7 +135,7 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect to the estimatedPayLanding url" when {
       "an income update has already been performed" in {
         val result = OnPageLoadHarness
-          .setup(hasJourneyCompleted = false, Some(defaultEmployment))
+          .harnessSetup(hasJourneyCompleted = false, Some(defaultEmployment))
           .onPageLoad()
 
         status(result) mustBe SEE_OTHER
@@ -142,7 +152,7 @@ class IncomeUpdateCalculatorControllerSpec
       "no employments are found" in {
 
         val result = OnPageLoadHarness
-          .setup(hasJourneyCompleted = false, None)
+          .harnessSetup(hasJourneyCompleted = false, None)
           .onPageLoad()
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -153,29 +163,26 @@ class IncomeUpdateCalculatorControllerSpec
   "duplicateSubmissionWarning" must {
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(
-            Future.successful(
-              Right(Seq(employer.name, employer.id.toString, "123456", TaiConstants.IncomeTypeEmployment))
-            )
-          )
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
-          .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
-          .thenReturn(Future.successful(Right(employer.name)))
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "123456")
+          .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypeEmployment)
+
+        setup(mockUserAnswers)
 
         def duplicateSubmissionWarning(): Future[Result] =
-          new TestIncomeUpdateCalculatorController()
+          new SUT()
             .duplicateSubmissionWarningPage(employerId)(RequestBuilder.buildFakeGetRequestWithAuth())
       }
 
-      def setup(): DuplicateSubmissionWarningHarness = new DuplicateSubmissionWarningHarness()
+      def harnessSetup(): DuplicateSubmissionWarningHarness = new DuplicateSubmissionWarningHarness()
     }
 
     "show employment duplicateSubmissionWarning view" in {
       val result = DuplicateSubmissionWarningHarness
-        .setup()
+        .harnessSetup()
         .duplicateSubmissionWarning()
 
       status(result) mustBe OK
@@ -188,26 +195,29 @@ class IncomeUpdateCalculatorControllerSpec
   "submitDuplicateSubmissionWarning" must {
     object SubmitDuplicateSubmissionWarningHarness {
       sealed class SubmitDuplicateSubmissionWarningHarness(employmentType: String) {
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Right(Seq(employer.name, "123456", employmentType))))
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
-          .thenReturn(Future.successful(Right(employer.id)))
-        when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
-          .thenReturn(Future.successful(Right(employer.name)))
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "123456")
+          .setOrException(UpdateIncomeTypePage, employmentType)
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateCalculatorController()
+          new SUT()
             .submitDuplicateSubmissionWarning(employerId)(request)
       }
 
-      def setup(employmentType: String): SubmitDuplicateSubmissionWarningHarness =
+      def harnessSetup(employmentType: String): SubmitDuplicateSubmissionWarningHarness =
         new SubmitDuplicateSubmissionWarningHarness(employmentType)
     }
 
     "redirect to the estimatedPayLandingPage url when yes is selected" in {
       val result = SubmitDuplicateSubmissionWarningHarness
-        .setup(TaiConstants.IncomeTypeEmployment)
+        .harnessSetup(TaiConstants.IncomeTypeEmployment)
         .submitDuplicateSubmissionWarning(
           RequestBuilder
             .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
@@ -224,7 +234,7 @@ class IncomeUpdateCalculatorControllerSpec
 
     "redirect to the IncomeSourceSummaryPage url when no is selected" in {
       val result = SubmitDuplicateSubmissionWarningHarness
-        .setup(TaiConstants.IncomeTypeEmployment)
+        .harnessSetup(TaiConstants.IncomeTypeEmployment)
         .submitDuplicateSubmissionWarning(
           RequestBuilder
             .buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
@@ -238,7 +248,7 @@ class IncomeUpdateCalculatorControllerSpec
       "income type is pension" in {
 
         val result = SubmitDuplicateSubmissionWarningHarness
-          .setup(TaiConstants.IncomeTypePension)
+          .harnessSetup(TaiConstants.IncomeTypePension)
           .submitDuplicateSubmissionWarning(
             RequestBuilder
               .buildFakePostRequestWithAuth()
@@ -256,7 +266,7 @@ class IncomeUpdateCalculatorControllerSpec
       "income type is employment" in {
 
         val result = SubmitDuplicateSubmissionWarningHarness
-          .setup(TaiConstants.IncomeTypeEmployment)
+          .harnessSetup(TaiConstants.IncomeTypeEmployment)
           .submitDuplicateSubmissionWarning(
             RequestBuilder
               .buildFakePostRequestWithAuth()
@@ -273,7 +283,7 @@ class IncomeUpdateCalculatorControllerSpec
 
   "checkYourAnswersPage" must {
     object CheckYourAnswersPageHarness {
-      sealed class CheckYourAnswersPageHarness(cacheEmpty: Boolean) {
+      sealed class CheckYourAnswersPageHarness {
 
         val employerName = "Employer1"
         val payFrequency = "monthly"
@@ -285,39 +295,32 @@ class IncomeUpdateCalculatorControllerSpec
         val payPeriodInDays = "3"
         val employerId = "1"
 
-        if (cacheEmpty) {
-          when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-            .thenReturn(Future.successful(Left("cacheEmpty")))
-        } else {
-          when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any()))
-            .thenReturn(
-              Future.successful(
-                Right(
-                  (
-                    Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments, employerId),
-                    Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
-                  )
-                )
-              )
-            )
-          when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any()))
-            .thenReturn(Future.successful(Right(employer.id)))
-          when(journeyCacheService.mandatoryJourneyValue(meq(UpdateIncomeConstants.NameKey))(any()))
-            .thenReturn(Future.successful(Right(employer.name)))
-        }
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeNamePage, employerName)
+          .setOrException(UpdateIncomePayPeriodPage, payFrequency)
+          .setOrException(UpdateIncomeTotalSalaryPage, totalSalary)
+          .setOrException(UpdateIncomePayslipDeductionsPage, payslipDeductions)
+          .setOrException(UpdateIncomeBonusPaymentsPage, bonusPayments)
+          .setOrException(UpdateIncomeIdPage, employerId.toInt)
+          .setOrException(UpdateIncomeTaxablePayPage, taxablePay)
+          .setOrException(UpdateIncomeBonusOvertimeAmountPage, bonusAmount)
+          .setOrException(UpdateIncomeOtherInDaysPage, payPeriodInDays)
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateCalculatorController()
+          new SUT()
             .checkYourAnswersPage(employer.id)(request)
       }
 
-      def setup(cacheEmpty: Boolean): CheckYourAnswersPageHarness =
-        new CheckYourAnswersPageHarness(cacheEmpty)
+      def harnessSetup: CheckYourAnswersPageHarness =
+        new CheckYourAnswersPageHarness
 
       "display check your answers containing populated values from the journey cache" in {
 
-        val result = CheckYourAnswersPageHarness
-          .setup(false)
+        val result = CheckYourAnswersPageHarness.harnessSetup
           .checkYourAnswersPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe OK
@@ -327,8 +330,10 @@ class IncomeUpdateCalculatorControllerSpec
 
       "Redirect to /Income-details" when {
         "the cache is empty" in {
-          val result = CheckYourAnswersPageHarness
-            .setup(true)
+          when(mockJourneyCacheNewRepository.get(any(), any()))
+            .thenReturn(Future.successful(None))
+
+          val result = CheckYourAnswersPageHarness.harnessSetup
             .checkYourAnswersPage(RequestBuilder.buildFakeGetRequestWithAuth())
 
           status(result) mustBe SEE_OTHER
@@ -343,47 +348,57 @@ class IncomeUpdateCalculatorControllerSpec
 
   "handleCalculationResult" must {
     object HandleCalculationResultHarness {
-      sealed class HandleCalculationResultHarness(currentValue: Option[String], cacheEmpty: Boolean) {
+      sealed class HandleCalculationResultHarness(currentValue: String, empId: Int, cacheEmpty: Boolean) {
 
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
-
-        if (cacheEmpty) {
-          when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-            .thenReturn(Future.successful(Left("empty cache")))
-          when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+        val baseUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = if (!cacheEmpty) {
+          baseUserAnswers
+            .setOrException(UpdateIncomeNamePage, "company")
+            .setOrException(UpdateIncomeIdPage, empId)
+            .setOrException(UpdateIncomeNewAmountPage, currentValue)
         } else {
-          when(journeyCacheService.currentValue(meq(UpdateIncomeConstants.NewAmountKey))(any()))
-            .thenReturn(Future.successful(currentValue))
+          baseUserAnswers
         }
 
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+
         def handleCalculationResult(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdateCalculatorController()
+          new SUT()
             .handleCalculationResult()(request)
       }
 
-      def setup(currentValue: Option[String], cacheEmpty: Boolean = false): HandleCalculationResultHarness =
-        new HandleCalculationResultHarness(currentValue, cacheEmpty)
+      def harnessSetup(
+        currentValue: String,
+        empId: Int = 1,
+        cacheEmpty: Boolean = false
+      ): HandleCalculationResultHarness =
+        new HandleCalculationResultHarness(currentValue, empId, cacheEmpty)
     }
     "redirect to EditSuccessView" when {
       "journey cache returns employment name, net amount and id" in {
-
+        val empId = 123
         val result = HandleCalculationResultHarness
-          .setup(Some("100"))
+          .harnessSetup("100", empId)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/check-income-tax/update-income/success-page/123456")
+        redirectLocation(result) mustBe Some(s"/check-income-tax/update-income/success-page/$empId")
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
-
+        val empId = 456
         val result = HandleCalculationResultHarness
-          .setup(Some("4632.460273972602739726027397260273"))
+          .harnessSetup("4632.460273972602739726027397260273", empId)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/check-income-tax/update-income/success-page/123456")
+        redirectLocation(result) mustBe Some(s"/check-income-tax/update-income/success-page/$empId")
       }
     }
 
@@ -391,7 +406,7 @@ class IncomeUpdateCalculatorControllerSpec
       "new estimated income is equal to old income" in {
 
         val result = HandleCalculationResultHarness
-          .setup(Some("1"))
+          .harnessSetup("1")
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
         status(result) mustBe SEE_OTHER
 
@@ -401,16 +416,14 @@ class IncomeUpdateCalculatorControllerSpec
 
     "redirect to /income-details" when {
       "cache is empty" in {
-
         val result = HandleCalculationResultHarness
-          .setup(Some("1"), cacheEmpty = true)
+          .harnessSetup("", cacheEmpty = true)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
           controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
         )
-
       }
     }
   }

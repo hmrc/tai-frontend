@@ -15,22 +15,25 @@
  */
 
 package utils
-import builders.UserBuilder
+import builders.{RequestBuilder, UserBuilder}
 import controllers.auth._
 import controllers.{FakeAuthRetrievals, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
 import org.mockito.Mockito.{reset, when}
+import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n._
+import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -55,17 +58,25 @@ trait BaseSpec
 
   val nino: Nino = FakeAuthRetrievals.nino
 
+  val userAnswers: UserAnswers = UserAnswers(
+    RequestBuilder.uuid,
+    nino.nino,
+    Json.obj(
+      "end-employment-employmentId" -> 1
+    )
+  )
+
   protected implicit val authedUser: AuthedUser = UserBuilder()
   implicit val hc: HeaderCarrier = HeaderCarrier()
   override implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   implicit class ElemUtil(elem: Element) {
-    def toStringBreak = elem.toString.replaceAll("&nbsp;", " ")
+    def toStringBreak: String = elem.toString.replaceAll("&nbsp;", " ")
   }
 
   implicit class StringUtils(str: String) {
-    def replaceU00A0 = str.replace("\u00A0", " ")
-    def replaceNbsp = str.replaceAll("&nbsp;", " ")
+    def replaceU00A0: String = str.replace("\u00A0", " ")
+    def replaceNbsp: String = str.replaceAll("&nbsp;", " ")
   }
 
   override def beforeEach(): Unit = {
@@ -115,4 +126,26 @@ trait BaseSpec
 
   }
 
+  def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =
+    when(mockAuthJourney.authWithDataRetrieval) thenReturn new ActionBuilder[DataRequest, AnyContent] {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: DataRequest[A] => Future[Result]
+      ): Future[Result] =
+        block(
+          DataRequest(
+            request,
+            taiUser = AuthedUser(
+              Nino(nino.toString()),
+              Some("saUtr"),
+              None
+            ),
+            fullName = "",
+            userAnswers = ua
+          )
+        )
+      override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = ec
+    }
 }

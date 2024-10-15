@@ -20,9 +20,9 @@ import pages.QuestionPage
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
-case class EndCompanyBenefitsUpdateIncomePage(empId: Int) extends QuestionPage[String] {
+case class EndCompanyBenefitsUpdateIncomePage(employmentId: Int) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ s"$toString-$employmentId"
 
   override def toString: String = TaiConstants.UpdateIncomeConfirmedAmountKey
 

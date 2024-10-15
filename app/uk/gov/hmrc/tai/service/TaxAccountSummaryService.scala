@@ -19,8 +19,8 @@ package uk.gov.hmrc.tai.service
 import cats.implicits._
 import com.google.inject.Inject
 import controllers.TaiBaseController
-import play.api.i18n.Messages
-import play.api.mvc.MessagesControllerComponents
+import controllers.auth.DataRequest
+import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
 import uk.gov.hmrc.tai.model.domain._
@@ -40,7 +40,7 @@ class TaxAccountSummaryService @Inject() (
 
   def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit
     hc: HeaderCarrier,
-    messages: Messages
+    request: DataRequest[AnyContent]
   ): Future[TaxAccountSummaryViewModel] =
     (
       taxAccountService.incomeSources(nino, TaxYear(), PensionIncome, Live),

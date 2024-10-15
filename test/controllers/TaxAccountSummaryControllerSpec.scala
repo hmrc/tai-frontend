@@ -24,9 +24,9 @@ import org.mockito.Mockito.{times, verify, when}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-import uk.gov.hmrc.tai.model.IncomeSources
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.{IncomeSources, UserAnswers}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
@@ -67,6 +67,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+    setup(UserAnswers("testSessionId", nino.nino))
     Mockito.reset(auditService)
   }
 

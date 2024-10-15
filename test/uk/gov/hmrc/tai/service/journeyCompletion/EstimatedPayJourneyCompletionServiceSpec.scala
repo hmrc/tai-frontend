@@ -16,9 +16,13 @@
 
 package uk.gov.hmrc.tai.service.journeyCompletion
 
+import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
+import play.api.mvc.AnyContent
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
@@ -48,30 +52,44 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec {
     Mockito.reset(successfulJourneyCacheService)
   }
 
+  protected val dataRequest: DataRequest[AnyContent] = DataRequest(
+    fakeRequest,
+    taiUser = AuthedUser(
+      Nino(nino.toString()),
+      Some("saUtr"),
+      None
+    ),
+    fullName = "",
+    userAnswers = UserAnswers("", "")
+  )
+
   "Estimated Pay Journey Completed Service" must {
 
     "add a successful journey completion" in {
 
       when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any()))
         .thenReturn(Future.successful(Map(idKey -> trueValue)))
-      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec), 5 seconds)
+      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec, dataRequest), 5 seconds)
       verify(successfulJourneyCacheService, times(1)).cache(meq(idKey), meq(trueValue))(any())
     }
 
     "return an empty collection upon failing to add a journey completion" in {
       when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(failedCacheCall)
-      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec), 5 seconds) mustBe Map.empty[String, String]
+      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec, dataRequest), 5 seconds) mustBe Map
+        .empty[String, String]
     }
 
     "retrieve a successful journey completion" in {
-      when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(Future.successful(Some(trueValue)))
-      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, ec), 5 seconds)
-      verify(successfulJourneyCacheService, times(1)).currentValue(meq(idKey))(any())
+      when(successfulJourneyCacheService.currentValue(meq(idKey))(any(), any(), any(), any()))
+        .thenReturn(Future.successful(Some(trueValue)))
+      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, ec, dataRequest), 5 seconds)
+      verify(successfulJourneyCacheService, times(1)).currentValue(meq(idKey))(any(), any(), any(), any())
     }
 
     "return false upon failing to retrieve a journey completion" in {
-      when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(failedCacheCall)
-      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, ec), 5 seconds) mustBe false
+      when(successfulJourneyCacheService.currentValue(meq(idKey))(any(), any(), any(), any()))
+        .thenReturn(failedCacheCall)
+      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc, ec, dataRequest), 5 seconds) mustBe false
     }
 
   }

@@ -16,7 +16,7 @@
 
 package pages
 
-import pages.EndEmployment.EndEmploymentIrregularPaymentPage
+import pages.endEmployment.EndEmploymentIrregularPaymentPage
 
 class EndEmploymentIrregularPaymentPageSpec extends PageBehaviours {
 

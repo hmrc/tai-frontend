@@ -19,56 +19,62 @@ package controllers.income.estimatedPay.update
 import builders.RequestBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
+import org.mockito.Mockito.{reset, when}
+import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeOtherInDaysPage, UpdateIncomePayPeriodPage}
 import play.api.test.Helpers._
+import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
 import utils.BaseSpec
 import views.html.incomes.PayPeriodView
 
 import scala.concurrent.Future
+import scala.util.Random
 
 class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val sessionId = "testSessionId"
 
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  def randomNino(): Nino = new Generator(new Random()).nextNino
+  def createSUT = new SUT
 
-  class TestIncomeUpdatePayPeriodController
+  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+
+  class SUT
       extends IncomeUpdatePayPeriodController(
         mockAuthJourney,
         mcc,
         inject[PayPeriodView],
-        journeyCacheService
+        mockJourneyCacheNewRepository
       ) {
-    when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-      .thenReturn(Future.successful(Right(Seq(employer.id.toString, employer.name))))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockJourneyCacheNewRepository)
   }
 
   "payPeriodPage" must {
-    object PayPeriodPageHarness {
-      sealed class PayPeriodPageHarness() {
-
-        when(journeyCacheService.optionalValues(any())(any(), any()))
-          .thenReturn(Future.successful(Seq(Some(Monthly), None)))
-        def payPeriodPage(): Future[Result] =
-          new TestIncomeUpdatePayPeriodController()
-            .payPeriodPage()(RequestBuilder.buildFakeGetRequestWithAuth())
-      }
-
-      def setup(): PayPeriodPageHarness =
-        new PayPeriodPageHarness()
-    }
-
     "display payPeriod page" when {
       "journey cache returns employment name and id" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomePayPeriodPage, Monthly)
+          .setOrException(UpdateIncomeOtherInDaysPage, "123")
 
-        val result = PayPeriodPageHarness
-          .setup()
-          .payPeriodPage()
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.payPeriodPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -79,13 +85,15 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(None))
 
-        val controller = new TestIncomeUpdatePayPeriodController
+        val SUT = createSUT
+        setup(mockUserAnswers)
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("empty cache")))
-
-        val result = controller.payPeriodPage(fakeRequest)
+        val result =
+          SUT.payPeriodPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
@@ -94,25 +102,22 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
   }
 
   "handlePayPeriod" must {
-    object HandlePayPeriodHarness {
-      sealed class HandlePayPeriodHarness() {
-
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
-
-        def handlePayPeriod(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
-          new TestIncomeUpdatePayPeriodController()
-            .handlePayPeriod()(request)
-      }
-
-      def setup(): HandlePayPeriodHarness =
-        new HandlePayPeriodHarness()
-    }
     "redirect the user to payslipAmountPage page" when {
       "user selected monthly" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomePayPeriodPage, Monthly)
+          .setOrException(UpdateIncomeOtherInDaysPage, "123")
 
-        val result = HandlePayPeriodHarness
-          .setup()
-          .handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "monthly"))
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        val result = SUT.handlePayPeriod(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payPeriod" -> "monthly")
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -123,10 +128,23 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
     "redirect user back to how to payPeriod page" when {
       "user input has error" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomePayPeriodPage, "nonsense")
+          .setOrException(UpdateIncomeOtherInDaysPage, "123")
 
-        val result = HandlePayPeriodHarness
-          .setup()
-          .handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.handlePayPeriod(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payPeriod" -> "nonsense")
+        )
 
         status(result) mustBe BAD_REQUEST
 
@@ -137,17 +155,25 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
 
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
-        val controller = new TestIncomeUpdatePayPeriodController
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomePayPeriodPage, "nonsense")
+          .setOrException(UpdateIncomeOtherInDaysPage, "123")
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any()))
-          .thenReturn(Future.successful(Left("")))
+        val SUT = createSUT
+        setup(mockUserAnswers)
 
-        val result = controller.handlePayPeriod(RequestBuilder.buildFakePostRequestWithAuth("payPeriod" -> "nonsense"))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.handlePayPeriod(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payPeriod" -> "nonsense")
+        )
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
   }
-
 }

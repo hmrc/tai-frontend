@@ -22,12 +22,13 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
-import pages.AddEmployment._
-import pages.AddPensionProvider.{AddPensionProviderNamePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
-import pages.EndEmployment._
-import pages.UpdateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneQuestionPage}
+import pages.addEmployment._
+import pages.addPensionProvider._
+import pages.endEmployment._
+import pages.updateEmployment._
 import pages._
 import pages.benefits._
+import pages.income._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -49,7 +50,8 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
-import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
+import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, TaiConstants}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 import utils.{FileHelper, IntegrationSpec}
 
@@ -662,7 +664,26 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
   )
 
-  private val userAnswers = UserAnswers("", "", Json.obj("test" -> "test"))
+  private val userAnswers = UserAnswers("testSessionId", "testNino")
+    .setOrException(UpdateIncomeIdPage, 1)
+    .setOrException(UpdateIncomeNamePage, "employer 1")
+    .setOrException(UpdateIncomePayslipDeductionsPage, "Yes")
+    .setOrException(UpdateIncomeWorkingHoursPage, EditIncomeIrregularPayConstants.RegularHours)
+    .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypePension)
+    .setOrException(UpdateIncomePayPeriodPage, Monthly)
+    .setOrException(UpdateIncomeBonusPaymentsPage, "yes")
+    .setOrException(UpdateIncomeTotalSalaryPage, "£1000")
+    .setOrException(UpdateIncomeTaxablePayPage, "£100")
+    .setOrException(UpdateIncomeOtherInDaysPage, "12")
+    .setOrException(UpdateIncomeBonusOvertimeAmountPage, "50")
+    .setOrException(UpdateIncomeConfirmedNewAmountPage(1), "150")
+    .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
+    .setOrException(UpdateIncomePayToDatePage, "1000")
+    .setOrException(UpdateNextYearsIncomeNewAmountPage(1), "2000")
+    .setOrException(UpdatePreviousYearsIncomeTaxYearPage, "2021")
+    .setOrException(UpdatePreviousYearsIncomePage, "whatYouToldUs")
+    .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+    .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "123456789")
     .setOrException(EndEmploymentIdPage, 1)
     .setOrException(EmploymentDecisionPage, "company name")
     .setOrException(EndEmploymentLatestPaymentPage, LocalDate.of(2022, 2, 2))
@@ -705,6 +726,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))

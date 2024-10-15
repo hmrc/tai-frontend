@@ -19,18 +19,18 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
+import pages.income.{UpdateIncomeBonusOvertimeAmountPage, UpdateIncomeBonusPaymentsPage, UpdateIncomeTaxablePayPage}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
+import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import views.html.incomes._
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeUpdateBonusController @Inject() (
@@ -38,26 +38,25 @@ class IncomeUpdateBonusController @Inject() (
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
   bonusPaymentAmount: BonusPaymentAmountView,
-  @Named("Update Income") implicit val journeyCacheService: JourneyCacheService
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with UpdatedEstimatedPayJourneyCache {
-  def bonusPaymentsPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
+    extends TaiBaseController(mcc) {
 
+  def bonusPaymentsPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
     (
-      IncomeSource.create(journeyCacheService),
-      journeyCacheService.currentValue(UpdateIncomeConstants.BonusPaymentsKey),
-      bonusPaymentBackUrl
+      IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
+      Future.successful(request.userAnswers.get(UpdateIncomeBonusPaymentsPage)),
+      bonusPaymentBackUrl(request.userAnswers)
     ).mapN {
       case (Right(incomeSource), bonusPayment, backUrl) =>
         val form = BonusPaymentsForm.createForm.fill(YesNoForm(bonusPayment))
         Ok(bonusPayments(form, incomeSource, backUrl))
       case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-
     }
   }
 
-  def handleBonusPayments(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
+  def handleBonusPayments(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -65,17 +64,22 @@ class IncomeUpdateBonusController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            (IncomeSource.create(journeyCacheService), bonusPaymentBackUrl).mapN {
+            (
+              IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
+              bonusPaymentBackUrl(request.userAnswers)
+            ).mapN {
               case (Right(incomeSource), backUrl) =>
                 BadRequest(bonusPayments(formWithErrors, incomeSource, backUrl))
               case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
             },
           formData => {
-            val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
-              Map(UpdateIncomeConstants.BonusPaymentsKey -> bonusPayments)
+            val bonusPaymentsAnswer = formData.yesNoChoice.fold(Map.empty[String, String]) { bonusPayments =>
+              Map(UpdateIncomeBonusPaymentsPage.toString -> bonusPayments)
             }
 
-            journeyCache(UpdateIncomeConstants.BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
+            journeyCacheNewRepository.set(
+              request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(bonusPaymentsAnswer).as[JsObject])
+            ) map { _ =>
               if (formData.yesNoChoice.contains(FormValuesConstants.YesValue)) {
                 Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
               } else {
@@ -86,21 +90,20 @@ class IncomeUpdateBonusController @Inject() (
         )
   }
 
-  def bonusOvertimeAmountPage: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+  def bonusOvertimeAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     (
-      IncomeSource.create(journeyCacheService),
-      journeyCacheService.currentValue(UpdateIncomeConstants.BonusOvertimeAmountKey)
-    )
-      .mapN {
-        case (Right(incomeSource), bonusOvertimeAmount) =>
-          val form = BonusOvertimeAmountForm.createForm.fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
-          Ok(bonusPaymentAmount(form, incomeSource))
-        case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      }
+      IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
+      Future.successful(request.userAnswers.get(UpdateIncomeBonusOvertimeAmountPage))
+    ).mapN {
+      case (Right(incomeSource), bonusOvertimeAmount) =>
+        val form = BonusOvertimeAmountForm.createForm.fill(BonusOvertimeAmountForm(bonusOvertimeAmount))
+        Ok(bonusPaymentAmount(form, incomeSource))
+      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    }
   }
 
-  def handleBonusOvertimeAmount(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
+  def handleBonusOvertimeAmount(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
 
@@ -109,7 +112,7 @@ class IncomeUpdateBonusController @Inject() (
         .fold(
           formWithErrors =>
             for {
-              incomeSourceEither <- IncomeSource.create(journeyCacheService)
+              incomeSourceEither <- IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
             } yield incomeSourceEither match {
               case Right(incomeSource) =>
                 BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
@@ -118,9 +121,10 @@ class IncomeUpdateBonusController @Inject() (
           formData =>
             formData.amount match {
               case Some(amount) =>
-                journeyCache(
-                  UpdateIncomeConstants.BonusOvertimeAmountKey,
-                  Map(UpdateIncomeConstants.BonusOvertimeAmountKey -> amount)
+                journeyCacheNewRepository.set(
+                  request.userAnswers.copy(data =
+                    request.userAnswers.data ++ Json.obj(UpdateIncomeBonusOvertimeAmountPage.toString -> amount)
+                  )
                 ) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
                 }
@@ -129,11 +133,16 @@ class IncomeUpdateBonusController @Inject() (
         )
   }
 
-  private def bonusPaymentBackUrl(implicit hc: HeaderCarrier): Future[String] =
-    journeyCacheService.currentValue(UpdateIncomeConstants.TaxablePayKey).map {
-      case None =>
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
-      case _ =>
-        controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url
+  private def bonusPaymentBackUrl(userAnswers: UserAnswers): Future[String] =
+    Future.successful {
+      userAnswers.get(UpdateIncomeTaxablePayPage) match {
+        case None =>
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
+        case _ =>
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .taxablePayslipAmountPage()
+            .url
+      }
     }
+
 }
