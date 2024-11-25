@@ -43,7 +43,6 @@ import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeVi
 
 import javax.inject.{Inject, Named}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class UpdatePensionProviderController @Inject() (
   taxAccountService: TaxAccountService,
@@ -319,20 +318,19 @@ class UpdatePensionProviderController @Inject() (
       redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
     }
 
-    (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
-      case Right(incomes) =>
-        incomes.find(income =>
-          income.employmentId.contains(id) &&
-            income.componentType == PensionIncome
-        ) match {
-          case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
-          case _                   => throw new RuntimeException(s"Tax code income source is not available for id $id")
-        }
-      case _ => throw new RuntimeException("Tax code income source is not available")
-    }).recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError(e.getMessage)
-    }
-
+    taxAccountService
+      .taxCodeIncomes(request.taiUser.nino, TaxYear())
+      .foldF(
+        _ => Future.successful(errorPagesHandler.internalServerError),
+        incomes =>
+          incomes.find(income =>
+            income.employmentId.contains(id) &&
+              income.componentType == PensionIncome
+          ) match {
+            case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
+            case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
+          }
+      )
   }
 
   def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>

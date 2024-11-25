@@ -201,7 +201,7 @@ class IncomeController @Inject() (
             logger.warn(errorMessage)
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
           case Right(cachedData) =>
-            (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
+            (taxAccountService.taxCodeIncomes(nino, TaxYear()).value, employmentService.employment(nino, empId))
               .mapN {
                 case (
                       Right(taxCodeIncomes),
@@ -403,7 +403,7 @@ class IncomeController @Inject() (
           case Left(_) =>
             Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
           case Right(newAmountKey) =>
-            (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
+            (taxAccountService.taxCodeIncomes(nino, TaxYear()).value, employmentService.employment(nino, empId))
               .mapN {
                 case (
                       Right(taxCodeIncomes),

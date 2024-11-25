@@ -16,10 +16,11 @@
 
 package controllers
 
-import cats.data.{EitherT, NonEmptyList}
+import cats.data.EitherT
 import cats.implicits._
 import controllers.auth.{AuthJourney, DataRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -27,13 +28,12 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.FutureOps.AttemptTNel
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import views.html.incomeTaxComparison.MainView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeTaxComparisonController @Inject() (
   val auditConnector: AuditConnector,
@@ -54,23 +54,31 @@ class IncomeTaxComparisonController @Inject() (
     val currentTaxYear = TaxYear()
     val nextTaxYear = currentTaxYear.next
 
-    (
-      taxAccountService.taxAccountSummary(nino, currentTaxYear).attemptTNel,
-      taxAccountService.taxAccountSummary(nino, nextTaxYear).attemptTNel,
-      EitherT(taxAccountService.taxCodeIncomes(nino, currentTaxYear)).leftMap(msg =>
-        NonEmptyList.one(new Throwable(msg))
-      ),
-      EitherT(taxAccountService.taxCodeIncomes(nino, nextTaxYear)).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
-      codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
-      codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
-      employmentService.employments(nino, currentTaxYear).attemptTNel,
-      updateNextYearsIncomeService.isEstimatedPayJourneyComplete.attemptTNel
-    ).parMapN(computeModel(currentTaxYear, nextTaxYear))
-      .fold(
-        errorPagesHandler
-          .internalServerError("Not able to fetch income tax comparison details in IncomeTaxComparisonController", _),
-        model => Ok(mainView(model, applicationConfig))
-      )
+    val result = for {
+      a <- EitherT[Future, UpstreamErrorResponse, TaxAccountSummary](
+             taxAccountService.taxAccountSummary(nino, currentTaxYear).map(Right(_))
+           )
+      b <- EitherT[Future, UpstreamErrorResponse, TaxAccountSummary](
+             taxAccountService.taxAccountSummary(nino, nextTaxYear).map(Right(_))
+           )
+      c <- taxAccountService.taxCodeIncomes(nino, currentTaxYear)
+      d <- taxAccountService.taxCodeIncomes(nino, nextTaxYear)
+      e <- EitherT[Future, UpstreamErrorResponse, Seq[CodingComponent]](
+             codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).map(Right(_))
+           )
+      f <- EitherT[Future, UpstreamErrorResponse, Seq[CodingComponent]](
+             codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).map(Right(_))
+           )
+      g <- employmentService.employments(nino, currentTaxYear)
+      h <- EitherT[Future, UpstreamErrorResponse, Boolean](
+             updateNextYearsIncomeService.isEstimatedPayJourneyComplete.map(Right(_))
+           )
+    } yield computeModel(currentTaxYear, nextTaxYear)(a, b, c, d, e, f, g, h)
+
+    result.fold(
+      _ => errorPagesHandler.internalServerError,
+      model => Ok(mainView(model, applicationConfig))
+    )
   }
 
   private def computeModel(currentTaxYear: TaxYear, nextTaxYear: TaxYear)(
@@ -82,7 +90,7 @@ class IncomeTaxComparisonController @Inject() (
     codingComponentsCYPlusOne: Seq[CodingComponent],
     employmentsCY: Seq[Employment],
     isEstimatedPayJourneyComplete: Boolean
-  )(implicit request: DataRequest[AnyContent]) = {
+  )(implicit request: DataRequest[AnyContent]): IncomeTaxComparisonViewModel = {
     val estimatedIncomeTaxComparisonViewModel = {
       val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
       val cyPlusOneEstimatedTax =

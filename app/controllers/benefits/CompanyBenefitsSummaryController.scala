@@ -56,7 +56,7 @@ class CompanyBenefitsSummaryController @Inject() (
       request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
     val incomeDetailsResult = for {
-      taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear()).value
       employment               <- employmentService.employment(nino, empId)
       benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
       estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)

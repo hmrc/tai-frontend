@@ -48,11 +48,11 @@ class YourIncomeCalculationController @Inject() (
   private def incomeCalculationPage(empId: Int)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
-    lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+    lazy val taxCodeIncomesEitherT = taxAccountService.taxCodeIncomes(nino, TaxYear())
     lazy val employmentFuture = employmentService.employment(nino, empId)
 
     for {
-      taxCodeIncomeDetails <- taxCodeIncomesFuture
+      taxCodeIncomeDetails <- taxCodeIncomesEitherT.value
       employmentDetails    <- employmentFuture
     } yield (taxCodeIncomeDetails, employmentDetails) match {
       case (Right(taxCodeIncomes), Some(employment)) =>
@@ -81,20 +81,24 @@ class YourIncomeCalculationController @Inject() (
       if (year <= TaxYear().prev) {
         val nino = request.taiUser.nino
 
-        employmentService.employments(nino, year) map { employments =>
-          val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
+        employmentService
+          .employments(nino, year)
+          .fold(
+            _ => errorPagesHandler.internalServerError,
+            employments => {
+              val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
 
-          (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
-            case (_, "TemporarilyUnavailable") =>
-              errorPagesHandler.internalServerError(
-                "Employment contains stub annual account data found meaning payment information can't be displayed"
-              )
-            case (true, _) =>
-              Ok(historicIncomePrintView(historicIncomeCalculationViewModel))
-            case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
-          }
-        }
-
+              (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
+                case (_, "TemporarilyUnavailable") =>
+                  errorPagesHandler.internalServerError(
+                    "Employment contains stub annual account data found meaning payment information can't be displayed"
+                  )
+                case (true, _) =>
+                  Ok(historicIncomePrintView(historicIncomeCalculationViewModel))
+                case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+              }
+            }
+          )
       } else {
         Future.successful(
           errorPagesHandler.internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year")

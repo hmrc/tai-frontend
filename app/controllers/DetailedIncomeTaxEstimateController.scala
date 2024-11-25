@@ -44,7 +44,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
 
     (
       taxAccountService.totalTax(nino, TaxYear()),
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()).value,
       taxAccountService.taxAccountSummary(nino, TaxYear()),
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear())

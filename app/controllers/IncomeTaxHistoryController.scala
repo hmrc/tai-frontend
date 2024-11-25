@@ -16,12 +16,13 @@
 
 package controllers
 
+import cats.data.EitherT
 import cats.implicits._
 import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -42,26 +43,21 @@ class IncomeTaxHistoryController @Inject() (
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
-  employmentService: EmploymentService
+  employmentService: EmploymentService,
+  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
-  ): Future[IncomeTaxYear] =
+  ): EitherT[Future, UpstreamErrorResponse, IncomeTaxYear] =
     for {
-      maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
-                                     None
-                                   }
-      employmentDetails <- employmentService.employments(nino, taxYear)
+      maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear)
+      employmentDetails         <- employmentService.employments(nino, taxYear)
     } yield {
-      val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
+      val taxCodesMap: Map[Option[Int], Seq[TaxCodeIncome]] = maybeTaxCodeIncomeDetails.groupBy(_.employmentId)
       val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { employment: Employment =>
-        val maybeTaxCode: Option[TaxCodeIncome] = for {
-          taxCodesMap <- maybeTaxCodesMap
-          incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
-          taxCode     <- incomes.headOption
-        } yield taxCode
+        val maybeTaxCode = taxCodesMap.get(Some(employment.sequenceNumber)).flatMap(_.headOption)
 
         val maybeLastPayment = fetchLastPayment(employment, taxYear)
         val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
@@ -102,8 +98,9 @@ class IncomeTaxHistoryController @Inject() (
           IncomeTaxYear(taxYear, Nil)
         }
       )
-      .map { taxCodeIncome =>
-        Ok(incomeTaxHistoryView(request.person, taxCodeIncome))
-      }
+      .fold(
+        _ => errorPagesHandler.internalServerError,
+        taxCodeIncome => Ok(incomeTaxHistoryView(request.person, taxCodeIncome))
+      )
   }
 }

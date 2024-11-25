@@ -51,11 +51,11 @@ class DescribedYourTaxFreeAmountService @Inject() (
     executionContext: ExecutionContext
   ): Future[YourTaxFreeAmountViewModel] =
     (
-      employmentService.employmentNames(nino, TaxYear()),
+      employmentService.employmentNames(nino, TaxYear()).value,
       getTaxFreeAmount(nino),
       companyCarService.companyCars(nino),
       taxAccountService.totalTax(nino, TaxYear())
-    ).mapN { (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>
+    ).mapN { case (Right(employmentNames), taxFreeAmountComparison, companyCarBenefit, totalTax) =>
       val describedPairs =
         describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
       YourTaxFreeAmountViewModel(

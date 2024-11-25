@@ -19,10 +19,12 @@ package uk.gov.hmrc.tai.service
 import org.apache.pekko.Done
 import cats.data.EitherT
 import cats.implicits._
+import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison.taxCodeIncomeSourceReads
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome}
@@ -30,7 +32,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentTy
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
+class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(implicit ec: ExecutionContext) {
 
   def incomeSources(
     nino: Nino,
@@ -42,14 +44,15 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, Seq[TaxCodeIncome]]] =
-    taxAccountConnector.taxCodeIncomes(nino, year)
+  ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
+    taxAccountConnector.taxCodeIncomes(nino, year).map { response =>
+      (response.json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads))
+    }
 
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext
-  ): Future[Either[String, Option[TaxCodeIncome]]] =
-    EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Option[TaxCodeIncome]] =
+    taxCodeIncomes(nino: Nino, year: TaxYear).map(_.find(_.employmentId.contains(employmentId)))
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
     taxAccountConnector.taxAccountSummary(nino, year)
@@ -66,8 +69,7 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
     taxAccountConnector.totalTax(nino, year)
 
   def scottishBandRates(nino: Nino, year: TaxYear, taxCodes: Seq[String])(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext
+    hc: HeaderCarrier
   ): Future[Map[String, BigDecimal]] = {
     def isScottishStandAloneTaxcode(taxCode: String) = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r.findFirstIn(taxCode).isDefined
 

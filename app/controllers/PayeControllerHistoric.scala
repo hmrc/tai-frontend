@@ -58,9 +58,9 @@ class PayeControllerHistoric @Inject() (
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
       (
-        employmentService.employments(nino, taxYear),
+        employmentService.employments(nino, taxYear).value,
         taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
-      ).mapN { case (employments, hasTaxCodeRecordsInYearPerEmployment) =>
+      ).mapN { case (Right(employments), hasTaxCodeRecordsInYearPerEmployment) =>
         if (isRtiUnavailable(employments)) {
           Ok(
             RtiDisabledHistoricPayAsYouEarnView(

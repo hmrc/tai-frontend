@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
@@ -26,7 +29,11 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfig: ApplicationConfig)(implicit
+class EmploymentsConnector @Inject() (
+  http: HttpClientV2,
+  httpHandler: HttpHandler,
+  applicationConfig: ApplicationConfig
+)(implicit
   ec: ExecutionContext
 ) {
 
@@ -37,12 +44,20 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
   private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =
     dateOption.filter(_.isAfter(applicationConfig.startEmploymentDateFilteredBefore))
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
-      (json \ "data" \ "employments").as[Seq[Employment]].map { employment =>
-        employment.copy(startDate = filterDate(employment.startDate))
+  def employments(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
+    httpHandler
+      .read(
+        http
+          .get(url"${employmentServiceUrl(nino, year)}")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map { response =>
+        (response.json \ "data" \ "employments").as[Seq[Employment]].map { employment =>
+          employment.copy(startDate = filterDate(employment.startDate))
+        }
       }
-    }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>

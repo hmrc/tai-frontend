@@ -53,7 +53,7 @@ class UpdateNextYearsIncomeService @Inject() (
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
     (
-      taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId),
+      taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId).value,
       employmentService.employment(nino, employmentId)
     ).mapN {
       case (Right(Some(taxCodeIncome)), Some(employment)) =>

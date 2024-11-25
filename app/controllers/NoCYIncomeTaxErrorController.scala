@@ -18,17 +18,14 @@ package controllers
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc._
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 import views.html.NoCYIncomeTaxErrorView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class NoCYIncomeTaxErrorController @Inject() (
   employmentService: EmploymentService,
@@ -40,17 +37,10 @@ class NoCYIncomeTaxErrorController @Inject() (
     extends TaiBaseController(mcc) {
 
   def noCYIncomeTaxErrorPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    for {
-      emp <- previousYearEmployments(request.taiUser.nino)
-    } yield {
-      implicit val user: AuthedUser = request.taiUser
-      Ok(noCYIncomeTaxErrorView(NoCYIncomeTaxErrorViewModel(emp)))
+    employmentService.employments(request.taiUser.nino, TaxYear().prev).fold(_ => Seq.empty, identity).map {
+      employments =>
+        implicit val user: AuthedUser = request.taiUser
+        Ok(noCYIncomeTaxErrorView(NoCYIncomeTaxErrorViewModel(employments)))
     }
   }
-
-  private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentService.employments(nino, TaxYear().prev) recover { case _ =>
-      Nil
-    }
-
 }

@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -27,7 +28,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
+  def employments(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
     employmentsConnector.employments(nino, year)
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
@@ -64,9 +67,9 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier,
     executionContext: ExecutionContext
-  ): Future[Map[Int, String]] =
-    for {
-      employments <- employments(nino, year)
-    } yield employments.map(employment => employment.sequenceNumber -> employment.name).toMap
+  ): EitherT[Future, UpstreamErrorResponse, Map[Int, String]] =
+    employments(nino, year).map { employments =>
+      employments.map(employment => employment.sequenceNumber -> employment.name).toMap
+    }
 
 }

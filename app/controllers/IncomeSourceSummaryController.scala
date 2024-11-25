@@ -61,7 +61,7 @@ class IncomeSourceSummaryController @Inject() (
       journeyCacheService.currentValueAsInt(s"$UpdateIncomeConfirmedAmountKey-$empId")
 
     (
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()).value,
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
       estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),

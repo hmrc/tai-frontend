@@ -31,7 +31,6 @@ import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -63,7 +62,7 @@ class WhatDoYouWantToDoController @Inject() (
       val nino = request.taiUser.nino
       val ninoString = request.taiUser.nino.toString()
 
-      lazy val employmentsFuture = employmentService.employments(nino, TaxYear())
+      lazy val employmentsFuture = employmentService.employments(nino, TaxYear()).value
       lazy val redirectFuture =
         OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith { case ex =>
           previousYearEmployments(nino).map { prevYearEmployments =>
@@ -151,7 +150,7 @@ class WhatDoYouWantToDoController @Inject() (
         EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight))
       cyPlusOneToggle <-
         EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
-      _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
+      _ <- auditNumberOfTaxCodesReturned(nino, showJrsLink): EitherT[Future, TaxCodeError, AuditResult]
     } yield Ok(
       whatDoYouWantToDoTileView(
         WhatDoYouWantToDoForm.createForm,
@@ -165,28 +164,42 @@ class WhatDoYouWantToDoController @Inject() (
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit
     request: Request[AnyContent]
-  ): Future[AuditResult] = {
+  ): EitherT[Future, TaxCodeError, AuditResult] = {
 
-    val noOfTaxCodesF = taxAccountService.taxCodeIncomes(nino, TaxYear()).map { currentTaxYearTaxCodes =>
-      currentTaxYearTaxCodes.getOrElse(Seq.empty[TaxCodeIncome])
-    }
+    val noOfTaxCodesF = taxAccountService
+      .taxCodeIncomes(nino, TaxYear())
+      .fold(
+        _ => Seq.empty,
+        identity
+      )
 
-    noOfTaxCodesF.flatMap { noOfTaxCodes =>
-      employmentService.employments(nino, TaxYear()).flatMap { employments =>
-        auditService
-          .sendUserEntryAuditEvent(
-            nino,
-            request.headers.get("Referer").getOrElse("NA"),
-            employments,
-            noOfTaxCodes,
-            isJrsTileShown
-          )
-      }
-    }
+    EitherT(noOfTaxCodesF.map { noOfTaxCodes =>
+      employmentService
+        .employments(nino, TaxYear())
+        .biflatMap(
+          error => EitherT.leftT[Future, AuditResult](TaxCodeError(nino, Some(error.getMessage))),
+          employments =>
+            EitherT[Future, TaxCodeError, AuditResult](
+              auditService
+                .sendUserEntryAuditEvent(
+                  nino,
+                  request.headers.get("Referer").getOrElse("NA"),
+                  employments,
+                  noOfTaxCodes,
+                  isJrsTileShown
+                )
+                .map(Right(_))
+            )
+        )
+        .value
+    }.flatten)
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentService.employments(nino, TaxYear().prev) recover { case _ =>
-      Nil
-    }
+    employmentService
+      .employments(nino, TaxYear().prev)
+      .fold(
+        _ => Seq.empty,
+        identity
+      )
 }

@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.tai.util
 
-import cats.data.{EitherT, NonEmptyList}
-import cats.implicits._
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 
@@ -38,8 +36,4 @@ object FutureOps {
     }
   }
 
-  implicit class AttemptTNel[A](f: Future[A]) {
-    def attemptTNel(implicit ec: ExecutionContext): EitherT[Future, NonEmptyList[Throwable], A] =
-      f.attemptT.leftMap(NonEmptyList.one)
-  }
 }

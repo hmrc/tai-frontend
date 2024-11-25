@@ -22,6 +22,7 @@ import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypeP
 import play.api.libs.json.Json
 import play.api.mvc._
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
@@ -83,7 +84,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
 
         for {
           incomeToEdit: EmploymentAmount <- incomeToEditFuture
-          taxCodeIncomeDetails           <- taxCodeIncomeDetailsFuture
+          taxCodeIncomeDetails           <- taxCodeIncomeDetailsFuture.value
           _                              <- cacheEmploymentDetailsFuture
           result <- processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails, request.userAnswers)
         } yield result
@@ -98,7 +99,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]],
+    maybeTaxCodeIncomeDetails: Either[UpstreamErrorResponse, Seq[TaxCodeIncome]],
     userAnswers: UserAnswers
   )(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {

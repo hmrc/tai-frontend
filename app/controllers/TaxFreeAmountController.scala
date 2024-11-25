@@ -16,11 +16,15 @@
 
 package controllers
 
+import cats.data.EitherT
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.{TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
@@ -28,8 +32,7 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 import views.html.TaxFreeAmountView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-import scala.util.control.NonFatal
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaxFreeAmountController @Inject() (
   codingComponentService: CodingComponentService,
@@ -48,10 +51,15 @@ class TaxFreeAmountController @Inject() (
     val nino = request.taiUser.nino
 
     (for {
-      codingComponents   <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-      employmentNames    <- employmentService.employmentNames(nino, TaxYear())
-      companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
-      totalTax           <- taxAccountService.totalTax(nino, TaxYear())
+      codingComponents <- EitherT[Future, UpstreamErrorResponse, Seq[CodingComponent]](
+                            codingComponentService.taxFreeAmountComponents(nino, TaxYear()).map(Right(_))
+                          )
+      employmentNames <- employmentService.employmentNames(nino, TaxYear())
+      companyCarBenefits <- EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]](
+                              companyCarService.companyCarOnCodingComponents(nino, codingComponents).map(Right(_))
+                            )
+      totalTax <-
+        EitherT[Future, UpstreamErrorResponse, TotalTax](taxAccountService.totalTax(nino, TaxYear()).map(Right(_)))
     } yield {
       val viewModel = TaxFreeAmountViewModel(
         codingComponents,
@@ -60,11 +68,15 @@ class TaxFreeAmountController @Inject() (
       )
       implicit val user: AuthedUser = request.taiUser
       Ok(taxFreeAmount(viewModel, applicationConfig, request.fullName))
-    }) recover {
-      case e: NotFoundException =>
-        logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      case NonFatal(e) => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))
-    }
+    }).fold(
+      error =>
+        if (error.statusCode == NOT_FOUND) {
+          logger.warn(s"Total tax - No tax account information found: ${error.getMessage}")
+          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+        } else {
+          errorPagesHandler.internalServerError
+        },
+      identity
+    )
   }
 }

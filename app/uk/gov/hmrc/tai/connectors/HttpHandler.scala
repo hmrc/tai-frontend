@@ -113,7 +113,10 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
             logger.warn(s"HttpHandler - Server error received")
             Future.failed(new HttpException(httpResponse.body, httpResponse.status))
         }
-      }
+      } recoverWith { case error: GatewayTimeoutException =>
+      logger.warn(s"HttpHandler - Server error received")
+      Future.failed(new HttpException(error.message, error.responseCode))
+    }
   }
 
   trait DataConverter[I] {

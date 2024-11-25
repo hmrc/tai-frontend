@@ -43,7 +43,7 @@ class IncomeService @Inject() (
     executionContext: ExecutionContext
   ): Future[EmploymentAmount] =
     (
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()).value,
       employmentService.employment(nino, id)
     ) mapN {
       case (Right(taxCodeIncomes), Some(employment)) =>
