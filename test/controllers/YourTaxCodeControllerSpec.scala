@@ -17,12 +17,14 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
@@ -57,7 +59,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
   "renderTaxCodes" must {
     "display error when there is TaiFailure in service" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Left("error occurred")))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
       val result = sut.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -65,7 +67,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
 
     "display any error" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.failed(new InternalError("error occurred")))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
       val result = sut.renderTaxCodes(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -89,8 +91,8 @@ class YourTaxCodeControllerSpec extends BaseSpec {
 
     "display tax code page containing all tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+        .thenReturn(EitherT.rightT(taxCodeIncomes))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startOfTaxYear: String =
@@ -107,8 +109,8 @@ class YourTaxCodeControllerSpec extends BaseSpec {
 
     "display tax code page containing the relevant tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+        .thenReturn(EitherT.rightT(taxCodeIncomes))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val result = sut.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -127,7 +129,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
       val startOfTaxYear: String = TaxYear().prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
       val endOfTaxYear: String = TaxYear().prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startDate = TaxYear().start
@@ -159,7 +161,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
 
     "display error when there is TaiFailure in service" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Left("error occurred")))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
       val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -167,7 +169,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
 
     "display any error" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.failed(new InternalError("error occurred")))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
       val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR

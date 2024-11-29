@@ -17,12 +17,13 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
+import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -90,13 +91,14 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         )
       )
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any())).thenReturn(
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(
         Future.successful(
           Map.empty[String, BigDecimal]
         )
       )
 
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(Nil)))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.rightT(Nil))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -201,14 +203,15 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(nonTaxCodeIncome)
         )
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(taxAccountSummary)
         )
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq(employment)))
 
         when(taxAccountSummaryService.taxAccountSummaryViewModel(any(), any())(any(), any())).thenReturn(
           Future.failed(new RuntimeException("Failed to fetch income details"))

@@ -20,6 +20,7 @@ import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
 import play.api.libs.json.{JsResultException, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, Live}
@@ -223,9 +224,10 @@ class EmploymentsConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, appConfig) {
-    override val serviceUrl: String = servUrl
-  }
+  def sut(servUrl: String = ""): EmploymentsConnector =
+    new EmploymentsConnector(inject[HttpClientV2], httpHandler, appConfig) {
+      override val serviceUrl: String = servUrl
+    }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -264,7 +266,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse(oneEmployment)))
 
-        val responseFuture = sut("test/service").employments(nino, year)
+        val responseFuture = sut("test/service").employments(nino, year).value
 
         Await.result(responseFuture, 5 seconds)
         verify(httpHandler)
@@ -279,7 +281,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse(oneEmployment)))
 
-        val responseFuture = sut().employments(nino, year)
+        val responseFuture = sut().employments(nino, year).value
 
         Await.result(responseFuture, 5 seconds)
 
@@ -294,7 +296,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse(oneEmployment)))
 
-        val responseFuture = sut().employments(nino, year)
+        val responseFuture = sut().employments(nino, year).value
 
         val result = Await.result(responseFuture, 5 seconds)
 
@@ -308,7 +310,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse(twoEmployments)))
 
-        val responseFuture = sut("test/service").employments(nino, year)
+        val responseFuture = sut("test/service").employments(nino, year).value
 
         val result = Await.result(responseFuture, 5 seconds)
 
@@ -323,7 +325,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse(oneEmployment.replace("2016-05-26", "1945-05-26"))))
 
-        val responseFuture = sut().employments(nino, year)
+        val responseFuture = sut().employments(nino, year).value
 
         val result = Await.result(responseFuture, 5 seconds)
 
@@ -338,7 +340,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
       when(httpHandler.getFromApiV2(any(), any())(any(), any()))
         .thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
-      val responseFuture = sut("test/service").employments(nino, year)
+      val responseFuture = sut("test/service").employments(nino, year).value
 
       val result = Await.result(responseFuture, 5 seconds)
 
@@ -354,7 +356,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
 
-        val result = sut("test/service").employments(nino, year)
+        val result = sut("test/service").employments(nino, year).value
 
         whenReady(result.failed) { e =>
           e mustBe a[JsResultException]

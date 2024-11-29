@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.http.Status.INTERNAL_SERVER_ERROR
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -40,7 +43,7 @@ class IncomeServiceSpec extends BaseSpec {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -70,7 +73,7 @@ class IncomeServiceSpec extends BaseSpec {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+          .thenReturn(EitherT.rightT(Seq.empty))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -84,7 +87,7 @@ class IncomeServiceSpec extends BaseSpec {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -95,7 +98,7 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+          .thenReturn(EitherT.rightT(Seq.empty))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)

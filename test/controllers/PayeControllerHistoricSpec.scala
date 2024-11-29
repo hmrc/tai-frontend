@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -25,7 +26,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain._
@@ -57,7 +58,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
         inject[ErrorPagesHandler]
       ) {
 
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+    when(employmentService.employments(any(), any())(any()))
+      .thenReturn(EitherT.rightT(employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }
@@ -220,7 +222,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmployment))
+        .thenReturn(EitherT.rightT(sampleEmployment))
 
       val result = testController.payePage(TaxYear().prev)(request)
 
@@ -233,7 +235,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
       val testController = createTestController()
       when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+        .thenReturn(EitherT.rightT(sampleEmploymentForRtiUnavailable))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -270,7 +272,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmploymentWithSameDatFpsSubmissions))
+        .thenReturn(EitherT.rightT(sampleEmploymentWithSameDatFpsSubmissions))
 
       val result = testController.payePage(TaxYear().prev)(request)
 
@@ -286,7 +288,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val testController = createTestController()
         when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -303,7 +305,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val testController = createTestController()
         when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new NotFoundException("not found")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -319,7 +321,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val testController = createTestController()
         when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new BadRequestException("Bad request")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("bad request", BAD_REQUEST)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -334,7 +336,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val testController = createTestController()
         when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new InternalServerException("Internal server error")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -349,7 +351,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val testController = createTestController()
         when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new HttpException("error", 502)))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("bad gateway", BAD_GATEWAY)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -364,7 +366,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val testController = createTestController()
         when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmptyEmployment))
+          .thenReturn(EitherT.rightT(sampleEmptyEmployment))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

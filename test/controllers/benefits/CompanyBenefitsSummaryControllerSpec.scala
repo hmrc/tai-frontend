@@ -17,6 +17,7 @@
 package controllers.benefits
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -26,6 +27,7 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
@@ -132,7 +134,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(mockJourneyCacheNewRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
@@ -163,7 +165,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(mockJourneyCacheNewRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any(), any()))
@@ -194,7 +196,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -212,7 +214,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -230,7 +232,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         setup(mockUserAnswers)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))

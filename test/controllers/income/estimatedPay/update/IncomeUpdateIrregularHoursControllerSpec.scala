@@ -17,6 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.apache.pekko.Done
 import org.jsoup.Jsoup
@@ -28,6 +29,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -77,8 +79,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
     when(incomeService.latestPayment(any(), any())(any(), any()))
       .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
-    when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
-      .thenReturn(Future.successful(Right(None: Option[TaxCodeIncome])))
+    when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+      .thenReturn(EitherT.rightT(None))
   }
 
   def BuildTaxCodeIncomes(incomeCount: Int): Seq[TaxCodeIncome] = {
@@ -112,8 +114,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(Right(taxCodeIncome)))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+          .thenReturn(EitherT.rightT(taxCodeIncome))
 
         def editIncomeIrregularHours(
           incomeNumber: Int,
@@ -166,8 +168,8 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         val service = EditIncomeIrregularHoursHarness.setup(Option.empty[TaxCodeIncome])
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(Left("error")))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER

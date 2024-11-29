@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import controllers.FakeTaiPlayApplication
 import controllers.auth.{AuthedUser, DataRequest}
 import org.apache.pekko.Done
@@ -87,9 +88,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
     when(
       taxAccountService
-        .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+        .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
     )
-      .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+      .thenReturn(EitherT.rightT(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
     when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
 
@@ -125,9 +126,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+          .thenReturn(EitherT.rightT(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
 
@@ -150,9 +151,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
-          .thenReturn(Future.successful(Right(None)))
+          .thenReturn(EitherT.rightT(None))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
 
@@ -173,9 +174,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+          .thenReturn(EitherT.rightT(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
 
@@ -195,9 +196,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+          .thenReturn(EitherT.rightT(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
 
@@ -219,9 +220,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(newEmploymentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(newEmploymentId))(any())
         )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
+          .thenReturn(EitherT.rightT(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount))))
 
         val userAnswers = UserAnswers(sessionId, randomNino().nino)
         when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))

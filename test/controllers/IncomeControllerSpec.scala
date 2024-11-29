@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
@@ -28,6 +29,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import play.twirl.api.HtmlFormat
 import repository.JourneyCacheNewRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
@@ -200,7 +202,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+          .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -219,7 +221,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -235,7 +237,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -453,7 +455,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result =
@@ -467,7 +469,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val employment = employmentWithAccounts(Nil)
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result =
@@ -487,7 +489,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+          .thenReturn(EitherT.rightT(Seq.empty))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(
           journeyCacheService.mandatoryJourneyValueAsInt(
@@ -510,7 +512,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any())).thenReturn(cachePayToDate)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(
           journeyCacheService.mandatoryJourneyValueAsInt(
@@ -532,7 +534,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValueAsInt(meq(UpdateIncomeConstants.IdKey))(any(), any(), any()))
           .thenReturn(Future.successful(Right(1)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -718,7 +720,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+          .thenReturn(EitherT.rightT(Seq.empty))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
@@ -737,7 +739,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.failed(new RuntimeException("failed")))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -751,7 +753,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.failed(new RuntimeException("failed")))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -924,7 +926,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
           .thenReturn(cachedUpdateIncomeNewAmountKey)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+          .thenReturn(EitherT.rightT(taxCodeIncomes))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -941,7 +943,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val employment = employmentWithAccounts(List(annualAccount))
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+          .thenReturn(EitherT.rightT(Seq.empty))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
           .thenReturn(cachedUpdateIncomeNewAmountKey)
@@ -960,7 +962,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
           .thenReturn(cachedUpdateIncomeNewAmountKey)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -973,7 +975,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any()))
           .thenReturn(cachedUpdateIncomeNewAmountKey)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -988,7 +990,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val testController = createTestIncomeController()
         when(journeyCacheService.mandatoryJourneyValue(any())(any(), any(), any())).thenReturn(emptyCache)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
@@ -35,9 +36,10 @@ class EmploymentServiceSpec extends BaseSpec {
     "return employments" in {
       val sut = createSUT
 
-      when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+      when(employmentsConnector.employments(any(), any())(any()))
+        .thenReturn(EitherT.rightT(employments))
 
-      val data = Await.result(sut.employments(nino, year), 5.seconds)
+      val data = Await.result(sut.employments(nino, year).value, 5.seconds)
 
       data mustBe employments
     }
@@ -60,9 +62,10 @@ class EmploymentServiceSpec extends BaseSpec {
       "connector returns one employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employmentDetails))
+        when(employmentsConnector.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT(employmentDetails))
 
-        val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
+        val employmentNames = Await.result(sut.employmentNames(nino, year).value, 5.seconds)
 
         employmentNames mustBe Map(2 -> "company name")
       }
@@ -100,9 +103,9 @@ class EmploymentServiceSpec extends BaseSpec {
         )
 
         when(employmentsConnector.employments(any(), any())(any()))
-          .thenReturn(Future.successful(List(employment1, employment2)))
+          .thenReturn(EitherT.rightT(List(employment1, employment2)))
 
-        val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
+        val employmentNames = Await.result(sut.employmentNames(nino, year).value, 5.seconds)
 
         employmentNames mustBe Map(1 -> "company name 1", 2 -> "company name 2")
       }
@@ -110,9 +113,10 @@ class EmploymentServiceSpec extends BaseSpec {
       "connector does not return any employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+        when(employmentsConnector.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq.empty))
 
-        val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
+        val data = Await.result(sut.employmentNames(nino, year).value, 5.seconds)
 
         data mustBe Map()
       }

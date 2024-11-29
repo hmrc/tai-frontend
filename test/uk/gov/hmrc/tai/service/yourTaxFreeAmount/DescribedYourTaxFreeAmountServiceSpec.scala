@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.model.domain._
@@ -43,7 +44,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(yourTaxFreeAmountService.taxFreeAmountComparison(meq(nino))(any(), any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
       when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
+        .thenReturn(EitherT.rightT(Map.empty))
       when(companyCarService.companyCars(meq(nino))(any(), any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
@@ -73,7 +74,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
       when(yourTaxFreeAmountService.taxFreeAmountComparison(meq(nino))(any(), any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
       when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
+        .thenReturn(EitherT.rightT(Map.empty))
       when(companyCarService.companyCars(meq(nino))(any(), any()))
         .thenReturn(Future.successful(Seq.empty))
       when(taxAccountService.totalTax(any(), any())(any()))

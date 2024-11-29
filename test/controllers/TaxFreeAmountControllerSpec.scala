@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -72,7 +73,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
       when(companyCarService.companyCarOnCodingComponents(any(), any())(any(), any()))
         .thenReturn(Future.successful(Nil))
       when(employmentService.employmentNames(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
+        .thenReturn(EitherT.rightT(Map.empty))
       when(taxAccountService.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
       val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -107,7 +108,7 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
         when(companyCarService.companyCarOnCodingComponents(any(), any())(any(), any()))
           .thenReturn(Future.successful(Nil))
         when(employmentService.employmentNames(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Map.empty[Int, String]))
+          .thenReturn(EitherT.rightT(Map.empty))
         when(taxAccountService.totalTax(any(), any())(any()))
           .thenReturn(Future.failed(new NotFoundException("no tax account information found")))
 

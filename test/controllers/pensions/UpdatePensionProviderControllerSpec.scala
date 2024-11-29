@@ -17,6 +17,7 @@
 package controllers.pensions
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.apache.pekko.Done
 import org.jsoup.Jsoup
@@ -25,6 +26,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import play.api.i18n.Messages
 import play.api.test.Helpers.{contentAsString, _}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
@@ -542,7 +544,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
     def taxAccountServiceCall =
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+        .thenReturn(EitherT.rightT(Seq(pensionTaxCodeIncome, empTaxCodeIncome)))
 
     def journeyCacheCall =
       when(journeyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
@@ -584,7 +586,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       "tax code income sources are not available" in {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
 
         val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -593,7 +595,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       "an invalid id has been passed" in {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+          .thenReturn(EitherT.rightT(Seq(pensionTaxCodeIncome, empTaxCodeIncome)))
 
         val result = createController.UpdatePension(4)(fakeGetRequest)
 

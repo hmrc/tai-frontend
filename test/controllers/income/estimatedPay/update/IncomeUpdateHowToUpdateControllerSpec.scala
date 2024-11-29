@@ -17,6 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import controllers.auth.AuthedUser
 import org.jsoup.Jsoup
@@ -117,7 +118,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
     reset(mockJourneyCacheNewRepository)
 
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-      .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
+      .thenReturn(EitherT.rightT(Seq.empty))
 
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(Future.successful(Some(defaultEmployment)))

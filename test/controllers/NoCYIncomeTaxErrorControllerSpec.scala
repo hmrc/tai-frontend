@@ -17,13 +17,14 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -33,17 +34,17 @@ import views.html.NoCYIncomeTaxErrorView
 
 import java.time.LocalDate
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.language.postfixOps
 
 class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
-  def createSUT(employmentDataFailure: Option[Throwable] = None) =
+  def createSUT(employmentDataFailure: Option[UpstreamErrorResponse] = None) =
     new SUT(employmentDataFailure)
 
   val employmentService: EmploymentService = mock[EmploymentService]
 
-  class SUT(employmentDataFailure: Option[Throwable])
+  class SUT(employmentDataFailure: Option[UpstreamErrorResponse])
       extends NoCYIncomeTaxErrorController(
         employmentService,
         mock[AuditConnector],
@@ -71,9 +72,11 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
     employmentDataFailure match {
       case None =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-      case Some(throwable) =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT(sampleEmployment))
+      case Some(failure) =>
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.leftT(failure))
     }
 
   }
@@ -101,7 +104,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
     "display the page" when {
       "employment service throws NotFound exception" in {
-        val sut = createSUT(employmentDataFailure = Some(new NotFoundException("no data found")))
+        val sut = createSUT(employmentDataFailure = Some(UpstreamErrorResponse("not found", NOT_FOUND)))
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
@@ -110,7 +113,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
       }
 
       "employment service throws BadRequest exception" in {
-        val sut = createSUT(employmentDataFailure = Some(new BadRequestException("bad request")))
+        val sut = createSUT(employmentDataFailure = Some(UpstreamErrorResponse("bad request", BAD_REQUEST)))
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)

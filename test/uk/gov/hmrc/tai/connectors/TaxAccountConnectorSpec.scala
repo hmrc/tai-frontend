@@ -24,6 +24,7 @@ import play.api.http.ContentTypes
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -82,7 +83,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   )
   val incomeSource: TaxedIncome = TaxedIncome(taxCodeIncome, employment)
 
-  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
+  lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], inject[HttpClientV2], servicesConfig)
 
   private val currentTaxYear = TaxYear()
 
@@ -275,7 +276,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe Right(Seq(taxCodeIncome))
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).value.futureValue mustBe Right(Seq(taxCodeIncome))
       }
     }
 
@@ -288,7 +289,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).value.futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
       }
     }
 
@@ -300,7 +301,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             .willReturn(unauthorized())
         )
 
-        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
+        taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).value.futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
       }
     }
   }

@@ -17,10 +17,11 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
-import play.api.http.Status.OK
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -31,8 +32,6 @@ import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
-
-import scala.concurrent.Future
 
 class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData with JsoupMatchers {
 
@@ -53,7 +52,8 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         inject[IncomeTaxHistoryView],
         mcc,
         taxAccountService,
-        employmentService
+        employmentService,
+        inject[ErrorPagesHandler]
       )
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -67,13 +67,11 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         for (_ <- taxYears) {
 
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Right(Seq(taxCodeIncome))
-          )
+          when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+            .thenReturn(EitherT.rightT(Seq(taxCodeIncome)))
 
-          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(empEmployment1, empEmployment2)
-          )
+          when(employmentService.employments(any(), any())(any()))
+            .thenReturn(EitherT.rightT(Seq(empEmployment1, empEmployment2)))
         }
 
         val controller = new TestController
@@ -91,12 +89,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       "pension data is returned" in {
         for (_ <- taxYears) {
 
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Right(Seq(taxCodeIncome))
-          )
-          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(pensionEmployment3, pensionEmployment4)
-          )
+          when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+            .thenReturn(EitherT.rightT(Seq(taxCodeIncome)))
+          when(employmentService.employments(any(), any())(any()))
+            .thenReturn(EitherT.rightT(Seq(pensionEmployment3, pensionEmployment4)))
         }
 
         val controller = new TestController
@@ -113,10 +109,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
       "tax code is empty if the tax account can't be found" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left("not found"))
-          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(pensionEmployment3, pensionEmployment4)
-          )
+          when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+            .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
+          when(employmentService.employments(any(), any())(any()))
+            .thenReturn(EitherT.rightT(Seq(pensionEmployment3, pensionEmployment4)))
         }
 
         val controller = new TestController
@@ -129,12 +125,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
       "tax code is empty if the tax account throws an exception" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(
-            new Exception("exception")
-          )
-          when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(
-            Seq(pensionEmployment3, pensionEmployment4)
-          )
+          when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+            .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
+          when(employmentService.employments(any(), any())(any()))
+            .thenReturn(EitherT.rightT(Seq(pensionEmployment3, pensionEmployment4)))
         }
 
         val controller = new TestController
@@ -150,34 +144,37 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   "getIncomeTaxYear" must {
 
     "return an empty tax code if there isn't one" in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
-      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.rightT(Seq.empty))
+      when(employmentService.employments(any(), any())(any()))
+        .thenReturn(EitherT.rightT(Seq(empEmployment1)))
 
       val controller = new TestController
       val result = controller.getIncomeTaxYear(nino, TaxYear())
 
-      result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
+      result.value.futureValue.map(_.incomeTaxHistory.map(_.maybeTaxCode)) mustBe Right(List(None))
     }
 
     "return an empty tax code if the taxAccountService fails to retrieve" in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
-      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
+      when(employmentService.employments(any(), any())(any()))
+        .thenReturn(EitherT.rightT(Seq(empEmployment1)))
 
       val controller = new TestController
       val result = controller.getIncomeTaxYear(nino, TaxYear())
 
-      result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
+      result.value.futureValue.map(_.incomeTaxHistory.map(_.maybeTaxCode)) mustBe List(None)
     }
 
     "display the income tax history page with no tax history message" when {
       "given taxYear returns no data" in {
 
         for (_ <- taxYears) {
-
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
-          when(employmentService.employments(any(), any())(any())) thenReturn Future.failed(
-            UpstreamErrorResponse("", 500, 500, Map.empty)
-          )
+          when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+            .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
+          when(employmentService.employments(any(), any())(any()))
+            .thenReturn(EitherT.leftT(UpstreamErrorResponse("", INTERNAL_SERVER_ERROR)))
         }
 
         val controller = new TestController
@@ -197,15 +194,15 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
     }
 
     "return a tax code if it's returned by the taxAccountService" in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-        Right(Seq(taxCodeIncome))
-      )
-      when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.rightT(Seq(taxCodeIncome)))
+      when(employmentService.employments(any(), any())(any()))
+        .thenReturn(EitherT.rightT(List(employment)))
 
       val controller = new TestController
       val result = controller.getIncomeTaxYear(nino, TaxYear())
 
-      result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(Some(taxCodeIncome.taxCode))
+      result.value.futureValue.map(_.incomeTaxHistory.map(_.maybeTaxCode)) mustBe List(Some(taxCodeIncome.taxCode))
     }
   }
 }

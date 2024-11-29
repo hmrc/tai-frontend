@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
+import play.api.http.Status.INTERNAL_SERVER_ERROR
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -37,10 +40,10 @@ class TaxAccountServiceSpec extends BaseSpec {
     "return seq of tax codes" in {
       val testService = createSut
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        .thenReturn(EitherT.rightT(Json.toJson(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomes(nino, TaxYear())
-      Await.result(result, 5 seconds) mustBe Right(taxCodeIncomes)
+      Await.result(result.value, 5 seconds) mustBe Right(taxCodeIncomes)
     }
   }
 
@@ -49,35 +52,35 @@ class TaxAccountServiceSpec extends BaseSpec {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        .thenReturn(EitherT.rightT(Json.toJson(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
 
       val expected = Right(Some(taxCodeIncome1))
 
-      Await.result(result, 5 seconds) mustBe expected
+      Await.result(result.value, 5 seconds) mustBe expected
     }
 
     "return None when an income id is not present" in {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        .thenReturn(EitherT.rightT(Json.toJson(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
-      Await.result(result, 5 seconds) mustBe Right(Option.empty[TaxCodeIncome])
+      Await.result(result.value, 5 seconds) mustBe Right(Option.empty[TaxCodeIncome])
     }
 
     "return the error when the TaxCodeIncome cannot be found" in {
       val testService = createSut
 
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Left("error")))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
 
-      Await.result(result, 5 seconds) mustBe Left("error")
+      Await.result(result.value, 5 seconds) mustBe Left("error")
     }
   }
 
@@ -210,10 +213,20 @@ class TaxAccountServiceSpec extends BaseSpec {
 
   private val taxCodeIncome1 =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
-  val taxCodeIncomes = Seq(
-    taxCodeIncome1,
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
+  val taxCodeIncomes =
+    Seq(
+      taxCodeIncome1,
+      TaxCodeIncome(
+        PensionIncome,
+        Some(2),
+        1111,
+        "employment2",
+        "150L",
+        "employment",
+        Week1Month1BasisOfOperation,
+        Live
+      )
+    )
 
   val taxCodes = Seq("SD0", "1150L")
 

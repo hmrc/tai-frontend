@@ -51,9 +51,11 @@ class TaxFreeAmountController @Inject() (
     val nino = request.taiUser.nino
 
     (for {
+      // tax account details api
       codingComponents <- EitherT[Future, UpstreamErrorResponse, Seq[CodingComponent]](
                             codingComponentService.taxFreeAmountComponents(nino, TaxYear()).map(Right(_))
                           )
+      // employment details api
       employmentNames <- employmentService.employmentNames(nino, TaxYear())
       companyCarBenefits <- EitherT[Future, UpstreamErrorResponse, Seq[CompanyCarBenefit]](
                               companyCarService.companyCarOnCodingComponents(nino, codingComponents).map(Right(_))

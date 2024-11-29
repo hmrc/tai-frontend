@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{RequestBuilder, UserBuilder}
+import cats.data.EitherT
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -173,13 +174,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             nonTaxCodeIncome
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(
-            Right(
-              Seq(taxCodeIncome)
-            )
-          )
-        )
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq(taxCodeIncome)))
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -270,13 +266,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             nonTaxCodeIncome
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(
-            Right(
-              Seq(taxCodeIncome)
-            )
-          )
-        )
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq(taxCodeIncome)))
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -360,13 +351,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             nonTaxCodeIncome
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(
-            Right(
-              Seq(taxCodeIncome)
-            )
-          )
-        )
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq(taxCodeIncome)))
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -396,13 +382,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(
-            Right(
-              Seq.empty[TaxCodeIncome]
-            )
-          )
-        )
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq.empty))
         when(partialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
@@ -432,13 +413,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(
-            Right(
-              Seq.empty[TaxCodeIncome]
-            )
-          )
-        )
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq.empty))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

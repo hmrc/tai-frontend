@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.connectors
 import cats.data.EitherT
 import org.apache.pekko.Done
 import play.api.Logging
-import play.api.libs.json.Reads
+import play.api.libs.json.{JsValue, Reads}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
@@ -79,13 +79,15 @@ class TaxAccountConnector @Inject() (
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
+  ): EitherT[Future, UpstreamErrorResponse, JsValue] = {
     val url = taxAccountUrl(nino.nino, year)
-    httpHandler.read(
-      httpClient
-        .get(url"$url")
-        .execute[Either[UpstreamErrorResponse, HttpResponse]]
-    )
+    httpHandler
+      .read(
+        httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map(_.json)
   }
 
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
