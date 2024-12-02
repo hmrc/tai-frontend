@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,15 +53,14 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
         val userId = s"session-$uuid"
         val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
 
-        when(repository.get(any, any)).thenReturn(Future.successful(None))
+        when(repository.get(any)).thenReturn(Future.successful(None))
         val action = new Harness(repository)
 
         val result = action
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
-        result.userAnswers.sessionId mustBe userId
-        result.userAnswers.nino mustBe authedUser.nino.nino
+        result.userAnswers.id mustBe userId
         result.userAnswers.data mustBe Json.obj()
       }
 
@@ -69,7 +68,7 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
         val userId = s"session-$uuid"
         val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
 
-        when(repository.get(any, any)).thenReturn(Future.successful(None))
+        when(repository.get(any)).thenReturn(Future.successful(None))
         val action = new Harness(repository)
 
         val helperNino = "helper-nino"
@@ -83,8 +82,7 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
-        result.userAnswers.sessionId mustBe userId
-        result.userAnswers.nino mustBe helperNino
+        result.userAnswers.id mustBe userId
         result.userAnswers.data mustBe Json.obj()
       }
     }
@@ -96,8 +94,8 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
         val instant = Instant.now()
         val data = Json.obj("testKey" -> "testValue")
 
-        when(repository.get(ArgumentMatchers.eq(userId), ArgumentMatchers.eq(authedUser.nino.nino))).thenReturn(
-          Future(Some(UserAnswers(userId, authedUser.nino.nino, Json.obj("testKey" -> "testValue"), instant)))
+        when(repository.get(ArgumentMatchers.eq(userId))).thenReturn(
+          Future(Some(UserAnswers(userId, Json.obj("testKey" -> "testValue"), instant)))
         )
         val action = new Harness(repository)
 
@@ -105,8 +103,7 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
-        result.userAnswers.sessionId mustBe userId
-        result.userAnswers.nino mustBe authedUser.nino.nino
+        result.userAnswers.id mustBe userId
         result.userAnswers.data mustBe data
         result.userAnswers.lastUpdated mustBe instant
       }
@@ -124,8 +121,8 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
           principalNino = helperNino
         )
 
-        when(repository.get(ArgumentMatchers.eq(userId), ArgumentMatchers.eq(helperNino))).thenReturn(
-          Future(Some(UserAnswers(userId, helperNino, Json.obj("testKey" -> "testValue"), instant)))
+        when(repository.get(ArgumentMatchers.eq(userId))).thenReturn(
+          Future(Some(UserAnswers(userId, Json.obj("testKey" -> "testValue"), instant)))
         )
         val action = new Harness(repository)
 
@@ -133,12 +130,10 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
           .callTransform(IdentifierRequest(AuthenticatedRequest(request, authedUser, fakePerson(nino)), userId))
           .futureValue
 
-        result.userAnswers.sessionId mustBe userId
-        result.userAnswers.nino mustBe helperNino
+        result.userAnswers.id mustBe userId
         result.userAnswers.data mustBe data
         result.userAnswers.lastUpdated mustBe instant
       }
     }
   }
-
 }

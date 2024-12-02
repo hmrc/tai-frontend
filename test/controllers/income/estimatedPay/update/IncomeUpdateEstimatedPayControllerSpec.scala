@@ -66,8 +66,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+    when(mockJourneyCacheNewRepository.get(any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
   }
 
   override def beforeEach(): Unit = {
@@ -77,12 +77,12 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   "estimatedPayLandingPage" must {
 
-    val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+    val mockUserAnswers = UserAnswers(sessionId)
       .setOrException(UpdateIncomeNamePage, employer.name)
       .setOrException(UpdateIncomeIdPage, employer.id)
       .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypeEmployment)
 
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheNewRepository.get(any()))
       .thenReturn(Future.successful(Some(mockUserAnswers)))
 
     def estimatedPayLandingPage(): Future[Result] =
@@ -140,9 +140,9 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     }
     "return to /income-details when nothing is present in the cache" in {
 
-      setup(UserAnswers(sessionId, randomNino().nino))
+      setup(UserAnswers(sessionId))
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(None))
 
       val result = estimatedPayLandingPage()
@@ -159,7 +159,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val payment = Some(Payment(LocalDate.now, 50, 1, 1, 1, 1, 1, Monthly))
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
 
@@ -168,7 +168,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
@@ -187,7 +187,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       "payYearToDate is None" in {
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
 
@@ -196,7 +196,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
@@ -213,7 +213,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "display incorrectTaxableIncome page" when {
       "payYearToDate is greater than gross annual pay" in {
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
 
@@ -224,7 +224,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
@@ -244,7 +244,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       "the pay is the same" in {
 
         val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeGrossAnnualPayPage, "100")
@@ -257,7 +257,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
@@ -279,9 +279,9 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val controller = createSUT
 
-        setup(UserAnswers(sessionId, randomNino().nino))
+        setup(UserAnswers(sessionId))
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(None))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 

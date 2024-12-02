@@ -43,7 +43,7 @@ class UpdateNextYearsIncomeService @Inject() (
 
   def isEstimatedPayJourneyCompleteForEmployer(id: Int, userAnswers: UserAnswers): Future[Boolean] =
     journeyCacheNewRepository
-      .get(userAnswers.sessionId, userAnswers.nino)
+      .get(userAnswers.id)
       .map(_.exists(_.data.keys.contains(UpdateNextYearsIncomeSuccessPage(id))))
 
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Boolean] =
@@ -68,7 +68,7 @@ class UpdateNextYearsIncomeService @Inject() (
   def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
+    journeyCacheNewRepository.get(userAnswers.id).flatMap(_ => setup(employmentId, nino))
 
   def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
     val value = convertCurrencyToInt(Some(newValue)).toString

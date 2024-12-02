@@ -38,7 +38,7 @@ class TaiUpdateIncomeController @Inject() (
   def delete(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     for {
       _ <- journeyCacheService.delete()
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+      _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
     } yield Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
   }
 }

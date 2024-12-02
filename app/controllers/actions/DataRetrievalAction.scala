@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,27 +29,21 @@ class DataRetrievalActionImpl @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
-    val nino: String = (request.request.taiUser.nino, request.request.taiUser.trustedHelper) match {
-      case (thisUserNino, None)     => thisUserNino.nino
-      case (thisUserNino, Some(th)) => th.principalNino.getOrElse(thisUserNino.nino)
-    }
-
+  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
     journeyCacheNewRepository
-      .get(request.userId, nino)
+      .get(request.userId)
       .map {
         _.fold(
           DataRequest(
             request.request,
             request.request.taiUser,
             request.request.fullName,
-            UserAnswers(request.userId, nino)
+            UserAnswers(request.userId)
           )
         )(
           DataRequest(request.request, request.request.taiUser, request.request.fullName, _)
         )
       }
-  }
 }
 
 trait DataRetrievalAction extends ActionTransformer[IdentifierRequest, DataRequest]

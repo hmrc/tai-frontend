@@ -100,13 +100,13 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         inject[RemoveCompanyBenefitConfirmationView],
         mockJourneyCacheNewRepository
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+    when(mockJourneyCacheNewRepository.get(any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId, randomNino().nino))
+    setup(UserAnswers(sessionId))
     reset(mockJourneyCacheNewRepository)
     reset(benefitsService)
   }
@@ -115,14 +115,14 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     "show 'When did you stop getting benefits from company?' page" in {
       reset(mockJourneyCacheNewRepository)
 
-      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+      val mockUserAnswers = UserAnswers("testSessionId")
         .setOrException(EndCompanyBenefitsEmploymentNamePage, "Test")
         .setOrException(EndCompanyBenefitsNamePage, "Test")
         .setOrException(EndCompanyBenefitsRefererPage, "Test")
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result = SUT.stopDate(fakeRequest)
@@ -138,7 +138,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       reset(mockJourneyCacheNewRepository)
 
       val stopDate = LocalDate.now()
-      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+      val mockUserAnswers = UserAnswers("testSessionId")
         .setOrException(EndCompanyBenefitsEmploymentNamePage, "EmploymentName")
         .setOrException(EndCompanyBenefitsNamePage, "BenefitName")
         .setOrException(EndCompanyBenefitsRefererPage, "Referer")
@@ -146,7 +146,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -177,7 +177,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the date is before this tax year" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "employment")
           .setOrException(EndCompanyBenefitsNamePage, "benefit")
         val SUT = createSUT
@@ -185,10 +185,10 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val year = TaxYear().year.toString
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
@@ -216,7 +216,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the date is during this tax year" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsNamePage, "benefit")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "employment")
 
@@ -226,10 +226,10 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val taxYear = TaxYear()
         val year = taxYear.year.toString
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
@@ -251,9 +251,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val updatedUserAnswers = mockUserAnswers.setOrException(EndCompanyBenefitsStopDatePage, s"$year-04-06")
         verify(mockJourneyCacheNewRepository, times(1)).set(argThat(new ArgumentMatcher[UserAnswers] {
           override def matches(argument: UserAnswers): Boolean =
-            argument.sessionId == updatedUserAnswers.sessionId &&
-              argument.nino == updatedUserAnswers.nino &&
-              argument.data == updatedUserAnswers.data
+            argument.id == updatedUserAnswers.id && argument.data == updatedUserAnswers.data
         }))
       }
     }
@@ -262,17 +260,17 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the form submission is having blank value" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsNamePage, "benefit")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "employment")
 
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
@@ -301,7 +299,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       "the request has an authorised session with employment name and benefit name" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, employmentName)
           .setOrException(EndCompanyBenefitsNamePage, benefitName)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
@@ -309,7 +307,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.totalValueOfBenefit()(fakeRequest)
@@ -328,7 +326,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       val valueOfBenefit = "9876543"
 
-      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+      val mockUserAnswers = UserAnswers("testSessionId")
         .setOrException(EndCompanyBenefitsEmploymentNamePage, employmentName)
         .setOrException(EndCompanyBenefitsNamePage, benefitName)
         .setOrException(EndCompanyBenefitsValuePage, valueOfBenefit)
@@ -336,7 +334,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       implicit val request: FakeRequest[AnyContent] = fakeRequest
@@ -356,13 +354,13 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val valueOfBenefit = "1000"
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsValuePage, valueOfBenefit)
 
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -386,13 +384,13 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val valueOfBenefit = "1000"
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsValuePage, valueOfBenefit)
 
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -416,13 +414,13 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val valueOfBenefit = "123000"
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsValuePage, valueOfBenefit)
 
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -449,7 +447,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val benefitName = "Employer Provided Services"
         val referer = "Url"
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, employmentName)
           .setOrException(EndCompanyBenefitsNamePage, benefitName)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
@@ -458,7 +456,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -484,7 +482,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val referer = "Url"
         val valueOfBenefit = "1234Â£$%@"
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, employmentName)
           .setOrException(EndCompanyBenefitsNamePage, benefitName)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
@@ -493,7 +491,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -520,8 +518,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val telephoneNumber = "85256651"
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          randomNino().nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
@@ -537,7 +534,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -563,8 +560,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val telephoneNumber = "85256651"
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          randomNino().nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
@@ -580,7 +576,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -601,7 +597,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val telephoneNumber = "85256651"
 
-        val mockUserAnswers = UserAnswers(sessionId = "testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
           .setOrException(EndCompanyBenefitsTypePage, "amazing")
@@ -614,7 +610,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -643,8 +639,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val telephoneNumber = "12345678"
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          randomNino().nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> telephoneNumber
@@ -661,7 +656,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -685,8 +680,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          randomNino().nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> ""
@@ -703,7 +697,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -727,8 +721,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789",
@@ -765,8 +758,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       "there is a form validation error (additional, controller specific constraint)" in {
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -822,8 +814,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       reset(benefitsService)
 
       val mockUserAnswers = UserAnswers(
-        sessionId = "testSessionId",
-        nino.nino,
+        sessionId,
         data = Json.obj(
           EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
           EndCompanyBenefitConstants.TelephoneNumberKey   -> "123456789"
@@ -846,7 +837,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       val stopDate = LocalDate.now()
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -869,8 +860,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       reset(mockJourneyCacheNewRepository)
 
       val mockUserAnswers = UserAnswers(
-        sessionId = "testSessionId",
-        nino.nino,
+        sessionId,
         data = Json.obj(
           EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
           EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -888,7 +878,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       setup(mockUserAnswers)
       val sut = createSUT
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(None))
 
       val result = sut.checkYourAnswers()(fakeRequest)
@@ -905,8 +895,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -924,12 +913,12 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         when(
           benefitsService
@@ -949,8 +938,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -974,12 +962,12 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         )
           .thenReturn(Future.successful("1"))
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -993,10 +981,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
         reset(benefitsService)
 
-        val testNino = "KH139703B"
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          testNino,
+          sessionId,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -1014,12 +1000,12 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         when(
           benefitsService
@@ -1042,25 +1028,24 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     "clear the cache and redirect to start of journey" in {
       reset(mockJourneyCacheNewRepository)
 
-      val testNino = "KH139703B"
-      val mockUserAnswers = UserAnswers(sessionId = "testSessionId", testNino)
+      val mockUserAnswers = UserAnswers(sessionId)
         .setOrException(EndCompanyBenefitsRefererPage, "Test")
 
       setup(mockUserAnswers)
       val SUT = createSUT
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-      when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+      when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
       val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
 
       redirectLocation(result).get mustBe "Test"
-      verify(mockJourneyCacheNewRepository, times(1)).clear(sessionId, testNino)
+      verify(mockJourneyCacheNewRepository, times(1)).clear(sessionId)
     }
   }
 

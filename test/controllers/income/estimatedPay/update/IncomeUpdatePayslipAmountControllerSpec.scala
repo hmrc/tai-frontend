@@ -59,8 +59,8 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         inject[PayslipDeductionsView],
         mockJourneyCacheNewRepository
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+    when(mockJourneyCacheNewRepository.get(any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
   }
 
   override def beforeEach(): Unit = {
@@ -72,7 +72,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "display payslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, Monthly)
@@ -82,7 +82,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result =
@@ -98,7 +98,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val cachedAmount = Some("998787")
         val payPeriod = Some(Monthly)
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, payPeriod.get)
@@ -131,7 +131,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     "Redirect user to /income-summary" when {
       "there is no data in the cache" in {
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
 
         val SUT = createSUT
         setup(mockUserAnswers)
@@ -151,7 +151,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
       "user entered valid pay" in {
         val salary = "£3,000"
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, Monthly)
@@ -162,7 +162,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayslipAmount(
           RequestBuilder
@@ -179,7 +179,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect user back to how to payslip page with an error form" when {
       "user input has error" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, Monthly)
@@ -190,7 +190,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(false)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayslipAmount(
           RequestBuilder
@@ -213,7 +213,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val cachedAmount = Some("5000")
         val payPeriod = Some(Monthly)
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, payPeriod.get)
@@ -223,7 +223,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
@@ -241,13 +241,13 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
         val SUT = createSUT
         setup(mockUserAnswers)
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(None))
 
         val result =
@@ -266,7 +266,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val cachedAmount = Some("4000")
         val payPeriod = Some(Monthly)
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, payPeriod.get)
@@ -277,7 +277,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -300,7 +300,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val cachedAmount = Some("4000")
         val payPeriod = Some(Monthly)
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayPeriodPage, payPeriod.get)
@@ -312,7 +312,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleTaxablePayslipAmount(
           RequestBuilder
@@ -329,12 +329,12 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
 
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
 
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleTaxablePayslipAmount(
           RequestBuilder
@@ -350,7 +350,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
   "payslipDeductionsPage" must {
     "display payslipDeductions" when {
       "journey cache returns employment name and id" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayslipDeductionsPage, "Yes")
@@ -358,7 +358,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result =
@@ -376,7 +376,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect the user to taxablePayslipAmountPage page" when {
       "user selected yes" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayslipDeductionsPage, "Yes")
@@ -384,12 +384,12 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         val result = SUT.handlePayslipDeductions(
           RequestBuilder
@@ -408,7 +408,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect the user to bonusPaymentsPage page" when {
       "user selected no" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayslipDeductionsPage, "No")
@@ -416,12 +416,12 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         val result = SUT.handlePayslipDeductions(
           RequestBuilder
@@ -438,7 +438,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
     "redirect user back to how to payslipDeductions page" when {
       "user input has error" in {
-        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomePayslipDeductionsPage, "No")
@@ -446,7 +446,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayslipDeductions(
           RequestBuilder

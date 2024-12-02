@@ -86,7 +86,7 @@ class CompanyBenefitsSummaryController @Inject() (
             cacheUpdatedIncomeAmount
           )
           val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
-            journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
+            journeyCacheNewRepository.clear(request.userAnswers.id).map(_ => (): Unit)
           } else {
             Future.successful((): Unit)
           }

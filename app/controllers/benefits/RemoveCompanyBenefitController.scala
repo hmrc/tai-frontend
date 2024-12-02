@@ -95,13 +95,12 @@ class RemoveCompanyBenefitController @Inject() (
   private def checkDate(
     date: LocalDate,
     userAnswers: UserAnswers,
-    user: AuthedUser,
     taxYear: TaxYear
   ): Future[Result] = {
     val dateString = date.toString
     if (date isBefore taxYear.start) {
       for {
-        _ <- journeyCacheNewRepository.clear(userAnswers.sessionId, user.nino.nino)
+        _ <- journeyCacheNewRepository.clear(userAnswers.id)
         _ <- {
           val updatedData = userAnswers.data - EndCompanyBenefitsValuePage.toString
           val updatedUserAnswers = userAnswers
@@ -144,7 +143,7 @@ class RemoveCompanyBenefitController @Inject() (
             )
           )
         },
-        date => checkDate(date, userAnswers, user, taxYear)
+        date => checkDate(date, userAnswers, taxYear)
       )
   }
 
@@ -354,10 +353,10 @@ class RemoveCompanyBenefitController @Inject() (
 
       _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toString.toInt, model)
       _ <- journeyCacheNewRepository.set(
-             UserAnswers(request.userAnswers.sessionId, user.nino.nino)
+             UserAnswers(request.userAnswers.id)
                .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true.toString)
            )
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+      _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
     } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
   }
 
@@ -368,7 +367,7 @@ class RemoveCompanyBenefitController @Inject() (
 
         Future.successful(userAnswers.get(EndCompanyBenefitsRefererPage))
       }
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+      _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
     } yield Redirect(mandatoryJourneyValues.head)
   }
 

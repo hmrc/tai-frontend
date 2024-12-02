@@ -243,7 +243,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       None
     ),
     fullName = "",
-    userAnswers = UserAnswers("", "")
+    userAnswers = UserAnswers("")
   )
 
   def viewWithMore(implicit currMessages: Messages): Html =

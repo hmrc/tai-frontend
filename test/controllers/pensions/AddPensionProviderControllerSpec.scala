@@ -72,7 +72,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
-    nino,
     Json.obj(
       "pensionProviderName" -> "TEST-Employer"
     )
@@ -81,7 +80,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockRepository)
-    when(mockRepository.get(any(), any()))
+    when(mockRepository.get(any()))
       .thenReturn(Future.successful(Some(userAnswers)))
   }
 
@@ -958,7 +957,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       when(pensionProviderService.addPensionProvider(any(), meq(expectedModel))(any(), any()))
         .thenReturn(Future.successful("envelope-123"))
-      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
       when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, String]))
       val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -981,7 +980,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   "cancel" must {
     "redirect to the the TaxAccountSummaryController" in {
 
-      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
 
       val result = createSUT(Some(userAnswers)).cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

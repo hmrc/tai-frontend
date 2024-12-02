@@ -60,7 +60,6 @@ trait BaseSpec
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
-    nino.nino,
     Json.obj(
       "end-employment-employmentId" -> 1
     )

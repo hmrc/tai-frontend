@@ -69,7 +69,7 @@ class IncomeController @Inject() (
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     for {
       _ <- journeyCacheService.flush()
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+      _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
     } yield Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
   }
 
@@ -234,7 +234,7 @@ class IncomeController @Inject() (
               case Right(_) =>
                 for {
                   _ <- journeyCacheService.flush()
-                  _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+                  _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
                 } yield Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
               case _ => Future.successful(errorPagesHandler.internalServerError(e.getMessage))
             }
@@ -285,7 +285,7 @@ class IncomeController @Inject() (
 
             for {
               _ <- journeyCacheService.flush()
-              _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+              _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
               _ <-
                 taxAccountService
                   .updateEstimatedIncome(user.nino, FormHelper.stripNumber(newAmount).toInt, TaxYear(), incomeId.toInt)

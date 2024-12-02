@@ -67,7 +67,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers("testSessionId", nino.nino))
+    setup(UserAnswers("testSessionId"))
     Mockito.reset(auditService)
   }
 

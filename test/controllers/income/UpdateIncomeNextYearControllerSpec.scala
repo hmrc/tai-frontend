@@ -86,7 +86,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId, randomNino().nino))
+    setup(UserAnswers(sessionId))
     reset(mockJourneyCacheNewRepository, updateNextYearsIncomeService, mockFeatureFlagService)
   }
 

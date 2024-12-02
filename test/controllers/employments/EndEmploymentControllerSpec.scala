@@ -61,7 +61,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
-    nino,
     Json.obj(
       "end-employment-employmentId" -> 1
     )
@@ -119,7 +118,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
       .thenReturn(Future.successful(Success))
     when(mockRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
   }
 
   "employmentUpdateRemove" must {
@@ -401,12 +400,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, and cache succeeds" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
-      when(mockRepository.clear(any(), any()))
+      when(mockRepository.clear(any()))
         .thenReturn(Future.successful(true))
       when(trackSuccessJourneyCacheService.cache(any())(any()))
         .thenReturn(
           Future.successful(
-            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.sessionId}" -> "true")
+            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
           )
         )
 
@@ -428,12 +427,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in {
       when(employmentService.endEmployment(any(), any(), any())(any()))
         .thenReturn(Future.successful(""))
-      when(mockRepository.clear(any(), any()))
+      when(mockRepository.clear(any()))
         .thenReturn(Future.successful(false))
       when(trackSuccessJourneyCacheService.cache(any())(any()))
         .thenReturn(
           Future.successful(
-            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.sessionId}" -> "true")
+            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
           )
         )
 
@@ -1001,7 +1000,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
   "cancel" must {
     "redirect to the the IncomeSourceSummarycontroller() if cache successfully clears" in {
       val employmentId = 1
-      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
 
       val result = controller().cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -1009,7 +1008,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to the the IncomeSourceSummarycontroller() if cache fails to clear" in {
       val employmentId = 1
-      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(false))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(false))
 
       val result = controller().cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

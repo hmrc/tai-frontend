@@ -59,7 +59,7 @@ class UpdateEmploymentController @Inject() (
     extends TaiBaseController(mcc) with Referral with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.id).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -241,7 +241,7 @@ class UpdateEmploymentController @Inject() (
           .cache(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId", true.toString)
           .map(_ =>
             journeyCacheNewRepository
-              .clear(request.userAnswers.sessionId, request.userAnswers.nino)
+              .clear(request.userAnswers.id)
               .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation()))
           )
         journeyTask.flatten.flatten

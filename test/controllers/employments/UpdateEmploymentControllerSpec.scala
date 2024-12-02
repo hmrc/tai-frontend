@@ -66,7 +66,6 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
   override val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
-    nino.nino,
     Json.obj(
       "end-employment-employmentId" -> 1
     )
@@ -92,8 +91,8 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     super.beforeEach()
     reset(successfulJourneyCacheService, personService, mockRepository)
     when(mockRepository.set(any)).thenReturn(Future.successful(true))
-    when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
-    when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockRepository.clear(any())).thenReturn(Future.successful(true))
+    when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
   }
 
   "employmentDetailsUpdate" must {
@@ -106,7 +105,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               .obj(UpdateEmploymentIdPage.toString -> 1, UpdateEmploymentNamePage.toString -> employment.name)
           )
 
-        when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
 
         val result = controller(Some(userAnswersUpdated)).updateEmploymentDetails(1)(
           RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -128,7 +127,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               .obj(UpdateEmploymentIdPage.toString -> 1, UpdateEmploymentNamePage.toString -> employment.name)
           )
 
-        when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
 
         val result = controller(Some(userAnswersUpdated)).updateEmploymentDetails(1)(
           RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -152,7 +151,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               )
           )
 
-        when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
 
         val result = controller(Some(userAnswersUpdated)).updateEmploymentDetails(1)(
           RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -222,7 +221,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               )
           )
 
-        when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
 
         val result = controller(Some(userAnswersUpdated)).submitUpdateEmploymentDetails(0)(
           RequestBuilder
@@ -269,7 +268,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               )
           )
 
-        when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
 
         val result = controller(Some(userAnswersUpdated)).submitUpdateEmploymentDetails(0)(
           RequestBuilder
@@ -294,7 +293,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               )
           )
 
-        when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
+        when(mockRepository.get(any())).thenReturn(Future.successful(Some(userAnswersUpdated)))
         val result =
           controller(Some(userAnswersUpdated)).addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -517,7 +516,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
-        verify(mockRepository, times(1)).clear(any, any)
+        verify(mockRepository, times(1)).clear(any)
 
       }
 
@@ -550,7 +549,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
-        verify(mockRepository, times(1)).clear(any, any)
+        verify(mockRepository, times(1)).clear(any)
       }
     }
   }
@@ -575,5 +574,4 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
     }
   }
-
 }

@@ -83,8 +83,8 @@ class IncomeUpdateCalculatorControllerSpec
         mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+    when(mockJourneyCacheNewRepository.get(any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
   }
 
   override def beforeEach(): Unit = {
@@ -96,7 +96,7 @@ class IncomeUpdateCalculatorControllerSpec
     object OnPageLoadHarness {
       sealed class OnPageLoadHarness(hasJourneyCompleted: Boolean, returnedEmployment: Option[Employment]) {
 
-        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), hasJourneyCompleted.toString)
@@ -164,7 +164,7 @@ class IncomeUpdateCalculatorControllerSpec
     object DuplicateSubmissionWarningHarness {
       sealed class DuplicateSubmissionWarningHarness() {
 
-        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "123456")
@@ -196,14 +196,14 @@ class IncomeUpdateCalculatorControllerSpec
     object SubmitDuplicateSubmissionWarningHarness {
       sealed class SubmitDuplicateSubmissionWarningHarness(employmentType: String) {
 
-        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "123456")
           .setOrException(UpdateIncomeTypePage, employmentType)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -295,7 +295,7 @@ class IncomeUpdateCalculatorControllerSpec
         val payPeriodInDays = "3"
         val employerId = "1"
 
-        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, employerName)
           .setOrException(UpdateIncomePayPeriodPage, payFrequency)
           .setOrException(UpdateIncomeTotalSalaryPage, totalSalary)
@@ -307,7 +307,7 @@ class IncomeUpdateCalculatorControllerSpec
           .setOrException(UpdateIncomeOtherInDaysPage, payPeriodInDays)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -330,7 +330,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       "Redirect to /Income-details" when {
         "the cache is empty" in {
-          when(mockJourneyCacheNewRepository.get(any(), any()))
+          when(mockJourneyCacheNewRepository.get(any()))
             .thenReturn(Future.successful(None))
 
           val result = CheckYourAnswersPageHarness.harnessSetup
@@ -350,7 +350,7 @@ class IncomeUpdateCalculatorControllerSpec
     object HandleCalculationResultHarness {
       sealed class HandleCalculationResultHarness(currentValue: String, empId: Int, cacheEmpty: Boolean) {
 
-        val baseUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val baseUserAnswers: UserAnswers = UserAnswers(sessionId)
         val mockUserAnswers: UserAnswers = if (!cacheEmpty) {
           baseUserAnswers
             .setOrException(UpdateIncomeNamePage, "company")
@@ -362,7 +362,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))

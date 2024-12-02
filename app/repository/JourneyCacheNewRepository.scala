@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,9 @@ class JourneyCacheNewRepository @Inject() (
       domainFormat = UserAnswers.format,
       indexes = Seq(
         IndexModel(
-          Indexes.ascending("sessionId", "nino"),
+          Indexes.ascending("_id"),
           IndexOptions()
-            .unique(true)
-            .name("sessionIdAndNino")
+            .name("_id")
         ),
         IndexModel(
           Indexes.ascending("lastUpdated"),
@@ -62,25 +61,21 @@ class JourneyCacheNewRepository @Inject() (
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-  private def byIdAndNino(id: String, nino: String): Bson =
-    Filters.and(
-      Filters.equal("sessionId", id),
-      Filters.equal("nino", nino)
-    )
+  private def byId(id: String): Bson = Filters.equal("_id", id)
 
-  def keepAlive(id: String, nino: String): Future[Boolean] =
+  def keepAlive(id: String): Future[Boolean] =
     collection
       .updateOne(
-        filter = byIdAndNino(id, nino),
+        filter = byId(id),
         update = Updates.set("lastUpdated", Instant.now(clock))
       )
       .toFuture()
       .map(_ => true)
 
-  def get(id: String, nino: String): Future[Option[UserAnswers]] =
-    keepAlive(id, nino).flatMap { _ =>
+  def get(id: String): Future[Option[UserAnswers]] =
+    keepAlive(id).flatMap { _ =>
       collection
-        .find(byIdAndNino(id, nino))
+        .find(byId(id))
         .headOption()
     }
 
@@ -89,7 +84,7 @@ class JourneyCacheNewRepository @Inject() (
 
     collection
       .replaceOne(
-        filter = byIdAndNino(updatedAnswers.sessionId, updatedAnswers.nino),
+        filter = byId(updatedAnswers.id),
         replacement = updatedAnswers,
         options = ReplaceOptions().upsert(true)
       )
@@ -97,9 +92,9 @@ class JourneyCacheNewRepository @Inject() (
       .map(_ => true)
   }
 
-  def clear(id: String, nino: String): Future[Boolean] =
+  def clear(id: String): Future[Boolean] =
     collection
-      .deleteOne(byIdAndNino(id, nino))
+      .deleteOne(byId(id))
       .toFuture()
       .map(_ => true)
 }

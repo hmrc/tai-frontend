@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import scala.util.Random
 trait NewCachingBaseSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach {
 
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   protected def applicationBuilder(userAnswers: UserAnswers = emptyUserAnswers): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()

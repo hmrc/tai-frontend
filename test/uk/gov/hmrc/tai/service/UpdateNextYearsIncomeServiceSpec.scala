@@ -91,7 +91,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     )
       .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
-    when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
+    when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(None))
 
     when(
       taxAccountService.updateEstimatedIncome(
@@ -115,8 +115,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   "get" must {
     "return the cache model" when {
       "an taxCodeIncome and Employment is returned" in {
-        val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(
+        val userAnswers: UserAnswers = UserAnswers(sessionId)
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(
           Future.successful(Some(userAnswers))
         )
 
@@ -142,8 +142,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
     "throw a runtime exception" when {
       "could not retrieve a TaxCodeIncome" in {
-        val userAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+        val userAnswers = UserAnswers(sessionId)
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
         when(employmentService.employment(meq(nino), meq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
@@ -165,8 +165,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       }
 
       "could not retrieve a Employment" in {
-        val userAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+        val userAnswers = UserAnswers(sessionId)
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
         when(employmentService.employment(meq(nino), meq(employmentId))(any()))
           .thenReturn(Future.successful(None))
@@ -199,7 +199,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(None))
 
         val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
 
@@ -223,8 +223,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
 
-        val userAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+        val userAnswers = UserAnswers(sessionId)
+        when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
         val result = updateNextYearsIncomeService.get(newEmploymentId, nino, userAnswers)
 
@@ -245,10 +245,10 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       val amount = convertCurrencyToInt(Some(employmentAmount.toString)).toString
       val expected = Map(key -> amount)
 
-      val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+      val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), amount)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -265,11 +265,11 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   "submit" must {
     "post the values from cache to the tax account" in new SubmitSetup {
 
-      val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+      val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
         .setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -291,12 +291,12 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
     "cache as a successful journey" in new SubmitSetup {
 
-      val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+      val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
         .setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
         .setOrException(UpdateIncomeNewAmountPage, employmentAmount.toString)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val service = new UpdateNextYearsIncomeServiceTest
@@ -312,8 +312,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       val key: String = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
       val errorMessage = s"Value for $key not found"
 
-      val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
+      when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val service = new UpdateNextYearsIncomeServiceTest
@@ -332,7 +332,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       None
     ),
     fullName = "",
-    userAnswers = UserAnswers("", "")
+    userAnswers = UserAnswers("")
   )
 
   "isEstimatedPayJourneyComplete" must {

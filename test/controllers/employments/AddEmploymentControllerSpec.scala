@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
-    nino,
     Json.obj(
       "employmentName" -> "TEST-Employer"
     )
@@ -88,7 +87,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockRepository, employmentService, trackSuccessJourneyCacheService)
-    when(mockRepository.get(any(), any()))
+    when(mockRepository.get(any()))
       .thenReturn(Future.successful(Some(userAnswers)))
   }
 
@@ -788,7 +787,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
 
-        when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+        when(mockRepository.clear(any())).thenReturn(Future.successful(true))
 
         val request = fakeGetRequest
 
@@ -821,7 +820,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         )
           .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
 
-        when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+        when(mockRepository.clear(any())).thenReturn(Future.successful(true))
 
         val request = fakeGetRequest
 
@@ -864,7 +863,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           status(result) mustBe BAD_REQUEST
         }
 
-        verify(mockRepository, times(0)).clear(any(), any())
+        verify(mockRepository, times(0)).clear(any())
         verify(trackSuccessJourneyCacheService, times(0)).cache(any())(any())
         verify(employmentService, times(0)).addEmployment(any(), any())(any(), any())
       }
@@ -887,7 +886,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   "cancel" must {
     "redirect to the the TaxAccountSummaryController" in {
 
-      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
 
       val result = createSUT().cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

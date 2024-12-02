@@ -66,13 +66,13 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         mockJourneyCacheNewRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+    when(mockJourneyCacheNewRepository.get(any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId, randomNino().nino))
+    setup(UserAnswers(sessionId))
     reset(mockJourneyCacheNewRepository)
 
     when(incomeService.latestPayment(any(), any())(any(), any()))
@@ -129,7 +129,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     "respond with OK and show the irregular hours edit page" in {
       reset(mockJourneyCacheNewRepository)
 
-      val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+      val mockUserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateIncomeIdPage, 1)
         .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
 
@@ -182,12 +182,12 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       sealed class HandleIncomeIrregularHoursHarness() {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, "name")
           .setOrException(UpdateIncomePayToDatePage, "123")
           .setOrException(UpdatedIncomeDatePage, LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear)))
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
@@ -290,7 +290,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         isEmptyCache: Boolean
       ) {
 
-        val defaultUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+        val defaultUserAnswers: UserAnswers = UserAnswers(sessionId)
         val mockUserAnswers: UserAnswers = if (isEmptyCache) {
           defaultUserAnswers
         } else {
@@ -376,7 +376,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
     "respond with INTERNAL_SERVER_ERROR when mandatory values are missing" in {
 
-      val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+      val userAnswers: UserAnswers = UserAnswers(sessionId)
 
       setup(userAnswers)
 
@@ -387,7 +387,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
     "sends Ok on successful submit" in {
 
-      val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+      val userAnswers: UserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateIncomeNamePage, "company")
         .setOrException(UpdateIncomeIdPage, 1)
         .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")

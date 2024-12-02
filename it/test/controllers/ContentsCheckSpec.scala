@@ -664,7 +664,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
   )
 
-  private val userAnswers = UserAnswers("testSessionId", "testNino")
+  private val userAnswers = UserAnswers("testSessionId")
     .setOrException(UpdateIncomeIdPage, 1)
     .setOrException(UpdateIncomeNamePage, "employer 1")
     .setOrException(UpdateIncomePayslipDeductionsPage, "Yes")
@@ -724,9 +724,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
-    when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))

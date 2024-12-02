@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,12 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.TryValues
 import pages._
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.{RichJsObject, UserAnswers}
-
-import scala.util.Random
 
 trait UserAnswersGenerator extends TryValues {
   self: Generators =>
 
   val generators: Seq[Gen[(QuestionPage[_], JsValue)]] = Nil
-
-  private def generateNino: Nino = new Generator(new Random).nextNino
 
   implicit lazy val arbitraryUserData: Arbitrary[UserAnswers] =
     Arbitrary {
@@ -41,8 +36,7 @@ trait UserAnswersGenerator extends TryValues {
                   case _   => Gen.mapOf(oneOf(generators))
                 }
       } yield UserAnswers(
-        sessionId = sessionId,
-        nino = generateNino.nino,
+        id = sessionId,
         data = data.foldLeft(Json.obj()) { case (obj, (path, value)) =>
           obj.setObject(path.path, value).get
         }

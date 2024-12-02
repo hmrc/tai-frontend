@@ -70,7 +70,7 @@ class AddPensionProviderController @Inject() (
     )
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.id) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -335,7 +335,7 @@ class AddPensionProviderController @Inject() (
         for {
           _ <- pensionProviderService.addPensionProvider(user.nino, model)
           _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddPensionProviderKey, "true")
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+          _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
         } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
     }
   }

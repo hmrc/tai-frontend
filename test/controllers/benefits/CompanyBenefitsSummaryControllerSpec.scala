@@ -107,13 +107,13 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     mockJourneyCacheNewRepository,
     inject[ErrorPagesHandler]
   ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
+    when(mockJourneyCacheNewRepository.get(any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId, randomNino().nino))
+    setup(UserAnswers(sessionId))
     reset(mockJourneyCacheNewRepository)
     reset(benefitsService)
   }
@@ -123,13 +123,13 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       "asked for benefits details" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheNewRepository.clear(any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -154,13 +154,13 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       "asked for company details" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheNewRepository.clear(any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -187,11 +187,11 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       "failed to read tax code incomes" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -205,11 +205,11 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       "failed to read employment details" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -225,7 +225,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       "cache update amount is the same as the HOD amount" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers("testSessionId")
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
@@ -235,9 +235,9 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
           .thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheNewRepository.get(any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheNewRepository.clear(any())) thenReturn Future.successful(true)
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -249,7 +249,5 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         )
       }
     }
-
   }
-
 }

@@ -32,7 +32,7 @@ object IncomeSource {
     userAnswers: UserAnswers
   )(implicit ec: ExecutionContext): Future[Either[String, IncomeSource]] =
     EitherT(
-      journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).map {
+      journeyCacheNewRepository.get(userAnswers.id).map {
         case Some(userAnswers) =>
           val idOpt = (userAnswers.data \ UpdateIncomeIdPage).asOpt[Int]
           val nameOpt = (userAnswers.data \ UpdateIncomeNamePage).asOpt[String]

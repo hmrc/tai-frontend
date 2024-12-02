@@ -78,7 +78,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers("testSessionId", nino.nino))
+    setup(UserAnswers("testSessionId"))
     Mockito.reset(journeyCacheService)
   }
 

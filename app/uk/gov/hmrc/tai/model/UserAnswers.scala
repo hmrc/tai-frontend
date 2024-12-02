@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.model
 
 import pages.QuestionPage
+import play.api.libs.Files.logger
 import play.api.libs.json._
 import queries.{Gettable, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -25,8 +26,7 @@ import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
-  sessionId: String,
-  nino: String,
+  id: String,
   data: JsObject = Json.obj(),
   lastUpdated: Instant = Instant.now
 ) {
@@ -39,11 +39,12 @@ final case class UserAnswers(
       case JsSuccess(jsValue, _) =>
         Success(jsValue)
       case JsError(errors) =>
+        logger.error(s"Failed to set value at path ${page.path}: $errors. Value: $value")
         Failure(JsResultException(errors))
     }
 
     updatedData.flatMap { d =>
-      val updatedAnswers: UserAnswers = UserAnswers(sessionId, nino, d)
+      val updatedAnswers = copy(data = d)
       page.cleanup(updatedAnswers)
     }
   }
@@ -68,8 +69,7 @@ object UserAnswers {
     import play.api.libs.functional.syntax._
 
     (
-      (__ \ "sessionId").read[String] and
-        (__ \ "nino").read[String] and
+      (__ \ "_id").read[String] and
         (__ \ "data").read[JsObject] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
     )(UserAnswers.apply _)
@@ -80,8 +80,7 @@ object UserAnswers {
     import play.api.libs.functional.syntax._
 
     (
-      (__ \ "sessionId").write[String] and
-        (__ \ "nino").write[String] and
+      (__ \ "_id").write[String] and
         (__ \ "data").write[JsObject] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
     )(unlift(UserAnswers.unapply))

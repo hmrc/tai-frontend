@@ -48,7 +48,7 @@ class JourneyCacheServiceSpec extends BaseSpec {
       None
     ),
     fullName = "",
-    userAnswers = UserAnswers("", "")
+    userAnswers = UserAnswers("")
   )
   "current value methods" must {
 

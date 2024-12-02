@@ -60,7 +60,7 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec {
       None
     ),
     fullName = "",
-    userAnswers = UserAnswers("", "")
+    userAnswers = UserAnswers("")
   )
 
   "Estimated Pay Journey Completed Service" must {
