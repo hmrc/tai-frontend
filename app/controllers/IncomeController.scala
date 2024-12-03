@@ -20,7 +20,7 @@ import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.name.Named
 import controllers.auth.{AuthJourney, AuthedUser, DataRequest}
-import pages.TrackingJourneyConstantsEstimatedPayPage
+import pages.UpdateEstimatedPayPage
 import pages.income.{UpdateIncomeConfirmedNewAmountPage, UpdateIncomeIdPage, UpdateIncomeNewAmountPage}
 import play.api.Logging
 import play.api.data.Form
@@ -254,7 +254,7 @@ class IncomeController @Inject() (
         val updatedUserAnswers =
           request.userAnswers
             .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), newAmount)
-            .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), "true")
+            .setOrException(UpdateEstimatedPayPage(employerId), "true")
 
         journeyCacheNewRepository.set(updatedUserAnswers)
 

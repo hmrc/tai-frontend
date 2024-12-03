@@ -22,11 +22,11 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
-import pages.TrackingJourneyConstantsEstimatedPayPage
+import pages.UpdateEstimatedPayPage
 import pages.income._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.test.Helpers._
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model._
@@ -99,7 +99,7 @@ class IncomeUpdateCalculatorControllerSpec
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
-          .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), hasJourneyCompleted.toString)
+          .setOrException(UpdateEstimatedPayPage(employerId), hasJourneyCompleted.toString)
         setup(mockUserAnswers)
 
         when(employmentService.employment(any(), any())(any()))
