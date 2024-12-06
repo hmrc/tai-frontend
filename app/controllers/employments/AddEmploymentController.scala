@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package controllers.employments
 
-import com.google.inject.name.Named
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.addEmployment._
@@ -28,10 +27,9 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddEmployment
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -50,7 +48,6 @@ class AddEmploymentController @Inject() (
   employmentService: EmploymentService,
   authenticate: AuthJourney,
   journeyCacheNewRepository: JourneyCacheNewRepository,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   addEmploymentStartDateForm: AddEmploymentStartDateFormView,
@@ -365,8 +362,13 @@ class AddEmploymentController @Inject() (
         )
         for {
           _ <- employmentService.addEmployment(user.nino, model)
-          _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddEmploymentKey, "true")
           _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+          _ <- {
+            // setting for tracking service
+            val newUserAnswers =
+              UserAnswers(request.userAnswers.id).setOrException(AddEmploymentPage, "true")
+            journeyCacheNewRepository.set(newUserAnswers)
+          }
         } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
       case _ => Future.successful(error5xxInBadRequest())
     }

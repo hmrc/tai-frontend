@@ -23,6 +23,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, reset, times, verify, when}
 import pages.endEmployment._
 import pages._
+import pages.updateEmployment.UpdateEndEmploymentPage
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -36,7 +37,6 @@ import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
@@ -57,7 +57,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
 
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
@@ -87,13 +86,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
     new FakeAuthJourney(userAnswersAsArg.getOrElse(userAnswers)),
-    repository,
-    trackSuccessJourneyCacheService
+    repository
   )
 
   override def beforeEach(): Unit = {
     reset(mockFeatureFlagService)
-    reset(employmentService, trackSuccessJourneyCacheService)
+    reset(employmentService)
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(
         Future.successful(
@@ -398,16 +396,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
   }
   "confirmAndSendEndEmployment is called" must { // TODO - Can't test service failure as long as it's Future[String]
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, and cache succeeds" in {
-      when(employmentService.endEmployment(any(), any(), any())(any()))
-        .thenReturn(Future.successful(""))
-      when(mockRepository.clear(any()))
-        .thenReturn(Future.successful(true))
-      when(trackSuccessJourneyCacheService.cache(any())(any()))
-        .thenReturn(
-          Future.successful(
-            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
-          )
-        )
+      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful(""))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -425,16 +416,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in {
-      when(employmentService.endEmployment(any(), any(), any())(any()))
-        .thenReturn(Future.successful(""))
-      when(mockRepository.clear(any()))
-        .thenReturn(Future.successful(false))
-      when(trackSuccessJourneyCacheService.cache(any())(any()))
-        .thenReturn(
-          Future.successful(
-            Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-${userAnswers.id}" -> "true")
-          )
-        )
+      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful(""))
+      when(mockRepository.clear(any())).thenReturn(Future.successful(false))
+      when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
       val userAnswersFull = userAnswers.copy(
         data = userAnswers.data ++ Json.obj(
@@ -701,7 +685,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           verify(mockRepository, times(1)).set(any[UserAnswers])
         }
       }
-      "return BAD_REQEST if value Yes but no phone number is submitted" in {
+      "return BAD_REQUEST if value Yes but no phone number is submitted" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
@@ -715,7 +699,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           status(result) mustBe BAD_REQUEST
         }
       }
-      "return BAD_REQEST if value Yes but phone number is too short" in {
+      "return BAD_REQUEST if value Yes but phone number is too short" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
@@ -729,7 +713,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           status(result) mustBe BAD_REQUEST
         }
       }
-      "return BAD_REQEST if value Yes but phone number is too long" in {
+      "return BAD_REQUEST if value Yes but phone number is too long" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
@@ -743,7 +727,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           status(result) mustBe BAD_REQUEST
         }
       }
-      "return BAD_REQEST if form values are invalid" in {
+      "return BAD_REQUEST if form values are invalid" in {
         val request = FakeRequest("POST", "")
           .withFormUrlEncodedBody(
             FormValuesConstants.YesNoChoice    -> "",
@@ -836,8 +820,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
   }
   "onPageLoad is called" must {
     "redirect to employmentUpdateRemove when there is no employment id in the user answers and no tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(None))
       val empId = 1
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
       val mockRepository = mock[JourneyCacheNewRepository]
@@ -854,8 +836,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to employmentUpdateRemove when there is an employment id in the user answers and no tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(None))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
       val application = applicationBuilderWithoutRepository(userAnswers)
@@ -873,35 +853,35 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to duplicateSubmissionWarning when there is no employment id in the user answers and a tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(Some("test")))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
-      val emptyUserAnswers = userAnswers.copy(data = Json.obj())
-      val application = applicationBuilderWithoutRepository(emptyUserAnswers)
+      val updatedUserAnswers =
+        userAnswers.copy(data = Json.obj()).setOrException(UpdateEndEmploymentPage(empId), "true")
+
+      val application = applicationBuilderWithoutRepository(updatedUserAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
       running(application) {
-        val result = controller(Some(emptyUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
+        val result = controller(Some(updatedUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
         verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "redirect to duplicateSubmissionWarning when there is an employment id in the user answers and a tracked successful journey in cache" in {
-      when(trackSuccessJourneyCacheService.currentValue(any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(Some("test")))
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
-      val application = applicationBuilderWithoutRepository(userAnswers)
+      val updatedUserAnswers = userAnswers.setOrException(UpdateEndEmploymentPage(empId), "true")
+
+      val application = applicationBuilderWithoutRepository(updatedUserAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
       running(application) {
-        val result = controller(repository = mockRepository).onPageLoad(empId)(fakeGetRequest)
+        val result = controller(Some(updatedUserAnswers), mockRepository).onPageLoad(empId)(fakeGetRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning().url
         verify(mockRepository, never).set(any())

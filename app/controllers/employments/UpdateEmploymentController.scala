@@ -18,7 +18,7 @@ package controllers.employments
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.updateEmployment.{UpdateEmploymentDetailsPage, UpdateEmploymentIdPage, UpdateEmploymentNamePage, UpdateEmploymentTelephoneNumberPage, UpdateEmploymentTelephoneQuestionPage}
+import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
@@ -26,12 +26,11 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.EmploymentService
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
@@ -39,7 +38,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.employments.ConfirmationView
 import views.html.employments.update.{UpdateEmploymentCheckYourAnswersView, WhatDoYouWantToTellUsView}
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -52,7 +51,6 @@ class UpdateEmploymentController @Inject() (
   canWeContactByPhone: CanWeContactByPhoneView,
   updateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
   confirmationView: ConfirmationView,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   errorPagesHandler: ErrorPagesHandler,
   journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
@@ -235,18 +233,18 @@ class UpdateEmploymentController @Inject() (
 
       case (Some(empId), Some(empDetails), Some(empTelQuestion)) =>
         val model = IncorrectIncome(empDetails, empTelQuestion, employmentTelephoneNumber)
-        val journeyTask = for {
+        for {
           _ <- employmentService.incorrectEmployment(user.nino, empId, model)
-        } yield successfulJourneyCacheService
-          .cache(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId", true.toString)
-          .map(_ =>
-            journeyCacheNewRepository
-              .clear(request.userAnswers.id)
-              .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation()))
-          )
-        journeyTask.flatten.flatten
-      case _ =>
-        Future.successful(Redirect(taxAccountSummaryRedirect))
+          _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+          _ <- {
+            // setting for tracking service
+            val newUserAnswers =
+              UserAnswers(request.userAnswers.id).setOrException(UpdateEndEmploymentPage(empId), "true")
+            journeyCacheNewRepository.set(newUserAnswers)
+          }
+        } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())
+
+      case _ => Future.successful(Redirect(taxAccountSummaryRedirect))
     }
   }
 

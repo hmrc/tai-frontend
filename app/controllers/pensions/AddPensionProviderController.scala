@@ -18,7 +18,7 @@ package controllers.pensions
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.TaiBaseController
-import pages.addPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import pages.addPensionProvider._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
@@ -26,10 +26,9 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -38,7 +37,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.pensions._
 
 import java.time.LocalDate
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddPensionProviderController @Inject() (
@@ -55,7 +54,6 @@ class AddPensionProviderController @Inject() (
   addPensionReceivedFirstPayView: AddPensionReceivedFirstPayView,
   addPensionNameView: AddPensionNameView,
   addPensionStartDateView: AddPensionStartDateView,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
   journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
@@ -334,8 +332,13 @@ class AddPensionProviderController @Inject() (
         )
         for {
           _ <- pensionProviderService.addPensionProvider(user.nino, model)
-          _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddPensionProviderKey, "true")
           _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+          _ <- {
+            // setting for tracking service
+            val newUserAnswers =
+              UserAnswers(request.userAnswers.id).setOrException(AddPensionProviderPage, "true")
+            journeyCacheNewRepository.set(newUserAnswers)
+          }
         } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
     }
   }

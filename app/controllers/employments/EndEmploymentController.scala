@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,18 @@ import controllers._
 import controllers.auth.{AuthJourney, AuthedUser, DataRequest}
 import pages.endEmployment._
 import pages._
+import pages.updateEmployment.UpdateEndEmploymentPage
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc._
 import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -44,7 +42,7 @@ import views.html.employments._
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EndEmploymentController @Inject() (
@@ -62,8 +60,7 @@ class EndEmploymentController @Inject() (
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   authenticate: AuthJourney,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+  journeyCacheNewRepository: JourneyCacheNewRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
@@ -125,13 +122,13 @@ class EndEmploymentController @Inject() (
         )(_ => checkDuplicateSubmission(empId))
     }
 
-  private def checkDuplicateSubmission(empId: Int)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]) =
-    successfulJourneyCacheService
-      .currentValue(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId")
-      .map {
+  private def checkDuplicateSubmission(empId: Int)(implicit request: DataRequest[AnyContent]) =
+    Future.successful {
+      request.userAnswers.get(UpdateEndEmploymentPage(empId)) match {
         case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
         case None => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
       }
+    }
 
   def handleEmploymentUpdateRemove: Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
@@ -469,10 +466,13 @@ class EndEmploymentController @Inject() (
         telephoneNumber   <- request.userAnswers.get(EndEmploymentTelephoneNumberPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
       } yield for {
-        _ <- successfulJourneyCacheService.cache(
-               Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true")
-             )
         _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+        _ <- {
+          // setting for tracking service
+          val newUserAnswers =
+            UserAnswers(request.userAnswers.id).setOrException(UpdateEndEmploymentPage(empId), "true")
+          journeyCacheNewRepository.set(newUserAnswers)
+        }
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())
       result.getOrElse(
