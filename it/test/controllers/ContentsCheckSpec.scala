@@ -29,6 +29,7 @@ import pages.updateEmployment._
 import pages._
 import pages.benefits._
 import pages.income._
+import pages.updatePensionProvider._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK}
@@ -716,6 +717,12 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(AddPensionProviderPayrollNumberPage, "pension-ref-1234")
     .setOrException(AddPensionProviderTelephoneQuestionPage, "Yes")
     .setOrException(AddPensionProviderTelephoneNumberPage, "123456789")
+    .setOrException(UpdatePensionProviderIdPage, 1)
+    .setOrException(UpdatePensionProviderNamePage, "Pension 1")
+    .setOrException(UpdatePensionProviderReceivePensionPage, "Yes")
+    .setOrException(UpdatePensionProviderDetailsPage, "some random info")
+    .setOrException(UpdatePensionProviderPhoneQuestionPage, "Yes")
+    .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
