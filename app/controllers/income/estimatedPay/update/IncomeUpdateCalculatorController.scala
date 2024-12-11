@@ -19,7 +19,7 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.UpdateEstimatedPayPage
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
@@ -54,7 +54,7 @@ class IncomeUpdateCalculatorController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val journeyCompleted = request.userAnswers.get(UpdateEstimatedPayPage(id)).contains("true")
+    val journeyCompleted = request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(id)).contains("true")
     (
       Future.successful(journeyCompleted),
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id, request.userAnswers))

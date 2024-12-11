@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
-import pages.UpdateEstimatedPayPage
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -99,7 +99,7 @@ class IncomeUpdateCalculatorControllerSpec
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
-          .setOrException(UpdateEstimatedPayPage(employerId), hasJourneyCompleted.toString)
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), hasJourneyCompleted.toString)
         setup(mockUserAnswers)
 
         when(employmentService.employment(any(), any())(any()))

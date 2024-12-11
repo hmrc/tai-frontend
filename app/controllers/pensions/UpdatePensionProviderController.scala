@@ -284,7 +284,6 @@ class UpdatePensionProviderController @Inject() (
       case Some((pensionId, details, phoneQuestion)) =>
         val model = IncorrectPensionProvider(details, phoneQuestion, optionalValues)
         for {
-
           _ <- pensionProviderService.incorrectPensionProvider(nino, pensionId, model)
           _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
           _ <- {
