@@ -295,7 +295,7 @@ class UpdatePensionProviderController @Inject() (
 
       case _ =>
         Future.successful(
-          errorPagesHandler.internalServerError(s"Mandatory values missing from UserAnswers")
+          errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers")
         )
     }
   }
@@ -395,7 +395,7 @@ class UpdatePensionProviderController @Inject() (
                     )
                 }
             )
-        case _ => Future.successful(errorPagesHandler.internalServerError(s"Mandatory values missing from UserAnswers"))
+        case _ => Future.successful(errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers"))
       }
   }
 }

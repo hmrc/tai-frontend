@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.implicits._
+import pages.income.{UpdateIncomePayToDatePage, UpdatedIncomeDatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -108,14 +109,14 @@ class IncomeService @Inject() (
     }
   }
 
-  def cachePaymentForRegularIncome(latestPayment: Option[Payment]): Map[String, String] =
+  def cachePaymentForRegularIncome(latestPayment: Option[Payment], userAnswers: UserAnswers): UserAnswers =
     latestPayment match {
       case Some(payment) =>
-        Map(
-          UpdateIncomeConstants.PayToDateKey -> payment.amountYearToDate.toString,
-          UpdateIncomeConstants.DateKey      -> payment.date.toString
-        )
-      case None => Map(UpdateIncomeConstants.PayToDateKey -> "0")
+        userAnswers
+          .setOrException(UpdateIncomePayToDatePage, payment.amountYearToDate.toString)
+          .setOrException(UpdatedIncomeDatePage, payment.date.toString)
+      case None =>
+        userAnswers.setOrException(UpdateIncomePayToDatePage, "0")
     }
 
 }

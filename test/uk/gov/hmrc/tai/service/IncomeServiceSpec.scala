@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import pages.income.{UpdateIncomePayToDatePage, UpdatedIncomeDatePage}
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
@@ -373,19 +374,24 @@ class IncomeServiceSpec extends BaseSpec {
   }
 
   "cachePaymentForRegularIncome" must {
-    "return cached map data" when {
-      "payment is none" in {
+    "update UserAnswers correctly" when {
+      "payment is None" in {
         val sut = createSUT
-        val expectedCached = Map(UpdateIncomeConstants.PayToDateKey -> "0")
-        sut.cachePaymentForRegularIncome(None) mustBe expectedCached
+        val userAnswers = UserAnswers("testSessionId")
+
+        val updatedAnswers = sut.cachePaymentForRegularIncome(None, userAnswers)
+        updatedAnswers.get(UpdateIncomePayToDatePage) mustBe Some("0")
+        updatedAnswers.get(UpdatedIncomeDatePage) mustBe None
       }
 
       "payment has value" in {
         val sut = createSUT
+        val userAnswers = UserAnswers("testSessionId")
         val payment = paymentOnDate(LocalDate.of(2017, 9, 6))
-        val expectedCached =
-          Map(UpdateIncomeConstants.PayToDateKey -> "2000", UpdateIncomeConstants.DateKey -> payment.date.toString)
-        sut.cachePaymentForRegularIncome(Some(payment)) mustBe expectedCached
+
+        val updatedAnswers = sut.cachePaymentForRegularIncome(Some(payment), userAnswers)
+        updatedAnswers.get(UpdateIncomePayToDatePage) mustBe Some("2000")
+        updatedAnswers.get(UpdatedIncomeDatePage) mustBe Some(payment.date.toString)
       }
     }
   }
