@@ -28,7 +28,6 @@ import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
@@ -46,7 +45,6 @@ class IncomeController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   incomeService: IncomeService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   confirmAmountEntered: ConfirmAmountEnteredView,
@@ -264,7 +262,6 @@ class IncomeController @Inject() (
             _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
             _ <- taxAccountService
                    .updateEstimatedIncome(user.nino, newAmountInt, TaxYear(), incomeId)
-            _ <- estimatedPayJourneyCompletionService.journeyCompleted(incomeId.toString)
           } yield respondWithSuccess(incomeName, incomeId, incomeType, newAmountInt.toString)).recover {
             case NonFatal(e) =>
               errorPagesHandler.internalServerError(e.getMessage, Some(e))

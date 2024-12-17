@@ -29,14 +29,6 @@ import scala.util.control.NonFatal
 
 abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCacheService) extends Logging {
 
-  protected def cache(
-    key: String
-  )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Map[String, String]] =
-    successfulJourneyCacheService.cache(key, "true") recover { case NonFatal(exception) =>
-      logger.warn(s"Failed to update Journey Completion service for key:$key caused by ${exception.getStackTrace}")
-      Map.empty[String, String]
-    }
-
   protected def currentValue(
     key: String
   )(implicit hc: HeaderCarrier, executionContext: ExecutionContext, request: DataRequest[AnyContent]): Future[Boolean] =
@@ -47,14 +39,6 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
       false
     }
 
-  def journeyCompleted(
-    incomeId: String
-  )(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext,
-    request: DataRequest[AnyContent]
-  ): Future[Map[String, String]]
-
   def hasJourneyCompleted(
     id: String
   )(implicit hc: HeaderCarrier, executionContext: ExecutionContext, request: DataRequest[AnyContent]): Future[Boolean]
@@ -64,15 +48,6 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
 class EstimatedPayJourneyCompletionService @Inject() (
   @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
 ) extends JourneyCompletionService(successfulJourneyCacheService) {
-
-  override def journeyCompleted(
-    incomeId: String
-  )(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext,
-    request: DataRequest[AnyContent]
-  ): Future[Map[String, String]] =
-    cache(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId")
 
   override def hasJourneyCompleted(
     id: String

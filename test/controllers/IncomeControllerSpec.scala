@@ -19,7 +19,7 @@ package controllers
 import builders.RequestBuilder
 import org.apache.pekko.Done
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import pages.income._
 import play.api.i18n.{I18nSupport, Messages}
@@ -33,7 +33,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
@@ -50,8 +49,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   val personService: PersonService = mock[PersonService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
 
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId")
 
@@ -120,7 +117,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         taxAccountService,
         employmentService,
         incomeService,
-        estimatedPayJourneyCompletionService,
         mockAuthJourney,
         mcc,
         inject[ConfirmAmountEnteredView],
@@ -583,9 +579,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
-        when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employerId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
 
@@ -614,9 +607,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
-        when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employerId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
-
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
 
@@ -641,8 +631,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(new Exception("Failed")))
-        when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employerId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.updateEstimatedIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -666,8 +654,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
       when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
-      when(estimatedPayJourneyCompletionService.journeyCompleted(meq(employerId.toString))(any(), any(), any()))
-        .thenReturn(Future.successful(Map.empty[String, String]))
 
       Await.result(testController.updateEstimatedIncome(employerId)(fakeRequest), 5.seconds)
 

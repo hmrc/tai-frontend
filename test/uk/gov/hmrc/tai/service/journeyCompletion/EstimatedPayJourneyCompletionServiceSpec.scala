@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,20 +64,6 @@ class EstimatedPayJourneyCompletionServiceSpec extends BaseSpec {
   )
 
   "Estimated Pay Journey Completed Service" must {
-
-    "add a successful journey completion" in {
-
-      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any()))
-        .thenReturn(Future.successful(Map(idKey -> trueValue)))
-      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec, dataRequest), 5 seconds)
-      verify(successfulJourneyCacheService, times(1)).cache(meq(idKey), meq(trueValue))(any())
-    }
-
-    "return an empty collection upon failing to add a journey completion" in {
-      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(failedCacheCall)
-      Await.result(createTestService.journeyCompleted(incomeId)(hc, ec, dataRequest), 5 seconds) mustBe Map
-        .empty[String, String]
-    }
 
     "retrieve a successful journey completion" in {
       when(successfulJourneyCacheService.currentValue(meq(idKey))(any(), any(), any(), any()))
