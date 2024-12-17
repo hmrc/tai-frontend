@@ -81,7 +81,7 @@ class MainTemplateImpl @Inject() (
       serviceURLs = ServiceURLs(
         serviceUrl = Some(appConfig.taiHomePageUrl),
         signOutUrl = Some(controllers.routes.ServiceController.serviceSignout().url),
-        accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl(requestHeader.uri))
+        accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl)
       ),
 //    sidebarContent: Option[Html] = None,
       timeOutUrl = Some(controllers.routes.ServiceController.sessionExpiredPage().url),
