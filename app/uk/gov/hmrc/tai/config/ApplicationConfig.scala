@@ -59,7 +59,7 @@ class ApplicationConfig @Inject() (
   lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
 
   def accessibilityStatementUrl: String = {
-    val redirectUrl = RedirectUrl(accessibilityBaseUrl + "/check-income-tax/what-do-you-want-to-do").getEither(
+    val redirectUrl = RedirectUrl(taiHomePageUrl).getEither(
       OnlyRelative | AbsoluteWithHostnameFromAllowlist("localhost")
     ) match {
       case Right(safeRedirectUrl) => safeRedirectUrl.url
