@@ -18,6 +18,7 @@ package controllers
 
 import cats.implicits._
 import controllers.auth.AuthJourney
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,7 +28,6 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
@@ -41,7 +41,6 @@ class IncomeSourceSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -57,11 +56,15 @@ class IncomeSourceSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       Future.successful(request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt))
 
+    val hasJourneyCompleted = Future.successful(
+      request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId)).contains("true")
+    )
+
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
-      estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
+      hasJourneyCompleted,
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (

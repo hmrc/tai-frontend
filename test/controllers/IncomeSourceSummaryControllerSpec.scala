@@ -18,9 +18,10 @@ package controllers
 
 import builders.RequestBuilder
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.{ArgumentCaptor, Mockito}
 import org.mockito.Mockito.{times, verify, when}
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.test.Helpers._
@@ -31,7 +32,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
@@ -79,8 +79,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val benefitsService: BenefitsService = mock[BenefitsService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId")
@@ -90,7 +88,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     taxAccountService,
     employmentService,
     benefitsService,
-    estimatedPayJourneyCompletionService,
     mockAuthJourney,
     appConfig,
     mcc,
@@ -111,12 +108,15 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   "onPageLoad" must {
     "display the income details page" when {
       "asked for employment details" in {
+
+        val userAnswers = baseUserAnswers
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+        setup(userAnswers)
+
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
         when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -133,12 +133,15 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       }
 
       "asked for pension details" in {
+
+        val userAnswers = baseUserAnswers
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), "true")
+        setup(userAnswers)
+
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
         when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -183,10 +186,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
 
-        val userAnswers = baseUserAnswers.setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
+        val userAnswers = baseUserAnswers
+          .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -213,10 +216,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
 
-        val userAnswers = baseUserAnswers.setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
+        val userAnswers = baseUserAnswers
+          .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -237,9 +240,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
-        val userAnswers = baseUserAnswers.setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
+        val userAnswers = baseUserAnswers
+          .setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), "true")
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
