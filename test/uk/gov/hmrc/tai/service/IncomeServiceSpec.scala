@@ -56,8 +56,8 @@ class IncomeServiceSpec extends BaseSpec {
           None,
           Some(LocalDate.of(2000, 5, 20)),
           None,
-          true,
-          false
+          isLive = true,
+          isOccupationalPension = false
         )
 
       }
@@ -396,12 +396,12 @@ class IncomeServiceSpec extends BaseSpec {
     }
   }
 
-  val taxCodeIncomes = Seq(
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
-  def employmentWithAccounts(accounts: List[AnnualAccount]) =
+  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
     Employment(
       "ABCD",
       Live,
@@ -413,11 +413,11 @@ class IncomeServiceSpec extends BaseSpec {
       "",
       8,
       None,
-      false,
-      false
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false
     )
 
-  def paymentOnDate(date: LocalDate) =
+  def paymentOnDate(date: LocalDate): Payment =
     Payment(
       date = date,
       amountYearToDate = 2000,
