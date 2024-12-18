@@ -306,9 +306,9 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         status(result) mustBe BAD_REQUEST
 
         result rendersTheSameViewAs bonusPaymentAmountView(
-          BonusOvertimeAmountForm.createForm.bindFromRequest(),
+          BonusOvertimeAmountForm.createForm.bind(Map("amount" -> "")),
           employer
-        )(fakeRequest, messages, authedUser)
+        )(fakeRequest.withFormUrlEncodedBody("updateIncomeBonusPaymentsKey" -> ""), messages, authedUser)
       }
     }
 
