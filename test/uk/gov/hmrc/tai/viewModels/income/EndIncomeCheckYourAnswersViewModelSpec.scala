@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
-import scala.concurrent.Future
-
 class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
+
+  private val empId = 1
 
   "journeyConfirmationLines method" must {
     "generate two confirmation lines when telephone contact not approved" in {
@@ -40,11 +37,8 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
-
       res.size mustBe 2
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
@@ -68,11 +62,8 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
-
       res.size mustBe 3
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q2"),
         "13 June 2017",
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
@@ -89,6 +80,4 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
     }
   }
-  private val empId = 1
-  private val endEmploymentJourneyCacheService = mock[JourneyCacheService]
 }
