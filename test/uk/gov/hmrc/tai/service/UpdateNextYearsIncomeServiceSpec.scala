@@ -21,7 +21,7 @@ import controllers.auth.{AuthedUser, DataRequest}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages.income.{UpdateIncomeNewAmountPage, UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage}
+import pages.income.{UpdateIncomeNewAmountPage, UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage, UpdateNextYearsIncomeSuccessPageForEmployment}
 import play.api.mvc.AnyContent
 import repository.JourneyCacheNewRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
@@ -264,7 +264,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
-        .setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
+        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
+        .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
 
       when(mockJourneyCacheNewRepository.get(any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
@@ -290,7 +291,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
-        .setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
+        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
+        .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
         .setOrException(UpdateIncomeNewAmountPage, employmentAmount.toString)
 
       when(mockJourneyCacheNewRepository.get(any()))
@@ -336,7 +338,10 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     "be true when a journey is successful" in {
       val service = new UpdateNextYearsIncomeServiceTest
 
-      val userAnswers = UserAnswers(sessionId).setOrException(UpdateNextYearsIncomeSuccessPage(employmentId), "true")
+      val userAnswers =
+        UserAnswers(sessionId)
+          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
+          .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
       when(mockJourneyCacheNewRepository.get(any())).thenReturn(Future.successful(Some(userAnswers)))
 
       service.isEstimatedPayJourneyComplete(userAnswers).futureValue mustBe true
