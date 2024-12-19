@@ -377,7 +377,7 @@ class IncomeServiceSpec extends BaseSpec {
     "update UserAnswers correctly" when {
       "payment is None" in {
         val sut = createSUT
-        val userAnswers = UserAnswers("testSessionId")
+        val userAnswers = UserAnswers("testSessionId", nino.nino)
 
         val updatedAnswers = sut.cachePaymentForRegularIncome(None, userAnswers)
         updatedAnswers.get(UpdateIncomePayToDatePage) mustBe Some("0")
@@ -386,7 +386,7 @@ class IncomeServiceSpec extends BaseSpec {
 
       "payment has value" in {
         val sut = createSUT
-        val userAnswers = UserAnswers("testSessionId")
+        val userAnswers = UserAnswers("testSessionId", nino.nino)
         val payment = paymentOnDate(LocalDate.of(2017, 9, 6))
 
         val updatedAnswers = sut.cachePaymentForRegularIncome(Some(payment), userAnswers)
