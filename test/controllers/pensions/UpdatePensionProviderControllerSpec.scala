@@ -57,7 +57,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId")
+  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
   class UpdatePensionProviderTestController
       extends UpdatePensionProviderController(
@@ -438,7 +438,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
         when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
@@ -447,7 +447,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
           .confirmation()
           .url
-        verify(mockJourneyCacheNewRepository, times(1)).clear(any())
+        verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
         verify(mockJourneyCacheNewRepository, times(1)).set(any())
       }
 
@@ -462,7 +462,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
         when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
@@ -472,7 +472,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
           .confirmation()
           .url
         verify(mockJourneyCacheNewRepository, times(1)).set(any())
-        verify(mockJourneyCacheNewRepository, times(1)).clear(any())
+        verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
       }
     }
   }

@@ -43,7 +43,7 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
       None
     ),
     "",
-    UserAnswers("session-id-1", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
+    UserAnswers("session-id-1", "nino", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
   )
 
   private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)

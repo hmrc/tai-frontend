@@ -54,6 +54,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
+    nino,
     Json.obj(
       "employmentName" -> "TEST-Employer"
     )
@@ -83,7 +84,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockRepository, employmentService)
-    when(mockRepository.get(any()))
+    when(mockRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(userAnswers)))
   }
 
@@ -778,7 +779,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
           .thenReturn(Future.successful("envelope-123"))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val request = fakeGetRequest
 
@@ -806,7 +807,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
           .thenReturn(Future.successful("envelope-123"))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val request = fakeGetRequest
 
@@ -849,7 +850,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           status(result) mustBe BAD_REQUEST
         }
 
-        verify(mockRepository, times(0)).clear(any())
+        verify(mockRepository, times(0)).clear(any(), any())
         verify(mockRepository, times(0)).set(any())
         verify(employmentService, times(0)).addEmployment(any(), any())(any(), any())
       }
@@ -872,7 +873,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   "cancel" must {
     "redirect to the the TaxAccountSummaryController" in {
 
-      when(mockRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = createSUT().cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

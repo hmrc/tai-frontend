@@ -61,7 +61,7 @@ class UpdateNextYearsIncomeService @Inject() (
   def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheNewRepository.get(userAnswers.id).flatMap(_ => setup(employmentId, nino))
+    journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
 
   def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
     val value = convertCurrencyToInt(Some(newValue)).toString

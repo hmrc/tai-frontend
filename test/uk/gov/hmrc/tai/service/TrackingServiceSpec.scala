@@ -45,7 +45,7 @@ class TrackingServiceSpec extends BaseSpec {
   val employmentId = 1
 
   def mockDataRequest(userAnswersData: Map[String, String]): DataRequest[AnyContent] = {
-    val userAnswers = UserAnswers("testSessionId", Json.toJson(userAnswersData).as[JsObject])
+    val userAnswers = UserAnswers("testSessionId", "nino", Json.toJson(userAnswersData).as[JsObject])
     DataRequest(
       fakeRequest,
       taiUser = AuthedUser(

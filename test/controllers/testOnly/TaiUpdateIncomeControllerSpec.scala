@@ -50,16 +50,16 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
     "delete the journey cache to facilitate the next test run" in {
 
-      val mockUserAnswers: UserAnswers = UserAnswers("testSessionId")
+      val mockUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = sut.delete(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       result.futureValue
       status(result) mustBe SEE_OTHER
-      verify(mockJourneyCacheNewRepository, times(1)).clear(any())
+      verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
     }
   }
 

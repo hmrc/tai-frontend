@@ -172,7 +172,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers("testSessionId"))
+    setup(UserAnswers("testSessionId", nino.nino))
   }
 
   "onPageLoad" must {

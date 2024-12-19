@@ -40,7 +40,7 @@ class JourneyCacheNewRepositorySpec
   private val instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
-  private val userAnswers = UserAnswers("session-id-1", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
+  private val userAnswers = UserAnswers("session-id-1", "nino", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[ApplicationConfig]
   when(mockAppConfig.sessionTimeoutInSeconds) thenReturn 1
@@ -58,7 +58,8 @@ class JourneyCacheNewRepositorySpec
       val setResult = repository.set(userAnswers).futureValue
       val updatedRecord = find(
         Filters.and(
-          Filters.equal("_id", userAnswers.id)
+          Filters.equal("sessionId", userAnswers.sessionId),
+          Filters.equal("nino", userAnswers.nino)
         )
       ).futureValue.headOption.value
 
@@ -77,20 +78,22 @@ class JourneyCacheNewRepositorySpec
 
       val results = find(
         Filters.and(
-          Filters.equal("_id", userAnswers.id)
+          Filters.equal("sessionId", userAnswers.sessionId),
+          Filters.equal("nino", userAnswers.nino)
         )
       ).futureValue
 
       setResult mustEqual true
       results.size mustBe 1
       val actualUserAnswers = results.headOption.value
-      actualUserAnswers.id mustBe userAnswers.id
+      actualUserAnswers.sessionId mustBe userAnswers.sessionId
+      actualUserAnswers.nino mustBe userAnswers.nino
       actualUserAnswers.data mustBe userAnswers.data
     }
 
     "must save a new document when value already exists in collection with different nino but same session id" in {
       val existingUserAnswers =
-        UserAnswers("session-id-1", Json.obj("foo2" -> "bar2"), Instant.ofEpochSecond(1))
+        UserAnswers("session-id-1", "nino2", Json.obj("foo2" -> "bar2"), Instant.ofEpochSecond(1))
       repository
         .set(existingUserAnswers)
         .futureValue
@@ -102,9 +105,11 @@ class JourneyCacheNewRepositorySpec
       val results = findAll().futureValue
 
       setResult mustEqual true
-      results.size mustBe 1
-      results.exists(ua => ua.id == userAnswers.id) mustBe true
-      results.exists(ua => ua.id == existingUserAnswers.id) mustBe true
+      results.size mustBe 2
+      results.exists(ua => ua.sessionId == userAnswers.sessionId && ua.nino == userAnswers.nino) mustBe true
+      results.exists(ua =>
+        ua.sessionId == existingUserAnswers.sessionId && ua.nino == existingUserAnswers.nino
+      ) mustBe true
     }
   }
 
@@ -113,7 +118,7 @@ class JourneyCacheNewRepositorySpec
       "must update the lastUpdated time and get the record" in {
         insert(userAnswers).futureValue
 
-        val result = repository.get(userAnswers.id).futureValue
+        val result = repository.get(userAnswers.sessionId, userAnswers.nino).futureValue
         val expectedResult = userAnswers copy (lastUpdated = instant)
 
         result.value mustEqual expectedResult
@@ -122,7 +127,7 @@ class JourneyCacheNewRepositorySpec
 
     "when there is no record for this id" - {
       "must return None" in {
-        repository.get("id that does not exist").futureValue must not be defined
+        repository.get("id that does not exist", "nino that does not exist").futureValue must not be defined
       }
     }
   }
@@ -130,14 +135,14 @@ class JourneyCacheNewRepositorySpec
   ".clear" - {
     "must remove a record" in {
       insert(userAnswers).futureValue
-      val result = repository.clear(userAnswers.id).futureValue
+      val result = repository.clear(userAnswers.sessionId, userAnswers.nino).futureValue
 
       result mustEqual true
-      repository.get(userAnswers.id).futureValue must not be defined
+      repository.get(userAnswers.sessionId, userAnswers.nino).futureValue must not be defined
     }
 
     "must return true when there is no record to remove" in {
-      val result = repository.clear("id that does not exist").futureValue
+      val result = repository.clear("id that does not exist", "nino does not exist").futureValue
 
       result mustEqual true
     }
@@ -149,14 +154,17 @@ class JourneyCacheNewRepositorySpec
 
         insert(userAnswers).futureValue
 
-        val result = repository.keepAlive(userAnswers.id).futureValue
+        val result = repository.keepAlive(userAnswers.sessionId, userAnswers.nino).futureValue
 
         val expectedUpdatedAnswers = userAnswers copy (lastUpdated = instant)
 
         result mustEqual true
 
         val updatedAnswers = find(
-          Filters.and(Filters.equal("_id", userAnswers.id))
+          Filters.and(
+            Filters.equal("sessionId", userAnswers.sessionId),
+            Filters.equal("nino", userAnswers.nino)
+          )
         ).futureValue.headOption.value
         updatedAnswers mustEqual expectedUpdatedAnswers
       }
@@ -164,7 +172,7 @@ class JourneyCacheNewRepositorySpec
 
     "when there is no record for this id" - {
       "must return true" in {
-        repository.keepAlive("id that does not exist").futureValue mustEqual true
+        repository.keepAlive("id that does not exist", "not exist").futureValue mustEqual true
       }
     }
   }

@@ -59,7 +59,7 @@ class IncomeController @Inject() (
     extends TaiBaseController(mcc) with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.id).map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -214,7 +214,7 @@ class IncomeController @Inject() (
               userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId)) match {
                 case Some(_) =>
                   journeyCacheNewRepository
-                    .clear(userAnswers.id)
+                    .clear(userAnswers.sessionId, request.userAnswers.nino)
                     .map(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
                 case None =>
                   Future.successful(errorPagesHandler.internalServerError(e.getMessage))
@@ -259,7 +259,7 @@ class IncomeController @Inject() (
         case Some((incomeName, newAmount, incomeId, incomeType)) =>
           val newAmountInt = FormHelper.stripNumber(newAmount).toInt
           (for {
-            _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+            _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
             _ <- taxAccountService
                    .updateEstimatedIncome(user.nino, newAmountInt, TaxYear(), incomeId)
           } yield respondWithSuccess(incomeName, incomeId, incomeType, newAmountInt.toString)).recover {

@@ -48,7 +48,7 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with TaxAccountSummaryTestDa
       None
     ),
     fullName = "",
-    userAnswers = UserAnswers("")
+    userAnswers = UserAnswers("", "")
   )
 
   "TaxAccountSummaryServiceSpec" should {

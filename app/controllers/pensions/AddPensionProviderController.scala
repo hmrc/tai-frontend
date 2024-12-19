@@ -68,7 +68,7 @@ class AddPensionProviderController @Inject() (
     )
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.id) map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -332,11 +332,12 @@ class AddPensionProviderController @Inject() (
         )
         for {
           _ <- pensionProviderService.addPensionProvider(user.nino, model)
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
             // setting for tracking service
             val newUserAnswers =
-              UserAnswers(request.userAnswers.id).setOrException(AddPensionProviderPage, "true")
+              UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+                .setOrException(AddPensionProviderPage, "true")
             journeyCacheNewRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())

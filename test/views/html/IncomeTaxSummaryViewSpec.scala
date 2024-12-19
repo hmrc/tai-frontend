@@ -32,7 +32,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     FakeRequest(),
     taiUser = authedUser,
     fullName = "Firstname Surname",
-    userAnswers = UserAnswers("testSessionId")
+    userAnswers = UserAnswers("testSessionId", nino.nino)
   )
   "Income tax summary page" must {
 

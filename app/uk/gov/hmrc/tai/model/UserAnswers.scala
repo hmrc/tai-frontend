@@ -26,7 +26,8 @@ import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
 final case class UserAnswers(
-  id: String,
+  sessionId: String,
+  nino: String,
   data: JsObject = Json.obj(),
   lastUpdated: Instant = Instant.now
 ) {
@@ -44,7 +45,7 @@ final case class UserAnswers(
     }
 
     updatedData.flatMap { d =>
-      val updatedAnswers = copy(data = d)
+      val updatedAnswers: UserAnswers = UserAnswers(sessionId, nino, d)
       page.cleanup(updatedAnswers)
     }
   }
@@ -69,7 +70,8 @@ object UserAnswers {
     import play.api.libs.functional.syntax._
 
     (
-      (__ \ "_id").read[String] and
+      (__ \ "sessionId").read[String] and
+        (__ \ "nino").read[String] and
         (__ \ "data").read[JsObject] and
         (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
     )(UserAnswers.apply _)
@@ -80,7 +82,8 @@ object UserAnswers {
     import play.api.libs.functional.syntax._
 
     (
-      (__ \ "_id").write[String] and
+      (__ \ "sessionId").write[String] and
+        (__ \ "nino").write[String] and
         (__ \ "data").write[JsObject] and
         (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
     )(unlift(UserAnswers.unapply))

@@ -43,9 +43,10 @@ class JourneyCacheNewRepository @Inject() (
       domainFormat = UserAnswers.format,
       indexes = Seq(
         IndexModel(
-          Indexes.ascending("_id"),
+          Indexes.ascending("sessionId", "nino"),
           IndexOptions()
-            .name("_id")
+            .unique(true)
+            .name("sessionIdAndNino")
         ),
         IndexModel(
           Indexes.ascending("lastUpdated"),
@@ -61,21 +62,25 @@ class JourneyCacheNewRepository @Inject() (
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 
-  private def byId(id: String): Bson = Filters.equal("_id", id)
+  private def byIdAndNino(id: String, nino: String): Bson =
+    Filters.and(
+      Filters.equal("sessionId", id),
+      Filters.equal("nino", nino)
+    )
 
-  def keepAlive(id: String): Future[Boolean] =
+  def keepAlive(id: String, nino: String): Future[Boolean] =
     collection
       .updateOne(
-        filter = byId(id),
+        filter = byIdAndNino(id, nino),
         update = Updates.set("lastUpdated", Instant.now(clock))
       )
       .toFuture()
       .map(_ => true)
 
-  def get(id: String): Future[Option[UserAnswers]] =
-    keepAlive(id).flatMap { _ =>
+  def get(id: String, nino: String): Future[Option[UserAnswers]] =
+    keepAlive(id, nino).flatMap { _ =>
       collection
-        .find(byId(id))
+        .find(byIdAndNino(id, nino))
         .headOption()
     }
 
@@ -84,7 +89,7 @@ class JourneyCacheNewRepository @Inject() (
 
     collection
       .replaceOne(
-        filter = byId(updatedAnswers.id),
+        filter = byIdAndNino(updatedAnswers.sessionId, updatedAnswers.nino),
         replacement = updatedAnswers,
         options = ReplaceOptions().upsert(true)
       )
@@ -92,9 +97,9 @@ class JourneyCacheNewRepository @Inject() (
       .map(_ => true)
   }
 
-  def clear(id: String): Future[Boolean] =
+  def clear(id: String, nino: String): Future[Boolean] =
     collection
-      .deleteOne(byId(id))
+      .deleteOne(byIdAndNino(id, nino))
       .toFuture()
       .map(_ => true)
 }

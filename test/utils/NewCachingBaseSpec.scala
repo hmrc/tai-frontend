@@ -43,7 +43,7 @@ import scala.util.Random
 trait NewCachingBaseSpec
     extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach {
 
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
 
   protected def applicationBuilder(userAnswers: UserAnswers = emptyUserAnswers): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()

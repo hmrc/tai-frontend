@@ -65,7 +65,7 @@ class EndEmploymentController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.id).map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -466,11 +466,12 @@ class EndEmploymentController @Inject() (
         telephoneNumber   <- request.userAnswers.get(EndEmploymentTelephoneNumberPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
       } yield for {
-        _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+        _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
         _ <- {
           // setting for tracking service
           val newUserAnswers =
-            UserAnswers(request.userAnswers.id).setOrException(UpdateEndEmploymentPage(empId), "true")
+            UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+              .setOrException(UpdateEndEmploymentPage(empId), "true")
           journeyCacheNewRepository.set(newUserAnswers)
         }
         _ <- employmentService.endEmployment(authUser.nino, empId, model)

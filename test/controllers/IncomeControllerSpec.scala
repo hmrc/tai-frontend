@@ -50,7 +50,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId")
+  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -146,14 +146,14 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     "clear the data from JourneyCacheNewRepository and redirect to the employer id's income details page" in {
       val testController = createTestIncomeController()
 
-      when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = testController.cancel(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
 
-      verify(mockJourneyCacheNewRepository, times(1)).clear(any())
+      verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
     }
   }
 
@@ -534,7 +534,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       val employment = employmentWithAccounts(List(annualAccount))
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-      when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result =
         testController.confirmRegularIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -542,7 +542,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
 
-      verify(mockJourneyCacheNewRepository, times(1)).clear(any())
+      verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
     }
 
     "Redirect to /Income-details" when {
@@ -580,7 +580,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
           .thenReturn(Future.successful(Done))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
 
@@ -608,7 +608,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
           .thenReturn(Future.successful(Done))
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
 
@@ -628,7 +628,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
           .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypeEmployment)
         setup(userAnswers)
 
-        when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(new Exception("Failed")))
 
@@ -651,13 +651,13 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         .setOrException(UpdateIncomeTypePage, employerType)
       setup(userAnswers)
 
-      when(mockJourneyCacheNewRepository.clear(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
       when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 
       Await.result(testController.updateEstimatedIncome(employerId)(fakeRequest), 5.seconds)
 
-      verify(mockJourneyCacheNewRepository, times(1)).clear(any())
+      verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
     }
 
     "Redirect to /Income-details" when {

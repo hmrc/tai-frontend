@@ -63,7 +63,7 @@ class UpdatePensionProviderController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.id).map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -285,9 +285,9 @@ class UpdatePensionProviderController @Inject() (
         val model = IncorrectPensionProvider(details, phoneQuestion, optionalValues)
         for {
           _ <- pensionProviderService.incorrectPensionProvider(nino, pensionId, model)
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
-            val newUserAnswers = UserAnswers(request.userAnswers.id)
+            val newUserAnswers = UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
               .setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), "true")
             journeyCacheNewRepository.set(newUserAnswers)
           }

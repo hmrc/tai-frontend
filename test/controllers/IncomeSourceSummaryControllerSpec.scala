@@ -81,7 +81,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
 
-  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId")
+  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
   def sut = new IncomeSourceSummaryController(
     mock[AuditConnector],

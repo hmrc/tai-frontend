@@ -85,13 +85,13 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         journeyCacheNewRepository = mockJourneyCacheNewRepository,
         errorPagesHandler = inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any()))
-      .thenReturn(Future.successful(Some(UserAnswers(sessionId))))
+    when(mockJourneyCacheNewRepository.get(any(), any()))
+      .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId))
+    setup(UserAnswers(sessionId, randomNino().nino))
     reset(mockJourneyCacheNewRepository)
   }
 
@@ -99,13 +99,13 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     "redirect to decision page" in {
       reset(mockJourneyCacheNewRepository)
 
-      val mockUserAnswers = UserAnswers("testSessionId")
+      val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
         .setOrException(EndCompanyBenefitsIdPage, empId)
         .setOrException(EndCompanyBenefitsTypePage, benefitType)
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any()))
+      when(mockJourneyCacheNewRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
@@ -128,14 +128,14 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val referer = "referer"
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, empName)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
@@ -158,7 +158,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, referer)
@@ -193,13 +193,13 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, "referrer")
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
@@ -218,7 +218,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "it is a NoIDontGetThisBenefit" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
         setup(mockUserAnswers)
 
@@ -226,7 +226,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.submitDecision(
@@ -243,7 +243,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "it is a YesIGetThisBenefit" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
         setup(mockUserAnswers)
 
@@ -251,7 +251,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.submitDecision(
@@ -270,7 +270,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is cached" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsRefererPage, "referrer")
@@ -278,7 +278,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
@@ -303,13 +303,13 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
@@ -333,7 +333,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form has the value noIDontGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
           .setOrException(EndCompanyBenefitsTypeTesterPage, None)
@@ -341,7 +341,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
@@ -361,7 +361,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form has the value YesIGetThisBenefit and EndCompanyBenefitConstants.BenefitTypeKey is not cached" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "company name")
           .setOrException(EndCompanyBenefitsTypeTesterPage, None)
@@ -369,7 +369,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val SUT = createSUT
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
 
@@ -388,7 +388,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form has no valid value" in {
         reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsTypePage, benefitType)
         setup(mockUserAnswers)
 
@@ -396,7 +396,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(false)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.submitDecision(
@@ -417,14 +417,14 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the form submission is having blank value" in {
         val SUT = createSUT
 
-        val mockUserAnswers = UserAnswers("testSessionId")
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsTypePage, "Expenses")
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "Employer A")
           .setOrException(EndCompanyBenefitsRefererPage, "referer")
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any()))
+        when(mockJourneyCacheNewRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.submitDecision(

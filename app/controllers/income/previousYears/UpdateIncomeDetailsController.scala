@@ -294,7 +294,7 @@ class UpdateIncomeDetailsController @Inject() (
                  userAnswers.data + (TrackSuccessfulJourneyConstantsUpdatePreviousYearPage.toString -> JsBoolean(true))
              )
            )
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino)
     } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
   }
 

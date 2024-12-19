@@ -63,7 +63,7 @@ class AddEmploymentController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.id) map { _ =>
+    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -362,11 +362,12 @@ class AddEmploymentController @Inject() (
         )
         for {
           _ <- employmentService.addEmployment(user.nino, model)
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.id)
+          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
             // setting for tracking service
             val newUserAnswers =
-              UserAnswers(request.userAnswers.id).setOrException(AddEmploymentPage, "true")
+              UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+                .setOrException(AddEmploymentPage, "true")
             journeyCacheNewRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())

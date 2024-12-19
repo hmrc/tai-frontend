@@ -103,7 +103,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       None
     ),
     fullName = "",
-    userAnswers = UserAnswers("")
+    userAnswers = UserAnswers("", "")
   )
 
   override def view: Html = template(model)
