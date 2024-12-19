@@ -17,7 +17,7 @@
 package repositories
 
 import org.mockito.Mockito.when
-import org.mongodb.scala.model.Filters
+import org.mongodb.scala.model.{Filters, IndexOptions, Indexes}
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -50,6 +50,29 @@ class JourneyCacheNewRepositorySpec
     appConfig = mockAppConfig,
     clock = stubClock
   )
+
+  ".dropOldCompoundIndex" - {
+    "must drop the old sessionIdAndNino index if it exists" in {
+      val collection = mongoComponent.database.getCollection("user-answers")
+      val oldIndexName = "sessionIdAndNino"
+
+      collection
+        .createIndex(Indexes.ascending("sessionId", "nino"), IndexOptions().name(oldIndexName))
+        .toFuture()
+        .futureValue
+
+      val initialIndexes = collection.listIndexes().toFuture().futureValue
+      initialIndexes.map(_.getString("name")) must contain(oldIndexName)
+
+      repository.dropOldCompoundIndex().futureValue
+
+      val updatedIndexes = collection.listIndexes().toFuture().futureValue
+      updatedIndexes.map(_.getString("name")) must not contain oldIndexName
+
+      val expectedIndexes = Seq("_id_", "lastUpdatedIdx")
+      updatedIndexes.map(_.getString("name")) must contain.allElementsOf(expectedIndexes)
+    }
+  }
 
   ".set" - {
     "must set the last updated time on the supplied user answers to `now`, and save them" in {

@@ -30,6 +30,7 @@ import java.time.{Clock, Instant}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Singleton
+import scala.util.control.NonFatal
 
 @Singleton
 class JourneyCacheNewRepository @Inject() (
@@ -60,6 +61,18 @@ class JourneyCacheNewRepository @Inject() (
     ) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+
+  dropOldCompoundIndex()
+
+  // Remove old compound index that is no longer required, to make ATs pass
+  // TODO: Remove in future
+  def dropOldCompoundIndex(): Future[Unit] = {
+    val collection = mongoComponent.database.getCollection("user-answers")
+    collection
+      .dropIndex("sessionIdAndNino")
+      .toFuture()
+      .recover { case NonFatal(_) => () }
+  }
 
   private def byId(id: String): Bson = Filters.equal("_id", id)
 
