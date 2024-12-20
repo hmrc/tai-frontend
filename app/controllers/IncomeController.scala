@@ -92,14 +92,12 @@ class IncomeController @Inject() (
     implicit request =>
       val userAnswers = request.userAnswers
 
-      val mandatoryValues = for {
-        name               <- userAnswers.get(UpdateIncomeNamePage)
-        id                 <- userAnswers.get(UpdateIncomeIdPage)
-        confirmedNewAmount <- userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
-      } yield (name, id, confirmedNewAmount)
+      val nameOpt = userAnswers.get(UpdateIncomeNamePage)
+      val idOpt = userAnswers.get(UpdateIncomeIdPage)
+      val confirmedNewAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
 
-      mandatoryValues match {
-        case Some((name, employerId, confirmedNewAmount)) =>
+      (nameOpt, idOpt, confirmedNewAmountOpt) match {
+        case (Some(name), Some(employerId), Some(confirmedNewAmount)) =>
           val model = SameEstimatedPayViewModel(
             name,
             employerId,
@@ -120,13 +118,11 @@ class IncomeController @Inject() (
     val userAnswers = request.userAnswers
     val nino = request.taiUser.nino
 
-    val mandatoryValues = for {
-      name <- userAnswers.get(UpdateIncomeNamePage)
-      id   <- userAnswers.get(UpdateIncomeIdPage)
-    } yield (name, id)
+    val nameOpt = userAnswers.get(UpdateIncomeNamePage)
+    val idOpt = userAnswers.get(UpdateIncomeIdPage)
 
-    mandatoryValues match {
-      case Some((name, id)) =>
+    (nameOpt, idOpt) match {
+      case (Some(name), Some(id)) =>
         incomeService
           .employmentAmount(nino, id)
           .map { income =>
@@ -248,15 +244,14 @@ class IncomeController @Inject() (
       }
 
       val userAnswers = request.userAnswers
-      val mandatoryValues = for {
-        incomeName <- userAnswers.get(UpdateIncomeNamePage)
-        newAmount  <- userAnswers.get(UpdateIncomeNewAmountPage)
-        incomeId   <- userAnswers.get(UpdateIncomeIdPage)
-        incomeType <- userAnswers.get(UpdateIncomeTypePage)
-      } yield (incomeName, newAmount, incomeId, incomeType)
 
-      mandatoryValues match {
-        case Some((incomeName, newAmount, incomeId, incomeType)) =>
+      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
+      val newAmountOpt = userAnswers.get(UpdateIncomeNewAmountPage)
+      val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
+      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+
+      (incomeNameOpt, newAmountOpt, incomeIdOpt, incomeTypeOpt) match {
+        case (Some(incomeName), Some(newAmount), Some(incomeId), Some(incomeType)) =>
           val newAmountInt = FormHelper.stripNumber(newAmount).toInt
           (for {
             _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)

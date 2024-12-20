@@ -241,27 +241,22 @@ class UpdateIncomeDetailsController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val userAnswers = request.userAnswers
 
-    val mandatoryValues = Seq(
-      userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage),
-      userAnswers.get(UpdatePreviousYearsIncomePage),
-      userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
-    )
-
-    val optionalValues = Seq(
-      userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
-    )
+    val taxYearOpt = userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage)
+    val incomeOpt = userAnswers.get(UpdatePreviousYearsIncomePage)
+    val telephoneQuestionOpt = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
+    val telephoneNumberOpt = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
 
     Future
       .successful(
-        mandatoryValues.flatten match {
-          case Seq(taxYear, income, telephoneQuestion) =>
+        (taxYearOpt, incomeOpt, telephoneQuestionOpt, telephoneNumberOpt) match {
+          case (Some(taxYear), Some(income), Some(telephoneQuestion), telephoneNumberOpt) =>
             Ok(
               CheckYourAnswers(
                 UpdateIncomeDetailsCheckYourAnswersViewModel(
                   tableHeader = TaxYear(taxYear.toInt).toString,
                   whatYouToldUs = income,
                   contactByPhone = telephoneQuestion,
-                  phoneNumber = optionalValues.flatten.headOption
+                  phoneNumber = telephoneNumberOpt
                 )
               )
             )

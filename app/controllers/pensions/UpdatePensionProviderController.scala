@@ -237,18 +237,23 @@ class UpdatePensionProviderController @Inject() (
 
   def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val userAnswers = request.userAnswers
-    val mandatoryValues = for {
-      pensionId              <- userAnswers.get(UpdatePensionProviderIdPage)
-      pensionName            <- userAnswers.get(UpdatePensionProviderNamePage)
-      receivePensionQuestion <- userAnswers.get(UpdatePensionProviderReceivePensionPage)
-      details                <- userAnswers.get(UpdatePensionProviderDetailsPage)
-      phoneQuestion          <- userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
-    } yield (pensionId, pensionName, receivePensionQuestion, details, phoneQuestion)
 
-    val optionalValues = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
+    val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val pensionNameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+    val receivePensionQuestionOpt = userAnswers.get(UpdatePensionProviderReceivePensionPage)
+    val detailsOpt = userAnswers.get(UpdatePensionProviderDetailsPage)
+    val phoneQuestionOpt = userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
+    val phoneNumberOpt = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
 
-    mandatoryValues match {
-      case Some((pensionId, pensionName, receivePensionQuestion, details, phoneQuestion)) =>
+    (pensionIdOpt, pensionNameOpt, receivePensionQuestionOpt, detailsOpt, phoneQuestionOpt, phoneNumberOpt) match {
+      case (
+            Some(pensionId),
+            Some(pensionName),
+            Some(receivePensionQuestion),
+            Some(details),
+            Some(phoneQuestion),
+            phoneNumberOpt
+          ) =>
         implicit val user: AuthedUser = request.taiUser
         Future.successful(
           Ok(
@@ -259,7 +264,7 @@ class UpdatePensionProviderController @Inject() (
                 receivePensionQuestion,
                 details,
                 phoneQuestion,
-                optionalValues
+                phoneNumberOpt
               )
             )
           )
@@ -273,16 +278,14 @@ class UpdatePensionProviderController @Inject() (
     val nino = request.taiUser.nino
     val userAnswers = request.userAnswers
 
-    val mandatoryValues = for {
-      pensionId     <- userAnswers.get(UpdatePensionProviderIdPage)
-      details       <- userAnswers.get(UpdatePensionProviderDetailsPage)
-      phoneQuestion <- userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
-    } yield (pensionId, details, phoneQuestion)
+    val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val detailsOpt = userAnswers.get(UpdatePensionProviderDetailsPage)
+    val phoneQuestionOpt = userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
+    val phoneNumberOpt = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
 
-    val optionalValues = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
-    mandatoryValues match {
-      case Some((pensionId, details, phoneQuestion)) =>
-        val model = IncorrectPensionProvider(details, phoneQuestion, optionalValues)
+    (pensionIdOpt, detailsOpt, phoneQuestionOpt, phoneNumberOpt) match {
+      case (Some(pensionId), Some(details), Some(phoneQuestion), phoneNumberOpt) =>
+        val model = IncorrectPensionProvider(details, phoneQuestion, phoneNumberOpt)
         for {
           _ <- pensionProviderService.incorrectPensionProvider(nino, pensionId, model)
           _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
