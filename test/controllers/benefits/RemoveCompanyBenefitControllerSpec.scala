@@ -520,7 +520,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val telephoneNumber = "85256651"
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
+          sessionId,
           randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
@@ -563,7 +563,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val telephoneNumber = "85256651"
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
+          sessionId,
           randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
@@ -601,7 +601,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val telephoneNumber = "85256651"
 
-        val mockUserAnswers = UserAnswers(sessionId = "testSessionId", randomNino().nino)
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
           .setOrException(EndCompanyBenefitsTypePage, "amazing")
@@ -643,7 +643,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val telephoneNumber = "12345678"
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
+          sessionId,
           randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
@@ -685,7 +685,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
+          sessionId,
           randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
@@ -727,8 +727,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
+          randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789",
@@ -765,8 +765,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       "there is a form validation error (additional, controller specific constraint)" in {
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
+          randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -822,8 +822,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       reset(benefitsService)
 
       val mockUserAnswers = UserAnswers(
-        sessionId = "testSessionId",
-        nino.nino,
+        sessionId,
+        randomNino().nino,
         data = Json.obj(
           EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
           EndCompanyBenefitConstants.TelephoneNumberKey   -> "123456789"
@@ -869,8 +869,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       reset(mockJourneyCacheNewRepository)
 
       val mockUserAnswers = UserAnswers(
-        sessionId = "testSessionId",
-        nino.nino,
+        sessionId,
+        randomNino().nino,
         data = Json.obj(
           EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
           EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -905,8 +905,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
+          randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -949,8 +949,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
 
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          nino.nino,
+          sessionId,
+          randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -993,10 +993,9 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheNewRepository)
         reset(benefitsService)
 
-        val testNino = "KH139703B"
         val mockUserAnswers = UserAnswers(
-          sessionId = "testSessionId",
-          testNino,
+          sessionId,
+          randomNino().nino,
           data = Json.obj(
             EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
             EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
@@ -1043,7 +1042,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
       reset(mockJourneyCacheNewRepository)
 
       val testNino = "KH139703B"
-      val mockUserAnswers = UserAnswers(sessionId = "testSessionId", testNino)
+      val mockUserAnswers = UserAnswers(sessionId, testNino)
         .setOrException(EndCompanyBenefitsRefererPage, "Test")
 
       setup(mockUserAnswers)

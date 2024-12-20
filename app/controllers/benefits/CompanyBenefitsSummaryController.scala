@@ -18,6 +18,7 @@ package controllers.benefits
 
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.AuthJourney
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
@@ -25,7 +26,6 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
@@ -38,7 +38,6 @@ class CompanyBenefitsSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -55,11 +54,14 @@ class CompanyBenefitsSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
+    val hasJourneyCompleted =
+      request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId)).contains("true")
+
     val incomeDetailsResult = for {
       taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employment               <- employmentService.employment(nino, empId)
       benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
-      estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+      estimatedPayCompletion   <- Future.successful(hasJourneyCompleted)
       cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
     } yield (taxCodeIncomes, employment, benefitsDetails, estimatedPayCompletion, cacheUpdatedIncomeAmount)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,10 @@ package uk.gov.hmrc.tai.config
 
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.tai.service.journeyCache._
 
 class TaiModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    // Journey Cache Services
-    bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("Add Pension Provider").to(classOf[AddPensionProviderJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("Company Car").to(classOf[CompanyCarJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("End Company Benefit").to(classOf[EndCompanyBenefitJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("End Employment").to(classOf[EndEmploymentJourneyCacheService]),
-    bind[JourneyCacheService]
-      .qualifiedWith("Track Successful Journey")
-      .to(classOf[TrackSuccessfulJourneyJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("Update Employment").to(classOf[UpdateEmploymentJourneyCacheService]),
-    bind[JourneyCacheService].qualifiedWith("Update Income").to(classOf[UpdateIncomeJourneyCacheService]),
-    bind[JourneyCacheService]
-      .qualifiedWith("Update Next Years Income")
-      .to(classOf[UpdateNextYearsIncomeJourneyCacheService]),
-    bind[JourneyCacheService]
-      .qualifiedWith("Update Pension Provider")
-      .to(classOf[UpdatePensionProviderJourneyCacheService]),
-    bind[JourneyCacheService]
-      .qualifiedWith("Update Previous Years Income")
-      .to(classOf[UpdatePreviousYearsIncomeJourneyCacheService]),
     bind[ApplicationStartUp].toSelf.eagerly()
   )
 }

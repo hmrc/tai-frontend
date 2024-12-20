@@ -17,8 +17,9 @@
 package controllers
 
 import cats.implicits._
-import com.google.inject.name.Named
 import controllers.auth.AuthJourney
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
+import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheNewRepository
@@ -27,24 +28,19 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
-import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKey
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class IncomeSourceSummaryController @Inject() (
   val auditConnector: AuditConnector,
-  @Named("Update Income") journeyCacheService: JourneyCacheService,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -58,13 +54,17 @@ class IncomeSourceSummaryController @Inject() (
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =
-      journeyCacheService.currentValueAsInt(s"$UpdateIncomeConfirmedAmountKey-$empId")
+      Future.successful(request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt))
+
+    val hasJourneyCompleted = Future.successful(
+      request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId)).contains("true")
+    )
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
-      estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString),
+      hasJourneyCompleted,
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (
@@ -89,13 +89,8 @@ class IncomeSourceSummaryController @Inject() (
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
-          for {
-            _ <- journeyCacheService.flushWithEmpId(empId)
-            _ <- {
-              val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
-              journeyCacheNewRepository.set(updatedUserAnswers)
-            }
-          } yield ()
+          val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
+          journeyCacheNewRepository.set(updatedUserAnswers)
         }
 
         Ok(incomeSourceSummary(incomeDetailsViewModel))
