@@ -86,7 +86,7 @@ class UpdatePensionProviderController @Inject() (
       controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId).url
     )
 
-  def doYouGetThisPension(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def doYouGetThisPension(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val userAnswers = request.userAnswers
@@ -98,9 +98,8 @@ class UpdatePensionProviderController @Inject() (
       case (Some(id), Some(name), receivePensionOpt) =>
         val model = PensionProviderViewModel(id, name)
         val form = UpdateRemovePensionForm.form.fill(receivePensionOpt)
-        Future.successful(Ok(doYouGetThisPensionIncome(model, form)))
-      case _ =>
-        Future.successful(Redirect(taxAccountSummaryRedirect))
+        Ok(doYouGetThisPensionIncome(model, form))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -138,7 +137,7 @@ class UpdatePensionProviderController @Inject() (
     }
   }
 
-  def whatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def whatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val userAnswers = request.userAnswers
     val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
     val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
@@ -148,8 +147,8 @@ class UpdatePensionProviderController @Inject() (
       case (Some(name), Some(id), details) =>
         implicit val user: AuthedUser = request.taiUser
         val form = WhatDoYouWantToTellUsForm.form.fill(details.getOrElse(""))
-        Future.successful(Ok(whatDoYouWantToTellUsView(name, id, form)))
-      case _ => Future.successful(Redirect(taxAccountSummaryRedirect))
+        Ok(whatDoYouWantToTellUsView(name, id, form))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -181,7 +180,7 @@ class UpdatePensionProviderController @Inject() (
       )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val userAnswers = request.userAnswers
     val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
     val telephoneQuestionOpt = userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
@@ -191,9 +190,9 @@ class UpdatePensionProviderController @Inject() (
       case Some(pensionId) =>
         val user = Some(request.taiUser)
         val form = YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneQuestionOpt, telephoneNumberOpt))
-        Future.successful(Ok(canWeContactByPhone(user, telephoneNumberViewModel(pensionId), form)))
+        Ok(canWeContactByPhone(user, telephoneNumberViewModel(pensionId), form))
 
-      case _ => Future.successful(Redirect(taxAccountSummaryRedirect))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
 
   }
@@ -235,7 +234,7 @@ class UpdatePensionProviderController @Inject() (
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val userAnswers = request.userAnswers
 
     val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
@@ -255,22 +254,20 @@ class UpdatePensionProviderController @Inject() (
             phoneNumberOpt
           ) =>
         implicit val user: AuthedUser = request.taiUser
-        Future.successful(
-          Ok(
-            updatePensionCheckYourAnswers(
-              UpdatePensionCheckYourAnswersViewModel(
-                pensionId,
-                pensionName,
-                receivePensionQuestion,
-                details,
-                phoneQuestion,
-                phoneNumberOpt
-              )
+        Ok(
+          updatePensionCheckYourAnswers(
+            UpdatePensionCheckYourAnswersViewModel(
+              pensionId,
+              pensionName,
+              receivePensionQuestion,
+              details,
+              phoneQuestion,
+              phoneNumberOpt
             )
           )
         )
 
-      case _ => Future.successful(Redirect(taxAccountSummaryRedirect))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -303,51 +300,39 @@ class UpdatePensionProviderController @Inject() (
     }
   }
 
-  def confirmation(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(confirmationView()))
+    Ok(confirmationView())
   }
 
   private def redirectToWarningOrDecisionPage(
-    journeyCacheFuture: Future[Map[String, String]],
-    successfulJourneyCacheFuture: Future[Option[String]]
+    journeyCacheUpdate: Future[Boolean],
+    successfulJourneyCheck: Option[String]
   ): Future[Result] =
-    for {
-      _                      <- journeyCacheFuture
-      successfulJourneyCache <- successfulJourneyCacheFuture
-    } yield successfulJourneyCache match {
-      case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-      case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
-    }
+    journeyCacheUpdate.map(_ =>
+      successfulJourneyCheck match {
+        case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
+        case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+      }
+    )
 
   def UpdatePension(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val userAnswers = request.userAnswers
     val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
-      val successfulJourneyCacheFuture = Future.successful(userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id)))
-
       val updatedAnswers = userAnswers
         .setOrException(UpdatePensionProviderIdPage, id)
         .setOrException(UpdatePensionProviderNamePage, taxCodeIncome.name)
 
-      val journeyCacheFuture = journeyCacheNewRepository
-        .set(updatedAnswers)
-        .map(_ =>
-          Map(
-            UpdatePensionProviderIdPage.toString   -> id.toString,
-            UpdatePensionProviderNamePage.toString -> taxCodeIncome.name
-          )
-        )
+      val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id))
+      val journeyCacheUpdate = journeyCacheNewRepository.set(updatedAnswers)
 
-      redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
+      redirectToWarningOrDecisionPage(journeyCacheUpdate, successfulJourneyCheck)
     }
 
     (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
       case Right(incomes) =>
-        incomes.find(income =>
-          income.employmentId.contains(id) &&
-            income.componentType == PensionIncome
-        ) match {
+        incomes.find(income => income.employmentId.contains(id) && income.componentType == PensionIncome) match {
           case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
           case _                   => throw new RuntimeException(s"Tax code income source is not available for id $id")
         }
@@ -357,15 +342,15 @@ class UpdatePensionProviderController @Inject() (
     }
   }
 
-  def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val userAnswers = request.userAnswers
     val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
     val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
     (nameOpt, idOpt) match {
       case (Some(name), Some(id)) =>
-        Future.successful(Ok(duplicateSubmissionWarningView(DuplicateSubmissionWarningForm.createForm, name, id)))
-      case _ => Future.successful(Redirect(taxAccountSummaryRedirect))
+        Ok(duplicateSubmissionWarningView(DuplicateSubmissionWarningForm.createForm, name, id))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 

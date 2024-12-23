@@ -86,7 +86,7 @@ class IncomeUpdateCalculatorController @Inject() (
         Future.failed(new RuntimeException("Not able to find employment"))
     }
 
-  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
+  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
@@ -103,9 +103,9 @@ class IncomeUpdateCalculatorController @Inject() (
           } else {
             DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
           }
-          Future.successful(Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId)))
+          Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId))
         case _ =>
-          Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
+          errorPagesHandler.internalServerError("Mandatory values missing")
       }
   }
 
