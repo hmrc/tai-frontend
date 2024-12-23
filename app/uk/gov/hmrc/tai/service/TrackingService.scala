@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.tai.service
 
-import cats.implicits._
 import controllers.auth.DataRequest
+import play.api.libs.json.{JsBoolean, JsNumber, JsString, JsValue}
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait TimeToProcess
@@ -37,8 +36,7 @@ case object FifteenDays extends TimeToProcess
 case object NoTimeToProcess extends TimeToProcess
 
 class TrackingService @Inject() (
-  trackingConnector: TrackingConnector,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+  trackingConnector: TrackingConnector
 ) {
 
   def isAnyIFormInProgress(
@@ -47,15 +45,14 @@ class TrackingService @Inject() (
     hc: HeaderCarrier,
     executionContext: ExecutionContext,
     request: DataRequest[AnyContent]
-  ): Future[TimeToProcess] =
-    (
-      trackingConnector.getUserTracking(nino),
-      successfulJourneyCacheService.currentCache
-    ) mapN { case (trackedForms, successfulJournies) =>
+  ): Future[TimeToProcess] = {
+    val currentCache = getCurrentCacheDataAsMap
+
+    trackingConnector.getUserTracking(nino).map { trackedForms =>
       val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
       val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
 
-      val filteredJournies = successfulJournies.keySet.filterNot(key =>
+      val filteredJournies = currentCache.keySet.filterNot(key =>
         key.contains(TrackSuccessfulJourneyConstants.EstimatedPayKey) || key.contains(
           UpdateNextYearsIncomeConstants.Successful
         )
@@ -66,23 +63,34 @@ class TrackingService @Inject() (
         haveAnyShortProcesses,
         haveAnyLongProcesses,
         filteredJournies.isEmpty,
-        isA3WeeksJourney(successfulJournies)
+        isA3WeeksJourney(currentCache)
       ) match {
         case (true, false, _, _) | (_, _, false, false) => FifteenDays
         case (_, true, _, _) | (_, _, false, true)      => ThreeWeeks
         case _                                          => NoTimeToProcess
       }
     }
+  }
 
-  private def isA3WeeksJourney(journies: Map[String, String]): Boolean =
-    journies exists {
+  private def isA3WeeksJourney(currentCache: Map[String, String]): Boolean =
+    currentCache exists {
       _ == TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true"
     }
 
   private def hasIncompleteTrackingForms(trackedForms: Seq[TrackedForm], regex: String): Boolean =
     trackedForms
       .filter(_.id.matches(regex))
-      .filter(form => form.status != TrackedFormDone)
-      .nonEmpty
+      .exists(form => form.status != TrackedFormDone)
 
+  private def getCurrentCacheDataAsMap(implicit request: DataRequest[AnyContent]): Map[String, String] =
+    request.userAnswers.data
+      .as[Map[String, JsValue]]
+      .view
+      .mapValues {
+        case JsString(s)  => s
+        case JsNumber(n)  => n.toString
+        case JsBoolean(b) => b.toString
+        case e            => throw new RuntimeException("Error" + e)
+      }
+      .toMap
 }

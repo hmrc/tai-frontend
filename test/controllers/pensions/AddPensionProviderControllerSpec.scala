@@ -29,7 +29,6 @@ import uk.gov.hmrc.tai.forms.pensions.PensionAddDateForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.AddPensionNumberConstants._
 import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, AuditConstants, FormValuesConstants}
 import utils.{FakeAuthJourney, NewCachingBaseSpec}
@@ -48,7 +47,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   val auditService: AuditService = mock[AuditService]
   val personService: PersonService = mock[PersonService]
-  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   private class SUT(
     userAnswersAsArg: Option[UserAnswers] = None
@@ -66,7 +64,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         inject[AddPensionReceivedFirstPayView],
         inject[AddPensionNameView],
         inject[AddPensionStartDateView],
-        trackSuccessJourneyCacheService,
         mockRepository
       ) {}
 
@@ -959,8 +956,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       when(pensionProviderService.addPensionProvider(any(), meq(expectedModel))(any(), any()))
         .thenReturn(Future.successful("envelope-123"))
       when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
-      when(trackSuccessJourneyCacheService.cache(any(), any())(any()))
-        .thenReturn(Future.successful(Map.empty[String, String]))
+      when(mockRepository.set(any())).thenReturn(Future.successful(true))
       val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.confirmation().url

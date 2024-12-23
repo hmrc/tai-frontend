@@ -40,7 +40,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def payslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def payslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val userAnswers = request.userAnswers
@@ -59,10 +59,10 @@ class IncomeUpdatePayslipAmountController @Inject() (
         val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
 
         val viewModel = PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
-        Future.successful(Ok(payslipAmount(viewModel)))
+        Ok(payslipAmount(viewModel))
 
       case _ =>
-        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -97,7 +97,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     }
   }
 
-  def taxablePayslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def taxablePayslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val userAnswers = request.userAnswers
 
     val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
@@ -112,10 +112,10 @@ class IncomeUpdatePayslipAmountController @Inject() (
         val incomeSource = IncomeSource(id = incomeId.toString.toInt, name = incomeName)
         val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePay))
         val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
-        Future.successful(Ok(taxablePayslipAmount(viewModel)))
+        Ok(taxablePayslipAmount(viewModel))
 
       case _ =>
-        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 

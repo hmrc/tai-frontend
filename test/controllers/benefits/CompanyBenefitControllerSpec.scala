@@ -432,9 +432,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         )
 
         status(result) mustBe BAD_REQUEST
-
       }
     }
   }
-
 }
