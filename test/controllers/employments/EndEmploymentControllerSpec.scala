@@ -857,7 +857,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
       val updatedUserAnswers =
-        userAnswers.copy(data = Json.obj()).setOrException(UpdateEndEmploymentPage(empId), "true")
+        userAnswers.copy(data = Json.obj()).setOrException(UpdateEndEmploymentPage(empId), true)
 
       val application = applicationBuilderWithoutRepository(updatedUserAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
@@ -874,7 +874,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     "redirect to duplicateSubmissionWarning when there is an employment id in the user answers and a tracked successful journey in cache" in {
       val empId = 1
       val mockRepository = mock[JourneyCacheNewRepository]
-      val updatedUserAnswers = userAnswers.setOrException(UpdateEndEmploymentPage(empId), "true")
+      val updatedUserAnswers = userAnswers.setOrException(UpdateEndEmploymentPage(empId), true)
 
       val application = applicationBuilderWithoutRepository(updatedUserAnswers)
         .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))

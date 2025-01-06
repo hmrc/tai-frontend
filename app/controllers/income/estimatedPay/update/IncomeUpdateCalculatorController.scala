@@ -54,9 +54,12 @@ class IncomeUpdateCalculatorController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val journeyCompleted = request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(id)).contains("true")
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(id))
+      .getOrElse(false)
+
     (
-      Future.successful(journeyCompleted),
+      Future.successful(hasJourneyCompleted),
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id, request.userAnswers))
     ).mapN {
       case (true, _) =>

@@ -367,7 +367,7 @@ class AddEmploymentController @Inject() (
             // setting for tracking service
             val newUserAnswers =
               UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
-                .setOrException(AddEmploymentPage, "true")
+                .setOrException(AddEmploymentPage, true)
             journeyCacheNewRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())

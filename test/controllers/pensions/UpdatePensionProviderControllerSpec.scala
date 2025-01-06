@@ -510,7 +510,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
       taxAccountServiceCall
 
-      val userAnswers = baseUserAnswers.setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), "true")
+      val userAnswers = baseUserAnswers.setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
       setup(userAnswers)
 
       when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))

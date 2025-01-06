@@ -162,7 +162,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val cacheAndRespond = (incomeName: String, incomeId: Int, newPay: String) => {
 
         val updatedUserAnswers = request.userAnswers
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
           .setOrException(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay)
 
         journeyCacheNewRepository

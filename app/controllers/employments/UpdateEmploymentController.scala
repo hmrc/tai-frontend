@@ -240,7 +240,7 @@ class UpdateEmploymentController @Inject() (
             // setting for tracking service
             val newUserAnswers =
               UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
-                .setOrException(UpdateEndEmploymentPage(empId), "true")
+                .setOrException(UpdateEndEmploymentPage(empId), true)
             journeyCacheNewRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())

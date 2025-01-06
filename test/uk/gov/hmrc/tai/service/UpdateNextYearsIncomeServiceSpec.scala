@@ -264,8 +264,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
-        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
-        .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
+        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
+        .setOrException(UpdateNextYearsIncomeSuccessPage, true)
 
       when(mockJourneyCacheNewRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
@@ -291,8 +291,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
-        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
-        .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
+        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
+        .setOrException(UpdateNextYearsIncomeSuccessPage, true)
         .setOrException(UpdateIncomeNewAmountPage, employmentAmount.toString)
 
       when(mockJourneyCacheNewRepository.get(any(), any()))
@@ -340,8 +340,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
       val userAnswers =
         UserAnswers(sessionId, randomNino().nino)
-          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
-          .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
+          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
+          .setOrException(UpdateNextYearsIncomeSuccessPage, true)
       when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
 
       service.isEstimatedPayJourneyComplete(userAnswers).futureValue mustBe true

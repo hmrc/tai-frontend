@@ -288,7 +288,7 @@ class UpdatePensionProviderController @Inject() (
           _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
             val newUserAnswers = UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
-              .setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), "true")
+              .setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
             journeyCacheNewRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
@@ -308,12 +308,13 @@ class UpdatePensionProviderController @Inject() (
 
   private def redirectToWarningOrDecisionPage(
     journeyCacheUpdate: Future[Boolean],
-    successfulJourneyCheck: Option[String]
+    successfulJourneyCheck: Boolean
   ): Future[Result] =
     journeyCacheUpdate.map(_ =>
-      successfulJourneyCheck match {
-        case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-        case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+      if (successfulJourneyCheck) {
+        Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
+      } else {
+        Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
       }
     )
 
@@ -324,7 +325,7 @@ class UpdatePensionProviderController @Inject() (
         .setOrException(UpdatePensionProviderIdPage, id)
         .setOrException(UpdatePensionProviderNamePage, taxCodeIncome.name)
 
-      val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id))
+      val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id)).getOrElse(false)
       val journeyCacheUpdate = journeyCacheNewRepository.set(updatedAnswers)
 
       redirectToWarningOrDecisionPage(journeyCacheUpdate, successfulJourneyCheck)

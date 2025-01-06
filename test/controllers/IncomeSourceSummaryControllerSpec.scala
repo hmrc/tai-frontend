@@ -110,7 +110,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       "asked for employment details" in {
 
         val userAnswers = baseUserAnswers
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(userAnswers)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -135,7 +135,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       "asked for pension details" in {
 
         val userAnswers = baseUserAnswers
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
         setup(userAnswers)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -189,7 +189,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -219,7 +219,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -242,7 +242,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])

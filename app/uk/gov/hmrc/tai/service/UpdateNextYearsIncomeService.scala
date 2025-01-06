@@ -37,10 +37,10 @@ class UpdateNextYearsIncomeService @Inject() (
 )(implicit ec: ExecutionContext) {
 
   def isEstimatedPayJourneyCompleteForEmployer(id: Int, userAnswers: UserAnswers): Future[Boolean] =
-    Future.successful(userAnswers.get(UpdateNextYearsIncomeSuccessPageForEmployment(id)).isDefined)
+    Future.successful(userAnswers.get(UpdateNextYearsIncomeSuccessPageForEmployment(id)).getOrElse(false))
 
   def isEstimatedPayJourneyComplete(userAnswers: UserAnswers): Future[Boolean] =
-    Future.successful(userAnswers.get(UpdateNextYearsIncomeSuccessPage).isDefined)
+    Future.successful(userAnswers.get(UpdateNextYearsIncomeSuccessPage).getOrElse(false))
 
   private def setup(employmentId: Int, nino: Nino)(implicit
     hc: HeaderCarrier
@@ -96,8 +96,8 @@ class UpdateNextYearsIncomeService @Inject() (
                    }
       _ <- {
         val updatedUserAnswers = userAnswers
-          .setOrException(UpdateNextYearsIncomeSuccessPage, "true")
-          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), "true")
+          .setOrException(UpdateNextYearsIncomeSuccessPage, true)
+          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
 
         journeyCacheNewRepository.set(updatedUserAnswers)
       }

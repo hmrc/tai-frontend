@@ -56,15 +56,15 @@ class IncomeSourceSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       Future.successful(request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt))
 
-    val hasJourneyCompleted = Future.successful(
-      request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId)).contains("true")
-    )
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
+      .getOrElse(false)
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
-      hasJourneyCompleted,
+      Future.successful(hasJourneyCompleted),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (

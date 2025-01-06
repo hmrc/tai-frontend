@@ -337,7 +337,7 @@ class AddPensionProviderController @Inject() (
             // setting for tracking service
             val newUserAnswers =
               UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
-                .setOrException(AddPensionProviderPage, "true")
+                .setOrException(AddPensionProviderPage, true)
             journeyCacheNewRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())

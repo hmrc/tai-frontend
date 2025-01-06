@@ -233,7 +233,7 @@ class IncomeController @Inject() (
         val updatedUserAnswers =
           request.userAnswers
             .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), newAmount)
-            .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), "true")
+            .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), true)
 
         journeyCacheNewRepository.set(updatedUserAnswers)
 

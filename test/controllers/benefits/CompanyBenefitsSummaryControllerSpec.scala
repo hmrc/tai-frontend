@@ -122,7 +122,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
@@ -151,7 +151,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
         setup(mockUserAnswers)
 
         when(mockJourneyCacheNewRepository.get(any(), any()))
@@ -218,7 +218,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))

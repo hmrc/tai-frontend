@@ -54,8 +54,9 @@ class CompanyBenefitsSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
-    val hasJourneyCompleted =
-      request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId)).contains("true")
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
+      .getOrElse(false)
 
     val incomeDetailsResult = for {
       taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())

@@ -99,7 +99,7 @@ class IncomeUpdateCalculatorControllerSpec
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), hasJourneyCompleted.toString)
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), hasJourneyCompleted)
         setup(mockUserAnswers)
 
         when(employmentService.employment(any(), any())(any()))

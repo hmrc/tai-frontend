@@ -122,13 +122,16 @@ class EndEmploymentController @Inject() (
         )(_ => checkDuplicateSubmission(empId))
     }
 
-  private def checkDuplicateSubmission(empId: Int)(implicit request: DataRequest[AnyContent]) =
+  private def checkDuplicateSubmission(empId: Int)(implicit request: DataRequest[AnyContent]): Future[Result] = {
+    val updateEndEmploymentComplete = request.userAnswers.get(UpdateEndEmploymentPage(empId)).getOrElse(false)
     Future.successful {
-      request.userAnswers.get(UpdateEndEmploymentPage(empId)) match {
-        case Some(_) => Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
-        case None => Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+      if (updateEndEmploymentComplete) {
+        Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
+      } else {
+        Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
       }
     }
+  }
 
   def handleEmploymentUpdateRemove: Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
@@ -471,7 +474,7 @@ class EndEmploymentController @Inject() (
           // setting for tracking service
           val newUserAnswers =
             UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
-              .setOrException(UpdateEndEmploymentPage(empId), "true")
+              .setOrException(UpdateEndEmploymentPage(empId), true)
           journeyCacheNewRepository.set(newUserAnswers)
         }
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
