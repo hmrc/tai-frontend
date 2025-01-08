@@ -21,7 +21,7 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypePage, UpdateIncomeUpdateKeyPage}
 import play.api.libs.json.Json
 import play.api.mvc._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
@@ -41,7 +41,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
   taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
   howToUpdateView: HowToUpdateView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -66,7 +66,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
           .setOrException(UpdateIncomeIdPage, id)
           .setOrException(UpdateIncomeTypePage, incomeType)
 
-        journeyCacheNewRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
+        journeyCacheRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
 
       case _ => throw new RuntimeException("Not able to find employment")
     }
@@ -130,7 +130,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
       .fold(
         formWithErrors =>
           for {
-            incomeSourceEither <- IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
+            incomeSourceEither <- IncomeSource.create(journeyCacheRepository, request.userAnswers)
           } yield incomeSourceEither match {
             case Right(incomeSource) =>
               BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
@@ -142,7 +142,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
               .obj(UpdateIncomeUpdateKeyPage.toString -> formData.howToUpdate)
           )
 
-          journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())

@@ -22,7 +22,7 @@ import controllers.auth.{AuthJourney, AuthedUser}
 import pages.income.{UpdateIncomeIdPage, UpdateIncomeWorkingHoursPage}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HoursWorkedForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
@@ -35,7 +35,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   workingHoursView: WorkingHoursView,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -45,7 +45,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
     val userAnswers = request.userAnswers
     val workingHours = userAnswers.get(UpdateIncomeWorkingHoursPage)
 
-    (IncomeSource.create(journeyCacheNewRepository, userAnswers), Future.successful(workingHours)).mapN {
+    (IncomeSource.create(journeyCacheRepository, userAnswers), Future.successful(workingHours)).mapN {
       case (Right(incomeSource), hours) =>
         Ok(
           workingHoursView(
@@ -67,7 +67,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          IncomeSource.create(journeyCacheNewRepository, request.userAnswers).map {
+          IncomeSource.create(journeyCacheRepository, request.userAnswers).map {
             case Right(incomeSource) =>
               BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
             case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
@@ -80,7 +80,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
                 data = request.userAnswers.data ++ Json
                   .obj(UpdateIncomeWorkingHoursPage.toString -> JsString(formData.workingHours.getOrElse("")))
               )
-              journeyCacheNewRepository.set(updatedAnswers)
+              journeyCacheRepository.set(updatedAnswers)
             }
           } yield id match {
             case Some(id) =>

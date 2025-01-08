@@ -23,7 +23,7 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.income._
 import play.api.libs.json.{JsNumber, JsObject, JsString, Json}
 import play.api.mvc._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -47,7 +47,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
   estimatedPayLandingPage: EstimatedPayLandingPageView,
   estimatedPay: EstimatedPayView,
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -94,7 +94,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
 
-    val employerFuture = IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
+    val employerFuture = IncomeSource.create(journeyCacheRepository, request.userAnswers)
 
     val result = for {
       incomeSource <- OptionT(employerFuture.map(_.toOption))
@@ -125,7 +125,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
           val updatedAnswers =
             request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
 
-          journeyCacheNewRepository.set(updatedAnswers) map { _ =>
+          journeyCacheRepository.set(updatedAnswers) map { _ =>
             val viewModel = EstimatedPayViewModel(
               calculatedPay.grossAnnualPay,
               calculatedPay.netAnnualPay,

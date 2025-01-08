@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import org.apache.pekko.Done
 import cats.implicits._
 import pages.income.{UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage, UpdateNextYearsIncomeSuccessPageForEmployment}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
@@ -31,7 +31,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateNextYearsIncomeService @Inject() (
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   employmentService: EmploymentService,
   taxAccountService: TaxAccountService
 )(implicit ec: ExecutionContext) {
@@ -61,14 +61,14 @@ class UpdateNextYearsIncomeService @Inject() (
   def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
+    journeyCacheRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
 
   def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
     val value = convertCurrencyToInt(Some(newValue)).toString
     val amountKey = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
     val updatedAnswers = userAnswers.setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), value)
 
-    journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+    journeyCacheRepository.set(updatedAnswers).map { _ =>
       Map(amountKey -> value)
     }
   }
@@ -99,7 +99,7 @@ class UpdateNextYearsIncomeService @Inject() (
           .setOrException(UpdateNextYearsIncomeSuccessPage, true)
           .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
 
-        journeyCacheNewRepository.set(updatedUserAnswers)
+        journeyCacheRepository.set(updatedUserAnswers)
       }
       _ <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
     } yield Done

@@ -25,7 +25,7 @@ import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -59,7 +59,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
   val personService: PersonService = mock[PersonService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  lazy val mockRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  lazy val mockRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,

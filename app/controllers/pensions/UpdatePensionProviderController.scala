@@ -23,7 +23,7 @@ import pages.updatePensionProvider._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
@@ -57,13 +57,13 @@ class UpdatePensionProviderController @Inject() (
   updatePensionCheckYourAnswers: UpdatePensionCheckYourAnswersView,
   confirmationView: ConfirmationView,
   duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -124,7 +124,7 @@ class UpdatePensionProviderController @Inject() (
               case Some(FormValuesConstants.YesValue) =>
                 val updatedAnswers =
                   userAnswers.setOrException(UpdatePensionProviderReceivePensionPage, Messages("tai.label.yes"))
-                journeyCacheNewRepository
+                journeyCacheRepository
                   .set(updatedAnswers)
                   .map { _ =>
                     Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs())
@@ -173,7 +173,7 @@ class UpdatePensionProviderController @Inject() (
         },
         pensionDetails => {
           val updatedAnswers = request.userAnswers.setOrException(UpdatePensionProviderDetailsPage, pensionDetails)
-          journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
             Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber())
           }
         }
@@ -227,7 +227,7 @@ class UpdatePensionProviderController @Inject() (
             .setOrException(UpdatePensionProviderPhoneQuestionPage, phoneQuestionData)
             .setOrException(UpdatePensionProviderPhoneNumberPage, phoneNumberData)
 
-          journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
             Redirect(controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers())
           }
         }
@@ -285,11 +285,11 @@ class UpdatePensionProviderController @Inject() (
         val model = IncorrectPensionProvider(details, phoneQuestion, phoneNumberOpt)
         for {
           _ <- pensionProviderService.incorrectPensionProvider(nino, pensionId, model)
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
             val newUserAnswers = UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
               .setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
-            journeyCacheNewRepository.set(newUserAnswers)
+            journeyCacheRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
 
@@ -326,7 +326,7 @@ class UpdatePensionProviderController @Inject() (
         .setOrException(UpdatePensionProviderNamePage, taxCodeIncome.name)
 
       val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id)).getOrElse(false)
-      val journeyCacheUpdate = journeyCacheNewRepository.set(updatedAnswers)
+      val journeyCacheUpdate = journeyCacheRepository.set(updatedAnswers)
 
       redirectToWarningOrDecisionPage(journeyCacheUpdate, successfulJourneyCheck)
     }

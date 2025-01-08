@@ -30,7 +30,7 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
@@ -71,7 +71,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
 
   def controller(
     userAnswersAsArg: Option[UserAnswers] = None,
-    repository: JourneyCacheNewRepository = mockRepository
+    repository: JourneyCacheRepository = mockRepository
   ) = new EndEmploymentController(
     auditService,
     employmentService,
@@ -515,9 +515,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
             EndEmploymentEndDatePage.toString -> date
           )
         )
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val application = applicationBuilderWithoutRepository(userAnswers = userAnswersWithDate)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -649,9 +649,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
             FormValuesConstants.YesNoTextEntry -> "123456789"
           )
-        val mockRepository = mock[JourneyCacheNewRepository]
+        val mockRepository = mock[JourneyCacheRepository]
         val application = applicationBuilderWithoutRepository(userAnswers)
-          .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+          .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
           .build()
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -671,9 +671,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
             FormValuesConstants.YesNoTextEntry -> ""
           )
 
-        val mockRepository = mock[JourneyCacheNewRepository]
+        val mockRepository = mock[JourneyCacheRepository]
         val application = applicationBuilderWithoutRepository(userAnswers)
-          .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+          .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
           .build()
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -757,9 +757,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     s"redirect to tax summaries if emp id exists and user inputted ${IrregularPayConstants.ContactEmployer}" in {
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.ContactEmployer)
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val application = applicationBuilderWithoutRepository(userAnswers)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
@@ -773,9 +773,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     s"redirect to updateEmploymentDetails if emp id exists and user inputted anything besides ${IrregularPayConstants.ContactEmployer}" in {
       val request = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> IrregularPayConstants.UpdateDetails)
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val application = applicationBuilderWithoutRepository(userAnswers)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
@@ -823,9 +823,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     "redirect to employmentUpdateRemove when there is no employment id in the user answers and no tracked successful journey in cache" in {
       val empId = 1
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val application = applicationBuilderWithoutRepository(emptyUserAnswers)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
@@ -838,9 +838,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to employmentUpdateRemove when there is an employment id in the user answers and no tracked successful journey in cache" in {
       val empId = 1
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val application = applicationBuilderWithoutRepository(userAnswers)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
@@ -855,12 +855,12 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to duplicateSubmissionWarning when there is no employment id in the user answers and a tracked successful journey in cache" in {
       val empId = 1
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val updatedUserAnswers =
         userAnswers.copy(data = Json.obj()).setOrException(UpdateEndEmploymentPage(empId), true)
 
       val application = applicationBuilderWithoutRepository(updatedUserAnswers)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 
@@ -873,11 +873,11 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to duplicateSubmissionWarning when there is an employment id in the user answers and a tracked successful journey in cache" in {
       val empId = 1
-      val mockRepository = mock[JourneyCacheNewRepository]
+      val mockRepository = mock[JourneyCacheRepository]
       val updatedUserAnswers = userAnswers.setOrException(UpdateEndEmploymentPage(empId), true)
 
       val application = applicationBuilderWithoutRepository(updatedUserAnswers)
-        .overrides(bind[JourneyCacheNewRepository].toInstance(mockRepository))
+        .overrides(bind[JourneyCacheRepository].toInstance(mockRepository))
         .build()
       when(mockRepository.set(any)).thenReturn(Future.successful(true))
 

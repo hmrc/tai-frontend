@@ -22,7 +22,7 @@ import controllers.auth.{AuthJourney, AuthedUser}
 import pages.income.{UpdateIncomeBonusOvertimeAmountPage, UpdateIncomeBonusPaymentsPage, UpdateIncomeTaxablePayPage}
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -38,14 +38,14 @@ class IncomeUpdateBonusController @Inject() (
   mcc: MessagesControllerComponents,
   bonusPayments: BonusPaymentsView,
   bonusPaymentAmount: BonusPaymentAmountView,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def bonusPaymentsPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     (
-      IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
+      IncomeSource.create(journeyCacheRepository, request.userAnswers),
       Future.successful(request.userAnswers.get(UpdateIncomeBonusPaymentsPage)),
       bonusPaymentBackUrl(request.userAnswers)
     ).mapN {
@@ -65,7 +65,7 @@ class IncomeUpdateBonusController @Inject() (
         .fold(
           formWithErrors =>
             (
-              IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
+              IncomeSource.create(journeyCacheRepository, request.userAnswers),
               bonusPaymentBackUrl(request.userAnswers)
             ).mapN {
               case (Right(incomeSource), backUrl) =>
@@ -77,7 +77,7 @@ class IncomeUpdateBonusController @Inject() (
               Map(UpdateIncomeBonusPaymentsPage.toString -> bonusPayments)
             }
 
-            journeyCacheNewRepository.set(
+            journeyCacheRepository.set(
               request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(bonusPaymentsAnswer).as[JsObject])
             ) map { _ =>
               if (formData.yesNoChoice.contains(FormValuesConstants.YesValue)) {
@@ -93,7 +93,7 @@ class IncomeUpdateBonusController @Inject() (
   def bonusOvertimeAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     (
-      IncomeSource.create(journeyCacheNewRepository, request.userAnswers),
+      IncomeSource.create(journeyCacheRepository, request.userAnswers),
       Future.successful(request.userAnswers.get(UpdateIncomeBonusOvertimeAmountPage))
     ).mapN {
       case (Right(incomeSource), bonusOvertimeAmount) =>
@@ -112,7 +112,7 @@ class IncomeUpdateBonusController @Inject() (
         .fold(
           formWithErrors =>
             for {
-              incomeSourceEither <- IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
+              incomeSourceEither <- IncomeSource.create(journeyCacheRepository, request.userAnswers)
             } yield incomeSourceEither match {
               case Right(incomeSource) =>
                 BadRequest(bonusPaymentAmount(formWithErrors, incomeSource))
@@ -121,7 +121,7 @@ class IncomeUpdateBonusController @Inject() (
           formData =>
             formData.amount match {
               case Some(amount) =>
-                journeyCacheNewRepository.set(
+                journeyCacheRepository.set(
                   request.userAnswers.copy(data =
                     request.userAnswers.data ++ Json.obj(UpdateIncomeBonusOvertimeAmountPage.toString -> amount)
                   )

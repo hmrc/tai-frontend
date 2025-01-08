@@ -19,7 +19,7 @@ package controllers.testOnly
 import controllers.TaiBaseController
 import controllers.auth.AuthJourney
 import play.api.mvc._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -28,12 +28,12 @@ import scala.concurrent.ExecutionContext
 class TaiUpdateIncomeController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def delete(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository
+    journeyCacheRepository
       .clear(request.userAnswers.sessionId, request.userAnswers.nino)
       .map(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
   }

@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Singleton
 
 @Singleton
-class JourneyCacheNewRepository @Inject() (
+class JourneyCacheRepository @Inject() (
   mongoComponent: MongoComponent,
   appConfig: ApplicationConfig,
   clock: Clock

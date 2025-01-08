@@ -25,7 +25,7 @@ import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -58,7 +58,7 @@ class RemoveCompanyBenefitController @Inject() (
   removeBenefitTotalValue: RemoveBenefitTotalValueView,
   canWeContactByPhone: CanWeContactByPhoneView,
   removeCompanyBenefitConfirmation: RemoveCompanyBenefitConfirmationView,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -101,17 +101,17 @@ class RemoveCompanyBenefitController @Inject() (
     val dateString = date.toString
     if (date isBefore taxYear.start) {
       for {
-        _ <- journeyCacheNewRepository.clear(userAnswers.sessionId, user.nino.nino)
+        _ <- journeyCacheRepository.clear(userAnswers.sessionId, user.nino.nino)
         _ <- {
           val updatedData = userAnswers.data - EndCompanyBenefitsValuePage.toString
           val updatedUserAnswers = userAnswers
             .copy(data = updatedData)
             .setOrException(EndCompanyBenefitsStopDatePage, dateString)
-          journeyCacheNewRepository.set(updatedUserAnswers)
+          journeyCacheRepository.set(updatedUserAnswers)
         }
       } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
     } else {
-      journeyCacheNewRepository
+      journeyCacheRepository
         .set {
           val updatedUserAnswers = userAnswers.setOrException(EndCompanyBenefitsStopDatePage, dateString)
           updatedUserAnswers
@@ -198,7 +198,7 @@ class RemoveCompanyBenefitController @Inject() (
         totalValue => {
           val rounded = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
           val updatedUserAnswers = request.userAnswers.setOrException(EndCompanyBenefitsValuePage, rounded.toString)
-          journeyCacheNewRepository
+          journeyCacheRepository
             .set(updatedUserAnswers)
             .map(_ => Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber()))
         }
@@ -271,7 +271,7 @@ class RemoveCompanyBenefitController @Inject() (
           val updatedData: JsObject = Json.toJson(dataForCache).as[JsObject]
           val updatedUserAnswers = userAnswers.copy(data = userAnswers.data ++ updatedData)
 
-          journeyCacheNewRepository.set(updatedUserAnswers) map { _ =>
+          journeyCacheRepository.set(updatedUserAnswers) map { _ =>
             Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers())
           }
         }
@@ -353,11 +353,11 @@ class RemoveCompanyBenefitController @Inject() (
               )
 
       _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toString.toInt, model)
-      _ <- journeyCacheNewRepository.set(
+      _ <- journeyCacheRepository.set(
              UserAnswers(request.userAnswers.sessionId, user.nino.nino)
                .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true.toString)
            )
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+      _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, user.nino.nino)
     } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
   }
 
@@ -368,7 +368,7 @@ class RemoveCompanyBenefitController @Inject() (
 
         Future.successful(userAnswers.get(EndCompanyBenefitsRefererPage))
       }
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+      _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
     } yield Redirect(mandatoryJourneyValues.head)
   }
 

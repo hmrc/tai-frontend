@@ -24,7 +24,7 @@ import pages.updateEmployment.UpdateEndEmploymentPage
 import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -60,12 +60,12 @@ class EndEmploymentController @Inject() (
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   authenticate: AuthJourney,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -116,7 +116,7 @@ class EndEmploymentController @Inject() (
         .get(EndEmploymentIdPage)
         .fold(
           for {
-            _      <- journeyCacheNewRepository.set(request.userAnswers.setOrException(EndEmploymentIdPage, empId))
+            _      <- journeyCacheRepository.set(request.userAnswers.setOrException(EndEmploymentIdPage, empId))
             result <- checkDuplicateSubmission(empId)
           } yield result
         )(_ => checkDuplicateSubmission(empId))
@@ -189,7 +189,7 @@ class EndEmploymentController @Inject() (
 
     latestPaymentDate.map { latestPaymentDate =>
       for {
-        _ <- journeyCacheNewRepository.set(
+        _ <- journeyCacheRepository.set(
                request.userAnswers.setOrException(EndEmploymentLatestPaymentPage, latestPaymentDate)
              )
       } yield
@@ -293,14 +293,14 @@ class EndEmploymentController @Inject() (
               {
                 case Some(IrregularPayConstants.ContactEmployer) =>
                   for {
-                    _ <- journeyCacheNewRepository.set(
+                    _ <- journeyCacheRepository.set(
                            request.userAnswers
                              .setOrException(EndEmploymentIrregularPaymentPage, IrregularPayConstants.ContactEmployer)
                          )
                   } yield Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
                 case Some(value) =>
                   for {
-                    _ <- journeyCacheNewRepository
+                    _ <- journeyCacheRepository
                            .set(request.userAnswers.setOrException(EndEmploymentIrregularPaymentPage, value))
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
               }
@@ -358,7 +358,7 @@ class EndEmploymentController @Inject() (
                 date =>
                   for {
                     _ <-
-                      journeyCacheNewRepository.set(request.userAnswers.setOrException(EndEmploymentEndDatePage, date))
+                      journeyCacheRepository.set(request.userAnswers.setOrException(EndEmploymentEndDatePage, date))
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
               )
           )
@@ -411,7 +411,7 @@ class EndEmploymentController @Inject() (
                 ),
               form =>
                 for {
-                  _ <- journeyCacheNewRepository.set(submitTelephoneCacheHandler(form))
+                  _ <- journeyCacheRepository.set(submitTelephoneCacheHandler(form))
                 } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers())
             )
         )
@@ -469,13 +469,13 @@ class EndEmploymentController @Inject() (
         telephoneNumber   <- request.userAnswers.get(EndEmploymentTelephoneNumberPage)
         model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
       } yield for {
-        _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+        _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
         _ <- {
           // setting for tracking service
           val newUserAnswers =
             UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
               .setOrException(UpdateEndEmploymentPage(empId), true)
-          journeyCacheNewRepository.set(newUserAnswers)
+          journeyCacheRepository.set(newUserAnswers)
         }
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())

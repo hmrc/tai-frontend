@@ -25,7 +25,7 @@ import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
@@ -79,7 +79,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val benefitsService: BenefitsService = mock[BenefitsService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
@@ -92,14 +92,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     appConfig,
     mcc,
     inject[IncomeSourceSummaryView],
-    mockJourneyCacheNewRepository,
+    mockJourneyCacheRepository,
     inject[ErrorPagesHandler]
   )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(baseUserAnswers)
-    Mockito.reset(mockJourneyCacheNewRepository)
+    Mockito.reset(mockJourneyCacheRepository)
   }
 
   val employmentId = 1
@@ -117,7 +117,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -142,7 +142,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -193,7 +193,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -204,7 +204,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
 
-        verify(mockJourneyCacheNewRepository, times(1)).set(updatedUserAnswersCaptor.capture())
+        verify(mockJourneyCacheRepository, times(1)).set(updatedUserAnswersCaptor.capture())
 
         val updatedAnswers = updatedUserAnswersCaptor.getValue
         updatedAnswers.get(EndCompanyBenefitsUpdateIncomePage(employmentId)) mustBe None
@@ -223,7 +223,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -231,7 +231,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.toString must include(Messages("tai.income.details.updateInProgress"))
-        verify(mockJourneyCacheNewRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
       }
     }
     "display the income details page with an update message" when {
@@ -246,7 +246,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         setup(userAnswers)
 
         val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -255,7 +255,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.toString must include(Messages("tai.income.details.updateInProgress"))
 
-        verify(mockJourneyCacheNewRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
       }
     }
   }

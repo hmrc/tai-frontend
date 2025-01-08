@@ -25,7 +25,7 @@ import pages.income._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -48,7 +48,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
   private val payslipAmountView = inject[PayslipAmountView]
   private val taxablePayslipAmountView = inject[TaxablePayslipAmountView]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
       extends IncomeUpdatePayslipAmountController(
@@ -57,15 +57,15 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         payslipAmountView,
         taxablePayslipAmountView,
         inject[PayslipDeductionsView],
-        mockJourneyCacheNewRepository
+        mockJourneyCacheRepository
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "payslipAmountPage" must {
@@ -82,7 +82,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result =
@@ -108,7 +108,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
 
         val result =
           SUT.payslipAmountPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -161,8 +161,8 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayslipAmount(
           RequestBuilder
@@ -189,8 +189,8 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(false)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(false)
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayslipAmount(
           RequestBuilder
@@ -223,7 +223,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
@@ -247,7 +247,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         val result =
@@ -277,10 +277,10 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.handleTaxablePayslipAmount(
           RequestBuilder
@@ -311,8 +311,8 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleTaxablePayslipAmount(
           RequestBuilder
@@ -334,7 +334,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleTaxablePayslipAmount(
           RequestBuilder
@@ -358,7 +358,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result =
@@ -384,12 +384,12 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.clear(any(), any())) thenReturn Future.successful(true)
 
         val result = SUT.handlePayslipDeductions(
           RequestBuilder
@@ -416,12 +416,12 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.clear(any(), any())) thenReturn Future.successful(true)
 
         val result = SUT.handlePayslipDeductions(
           RequestBuilder
@@ -446,7 +446,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayslipDeductions(
           RequestBuilder

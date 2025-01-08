@@ -21,7 +21,7 @@ import controllers.TaiBaseController
 import pages.addPensionProvider._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -54,7 +54,7 @@ class AddPensionProviderController @Inject() (
   addPensionReceivedFirstPayView: AddPensionReceivedFirstPayView,
   addPensionNameView: AddPensionNameView,
   addPensionStartDateView: AddPensionStartDateView,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
@@ -68,7 +68,7 @@ class AddPensionProviderController @Inject() (
     )
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -90,7 +90,7 @@ class AddPensionProviderController @Inject() (
         formWithErrors => Future.successful(BadRequest(addPensionNameView(formWithErrors))),
         pensionProviderName =>
           for {
-            _ <- journeyCacheNewRepository
+            _ <- journeyCacheRepository
                    .set(request.userAnswers.setOrException(AddPensionProviderNamePage, pensionProviderName))
           } yield Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay())
       )
@@ -136,7 +136,7 @@ class AddPensionProviderController @Inject() (
           },
         yesNo =>
           for {
-            _ <- journeyCacheNewRepository
+            _ <- journeyCacheRepository
                    .set(request.userAnswers.setOrException(AddPensionProviderFirstPaymentPage, yesNo.getOrElse("")))
           } yield yesNo match {
             case Some(FormValuesConstants.YesValue) =>
@@ -190,7 +190,7 @@ class AddPensionProviderController @Inject() (
             ),
           date =>
             for {
-              _ <- journeyCacheNewRepository
+              _ <- journeyCacheRepository
                      .set(request.userAnswers.setOrException(AddPensionProviderStartDatePage, date.toString))
             } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber())
         )
@@ -230,7 +230,7 @@ class AddPensionProviderController @Inject() (
         },
         form =>
           for {
-            _ <- journeyCacheNewRepository.set(
+            _ <- journeyCacheRepository.set(
                    request.userAnswers
                      .setOrException(
                        AddPensionProviderPayrollNumberChoicePage,
@@ -282,7 +282,7 @@ class AddPensionProviderController @Inject() (
           }
 
           for {
-            _ <- journeyCacheNewRepository.set(
+            _ <- journeyCacheRepository.set(
                    request.userAnswers
                      .setOrException(
                        AddPensionProviderTelephoneQuestionPage,
@@ -332,13 +332,13 @@ class AddPensionProviderController @Inject() (
         )
         for {
           _ <- pensionProviderService.addPensionProvider(user.nino, model)
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
             // setting for tracking service
             val newUserAnswers =
               UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
                 .setOrException(AddPensionProviderPage, true)
-            journeyCacheNewRepository.set(newUserAnswers)
+            journeyCacheRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
     }

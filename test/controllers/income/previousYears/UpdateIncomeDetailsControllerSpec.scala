@@ -25,7 +25,7 @@ import pages.TrackSuccessfulJourneyConstantsUpdatePreviousYearPage
 import pages.income._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
@@ -47,7 +47,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
   val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   private class SUT
       extends UpdateIncomeDetailsController(
@@ -59,24 +59,24 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         inject[UpdateIncomeDetailsDecisionView],
         inject[UpdateIncomeDetailsView],
         inject[UpdateIncomeDetailsConfirmationView],
-        mockJourneyCacheNewRepository,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "decision" must {
     "return ok" in {
       val SUT = createSUT
 
-      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+      when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
       val result = SUT.decision(previousTaxYear)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -151,7 +151,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -166,7 +166,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submitDetails" must {
     "redirect to the 'Add Telephone Number' page" when {
       "the form submission is valid" in {
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val SUT = createSUT
 
@@ -189,7 +189,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
         val incomeDetailsFormData = ("employmentDetails", "test details")
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.submitDetails()(
           RequestBuilder
@@ -198,7 +198,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         )
 
         status(result) mustBe SEE_OTHER
-        verify(mockJourneyCacheNewRepository).set(any())
+        verify(mockJourneyCacheRepository).set(any())
       }
     }
 
@@ -211,9 +211,9 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val employmentDetailsFormData = ("employmentDetails", "")
 
@@ -241,7 +241,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -263,10 +263,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
@@ -291,10 +291,10 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.submitTelephoneNumber()(
           RequestBuilder
@@ -321,7 +321,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.submitTelephoneNumber()(
@@ -347,7 +347,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val tooFewCharsResult = SUT.submitTelephoneNumber()(
@@ -372,7 +372,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val tooManyCharsResult = SUT.submitTelephoneNumber()(
@@ -402,7 +402,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -415,7 +415,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
     "redirect to the summary page if a value is missing from the cache " in {
       val SUT = createSUT
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(None))
 
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -441,13 +441,13 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers]))
+        when(mockJourneyCacheRepository.set(any[UserAnswers]))
           .thenReturn(Future.successful(true))
 
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
 
         when(previousYearsIncomeService.incorrectIncome(any(), meq(2020), meq(incorrectIncome))(any(), any()))
@@ -459,7 +459,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController
           .confirmation()
           .url
-        verify(mockJourneyCacheNewRepository).set(any())
+        verify(mockJourneyCacheRepository).set(any())
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
@@ -474,12 +474,12 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val sut = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.clear(any(), any())) thenReturn Future.successful(true)
 
         when(previousYearsIncomeService.incorrectIncome(any(), meq(2020), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
@@ -492,7 +492,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.income.previousYears.routes.UpdateIncomeDetailsController
           .confirmation()
           .url
-        verify(mockJourneyCacheNewRepository).set(any())
+        verify(mockJourneyCacheRepository).set(any())
       }
     }
   }

@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import pages.income.{UpdateIncomeIdPage, UpdateIncomeIrregularAnnualPayPage, UpdateIncomeNamePage, UpdateIncomeWorkingHoursPage}
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -41,23 +41,23 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
   def randomNino(): Nino = new Generator(new Random()).nextNino
   def createSUT = new SUT
 
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
       extends IncomeUpdateWorkingHoursController(
         mockAuthJourney,
         mcc,
         inject[WorkingHoursView],
-        mockJourneyCacheNewRepository
+        mockJourneyCacheRepository
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "workingHoursPage" must {
@@ -73,10 +73,10 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result =
           SUT.workingHoursPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -95,7 +95,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         val result =
@@ -120,9 +120,9 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleWorkingHours(
@@ -149,9 +149,9 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleWorkingHours(
@@ -178,9 +178,9 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleWorkingHours(
@@ -206,7 +206,7 @@ class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(None))
 
       val result = SUT.handleWorkingHours(RequestBuilder.buildFakePostRequestWithAuth())

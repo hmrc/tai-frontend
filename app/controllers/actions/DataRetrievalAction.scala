@@ -18,14 +18,14 @@ package controllers.actions
 
 import controllers.auth.{DataRequest, IdentifierRequest}
 import play.api.mvc.ActionTransformer
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject() (
-  val journeyCacheNewRepository: JourneyCacheNewRepository
+  val journeyCacheRepository: JourneyCacheRepository
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
@@ -35,7 +35,7 @@ class DataRetrievalActionImpl @Inject() (
       case (thisUserNino, Some(th)) => th.principalNino.getOrElse(thisUserNino.nino)
     }
 
-    journeyCacheNewRepository
+    journeyCacheRepository
       .get(request.userId, nino)
       .map {
         _.fold(

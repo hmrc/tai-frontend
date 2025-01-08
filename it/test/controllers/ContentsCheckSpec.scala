@@ -40,7 +40,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import org.mockito.Mockito.when
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
@@ -65,7 +65,7 @@ import scala.util.Random
 class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
 
   private val mockFeatureFlagService = mock[FeatureFlagService]
-  private val mockJourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  private val mockJourneyCacheRepository = mock[JourneyCacheRepository]
   private val startTaxYear = TaxYear().start.getYear
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
@@ -534,7 +534,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .overrides(
       bind[FeatureFlagService].toInstance(mockFeatureFlagService),
-      bind[JourneyCacheNewRepository].toInstance(mockJourneyCacheNewRepository)
+      bind[JourneyCacheRepository].toInstance(mockJourneyCacheRepository)
     )
     .configure(
       "microservice.services.auth.port"                                -> server.port(),
@@ -733,9 +733,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
-    when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
-    when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+    when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))
@@ -1086,8 +1086,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             .get(urlMatching("/single-customer-account-wrapper-data/wrapper-data.*"))
             .willReturn(ok(wrapperDataResponse))
         )
-
-        // JourneyCacheNewRepository
 
         val result: Future[Result] = route(app, request(url)).get
         val content = Jsoup.parse(contentAsString(result))

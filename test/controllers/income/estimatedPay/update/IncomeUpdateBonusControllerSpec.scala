@@ -25,7 +25,7 @@ import play.api.data.FormBinding.Implicits.formBinding
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, BonusPaymentsForm}
@@ -45,7 +45,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
   val empId: Int = 1
   val sessionId: String = "testSessionId"
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
 
@@ -58,9 +58,9 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
         mcc,
         bonusPaymentsView,
         bonusPaymentAmountView,
-        mockJourneyCacheNewRepository
+        mockJourneyCacheRepository
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
@@ -73,7 +73,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "bonusPaymentsPage" must {
@@ -85,7 +85,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result = sut.bonusPaymentsPage(fakeRequest)
 
@@ -113,7 +113,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result = sut.bonusPaymentsPage(fakeRequest)
 
@@ -135,7 +135,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         val result = sut.bonusPaymentsPage(fakeRequest)
@@ -154,9 +154,9 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = sut.handleBonusPayments(employer.id)(
           RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
@@ -174,9 +174,9 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         setup(baseUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(baseUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(baseUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = sut.handleBonusPayments(employer.id)(
           RequestBuilder.buildFakePostRequestWithAuth(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
@@ -198,9 +198,9 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = sut.handleBonusPayments(employer.id)(fakeRequest)
 
@@ -224,7 +224,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         val result = sut.handleBonusPayments(employer.id)(fakeRequest)
@@ -244,7 +244,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result = sut.bonusOvertimeAmountPage(fakeRequest)
@@ -262,7 +262,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         val result = sut.bonusOvertimeAmountPage(fakeRequest)
@@ -278,8 +278,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
       setup(baseUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(baseUserAnswers)))
-      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(baseUserAnswers)))
+      when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
       val result = sut
         .handleBonusOvertimeAmount(employer.id)(RequestBuilder.buildFakePostRequestWithAuth("amount" -> "£3,000"))
@@ -297,8 +297,8 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
         setup(baseUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(baseUserAnswers)))
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(baseUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = sut
           .handleBonusOvertimeAmount(employer.id)(RequestBuilder.buildFakePostRequestWithAuth("amount" -> ""))
@@ -315,7 +315,7 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
     "Redirect to /income-summary page" when {
       "IncomeSource.create returns a left" in {
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =

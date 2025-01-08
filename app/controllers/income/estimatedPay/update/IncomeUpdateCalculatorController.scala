@@ -24,7 +24,7 @@ import pages.income._
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -46,7 +46,7 @@ class IncomeUpdateCalculatorController @Inject() (
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   checkYourAnswers: CheckYourAnswersView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -83,7 +83,7 @@ class IncomeUpdateCalculatorController @Inject() (
           .setOrException(UpdateIncomeIdPage, id)
           .setOrException(UpdateIncomeTypePage, incomeType)
 
-        journeyCacheNewRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
+        journeyCacheRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
 
       case _ =>
         Future.failed(new RuntimeException("Not able to find employment"))

@@ -21,7 +21,7 @@ import controllers.auth.{AuthJourney, AuthedUser}
 import pages.income.{UpdateIncomeOtherInDaysPage, UpdateIncomePayPeriodPage}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import views.html.incomes.PayPeriodView
@@ -34,7 +34,7 @@ class IncomeUpdatePayPeriodController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   payPeriodView: PayPeriodView,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -45,7 +45,7 @@ class IncomeUpdatePayPeriodController @Inject() (
     val payPeriod = userAnswers.get(UpdateIncomePayPeriodPage)
     val payPeriodInDays = userAnswers.get(UpdateIncomeOtherInDaysPage)
 
-    IncomeSource.create(journeyCacheNewRepository, userAnswers).map {
+    IncomeSource.create(journeyCacheRepository, userAnswers).map {
       case Right(incomeSource) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
@@ -64,7 +64,7 @@ class IncomeUpdatePayPeriodController @Inject() (
       .fold(
         formWithErrors =>
           for {
-            incomeSourceEither <- IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
+            incomeSourceEither <- IncomeSource.create(journeyCacheRepository, request.userAnswers)
           } yield incomeSourceEither match {
             case Right(incomeSource) =>
               BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name))
@@ -82,7 +82,7 @@ class IncomeUpdatePayPeriodController @Inject() (
 
           updatedUserAnswers match {
             case Success(newUserAnswers) =>
-              journeyCacheNewRepository.set(newUserAnswers).map { _ =>
+              journeyCacheRepository.set(newUserAnswers).map { _ =>
                 Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
               }
             case Failure(_) =>

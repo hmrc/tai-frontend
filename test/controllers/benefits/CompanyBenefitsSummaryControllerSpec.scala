@@ -25,7 +25,7 @@ import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
@@ -90,7 +90,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
   val benefitsService: BenefitsService = mock[BenefitsService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   val mockPerson: Person = mock[Person]
 
   def sut: CompanyBenefitsSummaryController = new CompanyBenefitsSummaryController(
@@ -101,10 +101,10 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     appConfig,
     mcc,
     inject[CompanyBenefitsView],
-    mockJourneyCacheNewRepository,
+    mockJourneyCacheRepository,
     inject[ErrorPagesHandler]
   ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
@@ -113,7 +113,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(baseUserAnswers)
-    reset(benefitsService, mockJourneyCacheNewRepository)
+    reset(benefitsService, mockJourneyCacheRepository)
   }
 
   "onPageLoad" must {
@@ -125,9 +125,9 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -154,9 +154,9 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -184,7 +184,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -201,7 +201,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -225,9 +225,9 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.clear(any(), any())) thenReturn Future.successful(true)
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

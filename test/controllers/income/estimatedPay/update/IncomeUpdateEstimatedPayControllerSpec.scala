@@ -24,7 +24,7 @@ import org.mockito.Mockito.{reset, when}
 import pages.income._
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.model._
@@ -50,7 +50,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   def createSUT = new SUT
 
   val mockIncomeService: IncomeService = mock[IncomeService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
 
   class SUT
@@ -63,16 +63,16 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         inject[EstimatedPayLandingPageView],
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
-        mockJourneyCacheNewRepository,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "estimatedPayLandingPage" must {
@@ -82,7 +82,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       .setOrException(UpdateIncomeIdPage, employer.id)
       .setOrException(UpdateIncomeTypePage, TaiConstants.IncomeTypeEmployment)
 
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(mockUserAnswers)))
 
     def estimatedPayLandingPage(): Future[Result] =
@@ -142,7 +142,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       setup(UserAnswers(sessionId, randomNino().nino))
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(None))
 
       val result = estimatedPayLandingPage()
@@ -167,8 +167,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
@@ -195,8 +195,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
@@ -223,8 +223,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
@@ -256,8 +256,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
@@ -281,7 +281,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         setup(UserAnswers(sessionId, randomNino().nino))
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(None))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
 

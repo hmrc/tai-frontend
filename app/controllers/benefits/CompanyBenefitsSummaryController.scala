@@ -21,7 +21,7 @@ import controllers.auth.AuthJourney
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
@@ -42,7 +42,7 @@ class CompanyBenefitsSummaryController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   companyBenefits: CompanyBenefitsView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -89,7 +89,7 @@ class CompanyBenefitsSummaryController @Inject() (
             cacheUpdatedIncomeAmount
           )
           val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
-            journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
+            journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
           } else {
             Future.successful((): Unit)
           }

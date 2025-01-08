@@ -23,7 +23,7 @@ import org.mockito.Mockito.{times, verify, when}
 import play.api.http.Status.SEE_OTHER
 import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
 import utils.BaseSpec
 
@@ -31,11 +31,11 @@ import scala.concurrent.Future
 
 class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    Mockito.reset(mockJourneyCacheNewRepository)
+    Mockito.reset(mockJourneyCacheRepository)
   }
 
   val employerId = 14
@@ -43,7 +43,7 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
   private def sut = new TaiUpdateIncomeController(
     mockAuthJourney,
     mcc,
-    mockJourneyCacheNewRepository
+    mockJourneyCacheRepository
   )
 
   "TaiUpdateIncomeController" must {
@@ -54,12 +54,12 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = sut.delete(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       result.futureValue
       status(result) mustBe SEE_OTHER
-      verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
+      verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
     }
   }
 

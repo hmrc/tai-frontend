@@ -23,7 +23,7 @@ import pages.income._
 import play.api.i18n.Messages
 import play.api.libs.json.{JsBoolean, JsObject, JsString}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
@@ -50,7 +50,7 @@ class UpdateIncomeDetailsController @Inject() (
   UpdateIncomeDetailsDecision: UpdateIncomeDetailsDecisionView,
   UpdateIncomeDetails: UpdateIncomeDetailsView,
   UpdateIncomeDetailsConfirmation: UpdateIncomeDetailsConfirmationView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -74,7 +74,7 @@ class UpdateIncomeDetailsController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val updatedAnswers = request.userAnswers.setOrException(UpdatePreviousYearsIncomeTaxYearPage, taxYear.year.toString)
 
-    journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+    journeyCacheRepository.set(updatedAnswers).map { _ =>
       Ok(UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
     }
   }
@@ -144,7 +144,7 @@ class UpdateIncomeDetailsController @Inject() (
 
           updatedAnswers match {
             case Success(answers) =>
-              journeyCacheNewRepository.set(answers).map { _ =>
+              journeyCacheRepository.set(answers).map { _ =>
                 Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber())
               }
             case Failure(exception) =>
@@ -227,7 +227,7 @@ class UpdateIncomeDetailsController @Inject() (
             answers.setOrException(key, value)
           }
 
-          journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
             Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers())
           }
         }
@@ -283,13 +283,13 @@ class UpdateIncomeDetailsController @Inject() (
       optionalCacheSeq = Seq(userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage))
       model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
       _ <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
-      _ <- journeyCacheNewRepository.set(
+      _ <- journeyCacheRepository.set(
              userAnswers.copy(
                data =
                  userAnswers.data + (TrackSuccessfulJourneyConstantsUpdatePreviousYearPage.toString -> JsBoolean(true))
              )
            )
-      _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino)
+      _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino)
     } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
   }
 

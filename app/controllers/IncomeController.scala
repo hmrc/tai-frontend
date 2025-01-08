@@ -24,7 +24,7 @@ import pages.income._
 import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service._
@@ -53,13 +53,13 @@ class IncomeController @Inject() (
   editPensionSuccess: EditPensionSuccessView,
   editIncome: EditIncomeView,
   sameEstimatedPay: SameEstimatedPayView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -71,7 +71,7 @@ class IncomeController @Inject() (
       employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
       latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
       updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
-      _ <- EitherT.right[String](journeyCacheNewRepository.set(updatedUserAnswers))
+      _ <- EitherT.right[String](journeyCacheRepository.set(updatedUserAnswers))
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -209,7 +209,7 @@ class IncomeController @Inject() (
             .recoverWith { case NonFatal(e) =>
               userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId)) match {
                 case Some(_) =>
-                  journeyCacheNewRepository
+                  journeyCacheRepository
                     .clear(userAnswers.sessionId, request.userAnswers.nino)
                     .map(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
                 case None =>
@@ -235,7 +235,7 @@ class IncomeController @Inject() (
             .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), newAmount)
             .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), true)
 
-        journeyCacheNewRepository.set(updatedUserAnswers)
+        journeyCacheRepository.set(updatedUserAnswers)
 
         incomeType match {
           case TaiConstants.IncomeTypePension => Ok(editPensionSuccess(employerName, employerId))
@@ -254,7 +254,7 @@ class IncomeController @Inject() (
         case (Some(incomeName), Some(newAmount), Some(incomeId), Some(incomeType)) =>
           val newAmountInt = FormHelper.stripNumber(newAmount).toInt
           (for {
-            _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+            _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
             _ <- taxAccountService
                    .updateEstimatedIncome(user.nino, newAmountInt, TaxYear(), incomeId)
           } yield respondWithSuccess(incomeName, incomeId, incomeType, newAmountInt.toString)).recover {
@@ -277,7 +277,7 @@ class IncomeController @Inject() (
       latestPayment    <- incomeService.latestPayment(nino, empId)
       _ <- {
         val updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
-        journeyCacheNewRepository.set(updatedUserAnswers)
+        journeyCacheRepository.set(updatedUserAnswers)
       }
 
     } yield {
@@ -322,7 +322,7 @@ class IncomeController @Inject() (
     val newAmount = income.toEmploymentAmount.newAmount.toString
     val updatedAnswers = request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount)
 
-    journeyCacheNewRepository.set(updatedAnswers).map(_ => Redirect(confirmationCallback))
+    journeyCacheRepository.set(updatedAnswers).map(_ => Redirect(confirmationCallback))
   }
 
   def editPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>

@@ -22,7 +22,7 @@ import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -45,7 +45,7 @@ class IncomeSourceSummaryController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -90,7 +90,7 @@ class IncomeSourceSummaryController @Inject() (
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
           val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
-          journeyCacheNewRepository.set(updatedUserAnswers)
+          journeyCacheRepository.set(updatedUserAnswers)
         }
 
         Ok(incomeSourceSummary(incomeDetailsViewModel))

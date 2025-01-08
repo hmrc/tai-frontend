@@ -28,7 +28,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -82,12 +82,12 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository, updateNextYearsIncomeService, mockFeatureFlagService)
+    reset(mockJourneyCacheRepository, updateNextYearsIncomeService, mockFeatureFlagService)
   }
 
   "onPageLoad" must {
@@ -281,7 +281,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         when(updateNextYearsIncomeService.setNewAmount(meq(newEstPay), meq(employmentID), any()))
           .thenReturn(Future.successful(expectedResult))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = testController.update(employmentID)(
           RequestBuilder
@@ -337,7 +337,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             Future.successful(Right(newEstPay.toInt))
           )
 
-          when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+          when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
           val result = testController.update(employmentID)(
             RequestBuilder

@@ -27,7 +27,7 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -62,7 +62,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   def createSUT(
     userAnswersAsArg: Option[UserAnswers] = None,
-    repository: JourneyCacheNewRepository = mockRepository
+    repository: JourneyCacheRepository = mockRepository
   ) = new AddEmploymentController(
     auditService,
     employmentService,

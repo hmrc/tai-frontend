@@ -25,8 +25,8 @@ import org.mockito.Mockito.{times, verify, when}
 import pages.TrackSuccessfulJourneyUpdatePensionPage
 import pages.updatePensionProvider._
 import play.api.i18n.Messages
-import play.api.test.Helpers.{contentAsString, _}
-import repository.JourneyCacheNewRepository
+import play.api.test.Helpers._
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
@@ -55,7 +55,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
@@ -72,14 +72,14 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         inject[UpdatePensionCheckYourAnswersView],
         inject[ConfirmationView],
         inject[DuplicateSubmissionWarningView],
-        mockJourneyCacheNewRepository,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(baseUserAnswers)
-    Mockito.reset(mockJourneyCacheNewRepository)
+    Mockito.reset(mockJourneyCacheRepository)
   }
 
   "doYouGetThisPension" must {
@@ -157,7 +157,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         setup(userAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -220,7 +220,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to the addTelephoneNumber page" when {
       "the form submission is valid" in {
 
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitWhatDoYouWantToTellUs(
           fakePostRequest
@@ -307,7 +307,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
 
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -325,7 +325,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     }
     "the request has an authorised session, and telephone number contact has not been approved" in {
 
-      when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
       val result = createController.submitTelephoneNumber()(
         fakePostRequest
@@ -438,8 +438,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
@@ -447,8 +447,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
           .confirmation()
           .url
-        verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
-        verify(mockJourneyCacheNewRepository, times(1)).set(any())
+        verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
+        verify(mockJourneyCacheRepository, times(1)).set(any())
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
@@ -462,8 +462,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
@@ -471,8 +471,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
           .confirmation()
           .url
-        verify(mockJourneyCacheNewRepository, times(1)).set(any())
-        verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
+        verify(mockJourneyCacheRepository, times(1)).set(any())
+        verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
       }
     }
   }
@@ -499,7 +499,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
       taxAccountServiceCall
 
-      when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
@@ -513,7 +513,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       val userAnswers = baseUserAnswers.setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
       setup(userAnswers)
 
-      when(mockJourneyCacheNewRepository.set(any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
       val result = createController.UpdatePension(pensionId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER

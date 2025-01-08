@@ -26,7 +26,7 @@ import pages.income._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
@@ -52,7 +52,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   val incomeService: IncomeService = mock[IncomeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
       extends IncomeUpdateIrregularHoursController(
@@ -63,17 +63,17 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         inject[EditSuccessView],
         inject[EditIncomeIrregularHoursView],
         inject[ConfirmAmountEnteredView],
-        mockJourneyCacheNewRepository,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
 
     when(incomeService.latestPayment(any(), any())(any(), any()))
       .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
@@ -110,7 +110,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         when(incomeService.latestPayment(any(), any())(any(), any()))
           .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(Right(taxCodeIncome)))
@@ -127,7 +127,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         new EditIncomeIrregularHoursHarness(taxCodeIncome)
     }
     "respond with OK and show the irregular hours edit page" in {
-      reset(mockJourneyCacheNewRepository)
+      reset(mockJourneyCacheRepository)
 
       val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateIncomeIdPage, 1)
@@ -180,17 +180,17 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     object HandleIncomeIrregularHoursHarness {
 
       sealed class HandleIncomeIrregularHoursHarness() {
-        reset(mockJourneyCacheNewRepository)
+        reset(mockJourneyCacheRepository)
 
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeNamePage, "name")
           .setOrException(UpdateIncomePayToDatePage, "123")
           .setOrException(UpdatedIncomeDatePage, LocalDate.now().format(DateTimeFormatter.ofPattern(MonthAndYear)))
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-        when(mockJourneyCacheNewRepository.set(any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
 
         setup(mockUserAnswers)
 
@@ -303,7 +303,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         def confirmIncomeIrregularHours(
           employmentId: Int,
@@ -397,7 +397,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 
-      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+      when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
       val result = new SUT().submitIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
 

@@ -21,7 +21,7 @@ import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
@@ -52,12 +52,12 @@ class UpdateEmploymentController @Inject() (
   updateEmploymentCheckYourAnswers: UpdateEmploymentCheckYourAnswersView,
   confirmationView: ConfirmationView,
   errorPagesHandler: ErrorPagesHandler,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Referral with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -79,7 +79,7 @@ class UpdateEmploymentController @Inject() (
         futureResult <- employment match {
                           case Some(emp) =>
                             for {
-                              _ <- journeyCacheNewRepository
+                              _ <- journeyCacheRepository
                                      .set(
                                        request.userAnswers
                                          .setOrException(UpdateEmploymentIdPage, empId)
@@ -122,7 +122,7 @@ class UpdateEmploymentController @Inject() (
             )
           },
           employmentDetails =>
-            journeyCacheNewRepository
+            journeyCacheRepository
               .set(request.userAnswers.setOrException(UpdateEmploymentDetailsPage, employmentDetails))
               .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber()))
         )
@@ -175,12 +175,12 @@ class UpdateEmploymentController @Inject() (
         form => {
           val yesNoTask = form.yesNoChoice match {
             case Some(yn) if yn == FormValuesConstants.YesValue =>
-              journeyCacheNewRepository.set(
+              journeyCacheRepository.set(
                 setNoValueForTelephoneQuestion(form)
                   .setOrException(UpdateEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
               )
             case _ =>
-              journeyCacheNewRepository.set(
+              journeyCacheRepository.set(
                 setNoValueForTelephoneQuestion(form)
                   .setOrException(UpdateEmploymentTelephoneNumberPage, "")
               )
@@ -235,13 +235,13 @@ class UpdateEmploymentController @Inject() (
         val model = IncorrectIncome(empDetails, empTelQuestion, employmentTelephoneNumber)
         for {
           _ <- employmentService.incorrectEmployment(user.nino, empId, model)
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
             // setting for tracking service
             val newUserAnswers =
               UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
                 .setOrException(UpdateEndEmploymentPage(empId), true)
-            journeyCacheNewRepository.set(newUserAnswers)
+            journeyCacheRepository.set(newUserAnswers)
           }
         } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())
 
