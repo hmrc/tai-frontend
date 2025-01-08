@@ -472,10 +472,10 @@ class EndEmploymentController @Inject() (
         _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
         _ <- {
           // setting for tracking service
-          val newUserAnswers =
+          val updatedUserAnswers =
             UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
               .setOrException(UpdateEndEmploymentPage(empId), true)
-          journeyCacheRepository.set(newUserAnswers)
+          journeyCacheRepository.set(updatedUserAnswers)
         }
         _ <- employmentService.endEmployment(authUser.nino, empId, model)
       } yield Redirect(controllers.employments.routes.EndEmploymentController.showConfirmationPage())

@@ -81,8 +81,8 @@ class IncomeUpdatePayPeriodController @Inject() (
           }
 
           updatedUserAnswers match {
-            case Success(newUserAnswers) =>
-              journeyCacheRepository.set(newUserAnswers).map { _ =>
+            case Success(updatedAnswers) =>
+              journeyCacheRepository.set(updatedAnswers).map { _ =>
                 Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
               }
             case Failure(_) =>

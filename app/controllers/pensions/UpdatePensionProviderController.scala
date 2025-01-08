@@ -287,9 +287,9 @@ class UpdatePensionProviderController @Inject() (
           _ <- pensionProviderService.incorrectPensionProvider(nino, pensionId, model)
           _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
           _ <- {
-            val newUserAnswers = UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+            val updatedUserAnswers = UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
               .setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
-            journeyCacheRepository.set(newUserAnswers)
+            journeyCacheRepository.set(updatedUserAnswers)
           }
         } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
 
