@@ -25,15 +25,13 @@ import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.{BaseSpec, FakeAuthJourney}
 import views.html.CanWeContactByPhoneView
 import views.html.employments.ConfirmationView
@@ -60,9 +58,8 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
   )
 
   val personService: PersonService = mock[PersonService]
-  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  lazy val mockRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  lazy val mockRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
@@ -83,14 +80,13 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     inject[CanWeContactByPhoneView],
     inject[UpdateEmploymentCheckYourAnswersView],
     inject[ConfirmationView],
-    successfulJourneyCacheService,
     inject[ErrorPagesHandler],
     mockRepository
   )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(successfulJourneyCacheService, personService, mockRepository)
+    reset(personService, mockRepository)
     when(mockRepository.set(any)).thenReturn(Future.successful(true))
     when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
     when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
@@ -489,7 +485,6 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     "invoke the back end 'incorrectEmployment' service and redirect to the confirmation page" when {
       "the request has an authorised session and a telephone number has been provided" in {
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
-        val empId = 1
 
         val userAnswersUpdated =
           userAnswers.copy(data =
@@ -504,26 +499,18 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
         when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
-        when(
-          successfulJourneyCacheService
-            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
-        )
-          .thenReturn(
-            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
-          )
 
         val result =
           controller(Some(userAnswersUpdated)).submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
-        verify(mockRepository, times(1)).clear(any, any)
+        verify(mockRepository, times(1)).clear(any(), any())
 
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
-        val empId = 1
 
         val userAnswersUpdated =
           userAnswers.copy(data =
@@ -537,20 +524,13 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
         when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
           .thenReturn(Future.successful("1"))
-        when(
-          successfulJourneyCacheService
-            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId"), meq("true"))(any())
-        )
-          .thenReturn(
-            Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdateEndEmploymentKey}-$empId" -> "true"))
-          )
 
         val result =
           controller(Some(userAnswersUpdated)).submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.UpdateEmploymentController.confirmation().url
-        verify(mockRepository, times(1)).clear(any, any)
+        verify(mockRepository, times(1)).clear(any(), any())
       }
     }
   }
@@ -575,5 +555,4 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
       redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
     }
   }
-
 }

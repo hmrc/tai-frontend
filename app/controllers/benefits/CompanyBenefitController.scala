@@ -22,7 +22,7 @@ import pages.BenefitDecisionPage
 import pages.benefits._
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
@@ -40,7 +40,7 @@ class CompanyBenefitController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   updateOrRemoveCompanyBenefitDecision: UpdateOrRemoveCompanyBenefitDecisionView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
@@ -50,7 +50,7 @@ class CompanyBenefitController @Inject() (
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
       for {
-        _ <- journeyCacheNewRepository.set(
+        _ <- journeyCacheRepository.set(
                request.userAnswers
                  .setOrException(EndCompanyBenefitsIdPage, empId)
                  .setOrException(EndCompanyBenefitsTypePage, benefitType.toString)
@@ -92,7 +92,7 @@ class CompanyBenefitController @Inject() (
         )
 
         for {
-          _ <- journeyCacheNewRepository.set(
+          _ <- journeyCacheRepository.set(
                  request.userAnswers
                    .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
                    .setOrException(EndCompanyBenefitsNamePage, viewModel.benefitName)
@@ -140,9 +140,8 @@ class CompanyBenefitController @Inject() (
 
           benefitTypeFuture match {
             case Some(_) =>
-              journeyCacheNewRepository.set(request.userAnswers.setOrException(BenefitDecisionPage, decision)).map {
-                _ =>
-                  submitDecisionRedirect(decision, journeyStartRedirection)
+              journeyCacheRepository.set(request.userAnswers.setOrException(BenefitDecisionPage, decision)).map { _ =>
+                submitDecisionRedirect(decision, journeyStartRedirection)
               }
             case None =>
               Future.successful(journeyStartRedirection)

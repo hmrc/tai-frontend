@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.model
 
 import pages.QuestionPage
+import play.api.libs.Files.logger
 import play.api.libs.json._
 import queries.{Gettable, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -39,6 +40,7 @@ final case class UserAnswers(
       case JsSuccess(jsValue, _) =>
         Success(jsValue)
       case JsError(errors) =>
+        logger.error(s"Failed to set value at path ${page.path}: $errors. Value: $value")
         Failure(JsResultException(errors))
     }
 

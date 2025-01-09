@@ -64,7 +64,7 @@ class IncomeTaxComparisonController @Inject() (
       codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
       codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
       employmentService.employments(nino, currentTaxYear).attemptTNel,
-      updateNextYearsIncomeService.isEstimatedPayJourneyComplete.attemptTNel
+      updateNextYearsIncomeService.isEstimatedPayJourneyComplete(request.userAnswers).attemptTNel
     ).parMapN(computeModel(currentTaxYear, nextTaxYear))
       .fold(
         errorPagesHandler

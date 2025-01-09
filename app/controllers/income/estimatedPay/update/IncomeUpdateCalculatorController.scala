@@ -19,12 +19,12 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.TrackingJourneyConstantsEstimatedPayPage
-import pages.income.{UpdateIncomeNamePage, _}
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
+import pages.income._
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -46,7 +46,7 @@ class IncomeUpdateCalculatorController @Inject() (
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   checkYourAnswers: CheckYourAnswersView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -54,9 +54,12 @@ class IncomeUpdateCalculatorController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val journeyCompleted = request.userAnswers.get(TrackingJourneyConstantsEstimatedPayPage(id)).contains("true")
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(id))
+      .getOrElse(false)
+
     (
-      Future.successful(journeyCompleted),
+      Future.successful(hasJourneyCompleted),
       employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id, request.userAnswers))
     ).mapN {
       case (true, _) =>
@@ -80,13 +83,13 @@ class IncomeUpdateCalculatorController @Inject() (
           .setOrException(UpdateIncomeIdPage, id)
           .setOrException(UpdateIncomeTypePage, incomeType)
 
-        journeyCacheNewRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
+        journeyCacheRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
 
       case _ =>
         Future.failed(new RuntimeException("Not able to find employment"))
     }
 
-  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
+  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
@@ -103,9 +106,9 @@ class IncomeUpdateCalculatorController @Inject() (
           } else {
             DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
           }
-          Future.successful(Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId)))
+          Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId))
         case _ =>
-          Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
+          errorPagesHandler.internalServerError("Mandatory values missing")
       }
   }
 

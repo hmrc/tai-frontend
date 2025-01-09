@@ -16,19 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.income
 
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import utils.BaseSpec
 
-import scala.concurrent.Future
-
 class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
-
-  private val empId = 1
-  private val endEmploymentJourneyCacheService = mock[JourneyCacheService]
 
   "companion apply method" must {
     "generate four confirmation lines when telephone contact not approved" in {
@@ -45,7 +37,7 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
       res.size mustBe 4
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q1"),
         "income source",
         controllers.employments.routes.AddEmploymentController.addEmploymentName().url
@@ -81,7 +73,7 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
       res.size mustBe 5
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q1"),
         "income source",
         controllers.employments.routes.AddEmploymentController.addEmploymentName().url
@@ -122,11 +114,8 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
-
       res.size mustBe 2
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.dateEmploymentEnded"),
         "13 June 2017",
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
@@ -150,11 +139,8 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      when(endEmploymentJourneyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Right(Seq(employerName, empId.toString))))
-
       res.size mustBe 3
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.dateEmploymentEnded"),
         "13 June 2017",
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url

@@ -18,18 +18,17 @@ package controllers.pensions
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.TaiBaseController
-import pages.addPensionProvider.{AddPensionProviderFirstPaymentPage, AddPensionProviderNamePage, AddPensionProviderPayrollNumberChoicePage, AddPensionProviderPayrollNumberPage, AddPensionProviderStartDatePage, AddPensionProviderTelephoneNumberPage, AddPensionProviderTelephoneQuestionPage}
+import pages.addPensionProvider._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -38,7 +37,7 @@ import views.html.CanWeContactByPhoneView
 import views.html.pensions._
 
 import java.time.LocalDate
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddPensionProviderController @Inject() (
@@ -55,8 +54,7 @@ class AddPensionProviderController @Inject() (
   addPensionReceivedFirstPayView: AddPensionReceivedFirstPayView,
   addPensionNameView: AddPensionNameView,
   addPensionStartDateView: AddPensionStartDateView,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
@@ -70,7 +68,7 @@ class AddPensionProviderController @Inject() (
     )
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -92,7 +90,7 @@ class AddPensionProviderController @Inject() (
         formWithErrors => Future.successful(BadRequest(addPensionNameView(formWithErrors))),
         pensionProviderName =>
           for {
-            _ <- journeyCacheNewRepository
+            _ <- journeyCacheRepository
                    .set(request.userAnswers.setOrException(AddPensionProviderNamePage, pensionProviderName))
           } yield Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay())
       )
@@ -138,7 +136,7 @@ class AddPensionProviderController @Inject() (
           },
         yesNo =>
           for {
-            _ <- journeyCacheNewRepository
+            _ <- journeyCacheRepository
                    .set(request.userAnswers.setOrException(AddPensionProviderFirstPaymentPage, yesNo.getOrElse("")))
           } yield yesNo match {
             case Some(FormValuesConstants.YesValue) =>
@@ -192,7 +190,7 @@ class AddPensionProviderController @Inject() (
             ),
           date =>
             for {
-              _ <- journeyCacheNewRepository
+              _ <- journeyCacheRepository
                      .set(request.userAnswers.setOrException(AddPensionProviderStartDatePage, date.toString))
             } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber())
         )
@@ -232,7 +230,7 @@ class AddPensionProviderController @Inject() (
         },
         form =>
           for {
-            _ <- journeyCacheNewRepository.set(
+            _ <- journeyCacheRepository.set(
                    request.userAnswers
                      .setOrException(
                        AddPensionProviderPayrollNumberChoicePage,
@@ -284,7 +282,7 @@ class AddPensionProviderController @Inject() (
           }
 
           for {
-            _ <- journeyCacheNewRepository.set(
+            _ <- journeyCacheRepository.set(
                    request.userAnswers
                      .setOrException(
                        AddPensionProviderTelephoneQuestionPage,
@@ -334,8 +332,14 @@ class AddPensionProviderController @Inject() (
         )
         for {
           _ <- pensionProviderService.addPensionProvider(user.nino, model)
-          _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddPensionProviderKey, "true")
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- {
+            // setting for tracking service
+            val updatedUserAnswers =
+              UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+                .setOrException(AddPensionProviderPage, true)
+            journeyCacheRepository.set(updatedUserAnswers)
+          }
         } yield Redirect(controllers.pensions.routes.AddPensionProviderController.confirmation())
     }
   }

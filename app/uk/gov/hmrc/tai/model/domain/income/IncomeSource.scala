@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain.income
 
 import cats.data.EitherT
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
 import pages.income._
 
@@ -28,11 +28,11 @@ final case class IncomeSource(id: Int, name: String)
 object IncomeSource {
 
   def create(
-    journeyCacheNewRepository: JourneyCacheNewRepository,
+    journeyCacheRepository: JourneyCacheRepository,
     userAnswers: UserAnswers
   )(implicit ec: ExecutionContext): Future[Either[String, IncomeSource]] =
     EitherT(
-      journeyCacheNewRepository.get(userAnswers.sessionId, userAnswers.nino).map {
+      journeyCacheRepository.get(userAnswers.sessionId, userAnswers.nino).map {
         case Some(userAnswers) =>
           val idOpt = (userAnswers.data \ UpdateIncomeIdPage).asOpt[Int]
           val nameOpt = (userAnswers.data \ UpdateIncomeNamePage).asOpt[String]

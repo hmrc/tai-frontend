@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeOtherInDaysPage, UpdateIncomePayPeriodPage}
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -41,22 +41,22 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
   def randomNino(): Nino = new Generator(new Random()).nextNino
   def createSUT = new SUT
 
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
       extends IncomeUpdatePayPeriodController(
         mockAuthJourney,
         mcc,
         inject[PayPeriodView],
-        mockJourneyCacheNewRepository
+        mockJourneyCacheRepository
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "payPeriodPage" must {
@@ -71,7 +71,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.payPeriodPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -86,7 +86,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(None))
 
         val SUT = createSUT
@@ -111,7 +111,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.handlePayPeriod(
           RequestBuilder
@@ -137,7 +137,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayPeriod(
@@ -162,7 +162,7 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handlePayPeriod(

@@ -22,12 +22,12 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
-import pages.TrackingJourneyConstantsEstimatedPayPage
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
-import repository.JourneyCacheNewRepository
+import play.api.test.Helpers._
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -70,7 +70,7 @@ class IncomeUpdateCalculatorControllerSpec
 
   val mockIncomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
       extends IncomeUpdateCalculatorController(
@@ -80,16 +80,16 @@ class IncomeUpdateCalculatorControllerSpec
         mcc,
         inject[DuplicateSubmissionWarningView],
         inject[CheckYourAnswersView],
-        mockJourneyCacheNewRepository,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
   }
 
   "onPageLoad" must {
@@ -99,13 +99,13 @@ class IncomeUpdateCalculatorControllerSpec
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeNamePage, employer.name)
           .setOrException(UpdateIncomeIdPage, employer.id)
-          .setOrException(TrackingJourneyConstantsEstimatedPayPage(employerId), hasJourneyCompleted.toString)
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), hasJourneyCompleted)
         setup(mockUserAnswers)
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(returnedEmployment))
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         def onPageLoad(employerId: Int = employerId): Future[Result] =
           new SUT()
@@ -203,7 +203,7 @@ class IncomeUpdateCalculatorControllerSpec
           .setOrException(UpdateIncomeTypePage, employmentType)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -307,7 +307,7 @@ class IncomeUpdateCalculatorControllerSpec
           .setOrException(UpdateIncomeOtherInDaysPage, payPeriodInDays)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -330,7 +330,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       "Redirect to /Income-details" when {
         "the cache is empty" in {
-          when(mockJourneyCacheNewRepository.get(any(), any()))
+          when(mockJourneyCacheRepository.get(any(), any()))
             .thenReturn(Future.successful(None))
 
           val result = CheckYourAnswersPageHarness.harnessSetup
@@ -362,7 +362,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))

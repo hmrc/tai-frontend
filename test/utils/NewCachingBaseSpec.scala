@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import play.api.i18n._
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.MessagesControllerComponents
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -51,7 +51,7 @@ trait NewCachingBaseSpec
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[AuthJourney].toInstance(new FakeAuthJourney(userAnswers)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-        bind[JourneyCacheNewRepository].toInstance(mockRepository)
+        bind[JourneyCacheRepository].toInstance(mockRepository)
       )
       .configure(additionalConfiguration)
 
@@ -74,7 +74,7 @@ trait NewCachingBaseSpec
   lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
   lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
   lazy val langUtils: LanguageUtils = inject[LanguageUtils]
-  lazy val mockRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  lazy val mockRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]

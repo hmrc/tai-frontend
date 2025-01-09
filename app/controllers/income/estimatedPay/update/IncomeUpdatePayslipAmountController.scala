@@ -20,7 +20,7 @@ import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
 import pages.income._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.{PayslipDeductionsForm, PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.FormHelper
@@ -36,11 +36,11 @@ class IncomeUpdatePayslipAmountController @Inject() (
   payslipAmount: PayslipAmountView,
   taxablePayslipAmount: TaxablePayslipAmountView,
   payslipDeductionsView: PayslipDeductionsView,
-  journeyCacheNewRepository: JourneyCacheNewRepository
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def payslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def payslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
     val userAnswers = request.userAnswers
@@ -59,10 +59,10 @@ class IncomeUpdatePayslipAmountController @Inject() (
         val paySlipForm = PayslipForm.createForm(errorMessage).fill(PayslipForm(totalSalary))
 
         val viewModel = PaySlipAmountViewModel(paySlipForm, payPeriod, payPeriodInDays, employer)
-        Future.successful(Ok(payslipAmount(viewModel)))
+        Ok(payslipAmount(viewModel))
 
       case _ =>
-        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -73,7 +73,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     val payPeriod = userAnswers.get(UpdateIncomePayPeriodPage)
     val payPeriodInDays = userAnswers.get(UpdateIncomeOtherInDaysPage)
 
-    IncomeSource.create(journeyCacheNewRepository, userAnswers).flatMap {
+    IncomeSource.create(journeyCacheRepository, userAnswers).flatMap {
       case Right(incomeSource) =>
         val errorMessage = GrossPayPeriodTitle.title(payPeriod, payPeriodInDays)
         PayslipForm
@@ -87,7 +87,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
             {
               case PayslipForm(Some(value)) =>
                 val updatedUserAnswers = userAnswers.setOrException(UpdateIncomeTotalSalaryPage, value)
-                journeyCacheNewRepository.set(updatedUserAnswers).map { _ =>
+                journeyCacheRepository.set(updatedUserAnswers).map { _ =>
                   Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage())
                 }
               case _ => Future.successful(Redirect(routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage()))
@@ -97,7 +97,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     }
   }
 
-  def taxablePayslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def taxablePayslipAmountPage: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val userAnswers = request.userAnswers
 
     val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
@@ -112,10 +112,10 @@ class IncomeUpdatePayslipAmountController @Inject() (
         val incomeSource = IncomeSource(id = incomeId.toString.toInt, name = incomeName)
         val form = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(taxablePay))
         val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, payPeriodInDays, incomeSource)
-        Future.successful(Ok(taxablePayslipAmount(viewModel)))
+        Ok(taxablePayslipAmount(viewModel))
 
       case _ =>
-        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -125,7 +125,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     val payPeriodInDays = userAnswers.get(UpdateIncomeOtherInDaysPage)
     val totalSalary = userAnswers.get(UpdateIncomeTotalSalaryPage)
 
-    IncomeSource.create(journeyCacheNewRepository, userAnswers).flatMap {
+    IncomeSource.create(journeyCacheRepository, userAnswers).flatMap {
       case Right(incomeSource) =>
         TaxablePayslipForm
           .createForm(FormHelper.stripNumber(totalSalary), payPeriod, payPeriodInDays)
@@ -139,7 +139,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
               formData.taxablePay match {
                 case Some(taxablePay) =>
                   val updatedUserAnswers = userAnswers.setOrException(UpdateIncomeTaxablePayPage, taxablePay)
-                  journeyCacheNewRepository.set(updatedUserAnswers).map { _ =>
+                  journeyCacheRepository.set(updatedUserAnswers).map { _ =>
                     Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage())
                   }
                 case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))
@@ -155,7 +155,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
     val userAnswers = request.userAnswers
     val payslipDeductions = userAnswers.get(UpdateIncomePayslipDeductionsPage)
 
-    IncomeSource.create(journeyCacheNewRepository, userAnswers).map {
+    IncomeSource.create(journeyCacheRepository, userAnswers).map {
       case Right(incomeSource) =>
         val form = PayslipDeductionsForm.createForm().fill(PayslipDeductionsForm(payslipDeductions))
         Ok(payslipDeductionsView(form, incomeSource))
@@ -172,7 +172,7 @@ class IncomeUpdatePayslipAmountController @Inject() (
       .fold(
         formWithErrors =>
           for {
-            incomeSourceEither <- IncomeSource.create(journeyCacheNewRepository, request.userAnswers)
+            incomeSourceEither <- IncomeSource.create(journeyCacheRepository, request.userAnswers)
           } yield incomeSourceEither match {
             case Right(incomeSource) => BadRequest(payslipDeductionsView(formWithErrors, incomeSource))
             case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
@@ -182,13 +182,13 @@ class IncomeUpdatePayslipAmountController @Inject() (
             case Some(payslipDeductions) if payslipDeductions == "Yes" =>
               val updatedUserAnswers =
                 request.userAnswers.setOrException(UpdateIncomePayslipDeductionsPage, payslipDeductions)
-              journeyCacheNewRepository.set(updatedUserAnswers).map { _ =>
+              journeyCacheRepository.set(updatedUserAnswers).map { _ =>
                 Redirect(routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage())
               }
             case Some(payslipDeductions) =>
               val updatedUserAnswers =
                 request.userAnswers.setOrException(UpdateIncomePayslipDeductionsPage, payslipDeductions)
-              journeyCacheNewRepository.set(updatedUserAnswers).map { _ =>
+              journeyCacheRepository.set(updatedUserAnswers).map { _ =>
                 Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage())
               }
             case _ => Future.successful(Redirect(routes.IncomeUpdateBonusController.bonusPaymentsPage()))

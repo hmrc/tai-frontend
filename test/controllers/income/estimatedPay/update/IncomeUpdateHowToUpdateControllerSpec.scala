@@ -27,7 +27,7 @@ import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypeP
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
@@ -69,7 +69,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
   val mockIncomeService: IncomeService = mock[IncomeService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
       extends IncomeUpdateHowToUpdateController(
@@ -79,10 +79,10 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         taxAccountService,
         mcc,
         inject[HowToUpdateView],
-        mockJourneyCacheNewRepository,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
@@ -114,7 +114,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository)
+    reset(mockJourneyCacheRepository)
 
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
       .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
@@ -136,8 +136,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result =
@@ -156,19 +156,19 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result =
         SUT.howToUpdatePage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
-      verify(mockJourneyCacheNewRepository).set(any())
+      verify(mockJourneyCacheRepository).set(any())
     }
 
     "employments return empty income is none" in {
-      reset(mockJourneyCacheNewRepository)
+      reset(mockJourneyCacheRepository)
 
       val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateIncomeNamePage, "company")
@@ -178,7 +178,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       val SUT = createSUT
       setup(mockUserAnswers)
 
-      when(mockJourneyCacheNewRepository.get(any(), any()))
+      when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       val result =
@@ -202,7 +202,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -232,7 +232,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val employmentAmount = BuildEmploymentAmount(isOccupationPension = false)
@@ -269,7 +269,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.editableIncomes(any())).thenReturn(BuildTaxCodeIncomes(2))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
@@ -304,7 +304,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.editableIncomes(any())).thenReturn(BuildTaxCodeIncomes(2))
 
@@ -341,7 +341,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.singularIncomeId(any())).thenReturn(Some(1))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
@@ -376,7 +376,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.singularIncomeId(any())).thenReturn(Some(1))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
@@ -412,7 +412,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.editableIncomes(any())).thenReturn(BuildTaxCodeIncomes(0))
         when(mockIncomeService.singularIncomeId(any())).thenReturn(None)
@@ -451,7 +451,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
@@ -494,7 +494,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.handleChooseHowToUpdate(
           RequestBuilder
@@ -519,7 +519,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
         val result = SUT.handleChooseHowToUpdate(
           RequestBuilder
@@ -542,8 +542,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleChooseHowToUpdate(
           RequestBuilder
@@ -566,8 +566,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         val SUT = createSUT
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-        when(mockJourneyCacheNewRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val result = SUT.handleChooseHowToUpdate(
           RequestBuilder

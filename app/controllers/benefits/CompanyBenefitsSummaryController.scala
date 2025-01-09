@@ -18,14 +18,14 @@ package controllers.benefits
 
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.AuthJourney
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
@@ -38,12 +38,11 @@ class CompanyBenefitsSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
-  estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   companyBenefits: CompanyBenefitsView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -55,11 +54,15 @@ class CompanyBenefitsSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
+      .getOrElse(false)
+
     val incomeDetailsResult = for {
       taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employment               <- employmentService.employment(nino, empId)
       benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
-      estimatedPayCompletion   <- estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
+      estimatedPayCompletion   <- Future.successful(hasJourneyCompleted)
       cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
     } yield (taxCodeIncomes, employment, benefitsDetails, estimatedPayCompletion, cacheUpdatedIncomeAmount)
 
@@ -86,7 +89,7 @@ class CompanyBenefitsSummaryController @Inject() (
             cacheUpdatedIncomeAmount
           )
           val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
-            journeyCacheNewRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
+            journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
           } else {
             Future.successful((): Unit)
           }

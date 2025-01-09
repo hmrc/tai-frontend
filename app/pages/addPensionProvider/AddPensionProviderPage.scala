@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.config
+package pages.addPensionProvider
 
-import play.api.inject.{Binding, Module}
-import play.api.{Configuration, Environment}
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 
-class TaiModule extends Module {
+object AddPensionProviderPage extends QuestionPage[Boolean] {
 
-  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind[ApplicationStartUp].toSelf.eagerly()
-  )
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = TrackSuccessfulJourneyConstants.AddPensionProviderKey
+
 }

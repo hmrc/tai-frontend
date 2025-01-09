@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,13 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddEmployment
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants._
-import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, FormValuesConstants}
 import utils.{FakeAuthJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
@@ -53,7 +51,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val trackSuccessJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
@@ -65,13 +62,12 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   def createSUT(
     userAnswersAsArg: Option[UserAnswers] = None,
-    repository: JourneyCacheNewRepository = mockRepository
+    repository: JourneyCacheRepository = mockRepository
   ) = new AddEmploymentController(
     auditService,
     employmentService,
     new FakeAuthJourney(userAnswersAsArg.getOrElse(userAnswers)),
     repository,
-    trackSuccessJourneyCacheService,
     mock[AuditConnector],
     mcc,
     inject[AddEmploymentStartDateFormView],
@@ -87,7 +83,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockRepository, employmentService, trackSuccessJourneyCacheService)
+    reset(mockRepository, employmentService)
     when(mockRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(userAnswers)))
   }
@@ -782,12 +778,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
           .thenReturn(Future.successful("envelope-123"))
-        when(
-          trackSuccessJourneyCacheService
-            .cache(meq(TrackSuccessfulJourneyConstants.AddEmploymentKey), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
-
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
         when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val request = fakeGetRequest
@@ -815,12 +806,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
           .thenReturn(Future.successful("envelope-123"))
-        when(
-          trackSuccessJourneyCacheService
-            .cache(meq(TrackSuccessfulJourneyConstants.AddEmploymentKey), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
-
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
         when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
         val request = fakeGetRequest
@@ -865,7 +851,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         }
 
         verify(mockRepository, times(0)).clear(any(), any())
-        verify(trackSuccessJourneyCacheService, times(0)).cache(any())(any())
+        verify(mockRepository, times(0)).set(any())
         verify(employmentService, times(0)).addEmployment(any(), any())(any(), any())
       }
     }

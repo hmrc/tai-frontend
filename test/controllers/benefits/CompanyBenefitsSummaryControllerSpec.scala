@@ -19,19 +19,19 @@ package controllers.benefits
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants.UpdateIncomeConfirmedAmountKey
@@ -90,53 +90,49 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
   val benefitsService: BenefitsService = mock[BenefitsService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService =
-    mock[EstimatedPayJourneyCompletionService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   val mockPerson: Person = mock[Person]
 
   def sut: CompanyBenefitsSummaryController = new CompanyBenefitsSummaryController(
     taxAccountService,
     employmentService,
     benefitsService,
-    estimatedPayJourneyCompletionService,
     mockAuthJourney,
     appConfig,
     mcc,
     inject[CompanyBenefitsView],
-    mockJourneyCacheNewRepository,
+    mockJourneyCacheRepository,
     inject[ErrorPagesHandler]
   ) {
-    when(mockJourneyCacheNewRepository.get(any(), any()))
+    when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
+  val baseUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
+
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheNewRepository)
-    reset(benefitsService)
+    setup(baseUserAnswers)
+    reset(benefitsService, mockJourneyCacheRepository)
   }
 
   "onPageLoad" must {
     "display the benefits details page" when {
       "asked for benefits details" in {
-        reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -152,22 +148,20 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       }
 
       "asked for company details" in {
-        reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any()))
+        when(mockJourneyCacheRepository.clear(any(), any()))
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(pensionId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -185,13 +179,12 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
     "throw error" when {
       "failed to read tax code incomes" in {
-        reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -203,13 +196,12 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
       }
 
       "failed to read employment details" in {
-        reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
         setup(mockUserAnswers)
 
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -223,21 +215,19 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
     "flush the cache" when {
       "cache update amount is the same as the HOD amount" in {
-        reset(mockJourneyCacheNewRepository)
 
-        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+        val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(meq(employmentId.toString))(any(), any(), any()))
-          .thenReturn(Future.successful(true))
-        when(mockJourneyCacheNewRepository.get(any(), any()))
+        when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheNewRepository.clear(any(), any())) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.clear(any(), any())) thenReturn Future.successful(true)
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -249,7 +239,5 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         )
       }
     }
-
   }
-
 }

@@ -19,12 +19,12 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.TrackingJourneyConstantsEstimatedPayPage
+import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.Payment
@@ -48,7 +48,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   editSuccess: EditSuccessView,
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
   confirmAmountEntered: ConfirmAmountEnteredView,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
+  journeyCacheRepository: JourneyCacheRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -86,7 +86,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
           val updatedAnswers =
             request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
 
-          journeyCacheNewRepository.set(updatedAnswers).map { _ =>
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
             val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
             Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
           }
@@ -147,7 +147,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
           },
           validForm =>
             validForm.income.fold(throw new RuntimeException) { income =>
-              journeyCacheNewRepository.set(userAnswers.set(UpdateIncomeIrregularAnnualPayPage, income).get) map { _ =>
+              journeyCacheRepository.set(userAnswers.set(UpdateIncomeIrregularAnnualPayPage, income).get) map { _ =>
                 Redirect(routes.IncomeUpdateIrregularHoursController.confirmIncomeIrregularHours(employmentId))
               }
             }
@@ -162,10 +162,10 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val cacheAndRespond = (incomeName: String, incomeId: Int, newPay: String) => {
 
         val updatedUserAnswers = request.userAnswers
-          .setOrException(TrackingJourneyConstantsEstimatedPayPage(employmentId), "true")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
           .setOrException(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay)
 
-        journeyCacheNewRepository
+        journeyCacheRepository
           .set(updatedUserAnswers)
           .map { _ =>
             Ok(editSuccess(incomeName, incomeId))

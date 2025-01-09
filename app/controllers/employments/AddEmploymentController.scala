@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,20 @@
 
 package controllers.employments
 
-import com.google.inject.name.Named
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.addEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc._
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddEmployment
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -49,8 +47,7 @@ class AddEmploymentController @Inject() (
   auditService: AuditService,
   employmentService: EmploymentService,
   authenticate: AuthJourney,
-  journeyCacheNewRepository: JourneyCacheNewRepository,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+  journeyCacheRepository: JourneyCacheRepository,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   addEmploymentStartDateForm: AddEmploymentStartDateFormView,
@@ -66,7 +63,7 @@ class AddEmploymentController @Inject() (
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
       Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -102,7 +99,7 @@ class AddEmploymentController @Inject() (
         employmentName =>
           for {
             _ <-
-              journeyCacheNewRepository.set(request.userAnswers.setOrException(AddEmploymentNamePage, employmentName))
+              journeyCacheRepository.set(request.userAnswers.setOrException(AddEmploymentNamePage, employmentName))
           } yield Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate())
       )
   }
@@ -144,7 +141,7 @@ class AddEmploymentController @Inject() (
                 startDateAnswers.setOrException(AddEmploymentStartDateWithinSixWeeksPage, FormValuesConstants.NoValue)
               }
               for {
-                _ <- journeyCacheNewRepository.set(wholeAnswers)
+                _ <- journeyCacheRepository.set(wholeAnswers)
               } yield
                 if (date.isAfter(startDateBoundary)) {
                   Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
@@ -182,7 +179,7 @@ class AddEmploymentController @Inject() (
             firstPayYesNo =>
               for {
                 _ <-
-                  journeyCacheNewRepository
+                  journeyCacheRepository
                     .set(
                       request.userAnswers.setOrException(AddEmploymentReceivedFirstPayPage, firstPayYesNo.getOrElse(""))
                     )
@@ -242,7 +239,7 @@ class AddEmploymentController @Inject() (
           formWithErrors => Future.successful(BadRequest(addEmploymentPayrollNumberForm(formWithErrors, viewModel))),
           form =>
             for {
-              _ <- journeyCacheNewRepository
+              _ <- journeyCacheRepository
                      .set(
                        request.userAnswers
                          .setOrException(AddEmploymentPayrollQuestionPage, form.payrollNumberChoice.getOrElse(""))
@@ -312,7 +309,7 @@ class AddEmploymentController @Inject() (
               )
           }
           for {
-            _ <- journeyCacheNewRepository.set(userAnswers)
+            _ <- journeyCacheRepository.set(userAnswers)
           } yield Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers())
         }
       )
@@ -365,8 +362,14 @@ class AddEmploymentController @Inject() (
         )
         for {
           _ <- employmentService.addEmployment(user.nino, model)
-          _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourneyConstants.AddEmploymentKey, "true")
-          _ <- journeyCacheNewRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- {
+            // setting for tracking service
+            val updatedUserAnswers =
+              UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+                .setOrException(AddEmploymentPage, true)
+            journeyCacheRepository.set(updatedUserAnswers)
+          }
         } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
       case _ => Future.successful(error5xxInBadRequest())
     }

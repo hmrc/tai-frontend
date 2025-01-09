@@ -18,30 +18,30 @@ package controllers.pensions
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
+import pages.TrackSuccessfulJourneyUpdatePensionPage
+import pages.updatePensionProvider._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
 import uk.gov.hmrc.tai.forms.pensions.{DuplicateSubmissionWarningForm, UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{PensionProviderService, TaxAccountService}
-import uk.gov.hmrc.tai.util.FutureOps._
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
 import views.html.pensions.DuplicateSubmissionWarningView
-import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeView, UpdatePensionCheckYourAnswersView, WhatDoYouWantToTellUsView}
+import views.html.pensions.update._
 
-import javax.inject.{Inject, Named}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -57,14 +57,13 @@ class UpdatePensionProviderController @Inject() (
   updatePensionCheckYourAnswers: UpdatePensionCheckYourAnswersView,
   confirmationView: ConfirmationView,
   duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
-  @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
-  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc) with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheService.flush() map { _ =>
+    journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
     }
   }
@@ -87,107 +86,113 @@ class UpdatePensionProviderController @Inject() (
       controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId).url
     )
 
-  def doYouGetThisPension(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def doYouGetThisPension(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    journeyCacheService.collectedJourneyValues(
-      Seq(UpdatePensionProviderConstants.IdKey, UpdatePensionProviderConstants.NameKey),
-      Seq(UpdatePensionProviderConstants.ReceivePensionQuestionKey)
-    ) map {
-      case Right((mandatoryValues, optionalValues)) =>
-        val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
-        val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
+    val userAnswers = request.userAnswers
+    val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+    val receivePensionOpt = userAnswers.get(UpdatePensionProviderReceivePensionPage)
+
+    (idOpt, nameOpt, receivePensionOpt) match {
+      case (Some(id), Some(name), receivePensionOpt) =>
+        val model = PensionProviderViewModel(id, name)
+        val form = UpdateRemovePensionForm.form.fill(receivePensionOpt)
         Ok(doYouGetThisPensionIncome(model, form))
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 
   def handleDoYouGetThisPension: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheService
-      .mandatoryJourneyValues(
-        Seq(UpdatePensionProviderConstants.IdKey, UpdatePensionProviderConstants.NameKey)
-      ) flatMap {
-      case Right(mandatoryVals) =>
+    val userAnswers = request.userAnswers
+
+    val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+
+    (idOpt, nameOpt) match {
+      case (Some(id), Some(name)) =>
         UpdateRemovePensionForm.form
           .bindFromRequest()
           .fold(
             formWithErrors => {
-              val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
+              val model = PensionProviderViewModel(id, name)
               implicit val user: AuthedUser = request.taiUser
 
               Future(BadRequest(doYouGetThisPensionIncome(model, formWithErrors)))
             },
             {
               case Some(FormValuesConstants.YesValue) =>
-                journeyCacheService
-                  .cache(UpdatePensionProviderConstants.ReceivePensionQuestionKey, Messages("tai.label.yes"))
+                val updatedAnswers =
+                  userAnswers.setOrException(UpdatePensionProviderReceivePensionPage, Messages("tai.label.yes"))
+                journeyCacheRepository
+                  .set(updatedAnswers)
                   .map { _ =>
                     Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs())
                   }
               case _ => Future.successful(Redirect(applicationConfig.incomeFromEmploymentPensionLinkUrl))
             }
           )
-      case Left(message) => Future.successful(errorPagesHandler.internalServerError(message))
+      case _ =>
+        Future.successful(errorPagesHandler.internalServerError(s"Mandatory values missing: id=$idOpt, name=$nameOpt"))
     }
   }
 
-  def whatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey),
-        Seq(UpdatePensionProviderConstants.DetailsKey)
-      )
-      .map {
-        case Right((mandatoryValues, optionalValues)) =>
-          implicit val user: AuthedUser = request.taiUser
-          Ok(
-            whatDoYouWantToTellUsView(
-              mandatoryValues.head,
-              mandatoryValues(1).toInt,
-              WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))
-            )
-          )
-        case Left(_) => Redirect(taxAccountSummaryRedirect)
-      }
+  def whatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    val userAnswers = request.userAnswers
+    val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+    val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val detailsOpt = userAnswers.get(UpdatePensionProviderDetailsPage)
+
+    (nameOpt, idOpt, detailsOpt) match {
+      case (Some(name), Some(id), details) =>
+        implicit val user: AuthedUser = request.taiUser
+        val form = WhatDoYouWantToTellUsForm.form.fill(details.getOrElse(""))
+        Ok(whatDoYouWantToTellUsView(name, id, form))
+      case _ => Redirect(taxAccountSummaryRedirect)
+    }
   }
 
   def submitWhatDoYouWantToTellUs: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    val userAnswers = request.userAnswers
+
     WhatDoYouWantToTellUsForm.form
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          journeyCacheService
-            .mandatoryJourneyValues(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey))
-            .getOrFail map { mandatoryValues =>
-            implicit val user: AuthedUser = request.taiUser
-            BadRequest(whatDoYouWantToTellUsView(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
-          },
-        pensionDetails =>
-          journeyCacheService
-            .cache(Map(UpdatePensionProviderConstants.DetailsKey -> pensionDetails))
-            .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()))
+        formWithErrors => {
+          val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+          val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
+          (nameOpt, idOpt) match {
+            case (Some(name), Some(id)) =>
+              implicit val user: AuthedUser = request.taiUser
+              Future.successful(BadRequest(whatDoYouWantToTellUsView(name, id, formWithErrors)))
+            case _ =>
+              Future.successful(
+                errorPagesHandler.internalServerError(s"Mandatory values missing: id=$idOpt, name=$nameOpt")
+              )
+          }
+        },
+        pensionDetails => {
+          val updatedAnswers = request.userAnswers.setOrException(UpdatePensionProviderDetailsPage, pensionDetails)
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
+            Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber())
+          }
+        }
       )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    for {
-      pensionId <- journeyCacheService.mandatoryJourneyValueAsInt(UpdatePensionProviderConstants.IdKey)
-      telephoneCache <-
-        journeyCacheService.optionalValues(
-          Seq(UpdatePensionProviderConstants.TelephoneQuestionKey, UpdatePensionProviderConstants.TelephoneNumberKey)
-        )
-    } yield pensionId match {
-      case Right(mandatoryPensionId) =>
-        val user = Some(request.taiUser)
+  def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    val userAnswers = request.userAnswers
+    val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val telephoneQuestionOpt = userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
+    val telephoneNumberOpt = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
 
-        Ok(
-          canWeContactByPhone(
-            user,
-            telephoneNumberViewModel(mandatoryPensionId),
-            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))
-          )
-        )
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
+    pensionIdOpt match {
+      case Some(pensionId) =>
+        val user = Some(request.taiUser)
+        val form = YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneQuestionOpt, telephoneNumberOpt))
+        Ok(canWeContactByPhone(user, telephoneNumberViewModel(pensionId), form))
+
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
 
   }
@@ -201,130 +206,134 @@ class UpdatePensionProviderController @Inject() (
       )
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          journeyCacheService.currentCache map { currentCache =>
-            val user = Some(request.taiUser)
+        formWithErrors => {
+          val pensionId = request.userAnswers.get(UpdatePensionProviderIdPage).getOrElse(0)
+          val user = Some(request.taiUser)
 
-            BadRequest(
-              canWeContactByPhone(
-                user,
-                telephoneNumberViewModel(currentCache(UpdatePensionProviderConstants.IdKey).toInt),
-                formWithErrors
-              )
-            )
-          },
-        form => {
-          val mandatoryData = Map(
-            UpdatePensionProviderConstants.TelephoneQuestionKey -> Messages(
-              s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
-            )
+          Future.successful(
+            BadRequest(canWeContactByPhone(user, telephoneNumberViewModel(pensionId), formWithErrors))
           )
-          val dataForCache = form.yesNoChoice match {
-            case Some(yn) if yn == FormValuesConstants.YesValue =>
-              mandatoryData ++ Map(
-                UpdatePensionProviderConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse("")
-              )
-            case _ => mandatoryData ++ Map(UpdatePensionProviderConstants.TelephoneNumberKey -> "")
+        },
+        form => {
+          val phoneQuestionData = Messages(
+            s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
+          )
+          val phoneNumberData = form.yesNoChoice.fold("") {
+            case FormValuesConstants.YesValue => form.yesNoTextEntry.getOrElse("")
+            case _                            => ""
           }
-          journeyCacheService.cache(dataForCache) map { _ =>
+
+          val updatedAnswers = request.userAnswers
+            .setOrException(UpdatePensionProviderPhoneQuestionPage, phoneQuestionData)
+            .setOrException(UpdatePensionProviderPhoneNumberPage, phoneNumberData)
+
+          journeyCacheRepository.set(updatedAnswers).map { _ =>
             Redirect(controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers())
           }
         }
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    journeyCacheService
-      .collectedJourneyValues(
-        Seq(
-          UpdatePensionProviderConstants.IdKey,
-          UpdatePensionProviderConstants.NameKey,
-          UpdatePensionProviderConstants.ReceivePensionQuestionKey,
-          UpdatePensionProviderConstants.DetailsKey,
-          UpdatePensionProviderConstants.TelephoneQuestionKey
-        ),
-        Seq(UpdatePensionProviderConstants.TelephoneNumberKey)
-      )
-      .map {
-        case Right((mandatoryValues, optionalSeq)) =>
-          implicit val user: AuthedUser = request.taiUser
-          Ok(
-            updatePensionCheckYourAnswers(
-              UpdatePensionCheckYourAnswersViewModel(
-                mandatoryValues.head.toInt,
-                mandatoryValues(1),
-                mandatoryValues(2),
-                mandatoryValues(3),
-                mandatoryValues(4),
-                optionalSeq.head
-              )
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    val userAnswers = request.userAnswers
+
+    val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val pensionNameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+    val receivePensionQuestionOpt = userAnswers.get(UpdatePensionProviderReceivePensionPage)
+    val detailsOpt = userAnswers.get(UpdatePensionProviderDetailsPage)
+    val phoneQuestionOpt = userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
+    val phoneNumberOpt = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
+
+    (pensionIdOpt, pensionNameOpt, receivePensionQuestionOpt, detailsOpt, phoneQuestionOpt, phoneNumberOpt) match {
+      case (
+            Some(pensionId),
+            Some(pensionName),
+            Some(receivePensionQuestion),
+            Some(details),
+            Some(phoneQuestion),
+            phoneNumberOpt
+          ) =>
+        implicit val user: AuthedUser = request.taiUser
+        Ok(
+          updatePensionCheckYourAnswers(
+            UpdatePensionCheckYourAnswersViewModel(
+              pensionId,
+              pensionName,
+              receivePensionQuestion,
+              details,
+              phoneQuestion,
+              phoneNumberOpt
             )
           )
+        )
 
-        case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-      }
+      case _ => Redirect(taxAccountSummaryRedirect)
+    }
   }
 
   def submitYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val nino = request.taiUser.nino
+    val userAnswers = request.userAnswers
 
-    for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService
-                                                 .collectedJourneyValues(
-                                                   Seq(
-                                                     UpdatePensionProviderConstants.IdKey,
-                                                     UpdatePensionProviderConstants.DetailsKey,
-                                                     UpdatePensionProviderConstants.TelephoneQuestionKey
-                                                   ),
-                                                   Seq(UpdatePensionProviderConstants.TelephoneNumberKey)
-                                                 )
-                                                 .getOrFail
-      model = IncorrectPensionProvider(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
-      _ <- pensionProviderService.incorrectPensionProvider(nino, mandatoryCacheSeq.head.toInt, model)
-      _ <- successfulJourneyCacheService
-             .cache(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-${mandatoryCacheSeq.head}", true.toString)
-      _ <- journeyCacheService.flush()
-    } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
+    val pensionIdOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    val detailsOpt = userAnswers.get(UpdatePensionProviderDetailsPage)
+    val phoneQuestionOpt = userAnswers.get(UpdatePensionProviderPhoneQuestionPage)
+    val phoneNumberOpt = userAnswers.get(UpdatePensionProviderPhoneNumberPage)
+
+    (pensionIdOpt, detailsOpt, phoneQuestionOpt, phoneNumberOpt) match {
+      case (Some(pensionId), Some(details), Some(phoneQuestion), phoneNumberOpt) =>
+        val model = IncorrectPensionProvider(details, phoneQuestion, phoneNumberOpt)
+        for {
+          _ <- pensionProviderService.incorrectPensionProvider(nino, pensionId, model)
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+          _ <- {
+            val updatedUserAnswers = UserAnswers(request.userAnswers.sessionId, request.userAnswers.nino)
+              .setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
+            journeyCacheRepository.set(updatedUserAnswers)
+          }
+        } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
+
+      case _ =>
+        Future.successful(
+          errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers")
+        )
+    }
   }
 
-  def confirmation(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def confirmation(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    Future.successful(Ok(confirmationView()))
+    Ok(confirmationView())
   }
 
   private def redirectToWarningOrDecisionPage(
-    journeyCacheFuture: Future[Map[String, String]],
-    successfulJourneyCacheFuture: Future[Option[String]]
+    journeyCacheUpdate: Future[Boolean],
+    successfulJourneyCheck: Boolean
   ): Future[Result] =
-    for {
-      _                      <- journeyCacheFuture
-      successfulJourneyCache <- successfulJourneyCacheFuture
-    } yield successfulJourneyCache match {
-      case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-      case _       => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
-    }
+    journeyCacheUpdate.map(_ =>
+      if (successfulJourneyCheck) {
+        Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
+      } else {
+        Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+      }
+    )
 
   def UpdatePension(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    val userAnswers = request.userAnswers
     val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
-      val successfulJourneyCacheFuture =
-        successfulJourneyCacheService.currentValue(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$id")
-      val journeyCacheFuture = journeyCacheService.cache(
-        Map(
-          UpdatePensionProviderConstants.IdKey   -> id.toString,
-          UpdatePensionProviderConstants.NameKey -> taxCodeIncome.name
-        )
-      )
+      val updatedAnswers = userAnswers
+        .setOrException(UpdatePensionProviderIdPage, id)
+        .setOrException(UpdatePensionProviderNamePage, taxCodeIncome.name)
 
-      redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
+      val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id)).getOrElse(false)
+      val journeyCacheUpdate = journeyCacheRepository.set(updatedAnswers)
+
+      redirectToWarningOrDecisionPage(journeyCacheUpdate, successfulJourneyCheck)
     }
 
     (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
       case Right(incomes) =>
-        incomes.find(income =>
-          income.employmentId.contains(id) &&
-            income.componentType == PensionIncome
-        ) match {
+        incomes.find(income => income.employmentId.contains(id) && income.componentType == PensionIncome) match {
           case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
           case _                   => throw new RuntimeException(s"Tax code income source is not available for id $id")
         }
@@ -332,52 +341,50 @@ class UpdatePensionProviderController @Inject() (
     }).recover { case NonFatal(e) =>
       errorPagesHandler.internalServerError(e.getMessage)
     }
-
   }
 
-  def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    journeyCacheService
-      .mandatoryJourneyValues(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)) map {
-      case Right(mandatoryValues) =>
-        Ok(
-          duplicateSubmissionWarningView(
-            DuplicateSubmissionWarningForm.createForm,
-            mandatoryValues.head,
-            mandatoryValues(1).toInt
-          )
-        )
-      case Left(_) => Redirect(taxAccountSummaryRedirect)
+    val userAnswers = request.userAnswers
+    val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+    val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
+    (nameOpt, idOpt) match {
+      case (Some(name), Some(id)) =>
+        Ok(duplicateSubmissionWarningView(DuplicateSubmissionWarningForm.createForm, name, id))
+      case _ => Redirect(taxAccountSummaryRedirect)
     }
   }
 
   def submitDuplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      journeyCacheService
-        .mandatoryJourneyValues(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey))
-        .getOrFail flatMap { mandatoryValues =>
-        DuplicateSubmissionWarningForm.createForm
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(
-                  duplicateSubmissionWarningView(formWithErrors, mandatoryValues.head, mandatoryValues(1).toInt)
-                )
-              ),
-            success =>
-              success.yesNoChoice match {
-                case Some(FormValuesConstants.YesValue) =>
-                  Future.successful(
-                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension())
-                  )
-                case Some(FormValuesConstants.NoValue) =>
-                  Future.successful(
-                    Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatoryValues(1).toInt))
-                  )
-              }
-          )
+
+      val userAnswers = request.userAnswers
+      val nameOpt = userAnswers.get(UpdatePensionProviderNamePage)
+      val idOpt = userAnswers.get(UpdatePensionProviderIdPage)
+
+      (nameOpt, idOpt) match {
+        case (Some(name), Some(id)) =>
+          DuplicateSubmissionWarningForm.createForm
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(duplicateSubmissionWarningView(formWithErrors, name, id))
+                ),
+              success =>
+                success.yesNoChoice match {
+                  case Some(FormValuesConstants.YesValue) =>
+                    Future.successful(
+                      Redirect(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension())
+                    )
+                  case Some(FormValuesConstants.NoValue) =>
+                    Future.successful(
+                      Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(id))
+                    )
+                }
+            )
+        case _ => Future.successful(errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers"))
       }
   }
 }

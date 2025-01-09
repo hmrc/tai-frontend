@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package pages
+package pages.income
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
-import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
-case class TrackingJourneyConstantsEstimatedPayPage(employmentId: Int) extends QuestionPage[String] {
+case class UpdateNextYearsIncomeSuccessPageForEmployment(employmentId: Int) extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ s"$toString-$employmentId"
 
-  override def toString: String = TrackSuccessfulJourneyConstants.EstimatedPayKey
+  override def toString: String = UpdateNextYearsIncomeConstants.Successful
 
 }

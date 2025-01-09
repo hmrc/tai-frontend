@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.prop.TableDrivenPropertyChecks._
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.tracking._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
@@ -37,19 +37,32 @@ class TrackingServiceSpec extends BaseSpec {
 
   private val name = "name1"
 
-  protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
-    fakeRequest,
-    taiUser = AuthedUser(
-      Nino(nino.toString()),
-      Some("saUtr"),
-      None
-    ),
-    fullName = "",
-    userAnswers = UserAnswers("", "")
-  )
+  private def sut = new TrackingServiceTest
+
+  val trackingConnector: TrackingConnector = mock[TrackingConnector]
+  private class TrackingServiceTest extends TrackingService(trackingConnector)
+
+  val employmentId = 1
+
+  def mockDataRequest(userAnswersData: Map[String, String]): DataRequest[AnyContent] = {
+    val userAnswers = UserAnswers("testSessionId", "nino", Json.toJson(userAnswersData).as[JsObject])
+    DataRequest(
+      fakeRequest,
+      taiUser = AuthedUser(
+        Nino(nino.toString()),
+        Some("saUtr"),
+        None
+      ),
+      fullName = "",
+      userAnswers
+    )
+  }
 
   "isAnyIFormInProgress" must {
     "return a time to process" when {
+
+      val dataRequest = mockDataRequest(Map.empty)
+      implicit val request: DataRequest[AnyContent] = dataRequest
 
       "the iForm status is not done" in {
         val notDoneStatus = Table("TrackedFormStatus", TrackedFormReceived, TrackedFormAcquired, TrackedFormInProgress)
@@ -63,7 +76,7 @@ class TrackingServiceSpec extends BaseSpec {
         }
       }
 
-      Seq("TES1", "TES7") foreach { case tes =>
+      Seq("TES1", "TES7") foreach { tes =>
         s"$tes should take three weeks to process" in {
           when(trackingConnector.getUserTracking(any())(any()))
             .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
@@ -72,7 +85,7 @@ class TrackingServiceSpec extends BaseSpec {
         }
       }
 
-      Seq("TES2", "TES3", "TES4", "TES5", "TES6") foreach { case tes =>
+      Seq("TES2", "TES3", "TES4", "TES5", "TES6") foreach { tes =>
         s"$tes should take seven days to process" in {
           when(trackingConnector.getUserTracking(any())(any()))
             .thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
@@ -95,11 +108,12 @@ class TrackingServiceSpec extends BaseSpec {
         Map(TrackSuccessfulJourneyConstants.AddEmploymentKey      -> "true"),
         Map(TrackSuccessfulJourneyConstants.UpdatePensionKey      -> "true"),
         Map(TrackSuccessfulJourneyConstants.AddPensionProviderKey -> "true")
-      ) foreach { case entry =>
+      ) foreach { entry =>
         s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
           val controller = sut
           when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-          when(successfulJourneyCacheService.currentCache(any(), any(), any())).thenReturn(Future.successful(entry))
+          val dataRequest = mockDataRequest(entry)
+          implicit val request: DataRequest[AnyContent] = dataRequest
 
           val result = controller.isAnyIFormInProgress(nino.nino)
           Await.result(result, 5 seconds) mustBe FifteenDays
@@ -108,11 +122,12 @@ class TrackingServiceSpec extends BaseSpec {
 
       Seq(
         Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true")
-      ) foreach { case entry =>
+      ) foreach { entry =>
         s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
           val controller = sut
+          val dataRequest = mockDataRequest(Map(TrackSuccessfulJourneyConstants.EndEmploymentBenefitKey -> "true"))
+          implicit val request: DataRequest[AnyContent] = dataRequest
           when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-          when(successfulJourneyCacheService.currentCache(any(), any(), any())).thenReturn(Future.successful(entry))
 
           val result = controller.isAnyIFormInProgress(nino.nino)
           Await.result(result, 5 seconds) mustBe ThreeWeeks
@@ -123,8 +138,9 @@ class TrackingServiceSpec extends BaseSpec {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any(), any(), any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true")))
+
+        val dataRequest = mockDataRequest(Map(TrackSuccessfulJourneyConstants.AddEmploymentKey -> "true"))
+        implicit val request: DataRequest[AnyContent] = dataRequest
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe FifteenDays
@@ -132,6 +148,9 @@ class TrackingServiceSpec extends BaseSpec {
     }
 
     "return no time to process" when {
+      val dataRequest = mockDataRequest(Map.empty)
+      implicit val request: DataRequest[AnyContent] = dataRequest
+
       "there is no iForm in progress" in {
         when(trackingConnector.getUserTracking(any())(any()))
           .thenReturn(Future.successful(Seq(TrackedForm("TES1", name, TrackedFormDone))))
@@ -157,8 +176,10 @@ class TrackingServiceSpec extends BaseSpec {
         val controller = sut
         val incomeId = 1
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any(), any(), any()))
-          .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId" -> "true")))
+
+        val dataRequest =
+          mockDataRequest(Map(s"${TrackSuccessfulJourneyConstants.EstimatedPayKey}-$incomeId" -> "true"))
+        implicit val request: DataRequest[AnyContent] = dataRequest
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
@@ -167,8 +188,9 @@ class TrackingServiceSpec extends BaseSpec {
       "An Update Estimated key for CY+1 exists in the success journey cache" in {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any(), any(), any()))
-          .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.Successful -> "true")))
+
+        val dataRequest = mockDataRequest(Map(UpdateNextYearsIncomeConstants.Successful -> "true"))
+        implicit val request: DataRequest[AnyContent] = dataRequest
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
@@ -177,29 +199,13 @@ class TrackingServiceSpec extends BaseSpec {
       "An Update Estimated key for CY-1 exists in the success journey cache" in {
         val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any(), any(), any()))
-          .thenReturn(
-            Future.successful(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> true.toString))
-          )
+
+        val dataRequest = mockDataRequest(Map(TrackSuccessfulJourneyConstants.UpdatePreviousYearsIncomeKey -> "true"))
+        implicit val request: DataRequest[AnyContent] = dataRequest
 
         val result = controller.isAnyIFormInProgress(nino.nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
     }
   }
-
-  private def sut = new TrackingServiceTest
-
-  val trackingConnector: TrackingConnector = mock[TrackingConnector]
-  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-
-  private class TrackingServiceTest
-      extends TrackingService(
-        trackingConnector,
-        successfulJourneyCacheService
-      ) {
-    when(successfulJourneyCacheService.currentCache(any(), any(), any()))
-      .thenReturn(Future.successful(Map.empty[String, String]))
-  }
-
 }

@@ -18,24 +18,24 @@ package controllers.pensions
 
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
-import org.apache.pekko.Done
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
+import pages.TrackSuccessfulJourneyUpdatePensionPage
+import pages.updatePensionProvider._
 import play.api.i18n.Messages
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers._
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
 import views.html.pensions.DuplicateSubmissionWarningView
-import views.html.pensions.update.{ConfirmationView, DoYouGetThisPensionIncomeView, UpdatePensionCheckYourAnswersView, WhatDoYouWantToTellUsView}
+import views.html.pensions.update._
 
 import scala.concurrent.Future
 
@@ -46,17 +46,18 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
   private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val pensionName = "Pension 1"
-  val pensionId = "1"
+  val pensionId = 1
 
   val pensionTaxCodeIncome: TaxCodeIncome =
-    TaxCodeIncome(PensionIncome, Some(pensionId.toInt), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
+    TaxCodeIncome(PensionIncome, Some(pensionId), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
   val empTaxCodeIncome: TaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
 
   val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
+
+  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
   class UpdatePensionProviderTestController
       extends UpdatePensionProviderController(
@@ -71,30 +72,26 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         inject[UpdatePensionCheckYourAnswersView],
         inject[ConfirmationView],
         inject[DuplicateSubmissionWarningView],
-        journeyCacheService,
-        successfulJourneyCacheService,
+        mockJourneyCacheRepository,
         inject[ErrorPagesHandler]
       )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    setup(UserAnswers("testSessionId", nino.nino))
-    Mockito.reset(journeyCacheService)
+    setup(baseUserAnswers)
+    Mockito.reset(mockJourneyCacheRepository)
   }
 
   "doYouGetThisPension" must {
     "show the doYouGetThisPension view" in {
 
       val PensionQuestionKey = "yes"
+      val userAnswers = baseUserAnswers
+        .setOrException(UpdatePensionProviderIdPage, pensionId)
+        .setOrException(UpdatePensionProviderNamePage, pensionName)
+        .setOrException(UpdatePensionProviderReceivePensionPage, PensionQuestionKey)
 
-      when(
-        journeyCacheService.collectedJourneyValues(Seq(any()), Seq(any()))(
-          any(),
-          any(),
-          any()
-        )
-      )
-        .thenReturn(Future.successful(Right((Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey))))))
+      setup(userAnswers)
 
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
@@ -105,20 +102,10 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
     "redirect to the tax summary page if a value is missing from the cache " in {
 
-      when(
-        journeyCacheService.collectedJourneyValues(Seq(any()), Seq(any()))(
-          any(),
-          any(),
-          any()
-        )
-      )
-        .thenReturn(Future.successful(Left("Data missing from cache")))
-
       val result = createController.doYouGetThisPension()(fakeGetRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-
     }
 
   }
@@ -127,8 +114,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "return bad request" when {
       "no options are selected" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+        setup(userAnswers)
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(IncorrectPensionDecisionConstants.IncorrectPensionDecision -> "")
@@ -141,8 +131,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to tes-1 iform" when {
       "option NO is selected" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+        setup(userAnswers)
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -158,10 +151,13 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(Seq(pensionId, pensionName))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
 
-        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        setup(userAnswers)
+
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.handleDoYouGetThisPension()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -182,13 +178,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "show the whatDoYouWantToTellUs page" when {
       "an authorised user calls the page" in {
 
-        when(
-          journeyCacheService.collectedJourneyValues(
-            meq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
-            meq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(Right((Seq(pensionName, pensionId), Seq(None)))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+        setup(userAnswers)
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -198,15 +192,12 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       }
       "we have pension details in the cache" in {
 
-        val cache = Seq(pensionName, pensionId)
-        val optionalCache = Seq(Some("test1"))
-        when(
-          journeyCacheService.collectedJourneyValues(
-            meq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
-            meq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(Right((cache, optionalCache))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+          .setOrException(UpdatePensionProviderDetailsPage, "some details")
+
+        setup(userAnswers)
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -216,14 +207,6 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       }
 
       "redirect to the tax summary page if a value is missing from the cache " in {
-
-        when(
-          journeyCacheService.collectedJourneyValues(
-            meq(Seq(UpdatePensionProviderConstants.NameKey, UpdatePensionProviderConstants.IdKey)),
-            meq(Seq(UpdatePensionProviderConstants.DetailsKey))
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(Left("Data missing from cache")))
 
         val result = createController.whatDoYouWantToTellUs()(fakeGetRequest)
 
@@ -237,7 +220,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to the addTelephoneNumber page" when {
       "the form submission is valid" in {
 
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitWhatDoYouWantToTellUs(
           fakePostRequest
@@ -255,9 +238,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       "the form submission is invalid" in {
 
         val pensionDetailsFormData = ("pensionDetails", "")
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
+        setup(userAnswers)
 
         val result = createController.submitWhatDoYouWantToTellUs(
           fakePostRequest
@@ -274,10 +259,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "show the contact by telephone page" when {
       "an authorised request is received" in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(pensionId.toInt)))
-        when(journeyCacheService.optionalValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Seq(None, None)))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+
+        setup(userAnswers)
+
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
         status(result) mustBe OK
@@ -286,10 +272,13 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       }
       "an authorised request is received and we have cached data" in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(pensionId.toInt)))
-        when(journeyCacheService.optionalValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderPhoneQuestionPage, "yes")
+          .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
+
+        setup(userAnswers)
+
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
         status(result) mustBe OK
@@ -300,10 +289,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
       "redirect to the tax summary page if a value is missing from the cache " in {
 
-        when(journeyCacheService.mandatoryJourneyValueAsInt(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Left("Data missing from the cache")))
-        when(journeyCacheService.optionalValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderPhoneQuestionPage, "yes")
+          .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
+
+        setup(userAnswers)
         val result = createController.addTelephoneNumber()(fakeGetRequest)
 
         status(result) mustBe SEE_OTHER
@@ -317,11 +307,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
 
-        val expectedCache = Map(
-          UpdatePensionProviderConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
-          UpdatePensionProviderConstants.TelephoneNumberKey   -> "12345678"
-        )
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(expectedCache))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -339,13 +325,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     }
     "the request has an authorised session, and telephone number contact has not been approved" in {
 
-      val expectedCacheWithErasingNumber =
-        Map(
-          UpdatePensionProviderConstants.TelephoneQuestionKey -> FormValuesConstants.NoValue,
-          UpdatePensionProviderConstants.TelephoneNumberKey   -> ""
-        )
-      when(journeyCacheService.cache(any())(any()))
-        .thenReturn(Future.successful(expectedCacheWithErasingNumber))
+      when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
       val result = createController.submitTelephoneNumber()(
         fakePostRequest
@@ -364,8 +344,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
 
-        val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
-        when(journeyCacheService.currentCache(any(), any(), any())).thenReturn(Future.successful(cache))
+        val userAnswers = baseUserAnswers.setOrException(UpdatePensionProviderIdPage, pensionId)
+        setup(userAnswers)
 
         val result = createController.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -382,8 +362,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       "there is a form validation error (additional, controller specific constraint)" in {
         val controller = createController
 
-        val cache = Map(UpdatePensionProviderConstants.IdKey -> pensionId)
-        when(journeyCacheService.currentCache(any(), any(), any())).thenReturn(Future.successful(cache))
+        val userAnswers = baseUserAnswers.setOrException(UpdatePensionProviderIdPage, pensionId)
+        setup(userAnswers)
 
         val tooFewCharsResult = controller.submitTelephoneNumber()(
           fakePostRequest.withFormUrlEncodedBody(
@@ -411,18 +391,17 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   "check your answers" must {
     "show summary page" when {
-      "valid details are present in journey cache" in {
+      "valid details are present in userAnswers" in {
 
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String](pensionId, pensionName, "Yes", "some random info", "Yes"),
-                Seq[Option[String]](Some("123456789"))
-              )
-            )
-          )
-        )
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+          .setOrException(UpdatePensionProviderReceivePensionPage, "Yes")
+          .setOrException(UpdatePensionProviderDetailsPage, "some random info")
+          .setOrException(UpdatePensionProviderPhoneQuestionPage, "Yes")
+          .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
+
+        setup(userAnswers)
 
         val result = createController.checkYourAnswers()(fakeGetRequest)
         status(result) mustBe OK
@@ -434,49 +413,33 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
     "redirect to the summary page if a value is missing from the cache " in {
 
-      when(
-        journeyCacheService.collectedJourneyValues(
-          any(classOf[scala.collection.immutable.List[String]]),
-          any(classOf[scala.collection.immutable.List[String]])
-        )(any(), any(), any())
-      ).thenReturn(
-        Future.successful(Left("An error has occurred"))
-      )
+      val userAnswers = baseUserAnswers
+        .setOrException(UpdatePensionProviderIdPage, pensionId)
+
+      setup(userAnswers)
 
       val result = createController.checkYourAnswers()(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-
     }
-
   }
 
   "submit your answers" must {
     "invoke the back end 'incorrectEmployment' service and redirect to the confirmation page" when {
       "the request has an authorised session and a telephone number has been provided" in {
 
-        val incorrectPensionProvider = IncorrectPensionProvider("some random info", "Yes", Some("123456789"))
-        val empId = 1
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String](empId.toString, "some random info", "Yes"),
-                Seq[Option[String]](Some("123456789"))
-              )
-            )
-          )
-        )
-        when(
-          pensionProviderService.incorrectPensionProvider(any(), meq(1), meq(incorrectPensionProvider))(any(), any())
-        )
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderDetailsPage, "some random info")
+          .setOrException(UpdatePensionProviderPhoneQuestionPage, "Yes")
+          .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
+
+        setup(userAnswers)
+
+        when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(
-          successfulJourneyCacheService
-            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId" -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
@@ -484,33 +447,23 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
           .confirmation()
           .url
-        verify(journeyCacheService, times(1)).flush()(any())
+        verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
+        verify(mockJourneyCacheRepository, times(1)).set(any())
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
 
-        val incorrectPensionProvider = IncorrectPensionProvider("some random info", "No", None)
-        val empId = 1
-        when(journeyCacheService.collectedJourneyValues(any(), any())(any(), any(), any())).thenReturn(
-          Future.successful(
-            Right(
-              (
-                Seq[String](empId.toString, "some random info", "No"),
-                Seq[Option[String]](None)
-              )
-            )
-          )
-        )
-        when(
-          pensionProviderService.incorrectPensionProvider(any(), meq(1), meq(incorrectPensionProvider))(any(), any())
-        )
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderDetailsPage, "some random info")
+          .setOrException(UpdatePensionProviderPhoneQuestionPage, "No")
+
+        setup(userAnswers)
+
+        when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(
-          successfulJourneyCacheService
-            .cache(meq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId"), meq("true"))(any())
-        )
-          .thenReturn(Future.successful(Map(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$empId" -> "true")))
-        when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
+        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = createController.submitYourAnswers()(fakePostRequest)
 
@@ -518,7 +471,8 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController
           .confirmation()
           .url
-        verify(journeyCacheService, times(1)).flush()(any())
+        verify(mockJourneyCacheRepository, times(1)).set(any())
+        verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
       }
     }
   }
@@ -537,45 +491,31 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   "redirectUpdatePension" must {
 
-    def cacheMap =
-      Map(UpdatePensionProviderConstants.IdKey -> pensionId, UpdatePensionProviderConstants.NameKey -> pensionName)
-
     def taxAccountServiceCall =
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-    def journeyCacheCall =
-      when(journeyCacheService.cache(meq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-
     "redirect to the Do You Get This Pension page when there is no update pension ID cache value present" in {
 
       taxAccountServiceCall
-      when(
-        successfulJourneyCacheService.currentValue(
-          meq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId")
-        )(any(), any(), any(), any())
-      )
-        .thenReturn(Future.successful(None))
-      journeyCacheCall
+
+      when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
       val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension().url
-
     }
 
     "redirect to the Duplicate Submission Warning page when there is an Update pension ID cache value present" in {
 
       taxAccountServiceCall
-      when(
-        successfulJourneyCacheService.currentValue(
-          meq(s"${TrackSuccessfulJourneyConstants.UpdatePensionKey}-$pensionId")
-        )(any(), any(), any(), any())
-      )
-        .thenReturn(Future.successful(Some("true")))
-      journeyCacheCall
 
-      val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
+      val userAnswers = baseUserAnswers.setOrException(TrackSuccessfulJourneyUpdatePensionPage(pensionId), true)
+      setup(userAnswers)
+
+      when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+
+      val result = createController.UpdatePension(pensionId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning().url
     }
@@ -586,16 +526,17 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
 
-        val result = createController.UpdatePension(pensionId.toInt)(fakeGetRequest)
+        val result = createController.UpdatePension(pensionId)(fakeGetRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "an invalid id has been passed" in {
 
+        val invalidPensionId = 4
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-        val result = createController.UpdatePension(4)(fakeGetRequest)
+        val result = createController.UpdatePension(invalidPensionId)(fakeGetRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -605,8 +546,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
   "duplicateSubmissionWarning" must {
     "show duplicateSubmissionWarning view" in {
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
+      val userAnswers = baseUserAnswers
+        .setOrException(UpdatePensionProviderIdPage, pensionId)
+        .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+      setup(userAnswers)
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
@@ -617,9 +561,6 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
     "redirect to the summary page if a value is missing from the cache " in {
 
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Left("Data missing from cache")))
-
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
@@ -629,14 +570,14 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   "submitDuplicateSubmissionWarning" must {
 
-    def journeyCacheCall =
-      when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-        .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
-
     "redirect to the update remove employment decision page" when {
       "I want to update my employment is selected" in {
 
-        journeyCacheCall
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+        setup(userAnswers)
 
         val result = createController.submitDuplicateSubmissionWarning(
           fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
@@ -652,7 +593,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "redirect to the income source summary page" when {
       "I want to return to my employment details is selected" in {
 
-        journeyCacheCall
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+        setup(userAnswers)
 
         val result = createController.submitDuplicateSubmissionWarning(
           fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
@@ -660,7 +605,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController
-          .onPageLoad(pensionId.toInt)
+          .onPageLoad(pensionId)
           .url
       }
     }
@@ -668,8 +613,11 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
 
-        when(journeyCacheService.mandatoryJourneyValues(any())(any(), any(), any()))
-          .thenReturn(Future.successful(Right(Seq(pensionName, pensionId))))
+        val userAnswers = baseUserAnswers
+          .setOrException(UpdatePensionProviderIdPage, pensionId)
+          .setOrException(UpdatePensionProviderNamePage, pensionName)
+
+        setup(userAnswers)
 
         val result =
           createController.submitDuplicateSubmissionWarning(
@@ -677,6 +625,17 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
           )
 
         status(result) mustBe BAD_REQUEST
+      }
+    }
+
+    "return Internal Server Error" when {
+      "mandatory values are missing from userAnswers" in {
+
+        val result = createController.submitDuplicateSubmissionWarning(
+          fakePostRequest.withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
+        )
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

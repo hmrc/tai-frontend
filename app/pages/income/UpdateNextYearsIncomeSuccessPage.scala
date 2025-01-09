@@ -20,9 +20,9 @@ import pages.QuestionPage
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
-case class UpdateNextYearsIncomeSuccessPage(employmentId: Int) extends QuestionPage[String] {
+object UpdateNextYearsIncomeSuccessPage extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ s"$toString-$employmentId"
+  override def path: JsPath = JsPath \ toString
 
   override def toString: String = UpdateNextYearsIncomeConstants.Successful
 

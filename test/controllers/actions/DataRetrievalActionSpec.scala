@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.GET
-import repository.JourneyCacheNewRepository
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.UserAnswers
 import utils.BaseSpec
@@ -36,11 +36,11 @@ import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
 
-  class Harness(repository: JourneyCacheNewRepository) extends DataRetrievalActionImpl(repository) {
+  class Harness(repository: JourneyCacheRepository) extends DataRetrievalActionImpl(repository) {
     def callTransform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = transform(request)
   }
 
-  private val repository = mock[JourneyCacheNewRepository]
+  private val repository = mock[JourneyCacheRepository]
 
   override def beforeEach(): Unit = {
     super.beforeEach()

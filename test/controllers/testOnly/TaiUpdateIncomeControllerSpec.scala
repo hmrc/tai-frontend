@@ -17,40 +17,33 @@
 package controllers.testOnly
 
 import builders.RequestBuilder
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import play.api.http.Status.SEE_OTHER
 import play.api.i18n.I18nSupport
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
-import repository.JourneyCacheNewRepository
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
 import scala.concurrent.Future
 
 class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
-  val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  val mockJourneyCacheNewRepository: JourneyCacheNewRepository = mock[JourneyCacheNewRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    Mockito.reset(journeyCacheService, mockJourneyCacheNewRepository)
+    Mockito.reset(mockJourneyCacheRepository)
   }
 
   val employerId = 14
-  val cacheKey = s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$employerId"
 
   private def sut = new TaiUpdateIncomeController(
-    journeyCacheService,
     mockAuthJourney,
     mcc,
-    mockJourneyCacheNewRepository
+    mockJourneyCacheRepository
   )
 
   "TaiUpdateIncomeController" must {
@@ -61,15 +54,12 @@ class TaiUpdateIncomeControllerSpec extends BaseSpec with I18nSupport {
 
       setup(mockUserAnswers)
 
-      when(journeyCacheService.delete()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(Done))
-      when(mockJourneyCacheNewRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
       val result = sut.delete(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       result.futureValue
       status(result) mustBe SEE_OTHER
-      verify(journeyCacheService, times(1)).delete()(any())
-      verify(mockJourneyCacheNewRepository, times(1)).clear(any(), any())
+      verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
     }
   }
 
