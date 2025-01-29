@@ -50,7 +50,6 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class ValidatePersonSpec extends BaseSpec with I18nSupport {
-  // private val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
   val personService: PersonService = mock[PersonService]
   val errorPagesHandler: ErrorPagesHandler = inject[ErrorPagesHandler]
   val cc: ControllerComponents = stubControllerComponents()
