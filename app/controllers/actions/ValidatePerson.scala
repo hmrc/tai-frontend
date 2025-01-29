@@ -16,14 +16,18 @@
 
 package controllers.actions
 
+import cats.data.EitherT
 import com.google.inject.ImplementedBy
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
 import controllers.routes
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.tai.model.admin.DesignatoryDetailsCheck
+import uk.gov.hmrc.tai.model.domain.Address.emptyAddress
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.service.PersonService
 
@@ -36,21 +40,38 @@ trait ValidatePerson extends ActionRefiner[InternalAuthenticatedRequest, Authent
 @Singleton
 class ValidatePersonImpl @Inject() (
   personService: PersonService,
-  val messagesApi: MessagesApi
+  val messagesApi: MessagesApi,
+  featureFlagService: FeatureFlagService
 )(implicit ec: ExecutionContext)
     extends ValidatePerson with I18nSupport {
 
   override protected def refine[A](
     request: InternalAuthenticatedRequest[A]
   ): Future[Either[Result, AuthenticatedRequest[A]]] = {
-
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
     val personNino = request.taiUser.nino
-    val person = personService.personDetails(personNino)
+    val person =
+      featureFlagService.get(DesignatoryDetailsCheck).flatMap { ff =>
+        if (ff.isEnabled) {
+          personService.personDetails(personNino).value
+        } else {
+          Future.successful(
+            Right[UpstreamErrorResponse, Person](
+              Person(
+                nino = request.taiUser.nino,
+                firstName = "",
+                surname = "",
+                isDeceased = false,
+                address = emptyAddress
+              )
+            )
+          )
+        }
+      }
+
     // TODO: PertaxAuthAction is already checking MCI_RECORD. isDeceased check can also be removed once DDCNL-8734 is complete
-    person.transform {
+    EitherT(person).transform {
       case Right(person) if person.isDeceased =>
         Left(Redirect(routes.DeceasedController.deceased()))
       case Right(person) => Right(AuthenticatedRequest(request, request.taiUser.toAuthedUser, person))

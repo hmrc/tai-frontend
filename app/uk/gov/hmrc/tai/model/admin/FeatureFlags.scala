@@ -31,3 +31,10 @@ case object IncomeTaxHistoryToggle extends FeatureFlagName {
     "Enable/disable the income ta history"
   )
 }
+
+case object DesignatoryDetailsCheck extends FeatureFlagName {
+  override val name: String = "designatory-details-check"
+  override val description: Option[String] = Some(
+    "Enable/disable designatory details call for personal details on citizen details"
+  )
+}

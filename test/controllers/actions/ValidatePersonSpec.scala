@@ -35,12 +35,14 @@ package controllers.actions
 import cats.data.EitherT
 import controllers.{ErrorPagesHandler, FakeAuthRetrievals, routes}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
+import uk.gov.hmrc.tai.model.admin.DesignatoryDetailsCheck
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import utils.BaseSpec
@@ -48,7 +50,7 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class ValidatePersonSpec extends BaseSpec with I18nSupport {
-
+  // private val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
   val personService: PersonService = mock[PersonService]
   val errorPagesHandler: ErrorPagesHandler = inject[ErrorPagesHandler]
   val cc: ControllerComponents = stubControllerComponents()
@@ -56,6 +58,29 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
     def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { r =>
       Ok(Html(r.person.name + "/" + r.person.address.line1.getOrElse("empty")))
+    }
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    when(mockFeatureFlagService.get(DesignatoryDetailsCheck))
+      .thenReturn(Future.successful(FeatureFlag(DesignatoryDetailsCheck, isEnabled = true)))
+  }
+
+  "refine" must {
+    "return empty person when designatory details feature flag is off" in {
+      when(mockFeatureFlagService.get(DesignatoryDetailsCheck))
+        .thenReturn(Future.successful(FeatureFlag(DesignatoryDetailsCheck, isEnabled = false)))
+
+      val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+
+      val controller = new Harness(validatePerson)
+      val result = controller.onPageLoad()(fakeRequest)
+
+      status(result) mustBe OK
+      verify(personService, times(0)).personDetails(any())(any(), any())
+      contentAsString(result) mustBe " /empty"
+
     }
   }
 
@@ -68,7 +93,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](deceasedPerson))
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi)
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
 
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
@@ -86,7 +111,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
         when(personService.personDetails(any())(any(), any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi)
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
 
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
@@ -103,7 +128,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
               )
             )
 
-          val validatePerson = new ValidatePersonImpl(personService, messagesApi)
+          val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
           val controller = new Harness(validatePerson)
           val result = controller.onPageLoad()(fakeRequest)
           status(result) mustBe OK
@@ -120,7 +145,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
               )
             )
 
-          val validatePerson = new ValidatePersonImpl(personService, messagesApi)
+          val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
           val controller = new Harness(validatePerson)
           val result = controller.onPageLoad()(fakeRequest)
           status(result) mustBe OK
