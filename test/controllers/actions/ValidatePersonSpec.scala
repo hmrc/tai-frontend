@@ -33,7 +33,7 @@
 package controllers.actions
 
 import cats.data.EitherT
-import controllers.{ErrorPagesHandler, FakeAuthRetrievals, routes}
+import controllers.{ErrorPagesHandler, FakeAuthRetrievals}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import play.api.i18n.I18nSupport
@@ -85,27 +85,8 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   }
 
   "DeceasedActionFilter" when {
-    "the person is deceased" must {
-      "redirect the user to a deceased page " in {
-
-        val deceasedPerson = fakePerson(nino).copy(isDeceased = true)
-
-        when(personService.personDetails(any())(any(), any()))
-          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](deceasedPerson))
-
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
-
-        val controller = new Harness(validatePerson)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().url)
-      }
-    }
-
     "the person is alive" must {
       "not redirect the user to a deceased page " in {
-
         val alivePerson = fakePerson(nino)
 
         when(personService.personDetails(any())(any(), any()))

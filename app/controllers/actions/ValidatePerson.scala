@@ -19,9 +19,7 @@ package controllers.actions
 import cats.data.EitherT
 import com.google.inject.ImplementedBy
 import controllers.auth.{AuthenticatedRequest, InternalAuthenticatedRequest}
-import controllers.routes
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
@@ -72,8 +70,6 @@ class ValidatePersonImpl @Inject() (
 
     // TODO: PertaxAuthAction is already checking MCI_RECORD. isDeceased check can also be removed once DDCNL-8734 is complete
     EitherT(person).transform {
-      case Right(person) if person.isDeceased =>
-        Left(Redirect(routes.DeceasedController.deceased()))
       case Right(person) => Right(AuthenticatedRequest(request, request.taiUser.toAuthedUser, person))
       case Left(_) =>
         Right(
