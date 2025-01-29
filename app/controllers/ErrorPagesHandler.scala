@@ -128,13 +128,6 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     Future.successful(InternalServerError(error5xx(messages("tai.technical.error.message"))))
   }
 
-  def npsTaxAccountDeceasedResult(nino: String)(implicit
-    rl: RecoveryLocation
-  ): PartialFunction[Throwable, Option[Result]] = {
-    case NonFatal(e) if e.getMessage.contains(TaiConstants.NpsTaxAccountDeceasedMsg) =>
-      logger.warn(s"<Deceased response received from nps tax account> - for nino $nino @${rl.getName}")
-      Some(Redirect(routes.DeceasedController.deceased()))
-  }
   def npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit
     request: Request[AnyContent],
     messages: Messages,

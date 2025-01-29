@@ -72,8 +72,7 @@ class WhatDoYouWantToDoController @Inject() (
                 errorPagesHandler
                   .npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
                 errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentResult(ninoString) orElse
-                errorPagesHandler.npsTaxAccountDeceasedResult(ninoString) orElse { case _ => none }
+                errorPagesHandler.npsNoEmploymentResult(ninoString) orElse { case _ => none }
             handler(ex)
           }
         }).getOrElseF(

@@ -46,7 +46,7 @@ import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
+import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -104,11 +104,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "timeout" => ExpectedData("Log In - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "tax-estimate-unavailable" =>
         ExpectedData("We cannot access your details - Check your Income Tax - GOV.UK", navBarExpected = false, LOCKED)
-      case "deceased" =>
-        ExpectedData(
-          "The information you want is not available to view - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
+
       case "session-expired" =>
         ExpectedData("For your security, we signed you out - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "add-employment-name" =>
@@ -425,7 +421,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     "/check-income-tax/income-tax-history"                       -> getExpectedData("income-tax-history"),
     "/check-income-tax/timeout"                                  -> getExpectedData("timeout"),
     "/check-income-tax/tax-estimate-unavailable"                 -> getExpectedData("tax-estimate-unavailable"),
-    "/check-income-tax/deceased"                                 -> getExpectedData("deceased"),
     "/check-income-tax/session-expired"                          -> getExpectedData("session-expired"),
     "/check-income-tax/add-employment/employment-name"           -> getExpectedData("add-employment-name"),
     "/check-income-tax/add-employment/employment-start-date"     -> getExpectedData("add-employment-start-date"),
@@ -733,6 +728,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(IncomeTaxHistoryToggle))
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
+    when(mockFeatureFlagService.get(DesignatoryDetailsCheck))
+      .thenReturn(Future.successful(FeatureFlag(DesignatoryDetailsCheck, isEnabled = true)))
     when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
     when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
