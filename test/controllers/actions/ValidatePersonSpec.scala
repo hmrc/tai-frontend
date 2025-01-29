@@ -55,8 +55,8 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   val errorPagesHandler: ErrorPagesHandler = inject[ErrorPagesHandler]
   val cc: ControllerComponents = stubControllerComponents()
 
-  class Harness(deceased: ValidatePerson) extends AbstractController(cc) {
-    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen deceased) { r =>
+  class Harness(vp: ValidatePerson) extends AbstractController(cc) {
+    def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen vp) { r =>
       Ok(Html(r.person.name + "/" + r.person.address.line1.getOrElse("empty")))
     }
   }
@@ -68,7 +68,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
   }
 
   "refine" must {
-    "return empty person when designatory details feature flag is off" in {
+    "return person details from auth with empty address when designatory details feature flag is off" in {
       when(mockFeatureFlagService.get(DesignatoryDetailsCheck))
         .thenReturn(Future.successful(FeatureFlag(DesignatoryDetailsCheck, isEnabled = false)))
 
@@ -79,59 +79,56 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
 
       status(result) mustBe OK
       verify(personService, times(0)).personDetails(any())(any(), any())
-      contentAsString(result) mustBe " /empty"
-
+      contentAsString(result) mustBe "first last/empty"
     }
-  }
 
-  "DeceasedActionFilter" when {
-    "the person is alive" must {
-      "not redirect the user to a deceased page " in {
-        val alivePerson = fakePerson(nino)
+    "return person details and address from citizen details when designatory details feature flag is on" in {
+      val alivePerson = fakePerson(nino)
 
+      when(personService.personDetails(any())(any(), any()))
+        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))
+
+      val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+
+      val controller = new Harness(validatePerson)
+      val result = controller.onPageLoad()(fakeRequest)
+
+      status(result) mustBe OK
+      verify(personService, times(1)).personDetails(any())(any(), any())
+      contentAsString(result) mustBe "Firstname Surname/line1"
+    }
+
+    "the person details retrieval fails with 5xx error" must {
+      "return auth name, empty address and nino" in {
         when(personService.personDetails(any())(any(), any()))
-          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))
+          .thenReturn(
+            EitherT.leftT[Future, Person](
+              UpstreamErrorResponse("Failed to get person designatory details", INTERNAL_SERVER_ERROR)
+            )
+          )
 
         val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
-
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
-
         status(result) mustBe OK
+        contentAsString(result) mustBe "first last/empty"
       }
+    }
 
-      "the person details retrieval fails with 5xx error" must {
-        "return auth name, empty address and nino" in {
-          when(personService.personDetails(any())(any(), any()))
-            .thenReturn(
-              EitherT.leftT[Future, Person](
-                UpstreamErrorResponse("Failed to get person designatory details", INTERNAL_SERVER_ERROR)
-              )
+    "the person details retrieval fails with 4xx error" must {
+      "return auth name, empty address and nino" in {
+        when(personService.personDetails(any())(any(), any()))
+          .thenReturn(
+            EitherT.leftT[Future, Person](
+              UpstreamErrorResponse("Failed to get person designatory details", BAD_REQUEST)
             )
+          )
 
-          val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
-          val controller = new Harness(validatePerson)
-          val result = controller.onPageLoad()(fakeRequest)
-          status(result) mustBe OK
-          contentAsString(result) mustBe "first last/empty"
-        }
-      }
-
-      "the person details retrieval fails with 4xx error" must {
-        "return auth name, empty address and nino" in {
-          when(personService.personDetails(any())(any(), any()))
-            .thenReturn(
-              EitherT.leftT[Future, Person](
-                UpstreamErrorResponse("Failed to get person designatory details", BAD_REQUEST)
-              )
-            )
-
-          val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
-          val controller = new Harness(validatePerson)
-          val result = controller.onPageLoad()(fakeRequest)
-          status(result) mustBe OK
-          contentAsString(result) mustBe "first last/empty"
-        }
+        val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+        val controller = new Harness(validatePerson)
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe "first last/empty"
       }
     }
   }

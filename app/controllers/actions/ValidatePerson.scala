@@ -58,8 +58,8 @@ class ValidatePersonImpl @Inject() (
             Right[UpstreamErrorResponse, Person](
               Person(
                 nino = request.taiUser.nino,
-                firstName = "",
-                surname = "",
+                firstName = request.taiUser.firstName.getOrElse(""),
+                surname = request.taiUser.lastName.getOrElse(""),
                 isDeceased = false,
                 address = emptyAddress
               )
