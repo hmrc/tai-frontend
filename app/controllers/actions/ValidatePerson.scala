@@ -68,7 +68,6 @@ class ValidatePersonImpl @Inject() (
         }
       }
 
-    // TODO: PertaxAuthAction is already checking MCI_RECORD. isDeceased check can also be removed once DDCNL-8734 is complete
     EitherT(person).transform {
       case Right(person) => Right(AuthenticatedRequest(request, request.taiUser.toAuthedUser, person))
       case Left(_) =>
