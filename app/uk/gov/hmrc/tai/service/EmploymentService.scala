@@ -36,6 +36,9 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     employmentsConnector.employment(nino, id.toString)
 
+  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+    employmentsConnector.employmentOnly(nino, id, taxYear)
+
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.endEmployment(nino, id, endEmploymentData)
 

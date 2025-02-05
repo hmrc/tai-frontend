@@ -26,9 +26,8 @@ import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
@@ -41,6 +40,7 @@ class IncomeSourceSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   benefitsService: BenefitsService,
+  rtiService: RtiService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -62,24 +62,38 @@ class IncomeSourceSummaryController @Inject() (
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employment(nino, empId),
+      employmentService.employmentOnly(nino, empId, TaxYear()),
+      rtiService.getPaymentsForYear(nino, TaxYear()).value,
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (
-            Right(taxCodeIncomes),
+            taxCodeIncomes,
             Some(employment),
+            payments,
             benefitsDetails,
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+        val estimatedPay = taxCodeIncomes.fold(
+          _ => None,
+          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount)
+        ) // todo pull from iabd if missing from tax account
+
+        val taxCode = taxCodeIncomes.fold(
+          _ => None,
+          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode)
+        )
+
+        val rtiAvailable = payments.isRight
+        println("PPPPPP " + payments)
 
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
           empId,
           request.fullName,
-          taxCodeIncomes,
+          estimatedPay,
+          taxCode,
           employment,
           benefitsDetails,
           estimatedPayCompletion,
