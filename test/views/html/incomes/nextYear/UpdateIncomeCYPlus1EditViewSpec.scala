@@ -16,7 +16,6 @@
 
 package views.html.incomes.nextYear
 
-import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.util.MoneyPounds
@@ -32,7 +31,6 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 
   "CYPlus1 Edit Page" should {
     behave like pageWithBackLink()
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
 
     behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
