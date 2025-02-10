@@ -29,9 +29,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
     authedUser = Some(user),
     backLinkId = "back-link-custom-url",
     backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id).url),
     formForErrorSummary = Some(howToUpdateForm)
-
 ){
     <div class = "govuk-grid-row">
         <div class = "govuk-grid-column-two-thirds">

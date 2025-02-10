@@ -24,11 +24,11 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
 
   val employmentID = 1
   val isPension = false
+  override def view: Html = updateIncomeCYPlus1Start(employerName, employmentID, isPension)
   private val updateIncomeCYPlus1Start = inject[UpdateIncomeCYPlus1StartView]
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink()
-    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url))
     behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
       messages("tai.updateIncome.CYPlus1.start.heading", employerName)
@@ -71,5 +71,4 @@ class UpdateIncomeCYPlus1StartViewSpec extends TaiViewSpec {
 
   }
 
-  override def view: Html = updateIncomeCYPlus1Start(employerName, employmentID, isPension)
 }

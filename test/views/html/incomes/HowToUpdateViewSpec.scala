@@ -25,11 +25,7 @@ class HowToUpdateViewSpec extends TaiViewSpec {
   val empId = 1
 
   "How to update view" should {
-    behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController
-        .estimatedPayLandingPage(empId)
-        .url
-    )
+    behave like pageWithBackLink()
     behave like pageWithTitle(messages("tai.howToUpdate.title"))
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.howToUpdate.preHeading", employerName),

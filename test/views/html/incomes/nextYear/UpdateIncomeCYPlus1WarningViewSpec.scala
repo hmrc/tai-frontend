@@ -47,6 +47,13 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
   val choice: String = FormValuesConstants.YesNoChoice
+  val newAmount = 20000
+  val employmentViewModel: DuplicateSubmissionCYPlus1EmploymentViewModel =
+    DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newAmount)
+  private val template = inject[UpdateIncomeCYPlus1WarningView]
+
+  override def view: Html =
+    template(duplicateSubmissionWarningForm, employmentViewModel, empId)
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.incomes.warning.customGaTitle"))
@@ -65,7 +72,6 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
     )
 
     behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/next-year/income/$empId/warning")
-    behave like pageWithCancelLink(controllers.routes.IncomeTaxComparisonController.onPageLoad())
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
@@ -123,11 +129,4 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
       doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}-2") must not be null
     }
   }
-
-  val newAmount = 20000
-  val employmentViewModel = DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newAmount)
-  private val template = inject[UpdateIncomeCYPlus1WarningView]
-
-  override def view: Html =
-    template(duplicateSubmissionWarningForm, employmentViewModel, empId)
 }

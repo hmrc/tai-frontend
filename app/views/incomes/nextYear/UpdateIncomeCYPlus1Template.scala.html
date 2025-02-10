@@ -14,18 +14,14 @@
  * limitations under the License.
  *@
 
-@import includes.{cancelLink, ptaHeader}
+@import includes.ptaHeader
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(mainTemplate: MainTemplate, govukErrorSummary: GovukErrorSummary)
 
+@this(mainTemplate: MainTemplate, govukErrorSummary: GovukErrorSummary)
 @(employerName: String,
   form: Option[Form[_]],
-  heading: String,
-  showCancel: Boolean = true,
-  cancelText : Option[String] = None
-
-
+  heading: String
 )(content: Html
 )(implicit request: Request[_],
   user: controllers.auth.AuthedUser,
@@ -51,10 +47,6 @@
         @header()
 
         @content
-
-        @if(showCancel){
-            @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad().url), linkText = cancelText)
-        }
     </div>
 </div>
 }

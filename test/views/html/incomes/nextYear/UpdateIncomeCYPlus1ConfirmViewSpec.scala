@@ -29,7 +29,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
   val estimatedAmount = 1000
   val employmentId = 1
 
-  val vm = ConfirmAmountEnteredViewModel(
+  val vm: ConfirmAmountEnteredViewModel = ConfirmAmountEnteredViewModel(
     employmentId,
     employerName,
     currentAmount,
@@ -70,11 +70,6 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
         href = s"/update-income/edit-income-irregular-hours/$employmentId/submit",
         text = messages("tai.confirmAndSend")
       )
-    }
-
-    "display a cancel link" in {
-      doc(view) must haveLinkWithText(messages("tai.cancel"))
-
     }
   }
 

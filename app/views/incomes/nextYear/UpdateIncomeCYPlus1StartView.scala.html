@@ -14,8 +14,9 @@
  * limitations under the License.
  *@
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
+@import views.html.incomes.nextYear.UpdateIncomeCYPlus1Template
 
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
 @(employmentName: String, employmentId: Int, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
@@ -26,8 +27,7 @@
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = None,
-    heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>),
-    cancelText = Some("Cancel")
+    heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>)
 ){
 
     <div>
