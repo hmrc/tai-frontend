@@ -12,12 +12,12 @@
 # Add all the application routes to the prod.routes file
 # microservice specific routes
 
-GET         /check-income-tax/test-only/update-income/delete/:id                                        controllers.testOnly.TaiUpdateIncomeController.delete(id: Int)
+GET        /check-income-tax/test-only/update-income/delete/:id                                                testOnly.controllers.TaiUpdateIncomeController.delete(id: Int)
+
+GET        /check-income-tax/test-only/v1/api/employment/employee/:nino/tax-year/:taxYear/employment-details   testOnly.controllers.ApiCallController.employmentDetails(nino: String, taxYear: Int)
+GET        /check-income-tax/test-only/v1/api/person/:nino/tax-account/:taxYear                                testOnly.controllers.ApiCallController.taxAccount(nino: String, taxYear: Int)
+GET        /check-income-tax/test-only/v1/api/iabd/taxpayer/:nino/tax-year/:taxYear                            testOnly.controllers.ApiCallController.iabds(nino: String, taxYear: Int)
 
 ->         /                          prod.Routes
 
 ->         /check-income-tax     mongoFeatureTogglesTestOnly.Routes
-
-GET           /tai/v1/api/employment/employee/:nino/tax-year/:taxYear/employment-details                    @testOnly.controllers.ApiCallController.employmentDetails(nino: String, taxYear: Int)
-GET           /tai/v1/api/person/:nino/tax-account/:taxYear                                                 @testOnly.controllers.ApiCallController.taxAccount(nino: String, taxYear: Int)
-GET           /tai/v1/api/iabd/taxpayer/:nino/tax-year/:taxYear                                             @testOnly.controllers.ApiCallController.iabds(nino: String, taxYear: Int)

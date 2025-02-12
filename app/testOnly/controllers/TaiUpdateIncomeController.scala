@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.testOnly
+package testOnly.controllers
 
 import controllers.TaiBaseController
 import controllers.auth.AuthJourney

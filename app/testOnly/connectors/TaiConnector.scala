@@ -24,8 +24,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaiConnector @Inject()(httpClientV2: HttpClientV2, servicesConfig: ServicesConfig)(implicit
-                                                                                         ec: ExecutionContext
+class TaiConnector @Inject() (httpClientV2: HttpClientV2, servicesConfig: ServicesConfig)(implicit
+  ec: ExecutionContext
 ) {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
@@ -38,7 +38,7 @@ class TaiConnector @Inject()(httpClientV2: HttpClientV2, servicesConfig: Service
       .get(url"$urlGET")
       .execute[HttpResponse]
   }
-  
+
   def taxAccount(nino: String, taxYear: Int)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val urlGET = url(s"/v1/api/person/$nino/tax-account/$taxYear")
     httpClientV2
