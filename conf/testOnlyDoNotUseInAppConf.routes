@@ -17,3 +17,7 @@ GET         /check-income-tax/test-only/update-income/delete/:id                
 ->         /                          prod.Routes
 
 ->         /check-income-tax     mongoFeatureTogglesTestOnly.Routes
+
+GET           /v1/api/employment/employee/:nino/tax-year/:taxYear/employment-details                    @testOnly.controllers.ApiCallController.employmentDetails(nino: String, taxYear: Int)
+GET           /v1/api/person/:nino/tax-account/:taxYear                                                 @testOnly.controllers.ApiCallController.taxAccount(nino: String, taxYear: Int)
+GET           /v1/api/iabd/taxpayer/:nino/tax-year/:taxYear                                             @testOnly.controllers.ApiCallController.iabds(nino: String, taxYear: Int)
