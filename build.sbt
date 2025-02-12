@@ -23,7 +23,7 @@ lazy val playSettings: Seq[Setting[?]] = Seq(
 
 lazy val scoverageSettings = {
   val scoverageExcludePatterns =
-    List("<empty>", "Reverse.*", "dev.Routes.*", "tai.Routes.*", "prod.*", "testOnlyDoNotUseInAppConf.*", "config.*")
+    List("<empty>", "Reverse.*", "dev.Routes.*", "tai.Routes.*", "prod.*", "testOnlyDoNotUseInAppConf.*", "config.*", "testOnly.*")
 
   Seq(
     ScoverageKeys.coverageExcludedPackages := scoverageExcludePatterns.mkString("", ";", ""),
