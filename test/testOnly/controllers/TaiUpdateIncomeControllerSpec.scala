@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.testOnly
+package testOnly.controllers
 
 import builders.RequestBuilder
 import org.mockito.ArgumentMatchers.any
