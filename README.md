@@ -43,6 +43,12 @@ To verify the acceptance tests locally, follow the steps:
 - launch tai-frontend in terminal and execute the following command in the tai-frontend project directory: <br> `sbt "run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes"`
 - open [tai-acceptance-test-suite](https://github.com/hmrc/tai-acceptance-test-suite) repository in the terminal and execute the script: `./run_tests_local.sh`
 
+Endpoints for annual coding testing
+-----------------------------------
+These are authenticated so you must login via auth login stub before calling these GETs.
+- http://localhost:9230/check-income-tax/test-only/v1/api/employment/employee/tax-year/:taxYear/employment-details
+- http://localhost:9230/check-income-tax/test-only/v1/api/person/tax-account/:taxYear
+- http://localhost:9230/check-income-tax/test-only/v1/api/iabd/taxpayer/tax-year/:taxYear
 
 Acronyms
 --------
