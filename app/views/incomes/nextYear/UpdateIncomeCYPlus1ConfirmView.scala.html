@@ -18,9 +18,9 @@
 @import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
 @import uk.gov.hmrc.tai.util.MonetaryUtil
 @import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+@import views.html.incomes.nextYear.UpdateIncomeCYPlus1Template
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
-
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
   messages: Messages,
@@ -31,8 +31,7 @@
 @updateIncomeCYPlus1Template(
     employerName = viewModel.employerName,
     form = None,
-    heading = messages("tai.incomes.confirm.save.heading", viewModel.yearRange),
-    showCancel = false
+    heading = messages("tai.incomes.confirm.save.heading", viewModel.yearRange)
 ){
 
     <p class="govuk-body">
@@ -54,11 +53,4 @@
     <a id="confirmAndSend" class="govuk-button" role="button" href="@viewModel.onConfirm">
         @messages("tai.confirmAndSend")
     </a>
-
-
-    <p class="govuk-body">
-        <a class="govuk-link" href="@viewModel.onCancel">
-            @messages("tai.cancel")
-        </a>
-    </p>
 }
