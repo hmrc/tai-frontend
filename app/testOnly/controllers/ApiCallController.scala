@@ -33,24 +33,22 @@ class ApiCallController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendController(mcc) with I18nSupport with Logging {
 
-  def employmentDetails(nino: String, taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async {
+  def employmentDetails(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async {
     implicit request =>
-      taiConnector.employmentDetails(nino, taxYear).map { httpResponse =>
+      taiConnector.employmentDetails(request.taiUser.nino.nino, taxYear).map { httpResponse =>
         Status(httpResponse.status)(httpResponse.json)
       }
   }
 
-  def taxAccount(nino: String, taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async {
-    implicit request =>
-      taiConnector.taxAccount(nino, taxYear).map { httpResponse =>
-        Status(httpResponse.status)(httpResponse.json)
-      }
+  def taxAccount(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
+    taiConnector.taxAccount(request.taiUser.nino.nino, taxYear).map { httpResponse =>
+      Status(httpResponse.status)(httpResponse.json)
+    }
   }
-  def iabds(nino: String, taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async {
-    implicit request =>
-      taiConnector.iabds(nino, taxYear).map { httpResponse =>
-        Status(httpResponse.status)(httpResponse.json)
-      }
+  def iabds(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
+    taiConnector.iabds(request.taiUser.nino.nino, taxYear).map { httpResponse =>
+      Status(httpResponse.status)(httpResponse.json)
+    }
   }
 
 }
