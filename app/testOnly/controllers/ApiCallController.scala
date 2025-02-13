@@ -17,6 +17,7 @@
 package testOnly.controllers
 
 import com.google.inject.Inject
+import controllers.auth.AuthJourney
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,23 +28,25 @@ import scala.concurrent.ExecutionContext
 
 class ApiCallController @Inject() (
   mcc: MessagesControllerComponents,
-  taiConnector: TaiConnector
+  taiConnector: TaiConnector,
+  authenticate: AuthJourney
 )(implicit ec: ExecutionContext)
     extends FrontendController(mcc) with I18nSupport with Logging {
 
-  def employmentDetails(nino: String, taxYear: Int): Action[AnyContent] = Action.async { implicit request =>
-    taiConnector.employmentDetails(nino, taxYear).map { httpResponse =>
-      Status(httpResponse.status)(httpResponse.json)
-    }
+  def employmentDetails(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async {
+    implicit request =>
+      taiConnector.employmentDetails(request.taiUser.nino.nino, taxYear).map { httpResponse =>
+        Status(httpResponse.status)(httpResponse.json)
+      }
   }
 
-  def taxAccount(nino: String, taxYear: Int): Action[AnyContent] = Action.async { implicit request =>
-    taiConnector.taxAccount(nino, taxYear).map { httpResponse =>
+  def taxAccount(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
+    taiConnector.taxAccount(request.taiUser.nino.nino, taxYear).map { httpResponse =>
       Status(httpResponse.status)(httpResponse.json)
     }
   }
-  def iabds(nino: String, taxYear: Int): Action[AnyContent] = Action.async { implicit request =>
-    taiConnector.iabds(nino, taxYear).map { httpResponse =>
+  def iabds(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
+    taiConnector.iabds(request.taiUser.nino.nino, taxYear).map { httpResponse =>
       Status(httpResponse.status)(httpResponse.json)
     }
   }
