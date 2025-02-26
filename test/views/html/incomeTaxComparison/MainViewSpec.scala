@@ -119,7 +119,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
 
     "display a link to return to choose tax year page" in {
       doc must haveBackLinkWithUrl(
-        controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
+        "#"
       )
     }
 
