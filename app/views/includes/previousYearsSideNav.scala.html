@@ -21,10 +21,10 @@
 
 @(selectedYear: TaxYear, noOfPreviousYearsToShow: Int)(implicit messages: Messages)
 
-<div class="side-navigation--right govuk-!-margin-left-7">
-    <h2 id="heading" class="govuk-heading-m heading-section">@messages("tai.taxYearHeading")</h2>
+<!--<div class="side-navigation&#45;&#45;right govuk-!-margin-left-7">-->
+    <h2 id="heading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@messages("tai.taxYearHeading")</h2>
 
-    <nav id="previousYearsSideNav">
+    <nav id="previousYearsSideNav" aria-labelledby="heading">
         <ul class = "govuk-list">
             @for(year <- (TaxYear().prev.year) to (TaxYear().year - noOfPreviousYearsToShow) by -1) {
             @if(selectedYear.year != year){
@@ -40,4 +40,4 @@
         </ul>
 
     </nav>
-</div>
+<!--</div>-->

@@ -68,7 +68,7 @@ messages: Messages)
                 <div id="lastTaxYearIncome">
 
                     @if(employmentPairsList.nonEmpty) {
-                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section">
+                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section govuk-!-padding-bottom-2 govuk-!-margin-bottom-3">
                             @messages("tai.paye.incomeEmployment.heading")
                         </h2>
                         @incomeList(employmentPairsList, "employment")
@@ -105,10 +105,8 @@ messages: Messages)
                 </p>
             }
 
-                <div class="govuk-!-margin-top-8 govuk-!-margin-bottom-9">
-                <div class="print-this">
+                <div class="govuk-!-margin-top-8 govuk-!-margin-bottom-9 print-this">
                     <a class="print-this__link" href="#" id="printLink">@messages("tai.label.print") </a>
-                </div>
                 </div>
 
             </div>

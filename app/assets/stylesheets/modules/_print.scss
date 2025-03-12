@@ -1,10 +1,12 @@
 body.print-page {
-  background: #A9A9A9;
+  background: #a9a9a9;
   font-family: nta, Arial, sans-serif;
   margin: 0;
 }
 
-body.print-page .grid .inner-block { margin: 0 15px; }
+body.print-page .grid .inner-block {
+    margin: 0 15px;
+}
 
 body.print-page .column-whole {
   padding: 0 15px;
@@ -366,6 +368,7 @@ tr.print-pension-contributions-data td {
   html {
     margin: 0px;
   }
+
   body.print-page {
     background: #fff;
   }
