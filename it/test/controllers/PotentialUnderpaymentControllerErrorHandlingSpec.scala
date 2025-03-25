@@ -31,7 +31,6 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       "microservice.services.auth.port"                                 -> server.port(),
       "microservice.services.pertax.port"                               -> server.port(),
       "microservice.services.tai.port"                                  -> server.port(),
-      "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
       "microservice.services.citizen-details.port"                      -> server.port()
     )
     .build()

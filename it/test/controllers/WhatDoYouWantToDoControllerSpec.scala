@@ -66,7 +66,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             "auditing.enabled"                                                -> "false",
             "microservice.services.auth.port"                                 -> server.port(),
             "microservice.services.tai.port"                                  -> server.port(),
-            "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
             "microservice.services.citizen-details.port"                      -> server.port(),
             "microservice.services.pertax.port"                               -> server.port(),
             "feature.web-chat.enabled"                                        -> true
@@ -129,7 +128,6 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           "auditing.enabled"                                                -> "false",
           "microservice.services.auth.port"                                 -> server.port(),
           "microservice.services.tai.port"                                  -> server.port(),
-          "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
           "microservice.services.citizen-details.port"                      -> server.port(),
           "feature.web-chat.enabled"                                        -> false
         )
