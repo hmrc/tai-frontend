@@ -62,7 +62,7 @@ messages: Messages)
                 <div id="lastTaxYearIncome">
 
                     @if(employmentPairsList.nonEmpty) {
-                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section">
+                        <h2 id="lastYearEmploymentHeading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">
                             @messages("tai.paye.incomeEmployment.heading")
                         </h2>
 
@@ -70,7 +70,7 @@ messages: Messages)
                     }
 
                     @if(pensionPairsList.nonEmpty) {
-                        <h2 id="lastYearPensionHeading" class="govuk-heading-m heading-section">
+                        <h2 id="lastYearPensionHeading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">
                             @messages("tai.paye.incomePension.heading")
                         </h2>
 
@@ -79,7 +79,7 @@ messages: Messages)
                 </div>
             }
 
-            <h3 class="govuk-heading-m heading-section">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
+            <h3 class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
             <p class="govuk-body">
                 @messages("tai.paye.lastTaxYear.incorrectInformation.text")
                 @link(

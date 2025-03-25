@@ -45,7 +45,7 @@
                 <h1 class="govuk-heading-xl">@messages("check.jrs.claims.title")</h1>
 
 
-                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
+                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8 govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@messages("check.jrs.from", YearAndMonth.formattedDate(firstClaimDate(appConfig), languageUtils.getCurrentLang))</h2>
 
                 @for(employers <- viewModel.employers) {
                     @if(employers.hasMultipleClaims) {
@@ -72,10 +72,10 @@
                     <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.should.have.claimed.multiple.furlough")</p>
                 }
 
-                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
+                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8 govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@messages(s"check.jrs.${employerMessageKey}.can.claim.heading")</h2>
                 <p class="govuk-body">@messages(s"check.jrs.${employerMessageKey}.can.claim")</p>
 
-                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8">@messages("check.jrs.information.is.different.heading")</h2>
+                <h2 class="govuk-heading-m heading-section govuk-!-margin-top-8 govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@messages("check.jrs.information.is.different.heading")</h2>
                 <p class="govuk-body">@messages(s"check.jrs.speak.to.${employerMessageKey}")</p>
                 <p class="govuk-body">@messages("check.jrs.you.can")
                     @link(url = messages("jrs.report.fraud.link"), id = Some("report-fraud-link"), copy = messages("check.jrs.report.fraud"), externalLink = true)

@@ -17,32 +17,25 @@
     float:left;
 }
 
-.chart span {
-    position:absolute;
-    top:22%;
-    margin-left:0.26315789473684210526em;
-    font-weight:700;
-}
-
 .tax-bar {
     position:relative;
-    height:0.52631578947368421053em; /* 10 / 19 */
-    border:0px solid #6F777B;
+    height: calc(10em / 19);
+    border:0px solid #6f777b;
     width:auto;
 }
 
 .tax-point {
-    height:0.52631578947368421053em; /* 10 / 19 */
+    height: calc(10em / 19);
     width:2px;
-    background:#BFC1C3;
+    background:#bfc1c3;
     position:absolute;
 }
 
 .number-bar {
     position:relative;
     width:auto;
-    height:0.78947368421052631579em;
-    margin:0.263158em 0;
+    height: calc(15em / 19);
+    margin:calc(5em / 19) 0;
 }
 
 .number-bar span {
@@ -68,34 +61,33 @@
     text-align:right;
 }
 
-.key {
-    margin-left: 0px;
-    margin-bottom: 1em;
-    line-height:1.578947368421053em;
-}
-
 .key-icon {
     display:block;
-    width:1.578947368421053em;
-    height:1.578947368421053em;
+    width: calc(30em / 19);
+    height:calc(30em / 19);
     background-color:transparent;
-    float:left;
-    clear:both;
-    margin-right:0.5em;
+    margin-right: .5em;
 }
 
 .key-icon.Band-unused {
-    height:1.31578947368421052632em;
-    width:1.31578947368421052632em;
+    height: calc(25em / 19);
+    width: calc(25em / 19);
 }
 
-.TaxFree { background-color:#4c2c92; }
+.TaxFree {
+    background-color:#4c2c92;
+}
 
-.Band { background-color: #f499be; }
+.Band {
+    background-color: #f499be;
+}
 
-.Band-unused { background-color:#BFC1C3; }
+.Band-unused {
+    background-color:#bfc1c3;
+}
 
-.income-tax, .swatch {
+.income-tax,
+.swatch {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNjAgMTYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0aXRsZT5Hcm91cCA0PC90aXRsZT48ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9Ii4wMDcxMDQ4Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDAgNDApIiBmaWxsPSIjQTkwQzFDIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiLz48cmVjdCB4PSI4MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIi8+PHJlY3QgeT0iODAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIvPjxyZWN0IHg9IjgwIiB5PSI4MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIi8+PC9nPjwvZz48L3N2Zz4=');
     background-size: 12px;
     background-color: transparent;

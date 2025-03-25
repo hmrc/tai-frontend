@@ -6,38 +6,16 @@ $govuk-include-default-font-face: false;
 @import 'modules/tax_bar';
 @import 'modules/card';
 
-
-
-
-@media (max-width: 768px) {
- .set-no-row-border {
-  border-bottom: 0;
- }
-}
-
-
-@media(min-width:641px) {
-  .side-navigation {
-    margin-left:40px;
-  }
-}
-
-.carry-over{
-  -ms-word-break: break-all;
-
+.carry-over {
   word-break: break-word;
   word-wrap: break-word;
   overflow-wrap: break-word;
-
-  -webkit-hyphens: none;
-  -moz-hyphens: none;
   hyphens: none;
 }
 
 .border-bottom-1px {
   border-bottom: 1px solid #ccc;
 }
-
 
 .anchor-webchat {
   position: fixed;
@@ -132,15 +110,10 @@ header + .hmrc-user-research-banner {
 }
 
 .flex-container {
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
-  -ms-flex-direction: row;
   flex-direction: row;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  justify-content: flex-start;
-  padding: 0 15px;
+//   justify-content: flex-start;
 }
 
 
