@@ -27,11 +27,11 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
   override def fakeApplication() = GuiceApplicationBuilder()
     .configure(
-      "auditing.enabled"                                                -> "false",
-      "microservice.services.auth.port"                                 -> server.port(),
-      "microservice.services.pertax.port"                               -> server.port(),
-      "microservice.services.tai.port"                                  -> server.port(),
-      "microservice.services.citizen-details.port"                      -> server.port()
+      "auditing.enabled"                           -> "false",
+      "microservice.services.auth.port"            -> server.port(),
+      "microservice.services.pertax.port"          -> server.port(),
+      "microservice.services.tai.port"             -> server.port(),
+      "microservice.services.citizen-details.port" -> server.port()
     )
     .build()
 
