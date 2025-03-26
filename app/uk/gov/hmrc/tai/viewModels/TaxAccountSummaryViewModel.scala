@@ -96,4 +96,61 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       totalEstimatedIncome = totalEstimatedIncome
     )
   }
+
+  def apply(
+    taxAccountSummary: Option[TaxAccountSummary],
+    isAnyFormInProgress: TimeToProcess,
+    nonTaxCodeIncome: Option[NonTaxCodeIncome],
+    incomesSources: IncomeSources
+  )(implicit messages: Messages): TaxAccountSummaryViewModel = {
+
+    val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+    val title = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+
+    val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.fold(BigDecimal(0))(_.taxFreeAmount), 0))
+    val estimatedIncomeTaxAmount = withPoundPrefixAndSign(
+      MoneyPounds(taxAccountSummary.fold(BigDecimal(0))(_.totalEstimatedTax), 0)
+    )
+
+    val employmentViewModels =
+      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+
+    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+
+    def employmentCeasedThisYear(employment: Employment): Boolean = {
+      val currentYear = TaxYear()
+      // Default to true as if there is no endDate it's potentially ceased
+      employment.endDate.fold(true) { endDate =>
+        !(endDate isBefore currentYear.start)
+      }
+    }
+
+    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.collect {
+      case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
+        IncomeSourceViewModel.createFromTaxedIncome(ti)
+    }
+
+    val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
+
+    val totalEstimatedIncome = withPoundPrefixAndSign(
+      MoneyPounds(taxAccountSummary.fold(BigDecimal(0))(_.totalEstimatedIncome), 0)
+    )
+
+    TaxAccountSummaryViewModel(
+      header = header,
+      title = title,
+      taxFreeAmount = taxFreeAmount,
+      estimatedIncomeTaxAmount = estimatedIncomeTaxAmount,
+      lastTaxYearEnd = lastTaxYearEnd,
+      employments = employmentViewModels,
+      pensions = pensionsViewModels,
+      ceasedEmployments = ceasedEmploymentViewModels,
+      displayIyaBanner = taxAccountSummary.fold(BigDecimal(0))(_.totalInYearAdjustmentIntoCY) > 0,
+      isAnyFormInProgress = isAnyFormInProgress,
+      otherIncomeSources = nonTaxCodeIncome.fold(Seq.empty[IncomeSourceViewModel])(IncomeSourceViewModel(_)),
+      rtiAvailable = incomesSources.isRtiAvailable,
+      totalEstimatedIncome = totalEstimatedIncome
+    )
+  }
+
 }

@@ -33,7 +33,7 @@ import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
@@ -67,7 +67,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val sessionId = "testSessionId"

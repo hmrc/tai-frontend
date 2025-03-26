@@ -51,7 +51,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       sequenceNumber = 1,
       hasPayrolledBenefit = false,
       receivingOccupationalPension = false,
-      cessationPay = None
+      cessationPay = None,
+      employmentType = EmploymentIncome
     )
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
@@ -84,7 +85,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
     when(
       taxAccountService
-        .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+        .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
     )
       .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
@@ -122,7 +123,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
@@ -147,7 +148,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
           .thenReturn(Future.successful(Right(None)))
 
@@ -170,7 +171,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
@@ -192,7 +193,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
@@ -216,7 +217,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         when(
           taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(newEmploymentId))(any(), any())
+            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(newEmploymentId))(any())
         )
           .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
 

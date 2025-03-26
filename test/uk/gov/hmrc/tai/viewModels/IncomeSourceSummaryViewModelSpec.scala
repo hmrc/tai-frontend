@@ -140,7 +140,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -169,7 +170,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -197,7 +199,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val exception = the[RuntimeException] thrownBy createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -225,7 +228,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -251,7 +255,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           7,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val companyCars = Seq(
@@ -302,7 +307,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           employmentId,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val companyCars = Seq(
@@ -360,7 +366,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val companyCars = Seq(
@@ -420,7 +427,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -447,7 +455,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val companyCars = Seq(
@@ -500,7 +509,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -545,7 +555,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -592,7 +603,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -635,7 +647,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
@@ -661,7 +674,8 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
