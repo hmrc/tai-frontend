@@ -65,7 +65,7 @@
   }
 
   .display-for-print,
-  .display-for-print:link {
+  .display-for-print:any-link {
     display: inline !important;
     visibility: visible !important;
     text-decoration: none;
