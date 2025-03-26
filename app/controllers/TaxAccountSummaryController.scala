@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome, TaxAccountSummary, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.ApiBackendChoice
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import views.html.IncomeTaxSummaryView
@@ -46,6 +47,7 @@ class TaxAccountSummaryController @Inject() (
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,
   trackingService: TrackingService,
+  apiBackendChoice: ApiBackendChoice,
   implicit val
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
@@ -92,7 +94,7 @@ class TaxAccountSummaryController @Inject() (
     )
 
   def onPageLoad: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    if (request.getQueryString("newApi").isDefined) {
+    if (apiBackendChoice.isNewApiBackendEnabled) {
       onPageLoadNew
     } else {
       onPageLoadOld

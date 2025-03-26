@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHe
 case class TaxAccountSummaryViewModel(
   header: String,
   title: String,
-  taxFreeAmount: String,
-  estimatedIncomeTaxAmount: String,
+  taxFreeAmount: Option[String],
+  estimatedIncomeTaxAmount: Option[String],
   lastTaxYearEnd: String,
   employments: Seq[IncomeSourceViewModel],
   pensions: Seq[IncomeSourceViewModel],
@@ -36,7 +36,7 @@ case class TaxAccountSummaryViewModel(
   isAnyFormInProgress: TimeToProcess,
   otherIncomeSources: Seq[IncomeSourceViewModel],
   rtiAvailable: Boolean,
-  totalEstimatedIncome: String
+  totalEstimatedIncome: Option[String]
 )
 
 object TaxAccountSummaryViewModel extends ViewModelHelper {
@@ -83,8 +83,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     TaxAccountSummaryViewModel(
       header = header,
       title = title,
-      taxFreeAmount = taxFreeAmount,
-      estimatedIncomeTaxAmount = estimatedIncomeTaxAmount,
+      taxFreeAmount = Some(taxFreeAmount),
+      estimatedIncomeTaxAmount = Some(estimatedIncomeTaxAmount),
       lastTaxYearEnd = lastTaxYearEnd,
       employments = employmentViewModels,
       pensions = pensionsViewModels,
@@ -93,7 +93,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
       rtiAvailable = incomesSources.isRtiAvailable,
-      totalEstimatedIncome = totalEstimatedIncome
+      totalEstimatedIncome = Some(totalEstimatedIncome)
     )
   }
 
@@ -107,10 +107,9 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
     val title = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
 
-    val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.fold(BigDecimal(0))(_.taxFreeAmount), 0))
-    val estimatedIncomeTaxAmount = withPoundPrefixAndSign(
-      MoneyPounds(taxAccountSummary.fold(BigDecimal(0))(_.totalEstimatedTax), 0)
-    )
+    val taxFreeAmount = taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.taxFreeAmount, 0)))
+    val estimatedIncomeTaxAmount =
+      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedTax, 0)))
 
     val employmentViewModels =
       incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
@@ -132,9 +131,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 
-    val totalEstimatedIncome = withPoundPrefixAndSign(
-      MoneyPounds(taxAccountSummary.fold(BigDecimal(0))(_.totalEstimatedIncome), 0)
-    )
+    val totalEstimatedIncome =
+      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedIncome, 0)))
 
     TaxAccountSummaryViewModel(
       header = header,

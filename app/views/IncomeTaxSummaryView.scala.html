@@ -198,31 +198,39 @@
 
 
                 <h3 class="govuk-heading-s" >@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")</h3>
-                <p class=" govuk-body govuk-!-margin-bottom-0">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
-                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                    <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
-                    <span class="display-block heading-36">@viewModel.taxFreeAmount</span>
-                </p>
-                <p class=" govuk-body">
-                    @link(
-                        id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount().url,
-                        copy=Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
-                    )
-                </p>
+                @if(viewModel.taxFreeAmount.isDefined) {
+                    <p class=" govuk-body govuk-!-margin-bottom-0">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
+                        <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
+                        <span class="display-block heading-36">@viewModel.taxFreeAmount.get</span>
+                    </p>
+                    <p class=" govuk-body">
+                        @link(
+                            id=Some("taxFreeAmountLink"),
+                            url=routes.TaxFreeAmountController.taxFreeAmount().url,
+                            copy=Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
+                        )
+                    </p>
+                } else {
+                    <p class=" govuk-body govuk-!-margin-bottom-0">Your tax-free amount is unavailable. Try again later.</p>
+                }
                 <h3 class="govuk-heading-s">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
-                <p class="govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
-                <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                    <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
-                    <span class="display-block heading-36">@viewModel.estimatedIncomeTaxAmount</span>
-                </p>
-                <p class="govuk-body">
-                    @link(
-                        id=Some("estimatedIncomeTaxLink"),
-                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
-                        copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
-                    )
-                </p>
+                @if(viewModel.estimatedIncomeTaxAmount.isDefined) {
+                    <p class="govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
+                    <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
+                        <span class="govuk-visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
+                        <span class="display-block heading-36">@viewModel.estimatedIncomeTaxAmount.get</span>
+                    </p>
+                    <p class="govuk-body">
+                        @link(
+                            id=Some("estimatedIncomeTaxLink"),
+                            url=routes.EstimatedIncomeTaxController.estimatedIncomeTax().url,
+                            copy=Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")
+                        )
+                    </p>
+                } else {
+                    <p class=" govuk-body govuk-!-margin-bottom-0">Your estimated Income Tax is unavailable. Try again later.</p>
+                }
             </div>
 
         </div>
