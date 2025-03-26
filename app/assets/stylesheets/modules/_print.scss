@@ -1,362 +1,30 @@
-body.print-page {
-  background: #a9a9a9;
-  font-family: nta, Arial, sans-serif;
-  margin: 0;
+.print-banner {
+  display: none;
+  visibility: hidden;
 }
 
-body.print-page .grid .inner-block {
-    margin: 0 15px;
+.only-visible-on-print {
+    display:none;
+    visibility: hidden
 }
 
-body.print-page .column-whole {
-  padding: 0 15px;
-}
-body.print-page .column-third,
-body.print-page .column-two-thirds {
-  width: 100%;
-}
-body.print-page .nav {
-  background-color: #0B0C0C;
-  height: 50px;
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-body.print-page .nav .nav-container {
-  margin: 0 auto;
-  width: auto;
-}
-body.print-page .nav .nav-container .column-half {
-  float: left;
-  width: 50%;
-}
-body.print-page .nav .nav-container .back-link a {
-  border-bottom: 1px solid #fff;
-  color: #fff;
-  display: inline-block;
-  font-size: 14px;
-  line-height: 1.1428571429;
-  margin-left: 5px;
-  margin-top: 15px;
-  padding-left: 14px;
-  position: relative;
-  text-decoration: none;
-}
-body.print-page .nav .nav-container .back-link a::before {
-  border-top: 5px solid transparent;
-  border-right: 6px solid #fff;
-  border-bottom: 5px solid transparent;
-  content: '';
-  display: block;
-  height: 0;
-  left: 0;
-  margin-top: -6px;
-  position: absolute;
-  top: 50%;
-  width: 0;
-}
-body.print-page .nav .nav-container .print-button {
-  margin-top: 5px;
-  text-align: right;
-}
-body.print-page .nav .nav-container .print-button a {
-  background: #2B8CC4 url("/check-income-tax/assets/images/print-icon.png") center left no-repeat;
-  border: none;
-  -moz-box-shadow: 0 2px 0 #005EA5;
-  -webkit-box-shadow: 0 2px 0 #005EA5;
-  box-shadow: 0 2px #005EA5;
-  color: #fff;
-  display: inline-block;
-  font-weight: bold;
-  line-height: 25px;
-  margin-right: 5px;
-  padding: 7px 10px 4px 34px;
-  position: relative;
-  text-decoration: none;
-  vertical-align: top;
-}
-body.print-page .print-wrapper .box {
-  background-color: #fff;
-  margin: 60px 5px 10px 5px;
-  min-height: 900px;
-  padding: 10px 20px;
-  width: auto;
-}
-body.print-page .print-wrapper .box p {
-  margin-top: 0.3125em;
-  margin-bottom: 1.25em;
-}
-body.print-page .print-wrapper .box .header {
-  margin-bottom: 5px;
-  margin-top: 5px;
-}
-body.print-page .print-wrapper .box .header .logo {
-  float: left;
-}
-body.print-page .print-wrapper .box .header .logo img {
-  height: 48px;
-  width: 180px;
-}
-body.print-page .print-wrapper .box .header .title {
-  float: left;
-  text-align: left;
-}
-body.print-page .print-wrapper .box .header .title h1 {
-  font-family: Arial,sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-  float: left;
-  margin: 0;
-  padding-top: 22px;
-}
-body.print-page .print-wrapper .box hr {
-  border-top: 10px solid #0b0c0c;
-  display: block;
-  margin: 0;
-  padding: 0;
-}
-body.print-page .print-wrapper .box .addresses {
-  margin-top: 15px;
-}
-body.print-page .print-wrapper .box .addresses .recipient-wrapper {
-  font-size: 14px;
-  line-height: 22px;
-  margin-top: 10px;
-  text-transform: uppercase;
-}
-body.print-page .print-wrapper .box .addresses .sender-wrapper .sender,
-body.print-page .print-wrapper .box .addresses .sender-wrapper .url,
-body.print-page .print-wrapper .box .addresses .sender-wrapper .date {
-  color: #0b0c0c;
-  font-size: 14px;
-  line-height: 22px;
-  margin-left: 0;
-}
-body.print-page .print-wrapper .box .addresses .sender-wrapper .sender {
-  margin-top: 20px;
-}
-body.print-page .print-wrapper .box .addresses .sender-wrapper .url {
-  margin-bottom: 30px;
-  margin-top: 20px;
-}
-body.print-page .print-wrapper .box .main-content {
-  font-size: 14px;
-  margin-top: 15px;
-}
-body.print-page .print-wrapper .box .main-content .name {
-  text-transform: uppercase;
-}
-body.print-page .print-wrapper .box .main-content .your-nino {
-  border: 2px solid #000;
-  display: inline-block;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 5px 0 20px;
-  padding: 5px 10px;
-}
-body.print-page .print-wrapper .box .main-content .your-nino .nino {
-  color: #0b0c0c;
-  display: block;
-  font-size: 20px;
-  font-weight: bold;
-}
-body.print-page .print-wrapper .box .main-content ul {
-  list-style: disc;
-  padding-left: 20px;
-}
-body.print-page .print-wrapper .box .main-content h2 {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0;
-}
+.print-this {
+  background-image: url(../images/printer-icon-hmrc-1.svg);
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  margin: 1em 0;
 
-@media (min-width: 641px) {
-  body.print-page .column-whole {
-    padding: 0 15px;
-  }
-  body.print-page .column-third {
-    padding: 0 15px;
-    box-sizing: border-box;
-  }
-}
-@media (min-width: 641px) and (min-width: 641px) {
-  body.print-page .column-third {
-    float: left;
-    width: 33.33333%;
-  }
-}
-@media (min-width: 641px) {
-  body.print-page .column-two-thirds {
-    padding: 0 15px;
-    box-sizing: border-box;
-  }
-}
-@media (min-width: 641px) and (min-width: 641px) {
-  body.print-page .column-two-thirds {
-    float: left;
-    width: 66.66667%;
-  }
-}
-@media (min-width: 641px) {
-  body.print-page .column-half {
-    padding: 0 15px;
-    box-sizing: border-box;
-  }
-}
-@media (min-width: 641px) and (min-width: 641px) {
-  body.print-page .column-half {
-    float: left;
-    width: 50%;
-  }
-}
-@media (min-width: 641px) {
-  body.print-page .nav .nav-container {
-    width: 600px;
-  }
-  body.print-page .nav .nav-container .back-link a {
-    margin-left: 0;
-  }
-  body.print-page .nav .nav-container .print-button a {
-    margin-right: 0;
-  }
-  body.print-page .print-wrapper .box {
-    margin: 60px auto 10px;
-    padding: 25px 40px;
-    width: 520px;
-  }
-  body.print-page .print-wrapper .box .header .title {
-    float: right;
-    text-align: right;
-  }
-  body.print-page .print-wrapper .box .header .title h1 {
-    font-size: 21px;
-    float: right;
-    padding-top: 22px;
-  }
-  body.print-page .print-wrapper .box .addresses .recipient-wrapper {
-    margin-top: 40px;
-  }
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .sender,
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .url,
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .date {
-    margin-left: 50px;
-  }
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .sender {
-    margin-top: 5px;
-  }
-  body.print-page .print-wrapper .box .main-content .your-nino .nino {
-    display: inline;
-  }
-}
-@media (min-width: 769px) {
-  body.print-page .nav .nav-container {
-    width: 700px;
-  }
-  body.print-page .print-wrapper .box {
-    padding: 25px 50px;
-    width: 600px;
-  }
-  body.print-page .print-wrapper .box .header .title h1 {
-    font-size: 22px;
-    padding-top: 22px;
-  }
-}
+  &__link {
+      color: #000 !important;
+      padding-left: 25px;
+      text-underline-offset: .2em;
+      font-family: "GDS Transport", arial, sans-serif;
 
-.print-table__header--highlight {
-    border-bottom: 2px solid #005EA5;
-}
-.print-table__header--secondary {
-    color: #6f777b;
-}
-
-.print-table__link{
-    padding: 5px 0px 5px 0px;
-    font-size: 16px;
-}
-
-.print-table {
-    text-align: left;
-}
-
-.print-table th {
-    width: 30%;
-    padding-bottom: 6px;
-}
-
-#print-date-column th{
-    width: 20%;
-    padding-bottom: 6px;
-}
-
-.print-table {
-  border-collapse: collapse;
-}
-
-tr.print-pension-contributions-data td {
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: #bfc1c3;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.print-table__row--bold td, th{
-  font-weight: bold;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  border-bottom-color: #bfc1c3;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-#print-date-column {
-  width: 18%;
-}
-
-#print-taxable-income-column {
-  width: 23%;
-}
-
-#print-income-tax-paid-column {
-  width: 22%;
-}
-
-.print-text--right {
-  text-align: right;
-}
-
-@-ms-viewport {
-  width: device-width;
-}
-@-o-viewport {
-  width: device-width;
-}
-@-ms-viewport {
-  width: device-width;
-}
-@-o-viewport {
-  width: device-width;
-}
-@-ms-viewport {
-  width: device-width;
-}
-@-o-viewport {
-  width: device-width;
-}
-.print-grid-row:after {
-  content: "";
-  display: block;
-  clear: both;
-}
-.print-grid-row {
-  margin: 0 -15px;
-}
-
-#print-icon-important-multi {
-    float: left;
-    padding-bottom: 12%;
-    padding-right: 2%;
+      &:hover {
+        text-decoration-thickness: max(3px);
+      }
+  }
 }
 
 @media print {
@@ -365,216 +33,97 @@ tr.print-pension-contributions-data td {
     margin: 0mm;
     padding: 1cm .5cm;
   }
+
   html {
     margin: 0px;
   }
 
-  body.print-page {
-    background: #fff;
+  .govuk-grid-row {
+    margin: 0;
   }
-  body.print-page .print-wrapper {
-    margin: 20px auto 0;
-    width: 90%;
-  }
-  body.print-page .print-wrapper .nav {
-    display: none;
-    visibility: hidden;
-  }
-  body.print-page .print-wrapper .box {
+
+  [class*="govuk-grid-column"] {
+    width: auto;
     margin: 0;
     padding: 0;
-    width: 100%;
-  }
-  body.print-page .print-wrapper .box .column-third {
-    float: left;
-    width: 33.3%;
-  }
-  body.print-page .print-wrapper .box .column-two-thirds {
-    float: left;
-    width: 66.6%;
-  }
-  body.print-page .print-wrapper .box .column-half {
-    float: left;
-    width: 50%;
-  }
-  body.print-page .print-wrapper .box .header .logo {
-    float: left;
-  }
-  body.print-page .print-wrapper .box .header .title {
-    float: right;
-  }
-  body.print-page .print-wrapper .box .header .title h1 {
-    font-size: 22px;
-    float: right;
-    padding-top: 22px;
-  }
-  body.print-page .print-wrapper .box .addresses .recipient-wrapper {
-    margin-top: 50px;
-  }
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .sender,
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .date,
-  body.print-page .print-wrapper .box .addresses .sender-wrapper .url {
-    margin-left: 60px;
-  }
-  body.print-page .print-wrapper .box .main-content {
-    width: 90%;
-  }
-  body.print-page .print-wrapper .box .header .logo {
-    float: left;
-  }
-  body.print-page .print-wrapper .box .header .logo img {
-    height: 48px;
-    width: 180px;
-  }
-  body.print-page {
-    background: #A9A9A9;
-    font-family: "nta", Arial, sans-serif;
-    margin: 0;
-  }
-  body.print-page .column-whole {
-    padding: 0 15px;
-  }
-  body.print-page .column-third,
-  body.print-page .column-two-thirds {
-    width: 100%;
+    float: none;
   }
 
-  body.print-page .print-wrapper .box .main-content .your-nino .nino {
-    color: #0b0c0c;
-    display: inline;
-    font-size: 20px;
-    font-weight: bold;
-  }
-
-
-
-  body.printable-page div.grid.grid-1-3 .inner-block , .hide-for-print{
-    display: none;
-    visibility: hidden;
-  }
-
-  body.printable-page .print-banner {
-    display: block;
+  .print-banner {
+    display: flex;
+    justify-content: space-between;
     visibility: visible;
     border-bottom: 3px solid #b1b4b6;
     margin-bottom: 30px;
     padding-bottom: 10px;
-   }
 
-  body.printable-page .print-banner .title {
-    float: right;
-    text-align: right;
+    img {
+        width: 180px;
+        aspect-ratio: auto 30 / 8;
+        height: 48px;
+    }
   }
 
-  body.printable-page .print-banner img {
-    width: 180px;
-    aspect-ratio: auto 180 / 48;
-    height: 48px;
+  .display-for-print,
+  .display-for-print:link {
+    display: inline !important;
+    visibility: visible !important;
+    text-decoration: none;
+    color: black;
   }
 
-  body.printable-page .print-banner .hmrc-logo {
-    float:left;
-    margin-top:10px;
+  a[href]:after {
+    content: none !important;
   }
 
-  body.printable-page .print-banner .name{
-    text-align: right;
-    padding-top: 18px;
-  }
-
-
-  body.printable-page h1.heading-xlarge {
-    font-size: 2em;
-  }
-
-  body.printable-page h3.heading-large {
-    font-size: 1.5em;
-  }
-
-  body.printable-page .hmrc-user-research-banner,
-  body.printable-page .cbanner-govuk-cookie-banner,
-  body.printable-page a[href],
-  body.printable-page .hide-for-print,
-  body.printable-page .beta-banner,
-  body.printable-page header[role=banner],
-  body.printable-page .report-error,
-  body.printable-page.historic-pay-as-you-earn .govuk-phase-banner,
-  body.printable-page.historic-pay-as-you-earn .govuk-footer,
-  body.printable-page .govuk-phase-banner,
-  body.printable-page .govuk-footer,
-  body.printable-page .service-info {
+  header[role=banner],
+  header,
+  nav,
+  footer,
+  .hmrc-user-research-banner,
+  .cbanner-govuk-cookie-banner,
+  a[href]:not(.card-link, .display-for-print),
+  .hide-for-print,
+  .beta-banner,
+  .report-error,
+  .historic-pay-as-you-earn .govuk-phase-banner,
+  .historic-pay-as-you-earn .govuk-footer,
+  .govuk-phase-banner,
+  .govuk-footer,
+  .service-info,
+  .govuk-back-link,
+  .govuk-summary-card + p:has(.govuk-link),
+   #iForms {
     display: none;
     visibility: hidden;
   }
 
-  body.govuk-template__body .display-tax-code-for-print {
-      display: inline!important;
-      visibility: visible!important;
-      text-decoration: none;
-      color: black;
-  }
-
-  body.printable-page a[href]:after {
-    content: none!important;
-  }
-
-  body.printable-page.historic-pay-as-you-earn .column-two-thirds,
-  body.printable-page.historic-pay-as-you-earn .grid-2-3 {
+  .historic-pay-as-you-earn .column-two-thirds,
+  .historic-pay-as-you-earn .grid-2-3 {
     width: 100%;
   }
 
-  body.printable-page  div.govuk-grid-column-two-thirds {
-    width: 95%!important;
-    margin: 30px!important;
+  .future-pay-as-you-earn-summary .table__row--top-border,
+  .future-pay-as-you-earn-summary .table__footer--highlight,
+  .future-pay-as-you-earn-summary .highlight {
+    background-color:#fff
   }
 
-
-  body.printable-page.future-pay-as-you-earn-summary .table__row--top-border,
-  body.printable-page.future-pay-as-you-earn-summary .table__footer--highlight,
-  body.printable-page.future-pay-as-you-earn-summary .highlight {
-  background-color:#fff
-  }
- body.printable-page .only-visible-on-print {
+  .only-visible-on-print {
     display: inline-block;
     visibility: visible;
- }
+  }
 
-
-   body.printable-page div.card-body  {
-     background-color:#fff!important;
+   div.card-body  {
+     background-color: #fff !important;
    }
 
-   body.printable-page h3.card-heading a {
+   h3.card-heading a {
      display: block!important;
      visibility: visible!important;
    }
 
-   body.printable-page #taxCodesLink {
-   display:inline!important;
-   visibility:visible!important;
-   color:black;
-   text-decoration:none;
-   }
-
-  body.printable-page #taxOnEmploymentIncomeDesc > #taxFreeAmountLink {
-  display:inline!important;
-  visibility:visible!important;
-  color:black;
-  text-decoration:none;
-  }
-
-  body.printable-page #estimatedIncomeLowDesc > #taxFreeAmountLink {
-  display:inline!important;
-  visibility:visible!important;
-  color:black;
-  text-decoration:none;
-  }
-
-  +body.printable-page thead {display: table-row-group;}
-
-  body.printable-page details.govuk-details.only-visible-on-print > summary {
+  details.govuk-details.only-visible-on-print > summary {
     color: #000;
   }
-
-
 }
