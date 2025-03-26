@@ -64,6 +64,7 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
     httpHandler
       .getFromApiV2(employmentOnlyUrl(nino, id, taxYear))
       .map(json =>
+        // todo asOpt is too forgiving
         (json \ "data").asOpt[Employment].map { employment =>
           employment.copy(startDate = filterDate(employment.startDate))
         }

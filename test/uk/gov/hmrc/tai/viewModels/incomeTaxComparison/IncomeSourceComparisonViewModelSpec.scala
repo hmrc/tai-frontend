@@ -65,8 +65,36 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         )
 
         val employmentCY = Seq(
-          Employment("employment1", Live, None, Some(LocalDate.now), None, Nil, "", "", 1, None, false, false, EmploymentIncome),
-          Employment("employment2", Live, None, Some(LocalDate.now), None, Nil, "", "", 2, None, false, false, EmploymentIncome)
+          Employment(
+            "employment1",
+            Live,
+            None,
+            Some(LocalDate.now),
+            None,
+            Nil,
+            "",
+            "",
+            1,
+            None,
+            false,
+            false,
+            EmploymentIncome
+          ),
+          Employment(
+            "employment2",
+            Live,
+            None,
+            Some(LocalDate.now),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false,
+            EmploymentIncome
+          )
         )
 
         val incomeSourceComparisonViewModel =
@@ -110,8 +138,36 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
           )
 
         val employmentCY = Seq(
-          Employment("employment1", Live, None, Some(LocalDate.now), None, Nil, "", "", 1, None, false, false, EmploymentIncome),
-          Employment("employment2", Live, None, Some(LocalDate.now), None, Nil, "", "", 2, None, false, false, EmploymentIncome)
+          Employment(
+            "employment1",
+            Live,
+            None,
+            Some(LocalDate.now),
+            None,
+            Nil,
+            "",
+            "",
+            1,
+            None,
+            false,
+            false,
+            EmploymentIncome
+          ),
+          Employment(
+            "employment2",
+            Live,
+            None,
+            Some(LocalDate.now),
+            None,
+            Nil,
+            "",
+            "",
+            2,
+            None,
+            false,
+            false,
+            EmploymentIncome
+          )
         )
 
         val incomeSourceComparisonViewModel =
@@ -182,7 +238,21 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
           TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
         val employmentCY =
-          Employment("employment1", Live, None, Some(LocalDate.now), None, Nil, "", "", 3, None, false, false, EmploymentIncome)
+          Employment(
+            "employment1",
+            Live,
+            None,
+            Some(LocalDate.now),
+            None,
+            Nil,
+            "",
+            "",
+            3,
+            None,
+            false,
+            false,
+            EmploymentIncome
+          )
 
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))

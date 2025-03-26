@@ -53,15 +53,19 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
+  val mockTrackingService: TrackingService = mock[TrackingService]
+  val mockEmploymentService: EmploymentService = mock[EmploymentService]
 
   def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
     taxAccountService,
     taxAccountSummaryService,
+    mockEmploymentService,
     auditService,
     mockAuthJourney,
     appConfig,
     mcc,
     inject[IncomeTaxSummaryView],
+    mockTrackingService,
     inject[ErrorPagesHandler]
   )
 
@@ -90,7 +94,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         )
       )
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any())).thenReturn(
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(
         Future.successful(
           Map.empty[String, BigDecimal]
         )

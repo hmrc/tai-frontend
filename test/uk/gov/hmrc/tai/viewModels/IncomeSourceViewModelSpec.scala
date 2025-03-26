@@ -253,7 +253,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
 
   "createFromTaxedIncome" must {
     "transform a taxedIncome to a IncomeSourceViewModel for a live employment" in {
-      val taxedIncome = TaxedIncome(liveEmployment1, empEmployment1)
+      val taxedIncome = TaxedIncome(Some(liveEmployment1), empEmployment1)
       val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
       val expected =
         IncomeSourceViewModel(
@@ -283,21 +283,24 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
 
     "detailsLinkLabel" must {
       "be the correct label for ceased employments" in {
-        val taxedIncome = TaxedIncome(taxCodeIncomeCeased, ceasedEmployment)
+        val taxedIncome = TaxedIncome(Some(taxCodeIncomeCeased), ceasedEmployment)
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.employment.link")
       }
 
       "be the correct label for pension income" in {
-        val taxedIncome = TaxedIncome(livePension3, empEmployment1)
+        val taxedIncome = TaxedIncome(Some(livePension3), empEmployment1.copy(employmentType = PensionIncome))
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.pension.link")
       }
 
       "be the correct label for any other income" in {
-        val taxedIncome = TaxedIncome(livePension3.copy(componentType = OtherIncome), empEmployment1)
+        val taxedIncome = TaxedIncome(
+          Some(livePension3.copy(componentType = OtherIncome)),
+          empEmployment1.copy(employmentType = OtherIncome)
+        )
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.income.link")
@@ -305,7 +308,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
     }
 
     "detailsLinkUrl is yourIncomeCalculationPage for a ceased employment" in {
-      val taxedIncome = TaxedIncome(taxCodeIncome, ceasedEmployment)
+      val taxedIncome = TaxedIncome(Some(taxCodeIncome), ceasedEmployment)
       val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
       actual.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController

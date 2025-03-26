@@ -78,7 +78,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "employer2",
@@ -92,7 +93,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 
@@ -109,7 +111,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "employer2",
@@ -123,7 +126,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 
@@ -140,7 +144,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "employer2",
@@ -154,7 +159,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 
@@ -176,7 +182,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "employer2",
@@ -190,7 +197,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 

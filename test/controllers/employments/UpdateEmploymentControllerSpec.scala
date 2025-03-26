@@ -29,7 +29,7 @@ import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, IncorrectIncome}
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import utils.{BaseSpec, FakeAuthJourney}
@@ -54,7 +54,8 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val personService: PersonService = mock[PersonService]

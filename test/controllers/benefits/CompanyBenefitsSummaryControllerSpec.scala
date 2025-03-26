@@ -77,7 +77,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   private val taxCodeIncomes = Seq(
