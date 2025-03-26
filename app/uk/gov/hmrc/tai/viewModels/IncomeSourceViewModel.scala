@@ -59,7 +59,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
     IncomeSourceViewModel(
       name = employment.name,
       amount = Some(amountString),
-      taxCode = None,
+      taxCode = Some(""),
       displayTaxCode = false,
       taxDistrictNumber = employment.taxDistrictNumber,
       payeNumber = employment.payeNumber,
@@ -186,7 +186,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
         val model = IncomeSourceViewModel(
           name = messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
           amount = Some(withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0))),
-          taxCode = None,
+          taxCode = Some(""),
           displayTaxCode = false,
           taxDistrictNumber = "",
           payeNumber = "",

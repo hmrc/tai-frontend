@@ -56,8 +56,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       val vm = TaxAccountSummaryViewModel(
         "main heading",
         "title",
-        "£15,000",
-        "£12,320",
+        Some("£15,000"),
+        Some("£12,320"),
         "5 April 2017",
         Seq(activeEmployment),
         Seq(pensionIncome),
@@ -66,7 +66,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         NoTimeToProcess,
         Seq(otherIncomeSourceViewModel),
         rtiAvailable = true,
-        "0"
+        Some("0")
       )
 
       def view: Html = template(vm, appConfig)
@@ -133,8 +133,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         val vm = TaxAccountSummaryViewModel(
           "",
           "",
-          "",
-          "",
+          Some(""),
+          Some(""),
           "",
           Nil,
           Nil,
@@ -143,7 +143,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
           rtiAvailable = true,
-          "0"
+          Some("0")
         )
 
         val docWithIyaBanner = doc(template(vm, appConfig))
@@ -176,8 +176,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         val vm = TaxAccountSummaryViewModel(
           "",
           "",
-          "",
-          "",
+          Some(""),
+          Some(""),
           "",
           Seq(
             activeEmployment.copy(name = "name1"),
@@ -190,7 +190,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
           rtiAvailable = true,
-          "0"
+          Some("0")
         )
         val docWithMultipleEmployments = doc(template(vm, appConfig))
         docWithMultipleEmployments.select("#incomeFromEmploymentSection h3").size mustBe 3
@@ -227,8 +227,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         val vm = TaxAccountSummaryViewModel(
           "",
           "",
-          "",
-          "",
+          Some(""),
+          Some(""),
           "",
           Nil,
           Seq(
@@ -242,7 +242,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
           rtiAvailable = true,
-          "0"
+          Some("0")
         )
         val docWithMultiplePensionIncomes = doc(template(vm, appConfig))
         docWithMultiplePensionIncomes.select("#incomeFromPensionSection h3").size mustBe 4
@@ -277,8 +277,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         val vm = TaxAccountSummaryViewModel(
           "",
           "",
-          "",
-          "",
+          Some(""),
+          Some(""),
           "",
           Nil,
           Nil,
@@ -292,7 +292,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
           rtiAvailable = true,
-          "0"
+          Some("0")
         )
         val docWithMultipleEndedIncomes = doc(template(vm, appConfig))
         docWithMultipleEndedIncomes.select("#endedIncomeSection h3").size mustBe 4
@@ -320,14 +320,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display a tax year amount" in {
       doc must haveElementAtPathWithText(
         "#employment1 p",
-        s"${messages("tai.incomeTaxSummary.incomeAmount.prefix")} ${activeEmployment.amount}"
+        s"${messages("tai.incomeTaxSummary.incomeAmount.prefix")} ${activeEmployment.amount.get}"
       )
     }
 
     "show a tax code in link form when instructed" in {
       doc must haveElementAtPathWithText(
         "#employment1TaxCodeLink",
-        messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode)
+        messages("tai.incomeTaxSummary.taxCode.prefix", activeEmployment.taxCode.get)
       )
 
       doc must haveElementAtPathWithAttribute("#employment1TaxCodeLink", "href", url.url)
@@ -337,8 +337,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       val vm = TaxAccountSummaryViewModel(
         "",
         "",
-        "",
-        "",
+        Some(""),
+        Some(""),
         "",
         Seq(activeEmployment.copy(displayTaxCode = false)),
         Nil,
@@ -347,7 +347,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
         rtiAvailable = true,
-        "0"
+        Some("0")
       )
 
       val document = doc(template(vm, appConfig))
@@ -370,8 +370,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       val vm = TaxAccountSummaryViewModel(
         "",
         "",
-        "",
-        "",
+        Some(""),
+        Some(""),
         "",
         Seq(activeEmployment.copy(displayPayrollNumber = false)),
         Nil,
@@ -380,7 +380,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
         rtiAvailable = true,
-        "0"
+        Some("0")
       )
 
       val document = doc(template(vm, appConfig))
@@ -393,8 +393,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       val vm = TaxAccountSummaryViewModel(
         "",
         "",
-        "",
-        "",
+        Some(""),
+        Some(""),
         "",
         Seq(inactiveEmployment),
         Nil,
@@ -403,7 +403,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
         rtiAvailable = true,
-        "0"
+        Some("0")
       )
 
       val document = doc(template(vm, appConfig))
@@ -429,8 +429,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       val vm = TaxAccountSummaryViewModel(
         "",
         "",
-        "",
-        "",
+        Some(""),
+        Some(""),
         "",
         Seq(activeEmployment.copy(displayDetailsLink = false)),
         Nil,
@@ -439,7 +439,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
         rtiAvailable = true,
-        "0"
+        Some("0")
       )
 
       val document = doc(template(vm, appConfig))
@@ -460,7 +460,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.taxFreeAmount}"
+        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.taxFreeAmount.get}"
       )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection a",
@@ -484,7 +484,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection p",
-        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.estimatedIncomeTaxAmount}"
+        s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.estimatedIncomeTaxAmount.get}"
       )
       doc must haveElementAtPathWithText(
         "#annualAmountsSummarySection a",
@@ -532,8 +532,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val activeEmployment: IncomeSourceViewModel =
     IncomeSourceViewModel(
       name = "Company1",
-      amount = "£23,000",
-      taxCode = "1150L",
+      amount = Some("£23,000"),
+      taxCode = Some("1150L"),
       displayTaxCode = true,
       taxDistrictNumber = "123",
       payeNumber = "A100",
@@ -552,8 +552,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val endedEmployment: IncomeSourceViewModel =
     IncomeSourceViewModel(
       name = "Company2",
-      amount = "£25,000",
-      taxCode = "1150L",
+      amount = Some("£25,000"),
+      taxCode = Some("1150L"),
       displayTaxCode = true,
       taxDistrictNumber = "",
       payeNumber = "",
@@ -572,8 +572,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val pensionIncome: IncomeSourceViewModel =
     IncomeSourceViewModel(
       name = "PensionProvider1",
-      amount = "£14,000",
-      taxCode = "",
+      amount = Some("£14,000"),
+      taxCode = Some(""),
       displayTaxCode = false,
       taxDistrictNumber = "",
       payeNumber = "",
@@ -592,8 +592,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val employments: Seq[IncomeSourceViewModel] = Seq(
     IncomeSourceViewModel(
       name = "Company1",
-      amount = "£23,000",
-      taxCode = "1150L",
+      amount = Some("£23,000"),
+      taxCode = Some("1150L"),
       displayTaxCode = true,
       taxDistrictNumber = "123",
       payeNumber = "A100",
@@ -612,8 +612,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
   val otherIncomeSourceViewModel: IncomeSourceViewModel = IncomeSourceViewModel(
     name = "State Pension",
-    amount = "£123",
-    taxCode = "",
+    amount = Some("£123"),
+    taxCode = Some(""),
     displayTaxCode = false,
     taxDistrictNumber = "",
     payeNumber = "",
@@ -632,8 +632,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val vm: TaxAccountSummaryViewModel = TaxAccountSummaryViewModel(
     header = "main heading",
     title = "title",
-    taxFreeAmount = "£15,000",
-    estimatedIncomeTaxAmount = "£12,320",
+    taxFreeAmount = Some("£15,000"),
+    estimatedIncomeTaxAmount = Some("£12,320"),
     lastTaxYearEnd = "5 April 2017",
     employments = Seq(activeEmployment),
     pensions = Seq(pensionIncome),
@@ -642,14 +642,14 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     isAnyFormInProgress = ThreeWeeks,
     otherIncomeSources = Seq(otherIncomeSourceViewModel),
     rtiAvailable = true,
-    totalEstimatedIncome = "0"
+    totalEstimatedIncome = Some("0")
   )
 
   val noSectionsVm: TaxAccountSummaryViewModel = TaxAccountSummaryViewModel(
     header = "main heading",
     title = "title",
-    taxFreeAmount = "£15,000",
-    estimatedIncomeTaxAmount = "£12,320",
+    taxFreeAmount = Some("£15,000"),
+    estimatedIncomeTaxAmount = Some("£12,320"),
     lastTaxYearEnd = "5 April 2017",
     employments = Nil,
     pensions = Nil,
@@ -658,7 +658,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     isAnyFormInProgress = ThreeWeeks,
     otherIncomeSources = Seq(otherIncomeSourceViewModel),
     rtiAvailable = true,
-    totalEstimatedIncome = "0"
+    totalEstimatedIncome = Some("0")
   )
 
   private val template = inject[IncomeTaxSummaryView]

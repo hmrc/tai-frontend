@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.{IncomeSources, UserAnswers}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{ApiBackendChoice, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import utils.{BaseSpec, TaxAccountSummaryTestData}
@@ -55,6 +55,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
   val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
   val mockTrackingService: TrackingService = mock[TrackingService]
   val mockEmploymentService: EmploymentService = mock[EmploymentService]
+  val mockApiBackendChoice: ApiBackendChoice = mock[ApiBackendChoice]
 
   def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
     taxAccountService,
@@ -66,6 +67,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     mcc,
     inject[IncomeTaxSummaryView],
     mockTrackingService,
+    mockApiBackendChoice,
     inject[ErrorPagesHandler]
   )
 
