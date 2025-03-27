@@ -18,8 +18,10 @@
 @import includes.{link, ptaHeader}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.{IFormInProgressBannerViewModel, TaxAccountSummaryViewModel, TaxCodeViewModel}
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(main: MainTemplate)
+@this(main: MainTemplate, incomeTaxSummaryIncomeSourceDetail: IncomeTaxSummaryIncomeSourceDetail, govukInsetText: GovukInsetText)
 
 @(viewModel: TaxAccountSummaryViewModel, appConfig: ApplicationConfig
 )(implicit request: DataRequest[_],
@@ -73,21 +75,21 @@
             @if(viewModel.employments.nonEmpty){
                 <div id="incomeFromEmploymentSection" class="section govuk-!-margin-bottom-0">
                     <h2 id="incomeFromEmploymentHeading" class="govuk-heading-m under-line">@Messages("tai.incomeTaxSummary.employment.section.heading")</h2>
-                    @IncomeTaxSummaryIncomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                    @incomeTaxSummaryIncomeSourceDetail(viewModel.employments, "employment", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
                 </div>
             }
 
             @if(viewModel.pensions.nonEmpty){
                 <div id="incomeFromPensionSection" class="govuk-!-margin-top-8 section govuk-!-margin-bottom-0">
                     <h2 id="incomeFromPensionHeading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@Messages("tai.incomeTaxSummary.pension.section.heading")</h2>
-                    @IncomeTaxSummaryIncomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                    @incomeTaxSummaryIncomeSourceDetail(viewModel.pensions, "pension", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
                 </div>
             }
 
             @if(viewModel.otherIncomeSources.nonEmpty){
                 <div id="otherIncomeSources" class="govuk-!-margin-top-8 section govuk-!-margin-bottom-0">
                     <h2 id="otherIncomeSourcesHeading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@Messages("tai.incomeTaxSummary.otherIncomeSources.heading")</h2>
-                    @IncomeTaxSummaryIncomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
+                    @incomeTaxSummaryIncomeSourceDetail(viewModel.otherIncomeSources, "otherIncomeSources", Messages("tai.incomeTaxSummary.incomeAmount.prefix"))
                 </div>
             }
 
@@ -95,7 +97,7 @@
                 <div id="endedIncomeSection" class="section">
                     <h2 id="endedIncomeHeading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@Messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
                     @if(viewModel.rtiAvailable) {
-                        @IncomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
+                        @incomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", Messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
                     } else {
                         <p class="govuk-body panel-indent panel-indent--info">@messages("tai.rti.down.ceasedEmployments")</p>
                     }
@@ -210,9 +212,12 @@
                         )
                     </p>
                 } else {
-                    <p class=" govuk-body govuk-!-margin-bottom-0">Your tax-free amount is unavailable. Try again later.</p>
+                    @govukInsetText(InsetText(
+                        content = HtmlContent(s"""<p>${messages("tai.incomeTaxSummary.taxFreeAmountUnavailable")} ${messages("tai.incomeTaxSummary.tryAgainLater")}</p>""")
+                    ))
                 }
-                <h3 class="govuk-heading-s">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
+
+            <h3 class="govuk-heading-s">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
                 @if(viewModel.estimatedIncomeTaxAmount.isDefined) {
                     <p class="govuk-body flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
                     <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
@@ -227,7 +232,9 @@
                         )
                     </p>
                 } else {
-                    <p class=" govuk-body govuk-!-margin-bottom-0">Your estimated Income Tax is unavailable. Try again later.</p>
+                    @govukInsetText(InsetText(
+                        content = HtmlContent(s"""<p>${messages("tai.incomeTaxSummary.taxEstimateUnavailable")} ${messages("tai.incomeTaxSummary.tryAgainLater")}</p>""")
+                    ))
                 }
             </div>
         </div>

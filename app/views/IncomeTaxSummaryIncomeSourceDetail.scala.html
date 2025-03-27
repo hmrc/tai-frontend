@@ -16,6 +16,10 @@
 
 @import includes.link
 @import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, IncomeSourceViewModel, TaxCodeViewModel}
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+
+@this(govukInsetText: GovukInsetText)
 
 @(incomeSources: Seq[IncomeSourceViewModel],
 typeLabel: String,
@@ -47,17 +51,19 @@ accessibleAmountPrefix: String)(implicit messages: Messages)
                         @link(
                             id = Some(s"${typeLabel}${idx}TaxCodeLink"),
                             url = taxCodeUrl.url,
-                            copy = Messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode.get),
+                            copy = messages("tai.incomeTaxSummary.taxCode.prefix", incomeSource.taxCode.get),
                             linkClasses = Seq("display-tax-code-for-print"))
                     }
                 } else {
-                    These are unavailable:
-                    <ul>
-                        <li>tax code</li>
-                        <li>estimated income</li>
-                        <li>company benefits</li>
-                    </ul>
-                    Try again later.
+                    @govukInsetText(InsetText(
+                        content = HtmlContent(s"""<p>${messages("tai.incomeTaxSummary.theseAreUnavailable")}</p>
+                            <ul class="govuk-inset-text__list">
+                                <li>${messages("tai.incomeTaxSummary.taxCode")}</li>
+                                <li>${messages("tai.incomeTaxSummary.estimatedIncome")}</li>
+                                <li>${messages("tai.incomeTaxSummary.companyBenefits")}</li>
+                            </ul>
+                            <p>${messages("tai.incomeTaxSummary.tryAgainLater")}</p>""")
+                    ))
                 }
             }
         </p>
@@ -67,11 +73,11 @@ accessibleAmountPrefix: String)(implicit messages: Messages)
         }
 
         @if(incomeSource.displayPayrollNumber && typeLabel == "pension"){
-            <p id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-body">@Messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</p>
+            <p id="@{typeLabel}@{idx}PensionNumber" class="carry-over govuk-body">@messages("tai.incomeTaxSummary.pensionNumber.prefix", incomeSource.payrollNumber)</p>
         }
 
         @if(incomeSource.displayEndDate){
-            <p id="@{typeLabel}@{idx}EndDate" class="govuk-body">@Messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</p>
+            <p id="@{typeLabel}@{idx}EndDate" class="govuk-body">@messages("tai.incomeTaxSummary.endDate.prefix", incomeSource.endDate)</p>
         }
 
         @if(incomeSource.displayDetailsLink){
