@@ -63,13 +63,12 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
       "it is enabled" in {
         lazy val app = new GuiceApplicationBuilder()
           .configure(
-            "auditing.enabled"                                                -> "false",
-            "microservice.services.auth.port"                                 -> server.port(),
-            "microservice.services.tai.port"                                  -> server.port(),
-            "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
-            "microservice.services.citizen-details.port"                      -> server.port(),
-            "microservice.services.pertax.port"                               -> server.port(),
-            "feature.web-chat.enabled"                                        -> true
+            "auditing.enabled"                           -> "false",
+            "microservice.services.auth.port"            -> server.port(),
+            "microservice.services.tai.port"             -> server.port(),
+            "microservice.services.citizen-details.port" -> server.port(),
+            "microservice.services.pertax.port"          -> server.port(),
+            "feature.web-chat.enabled"                   -> true
           )
           .overrides(
             bind[WebChatClient].toInstance(mockWebChatClient)
@@ -126,12 +125,11 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     "it is disabled" in {
       lazy val app = new GuiceApplicationBuilder()
         .configure(
-          "auditing.enabled"                                                -> "false",
-          "microservice.services.auth.port"                                 -> server.port(),
-          "microservice.services.tai.port"                                  -> server.port(),
-          "microservice.services.digital-engagement-platform-partials.port" -> server.port(),
-          "microservice.services.citizen-details.port"                      -> server.port(),
-          "feature.web-chat.enabled"                                        -> false
+          "auditing.enabled"                           -> "false",
+          "microservice.services.auth.port"            -> server.port(),
+          "microservice.services.tai.port"             -> server.port(),
+          "microservice.services.citizen-details.port" -> server.port(),
+          "feature.web-chat.enabled"                   -> false
         )
         .overrides(
           bind[WebChatClient].toInstance(mockWebChatClient)
