@@ -204,6 +204,7 @@
                 <p class=" govuk-body">
                     @link(
                         id=Some("taxFreeAmountLink"),
+                        linkClasses=Seq("display-for-print"),
                         url=routes.TaxFreeAmountController.taxFreeAmount().url,
                         copy=Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")
                     )
