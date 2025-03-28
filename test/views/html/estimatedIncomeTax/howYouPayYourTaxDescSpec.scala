@@ -37,7 +37,7 @@ class howYouPayYourTaxDescSpec extends TaiViewSpec {
         "tai.estimatedIncome.howYouPay.desc",
         link(
           id = Some("taxCodesLink"),
-          linkClasses=Seq("display-for-print"),
+          linkClasses = Seq("display-for-print"),
           url = routes.YourTaxCodeController.taxCodes().url.toString,
           copy = Messages("tai.estimatedIncome.taxCodes.link")
         )
