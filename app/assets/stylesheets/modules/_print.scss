@@ -40,6 +40,12 @@
 
   .govuk-grid-row {
     margin: 0;
+
+    &:has(.govuk-grid-column-one-half) {
+      display: flex;
+      justify-content: space-between;
+      gap: 2em;
+    }
   }
 
   [class*="govuk-grid-column"] {
@@ -47,6 +53,7 @@
     margin: 0;
     padding: 0;
     float: none;
+    flex: 1;
   }
 
   .print-banner {
