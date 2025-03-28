@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -35,6 +36,14 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     employmentsConnector.employment(nino, id.toString)
+
+  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+    employmentsConnector.employmentOnly(nino, id, taxYear)
+
+  def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
+    employmentsConnector.employmentsOnly(nino, taxYear)
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.endEmployment(nino, id, endEmploymentData)

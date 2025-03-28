@@ -52,12 +52,13 @@ class IncomesSourcesSpec extends BaseSpec with ScalaCheckDrivenPropertyChecks wi
         1,
         None,
         false,
-        false
+        false,
+        EmploymentIncome
       )
 
     for {
       employment  <- employmentGen
-      taxedIncome <- Gen.listOf(TaxedIncome(employmentTaxCodeIncome, employment))
+      taxedIncome <- Gen.listOf(TaxedIncome(Some(employmentTaxCodeIncome), employment))
     } yield taxedIncome
   }
 
@@ -75,11 +76,12 @@ class IncomesSourcesSpec extends BaseSpec with ScalaCheckDrivenPropertyChecks wi
         1,
         None,
         false,
-        false
+        false,
+        EmploymentIncome
       )
 
     for {
-      taxedIncome <- Gen.listOf(TaxedIncome(employmentTaxCodeIncome, employment))
+      taxedIncome <- Gen.listOf(TaxedIncome(Some(employmentTaxCodeIncome), employment))
     } yield taxedIncome
   }
 

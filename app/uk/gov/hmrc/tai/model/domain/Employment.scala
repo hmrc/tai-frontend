@@ -34,7 +34,8 @@ case class Employment(
   sequenceNumber: Int,
   cessationPay: Option[BigDecimal],
   hasPayrolledBenefit: Boolean,
-  receivingOccupationalPension: Boolean
+  receivingOccupationalPension: Boolean,
+  employmentType: TaxComponentType
 ) {
 
   lazy val latestAnnualAccount: Option[AnnualAccount] = if (annualAccounts.isEmpty) None else Some(annualAccounts.max)

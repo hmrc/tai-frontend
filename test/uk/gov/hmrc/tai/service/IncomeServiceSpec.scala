@@ -414,7 +414,8 @@ class IncomeServiceSpec extends BaseSpec {
       8,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
 
   def paymentOnDate(date: LocalDate): Payment =

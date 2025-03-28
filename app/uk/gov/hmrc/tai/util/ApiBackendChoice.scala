@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package uk.gov.hmrc.tai.util
 
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import com.google.inject.Inject
+import controllers.auth.DataRequest
+import play.api.mvc.AnyContent
+import uk.gov.hmrc.tai.config.ApplicationConfig
 
-case class TaxedIncome(taxCodeIncome: Option[TaxCodeIncome], employment: Employment)
+class ApiBackendChoice @Inject() (appConfig: ApplicationConfig) {
 
-object TaxedIncome {
-  implicit val format: Format[TaxedIncome] = Json.format[TaxedIncome]
+  def isNewApiBackendEnabled(implicit request: DataRequest[AnyContent]): Boolean = {
+    val allowedNinos = appConfig.newApiOnboarding
+    request.getQueryString("newApi").isDefined || allowedNinos.contains(
+      request.taiUser.nino.withoutSuffix.takeRight(1).toInt
+    )
+  }
 }

@@ -47,7 +47,8 @@ class PaymentsServiceSpec extends PlaySpec {
       2,
       None,
       false,
-      false
+      false,
+      EmploymentIncome
     )
   }
 
@@ -68,7 +69,8 @@ class PaymentsServiceSpec extends PlaySpec {
         2,
         None,
         false,
-        false
+        false,
+        EmploymentIncome
       )
 
       paymentsService.filterDuplicates(employment) mustBe Seq.empty[PaymentDetailsViewModel]

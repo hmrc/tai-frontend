@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
 import org.apache.pekko.Done
 import play.api.Logging
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -28,6 +29,7 @@ import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
 import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -80,6 +82,19 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
       Left(e.getMessage)
     }
 
+  def newTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] = {
+    val url = taxAccountUrl(nino.nino, year)
+    httpHandler
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map(httpResponse => (httpResponse.json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
+  }
+
   def nonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[NonTaxCodeIncome] =
     httpHandler.getFromApiV2(nonTaxCodeIncomeUrl(nino.nino, year)).map { json =>
       (json \ "data").as[Incomes].nonTaxCodeIncomes
@@ -87,6 +102,19 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
       logger.warn(s"Couldn't retrieve non tax code incomes for $nino with exception:${e.getMessage}")
       throw e
     }
+
+  def newNonTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, NonTaxCodeIncome] = {
+    val url = nonTaxCodeIncomeUrl(nino.nino, year)
+    httpHandler
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map(httpResponse => (httpResponse.json \ "data").as[Incomes].nonTaxCodeIncomes)
+  }
 
   def codingComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] =
     httpHandler.getFromApiV2(codingComponentsUrl(nino.nino, year)) map (json =>

@@ -35,17 +35,17 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       }
       "has the amount field as positive formatted value coming from taxCodeIncome model" in {
         val sut = IncomeSourceViewModel(taxCodeIncome, employment)
-        sut.amount mustBe "£1,111"
+        sut.amount mustBe Some("£1,111")
       }
       "has the amount field as negative formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeNegative = taxCodeIncome.copy(amount = -1111)
         val sut = IncomeSourceViewModel(taxCodeIncomeNegative, employment)
-        sut.amount mustBe s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£1,111"
+        sut.amount mustBe Some(s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£1,111")
       }
       "has the amount field as zero formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeZero = taxCodeIncome.copy(amount = 0)
         val sut = IncomeSourceViewModel(taxCodeIncomeZero, employment)
-        sut.amount mustBe "£0"
+        sut.amount mustBe Some("£0")
       }
       "has the displayTaxCode field as true" when {
         "employment status is live" in {
@@ -196,24 +196,24 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       }
       "has the amount field as the latest payment 'amountYearToDate' value" in {
         val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
-        sut.amount mustBe "£123"
+        sut.amount mustBe Some("£123")
       }
       "does not display any message" when {
         "the latest annual account is absent" in {
           val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment.copy(annualAccounts = Nil))
-          sut.amount mustBe ""
+          sut.amount mustBe Some("")
         }
         "the latest payment is None" in {
           val sut =
             IncomeSourceViewModel.createFromEmployment(
               ceasedEmployment.copy(annualAccounts = Seq(annualAccount.copy(payments = Nil)))
             )
-          sut.amount mustBe ""
+          sut.amount mustBe Some("")
         }
       }
-      "has an empty taxCode field, and a 'false' value corrresponding boolean set to instruct non display" in {
+      "has an empty taxCode field, and a 'false' value corresponding boolean set to instruct non display" in {
         val sut = IncomeSourceViewModel.createFromEmployment(employment)
-        sut.taxCode mustBe ""
+        sut.taxCode mustBe Some("")
         sut.displayTaxCode mustBe false
       }
       "has a payrollNumber field and the corresponding boolean set to instruct display" when {
@@ -253,13 +253,13 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
 
   "createFromTaxedIncome" must {
     "transform a taxedIncome to a IncomeSourceViewModel for a live employment" in {
-      val taxedIncome = TaxedIncome(liveEmployment1, empEmployment1)
+      val taxedIncome = TaxedIncome(Some(liveEmployment1), empEmployment1)
       val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
       val expected =
         IncomeSourceViewModel(
           name = "Employer name1",
-          amount = "£1,111",
-          taxCode = "1150L",
+          amount = Some("£1,111"),
+          taxCode = Some("1150L"),
           displayTaxCode = true,
           taxDistrictNumber = "DIST1",
           payeNumber = "PAYE1",
@@ -283,21 +283,24 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
 
     "detailsLinkLabel" must {
       "be the correct label for ceased employments" in {
-        val taxedIncome = TaxedIncome(taxCodeIncomeCeased, ceasedEmployment)
+        val taxedIncome = TaxedIncome(Some(taxCodeIncomeCeased), ceasedEmployment)
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.employment.link")
       }
 
       "be the correct label for pension income" in {
-        val taxedIncome = TaxedIncome(livePension3, empEmployment1)
+        val taxedIncome = TaxedIncome(Some(livePension3), empEmployment1.copy(employmentType = PensionIncome))
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.pension.link")
       }
 
       "be the correct label for any other income" in {
-        val taxedIncome = TaxedIncome(livePension3.copy(componentType = OtherIncome), empEmployment1)
+        val taxedIncome = TaxedIncome(
+          Some(livePension3.copy(componentType = OtherIncome)),
+          empEmployment1.copy(employmentType = OtherIncome)
+        )
         val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.income.link")
@@ -305,7 +308,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
     }
 
     "detailsLinkUrl is yourIncomeCalculationPage for a ceased employment" in {
-      val taxedIncome = TaxedIncome(taxCodeIncome, ceasedEmployment)
+      val taxedIncome = TaxedIncome(Some(taxCodeIncome), ceasedEmployment)
       val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
       actual.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController

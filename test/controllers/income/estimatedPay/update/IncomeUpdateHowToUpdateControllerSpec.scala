@@ -63,7 +63,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
 
   val mockIncomeService: IncomeService = mock[IncomeService]

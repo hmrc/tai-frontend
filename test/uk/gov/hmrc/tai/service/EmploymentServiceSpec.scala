@@ -21,7 +21,7 @@ import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
+import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EmploymentIncome, EndEmployment, IncorrectIncome}
 import utils.BaseSpec
 
 import java.time.{LocalDate, LocalDateTime}
@@ -82,7 +82,8 @@ class EmploymentServiceSpec extends BaseSpec {
           1,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
         val employment2 = Employment(
           "company name 2",
@@ -96,7 +97,8 @@ class EmploymentServiceSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         when(employmentsConnector.employments(any(), any())(any()))
@@ -239,7 +241,8 @@ class EmploymentServiceSpec extends BaseSpec {
     2,
     None,
     false,
-    false
+    false,
+    EmploymentIncome
   )
   private val employmentDetails = List(employment)
   private val employments = employmentDetails.head :: employmentDetails.head :: Nil

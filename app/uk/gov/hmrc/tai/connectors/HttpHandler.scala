@@ -43,6 +43,8 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       logger.error(exception.message)
   }
 
+  def httpClient: HttpClientV2 = http
+
   def read(
     response: Future[Either[UpstreamErrorResponse, HttpResponse]]
   )(implicit ec: ExecutionContext): EitherT[Future, UpstreamErrorResponse, HttpResponse] =

@@ -130,7 +130,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "TEST1",
@@ -144,7 +145,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 

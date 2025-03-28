@@ -124,4 +124,6 @@ class ApplicationConfig @Inject() (
 
   val citizenDetailsUrl: String = servicesConfig.baseUrl("citizen-details")
 
+  val newApiOnboarding: Seq[Int] = runModeConfiguration.get[Seq[Int]]("tai.newApiOnboarding")
+
 }

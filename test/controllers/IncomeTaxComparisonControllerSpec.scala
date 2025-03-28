@@ -53,7 +53,8 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
 
   val employment2: Employment =
@@ -69,7 +70,8 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
 
   val pension: Employment =
@@ -85,7 +87,8 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       3,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = true
+      receivingOccupationalPension = true,
+      PensionIncome
     )
 
   val pension2: Employment =
@@ -101,7 +104,8 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       4,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = true
+      receivingOccupationalPension = true,
+      PensionIncome
     )
 
   val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
