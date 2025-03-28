@@ -46,10 +46,9 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       doc must haveBackLink
     }
 
-    "display print button link with href to historic print view" in {
-      doc must haveLinkWithUrlWithID(
-        "print-link-btn",
-        s"/check-income-tax/print-your-income-calculation-previous-year/" + historicIncomeCalculationVM.taxYear.year + "/" + historicIncomeCalculationVM.employmentId
+    "display print button" in {
+      doc must haveLinkWithText(
+        messages("tai.label.print")
       )
     }
 

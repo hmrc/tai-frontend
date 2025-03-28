@@ -151,6 +151,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
             pounds(47835),
             link(
               id = Some("taxFreeAmountLink"),
+              linkClasses = Seq("display-for-print"),
               url = routes.TaxFreeAmountController.taxFreeAmount().url,
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),

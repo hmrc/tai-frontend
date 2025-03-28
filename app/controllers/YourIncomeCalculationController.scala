@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
-import views.html.print.HistoricIncomePrintView
+//import views.html.print.HistoricIncomePrintView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,6 @@ class YourIncomeCalculationController @Inject() (
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,
   yourIncomeCalculation: YourIncomeCalculationView,
-  historicIncomePrintView: HistoricIncomePrintView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -71,12 +70,9 @@ class YourIncomeCalculationController @Inject() (
   }
 
   def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
-    yourIncomeCalculationHistoricYears(year, empId, printPage = false)
+    incomeCalculationHistoricYears(year, empId)
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
-    yourIncomeCalculationHistoricYears(year, empId, printPage = true)
-
-  private def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int, printPage: Boolean): Action[AnyContent] =
+  private def incomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] =
     authenticate.authWithValidatePerson.async { implicit request =>
       if (year <= TaxYear().prev) {
         val nino = request.taiUser.nino
@@ -84,14 +80,12 @@ class YourIncomeCalculationController @Inject() (
         employmentService.employments(nino, year) map { employments =>
           val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
 
-          (printPage, historicIncomeCalculationViewModel.realTimeStatus.toString) match {
-            case (_, "TemporarilyUnavailable") =>
+          historicIncomeCalculationViewModel.realTimeStatus.toString match {
+            case ("TemporarilyUnavailable") =>
               errorPagesHandler.internalServerError(
                 "Employment contains stub annual account data found meaning payment information can't be displayed"
               )
-            case (true, _) =>
-              Ok(historicIncomePrintView(historicIncomeCalculationViewModel))
-            case (false, _) => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            case _ => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
           }
         }
 

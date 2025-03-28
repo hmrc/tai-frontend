@@ -29,7 +29,8 @@
 @header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
-        preHeadingText = messages("tai.yourIncome.preHeading")
+        preHeadingText = messages("tai.yourIncome.preHeading"),
+        maybeUserName = Some(request.fullName)
     )
 }
 
@@ -137,8 +138,7 @@
                 }
             </div>
             <div class="print-this">
-                <a id="print-link-btn" href="@routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(historicIncomeCalculationViewModel.taxYear,historicIncomeCalculationViewModel.employmentId).toString"
-                   class="print-this__link" >@Messages("tai.label.print")</a>
+                <a id="printLink" href="#" class="print-this__link" >@Messages("tai.label.print")</a>
             </div>
 
         </div>

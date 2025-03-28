@@ -84,7 +84,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         Messages(
           "your.total.income.from.employment.desc",
           pounds(47835),
-          "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" class=\"govuk-link\">tax-free amount</a>",
+          "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" class=\"govuk-link display-for-print\">tax-free amount</a>",
           pounds(11500)
         ).replaceAll("\\s+", "")
       )
