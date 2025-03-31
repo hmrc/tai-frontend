@@ -18,15 +18,25 @@ package uk.gov.hmrc.tai.util
 
 import com.google.inject.Inject
 import controllers.auth.DataRequest
+import play.api.Logging
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
-class ApiBackendChoice @Inject() (appConfig: ApplicationConfig) {
+class ApiBackendChoice @Inject() (appConfig: ApplicationConfig) extends Logging {
 
   def isNewApiBackendEnabled(implicit request: DataRequest[AnyContent]): Boolean = {
-    val allowedNinos = appConfig.newApiOnboarding
-    request.getQueryString("newApi").isDefined || allowedNinos.contains(
+    val allowedNinoGroup = appConfig.newApiBulkOnboarding
+
+    val isNinoInAllowedGroup = allowedNinoGroup.contains(
       request.taiUser.nino.withoutSuffix.takeRight(1).toInt
     )
+
+    if (request.getQueryString("newApi").isDefined) {
+      logger.info(
+        s"The nino ending `${request.taiUser.nino.nino.takeRight(3)}` is using the new API for path ${request.request.path}"
+      )
+    }
+
+    request.getQueryString("newApi").isDefined || isNinoInAllowedGroup
   }
 }
