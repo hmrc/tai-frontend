@@ -95,7 +95,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
       when(taxAccountService.totalTax(meq(FakeAuthRetrievals.nino), any())(any()))
         .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))

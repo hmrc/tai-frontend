@@ -109,7 +109,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
               1,
               None,
               hasPayrolledBenefit = false,
-              receivingOccupationalPension = false
+              receivingOccupationalPension = false,
+              EmploymentIncome
             )
           )
         )
@@ -1010,7 +1011,8 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       8,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
 
   def paymentOnDate(date: LocalDate): Payment =

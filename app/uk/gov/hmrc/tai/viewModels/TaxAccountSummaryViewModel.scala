@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHe
 case class TaxAccountSummaryViewModel(
   header: String,
   title: String,
-  taxFreeAmount: String,
-  estimatedIncomeTaxAmount: String,
+  taxFreeAmount: Option[String],
+  estimatedIncomeTaxAmount: Option[String],
   lastTaxYearEnd: String,
   employments: Seq[IncomeSourceViewModel],
   pensions: Seq[IncomeSourceViewModel],
@@ -36,7 +36,7 @@ case class TaxAccountSummaryViewModel(
   isAnyFormInProgress: TimeToProcess,
   otherIncomeSources: Seq[IncomeSourceViewModel],
   rtiAvailable: Boolean,
-  totalEstimatedIncome: String
+  totalEstimatedIncome: Option[String]
 )
 
 object TaxAccountSummaryViewModel extends ViewModelHelper {
@@ -83,8 +83,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     TaxAccountSummaryViewModel(
       header = header,
       title = title,
-      taxFreeAmount = taxFreeAmount,
-      estimatedIncomeTaxAmount = estimatedIncomeTaxAmount,
+      taxFreeAmount = Some(taxFreeAmount),
+      estimatedIncomeTaxAmount = Some(estimatedIncomeTaxAmount),
       lastTaxYearEnd = lastTaxYearEnd,
       employments = employmentViewModels,
       pensions = pensionsViewModels,
@@ -93,7 +93,62 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
       rtiAvailable = incomesSources.isRtiAvailable,
+      totalEstimatedIncome = Some(totalEstimatedIncome)
+    )
+  }
+
+  def apply(
+    taxAccountSummary: Option[TaxAccountSummary],
+    isAnyFormInProgress: TimeToProcess,
+    nonTaxCodeIncome: Option[NonTaxCodeIncome],
+    incomesSources: IncomeSources
+  )(implicit messages: Messages): TaxAccountSummaryViewModel = {
+
+    val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+    val title = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+
+    val taxFreeAmount = taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.taxFreeAmount, 0)))
+    val estimatedIncomeTaxAmount =
+      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedTax, 0)))
+
+    val employmentViewModels =
+      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+
+    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+
+    def employmentCeasedThisYear(employment: Employment): Boolean = {
+      val currentYear = TaxYear()
+      // Default to true as if there is no endDate it's potentially ceased
+      employment.endDate.fold(true) { endDate =>
+        !(endDate isBefore currentYear.start)
+      }
+    }
+
+    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.collect {
+      case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
+        IncomeSourceViewModel.createFromTaxedIncome(ti)
+    }
+
+    val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
+
+    val totalEstimatedIncome =
+      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedIncome, 0)))
+
+    TaxAccountSummaryViewModel(
+      header = header,
+      title = title,
+      taxFreeAmount = taxFreeAmount,
+      estimatedIncomeTaxAmount = estimatedIncomeTaxAmount,
+      lastTaxYearEnd = lastTaxYearEnd,
+      employments = employmentViewModels,
+      pensions = pensionsViewModels,
+      ceasedEmployments = ceasedEmploymentViewModels,
+      displayIyaBanner = taxAccountSummary.fold(BigDecimal(0))(_.totalInYearAdjustmentIntoCY) > 0,
+      isAnyFormInProgress = isAnyFormInProgress,
+      otherIncomeSources = nonTaxCodeIncome.fold(Seq.empty[IncomeSourceViewModel])(IncomeSourceViewModel(_)),
+      rtiAvailable = incomesSources.isRtiAvailable,
       totalEstimatedIncome = totalEstimatedIncome
     )
   }
+
 }

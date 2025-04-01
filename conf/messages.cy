@@ -755,6 +755,13 @@ tai.incomeTaxSummary.pension.section.heading=Eich pensiynau preifat presennol
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxSummary.view.income.source.details=Gweld manylion {0}
 tai.incomes.monetaryAmount.format.valid=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
+tai.incomeTaxSummary.theseAreUnavailable = Nid yw’r rhain ar gael:
+tai.incomeTaxSummary.taxCode = eich cod treth
+tai.incomeTaxSummary.estimatedIncome = incwm amcangyfrifedig
+tai.incomeTaxSummary.companyBenefits = buddiannau cwmni
+tai.incomeTaxSummary.taxFreeAmountUnavailable = Nid yw’ch swm sy’n rhydd o dreth ar gael.
+tai.incomeTaxSummary.taxEstimateUnavailable = Nid yw’ch treth incwm amcangyfrifedig ar gael.
+tai.incomeTaxSummary.tryAgainLater = Rhowch gynnig arall arni yn nes ymlaen.
 
 tai.incomes.warning.preHeading=Diweddariad wedi dod i law
 tai.incomes.warning.employment.heading=Rydych eisoes wedi anfon incwm amcangyfrifedig newydd ar gyfer eich cyflogaeth gyda {0}

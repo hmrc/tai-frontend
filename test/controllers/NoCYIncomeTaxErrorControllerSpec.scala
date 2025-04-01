@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.NoCYIncomeTaxErrorView
@@ -65,7 +65,8 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         1,
         None,
         hasPayrolledBenefit = false,
-        receivingOccupationalPension = false
+        receivingOccupationalPension = false,
+        EmploymentIncome
       )
     )
 

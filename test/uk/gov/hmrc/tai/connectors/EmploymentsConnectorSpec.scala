@@ -44,7 +44,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   private val oneEmploymentDetails = List(anEmploymentObject)
@@ -53,7 +54,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
     taxDistrictNumber = "1234",
     payeNumber = "4321",
     sequenceNumber = 3,
-    receivingOccupationalPension = true
+    receivingOccupationalPension = true,
+    employmentType = PensionIncome
   ) :: Nil
 
   private val oneCeasedEmploymentDetails = List(
@@ -69,7 +71,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 
@@ -77,7 +80,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
     taxDistrictNumber = "1234",
     payeNumber = "4321",
     sequenceNumber = 3,
-    receivingOccupationalPension = true
+    receivingOccupationalPension = true,
+    employmentType = PensionIncome
   ) :: Nil
 
   private val zeroEmployments =
@@ -111,7 +115,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
             "sequenceNumber": 2,
             "isPrimary": true,
             "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false
+            "receivingOccupationalPension": false,
+            "employmentType": "EmploymentIncome"
           }
         }"""
 
@@ -131,7 +136,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
             "sequenceNumber": 2,
             "isPrimary": true,
             "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false
+            "receivingOccupationalPension": false,
+            "employmentType": "EmploymentIncome"
           }]}
         }"""
 
@@ -151,7 +157,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "sequenceNumber": 2,
       |            "isPrimary": true,
       |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : false
+      |            "receivingOccupationalPension" : false,
+      |            "employmentType": "EmploymentIncome"
       |          },
       |          {
       |            "name": "company name",
@@ -165,7 +172,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "sequenceNumber": 3,
       |            "isPrimary": true,
       |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : true
+      |            "receivingOccupationalPension" : true,
+      |            "employmentType": "PensionIncome"
       |          }]}
         }""".stripMargin
 
@@ -183,7 +191,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
             "sequenceNumber": 2,
             "isPrimary": true,
             "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false
+            "receivingOccupationalPension": false,
+            "employmentType": "EmploymentIncome"
           }]
         }"""
 
@@ -201,7 +210,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "sequenceNumber": 2,
       |            "isPrimary": true,
       |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : false
+      |            "receivingOccupationalPension" : false,
+      |            "employmentType": "EmploymentIncome"
       |          },
       |          {
       |            "name": "company name",
@@ -215,7 +225,8 @@ class EmploymentsConnectorSpec extends BaseSpec {
       |            "sequenceNumber": 3,
       |            "isPrimary": true,
       |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : true
+      |            "receivingOccupationalPension" : true,
+      |            "employmentType": "PensionIncome"
       |          }]
         }""".stripMargin
 

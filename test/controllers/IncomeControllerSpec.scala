@@ -75,7 +75,8 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       8,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
 
   def paymentOnDate(date: LocalDate): Payment =

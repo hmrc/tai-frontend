@@ -26,6 +26,7 @@
     <logger name="controllers.auth.TaiAuthenticationProvider" level="INFO"/>
     <logger name="controllers.benefits.CompanyBenefitController" level="WARN"/>
     <logger name="uk.gov.hmrc.tai.DecisionCacheWrapper" level="WARN"/>
+    <logger name="uk.gov.hmrc.tai.util.ApiBackendChoice" level="INFO"/>
 
     <root level="WARN">
         <appender-ref ref="FILE"/>

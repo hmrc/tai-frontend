@@ -200,7 +200,8 @@ class AuditServiceSpec extends BaseSpec {
             1,
             None,
             hasPayrolledBenefit = false,
-            receivingOccupationalPension = false
+            receivingOccupationalPension = false,
+            EmploymentIncome
           )
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)

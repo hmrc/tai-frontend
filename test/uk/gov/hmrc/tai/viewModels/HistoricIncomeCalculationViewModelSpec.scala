@@ -84,7 +84,8 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
           1,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         sut(employments = List(sampleEmployment)).endOfTaxYearUpdateMessages mustBe Seq(
@@ -333,7 +334,8 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       1,
       None,
       false,
-      false
+      false,
+      EmploymentIncome
     )
   val sampleEmployment2 = Employment(
     "emp2",
@@ -347,7 +349,8 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
     2,
     None,
     false,
-    false
+    false,
+    EmploymentIncome
   )
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
