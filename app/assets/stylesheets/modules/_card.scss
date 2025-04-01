@@ -56,13 +56,6 @@ $black: #0b0c0c;
   }
 }
 
-html[data-useragent*='MSIE 10.0'] .flex-container {
-  .card {
-    flex-basis: 31%;
-    margin: 3%;
-  }
-}
-
 .card-full-width {
   flex-basis: 100%;
   margin-right: 0%;

@@ -24,6 +24,7 @@
     @Html(Messages("tai.estimatedIncome.howYouPay.desc",
     includes.link(
     id=Some("taxCodesLink"),
+    linkClasses=Seq("display-for-print"),
     url=routes.YourTaxCodeController.taxCodes().url,
     copy=Messages("tai.estimatedIncome.taxCodes.link"))))
 </p>

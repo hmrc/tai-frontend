@@ -28,7 +28,6 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, PersonService, TaxAccountService}
 import utils.BaseSpec
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
-import views.html.print.HistoricIncomePrintView
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -148,7 +147,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       mcc,
       inject[HistoricIncomeCalculationView],
       inject[YourIncomeCalculationView],
-      inject[HistoricIncomePrintView],
       inject[ErrorPagesHandler]
     )
 
@@ -233,45 +231,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
-
-      }
-    }
-
-  }
-
-  "print Your income calculation" should {
-
-    "show historic data" when {
-      "historic data has been passed" in {
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-        val result =
-          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-
-        val content = contentAsString(result)
-        val doc = Jsoup.parse(content)
-        doc.select("#back-link").text() mustBe Messages("tai.back-link.upper")
-      }
-    }
-
-    "throw internal server error" when {
-      "RTI throws service unavailable" in {
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
-        val result =
-          sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-
-      }
-    }
-
-    "throw bad request" when {
-      "next year has been passed" in {
-        val result =
-          sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
