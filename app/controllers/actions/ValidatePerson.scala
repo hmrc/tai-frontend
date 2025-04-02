@@ -58,8 +58,8 @@ class ValidatePersonImpl @Inject() (
             Right[UpstreamErrorResponse, Person](
               Person(
                 nino = request.taiUser.nino,
-                firstName = request.taiUser.firstName.getOrElse(""),
-                surname = request.taiUser.lastName.getOrElse(""),
+                firstName = "",
+                surname = "",
                 isDeceased = false,
                 address = emptyAddress
               )
@@ -69,16 +69,16 @@ class ValidatePersonImpl @Inject() (
       }
 
     EitherT(person).transform {
-      case Right(person) => Right(AuthenticatedRequest(request, request.taiUser.toAuthedUser, person))
+      case Right(person) => Right(AuthenticatedRequest(request, request.taiUser, person))
       case Left(_) =>
         Right(
           AuthenticatedRequest(
             request,
-            request.taiUser.toAuthedUser,
+            request.taiUser,
             Person(
               nino = personNino,
-              firstName = request.taiUser.firstName.getOrElse(""),
-              surname = request.taiUser.lastName.getOrElse(""),
+              firstName = "",
+              surname = "",
               isDeceased = false,
               address = Address(None, None, None, None, None)
             )

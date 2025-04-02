@@ -19,61 +19,24 @@ package controllers.auth
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
-case class AuthedUserWithName(
-  nino: Nino,
-  utr: Option[String],
-  trustedHelper: Option[TrustedHelper],
-  firstName: Option[String],
-  lastName: Option[String]
-) {
-  def toAuthedUser: AuthedUser =
-    AuthedUser(
-      nino = nino,
-      utr = utr,
-      trustedHelper = trustedHelper
-    )
-}
-
 case class AuthedUser(
   nino: Nino,
   utr: Option[String],
   trustedHelper: Option[TrustedHelper]
-) {
-  def toAuthedUserWithName(firstName: Option[String], lastName: Option[String]): AuthedUserWithName =
-    AuthedUserWithName(
-      nino = nino,
-      utr = utr,
-      trustedHelper = trustedHelper,
-      firstName = firstName,
-      lastName = lastName
-    )
-}
+)
 
 object AuthedUser {
 
   def apply(
-    nino: Nino,
+    originalNino: Nino,
     trustedHelper: TrustedHelper,
     saUtr: Option[String]
-  ): AuthedUser =
+  ): AuthedUser = {
+    val principalNino = trustedHelper.principalNino.getOrElse(originalNino.nino)
     AuthedUser(
-      nino = Nino(trustedHelper.principalNino.getOrElse(nino.nino)),
+      nino = Nino(principalNino),
       utr = saUtr,
       trustedHelper = Some(trustedHelper)
     )
-
-  def applyWithName(
-    nino: Nino,
-    trustedHelper: TrustedHelper,
-    saUtr: Option[String],
-    firstName: Option[String] = None,
-    lastName: Option[String] = None
-  ): AuthedUserWithName =
-    AuthedUserWithName(
-      nino = Nino(trustedHelper.principalNino.getOrElse(nino.nino)),
-      utr = saUtr,
-      trustedHelper = Some(trustedHelper),
-      firstName = firstName,
-      lastName = lastName
-    )
+  }
 }

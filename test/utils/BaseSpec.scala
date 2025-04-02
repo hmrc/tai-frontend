@@ -104,11 +104,9 @@ trait BaseSpec
     when(mockAuthJourney.authWithoutValidatePerson).thenReturn(
       new ActionBuilder[InternalAuthenticatedRequest, AnyContent] {
         private val user =
-          AuthedUserWithName(
+          AuthedUser(
             Nino(nino.toString()),
             Some("saUtr"),
-            None,
-            None,
             None
           )
 

@@ -17,6 +17,7 @@
 package controllers.actions
 
 import controllers.auth.{DataRequest, IdentifierRequest}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -26,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject() (
   val journeyCacheRepository: JourneyCacheRepository
-)(implicit val executionContext: ExecutionContext)
+)(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi)
     extends DataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
@@ -34,6 +35,8 @@ class DataRetrievalActionImpl @Inject() (
       case (thisUserNino, None)     => thisUserNino.nino
       case (thisUserNino, Some(th)) => th.principalNino.getOrElse(thisUserNino.nino)
     }
+
+    implicit val messages: Messages = messagesApi.preferred(request)
 
     journeyCacheRepository
       .get(request.userId, nino)

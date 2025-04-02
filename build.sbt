@@ -89,7 +89,6 @@ lazy val microservice = Project(appName, file("."))
       "-Wconf:cat=deprecation&msg=trait HttpGet in package http is deprecated \\(since 15.0.0\\).*:s",
       "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s",
       "-Wconf:msg=a type was inferred to be `Object`; this may indicate a programming error\\.:s",
-      "-Wconf:cat=deprecation&msg=value name in trait Retrievals is deprecated \\(since 8.2.0\\).*:s",
     )
   )
   .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
