@@ -17,6 +17,7 @@
 package utils
 
 import controllers.auth.{AuthJourney, AuthenticatedRequest, DataRequest, InternalAuthenticatedRequest}
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc._
 import play.api.test.Helpers
 import uk.gov.hmrc.tai.model.UserAnswers
@@ -26,6 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class FakeAuthJourney(
   userAnswers: UserAnswers
 ) extends AuthJourney {
+
+  lazy val messagesApi: MessagesApi = Helpers.stubMessagesApi()
+
+  implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
+
   private val authWithDataRetrievalAuthActionBuilder = new ActionBuilder[DataRequest, AnyContent] {
     override def invokeBlock[A](
       request: Request[A],
@@ -68,7 +74,7 @@ class FakeAuthJourney(
       block(
         InternalAuthenticatedRequest(
           authRequest.request,
-          authRequest.taiUser.toAuthedUserWithName(None, None)
+          authRequest.taiUser
         )
       )
     }

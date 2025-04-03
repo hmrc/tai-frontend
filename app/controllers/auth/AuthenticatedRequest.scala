@@ -16,13 +16,18 @@
 
 package controllers.auth
 
+import play.api.i18n.Messages
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.tai.model.domain.Person
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser, person: Person)
     extends WrappedRequest[A](request) {
-  def fullName: String = person.name
+
+  def fullName(implicit messages: Messages): String =
+    taiUser.trustedHelper.map(_.principalName).getOrElse {
+      val trimmedName = person.name.trim
+      if (trimmedName.nonEmpty) trimmedName else messages("label.your_account")
+    }
 }
 
-case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUserWithName)
-    extends WrappedRequest[A](request)
+case class InternalAuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
