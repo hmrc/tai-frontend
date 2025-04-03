@@ -31,25 +31,20 @@ class DataRetrievalActionImpl @Inject() (
     extends DataRetrievalAction {
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
-    val nino: String = (request.request.taiUser.nino, request.request.taiUser.trustedHelper) match {
-      case (thisUserNino, None)     => thisUserNino.nino
-      case (thisUserNino, Some(th)) => th.principalNino.getOrElse(thisUserNino.nino)
-    }
+    val nino = request.request.taiUser.trustedHelper
+      .flatMap(_.principalNino)
+      .getOrElse(request.request.taiUser.nino.nino)
 
     implicit val messages: Messages = messagesApi.preferred(request)
 
     journeyCacheRepository
       .get(request.userId, nino)
-      .map {
-        _.fold(
-          DataRequest(
-            request.request,
-            request.request.taiUser,
-            request.request.fullName,
-            UserAnswers(request.userId, nino)
-          )
-        )(
-          DataRequest(request.request, request.request.taiUser, request.request.fullName, _)
+      .map { userAnswersOpt =>
+        DataRequest(
+          request.request,
+          request.request.taiUser,
+          request.request.fullName,
+          userAnswersOpt.getOrElse(UserAnswers(request.userId, nino))
         )
       }
   }

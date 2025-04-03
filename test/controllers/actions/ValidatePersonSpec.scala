@@ -71,7 +71,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
       when(mockFeatureFlagService.get(DesignatoryDetailsCheck))
         .thenReturn(Future.successful(FeatureFlag(DesignatoryDetailsCheck, isEnabled = false)))
 
-      val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+      val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
 
       val controller = new Harness(validatePerson)
       val result = controller.onPageLoad()(fakeRequest)
@@ -87,7 +87,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
       when(personService.personDetails(any())(any(), any()))
         .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](alivePerson))
 
-      val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+      val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
 
       val controller = new Harness(validatePerson)
       val result = controller.onPageLoad()(fakeRequest)
@@ -106,7 +106,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
             )
           )
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+        val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
@@ -123,7 +123,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
             )
           )
 
-        val validatePerson = new ValidatePersonImpl(personService, messagesApi, mockFeatureFlagService)
+        val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
         val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK

@@ -19,24 +19,17 @@ package controllers.auth
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
-case class AuthedUser(
+final case class AuthedUser private (
   nino: Nino,
   utr: Option[String],
   trustedHelper: Option[TrustedHelper]
 )
 
 object AuthedUser {
-
-  def apply(
-    originalNino: Nino,
-    trustedHelper: TrustedHelper,
-    saUtr: Option[String]
-  ): AuthedUser = {
-    val principalNino = trustedHelper.principalNino.getOrElse(originalNino.nino)
-    AuthedUser(
-      nino = Nino(principalNino),
+  def apply(nino: Nino, trustedHelper: TrustedHelper, saUtr: Option[String]): AuthedUser =
+    new AuthedUser(
+      nino = Nino(trustedHelper.principalNino.getOrElse(nino.nino)),
       utr = saUtr,
       trustedHelper = Some(trustedHelper)
     )
-  }
 }

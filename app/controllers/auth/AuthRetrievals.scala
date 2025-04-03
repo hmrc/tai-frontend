@@ -59,13 +59,15 @@ class AuthRetrievalsImpl @Inject() (
         block(InternalAuthenticatedRequest(request, user))
 
       case optNino ~ saUtr ~ _ =>
-        lazy val user = AuthedUser.apply(
+        val user = AuthedUser.apply(
           uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
           saUtr,
           None
         )
         block(InternalAuthenticatedRequest(request, user))
-      case _ => throw new RuntimeException("Can't find credentials for user")
+
+      case _ =>
+        throw new RuntimeException("Can't find credentials for user")
     }
   }
 
