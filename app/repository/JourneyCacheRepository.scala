@@ -23,6 +23,7 @@ import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import uk.gov.hmrc.play.http.logging.Mdc
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.UserAnswers
 
@@ -69,37 +70,45 @@ class JourneyCacheRepository @Inject() (
     )
 
   def keepAlive(id: String, nino: String): Future[Boolean] =
-    collection
-      .updateOne(
-        filter = byIdAndNino(id, nino),
-        update = Updates.set("lastUpdated", Instant.now(clock))
-      )
-      .toFuture()
-      .map(_ => true)
+    Mdc.preservingMdc {
+      collection
+        .updateOne(
+          filter = byIdAndNino(id, nino),
+          update = Updates.set("lastUpdated", Instant.now(clock))
+        )
+        .toFuture()
+        .map(_ => true)
+    }
 
   def get(id: String, nino: String): Future[Option[UserAnswers]] =
     keepAlive(id, nino).flatMap { _ =>
-      collection
-        .find(byIdAndNino(id, nino))
-        .headOption()
+      Mdc.preservingMdc {
+        collection
+          .find(byIdAndNino(id, nino))
+          .headOption()
+      }
     }
 
   def set(answers: UserAnswers): Future[Boolean] = {
     val updatedAnswers = answers copy (lastUpdated = Instant.now(clock))
 
-    collection
-      .replaceOne(
-        filter = byIdAndNino(updatedAnswers.sessionId, updatedAnswers.nino),
-        replacement = updatedAnswers,
-        options = ReplaceOptions().upsert(true)
-      )
-      .toFuture()
-      .map(_ => true)
+    Mdc.preservingMdc {
+      collection
+        .replaceOne(
+          filter = byIdAndNino(updatedAnswers.sessionId, updatedAnswers.nino),
+          replacement = updatedAnswers,
+          options = ReplaceOptions().upsert(true)
+        )
+        .toFuture()
+        .map(_ => true)
+    }
   }
 
   def clear(id: String, nino: String): Future[Boolean] =
-    collection
-      .deleteOne(byIdAndNino(id, nino))
-      .toFuture()
-      .map(_ => true)
+    Mdc.preservingMdc {
+      collection
+        .deleteOne(byIdAndNino(id, nino))
+        .toFuture()
+        .map(_ => true)
+    }
 }

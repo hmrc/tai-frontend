@@ -96,7 +96,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "historic-paye-year" =>
         ExpectedData(
-          "Your taxable income for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          s"Your taxable income for 6 April ${startTaxYear - 1} to 5 April $startTaxYear - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "income-tax-history" =>
@@ -199,17 +199,17 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         ExpectedData("Estimated tax you owe - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "tax-free-allowance" =>
         ExpectedData(
-          "Your tax-free amount for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Your tax-free amount for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "tax-code" =>
         ExpectedData(
-          "Your tax code for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Your tax code for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "year-tax-codes" =>
         ExpectedData(
-          "Your last tax code for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Your last tax code for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "paye-income-tax-estimate" =>
@@ -253,7 +253,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "edit-income-irregular-hours-confirm" | "update-income-check-save" =>
         ExpectedData(
-          "Confirm your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Confirm your estimated income for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "edit-income-irregular-hours-submit" =>
@@ -277,22 +277,22 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         ExpectedData("Enter your taxable pay for the month - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-bonus-payments" =>
         ExpectedData(
-          "Will you get any bonus, commission or overtime between 6 April 2024 and 5 April 2025? - Check your Income Tax - GOV.UK",
+          s"Will you get any bonus, commission or overtime between 6 April $startTaxYear and 5 April ${startTaxYear + 1}? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-bonus-overtime-amount" =>
         ExpectedData(
-          "How much do you think you will get in bonus, commission or overtime between 6 April 2024 and 5 April 2025? - Check your Income Tax - GOV.UK",
+          s"How much do you think you will get in bonus, commission or overtime between 6 April $startTaxYear and 5 April ${startTaxYear + 1}? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-edit-taxable-pay" | "update-income-edit-pension" =>
         ExpectedData(
-          "Update your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Update your estimated income for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-same-estimated-pay" =>
         ExpectedData(
-          "Your estimated income for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Your estimated income for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-success-page" =>
@@ -301,7 +301,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         ExpectedData("Cannot pay the tax you owe this year - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "update-income-details-decision" =>
         ExpectedData(
-          "Update income details for 6 April 2023 to 5 April 2024 - Check your Income Tax - GOV.UK",
+          s"Update income details for 6 April ${startTaxYear - 1} to 5 April $startTaxYear - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-income-what-to-tell" =>
@@ -313,12 +313,12 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         ExpectedData("Your update has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
       case "income" =>
         ExpectedData(
-          "Your tax-free amount for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Your tax-free amount for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "income-tax-refresh" =>
         ExpectedData(
-          "Your PAYE Income Tax summary for 6 April 2024 to 5 April 2025 - Check your Income Tax - GOV.UK",
+          s"Your PAYE Income Tax summary for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "remove-stop-date" =>
@@ -393,22 +393,22 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "update-next-income-edit" =>
         ExpectedData(
-          "Update your estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
+          s"Update your estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-next-income-no-change" =>
         ExpectedData(
-          "Your estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
+          s"Your estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-next-income-confirm" =>
         ExpectedData(
-          "Confirm your estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
+          s"Confirm your estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-next-income-success" =>
         ExpectedData(
-          "Your updated estimated income for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK",
+          s"Your updated estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
     }
