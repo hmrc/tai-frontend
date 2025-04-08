@@ -35,9 +35,7 @@ import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
 import javax.inject.Inject
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.util.Try
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class IncomeSourceSummaryController @Inject() (
@@ -122,8 +120,6 @@ class IncomeSourceSummaryController @Inject() (
     val hasJourneyCompleted: Boolean = request.userAnswers
       .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
       .getOrElse(false)
-
-
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
