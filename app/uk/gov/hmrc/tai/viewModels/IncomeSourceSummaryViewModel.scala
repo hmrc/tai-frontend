@@ -52,7 +52,6 @@ object IncomeSourceSummaryViewModel {
   def applyNew(
     empId: Int,
     displayName: String,
-//    taxCodeIncomeSources: Seq[TaxCodeIncome],
     estimatedPayAmount: Option[BigDecimal], // Added
     taxCode: Option[String], // Added
     employment: Employment,
@@ -68,10 +67,6 @@ object IncomeSourceSummaryViewModel {
       latestPayment       <- latestAnnualAccount.latestPayment
     } yield latestPayment.amountYearToDate
 
-//    val taxCodeIncomeSource = taxCodeIncomeSources
-//      .find(_.employmentId.contains(empId))
-//      .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
-
     val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
     val displayAddCompanyCar =
       !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
@@ -81,23 +76,14 @@ object IncomeSourceSummaryViewModel {
       case None                    => false
     }
 
-//    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-//      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
-//      case None                    => false
-//    }
-
     IncomeSourceSummaryViewModel(
       empId = empId,
       displayName = displayName,
-//      taxCodeIncomeSource.name,
-//      taxCodeIncomeSource.amount,
       empOrPensionName = employment.name,
       estimatedTaxableIncome = estimatedPayAmount,
       incomeReceivedToDate = amountYearToDate.getOrElse(0),
-//      taxCodeIncomeSource.taxCode,
       taxCode = taxCode,
       pensionOrPayrollNumber = employment.payrollNumber.getOrElse(""),
-//      taxCodeIncomeSource.componentType == PensionIncome,
       isPension = employment.receivingOccupationalPension,
       benefits = benefitVMs,
       displayAddCompanyCarLink = displayAddCompanyCar,

@@ -134,26 +134,20 @@ class IncomeSourceSummaryController @Inject() (
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employment(nino, empId),
-      //      employmentService.employmentOnly(nino, empId, TaxYear()), // TODO: DDCNL-10086 New API
+      employmentService.employmentOnly(nino, empId, TaxYear()),
       rtiService.getPaymentsForYear(nino, TaxYear()).value,
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (
-            Right(taxCodeIncomes),
-            //            taxCodeIncomes, // TODO: DDCNL-10086 New API
+            taxCodeIncomes,
             Some(employment),
             payments,
             benefitsDetails,
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-
-        // TODO: DDCNL-10086 New API:-
-        /*
         val estimatedPay = taxCodeIncomes.fold(
           _ => None,
           incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount)
@@ -164,32 +158,17 @@ class IncomeSourceSummaryController @Inject() (
           incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode)
         )
 
-        val rtiAvailable = payments.isRight
-
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
           empId = empId,
           displayName = request.fullName,
-//          taxCodeIncomes,
           estimatedPayAmount = estimatedPay,
           taxCode = taxCode,
           employment = employment,
           benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,
-          rtiAvailable = rtiAvailable,
+          rtiAvailable = payments.isRight,
           applicationConfig = applicationConfig,
           cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
-        )
-         */
-        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
-          empId,
-          request.fullName,
-          taxCodeIncomes,
-          employment,
-          benefitsDetails,
-          estimatedPayCompletion,
-          rtiAvailable,
-          applicationConfig,
-          cacheUpdatedIncomeAmount
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
