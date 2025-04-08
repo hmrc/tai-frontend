@@ -21,6 +21,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates, ViewModelHelper}
 
@@ -47,7 +48,7 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
-  def apply(
+  def applyNew(
     empId: Int,
     displayName: String,
 //    taxCodeIncomeSources: Seq[TaxCodeIncome],
@@ -104,6 +105,55 @@ object IncomeSourceSummaryViewModel {
       taxDistrictNumber = employment.taxDistrictNumber,
       payeNumber = employment.payeNumber,
       isUpdateInProgress = isUpdateInProgress
+    )
+  }
+
+  def applyOld(
+    empId: Int,
+    displayName: String,
+    taxCodeIncomeSources: Seq[TaxCodeIncome],
+    employment: Employment,
+    benefits: Benefits,
+    estimatedPayJourneyCompleted: Boolean,
+    rtiAvailable: Boolean,
+    applicationConfig: ApplicationConfig,
+    cacheUpdatedIncomeAmount: Option[Int]
+  )(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+
+    val amountYearToDate = for {
+      latestAnnualAccount <- employment.latestAnnualAccount
+      latestPayment       <- latestAnnualAccount.latestPayment
+    } yield latestPayment.amountYearToDate
+
+    val taxCodeIncomeSource = taxCodeIncomeSources
+      .find(_.employmentId.contains(empId))
+      .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
+
+    val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
+    val displayAddCompanyCar =
+      !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+
+    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
+      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
+      case None                    => false
+    }
+
+    IncomeSourceSummaryViewModel(
+      empId,
+      displayName,
+      taxCodeIncomeSource.name,
+      Some(taxCodeIncomeSource.amount),
+      amountYearToDate.getOrElse(0),
+      Some(taxCodeIncomeSource.taxCode),
+      employment.payrollNumber.getOrElse(""),
+      taxCodeIncomeSource.componentType == PensionIncome,
+      benefitVMs,
+      displayAddCompanyCar,
+      estimatedPayJourneyCompleted,
+      rtiAvailable,
+      employment.taxDistrictNumber,
+      employment.payeNumber,
+      isUpdateInProgress
     )
   }
 

@@ -41,14 +41,14 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
   val estimatedPayJourneyCompleted = false
 
   val expectedPenisonViewModel = IncomeSourceSummaryViewModel(
-    empId = 1,
-    displayName = "User Name",
-    empOrPensionName = "Pension",
-    estimatedTaxableIncome = Some(100),
-    incomeReceivedToDate = 400,
-    taxCode = Some("1100L"),
-    pensionOrPayrollNumber = "PENSION-1122",
-    isPension = true,
+    1,
+    "User Name",
+    "Pension",
+    Some(100),
+    400,
+    Some("1100L"),
+    "PENSION-1122",
+    true,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "475",
@@ -56,14 +56,14 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
   )
 
   val expectedPensionVmUpdateInProgress = IncomeSourceSummaryViewModel(
-    empId = 1,
-    displayName = "User Name",
-    empOrPensionName = "Pension",
-    estimatedTaxableIncome = Some(100),
-    incomeReceivedToDate = 400,
-    taxCode = Some("1100L"),
-    pensionOrPayrollNumber = "PENSION-1122",
-    isPension = true,
+    1,
+    "User Name",
+    "Pension",
+    Some(100),
+    400,
+    Some("1100L"),
+    "PENSION-1122",
+    true,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "475",
@@ -72,14 +72,14 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
   )
 
   val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(
-    empId = 1,
-    displayName = "User Name",
-    empOrPensionName = "Employer",
-    estimatedTaxableIncome = Some(100),
-    incomeReceivedToDate = 400,
-    taxCode = Some("1100L"),
-    pensionOrPayrollNumber = "EMPLOYER-1122",
-    isPension = false,
+    1,
+    "User Name",
+    "Employer",
+    Some(100),
+    400,
+    Some("1100L"),
+    "EMPLOYER-1122",
+    false,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
@@ -87,14 +87,14 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
   )
 
   val expectedEmploymentVmUpdateInProgress = IncomeSourceSummaryViewModel(
-    empId = 1,
-    displayName = "User Name",
-    empOrPensionName = "Employer",
-    estimatedTaxableIncome = Some(100),
-    incomeReceivedToDate = 400,
-    taxCode = Some("1100L"),
-    pensionOrPayrollNumber = "EMPLOYER-1122",
-    isPension = false,
+    1,
+    "User Name",
+    "Employer",
+    Some(100),
+    400,
+    Some("1100L"),
+    "EMPLOYER-1122",
+    false,
     estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
@@ -102,39 +102,22 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     isUpdateInProgress = true
   )
 
-  /*
-    empId: Int,
-    displayName: String,
-//    taxCodeIncomeSources: Seq[TaxCodeIncome],
-    estimatedPayAmount: Option[BigDecimal], // Added
-    taxCode: Option[String], // Added
-    employment: Employment,
-    benefits: Benefits,
-    estimatedPayJourneyCompleted: Boolean,
-    rtiAvailable: Boolean,
-    applicationConfig: ApplicationConfig,
-    cacheUpdatedIncomeAmount: Option[Int]
-   */
-
   def createViewModel(
     taxCodeIncomeSources: Seq[TaxCodeIncome],
     employment: Employment,
     benefits: Benefits,
     empId: Int = 1
   ): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel(
-      empId = empId,
-      displayName = "User Name",
-      estimatedPayAmount =
-        taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount), // Added
-      taxCode =
-        taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode), // Added
-      employment = employment,
-      benefits = benefits,
-      estimatedPayJourneyCompleted = false,
-      rtiAvailable = true,
-      applicationConfig = appConfig,
-      cacheUpdatedIncomeAmount = None
+    IncomeSourceSummaryViewModel.applyOld(
+      empId,
+      "User Name",
+      taxCodeIncomeSources,
+      employment,
+      benefits,
+      false,
+      true,
+      appConfig,
+      None
     )
 
   "IncomeSourceSummaryViewModel apply method" must {
@@ -488,21 +471,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
-            empId = empId,
-            displayName = "User Name",
-            estimatedPayAmount = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.amount), // Added
-            taxCode = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.taxCode), // Added
-            employment = employment,
-            benefits = benefits,
-            estimatedPayJourneyCompleted = false,
-            rtiAvailable = true,
-            applicationConfig = appConfig,
-            cacheUpdatedIncomeAmount = Some(300)
+          IncomeSourceSummaryViewModel.applyOld(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(300)
           )
 
         val taxCodeIncomeSources = Seq(
@@ -538,21 +516,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
-            empId = empId,
-            displayName = "User Name",
-            estimatedPayAmount = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.amount), // Added
-            taxCode = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.taxCode), // Added
-            employment = employment,
-            benefits = benefits,
-            estimatedPayJourneyCompleted = false,
-            rtiAvailable = true,
-            applicationConfig = appConfig,
-            cacheUpdatedIncomeAmount = Some(300)
+          IncomeSourceSummaryViewModel.applyOld(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(300)
           )
 
         val taxCodeIncomeSources = Seq(
@@ -590,21 +563,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
-            empId = empId,
-            displayName = "User Name",
-            estimatedPayAmount = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.amount), // Added
-            taxCode = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.taxCode), // Added
-            employment = employment,
-            benefits = benefits,
-            estimatedPayJourneyCompleted = false,
-            rtiAvailable = true,
-            applicationConfig = appConfig,
-            cacheUpdatedIncomeAmount = Some(100)
+          IncomeSourceSummaryViewModel.applyOld(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(100)
           )
 
         val taxCodeIncomeSources = Seq(
@@ -638,21 +606,16 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
-            empId = empId,
-            displayName = "User Name",
-            estimatedPayAmount = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.amount), // Added
-            taxCode = taxCodeIncomeSources
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.taxCode), // Added
-            employment = employment,
-            benefits = benefits,
-            estimatedPayJourneyCompleted = false,
-            rtiAvailable = true,
-            applicationConfig = appConfig,
-            cacheUpdatedIncomeAmount = Some(100)
+          IncomeSourceSummaryViewModel.applyOld(
+            empId,
+            "User Name",
+            taxCodeIncomeSources,
+            employment,
+            benefits,
+            false,
+            true,
+            appConfig,
+            Some(100)
           )
 
         val taxCodeIncomeSources = Seq(

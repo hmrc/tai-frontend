@@ -200,7 +200,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is employment" in {
         doc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         doc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
-        doc must haveSpanWithText("£" + model.estimatedTaxableIncome)
+        doc must haveSpanWithText("£" + model.estimatedTaxableIncome.get)
         doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         doc must haveLinkWithUrlWithID(
           "updateIncome",
@@ -212,7 +212,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is pension" in {
         pensionDoc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         pensionDoc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
-        pensionDoc must haveSpanWithText("£" + pensionModel.estimatedTaxableIncome)
+        pensionDoc must haveSpanWithText("£" + pensionModel.estimatedTaxableIncome.get)
         pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         pensionDoc must haveLinkWithUrlWithID(
           "updateIncome",

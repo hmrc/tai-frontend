@@ -117,32 +117,32 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
   "onPageLoad" must {
     "display the income details page" when {
-//      "asked for employment details" in {
-//
-//        val userAnswers = baseUserAnswers
-//          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
-//        setup(userAnswers)
-//
-//        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-//          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-//        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-//        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
-//        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-//          .thenReturn(extractAnnualAccounts(employment))
-//
-//        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//
-//        status(result) mustBe OK
-//
-//        val doc = Jsoup.parse(contentAsString(result))
-//        doc.title() must include(
-//          Messages(
-//            "tai.employment.income.details.mainHeading.gaTitle",
-//            TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
-//          )
-//        )
-//      }
+      "asked for employment details" in {
+
+        val userAnswers = baseUserAnswers
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
+        setup(userAnswers)
+
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(extractAnnualAccounts(employment))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(
+          Messages(
+            "tai.employment.income.details.mainHeading.gaTitle",
+            TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
+          )
+        )
+      }
 
       "asked for pension details" in {
 
@@ -187,103 +187,103 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-//      "failed to read employment details" in {
-//        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-//          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-//        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-//          .thenReturn(extractAnnualAccounts(employment))
-//
-//        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//
-//        status(result) mustBe INTERNAL_SERVER_ERROR
-//      }
+      "failed to read employment details" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(extractAnnualAccounts(employment))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
     }
 
-//    "flush the cache" when {
-//      "cache update amount is the same as the HOD amount" in {
-//        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-//          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-//        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-//        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-//          .thenReturn(extractAnnualAccounts(employment))
-//
-//        val userAnswers = baseUserAnswers
-//          .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
-//          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
-//        setup(userAnswers)
-//
-//        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-//        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
-//
-//        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//
-//        status(result) mustBe OK
-//
-//        val doc = Jsoup.parse(contentAsString(result))
-//        doc.title() must include(
-//          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
-//        )
-//
-//        verify(mockJourneyCacheRepository, times(1)).set(updatedUserAnswersCaptor.capture())
-//
-//        val updatedAnswers = updatedUserAnswersCaptor.getValue
-//        updatedAnswers.get(EndCompanyBenefitsUpdateIncomePage(employmentId)) mustBe None
-//      }
-//    }
-//    "display the income details page with an update message" when {
-//      "update is in progress for employment as cache update amount is different to the HOD amount" in {
-//        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-//          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-//        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-//        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-//          .thenReturn(extractAnnualAccounts(employment))
-//
-//        val userAnswers = baseUserAnswers
-//          .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
-//          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
-//        setup(userAnswers)
-//
-//        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-//        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
-//
-//        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//
-//        status(result) mustBe OK
-//
-//        val doc = Jsoup.parse(contentAsString(result))
-//        doc.toString must include(Messages("tai.income.details.updateInProgress"))
-//        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
-//      }
-//    }
-//
-//    "display the income details page with an update message" when {
-//      "update is in progress for pension as cache update amount is different to the HOD amount" in {
-//        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-//          .thenReturn(Future.successful(Right(taxCodeIncomes)))
-//        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-//        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-//        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-//          .thenReturn(extractAnnualAccounts(employment))
-//        val userAnswers = baseUserAnswers
-//          .setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
-//          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
-//        setup(userAnswers)
-//
-//        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-//        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
-//
-//        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-//
-//        status(result) mustBe OK
-//
-//        val doc = Jsoup.parse(contentAsString(result))
-//        doc.toString must include(Messages("tai.income.details.updateInProgress"))
-//
-//        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
-//      }
-//    }
+    "flush the cache" when {
+      "cache update amount is the same as the HOD amount" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(extractAnnualAccounts(employment))
+
+        val userAnswers = baseUserAnswers
+          .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
+        setup(userAnswers)
+
+        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(
+          Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
+        )
+
+        verify(mockJourneyCacheRepository, times(1)).set(updatedUserAnswersCaptor.capture())
+
+        val updatedAnswers = updatedUserAnswersCaptor.getValue
+        updatedAnswers.get(EndCompanyBenefitsUpdateIncomePage(employmentId)) mustBe None
+      }
+    }
+    "display the income details page with an update message" when {
+      "update is in progress for employment as cache update amount is different to the HOD amount" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(extractAnnualAccounts(employment))
+
+        val userAnswers = baseUserAnswers
+          .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
+        setup(userAnswers)
+
+        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.toString must include(Messages("tai.income.details.updateInProgress"))
+        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+      }
+    }
+
+    "display the income details page with an update message" when {
+      "update is in progress for pension as cache update amount is different to the HOD amount" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(extractAnnualAccounts(employment))
+        val userAnswers = baseUserAnswers
+          .setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
+          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
+        setup(userAnswers)
+
+        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.toString must include(Messages("tai.income.details.updateInProgress"))
+
+        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+      }
+    }
   }
 }

@@ -77,7 +77,7 @@ class CompanyBenefitsSummaryController @Inject() (
             ) =>
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-          val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+          val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
             empId = empId,
             displayName = request.fullName,
 //            taxCodeIncomes,

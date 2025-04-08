@@ -26,6 +26,7 @@ import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
@@ -82,39 +83,53 @@ class IncomeSourceSummaryController @Inject() (
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (
-//            Right(taxCodeIncomes),
-            taxCodeIncomes,
+            Right(taxCodeIncomes),
+//            taxCodeIncomes, // NEW ONE!!
             Some(employment),
             payments,
             benefitsDetails,
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-//        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-        val estimatedPay = taxCodeIncomes.fold(
-          _ => None,
-          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount)
-        ) // todo pull from iabd if missing from tax account
+        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-        val taxCode = taxCodeIncomes.fold(
-          _ => None,
-          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode)
-        )
+// NEW STUFF BELOW:-
+//        val estimatedPay = taxCodeIncomes.fold(
+//          _ => None,
+//          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount)
+//        ) // todo pull from iabd if missing from tax account
+//
+//        val taxCode = taxCodeIncomes.fold(
+//          _ => None,
+//          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode)
+//        )
 
-        val rtiAvailable = payments.isRight
+//        val rtiAvailable = payments.isRight
 
-        val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-          empId = empId,
-          displayName = request.fullName,
-//          taxCodeIncomes,
-          estimatedPayAmount = estimatedPay,
-          taxCode = taxCode,
-          employment = employment,
-          benefits = benefitsDetails,
-          estimatedPayJourneyCompleted = estimatedPayCompletion,
-          rtiAvailable = rtiAvailable,
-          applicationConfig = applicationConfig,
-          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
+//        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
+//          empId = empId,
+//          displayName = request.fullName,
+////          taxCodeIncomes,
+//          estimatedPayAmount = estimatedPay,
+//          taxCode = taxCode,
+//          employment = employment,
+//          benefits = benefitsDetails,
+//          estimatedPayJourneyCompleted = estimatedPayCompletion,
+//          rtiAvailable = rtiAvailable,
+//          applicationConfig = applicationConfig,
+//          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
+//        )
+
+        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
+          empId,
+          request.fullName,
+          taxCodeIncomes,
+          employment,
+          benefitsDetails,
+          estimatedPayCompletion,
+          rtiAvailable,
+          applicationConfig,
+          cacheUpdatedIncomeAmount
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
