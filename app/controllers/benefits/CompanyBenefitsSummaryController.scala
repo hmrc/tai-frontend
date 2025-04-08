@@ -80,11 +80,13 @@ class CompanyBenefitsSummaryController @Inject() (
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
             empId = empId,
             displayName = request.fullName,
-//            taxCodeIncomes,
-            estimatedPayAmount =
-              taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount), // Added
-            taxCode =
-              taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode), // Added
+//            taxCodeIncomes, // TODO: DDCNL-10086 New API
+            estimatedPayAmount = taxCodeIncomes
+              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
+              .map(_.amount), // TODO: DDCNL-10086 New API added
+            taxCode = taxCodeIncomes
+              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
+              .map(_.taxCode), // TODO: DDCNL-10086 New API added
             employment = employment,
             benefits = benefitsDetails,
             estimatedPayJourneyCompleted = estimatedPayCompletion,

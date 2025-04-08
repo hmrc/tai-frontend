@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, Gener
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, RtiService, TaxAccountService}
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{ApiBackendChoice, TaxYearRangeUtil}
 import utils.BaseSpec
 import views.html.IncomeSourceSummaryView
 
@@ -89,7 +89,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   private val mockRtiService = mock[RtiService]
-
+  private val mockApiBackendChoice: ApiBackendChoice = mock[ApiBackendChoice] // TODO: DDCNL-10086 New API
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
   def sut = new IncomeSourceSummaryController(
@@ -103,6 +103,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     inject[IncomeSourceSummaryView],
     mockJourneyCacheRepository,
     mockRtiService,
+    mockApiBackendChoice,
     inject[ErrorPagesHandler]
   )
 
@@ -111,6 +112,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     setup(baseUserAnswers)
     Mockito.reset(mockJourneyCacheRepository)
     Mockito.reset(mockRtiService)
+    Mockito.reset(mockApiBackendChoice)
   }
 
   val employmentId = 1

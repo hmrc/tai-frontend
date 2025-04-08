@@ -29,9 +29,9 @@ case class IncomeSourceSummaryViewModel(
   empId: Int,
   displayName: String,
   empOrPensionName: String,
-  estimatedTaxableIncome: Option[BigDecimal], // Changed to Option
+  estimatedTaxableIncome: Option[BigDecimal], // TODO: DDCNL-10086 New API - changed to Option
   incomeReceivedToDate: BigDecimal,
-  taxCode: Option[String], // Changed to Option
+  taxCode: Option[String], // TODO: DDCNL-10086 New API - changed to Option
   pensionOrPayrollNumber: String,
   isPension: Boolean,
   benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
@@ -48,6 +48,7 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
+  // TODO: DDCNL-10086 New API:-
   def applyNew(
     empId: Int,
     displayName: String,
