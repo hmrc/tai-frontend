@@ -16,8 +16,8 @@
 
 package controllers.benefits
 
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.AuthJourney
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -25,6 +25,7 @@ import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
@@ -76,17 +77,12 @@ class CompanyBenefitsSummaryController @Inject() (
               cacheUpdatedIncomeAmount
             ) =>
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-
+          val optTaxCodeIncome: Option[TaxCodeIncome] =
+            taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
             empId = empId,
             displayName = request.fullName,
-//            taxCodeIncomes, // TODO: DDCNL-10086 New API
-            estimatedPayAmount = taxCodeIncomes
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.amount), // TODO: DDCNL-10086 New API added
-            taxCode = taxCodeIncomes
-              .find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-              .map(_.taxCode), // TODO: DDCNL-10086 New API added
+            optTaxCodeIncome,
             employment = employment,
             benefits = benefitsDetails,
             estimatedPayJourneyCompleted = estimatedPayCompletion,

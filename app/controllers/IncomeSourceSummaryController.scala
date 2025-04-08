@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.ApiBackendChoice
@@ -122,15 +123,7 @@ class IncomeSourceSummaryController @Inject() (
       .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
       .getOrElse(false)
 
-    println(
-      "\ntaxCodeIncomes response:" + Try(Await.result(taxAccountService.taxCodeIncomes(nino, TaxYear()), Duration.Inf))
-    )
-    println("\nRTI response:" + Try(Await.result(rtiService.getPaymentsForYear(nino, TaxYear()).value, Duration.Inf)))
-    println(
-      "\nemploymentsOnly response:" + Try(
-        Await.result(employmentService.employmentOnly(nino, empId, TaxYear()), Duration.Inf)
-      )
-    )
+
 
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
@@ -148,21 +141,15 @@ class IncomeSourceSummaryController @Inject() (
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-        val estimatedPay = taxCodeIncomes.fold(
+        val optTaxCodeIncome: Option[TaxCodeIncome] = taxCodeIncomes.fold(
           _ => None,
-          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount)
-        ) // todo pull from iabd if missing from tax account
-
-        val taxCode = taxCodeIncomes.fold(
-          _ => None,
-          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode)
+          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
         )
 
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
           empId = empId,
           displayName = request.fullName,
-          estimatedPayAmount = estimatedPay,
-          taxCode = taxCode,
+          optTaxCodeIncome,
           employment = employment,
           benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,

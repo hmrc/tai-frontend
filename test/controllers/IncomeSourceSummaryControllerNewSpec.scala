@@ -156,7 +156,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(mockEploymentService.employmentOnly(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment copy(receivingOccupationalPension = true))))
+          .thenReturn(Future.successful(Some(employment copy (receivingOccupationalPension = true))))
         when(mockRtiService.getPaymentsForYear(any(), any())(any())).thenReturn(extractAnnualAccounts(employment))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))

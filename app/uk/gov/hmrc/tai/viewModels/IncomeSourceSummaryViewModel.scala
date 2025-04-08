@@ -48,19 +48,20 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
-  // TODO: DDCNL-10086 New API:-
   def applyNew(
     empId: Int,
     displayName: String,
-    estimatedPayAmount: Option[BigDecimal], // Added
-    taxCode: Option[String], // Added
-    employment: Employment,
+    optTaxCodeIncome: Option[TaxCodeIncome], // Tax account API response
+    employment: Employment, // Employment API response
     benefits: Benefits,
     estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
     applicationConfig: ApplicationConfig,
     cacheUpdatedIncomeAmount: Option[Int]
   )(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+    val estimatedPayAmount =
+      optTaxCodeIncome.map(_.amount) // TODO: DDCNL-10088 - pull from iabd if missing from tax account
+    val taxCode = optTaxCodeIncome.map(_.taxCode)
 
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
