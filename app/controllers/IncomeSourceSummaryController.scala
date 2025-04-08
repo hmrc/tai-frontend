@@ -32,7 +32,9 @@ import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.Try
 import scala.util.control.NonFatal
 
 class IncomeSourceSummaryController @Inject() (
@@ -60,10 +62,20 @@ class IncomeSourceSummaryController @Inject() (
       .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
       .getOrElse(false)
 
+    println(
+      "\ntaxCodeIncomes response:" + Try(Await.result(taxAccountService.taxCodeIncomes(nino, TaxYear()), Duration.Inf))
+    )
+    println("\nRTI response:" + Try(Await.result(rtiService.getPaymentsForYear(nino, TaxYear()).value, Duration.Inf)))
+    println(
+      "\nemploymentsOnly response:" + Try(
+        Await.result(employmentService.employmentOnly(nino, empId, TaxYear()), Duration.Inf)
+      )
+    )
+
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-//      employmentService.employment(nino, empId),
-      employmentService.employmentOnly(nino, empId, TaxYear()),
+      employmentService.employment(nino, empId),
+//      employmentService.employmentOnly(nino, empId, TaxYear()), // THIS IS THE NEW ONE
       rtiService.getPaymentsForYear(nino, TaxYear()).value,
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
@@ -92,17 +104,17 @@ class IncomeSourceSummaryController @Inject() (
         val rtiAvailable = payments.isRight
 
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-          empId,
-          request.fullName,
+          empId = empId,
+          displayName = request.fullName,
 //          taxCodeIncomes,
-          estimatedPay,
-          taxCode,
-          employment,
-          benefitsDetails,
-          estimatedPayCompletion,
-          rtiAvailable,
-          applicationConfig,
-          cacheUpdatedIncomeAmount
+          estimatedPayAmount = estimatedPay,
+          taxCode = taxCode,
+          employment = employment,
+          benefits = benefitsDetails,
+          estimatedPayJourneyCompleted = estimatedPayCompletion,
+          rtiAvailable = rtiAvailable,
+          applicationConfig = applicationConfig,
+          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {

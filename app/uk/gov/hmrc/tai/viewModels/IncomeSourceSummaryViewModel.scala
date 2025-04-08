@@ -85,25 +85,25 @@ object IncomeSourceSummaryViewModel {
 //    }
 
     IncomeSourceSummaryViewModel(
-      empId,
-      displayName,
+      empId = empId,
+      displayName = displayName,
 //      taxCodeIncomeSource.name,
 //      taxCodeIncomeSource.amount,
-      employment.name,
-      estimatedPayAmount,
-      amountYearToDate.getOrElse(0),
+      empOrPensionName = employment.name,
+      estimatedTaxableIncome = estimatedPayAmount,
+      incomeReceivedToDate = amountYearToDate.getOrElse(0),
 //      taxCodeIncomeSource.taxCode,
-      taxCode,
-      employment.payrollNumber.getOrElse(""),
+      taxCode = taxCode,
+      pensionOrPayrollNumber = employment.payrollNumber.getOrElse(""),
 //      taxCodeIncomeSource.componentType == PensionIncome,
-      employment.receivingOccupationalPension,
-      benefitVMs,
-      displayAddCompanyCar,
-      estimatedPayJourneyCompleted,
-      rtiAvailable,
-      employment.taxDistrictNumber,
-      employment.payeNumber,
-      isUpdateInProgress
+      isPension = employment.receivingOccupationalPension,
+      benefits = benefitVMs,
+      displayAddCompanyCarLink = displayAddCompanyCar,
+      estimatedPayJourneyCompleted = estimatedPayJourneyCompleted,
+      rtiAvailable = rtiAvailable,
+      taxDistrictNumber = employment.taxDistrictNumber,
+      payeNumber = employment.payeNumber,
+      isUpdateInProgress = isUpdateInProgress
     )
   }
 

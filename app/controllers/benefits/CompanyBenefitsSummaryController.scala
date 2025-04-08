@@ -78,17 +78,19 @@ class CompanyBenefitsSummaryController @Inject() (
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
-            empId,
-            request.fullName,
+            empId = empId,
+            displayName = request.fullName,
 //            taxCodeIncomes,
-            taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount), // Added
-            taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode), // Added
-            employment,
-            benefitsDetails,
-            estimatedPayCompletion,
-            rtiAvailable,
-            applicationConfig,
-            cacheUpdatedIncomeAmount
+            estimatedPayAmount =
+              taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount), // Added
+            taxCode =
+              taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode), // Added
+            employment = employment,
+            benefits = benefitsDetails,
+            estimatedPayJourneyCompleted = estimatedPayCompletion,
+            rtiAvailable = rtiAvailable,
+            applicationConfig = applicationConfig,
+            cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
           )
           val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
             journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
