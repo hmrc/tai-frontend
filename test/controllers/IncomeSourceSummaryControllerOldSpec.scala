@@ -17,7 +17,6 @@
 package controllers
 
 import builders.RequestBuilder
-import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -27,7 +26,6 @@ import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
@@ -43,11 +41,6 @@ import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
-  private def extractAnnualAccounts(
-    employment: Employment
-  ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] = EitherT(
-    Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(employment.annualAccounts))
-  )
 
   val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
@@ -111,7 +104,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
     super.beforeEach()
     setup(baseUserAnswers)
     Mockito.reset(mockJourneyCacheRepository)
-    Mockito.reset(mockRtiService)
     Mockito.reset(mockApiBackendChoice)
     when(mockApiBackendChoice.isNewApiBackendEnabled(any())).thenReturn(false)
   }
@@ -132,8 +124,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(extractAnnualAccounts(employment))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -158,7 +148,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any())).thenReturn(extractAnnualAccounts(employment))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -178,8 +167,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(extractAnnualAccounts(employment))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -190,8 +177,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(extractAnnualAccounts(employment))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -205,8 +190,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(extractAnnualAccounts(employment))
 
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
@@ -237,8 +220,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(extractAnnualAccounts(employment))
 
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
@@ -264,8 +245,6 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(extractAnnualAccounts(employment))
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
           .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
