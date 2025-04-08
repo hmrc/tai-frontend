@@ -133,14 +133,10 @@
                 @messages("tai.income.details.updateInProgress")
             </p>
             } else {
-            @*                <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(model.estimatedTaxableIncome)</span> *@
                 @for(estimatedIncome <- model.estimatedTaxableIncome) {
                     <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(estimatedIncome)</span>
                 }
             }
-            
-
-
             <p>
                 @link(
                     id=Some("updateIncome"),

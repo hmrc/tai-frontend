@@ -114,6 +114,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
     Mockito.reset(mockJourneyCacheRepository)
     Mockito.reset(mockApiBackendChoice)
     Mockito.reset(mockRtiService)
+    Mockito.reset(mockEploymentService)
     when(mockApiBackendChoice.isNewApiBackendEnabled(any())).thenReturn(true)
   }
 
@@ -123,7 +124,6 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
   "onPageLoad" must {
     "display the income details page" when {
       "asked for employment details" in {
-
         val userAnswers = baseUserAnswers
           .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(userAnswers)
@@ -147,6 +147,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
             TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
           )
         )
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
 
       "asked for pension details" in {
@@ -171,6 +172,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
             TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
           )
         )
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
 
       "failed to read tax code incomes" in {
@@ -183,6 +185,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
     }
 
@@ -197,6 +200,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
     }
 
@@ -230,6 +234,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
         val updatedAnswers = updatedUserAnswersCaptor.getValue
         updatedAnswers.get(EndCompanyBenefitsUpdateIncomePage(employmentId)) mustBe None
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
     }
     "display the income details page with an update message" when {
@@ -256,6 +261,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.toString must include(Messages("tai.income.details.updateInProgress"))
         verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
     }
 
@@ -283,6 +289,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         doc.toString must include(Messages("tai.income.details.updateInProgress"))
 
         verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
     }
   }

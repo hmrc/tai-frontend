@@ -29,9 +29,9 @@ case class IncomeSourceSummaryViewModel(
   empId: Int,
   displayName: String,
   empOrPensionName: String,
-  estimatedTaxableIncome: Option[BigDecimal], // TODO: DDCNL-10086 New API - changed to Option
+  estimatedTaxableIncome: Option[BigDecimal],
   incomeReceivedToDate: BigDecimal,
-  taxCode: Option[String], // TODO: DDCNL-10086 New API - changed to Option
+  taxCode: Option[String],
   pensionOrPayrollNumber: String,
   isPension: Boolean,
   benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
