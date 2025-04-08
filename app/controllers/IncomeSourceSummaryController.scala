@@ -17,11 +17,11 @@
 package controllers
 
 import cats.implicits._
-import controllers.auth.AuthJourney
+import controllers.auth.{AuthJourney, DataRequest}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -55,16 +55,64 @@ class IncomeSourceSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-// TODO: DDCNL-10086 New API:-
-//  def onPageLoad: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-//    if (apiBackendChoice.isNewApiBackendEnabled) {
-//      onPageLoadNew
-//    } else {
-//      onPageLoadOld
-//    }
-//  }
-
   def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    if (apiBackendChoice.isNewApiBackendEnabled) {
+      onPageLoadNew(empId)
+    } else {
+      onPageLoadOld(empId)
+    }
+  }
+
+  private def onPageLoadOld(empId: Int)(implicit request: DataRequest[AnyContent]): Future[Result] = {
+    val nino = request.taiUser.nino
+
+    val cacheUpdatedIncomeAmountFuture =
+      Future.successful(request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt))
+
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
+      .getOrElse(false)
+
+    (
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      employmentService.employment(nino, empId),
+      benefitsService.benefits(nino, TaxYear().year),
+      Future.successful(hasJourneyCompleted),
+      cacheUpdatedIncomeAmountFuture
+    ).mapN {
+      case (
+            Right(taxCodeIncomes),
+            Some(employment),
+            benefitsDetails,
+            estimatedPayCompletion,
+            cacheUpdatedIncomeAmount
+          ) =>
+        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
+          empId,
+          request.fullName,
+          taxCodeIncomes,
+          employment,
+          benefitsDetails,
+          estimatedPayCompletion,
+          rtiAvailable,
+          applicationConfig,
+          cacheUpdatedIncomeAmount
+        )
+
+        if (!incomeDetailsViewModel.isUpdateInProgress) {
+          val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
+          journeyCacheRepository.set(updatedUserAnswers)
+        }
+
+        Ok(incomeSourceSummary(incomeDetailsViewModel))
+      case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
+    } recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
+    }
+  }
+
+  private def onPageLoadNew(empId: Int)(implicit request: DataRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =
@@ -87,7 +135,7 @@ class IncomeSourceSummaryController @Inject() (
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
-//      employmentService.employmentOnly(nino, empId, TaxYear()), // TODO: DDCNL-10086 New API
+      //      employmentService.employmentOnly(nino, empId, TaxYear()), // TODO: DDCNL-10086 New API
       rtiService.getPaymentsForYear(nino, TaxYear()).value,
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
@@ -95,7 +143,7 @@ class IncomeSourceSummaryController @Inject() (
     ).mapN {
       case (
             Right(taxCodeIncomes),
-//            taxCodeIncomes, // TODO: DDCNL-10086 New API
+            //            taxCodeIncomes, // TODO: DDCNL-10086 New API
             Some(employment),
             payments,
             benefitsDetails,
@@ -104,7 +152,7 @@ class IncomeSourceSummaryController @Inject() (
           ) =>
         val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-// TODO: DDCNL-10086 New API:-
+        // TODO: DDCNL-10086 New API:-
         /*
         val estimatedPay = taxCodeIncomes.fold(
           _ => None,

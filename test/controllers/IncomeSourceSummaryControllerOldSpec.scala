@@ -42,7 +42,7 @@ import views.html.IncomeSourceSummaryView
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class IncomeSourceSummaryControllerSpec extends BaseSpec {
+class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
   private def extractAnnualAccounts(
     employment: Employment
   ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] = EitherT(
@@ -113,6 +113,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     Mockito.reset(mockJourneyCacheRepository)
     Mockito.reset(mockRtiService)
     Mockito.reset(mockApiBackendChoice)
+    when(mockApiBackendChoice.isNewApiBackendEnabled(any())).thenReturn(false)
   }
 
   val employmentId = 1
@@ -162,11 +163,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
-        /*
-"Your employment for 6 April 2025 to 5 April 2026 - Check your Income Tax - GOV.UK" did not include substring
-"Your pension for 6 April 2025 to 5 April 2026" (IncomeSourceSummaryControllerSpec.scala:166)
-
-         */
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
           Messages(
