@@ -72,7 +72,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     sequenceNumber = 2,
     cessationPay = None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   private val taxCodeIncomes = Seq(

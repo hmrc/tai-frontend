@@ -68,7 +68,8 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val employmentService: EmploymentService = mock[EmploymentService]

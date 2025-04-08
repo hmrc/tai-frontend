@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
+import cats.implicits._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
@@ -34,8 +37,11 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
-  private def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
+  def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employment-only/$id/years/${taxYear.year}"
+
+  def employmentsOnlyUrl(nino: Nino, taxYear: TaxYear): String =
+    s"$serviceUrl/tai/$nino/employments-only/years/${taxYear.year}"
 
   private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =
     dateOption.filter(_.isAfter(applicationConfig.startEmploymentDateFilteredBefore))
@@ -47,21 +53,39 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
       }
     }
 
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler
-      .getFromApiV2(employmentOnlyUrl(nino, id, taxYear))
-      .map(json =>
-        (json \ "data").asOpt[Employment].map { employment =>
-          employment.copy(startDate = filterDate(employment.startDate))
-        }
-      )
-
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
       (json \ "data").as[Seq[Employment]].map { employment =>
         employment.copy(startDate = filterDate(employment.startDate))
       }
     }
+
+  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+    httpHandler
+      .getFromApiV2(employmentOnlyUrl(nino, id, taxYear))
+      .map(json =>
+        // todo asOpt is too forgiving
+        (json \ "data").asOpt[Employment].map { employment =>
+          employment.copy(startDate = filterDate(employment.startDate))
+        }
+      )
+
+  def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] = {
+    val url = employmentsOnlyUrl(nino, taxYear)
+    httpHandler
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map { httpResponse =>
+        (httpResponse.json \ "data" \ "employments").as[Seq[Employment]].map { employment =>
+          employment.copy(startDate = filterDate(employment.startDate))
+        }
+      }
+  }
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler

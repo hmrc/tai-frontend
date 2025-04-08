@@ -90,7 +90,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
     "display tax code page containing all tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startOfTaxYear: String =
@@ -108,7 +108,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
     "display tax code page containing the relevant tax codes" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val result = sut.taxCode(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -127,7 +127,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
       val startOfTaxYear: String = TaxYear().prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
       val endOfTaxYear: String = TaxYear().prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
-      when(taxAccountService.scottishBandRates(any(), any(), any())(any(), any()))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startDate = TaxYear().start

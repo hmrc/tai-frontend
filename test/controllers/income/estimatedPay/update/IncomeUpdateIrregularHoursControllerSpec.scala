@@ -77,7 +77,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
     when(incomeService.latestPayment(any(), any())(any(), any()))
       .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
-    when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
+    when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Right(None: Option[TaxCodeIncome])))
   }
 
@@ -112,7 +112,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncome)))
 
         def editIncomeIrregularHours(
@@ -166,7 +166,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
         val service = EditIncomeIrregularHoursHarness.setup(Option.empty[TaxCodeIncome])
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any(), any()))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Left("error")))
         val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
 

@@ -25,8 +25,8 @@ import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHe
 
 case class IncomeSourceViewModel(
   name: String,
-  amount: String,
-  taxCode: String,
+  amount: Option[String],
+  taxCode: Option[String],
   displayTaxCode: Boolean,
   taxDistrictNumber: String,
   payeNumber: String,
@@ -58,8 +58,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     IncomeSourceViewModel(
       name = employment.name,
-      amount = amountString,
-      taxCode = "",
+      amount = Some(amountString),
+      taxCode = Some(""),
       displayTaxCode = false,
       taxDistrictNumber = employment.taxDistrictNumber,
       payeNumber = employment.payeNumber,
@@ -80,7 +80,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
     val endDate: Option[String] = taxedIncome.employment.endDate.map(Dates.formatDate(_))
 
     def getLinkLabel(messageKey: String): String =
-      taxedIncome.taxCodeIncome.componentType match {
+      taxedIncome.employment.employmentType match {
         case EmploymentIncome if taxedIncome.employment.employmentStatus == Live =>
           messages(s"tai.incomeTaxSummary.$messageKey.link")
         case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
@@ -94,7 +94,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val detailsLinkUrl =
       if (
-        taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
+        taxedIncome.employment.employmentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
       ) {
         controllers.routes.YourIncomeCalculationController
           .yourIncomeCalculationPage(taxedIncome.employment.sequenceNumber)
@@ -105,7 +105,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val companyBenefitLinkUrl =
       if (
-        taxedIncome.taxCodeIncome.componentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
+        taxedIncome.employment.employmentType == EmploymentIncome && taxedIncome.employment.employmentStatus != Live
       ) {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(taxedIncome.employment.sequenceNumber).url
       } else {
@@ -116,8 +116,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     IncomeSourceViewModel(
       name = taxedIncome.employment.name,
-      amount = withPoundPrefixAndSign(MoneyPounds(taxedIncome.taxCodeIncome.amount, 0)),
-      taxCode = taxedIncome.taxCodeIncome.taxCode,
+      amount = taxedIncome.taxCodeIncome.map(account => withPoundPrefixAndSign(MoneyPounds(account.amount, 0))),
+      taxCode = taxedIncome.taxCodeIncome.map(_.taxCode),
       displayTaxCode =
         taxedIncome.employment.employmentStatus == Live || taxedIncome.employment.employmentStatus == Ceased,
       taxDistrictNumber = taxedIncome.employment.taxDistrictNumber,
@@ -160,8 +160,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     IncomeSourceViewModel(
       name = employment.name,
-      amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
-      taxCode = taxCodeIncome.taxCode,
+      amount = Some(withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))),
+      taxCode = Some(taxCodeIncome.taxCode),
       displayTaxCode = employment.employmentStatus == Live,
       taxDistrictNumber = employment.taxDistrictNumber,
       payeNumber = employment.payeNumber,
@@ -185,8 +185,8 @@ object IncomeSourceViewModel extends ViewModelHelper {
       .map { otherNonTaxCodeIncome =>
         val model = IncomeSourceViewModel(
           name = messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
-          amount = withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
-          taxCode = "",
+          amount = Some(withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0))),
+          taxCode = Some(""),
           displayTaxCode = false,
           taxDistrictNumber = "",
           payeNumber = "",
