@@ -80,7 +80,9 @@ class CompanyBenefitsSummaryController @Inject() (
           val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
             empId,
             request.fullName,
-            taxCodeIncomes,
+//            taxCodeIncomes,
+            taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.amount), // Added
+            taxCodeIncomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)).map(_.taxCode), // Added
             employment,
             benefitsDetails,
             estimatedPayCompletion,

@@ -19,9 +19,8 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates, ViewModelHelper}
 
@@ -29,9 +28,9 @@ case class IncomeSourceSummaryViewModel(
   empId: Int,
   displayName: String,
   empOrPensionName: String,
-  estimatedTaxableIncome: BigDecimal,
+  estimatedTaxableIncome: Option[BigDecimal], // Changed to Option
   incomeReceivedToDate: BigDecimal,
-  taxCode: String,
+  taxCode: Option[String], // Changed to Option
   pensionOrPayrollNumber: String,
   isPension: Boolean,
   benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
@@ -51,7 +50,9 @@ object IncomeSourceSummaryViewModel {
   def apply(
     empId: Int,
     displayName: String,
-    taxCodeIncomeSources: Seq[TaxCodeIncome],
+//    taxCodeIncomeSources: Seq[TaxCodeIncome],
+    estimatedPayAmount: Option[BigDecimal], // Added
+    taxCode: Option[String], // Added
     employment: Employment,
     benefits: Benefits,
     estimatedPayJourneyCompleted: Boolean,
@@ -65,28 +66,37 @@ object IncomeSourceSummaryViewModel {
       latestPayment       <- latestAnnualAccount.latestPayment
     } yield latestPayment.amountYearToDate
 
-    val taxCodeIncomeSource = taxCodeIncomeSources
-      .find(_.employmentId.contains(empId))
-      .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
+//    val taxCodeIncomeSource = taxCodeIncomeSources
+//      .find(_.employmentId.contains(empId))
+//      .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
 
     val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
     val displayAddCompanyCar =
       !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
     val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
+      case Some(cacheUpdateAMount) => cacheUpdateAMount != estimatedPayAmount.map(_.toInt).getOrElse(0)
       case None                    => false
     }
+
+//    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
+//      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
+//      case None                    => false
+//    }
 
     IncomeSourceSummaryViewModel(
       empId,
       displayName,
-      taxCodeIncomeSource.name,
-      taxCodeIncomeSource.amount,
+//      taxCodeIncomeSource.name,
+//      taxCodeIncomeSource.amount,
+      employment.name,
+      estimatedPayAmount,
       amountYearToDate.getOrElse(0),
-      taxCodeIncomeSource.taxCode,
+//      taxCodeIncomeSource.taxCode,
+      taxCode,
       employment.payrollNumber.getOrElse(""),
-      taxCodeIncomeSource.componentType == PensionIncome,
+//      taxCodeIncomeSource.componentType == PensionIncome,
+      employment.receivingOccupationalPension,
       benefitVMs,
       displayAddCompanyCar,
       estimatedPayJourneyCompleted,

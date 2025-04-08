@@ -20,6 +20,8 @@ import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagName
 
 case object CyPlusOneToggle extends FeatureFlagName {
   override val name: String = "cy-plus-one-toggle"
+  // override val lockedEnvironments: Seq[Environment] = Seq(Environment.Local)
+  override val defaultState: Boolean = true
   override val description: Option[String] = Some(
     "Enable/disable cy plus one"
   )

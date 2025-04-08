@@ -34,6 +34,9 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
+  private def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
+    s"$serviceUrl/tai/$nino/employment-only/$id/years/${taxYear.year}"
+
   private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =
     dateOption.filter(_.isAfter(applicationConfig.startEmploymentDateFilteredBefore))
 
@@ -43,6 +46,15 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
         employment.copy(startDate = filterDate(employment.startDate))
       }
     }
+
+  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+    httpHandler
+      .getFromApiV2(employmentOnlyUrl(nino, id, taxYear))
+      .map(json =>
+        (json \ "data").asOpt[Employment].map { employment =>
+          employment.copy(startDate = filterDate(employment.startDate))
+        }
+      )
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
