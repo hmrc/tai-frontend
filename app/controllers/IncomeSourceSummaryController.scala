@@ -27,7 +27,6 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
@@ -132,16 +131,16 @@ class IncomeSourceSummaryController @Inject() (
       .getOrElse(false)
 
     (
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employmentOnly(nino, empId, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
       rtiService.getPaymentsForYear(nino, TaxYear()).value,
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (
-            taxCodeIncomes,
             Some(employment),
+            taxCodeIncomes,
             payments,
             benefitsDetails,
             estimatedPayCompletion,
