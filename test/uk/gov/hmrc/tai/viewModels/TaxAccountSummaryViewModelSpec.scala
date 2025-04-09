@@ -49,8 +49,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       "has correctly formatted positive tax free amount and estimated income" when {
         "taxAccountSummary has positive values" in {
           val sut = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
-          sut.taxFreeAmount mustBe "£2,222"
-          sut.estimatedIncomeTaxAmount mustBe "£1,111"
+          sut.taxFreeAmount mustBe Some("£2,222")
+          sut.estimatedIncomeTaxAmount mustBe Some("£1,111")
         }
       }
 
@@ -63,8 +63,10 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             noIncomesSources,
             Seq()
           )
-          sut.taxFreeAmount mustBe s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£12,345"
-          sut.estimatedIncomeTaxAmount mustBe s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£54,321"
+          sut.taxFreeAmount mustBe Some(s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£12,345")
+          sut.estimatedIncomeTaxAmount mustBe Some(
+            s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£54,321"
+          )
         }
       }
 
@@ -77,8 +79,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             noIncomesSources,
             Seq()
           )
-          sut.taxFreeAmount mustBe "£0"
-          sut.estimatedIncomeTaxAmount mustBe "£0"
+          sut.taxFreeAmount mustBe Some("£0")
+          sut.estimatedIncomeTaxAmount mustBe Some("£0")
         }
       }
 
@@ -229,7 +231,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         "other income sources with untaxed interest are available and bank accounts are not available" in {
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.Profit"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
@@ -242,7 +244,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         "other income sources with untaxed interest are available and bank accounts are also available" in {
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.Profit"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
@@ -271,7 +273,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           val nonTaxCodeIncomeWithOutUntaxedInterest = nonTaxCodeIncome.copy(untaxedInterest = None)
           val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.Profit"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
@@ -290,26 +292,26 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
         "multiple other income with untaxed interest are present" in {
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.Tips"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url
           )
           val otherIncomeSourceViewModel3 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.OccupationalPension"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url
           )
           val otherIncomeSourceViewModel4 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.UkDividend"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url
           )
 
           val otherIncomeSourceViewModel5 = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.JobSeekersAllowance"),
-            amount = "£100",
+            amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url
           )
@@ -371,8 +373,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       sut.ceasedEmployments.size mustBe 1
       sut.ceasedEmployments.head mustBe IncomeSourceViewModel(
         name = "Ceased employer name",
-        amount = "£123",
-        taxCode = "",
+        amount = Some("£123"),
+        taxCode = Some(""),
         displayTaxCode = false,
         taxDistrictNumber = "DIST123",
         payeNumber = "PAYE543",
@@ -393,8 +395,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
 
   val otherIncomeSourceViewModel: IncomeSourceViewModel = IncomeSourceViewModel(
     name = "State Pension",
-    amount = "£123",
-    taxCode = "",
+    amount = Some("£123"),
+    taxCode = Some(""),
     displayTaxCode = false,
     taxDistrictNumber = "",
     payeNumber = "",

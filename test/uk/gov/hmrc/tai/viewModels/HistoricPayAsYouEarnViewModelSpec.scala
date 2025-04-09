@@ -53,7 +53,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(cyMinusTwoTaxYear, Seq(employment))
@@ -77,7 +78,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment))
@@ -109,7 +111,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment))
@@ -141,7 +144,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment))
@@ -172,7 +176,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          true
+          true,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment))
@@ -206,7 +211,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
         val employment2 = Employment(
           "test employment2",
@@ -220,7 +226,8 @@ class HistoricPayAsYouEarnViewModelSpec extends BaseSpec {
           3,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment2, employment1))

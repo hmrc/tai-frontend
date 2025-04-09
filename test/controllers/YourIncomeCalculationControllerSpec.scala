@@ -57,7 +57,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val sampleEmployment: Seq[Employment] = Seq(
@@ -73,7 +74,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "employer2",
@@ -87,7 +89,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 
@@ -104,7 +107,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       1,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     ),
     Employment(
       "employer2",
@@ -118,7 +122,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       2,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 

@@ -42,7 +42,8 @@ trait TaxAccountSummaryTestData {
     1,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(1111, 2222, 333.32, 444.44, 111.11)
@@ -99,7 +100,8 @@ trait TaxAccountSummaryTestData {
     1,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
   val empEmployment2: Employment = Employment(
     "Employer name2",
@@ -113,7 +115,8 @@ trait TaxAccountSummaryTestData {
     2,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
   val pensionEmployment3: Employment = Employment(
     "Pension name1",
@@ -127,7 +130,8 @@ trait TaxAccountSummaryTestData {
     3,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    PensionIncome
   )
   val pensionEmployment4: Employment = Employment(
     "Pension name2",
@@ -141,7 +145,8 @@ trait TaxAccountSummaryTestData {
     4,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    PensionIncome
   )
   val empEmployment9: Employment = Employment(
     "Employer name3",
@@ -155,7 +160,8 @@ trait TaxAccountSummaryTestData {
     9,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
   val empEmployment10: Employment = Employment(
     "Employer name4",
@@ -169,22 +175,23 @@ trait TaxAccountSummaryTestData {
     10,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val livePensionIncomeSources: Seq[TaxedIncome] = Seq(
-    TaxedIncome(livePension3, pensionEmployment3),
-    TaxedIncome(livePension4, pensionEmployment4)
+    TaxedIncome(Some(livePension3), pensionEmployment3),
+    TaxedIncome(Some(livePension4), pensionEmployment4)
   )
 
   val liveEmploymentIncomeSources: Seq[TaxedIncome] = Seq(
-    TaxedIncome(liveEmployment1, empEmployment1),
-    TaxedIncome(liveEmployment2, empEmployment2)
+    TaxedIncome(Some(liveEmployment1), empEmployment1),
+    TaxedIncome(Some(liveEmployment2), empEmployment2)
   )
 
   val ceasedEmploymentIncomeSources: Seq[TaxedIncome] = Seq(
-    TaxedIncome(potentiallyCeasedEmployment9, empEmployment9),
-    TaxedIncome(ceasedEmployment10, empEmployment10)
+    TaxedIncome(Some(potentiallyCeasedEmployment9), empEmployment9),
+    TaxedIncome(Some(ceasedEmployment10), empEmployment10)
   )
   val taxCodeIncome: TaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
@@ -215,7 +222,8 @@ trait TaxAccountSummaryTestData {
     1,
     None,
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = false
+    receivingOccupationalPension = false,
+    EmploymentIncome
   )
 
   val nonMatchedEmployments: Seq[Employment] = Seq(
@@ -232,7 +240,8 @@ trait TaxAccountSummaryTestData {
       999,
       None,
       hasPayrolledBenefit = false,
-      receivingOccupationalPension = false
+      receivingOccupationalPension = false,
+      EmploymentIncome
     )
   )
 

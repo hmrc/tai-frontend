@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.model
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import utils.BaseSpec
@@ -48,7 +48,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false
+            false,
+            EmploymentIncome
           )
 
         val sut = createSut(Seq(employment))
@@ -68,7 +69,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false
+            false,
+            EmploymentIncome
           )
 
         val employment1 =
@@ -84,7 +86,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false
+            false,
+            EmploymentIncome
           )
 
         val employment2 =
@@ -100,7 +103,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false
+            false,
+            EmploymentIncome
           )
 
         val sut = createSut(Seq(employment, employment1, employment2))
@@ -122,7 +126,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment))
@@ -146,7 +151,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
             2,
             None,
             false,
-            false
+            false,
+            EmploymentIncome
           )
 
         val employment1 = Employment(
@@ -161,7 +167,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val employment2 = Employment(
@@ -176,7 +183,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment, employment1, employment2))
@@ -195,7 +203,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val employment1 = Employment(
@@ -210,7 +219,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val employment2 = Employment(
@@ -225,7 +235,8 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
           2,
           None,
           false,
-          false
+          false,
+          EmploymentIncome
         )
 
         val sut = createSut(Seq(employment, employment1, employment2))

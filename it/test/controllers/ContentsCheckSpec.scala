@@ -611,7 +611,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             "sequenceNumber": 2,
             "isPrimary": true,
             "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false
+            "receivingOccupationalPension": false,
+            "employmentType": "EmploymentIncome"
           }
         }"""
 

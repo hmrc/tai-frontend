@@ -74,13 +74,14 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     1,
     Some(BigDecimal(100)),
     hasPayrolledBenefit = false,
-    receivingOccupationalPension = true
+    receivingOccupationalPension = true,
+    PensionIncome
   )
   val codingComponentSeq: Seq[CodingComponent] = Seq(
     CodingComponent(EmployerProvidedServices, Some(12), 12321, "Some Description"),
     CodingComponent(GiftsSharesCharity, Some(31), 12345, "Some Description Some")
   )
-  val incomeSource: TaxedIncome = TaxedIncome(taxCodeIncome, employment)
+  val incomeSource: TaxedIncome = TaxedIncome(Some(taxCodeIncome), employment)
 
   lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
 
@@ -133,7 +134,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           "sequenceNumber"               -> 1,
           "cessationPay"                 -> 100,
           "hasPayrolledBenefit"          -> false,
-          "receivingOccupationalPension" -> true
+          "receivingOccupationalPension" -> true,
+          "employmentType"               -> "PensionIncome"
         )
       )
     )
