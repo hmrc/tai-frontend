@@ -23,11 +23,12 @@ import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.ApiBackendChoice
@@ -111,6 +112,15 @@ class IncomeSourceSummaryController @Inject() (
     }
   }
 
+  private def isRTIAvailable(payments: Either[UpstreamErrorResponse, Seq[AnnualAccount]]): Boolean =
+    payments.fold(
+      _ => false,
+      seqAA => {
+        val latestAnnualAccount: Option[AnnualAccount] = if (seqAA.isEmpty) None else Some(seqAA.max)
+        latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+      }
+    )
+
   private def onPageLoadNew(empId: Int)(implicit request: DataRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
@@ -149,7 +159,7 @@ class IncomeSourceSummaryController @Inject() (
           employment = employment,
           benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,
-          rtiAvailable = payments.isRight,
+          rtiAvailable = isRTIAvailable(payments),
           applicationConfig = applicationConfig,
           cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
