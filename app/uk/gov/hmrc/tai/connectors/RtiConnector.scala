@@ -48,7 +48,6 @@ class RtiConnector @Inject() (
           .execute[Either[UpstreamErrorResponse, HttpResponse]]
       )
       .map { response =>
-        println(response.body)
         (response.json \ "data").as[Seq[AnnualAccount]]
       }
 }
