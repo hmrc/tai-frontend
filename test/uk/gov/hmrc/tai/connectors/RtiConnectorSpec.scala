@@ -33,7 +33,6 @@ import utils.{BaseSpec, WireMockHelper}
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.language.postfixOps
 
 class RtiConnectorSpec extends BaseSpec with WireMockHelper {
 

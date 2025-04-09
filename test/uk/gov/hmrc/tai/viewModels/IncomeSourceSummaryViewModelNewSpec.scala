@@ -38,8 +38,6 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     Nil
   )
-  private val estimatedPayJourneyCompleted = false
-
   private val expectedPenisonViewModel = IncomeSourceSummaryViewModel(
     empId = 1,
     displayName = "User Name",

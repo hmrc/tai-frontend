@@ -39,7 +39,6 @@ class HttpClientResponseSpec
     behave like clientResponseLogger(
       httpClientResponseUsingMockLogger.read,
       infoLevel = Set(NOT_FOUND),
-      warnLevel = Set(LOCKED),
       errorLevelWithThrowable = Set(UNPROCESSABLE_ENTITY, UNAUTHORIZED, FORBIDDEN),
       errorLevelWithoutThrowable = Set(TOO_MANY_REQUESTS, INTERNAL_SERVER_ERROR)
     )
@@ -48,7 +47,6 @@ class HttpClientResponseSpec
   private def clientResponseLogger(
     block: Future[Either[UpstreamErrorResponse, HttpResponse]] => EitherT[Future, UpstreamErrorResponse, HttpResponse],
     infoLevel: Set[Int],
-    warnLevel: Set[Int],
     errorLevelWithThrowable: Set[Int],
     errorLevelWithoutThrowable: Set[Int]
   ): Unit = {
