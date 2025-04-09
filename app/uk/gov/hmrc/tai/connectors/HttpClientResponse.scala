@@ -36,6 +36,7 @@ class HttpClientResponse @Inject() ()(implicit ec: ExecutionContext) extends Log
         logger.error(error.message)
         Left(error)
       case Left(error) if error.statusCode == NOT_FOUND || error.statusCode == LOCKED =>
+        println("\n\nA HERE:" + error)
         logger.info(error.message)
         Left(error)
       case Left(error) =>
