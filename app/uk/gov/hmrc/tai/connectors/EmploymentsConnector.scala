@@ -37,10 +37,10 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
-  def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
+  private def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employment-only/$id/years/${taxYear.year}"
 
-  def employmentsOnlyUrl(nino: Nino, taxYear: TaxYear): String =
+  private def employmentsOnlyUrl(nino: Nino, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments-only/years/${taxYear.year}"
 
   private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =

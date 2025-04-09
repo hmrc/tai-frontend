@@ -53,7 +53,7 @@ class TaxAccountSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  private def OptionalTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
+  private def optionalTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
     taxAccountService
@@ -111,7 +111,7 @@ class TaxAccountSummaryController @Inject() (
     (for {
       employments               <- employmentService.employmentsOnly(nino, TaxYear())
       nonTaxCodeIncomes         <- taxAccountService.newNonTaxCodeIncomes(nino, TaxYear())
-      employmentsFromTaxAccount <- OptionalTaxCodeIncomes(nino, TaxYear())
+      employmentsFromTaxAccount <- optionalTaxCodeIncomes(nino, TaxYear())
       taxAccountSummary         <- optionalTaxAccountSummary(nino, TaxYear())
       isAnyFormInProgress       <- optionalIsAnyIFormInProgress(nino)
     } yield {
