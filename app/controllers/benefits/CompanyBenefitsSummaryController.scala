@@ -16,7 +16,6 @@
 
 package controllers.benefits
 
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.AuthJourney
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
