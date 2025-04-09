@@ -45,18 +45,18 @@ import scala.concurrent.Future
 
 class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
-  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  private val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  private val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  private val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  private val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
-  val annualAccount: AnnualAccount = AnnualAccount(
+  private val annualAccount: AnnualAccount = AnnualAccount(
     taxYear = uk.gov.hmrc.tai.model.TaxYear(),
     realTimeStatus = Available,
     payments = Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     endOfTaxYearUpdates = Nil
   )
-  val employment: Employment = Employment(
+  private val employment: Employment = Employment(
     name = "test employment",
     employmentStatus = Live,
     payrollNumber = Some("EMPLOYER-1122"),
@@ -79,16 +79,16 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
 
-  val personService: PersonService = mock[PersonService]
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  val mockEploymentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
+  private val personService: PersonService = mock[PersonService]
+  private val benefitsService: BenefitsService = mock[BenefitsService]
+  private val mockEploymentService: EmploymentService = mock[EmploymentService]
+  private val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  private val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   private val mockRtiService = mock[RtiService]
   private val mockApiBackendChoice: ApiBackendChoice = mock[ApiBackendChoice] // TODO: DDCNL-10086 New API
-  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
+  private val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
-  def sut = new IncomeSourceSummaryController(
+  private def sut = new IncomeSourceSummaryController(
     mock[AuditConnector],
     taxAccountService,
     mockEploymentService,
@@ -119,8 +119,8 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
     when(mockApiBackendChoice.isNewApiBackendEnabled(any())).thenReturn(true)
   }
 
-  val employmentId = 1
-  val pensionId = 2
+  private val employmentId = 1
+  private val pensionId = 2
 
   "onPageLoad" must {
     "display the income details page" when {
@@ -204,13 +204,30 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
       }
 
-      "asked for pension details and NOT include RTI section where RTI response is error" in {
+      "asked for pension details and NOT include RTI section where RTI response is 500" in {
         setUpPension()
         when(mockRtiService.getPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(
               Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](
                 Left(UpstreamErrorResponse("error", 500))
+              )
+            )
+          )
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        Option(doc.getElementById("updatePension")).isDefined mustBe false
+        verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
+      }
+
+      "asked for pension details and NOT include RTI section where left not found response" in {
+        setUpPension()
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(
+              Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](
+                Left(UpstreamErrorResponse("No payments found", NOT_FOUND))
               )
             )
           )
