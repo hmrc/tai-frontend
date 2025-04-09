@@ -147,15 +147,10 @@ class IncomeSourceSummaryController @Inject() (
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-        val optTaxCodeIncome: Option[TaxCodeIncome] = taxCodeIncomes.fold(
-          _ => None,
-          incomes => incomes.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))
-        )
-
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
           empId = empId,
           displayName = request.fullName,
-          optTaxCodeIncome,
+          taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
           employment = employment,
           benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,
