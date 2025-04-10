@@ -254,11 +254,6 @@ trait JsoupMatchers {
       s"$expectedPreHeadingAnnouncement $expectedText",
       ".govuk-caption-xl.hmrc-caption-xl.carry-over"
     )
-  def havePreHeadingWithoutHeader(expectedText: String) =
-    new CssSelectorWithTextMatcher(
-      s"$expectedText",
-      ".govuk-caption-l"
-    )
   def haveH2HeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h2")
   def haveH3HeadingWithText(expectedText: String) = new TagWithTextMatcher(expectedText, "h3")
 
