@@ -38,7 +38,7 @@ import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponent
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
-import uk.gov.hmrc.auth.core.retrieve.{Name, Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -108,9 +108,9 @@ class AuthRetrievalsSpec extends BaseSpec {
         Some(nino.nino) ~ saUtr
 
       "no trusted helper data is returned" in {
-        val controller = Harness.successful(baseRetrieval ~ None ~ Some(Name(Some("first"), Some("last"))))
+        val controller = Harness.successful(baseRetrieval ~ None)
         val result = controller.onPageLoad()(fakeRequest)
-        val expectedTaiUser = AuthedUserWithName(nino, saUtr, None, Some("first"), Some("last"))
+        val expectedTaiUser = AuthedUser(nino, saUtr, None)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
@@ -120,11 +120,11 @@ class AuthRetrievalsSpec extends BaseSpec {
         val nino = new Generator().nextNino
         val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
         val controller =
-          Harness.successful(baseRetrieval ~ Some(trustedHelper) ~ Some(Name(Some("first"), Some("last"))))
+          Harness.successful(baseRetrieval ~ Some(trustedHelper))
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
-          AuthedUserWithName(nino, Some("000111222"), Some(trustedHelper), Some("first"), Some("last"))
+          AuthedUser(nino, Some("000111222"), Some(trustedHelper))
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
