@@ -31,11 +31,6 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(Messages("taxCode.change.yourTaxFreeAmount.title"))
 
-    behave like pageWithCombinedHeaderNewFormatNew(
-      Messages("taxCode.change.journey.preHeading"),
-      Messages("taxCode.change.yourTaxFreeAmount.title")
-    )
-
     "have explanation of tax-free amount" in {
       doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }

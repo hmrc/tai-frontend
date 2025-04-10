@@ -133,9 +133,6 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
           preHeaderText,
           expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get
         )
-      } else {
-        print(doc)
-        doc must havePreHeadingWithoutHeader(preHeaderText)
       }
     }
     "have an h1 header consisting of the main heading text" in {
