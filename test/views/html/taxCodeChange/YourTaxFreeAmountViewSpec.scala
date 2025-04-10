@@ -46,42 +46,28 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     "display a detail section" which {
 
-      "contains 3 columns when previous is present" in {
-        doc.select("th").size() mustBe 7
+      "contains 4 columns when previous is present" in {
+        doc.select("th").size() mustBe 8
       }
 
       "contains no header when previous is not present" in {
         doc(currentOnlyView).select("thead").size() mustBe 0
       }
 
-      "contains 3 cells for personal allowance" in {
-        doc.select(".tax-free-amount-comparison-personal-allowance th").size() mustBe 1
-        doc.select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 2
+      "contains 4 cells for each addition and deduction" in {
+        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 8
       }
 
-      "contains 2 cells for personal allowance when previous is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-personal-allowance th").size() mustBe 1
-        doc(currentOnlyView).select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 1
+      "contains 3 cells for each addition and deduction when previous is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 6
       }
 
-      "contains 3 cells for each addition and deduction" in {
-        doc.select(".tax-free-amount-comparison-blank-row th").size() mustBe 2
-        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 4
+      "contains 4 cells for total tax free amount" in {
+        doc.select(".tax-free-amount-comparison-total th").size() mustBe 4
       }
 
-      "contains 2 cells for each addition and deduction when previous is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row th").size() mustBe 2
-        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 2
-      }
-
-      "contains 3 cells for total tax free amount" in {
-        doc.select(".tax-free-amount-comparison-total th").size() mustBe 1
-        doc.select(".tax-free-amount-comparison-total td").size() mustBe 2
-      }
-
-      "contains 2 cells for total tax free amount is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-total th").size() mustBe 1
-        doc(currentOnlyView).select(".tax-free-amount-comparison-total td").size() mustBe 1
+      "contains 3 cells for total tax free amount is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-total th").size() mustBe 3
       }
 
       "contains a heading for the addition section" in {
@@ -95,13 +81,6 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
         doc must haveElementAtPathWithText(
           "td.tax-free-amount-comparison-row-heading",
           Messages("tai.taxFreeAmount.table.deductions.caption")
-        )
-      }
-
-      "contains heading for the personal allowance category" in {
-        doc must haveElementAtPathWithText(
-          ".tax-free-amount-comparison-personal-allowance th",
-          Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")
         )
       }
 
@@ -140,7 +119,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     )
   )
 
-  val emptyAdditionRows = Seq(
+  val emptyAdditionRows: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.additions.noAddition"),
       "£0",
@@ -148,7 +127,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     )
   )
 
-  val nonEmptyAdditionRows = Seq(
+  val nonEmptyAdditionRows: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"),
       "£200",
@@ -161,7 +140,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     )
   )
 
-  def createAdditionsCatetgory(
+  def createAdditionsCategory(
     additionRows: Seq[TaxFreeAmountSummaryRowViewModel]
   ): TaxFreeAmountSummaryCategoryViewModel =
     TaxFreeAmountSummaryCategoryViewModel(
@@ -173,7 +152,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       additionRows
     )
 
-  val emptyDeductionsRows = Seq(
+  val emptyDeductionsRows: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
       "£0",
@@ -181,7 +160,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     )
   )
 
-  val nonEmptyDeductionRows = Seq(
+  val nonEmptyDeductionRows: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
     TaxFreeAmountSummaryRowViewModel(
       Messages("tai.taxFreeAmount.table.deductions.total"),
       "£100",
@@ -230,7 +209,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryViewModel(
       Seq(
         personalAllowanceCategory,
-        createAdditionsCatetgory(additionRows),
+        createAdditionsCategory(additionRows),
         createDeductionsCategory(deductionRows),
         createTotalCategory(totalFormattedAmount)
       )

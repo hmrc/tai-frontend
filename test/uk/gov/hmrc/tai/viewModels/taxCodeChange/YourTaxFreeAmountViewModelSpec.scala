@@ -43,12 +43,12 @@ class YourTaxFreeAmountViewModelSpec extends BaseSpec with ViewModelHelper {
 
     "set columns as 2 with no previousTaxFreeInfo" in {
       val viewModel = YourTaxFreeAmountViewModel(None, taxFreeInfo, Seq.empty, Seq.empty)
-      viewModel.columns mustBe 2
+      viewModel.columns mustBe 3
     }
 
     "set columns as 3 with a previousTaxFreeInfo" in {
       val viewModel = YourTaxFreeAmountViewModel(Some(taxFreeInfo), taxFreeInfo, Seq.empty, Seq.empty)
-      viewModel.columns mustBe 3
+      viewModel.columns mustBe 4
     }
 
     "prettyPrint BigDecimals as currency" in {

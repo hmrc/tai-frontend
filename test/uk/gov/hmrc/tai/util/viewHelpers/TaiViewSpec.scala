@@ -134,7 +134,8 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
           expectedPreHeadingAnnouncement = preHeaderAnnouncementText.get
         )
       } else {
-        doc must havePreHeadingWithTextGdsNew(preHeaderText)
+        print(doc)
+        doc must havePreHeadingWithoutHeader(preHeaderText)
       }
     }
     "have an h1 header consisting of the main heading text" in {
@@ -164,7 +165,7 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
 
   def haveReturnToSummaryButtonWithUrl(previousPage: => Call): Unit =
     "have a return to summary button with url" in {
-      doc must haveReturnToSummaryButtonWithUrl(previousPage.url.toString)
+      doc must haveReturnToSummaryButtonWithUrl(previousPage.url)
     }
 
   def pageWithContinueButtonForm(submitUrl: String): Unit =
@@ -202,7 +203,7 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
 
   def pageWithCancelLink(call: Call): Unit =
     "have a cancel link with url" in {
-      doc must haveCancelLinkWithUrl(call.url.toString)
+      doc must haveCancelLinkWithUrl(call.url)
     }
 
   def haveInternalLink(url: String, linkText: String, id: String): Unit =
