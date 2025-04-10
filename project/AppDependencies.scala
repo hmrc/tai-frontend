@@ -3,9 +3,6 @@ import sbt.*
 
 private object AppDependencies {
   private val playVersion = "play-30"
-  private val hmrcMongoVersion = "2.4.0"
-  private val bootstrapVersion = "9.8.0"
-  private val webChatVersion = "1.6.0"
   private val scaWrapperVersion = "2.9.0"
   private val mongoFeatureToggleVersion = "1.10.0"
 
@@ -13,7 +10,6 @@ private object AppDependencies {
     filters,
     "org.typelevel" %% "cats-core"                                   % "2.13.0",
     "uk.gov.hmrc"   %% s"play-conditional-form-mapping-$playVersion" % "3.3.0",
-    "uk.gov.hmrc"   %% "digital-engagement-platform-chat-30"         % webChatVersion,
     "uk.gov.hmrc"   %% s"mongo-feature-toggles-client-$playVersion"  % mongoFeatureToggleVersion,
     "uk.gov.hmrc"   %% s"sca-wrapper-$playVersion"                   % scaWrapperVersion
   )
