@@ -119,13 +119,15 @@
             @YourTaxFreeAmountViewModel.prettyPrint(pair.current)
             </td>
             <td class="govuk-table__cell">
-            @pair.label.link.map { link =>
-                @includes.link(
-                    id = Some(link.id),
-                    copy = Messages("taxFreeAmountSummaryComparison.viewUnderpayments"),
-                    url = link.href,
-                    linkClasses = Seq("link-list__item")
-                )
+            @if(pair.current != 0) {
+                @pair.label.link.map { link =>
+                    @includes.link(
+                        id = Some(link.id),
+                        copy = Messages("taxFreeAmountSummaryComparison.viewUnderpayments"),
+                        url = link.href,
+                        linkClasses = Seq("link-list__item")
+                    )
+                }
             }
             </td>
         </tr>
