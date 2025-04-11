@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,32 +20,40 @@
 @import scala.annotation.nowarn
 
 @(formForErrorSummary: Option[Form[_]] = None,
-  mainHeadingText: String,
-  preHeadingText: String,
-  maybeUserName: Option[String] = None,
-  preHeadingAccessibleAnnouncement: String = "",
-  @nowarn customBackLinkContent: Option[Html] = None,
-  govukErrorSummary: Option[GovukErrorSummary] = None
+        mainHeadingText: String,
+        preHeadingText: String,
+        maybeUserName: Option[String] = None,
+        preHeadingAccessibleAnnouncement: String = "",
+        @nowarn customBackLinkContent: Option[Html] = None,
+        govukErrorSummary: Option[GovukErrorSummary] = None,
+        showPreHeading: Boolean = true,
+        mainHeadingCssClass: Option[String] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
-    if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
+    if (preHeadingAccessibleAnnouncement.nonEmpty) preHeadingAccessibleAnnouncement
+    else Messages("tai.ptaHeader.accessible.preHeading")
 }
 
-@printHeader = @{
-    printBanner(preHeadingText = preHeadingText, maybeUserName = maybeUserName)
-}
-
-@printHeader
-
+@printBanner(preHeadingText = preHeadingText, maybeUserName = maybeUserName)
 
 @if(formForErrorSummary.exists(_.errors.nonEmpty) && govukErrorSummary.isDefined) {
-    @govukErrorSummary.get(ErrorSummary(errorList = formForErrorSummary.get.errors.asTextErrorLinks, title = Text(Messages("tai.income.error.form.summary"))))
+    @govukErrorSummary.get(
+        ErrorSummary(
+            errorList = formForErrorSummary.get.errors.asTextErrorLinks,
+            title = Text(Messages("tai.income.error.form.summary"))
+        )
+    )
 }
-<h2 class="govuk-caption-xl hmrc-caption-xl carry-over">
-    <span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)
-</h2>
-<h1 class="govuk-heading-xl carry-over">@Html(mainHeadingText)
+
+@if(showPreHeading) {
+    <h2 class="govuk-caption-xl hmrc-caption-xl carry-over">
+        <span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)
+    </h2>
+} else {
+    <span class="govuk-caption-l">@Html(preHeadingText)</span>
+}
+
+<h1 class="@mainHeadingCssClass.getOrElse("govuk-heading-xl") carry-over">
+@Html(mainHeadingText)
 </h1>
-
-
