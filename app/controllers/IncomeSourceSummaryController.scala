@@ -17,18 +17,20 @@
 package controllers
 
 import cats.implicits._
-import controllers.auth.AuthJourney
+import controllers.auth.{AuthJourney, DataRequest}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
+import uk.gov.hmrc.tai.util.ApiBackendChoice
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
@@ -46,11 +48,21 @@ class IncomeSourceSummaryController @Inject() (
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
   journeyCacheRepository: JourneyCacheRepository,
+  rtiService: RtiService,
+  apiBackendChoice: ApiBackendChoice, // TODO: DDCNL-10086 New API
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    if (apiBackendChoice.isNewApiBackendEnabled) {
+      onPageLoadNew(empId)
+    } else {
+      onPageLoadOld(empId)
+    }
+  }
+
+  private def onPageLoadOld(empId: Int)(implicit request: DataRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
     val cacheUpdatedIncomeAmountFuture =
@@ -75,8 +87,7 @@ class IncomeSourceSummaryController @Inject() (
             cacheUpdatedIncomeAmount
           ) =>
         val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-
-        val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
           empId,
           request.fullName,
           taxCodeIncomes,
@@ -86,6 +97,65 @@ class IncomeSourceSummaryController @Inject() (
           rtiAvailable,
           applicationConfig,
           cacheUpdatedIncomeAmount
+        )
+
+        if (!incomeDetailsViewModel.isUpdateInProgress) {
+          val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
+          journeyCacheRepository.set(updatedUserAnswers)
+        }
+
+        Ok(incomeSourceSummary(incomeDetailsViewModel))
+      case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
+    } recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
+    }
+  }
+
+  private def isRTIAvailable(payments: Either[UpstreamErrorResponse, Seq[AnnualAccount]]): Boolean =
+    payments.fold(
+      _ => false,
+      seqAA => {
+        val latestAnnualAccount: Option[AnnualAccount] = if (seqAA.isEmpty) None else Some(seqAA.max)
+        latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+      }
+    )
+
+  private def onPageLoadNew(empId: Int)(implicit request: DataRequest[AnyContent]): Future[Result] = {
+    val nino = request.taiUser.nino
+
+    val cacheUpdatedIncomeAmountFuture =
+      Future.successful(request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt))
+
+    val hasJourneyCompleted: Boolean = request.userAnswers
+      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
+      .getOrElse(false)
+
+    (
+      employmentService.employmentOnly(nino, empId, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      rtiService.getPaymentsForYear(nino, TaxYear()).value,
+      benefitsService.benefits(nino, TaxYear().year),
+      Future.successful(hasJourneyCompleted),
+      cacheUpdatedIncomeAmountFuture
+    ).mapN {
+      case (
+            Some(employment),
+            taxCodeIncomes,
+            payments,
+            benefitsDetails,
+            estimatedPayCompletion,
+            cacheUpdatedIncomeAmount
+          ) =>
+        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
+          empId = empId,
+          displayName = request.fullName,
+          taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
+          employment = employment,
+          benefits = benefitsDetails,
+          estimatedPayJourneyCompleted = estimatedPayCompletion,
+          rtiAvailable = isRTIAvailable(payments),
+          applicationConfig = applicationConfig,
+          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
