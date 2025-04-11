@@ -79,21 +79,21 @@ object IncomeSourceSummaryViewModel {
     }
 
     IncomeSourceSummaryViewModel(
-      empId = empId,
-      displayName = displayName,
-      empOrPensionName = taxCodeIncomeSource.name,
-      estimatedTaxableIncome = taxCodeIncomeSource.amount,
-      incomeReceivedToDate = amountYearToDate.getOrElse(0),
-      taxCode = taxCodeIncomeSource.taxCode,
-      pensionOrPayrollNumber = employment.payrollNumber.getOrElse(""),
-      isPension = taxCodeIncomeSource.componentType == PensionIncome,
-      benefits = benefitVMs,
-      displayAddCompanyCarLink = displayAddCompanyCar,
-      estimatedPayJourneyCompleted = estimatedPayJourneyCompleted,
-      rtiAvailable = rtiAvailable,
-      taxDistrictNumber = employment.taxDistrictNumber,
-      payeNumber = employment.payeNumber,
-      isUpdateInProgress = isUpdateInProgress
+      empId,
+      displayName,
+      taxCodeIncomeSource.name,
+      taxCodeIncomeSource.amount,
+      amountYearToDate.getOrElse(0),
+      taxCodeIncomeSource.taxCode,
+      employment.payrollNumber.getOrElse(""),
+      taxCodeIncomeSource.componentType == PensionIncome,
+      benefitVMs,
+      displayAddCompanyCar,
+      estimatedPayJourneyCompleted,
+      rtiAvailable,
+      employment.taxDistrictNumber,
+      employment.payeNumber,
+      isUpdateInProgress
     )
   }
 
