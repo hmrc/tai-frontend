@@ -18,11 +18,17 @@ package utils
 
 import controllers.actions.DataRetrievalAction
 import controllers.auth.{DataRequest, IdentifierRequest}
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.test.Helpers
 import uk.gov.hmrc.tai.model.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class FakeDataRetrievalAction(dataToReturn: UserAnswers) extends DataRetrievalAction { // TODO - Delete?
+
+  lazy val messagesApi: MessagesApi = Helpers.stubMessagesApi()
+
+  implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
   override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
     Future(
