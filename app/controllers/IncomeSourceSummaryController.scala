@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,17 +86,17 @@ class IncomeSourceSummaryController @Inject() (
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-        val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
+        val rtiUnavailable = employment.latestAnnualAccount.exists(_.realTimeStatus == TemporarilyUnavailable)
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
-          empId,
-          request.fullName,
-          taxCodeIncomes,
-          employment,
-          benefitsDetails,
-          estimatedPayCompletion,
-          rtiAvailable,
-          applicationConfig,
-          cacheUpdatedIncomeAmount
+          empId = empId,
+          displayName = request.fullName,
+          taxCodeIncomeSources = taxCodeIncomes,
+          employment = employment,
+          benefits = benefitsDetails,
+          estimatedPayJourneyCompleted = estimatedPayCompletion,
+          rtiAvailable = !rtiUnavailable,
+          applicationConfig = applicationConfig,
+          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
 
         if (!incomeDetailsViewModel.isUpdateInProgress) {
