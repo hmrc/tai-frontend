@@ -151,7 +151,8 @@ trait CodingComponentFormatters {
     "JobSeekerAllowanceIncome"                             -> JobSeekerAllowanceIncome,
     "OtherIncome"                                          -> OtherIncome,
     "BRDifferenceTaxReduction"                             -> BRDifferenceTaxReduction,
-    "BRDifferenceTaxCharge"                                -> BRDifferenceTaxCharge
+    "BRDifferenceTaxCharge"                                -> BRDifferenceTaxCharge,
+    "HICBCPaye"                                            -> HICBCPaye
   )
 
   val taxCodeIncomeSourceReads: Reads[TaxCodeIncome] = new Reads[TaxCodeIncome] {

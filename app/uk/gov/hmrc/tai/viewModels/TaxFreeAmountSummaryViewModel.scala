@@ -25,7 +25,12 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{MoneyPounds, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
-case class ChangeLinkViewModel(isDisplayed: Boolean, value: String = "", href: String = "")
+case class ChangeLinkViewModel(
+  isDisplayed: Boolean,
+  value: String = "",
+  href: String = "",
+  linkText: String = "tai.updateOrRemove"
+)
 
 case class TaxFreeAmountSummaryCategoryViewModel(
   headerCol1: String,
@@ -264,6 +269,14 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
           isDisplayed = true,
           Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
           applicationConfig.cocarFrontendUrl
+        )
+      case HICBCPaye =>
+        val url = applicationConfig.hicbcUpdateUrl
+        ChangeLinkViewModel(
+          isDisplayed = url.nonEmpty,
+          Messages(""),
+          url,
+          "tai.updateOrRemove.hicbc"
         )
       case companyBenefit: BenefitComponentType =>
         val url = controllers.benefits.routes.CompanyBenefitController
