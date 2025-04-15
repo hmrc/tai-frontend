@@ -133,15 +133,16 @@
                 @messages("tai.income.details.updateInProgress")
             </p>
             } else {
-                <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(model.estimatedTaxableIncome)</span>
+                @for(estimatedIncome <- model.estimatedTaxableIncome) {
+                    <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(estimatedIncome)</span>
+                }
             }
-
-                <p>
-                    @link(
-                        id=Some("updateIncome"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
-                        copy=messages("tai.income.details.updateTaxableIncome.full"))
-                </p>
+            <p>
+                @link(
+                    id=Some("updateIncome"),
+                    url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
+                    copy=messages("tai.income.details.updateTaxableIncome.full"))
+            </p>
         </div>
 
         <div class="govuk-grid-column-one-half">

@@ -16,8 +16,8 @@
 
 package controllers.benefits
 
-import controllers.{ErrorPagesHandler, TaiBaseController}
 import controllers.auth.AuthJourney
+import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -77,7 +77,7 @@ class CompanyBenefitsSummaryController @Inject() (
             ) =>
           val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
 
-          val incomeDetailsViewModel = IncomeSourceSummaryViewModel(
+          val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
             empId,
             request.fullName,
             taxCodeIncomes,

@@ -44,9 +44,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     1,
     "User Name",
     "Pension",
-    100,
+    Some(100),
     400,
-    "1100L",
+    Some("1100L"),
     "PENSION-1122",
     true,
     estimatedPayJourneyCompleted = false,
@@ -59,9 +59,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     1,
     "User Name",
     "Pension",
-    100,
+    Some(100),
     400,
-    "1100L",
+    Some("1100L"),
     "PENSION-1122",
     true,
     estimatedPayJourneyCompleted = false,
@@ -75,9 +75,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     1,
     "User Name",
     "Employer",
-    100,
+    Some(100),
     400,
-    "1100L",
+    Some("1100L"),
     "EMPLOYER-1122",
     false,
     estimatedPayJourneyCompleted = false,
@@ -90,9 +90,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     1,
     "User Name",
     "Employer",
-    100,
+    Some(100),
     400,
-    "1100L",
+    Some("1100L"),
     "EMPLOYER-1122",
     false,
     estimatedPayJourneyCompleted = false,
@@ -108,7 +108,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     benefits: Benefits,
     empId: Int = 1
   ): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel(
+    IncomeSourceSummaryViewModel.applyOld(
       empId,
       "User Name",
       taxCodeIncomeSources,
@@ -480,7 +480,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
+          IncomeSourceSummaryViewModel.applyOld(
             empId,
             "User Name",
             taxCodeIncomeSources,
@@ -526,7 +526,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
+          IncomeSourceSummaryViewModel.applyOld(
             empId,
             "User Name",
             taxCodeIncomeSources,
@@ -574,7 +574,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
+          IncomeSourceSummaryViewModel.applyOld(
             empId,
             "User Name",
             taxCodeIncomeSources,
@@ -618,7 +618,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel(
+          IncomeSourceSummaryViewModel.applyOld(
             empId,
             "User Name",
             taxCodeIncomeSources,

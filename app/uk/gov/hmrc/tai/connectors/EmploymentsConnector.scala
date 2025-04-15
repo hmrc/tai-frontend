@@ -17,13 +17,13 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.EitherT
-import uk.gov.hmrc.domain.Nino
 import cats.implicits._
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import java.time.LocalDate
 import javax.inject.Inject
