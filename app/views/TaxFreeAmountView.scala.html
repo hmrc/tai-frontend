@@ -15,10 +15,12 @@
  *@
 
 @import includes.{link, ptaHeader, taxFreeAmountSummary}
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
-@this(main: MainTemplate)
+
+@this(main: MainTemplate, govukSummaryList: GovukSummaryList)
 
 @(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
@@ -71,7 +73,7 @@
             <div id="taxFreeAmountDetail" class="govuk-!-margin-top-8 govuk-!-margin-bottom-8">
                     <h2 class="govuk-heading-m">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
 
-                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)
+                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)(implicitly, govukSummaryList)
 
             </div>
 
