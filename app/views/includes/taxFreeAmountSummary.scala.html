@@ -15,10 +15,44 @@
  *@
 
 @import play.api.i18n.Messages
-@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukSummaryList, _}
+@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukSummaryList}
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel
+@import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Text, SummaryList, SummaryListRow, Key, Value, Actions}
+@import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryRowViewModel
 
-@(items: Seq[TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit messages: Messages, govukSummaryList: GovukSummaryList)
+@this(
+    govukSummaryList: GovukSummaryList
+)
+
+@(items: Seq[TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit messages: Messages)
+
+@actions(row: TaxFreeAmountSummaryRowViewModel): Option[Actions] = @{
+    val actionItem = if (!taxCodeChange && row.link.isDisplayed) {
+        Some(ActionItem(
+            href = row.link.href,
+            content = Text(Messages("tai.updateOrRemove")),
+            visuallyHiddenText = Some(row.link.value)
+            ))
+    } else if (row.label.link.isDefined) {
+        row.label.link.map { link =>
+            ActionItem(
+                href = link.href,
+                content = Text(Messages("taxFreeAmountSummaryComparison.viewUnderpayments")),
+                visuallyHiddenText = None,
+                attributes = Map("id" -> link.id)
+            )
+        }
+    } else {
+        None
+    }
+
+    actionItem.map{ item =>
+        Actions(
+            items = Seq(item),
+            classes = "govuk-summary-list__row--no-actions"
+        )
+    }
+}
 
 @for((item, itemIdx) <- items.zipWithIndex.map { case (item, idx) => (item, idx + 1) }) {
 
@@ -30,46 +64,15 @@
         @if(item.rows.nonEmpty) {
             @govukSummaryList(SummaryList(
                 rows = item.rows.map { row =>
-                    val maybeActionItem: Option[ActionItem] =
-                        if (!taxCodeChange && row.link.isDisplayed) {
-                            Some(ActionItem(
-                                href = row.link.href,
-                                content = Text(Messages("tai.updateOrRemove")),
-                                visuallyHiddenText = Some(row.link.value)
-                            ))
-                        } else if (row.label.link.isDefined) {
-                            row.label.link.map { link =>
-                                ActionItem(
-                                    href = link.href,
-                                    content = Text(Messages("taxFreeAmountSummaryComparison.viewUnderpayments")),
-                                    visuallyHiddenText = None,
-                                    attributes = Map("id" -> link.id),
-                                    classes = "link-list__item no-wrap"
-                                )
-                            }
-                        } else {
-                            Some(ActionItem(
-                                href = "#",
-                                content = HtmlContent(""),
-                                visuallyHiddenText = None,
-                                attributes = Map("aria-hidden" -> "true", "tabindex" -> "-1"),
-                                classes = "govuk-visually-hidden"
-                            ))
-                        }
-
                     SummaryListRow(
                         key = Key(
-                            content = Text(row.label.value),
-                            classes = "govuk-summary-list__key govuk-!-font-weight-regular"
+                            content = Text(row.label.value)
                         ),
                         value = Value(
                             content = Text(row.value),
-                            classes = "govuk-summary-list__value govuk-!-text-align-right"
+                            classes = "govuk-!-text-align-right"
                         ),
-                        actions = Some(Actions(
-                            items = Seq(maybeActionItem.get),
-                            classes = "govuk-summary-list__actions govuk-!-text-align-right"
-                        ))
+                        actions = actions(row)
                     )
                 }
             ))

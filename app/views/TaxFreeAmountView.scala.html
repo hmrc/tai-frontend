@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
 
-@this(main: MainTemplate, govukSummaryList: GovukSummaryList)
+@this(main: MainTemplate, taxFreeAmountSummaryView: taxFreeAmountSummary)
 
 @(viewModel: TaxFreeAmountViewModel, appConfig: ApplicationConfig, userName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
@@ -73,7 +73,7 @@
             <div id="taxFreeAmountDetail" class="govuk-!-margin-top-8 govuk-!-margin-bottom-8">
                     <h2 class="govuk-heading-m">@Messages("tai.taxFreeAmount.detailsection.heading")</h2>
 
-                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)(implicitly, govukSummaryList)
+                    @taxFreeAmountSummaryView(viewModel.taxFreeAmountSummary.summaryItems)
 
             </div>
 
