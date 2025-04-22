@@ -17,7 +17,9 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.routes
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
@@ -276,6 +278,35 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           appConfig
         )
         row.label.value mustBe s"${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
+      }
+    }
+
+    "display the HICBC row" when {
+      val mockAppConfig = mock[ApplicationConfig]
+      "the coding component type is HICBC and non empty link is in config" in {
+        when(mockAppConfig.hicbcUpdateUrl).thenReturn("non empty link")
+
+        val row = TaxFreeAmountSummaryRowViewModel(
+          CodingComponent(HICBCPaye, Some(10), 11500, "HICBC PAYE"),
+          taxFreeAmountDetails,
+          mockAppConfig
+        )
+        row.label.value mustBe "Based on High Income Child Benefit Charge"
+        row.link.href mustBe "non empty link"
+        row.link.isDisplayed mustBe true
+      }
+
+      "the coding component type is HICBC and empty link is in config" in {
+        when(mockAppConfig.hicbcUpdateUrl).thenReturn("")
+
+        val row = TaxFreeAmountSummaryRowViewModel(
+          CodingComponent(HICBCPaye, Some(10), 11500, "HICBC PAYE"),
+          taxFreeAmountDetails,
+          mockAppConfig
+        )
+        row.label.value mustBe "Based on High Income Child Benefit Charge"
+        row.link.href mustBe ""
+        row.link.isDisplayed mustBe false
       }
     }
   }

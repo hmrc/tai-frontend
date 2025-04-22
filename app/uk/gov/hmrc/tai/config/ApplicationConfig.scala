@@ -55,6 +55,9 @@ class ApplicationConfig @Inject() (
   lazy val taxFreeAllowanceLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
 
+  lazy val hicbcUpdateUrl: String =
+    runModeConfiguration.get[String]("external-url.hicbcUrl")
+
   private lazy val accessibilityBaseUrl: String = servicesConfig.getString(s"accessibility-statement.baseUrl")
   lazy private val accessibilityRedirectUrl: String = servicesConfig.getString(s"accessibility-statement.redirectUrl")
 

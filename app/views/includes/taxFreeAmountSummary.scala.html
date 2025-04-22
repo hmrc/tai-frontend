@@ -59,7 +59,7 @@
                                         @includes.link(
                                             id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
                                             url = row.link.href,
-                                            copy=Messages("tai.updateOrRemove"),
+                                            copy=Messages(row.link.linkText),
                                             altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value)
                                         )
                                     </dd>
