@@ -1,81 +1,103 @@
 @*
- * Copyright 2025 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
+* Copyright 2023 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 
-@import play.api.i18n.Messages
-@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukSummaryList}
-@import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel
-@import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Text, SummaryList, SummaryListRow, Key, Value, Actions}
-@import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryRowViewModel
+@(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit m: Messages)
 
-@this(
-    govukSummaryList: GovukSummaryList
-)
-
-@(items: Seq[TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit messages: Messages)
-
-@actions(row: TaxFreeAmountSummaryRowViewModel): Option[Actions] = @{
-    val actionItem = if (!taxCodeChange && row.link.isDisplayed) {
-        Some(ActionItem(
-            href = row.link.href,
-            content = Text(Messages("tai.updateOrRemove")),
-            visuallyHiddenText = Some(row.link.value)
-            ))
-    } else if (row.label.link.isDefined) {
-        row.label.link.map { link =>
-            ActionItem(
-                href = link.href,
-                content = Text(Messages("taxFreeAmountSummaryComparison.viewUnderpayments")),
-                visuallyHiddenText = None,
-                attributes = Map("id" -> link.id)
-            )
-        }
-    } else {
-        None
-    }
-
-    actionItem.map{ item =>
-        Actions(
-            items = Seq(item),
-            classes = "govuk-summary-list__row--no-actions"
-        )
-    }
+@oneOrMoreLinksPresent = @{
+    items.exists(item => item.rows.exists(row => row.link.isDisplayed))
 }
 
-@for((item, itemIdx) <- items.zipWithIndex.map { case (item, idx) => (item, idx + 1) }) {
+@for((item, itemIdx) <- items zip LazyList.from(1);
+        isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption")) {
 
-    <div id="summaryTable@itemIdx" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1) {subsection--wide govuk-!-margin-bottom-0}">
-        @if(item.caption != Messages("tai.taxFreeAmount.table.allowances.caption") && item.caption != Messages("tai.taxFreeAmount.table.totals.caption")) {
-            <h3 class="heading-small govuk-heading-s" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
-        }
+    @if(item.rows.nonEmpty) {
 
-        @if(item.rows.nonEmpty) {
-            @govukSummaryList(SummaryList(
-                rows = item.rows.map { row =>
-                    SummaryListRow(
-                        key = Key(
-                            content = Text(row.label.value)
-                        ),
-                        value = Value(
-                            content = Text(row.value),
-                            classes = "govuk-!-text-align-right"
-                        ),
-                        actions = actions(row)
-                    )
+        <div id="summaryTable@{
+            itemIdx.toString
+        }" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1) {subsection--wide govuk-!-margin-bottom-0}">
+
+            @if(!isAllowanceOrTotalItem) {
+                <h3 class="heading-small govuk-heading-s" id="summaryTable@{
+                    itemIdx.toString
+                }Caption">@item.caption</h3>
+            }
+
+            <dl id="summaryTable@{
+                itemIdx.toString
+            }Body" class="govuk-summary-list @if(itemIdx == items.length && item.rows.length == 1) {subsection} else {flush}">
+            @for((row, rowIdx) <- item.rows.zipWithIndex) {
+                <div id="summaryTable@{
+                    itemIdx.toString
+                }Row@{
+                    rowIdx + 1
+                }" class="govuk-summary-list__row">
+                    <dt id="summaryTable@{
+                        itemIdx.toString
+                    }Row@{
+                        rowIdx + 1
+                    }-header" class="govuk-summary-list__key govuk-!-font-weight-regular">
+                    @row.label.value
+                    </dt>
+
+                    <dd id="summaryTable@{
+                        itemIdx.toString
+                    }Row@{
+                        rowIdx + 1
+                    }ValueCell" class="govuk-summary-list__value govuk-!-text-align-right">
+                    @row.value
+                    </dd>
+
+                    @if(!taxCodeChange && row.link.isDisplayed) {
+                        <dd id="summaryTable@{
+                            itemIdx.toString
+                        }Row@{
+                            rowIdx + 1
+                        }ChangeLinkCell" class="govuk-summary-list__actions govuk-summary-list__value  govuk-!-text-align-right">
+                        @includes.link(
+                            id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx + 1}ChangeLink"),
+                            url = row.link.href,
+                            copy = Messages("tai.updateOrRemove"),
+                            altCopy = Some(Messages("tai.updateOrRemove") + " " + row.link.value)
+                        )
+                        </dd>
+                    } else @if(oneOrMoreLinksPresent) {
+                    <dd class="govuk-summary-list__actions govuk-summary-list__value govuk-!-text-align-right"></dd>
                 }
-            ))
+
+                    @if(row.value != "0") {
+                        <dd id="summaryTable@{
+                            itemIdx.toString
+                        }Row@{
+                            rowIdx + 1
+                        }LinkCell" class="govuk-summary-list__value govuk-!-text-align-right">
+                        @row.label.link.map { link =>
+                            @includes.link(
+                                id = Some(link.id),
+                                copy = Messages("taxFreeAmountSummaryComparison.viewUnderpayments"),
+                                url = link.href,
+                                linkClasses = Seq("link-list__item")
+                            )
+                        }
+                        </dd>
+                    }
+                </div>
+            }
+            </dl>
         }
-    </div>
+
+</div>
+
 }
