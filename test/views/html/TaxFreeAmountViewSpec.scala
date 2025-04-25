@@ -21,6 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
 
 class TaxFreeAmountViewSpec extends TaiViewSpec {
+
   val rowViewModels: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
     TaxFreeAmountSummaryRowViewModel(
       "An example addition benefit",
@@ -38,7 +39,6 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       ChangeLinkViewModel(isDisplayed = false)
     )
   )
-
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel =
     TaxFreeAmountSummaryViewModel(
       Seq(
@@ -90,7 +90,6 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         )
       )
     )
-
   val viewModel: TaxFreeAmountViewModel =
     TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
@@ -164,27 +163,27 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "contains an inline heading for the personal allowance and total groups (which are of length 1)" in {
-        val personalAllowanceRow = doc.select("#summaryTable1 .govuk-summary-list__row dt").text()
-        val totalTaxFreeAmountRow = doc.select("#summaryTable4 .govuk-summary-list__row dt").text()
-
-        personalAllowanceRow must include("Personal Allowance")
-        totalTaxFreeAmountRow must include("Your total tax-free amount")
+        doc must haveElementAtPathWithText("#summaryTable1Row1-header", "Personal Allowance")
+        doc must haveElementAtPathWithText("#summaryTable4Row1-header", "Your total tax-free amount")
       }
 
       "displays a group with multiple rows as an unordered list of items" in {
-        val dlElements = doc.select("#summaryTable2 .govuk-summary-list")
-        dlElements.size() mustNot be(0)
+        doc must haveElementAtPathWithId("#taxFreeAmountDetail dl", "summaryTable2Body")
+      }
+
+      "displays a group with a single row as a plain div" in {
+        doc must not(haveElementAtPathWithId("#taxFreeAmountDetail div", "summaryTable3Body"))
+        doc must haveElementAtPathWithId("#taxFreeAmountDetail dl", "summaryTable3Body")
       }
 
       "displays a link & inner link element, where present in the view model" in {
-        doc must haveLinkWithTextAndUrl("Update or remove", "/dummy/url1")
-
-        val link = doc.select("a.govuk-link[href='/dummy/url1']").first()
-        link must not be null
-
-        val span = link.select("span.govuk-visually-hidden").first()
-        span must not be null
-        span.text() mustBe "context1"
+        doc must haveElementWithId("summaryTable2Row1ChangeLinkCell")
+        doc must haveLinkWithUrlWithID("summaryTable2Row1ChangeLink", "/dummy/url1")
+        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "govuk-visually-hidden")
+        doc must haveElementAtPathWithText(
+          "a[id=summaryTable2Row1ChangeLink] > span",
+          messages("tai.updateOrRemove") + " context1"
+        )
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
@@ -256,5 +255,4 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       }
     }
   }
-
 }
