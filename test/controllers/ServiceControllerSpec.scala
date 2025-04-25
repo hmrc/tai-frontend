@@ -18,14 +18,21 @@ package controllers
 
 import controllers.auth.AuthJourney
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repository.JourneyCacheRepository
+import uk.gov.hmrc.tai.model.UserAnswers
 import utils.BaseSpec
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
-class ServiceControllerSpec extends BaseSpec {
+import scala.concurrent.Future
 
+class ServiceControllerSpec extends BaseSpec {
+  private val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
+  private val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
   def createSut(authAction: AuthJourney = mockAuthJourney) = new SUT(authAction)
 
   class SUT(authAction: AuthJourney = mockAuthJourney)
@@ -35,8 +42,15 @@ class ServiceControllerSpec extends BaseSpec {
         mcc,
         inject[TimeoutView],
         inject[SessionExpiredView],
-        inject[ManualCorrespondenceView]
+        inject[ManualCorrespondenceView],
+        mockJourneyCacheRepository
       )
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    setup(baseUserAnswers)
+    reset(mockJourneyCacheRepository)
+  }
 
   "Time Out page" should {
     "return page when called" in {
@@ -63,22 +77,22 @@ class ServiceControllerSpec extends BaseSpec {
 
   "keepAlive" should {
 
-    "return 200" in {
-
+    "return 200 and call keep alive on session repository" in {
+      when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
       val sut = createSut()
 
       val result = sut.keepAlive()(FakeRequest("GET", ""))
 
       status(result) mustBe OK
+      verify(mockJourneyCacheRepository, times(1)).keepAlive(any(), any())
     }
   }
 
   "sessionExpiredPage" should {
     "clear the session" in {
-
       val sut = createSut()
 
-      val result = sut.keepAlive()(FakeRequest("GET", "").withSession("test" -> "session"))
+      val result = sut.sessionExpiredPage()(FakeRequest("GET", "").withSession("test" -> "session"))
 
       session(result) mustBe empty
     }
