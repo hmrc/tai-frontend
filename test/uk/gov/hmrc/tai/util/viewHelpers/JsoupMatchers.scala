@@ -374,4 +374,15 @@ trait JsoupMatchers {
 
   def haveNavMenuItem(expectedText: String) =
     new CssSelectorWithTextMatcher(expectedText, ".hmrc-account-menu__link")
+
+  def haveLinkWithTextAndUrl(text: String, url: String): Matcher[Document] = new Matcher[Document] {
+    def apply(doc: Document): MatchResult = {
+      val link = doc.select(s"""a[href="$url"]""").asScala.find(_.text().contains(text))
+      MatchResult(
+        link.isDefined,
+        s"Document did not contain a link with text '$text' and url '$url'",
+        s"Document contains a link with text '$text' and url '$url'"
+      )
+    }
+  }
 }
