@@ -21,14 +21,14 @@ import controllers.auth.{AuthJourney, DataRequest}
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UnauthorizedException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome, TaxAccountSummary, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.ApiBackendChoice
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import views.html.IncomeTaxSummaryView
 
@@ -67,16 +67,13 @@ class TaxAccountSummaryController @Inject() (
   private def optionalTaxAccountSummary(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Option[TaxAccountSummary]] =
-    EitherT(
-      taxAccountService
-        .taxAccountSummary(nino, taxYear)
-        .map { account =>
-          Right(Some(account))
-        }
-        .recover { case _: NotFoundException =>
-          Right(None)
-        }
-    )
+    taxAccountService
+      .taxAccountSummary(nino, taxYear)
+      .transform {
+        case Left(error: UpstreamErrorResponse) if error.statusCode == NOT_FOUND => Right(None)
+        case Right(account)                                                      => Right(Some(account))
+        case Left(error)                                                         => Left(error)
+      }
 
   private def optionalIsAnyIFormInProgress(nino: Nino)(implicit
     hc: HeaderCarrier,
@@ -157,29 +154,23 @@ class TaxAccountSummaryController @Inject() (
 
   def onPageLoadOld(implicit request: DataRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
+    val messages = request2Messages
 
     auditService
       .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
 
-    taxAccountService
-      .taxAccountSummary(nino, TaxYear())
-      .flatMap { taxAccountSummary =>
-        for {
-          vm <- taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary)
-        } yield Ok(incomeTaxSummary(vm, appConfig))
-      }
-      .recover {
-        case _: NotFoundException =>
+    (for {
+      taxAccountSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
+      vm <- EitherT[Future, UpstreamErrorResponse, TaxAccountSummaryViewModel](
+              taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary).map(Right(_))
+            )
+    } yield Ok(incomeTaxSummary(vm, appConfig))).fold(
+      {
+        case error if error.statusCode == NOT_FOUND =>
           Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-        case e: UnauthorizedException =>
-          logger.warn("taxAccountSummary failed with: " + e.getMessage)
-          Redirect(controllers.routes.UnauthorisedController.onPageLoad())
-        case NonFatal(e)
-            if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-              e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-        case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage, Some(e))
-      }
+        case _ => InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
+      },
+      identity
+    )
   }
 }

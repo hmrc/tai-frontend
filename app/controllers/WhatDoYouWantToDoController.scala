@@ -16,13 +16,13 @@
 
 package controllers
 
-import cats.data.{EitherT, OptionT}
+import cats.data.EitherT
 import cats.implicits._
-import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest}
+import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -55,46 +55,35 @@ class WhatDoYouWantToDoController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  private implicit val recoveryLocation: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
-
   def whatDoYouWantToDoPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    {
-      implicit val user: AuthedUser = request.taiUser
-      val nino = request.taiUser.nino
-      val ninoString = request.taiUser.nino.toString()
+    val nino = request.taiUser.nino
+    implicit val user: AuthedUser = request.taiUser
+    val messages = request2Messages
 
-      lazy val employmentsFuture = employmentService.employments(nino, TaxYear())
-      lazy val redirectFuture =
-        OptionT(taxAccountService.taxAccountSummary(nino, TaxYear()).map(_ => none[Result]).recoverWith { case ex =>
-          previousYearEmployments(nino).map { prevYearEmployments =>
-            val handler: PartialFunction[Throwable, Option[Result]] =
-              errorPagesHandler.npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler
-                  .npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments, ninoString) orElse
-                errorPagesHandler.npsNoEmploymentResult(ninoString) orElse { case _ => none }
-            handler(ex)
-          }
-        }).getOrElseF(
-          allowWhatDoYouWantToDo
-            .leftMap(error =>
-              errorPagesHandler.internalServerError(
-                error.errorMessage.getOrElse("Unknown error on what do you want to do page")
-              )
-            )
-            .merge
-        )
-
-      for {
-        _        <- employmentsFuture
-        redirect <- redirectFuture
-      } yield redirect
-    } recoverWith {
-      val nino = request.taiUser.nino
-
-      errorPagesHandler.hodBadRequestResult(nino.toString()) orElse errorPagesHandler.hodInternalErrorResult(
-        nino.toString()
+    (for {
+      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
+      showJrsLink <- EitherT[Future, TaxCodeError, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
+      model <- EitherT[Future, TaxCodeError, WhatDoYouWantToDoViewModel](
+                 whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
+               )
+      incomeTaxHistoryToggle <-
+        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight))
+      cyPlusOneToggle <-
+        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
+      _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
+    } yield Ok(
+      whatDoYouWantToDoTileView(
+        WhatDoYouWantToDoForm.createForm,
+        model,
+        applicationConfig,
+        incomeTaxHistoryToggle.isEnabled,
+        cyPlusOneToggle.isEnabled
       )
+    )).fold(
+      _ => InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message"))),
+      identity
+    ).recover { case _: HttpException =>
+      InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
     }
   }
 
@@ -121,45 +110,23 @@ class WhatDoYouWantToDoController @Inject() (
         )
       featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
         if (toggle.isEnabled) {
-          taxAccountService.taxAccountSummary(nino, TaxYear().next).map(_ => successfulResponseModel) recover {
-            case _: NotFoundException =>
-              logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-              unsuccessfulResponseModel
-            case _ =>
-              unsuccessfulResponseModel
-          }
+          taxAccountService
+            .taxAccountSummary(nino, TaxYear().next)
+            .map(_ => successfulResponseModel)
+            .fold(
+              {
+                case error if error.statusCode == NOT_FOUND =>
+                  logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
+                  unsuccessfulResponseModel
+                case _ => unsuccessfulResponseModel
+              },
+              _ => successfulResponseModel
+            )
         } else {
           Future.successful(successfulResponseModel)
         }
       }
     }
-  }
-
-  private def allowWhatDoYouWantToDo(implicit
-    request: AuthenticatedRequest[AnyContent],
-    user: AuthedUser
-  ) = {
-    val nino = user.nino
-    for {
-      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-      showJrsLink <- EitherT[Future, TaxCodeError, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
-      model <- EitherT[Future, TaxCodeError, WhatDoYouWantToDoViewModel](
-                 whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
-               )
-      incomeTaxHistoryToggle <-
-        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight))
-      cyPlusOneToggle <-
-        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
-      _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
-    } yield Ok(
-      whatDoYouWantToDoTileView(
-        WhatDoYouWantToDoForm.createForm,
-        model,
-        applicationConfig,
-        incomeTaxHistoryToggle.isEnabled,
-        cyPlusOneToggle.isEnabled
-      )
-    )
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit

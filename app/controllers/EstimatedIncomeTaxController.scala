@@ -28,6 +28,7 @@ import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIn
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
+import uk.gov.hmrc.tai.util.EitherTExtensions._
 
 class EstimatedIncomeTaxController @Inject() (
   codingComponentService: CodingComponentService,
@@ -48,7 +49,7 @@ class EstimatedIncomeTaxController @Inject() (
     val nino = request.taiUser.nino
 
     (
-      taxAccountService.taxAccountSummary(nino, TaxYear()),
+      taxAccountService.taxAccountSummary(nino, TaxYear()).toFutureOrThrow,
       taxAccountService.totalTax(nino, TaxYear()),
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),

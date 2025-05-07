@@ -24,7 +24,7 @@ import play.api.http.ContentTypes
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.test.Helpers.CONTENT_TYPE
-import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException}
+import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -453,7 +453,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).futureValue
+        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value.futureValue
         result mustBe TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200)
       }
     }
@@ -475,7 +475,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear)
+        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value
         assertThrows[JsResultException] {
           Await.result(result, 5.seconds)
         }
@@ -492,10 +492,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear)
-        assertThrows[UnauthorizedException] {
-          Await.result(result, 5.seconds)
-        }
+        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value.futureValue
+        result mustBe a[Left[UpstreamErrorResponse, _]]
       }
     }
 
@@ -509,10 +507,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
             )
         )
 
-        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear)
-        assertThrows[NotFoundException] {
-          Await.result(result, 5.seconds)
-        }
+        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value.futureValue
+        result mustBe a[Left[UpstreamErrorResponse, _]]
       }
     }
   }
