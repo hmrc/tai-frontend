@@ -33,7 +33,7 @@
 package controllers.auth
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -42,12 +42,13 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino => _, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.FandFConnector
 import utils.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthRetrievalsSpec extends BaseSpec {
-
+  private val mockFandFConnector = mock[FandFConnector]
   val cc: ControllerComponents = stubControllerComponents()
 
   abstract class Harness(AuthRetrievals: AuthRetrievals) extends AbstractController(cc) {
@@ -66,11 +67,11 @@ class AuthRetrievalsSpec extends BaseSpec {
       val mocked = mock[AuthConnector]
       when(mocked.authorise[A](any(), any())(any(), any())).thenReturn(Future.successful(a))
 
-      fromAction(new AuthRetrievalsImpl(mocked, mcc))
+      fromAction(new AuthRetrievalsImpl(mocked, mcc, mockFandFConnector))
     }
 
     def failure(ex: Throwable): Harness =
-      fromAction(new AuthRetrievalsImpl(new FakeFailingAuthConnector(ex), mcc))
+      fromAction(new AuthRetrievalsImpl(new FakeFailingAuthConnector(ex), mcc, mockFandFConnector))
   }
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
@@ -86,6 +87,11 @@ class AuthRetrievalsSpec extends BaseSpec {
     def ~[B](b: B) = new ~(a, b)
   }
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockFandFConnector)
+    when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(None))
+  }
   "Auth Action" when {
     s"is not logged in" must {
       "throw an exception" in {
@@ -104,11 +110,10 @@ class AuthRetrievalsSpec extends BaseSpec {
     "return the users nino & name in an Ok response" when {
       val saUtr = Some("000111222")
       val nino = Nino(new Generator().nextNino.nino)
-      val baseRetrieval =
-        Some(nino.nino) ~ saUtr
+      val baseRetrieval = Some(nino.nino) ~ saUtr
 
       "no trusted helper data is returned" in {
-        val controller = Harness.successful(baseRetrieval ~ None)
+        val controller = Harness.successful(baseRetrieval)
         val result = controller.onPageLoad()(fakeRequest)
         val expectedTaiUser = AuthedUser(nino, saUtr, None)
 
@@ -116,16 +121,18 @@ class AuthRetrievalsSpec extends BaseSpec {
       }
 
       "trusted helper data is returned" in {
-
         val nino = new Generator().nextNino
-        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
+        val thNino = new Generator().nextNino
+        val baseRetrieval = Some(nino.nino) ~ saUtr
+        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(thNino.nino))
+        when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(Some(trustedHelper)))
+
         val controller =
-          Harness.successful(baseRetrieval ~ Some(trustedHelper))
+          Harness.successful(baseRetrieval)
         val result = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
           AuthedUser(nino, Some("000111222"), Some(trustedHelper))
-
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
