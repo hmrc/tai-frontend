@@ -63,7 +63,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Random
 
 class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
-
+  private val fandfDelegationUrl = s"/delegation/get"
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheRepository = mock[JourneyCacheRepository]
   private val startTaxYear = TaxYear().start.getYear
@@ -534,6 +534,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .configure(
       "microservice.services.auth.port"                                -> server.port(),
       "microservice.services.pertax.port"                              -> server.port(),
+      "microservice.services.fandf.port"                               -> server.port(),
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
@@ -748,6 +749,11 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
         .willReturn(ok("false"))
+    )
+
+    server.stubFor(
+      get(urlEqualTo(fandfDelegationUrl))
+        .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
     )
 
     for (year <- startTaxYear - 5 to startTaxYear + 1) {
