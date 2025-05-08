@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
-import cats.implicits._
 import pages.income.{UpdateIncomePayToDatePage, UpdatedIncomeDatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
+import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Ceased, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
-import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
@@ -33,7 +32,6 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeService @Inject() (
-  taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   taiConnector: TaiConnector
 ) {
@@ -41,33 +39,18 @@ class IncomeService @Inject() (
   def employmentAmount(nino: Nino, id: Int)(implicit
     hc: HeaderCarrier,
     messages: Messages,
-    executionContext: ExecutionContext
+    ec: ExecutionContext
   ): Future[EmploymentAmount] =
-    (
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employment(nino, id)
-    ) mapN {
-      case (Right(taxCodeIncomes), Some(employment)) =>
-        taxCodeIncomes.find(_.employmentId.contains(id)) match {
-          case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
-          case _                   => throw new RuntimeException(s"Not able to found employment with id $id")
-        }
-      case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+    employmentService.employment(nino, id).map {
+      case Some(employment) => EmploymentAmount(employment)
+      case None             => throw new RuntimeException(s"Not able to found employment with id $id")
     }
 
   def latestPayment(nino: Nino, id: Int)(implicit
     hc: HeaderCarrier,
-    executionContext: ExecutionContext
+    ec: ExecutionContext
   ): Future[Option[Payment]] =
-    employmentService.employment(nino, id) map {
-      case Some(employment) =>
-        for {
-          latestAnnualAccount <- employment.latestAnnualAccount
-          latestPayment       <- latestAnnualAccount.latestPayment
-        } yield latestPayment
-
-      case _ => None
-    }
+    employmentService.employment(nino, id).map(_.flatMap(_.latestAnnualAccount.flatMap(_.latestPayment)))
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit
     hc: HeaderCarrier
@@ -95,19 +78,15 @@ class IncomeService @Inject() (
   }
 
   def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] =
-    taxCodeIncomes.filter { income =>
-      (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
-      income.status != Ceased
-    }
+    taxCodeIncomes.filter(income =>
+      (income.componentType == EmploymentIncome || income.componentType == PensionIncome) && income.status != Ceased
+    )
 
-  def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] = {
-    val incomes = editableIncomes(taxCodeIncomes)
-    if (incomes.size == 1) {
-      incomes.head.employmentId
-    } else {
-      None
+  def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] =
+    editableIncomes(taxCodeIncomes) match {
+      case Seq(singleIncome) => singleIncome.employmentId
+      case _                 => None
     }
-  }
 
   def cachePaymentForRegularIncome(latestPayment: Option[Payment], userAnswers: UserAnswers): UserAnswers =
     latestPayment match {
@@ -118,5 +97,4 @@ class IncomeService @Inject() (
       case None =>
         userAnswers.setOrException(UpdateIncomePayToDatePage, "0")
     }
-
 }

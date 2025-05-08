@@ -27,9 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
-import uk.gov.hmrc.tai.model.domain.Payment
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
@@ -44,6 +42,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   authenticate: AuthJourney,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
   mcc: MessagesControllerComponents,
   editSuccess: EditSuccessView,
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
@@ -55,20 +54,6 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
   private val logger = Logger(this.getClass)
 
-  private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] =
-    (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
-      val defaultCaching = Map[String, String](
-        UpdateIncomeNamePage.toString      -> taxCodeIncome.name,
-        UpdateIncomePayToDatePage.toString -> taxCodeIncome.amount.toString
-      )
-
-      payment.fold(defaultCaching)(payment =>
-        defaultCaching + (UpdatedIncomeDatePage.toString -> payment.date.format(
-          DateTimeFormatter.ofPattern(MonthAndYear)
-        ))
-      )
-    }
-
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
@@ -76,20 +61,33 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
       (
         incomeService.latestPayment(nino, employmentId),
-        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
+        employmentService.employment(nino, employmentId)
       ).mapN {
-        case (_, Left(value)) =>
-          logger.error(value)
+        case (_, None) =>
+          logger.warn(s"Employment not found for IDs: $employmentId")
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-        case (maybePayment, Right(Some(tci))) =>
-          val cacheMap = taxCodeIncomeInfoToCache(tci, maybePayment)
-          val updatedAnswers =
-            request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
+
+        case (maybePayment, Some(employment)) =>
+          val estimatedPay = employment.latestAnnualAccount
+            .flatMap(_.latestPayment)
+            .map(_.amount)
+            .getOrElse(BigDecimal(0))// Check with Pascal is it editing the latest Payment
+          val cacheMap = Map(
+            UpdateIncomeNamePage.toString      -> employment.name,
+            UpdateIncomePayToDatePage.toString -> estimatedPay.toString
+          ) ++ maybePayment
+            .map(p => UpdatedIncomeDatePage.toString -> p.date.format(DateTimeFormatter.ofPattern(MonthAndYear)))
+            .toMap
+
+          val updatedAnswers = request.userAnswers.copy(
+            data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject]
+          )
 
           journeyCacheRepository.set(updatedAnswers).map { _ =>
-            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
+            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employment.name, estimatedPay)
             Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
           }
+
         case _ =>
           Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
       }.flatten
@@ -154,6 +152,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
         )
   }
 
+  // Check with Pascal as there is no estimated payment update API in employment. There is update for previous years
   def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
@@ -179,7 +178,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
       (incomeNameOpt, newPayOpt, incomeIdOpt) match {
         case (Some(incomeName), Some(newPay), Some(incomeId)) =>
           (for {
-            _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
+            _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) //To Check with Pascal
             result <- cacheAndRespond(incomeName, incomeId, newPay)
           } yield result).recover { case NonFatal(e) =>
             errorPagesHandler.internalServerError(e.getMessage)

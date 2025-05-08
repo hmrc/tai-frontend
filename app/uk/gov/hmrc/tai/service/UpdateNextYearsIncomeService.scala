@@ -17,14 +17,13 @@
 package uk.gov.hmrc.tai.service
 
 import org.apache.pekko.Done
-import cats.implicits._
 import pages.income.{UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage, UpdateNextYearsIncomeSuccessPageForEmployment}
+import play.api.i18n.Messages
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
-import uk.gov.hmrc.tai.model.domain.PensionIncome
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 
 import javax.inject.Inject
@@ -43,23 +42,22 @@ class UpdateNextYearsIncomeService @Inject() (
     Future.successful(userAnswers.get(UpdateNextYearsIncomeSuccessPage).getOrElse(false))
 
   private def setup(employmentId: Int, nino: Nino)(implicit
-    hc: HeaderCarrier
+                                                   hc: HeaderCarrier, messages: Messages
   ): Future[UpdateNextYearsIncomeCacheModel] =
-    (
-      taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId),
-      employmentService.employment(nino, employmentId)
-    ).mapN {
-      case (Right(Some(taxCodeIncome)), Some(employment)) =>
-        val isPension = taxCodeIncome.componentType == PensionIncome
-        UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
-      case _ =>
+    employmentService.employment(nino, employmentId).map {
+      case Some(employment) =>
+        val employmentAmount = EmploymentAmount(employment)
+        val isPension = employment.receivingOccupationalPension
+        val amount = employmentAmount.oldAmount
+        UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, amount)
+      case None =>
         throw new RuntimeException(
-          "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
+          "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey: employment not found"
         )
     }
 
   def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier, messages: Messages
   ): Future[UpdateNextYearsIncomeCacheModel] =
     journeyCacheRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
 
@@ -86,7 +84,8 @@ class UpdateNextYearsIncomeService @Inject() (
 
   def submit(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
     hc: HeaderCarrier,
-    ec: ExecutionContext
+    ec: ExecutionContext,
+                                                                      messages: Messages
   ): Future[Done] =
     for {
       _ <- get(employmentId, nino, userAnswers)

@@ -27,10 +27,10 @@ import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService}
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
@@ -43,11 +43,11 @@ class IncomeUpdateEstimatedPayController @Inject() (
   incomeService: IncomeService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  taxAccountService: TaxAccountService,
   estimatedPayLandingPage: EstimatedPayLandingPageView,
   estimatedPay: EstimatedPayView,
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
   journeyCacheRepository: JourneyCacheRepository,
+  employmentService: EmploymentService,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -59,11 +59,11 @@ class IncomeUpdateEstimatedPayController @Inject() (
 
       val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
       val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+
       (incomeNameOpt, incomeTypeOpt) match {
         case (Some(incomeName), Some(incomeType)) =>
-          taxAccountService
-            .taxAccountSummary(user.nino, TaxYear())
-            .map { _ =>
+          employmentService.employmentsOnly(user.nino, TaxYear()).value.map { //Check with Pascal
+            case Right(_) =>
               Ok(
                 estimatedPayLandingPage(
                   incomeName,
@@ -72,11 +72,9 @@ class IncomeUpdateEstimatedPayController @Inject() (
                   appConfig
                 )
               )
-            }
-            .recover { case e: Exception =>
-              errorPagesHandler.internalServerError(e.getMessage)
-            }
-
+            case Left(error) =>
+              errorPagesHandler.internalServerError(error.message)
+          }
         case _ =>
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }

@@ -24,9 +24,9 @@ import play.api.mvc._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
-import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
+import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+import uk.gov.hmrc.tai.model.{EmploymentAmount, UserAnswers}
+import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import views.html.incomes.HowToUpdateView
 
@@ -38,7 +38,6 @@ class IncomeUpdateHowToUpdateController @Inject() (
   authenticate: AuthJourney,
   employmentService: EmploymentService,
   incomeService: IncomeService,
-  taxAccountService: TaxAccountService,
   mcc: MessagesControllerComponents,
   howToUpdateView: HowToUpdateView,
   journeyCacheRepository: JourneyCacheRepository,
@@ -74,22 +73,22 @@ class IncomeUpdateHowToUpdateController @Inject() (
   def howToUpdatePage(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino = user.nino
-    (employmentService.employment(nino, id) flatMap {
-      case Some(employment: Employment) =>
+
+    employmentService.employment(nino, id).flatMap {
+      case Some(employment) =>
         val incomeToEditFuture = incomeService.employmentAmount(nino, id)
-        val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
         val cacheEmploymentDetailsFuture =
-          cacheEmploymentDetails(id, employmentService.employment(nino, id), request.userAnswers)
+          cacheEmploymentDetails(id, Future.successful(Some(employment)), request.userAnswers)
 
         for {
-          incomeToEdit: EmploymentAmount <- incomeToEditFuture
-          taxCodeIncomeDetails           <- taxCodeIncomeDetailsFuture
-          _                              <- cacheEmploymentDetailsFuture
-          result <- processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails, request.userAnswers)
+          incomeToEdit <- incomeToEditFuture
+          _            <- cacheEmploymentDetailsFuture
+          result       <- processHowToUpdatePage(id, employment.name, incomeToEdit, request.userAnswers)
         } yield result
+
       case None =>
         Future.failed(new RuntimeException("Not able to find employment"))
-    }).recover { case NonFatal(e) =>
+    } recover { case NonFatal(e) =>
       errorPagesHandler.internalServerError(e.getMessage)
     }
   }
@@ -98,28 +97,19 @@ class IncomeUpdateHowToUpdateController @Inject() (
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]],
     userAnswers: UserAnswers
   )(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
-    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {
-      case (true, false, Right(taxCodeIncomes)) =>
-        val howToUpdateFuture = Future.successful(userAnswers.get(UpdateIncomeUpdateKeyPage))
-        for {
-          howToUpdate <- howToUpdateFuture
-        } yield {
-          val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
+    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension) match {
+      case (true, false) =>
+        val howToUpdate = userAnswers.get(UpdateIncomeUpdateKeyPage)
+        val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
+        Future.successful(Ok(howToUpdateView(form, id, employmentName)))
 
-          if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-            Ok(howToUpdateView(form, id, employmentName))
-          } else {
-            incomeService.singularIncomeId(taxCodeIncomes) match {
-              case Some(incomeId) => Ok(howToUpdateView(form, incomeId, employmentName))
-              case None           => throw new RuntimeException("Employment id not present")
-            }
-          }
-        }
-      case (false, false, _) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-      case _                 => Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome(id)))
+      case (false, false) =>
+        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+
+      case _ =>
+        Future.successful(Redirect(controllers.routes.IncomeController.pensionIncome(id)))
     }
 
   def handleChooseHowToUpdate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>

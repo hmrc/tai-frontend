@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.model
 
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 
 import java.time.LocalDate
@@ -39,26 +39,42 @@ case class EmploymentAmount(
 
 object EmploymentAmount {
   implicit val formats: OFormat[EmploymentAmount] = Json.format[EmploymentAmount]
-  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount = {
-    val description = taxCodeIncome.componentType match {
-      case EmploymentIncome if employment.employmentStatus == Live =>
-        s"${Messages("tai.incomes.status-1")} ${Messages(s"tai.incomes.type-0")}"
-      case EmploymentIncome => s"${Messages("tai.incomes.status-2")} ${Messages(s"tai.incomes.type-0")}"
-      case _                => Messages(s"tai.incomes.type-1")
-    }
 
+  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount =
     EmploymentAmount(
-      taxCodeIncome.name,
-      description,
-      taxCodeIncome.employmentId.getOrElse(0),
-      taxCodeIncome.amount.toInt,
-      taxCodeIncome.amount.toInt,
-      None,
-      None,
-      employment.startDate,
-      employment.endDate,
-      employment.employmentStatus == Live,
-      taxCodeIncome.componentType == PensionIncome
+      name = taxCodeIncome.name,
+      description = descriptionFrom(taxCodeIncome.componentType, employment.employmentStatus),
+      employmentId = taxCodeIncome.employmentId.getOrElse(0),
+      newAmount = taxCodeIncome.amount.toInt,
+      oldAmount = taxCodeIncome.amount.toInt,
+      startDate = employment.startDate,
+      endDate = employment.endDate,
+      isLive = employment.employmentStatus == Live,
+      isOccupationalPension = taxCodeIncome.componentType == PensionIncome
     )
-  }
+
+  def apply(employment: Employment)(implicit messages: Messages): EmploymentAmount =
+    EmploymentAmount(
+      name = employment.name,
+      description = descriptionFrom(employment.employmentType, employment.employmentStatus),
+      employmentId = employment.sequenceNumber,
+      newAmount = 0, //Check with Pascal
+      oldAmount = 0, // Check with Pascal
+      startDate = employment.startDate,
+      endDate = employment.endDate,
+      isLive = employment.employmentStatus == Live,
+      isOccupationalPension = employment.employmentType == PensionIncome
+    )
+
+  private def descriptionFrom(componentType: Any, employmentStatus: TaxCodeIncomeSourceStatus)(implicit
+    messages: Messages
+  ): String =
+    componentType match {
+      case EmploymentIncome if employmentStatus == Live =>
+        s"${Messages("tai.incomes.status-1")} ${Messages("tai.incomes.type-0")}"
+      case EmploymentIncome =>
+        s"${Messages("tai.incomes.status-2")} ${Messages("tai.incomes.type-0")}"
+      case _ =>
+        Messages("tai.incomes.type-1")
+    }
 }
