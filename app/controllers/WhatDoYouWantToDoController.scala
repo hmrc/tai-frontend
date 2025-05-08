@@ -39,6 +39,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatDoYouWantToDoController @Inject() (
+  config: ApplicationConfig,
   employmentService: EmploymentService,
   taxCodeChangeService: TaxCodeChangeService,
   taxAccountService: TaxAccountService,
@@ -54,12 +55,31 @@ class WhatDoYouWantToDoController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
+  def isAnyPreviousEmployments(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] = {
+    val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
+      .map(TaxYear(_))
+      .toList
+
+    taxYears
+      .traverse { taxYear =>
+        employmentService.employmentsOnly(nino, taxYear).transform {
+          case Right(_)                                     => Right(true)
+          case Left(error) if error.statusCode == NOT_FOUND => Right(false)
+          case Left(error)                                  => Left(error)
+        }
+      }
+      .map(_.exists(identity))
+  }
+
   def whatDoYouWantToDoPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
     implicit val user: AuthedUser = request.taiUser
     val messages = request2Messages
 
     (for {
+      anyPastEmployment <- isAnyPreviousEmployments(nino) // home is shown only if any employment exist current or past
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
       showJrsLink <-
         EitherT[Future, UpstreamErrorResponse, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
@@ -73,21 +93,24 @@ class WhatDoYouWantToDoController @Inject() (
       cyPlusOneToggle <-
         EitherT[Future, UpstreamErrorResponse, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
       _ <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
-    } yield Ok(
-      whatDoYouWantToDoTileView(
-        WhatDoYouWantToDoForm.createForm,
-        model,
-        applicationConfig,
-        incomeTaxHistoryToggle.isEnabled,
-        cyPlusOneToggle.isEnabled
-      )
-    )).leftMap {
-      case error if error.statusCode == NOT_FOUND =>
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      case error =>
+
+    } yield
+      if (anyPastEmployment) {
+        Ok(
+          whatDoYouWantToDoTileView(
+            WhatDoYouWantToDoForm.createForm,
+            model,
+            applicationConfig,
+            incomeTaxHistoryToggle.isEnabled,
+            cyPlusOneToggle.isEnabled
+          )
+        )
+      } else Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+      .leftMap { error =>
         logger.error(error.message)
         InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
-    }.merge
+      }
+      .merge
       .recover { case error: HttpException =>
         logger.error(error.getMessage)
         InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
@@ -139,7 +162,7 @@ class WhatDoYouWantToDoController @Inject() (
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit
     request: Request[AnyContent]
   ): EitherT[Future, UpstreamErrorResponse, Future[AuditResult]] =
-    taxAccountService.taxCodeIncomes(nino, TaxYear()).map { noOfTaxCodes =>
+    taxAccountService.newTaxCodeIncomes(nino, TaxYear()).map { noOfTaxCodes =>
       employmentService.employments(nino, TaxYear()).flatMap { employments =>
         auditService
           .sendUserEntryAuditEvent(

@@ -36,8 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TaxAccountConnector @Inject() (
   httpHandler: HttpHandler,
-  servicesConfig: ServicesConfig,
-  httpClientResponse: HttpClientResponse
+  servicesConfig: ServicesConfig
 )(implicit
   ec: ExecutionContext
 ) extends CodingComponentFormatters with Logging {
@@ -78,18 +77,13 @@ class TaxAccountConnector @Inject() (
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] = {
-    val url = taxAccountUrl(nino.nino, year)
-    httpClientResponse
-      .read(
-        httpHandler.httpClient
-          .get(url"$url")
-          .execute[Either[UpstreamErrorResponse, HttpResponse]]
-      )
-      .map { httpResponse =>
-        (httpResponse.json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads))
-      }
-  }
+  ): Future[Either[String, Seq[TaxCodeIncome]]] =
+    httpHandler.getFromApiV2(taxAccountUrl(nino.nino, year)) map (json =>
+      Right((json \ "data").as[Seq[TaxCodeIncome]](Reads.seq(taxCodeIncomeSourceReads)))
+    ) recover { case e: Exception =>
+      logger.warn(s"Couldn't retrieve tax code for $nino with exception:${e.getMessage}")
+      Left(e.getMessage)
+    }
 
   def newTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier

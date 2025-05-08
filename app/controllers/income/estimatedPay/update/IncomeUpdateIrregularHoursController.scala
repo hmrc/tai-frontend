@@ -78,8 +78,8 @@ class IncomeUpdateIrregularHoursController @Inject() (
         incomeService.latestPayment(nino, employmentId),
         taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
       ).mapN {
-        case (_, Left(error)) =>
-          logger.error(error.message)
+        case (_, Left(value)) =>
+          logger.error(value)
           Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
         case (maybePayment, Right(Some(tci))) =>
           val cacheMap = taxCodeIncomeInfoToCache(tci, maybePayment)

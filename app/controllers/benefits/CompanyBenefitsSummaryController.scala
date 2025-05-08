@@ -59,7 +59,7 @@ class CompanyBenefitsSummaryController @Inject() (
       .getOrElse(false)
 
     val incomeDetailsResult = for {
-      taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear()).value
+      taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employment               <- employmentService.employment(nino, empId)
       benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
       estimatedPayCompletion   <- Future.successful(hasJourneyCompleted)

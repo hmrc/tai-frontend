@@ -43,18 +43,22 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(imp
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
+  ): Future[Either[String, Seq[TaxCodeIncome]]] =
     taxAccountConnector.taxCodeIncomes(nino, year)
 
   def newTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
-    taxAccountConnector.newTaxCodeIncomes(nino, year)
+    taxAccountConnector.newTaxCodeIncomes(nino, year).transform {
+      case Right(taxCodeIncomes)                        => Right(taxCodeIncomes)
+      case Left(error) if error.statusCode == NOT_FOUND => Right(Seq.empty)
+      case Left(error)                                  => Left(error)
+    }
 
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
     hc: HeaderCarrier
-  ): Future[Either[UpstreamErrorResponse, Option[TaxCodeIncome]]] =
-    taxAccountConnector.taxCodeIncomes(nino, year).map(_.find(_.employmentId.contains(employmentId))).value
+  ): Future[Either[String, Option[TaxCodeIncome]]] =
+    EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
 
   def newTaxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
     hc: HeaderCarrier

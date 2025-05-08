@@ -22,7 +22,6 @@ import pages.income.{UpdateIncomeIdPage, UpdateIncomeNamePage, UpdateIncomeTypeP
 import play.api.libs.json.Json
 import play.api.mvc._
 import repository.JourneyCacheRepository
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.HowToUpdateForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, TaxCodeIncome}
@@ -78,7 +77,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
     (employmentService.employment(nino, id) flatMap {
       case Some(employment: Employment) =>
         val incomeToEditFuture = incomeService.employmentAmount(nino, id)
-        val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear()).value
+        val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
         val cacheEmploymentDetailsFuture =
           cacheEmploymentDetails(id, employmentService.employment(nino, id), request.userAnswers)
 
@@ -99,7 +98,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
     id: Int,
     employmentName: String,
     incomeToEdit: EmploymentAmount,
-    maybeTaxCodeIncomeDetails: Either[UpstreamErrorResponse, Seq[TaxCodeIncome]],
+    maybeTaxCodeIncomeDetails: Either[String, Seq[TaxCodeIncome]],
     userAnswers: UserAnswers
   )(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] =
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, maybeTaxCodeIncomeDetails) match {

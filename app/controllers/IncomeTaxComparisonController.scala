@@ -16,7 +16,7 @@
 
 package controllers
 
-import cats.data.NonEmptyList
+import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
 import controllers.auth.{AuthJourney, DataRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -55,10 +55,12 @@ class IncomeTaxComparisonController @Inject() (
     val nextTaxYear = currentTaxYear.next
 
     (
-      taxAccountService.taxAccountSummary(nino, currentTaxYear).leftMap(ex => NonEmptyList.one(new Throwable(ex))),
-      taxAccountService.taxAccountSummary(nino, nextTaxYear).leftMap(ex => NonEmptyList.one(new Throwable(ex))),
-      taxAccountService.taxCodeIncomes(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
-      taxAccountService.taxCodeIncomes(nino, nextTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+      taxAccountService.taxAccountSummary(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+      taxAccountService.taxAccountSummary(nino, nextTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+      EitherT(taxAccountService.taxCodeIncomes(nino, currentTaxYear)).leftMap(msg =>
+        NonEmptyList.one(new Throwable(msg))
+      ),
+      EitherT(taxAccountService.taxCodeIncomes(nino, nextTaxYear)).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
       codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
       codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
       employmentService.employments(nino, currentTaxYear).attemptTNel,
