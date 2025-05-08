@@ -20,14 +20,13 @@ import cats.data.EitherT
 import cats.implicits._
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class TaxCodeChangeService @Inject() (
   taxCodeChangeConnector: TaxCodeChangeConnector,
@@ -39,16 +38,9 @@ class TaxCodeChangeService @Inject() (
 
   def hasTaxCodeChanged(
     nino: Nino
-  )(implicit hc: HeaderCarrier): EitherT[Future, TaxCodeError, Boolean] =
-    EitherT(
-      taxCodeChangeConnector
-        .hasTaxCodeChanged(nino)
-        .map(_.asRight)
-        .recover { case NonFatal(_) =>
-          logger.error("Could not fetch the changed tax code")
-          TaxCodeError(nino, Some("Could not fetch tax code change")).asLeft
-        }
-    )
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] =
+    taxCodeChangeConnector
+      .hasTaxCodeChanged(nino)
 
   def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier

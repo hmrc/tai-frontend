@@ -16,6 +16,7 @@
 
 package controllers.pensions
 
+import cats.data.EitherT
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.TrackSuccessfulJourneyUpdatePensionPage
@@ -24,6 +25,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneRegex
@@ -306,41 +308,37 @@ class UpdatePensionProviderController @Inject() (
     Ok(confirmationView())
   }
 
-  private def redirectToWarningOrDecisionPage(
-    journeyCacheUpdate: Future[Boolean],
-    successfulJourneyCheck: Boolean
-  ): Future[Result] =
-    journeyCacheUpdate.map(_ =>
-      if (successfulJourneyCheck) {
-        Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-      } else {
-        Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
-      }
-    )
+  private def redirectToWarningOrDecisionPage(successfulJourneyCheck: Boolean): Result =
+    if (successfulJourneyCheck) {
+      Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
+    } else {
+      Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+    }
 
   def UpdatePension(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val userAnswers = request.userAnswers
-    val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
+    val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id)).getOrElse(false)
+
+    def updateAnswers(id: Int, taxCodeIncome: TaxCodeIncome): EitherT[Future, UpstreamErrorResponse, Boolean] = {
       val updatedAnswers = userAnswers
         .setOrException(UpdatePensionProviderIdPage, id)
         .setOrException(UpdatePensionProviderNamePage, taxCodeIncome.name)
-
-      val successfulJourneyCheck = userAnswers.get(TrackSuccessfulJourneyUpdatePensionPage(id)).getOrElse(false)
-      val journeyCacheUpdate = journeyCacheRepository.set(updatedAnswers)
-
-      redirectToWarningOrDecisionPage(journeyCacheUpdate, successfulJourneyCheck)
+      EitherT[Future, UpstreamErrorResponse, Boolean](journeyCacheRepository.set(updatedAnswers).map(Right(_)))
     }
 
-    (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
-      case Right(incomes) =>
-        incomes.find(income => income.employmentId.contains(id) && income.componentType == PensionIncome) match {
-          case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
-          case _                   => throw new RuntimeException(s"Tax code income source is not available for id $id")
-        }
-      case _ => throw new RuntimeException("Tax code income source is not available")
-    }).recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError(e.getMessage)
-    }
+    (for {
+      allTaxCodeIncomes <- taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear())
+      maybeTaxCodeIncome =
+        allTaxCodeIncomes.find(income => income.employmentId.contains(id) && income.componentType == PensionIncome)
+      taxCodeIncome =
+        maybeTaxCodeIncome.getOrElse(throw new RuntimeException(s"Tax code income source is not available for id $id"))
+      _ <- updateAnswers(id, taxCodeIncome)
+    } yield redirectToWarningOrDecisionPage(successfulJourneyCheck))
+      .leftMap(error => errorPagesHandler.internalServerError(error.getMessage))
+      .merge
+      .recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError(e.getMessage)
+      }
   }
 
   def duplicateSubmissionWarning: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>

@@ -73,7 +73,7 @@ class IncomeSourceSummaryController @Inject() (
       .getOrElse(false)
 
     (
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()).value,
       employmentService.employment(nino, empId),
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
@@ -132,7 +132,7 @@ class IncomeSourceSummaryController @Inject() (
 
     (
       employmentService.employmentOnly(nino, empId, TaxYear()),
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()).value,
       rtiService.getPaymentsForYear(nino, TaxYear()).value,
       benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),

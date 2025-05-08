@@ -43,7 +43,7 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(imp
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, Seq[TaxCodeIncome]]] =
+  ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
     taxAccountConnector.taxCodeIncomes(nino, year)
 
   def newTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
@@ -53,8 +53,8 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(imp
 
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
     hc: HeaderCarrier
-  ): Future[Either[String, Option[TaxCodeIncome]]] =
-    EitherT(taxAccountConnector.taxCodeIncomes(nino, year)).map(_.find(_.employmentId.contains(employmentId))).value
+  ): Future[Either[UpstreamErrorResponse, Option[TaxCodeIncome]]] =
+    taxAccountConnector.taxCodeIncomes(nino, year).map(_.find(_.employmentId.contains(employmentId))).value
 
   def newTaxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
     hc: HeaderCarrier

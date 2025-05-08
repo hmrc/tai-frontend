@@ -185,7 +185,7 @@ class IncomeController @Inject() (
 
       userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
-          (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
+          (taxAccountService.taxCodeIncomes(nino, TaxYear()).value, employmentService.employment(nino, empId))
             .mapN {
               case (Right(taxCodeIncomes), Some(employment)) =>
                 taxCodeIncomes.find(_.employmentId.contains(empId)) match {
@@ -367,7 +367,7 @@ class IncomeController @Inject() (
 
       request.userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
-          (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
+          (taxAccountService.taxCodeIncomes(nino, TaxYear()).value, employmentService.employment(nino, empId))
             .mapN {
               case (Right(taxCodeIncomes), Some(employment)) =>
                 taxCodeIncomes.find(_.employmentId.contains(empId)) match {

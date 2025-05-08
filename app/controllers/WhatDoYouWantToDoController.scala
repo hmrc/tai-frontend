@@ -22,7 +22,7 @@ import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -31,7 +31,6 @@ import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -62,15 +61,18 @@ class WhatDoYouWantToDoController @Inject() (
 
     (for {
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-      showJrsLink <- EitherT[Future, TaxCodeError, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
-      model <- EitherT[Future, TaxCodeError, WhatDoYouWantToDoViewModel](
+      showJrsLink <-
+        EitherT[Future, UpstreamErrorResponse, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
+      model <- EitherT[Future, UpstreamErrorResponse, WhatDoYouWantToDoViewModel](
                  whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
                )
       incomeTaxHistoryToggle <-
-        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight))
+        EitherT[Future, UpstreamErrorResponse, FeatureFlag](
+          featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight)
+        )
       cyPlusOneToggle <-
-        EitherT[Future, TaxCodeError, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
-      _ <- EitherT[Future, TaxCodeError, AuditResult](auditNumberOfTaxCodesReturned(nino, showJrsLink).map(_.asRight))
+        EitherT[Future, UpstreamErrorResponse, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
+      _ <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
     } yield Ok(
       whatDoYouWantToDoTileView(
         WhatDoYouWantToDoForm.createForm,
@@ -79,12 +81,17 @@ class WhatDoYouWantToDoController @Inject() (
         incomeTaxHistoryToggle.isEnabled,
         cyPlusOneToggle.isEnabled
       )
-    )).fold(
-      _ => InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message"))),
-      identity
-    ).recover { case _: HttpException =>
-      InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
-    }
+    )).leftMap {
+      case error if error.statusCode == NOT_FOUND =>
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+      case error =>
+        logger.error(error.message)
+        InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
+    }.merge
+      .recover { case error: HttpException =>
+        logger.error(error.getMessage)
+        InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
+      }
   }
 
   private def whatToDoView(nino: Nino, hasTaxCodeChanged: Boolean, showJrsLink: Boolean)(implicit
@@ -131,13 +138,8 @@ class WhatDoYouWantToDoController @Inject() (
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit
     request: Request[AnyContent]
-  ): Future[AuditResult] = {
-
-    val noOfTaxCodesF = taxAccountService.taxCodeIncomes(nino, TaxYear()).map { currentTaxYearTaxCodes =>
-      currentTaxYearTaxCodes.getOrElse(Seq.empty[TaxCodeIncome])
-    }
-
-    noOfTaxCodesF.flatMap { noOfTaxCodes =>
+  ): EitherT[Future, UpstreamErrorResponse, Future[AuditResult]] =
+    taxAccountService.taxCodeIncomes(nino, TaxYear()).map { noOfTaxCodes =>
       employmentService.employments(nino, TaxYear()).flatMap { employments =>
         auditService
           .sendUserEntryAuditEvent(
@@ -149,7 +151,6 @@ class WhatDoYouWantToDoController @Inject() (
           )
       }
     }
-  }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentService.employments(nino, TaxYear().prev) recover { case _ =>

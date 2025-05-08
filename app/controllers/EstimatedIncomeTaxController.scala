@@ -52,7 +52,7 @@ class EstimatedIncomeTaxController @Inject() (
       taxAccountService.taxAccountSummary(nino, TaxYear()).toFutureOrThrow,
       taxAccountService.totalTax(nino, TaxYear()),
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      taxAccountService.taxCodeIncomes(nino, TaxYear()).value,
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
       partialService.getIncomeTaxPartial
     )

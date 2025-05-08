@@ -47,7 +47,7 @@ class YourIncomeCalculationController @Inject() (
   private def incomeCalculationPage(empId: Int)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
     val nino = request.taiUser.nino
 
-    lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+    lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear()).value
     lazy val employmentFuture = employmentService.employment(nino, empId)
 
     for {
