@@ -49,19 +49,25 @@ class AuthRetrievalsImpl @Inject() (
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    fandFConnector.getTrustedHelper().flatMap { helper =>
-      authorised().retrieve(Retrievals.nino and Retrievals.saUtr) {
-        case optNino ~ saUtr =>
-          val user = AuthedUser(
-            nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
-            utr = saUtr,
-            trustedHelper = helper
-          )
-          block(InternalAuthenticatedRequest(request, user))
-        case _ =>
-          throw new RuntimeException("Can't find credentials for user")
+    fandFConnector
+      .getTrustedHelper()
+      .recoverWith { e =>
+        logger.warn(s"Trusted helper retrieval failed", e)
+        Future.successful(None)
       }
-    }
+      .flatMap { helper =>
+        authorised().retrieve(Retrievals.nino and Retrievals.saUtr) {
+          case optNino ~ saUtr =>
+            val user = AuthedUser(
+              nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+              utr = saUtr,
+              trustedHelper = helper
+            )
+            block(InternalAuthenticatedRequest(request, user))
+          case _ =>
+            throw new RuntimeException("Can't find credentials for user")
+        }
+      }
   }
 
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser

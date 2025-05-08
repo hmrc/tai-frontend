@@ -93,7 +93,7 @@ class AuthRetrievalsSpec extends BaseSpec {
     when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(None))
   }
   "Auth Action" when {
-    s"is not logged in" must {
+    "is not logged in" must {
       "throw an exception" in {
         val controller = Harness.failure(MissingBearerToken())
         val result = controller.onPageLoad()(fakeRequest)
@@ -133,6 +133,20 @@ class AuthRetrievalsSpec extends BaseSpec {
 
         val expectedTaiUser =
           AuthedUser(nino, Some("000111222"), Some(trustedHelper))
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
+
+      "trusted helper retrieval returns an exception" in {
+        val nino = new Generator().nextNino
+        val baseRetrieval = Some(nino.nino) ~ saUtr
+        when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.failed(new RuntimeException("error")))
+
+        val controller =
+          Harness.successful(baseRetrieval)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        val expectedTaiUser =
+          AuthedUser(nino, Some("000111222"), None)
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
