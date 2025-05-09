@@ -52,6 +52,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   val incomeService: IncomeService = mock[IncomeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val employmentService: EmploymentService = mock[EmploymentService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
@@ -59,6 +60,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         mockAuthJourney,
         incomeService,
         taxAccountService,
+        employmentService,
         mcc,
         inject[EditSuccessView],
         inject[EditIncomeIrregularHoursView],
@@ -179,7 +181,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
   "handleIncomeIrregularHours" must {
     object HandleIncomeIrregularHoursHarness {
 
-      sealed class HandleIncomeIrregularHoursHarness() {
+      sealed class HandleIncomeIrregularHoursHarness {
         reset(mockJourneyCacheRepository)
 
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)

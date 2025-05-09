@@ -77,7 +77,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         mockAuthJourney,
         employmentService,
         mockIncomeService,
-        taxAccountService,
         mcc,
         inject[HowToUpdateView],
         mockJourneyCacheRepository,
@@ -92,8 +91,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       name = "name",
       description = "description",
       employmentId = employer.id,
-      newAmount = 200,
-      oldAmount = 200,
+      oldAmount = Some(200),
       isLive = isLive,
       isOccupationalPension = isOccupationPension
     )
@@ -198,7 +196,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
           .setOrException(UpdateIncomeIdPage, 1)
 
         val employmentAmount = BuildEmploymentAmount()
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(2))
 
         val SUT = createSUT
         setup(mockUserAnswers)
@@ -217,7 +214,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -237,7 +233,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val employmentAmount = BuildEmploymentAmount(isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(0))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -251,7 +246,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -274,7 +268,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         when(mockIncomeService.editableIncomes(any())).thenReturn(BuildTaxCodeIncomes(2))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(2))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -288,7 +281,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -310,7 +302,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         when(mockIncomeService.editableIncomes(any())).thenReturn(BuildTaxCodeIncomes(2))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(2))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -324,7 +315,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -346,7 +336,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         when(mockIncomeService.singularIncomeId(any())).thenReturn(Some(1))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(1))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -360,7 +349,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -381,7 +369,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         when(mockIncomeService.singularIncomeId(any())).thenReturn(Some(1))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(1))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -395,7 +382,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -419,7 +405,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
         when(mockIncomeService.singularIncomeId(any())).thenReturn(None)
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(0))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -433,7 +418,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 
@@ -456,7 +440,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         val employmentAmount = BuildEmploymentAmount(isLive = true, isOccupationPension = false)
-        val maybeTaxCodeIncomeDetails = Right(BuildTaxCodeIncomes(0))
 
         implicit val request: Request[AnyContent] = FakeRequest("GET", "/")
         implicit val user: AuthedUser = AuthedUser(
@@ -470,7 +453,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
             empId,
             "name",
             employmentAmount,
-            maybeTaxCodeIncomeDetails,
             userAnswers
           )(request, user)
 

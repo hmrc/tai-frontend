@@ -76,7 +76,7 @@ class IncomeController @Inject() (
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
         editIncome(
-          EditIncomeForm.create(employmentAmount),
+          EditIncomeForm.create(employmentAmount, None),
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString
@@ -101,7 +101,7 @@ class IncomeController @Inject() (
           val model = SameEstimatedPayViewModel(
             name,
             employerId,
-            confirmedNewAmount.toInt,
+            Some(confirmedNewAmount.toInt),
             isPension = false,
             routes.IncomeSourceSummaryController.onPageLoad(employerId).url
           )
@@ -185,24 +185,28 @@ class IncomeController @Inject() (
 
       userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
-          employmentService.employment(nino, empId).flatMap {
-            case Some(employment) =>
-              val employmentAmount = EmploymentAmount(employment)
+          employmentService
+            .employment(nino, empId)
+            .flatMap {
+              case Some(employment) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
 
-              val vm = ConfirmAmountEnteredViewModel(
-                empName = employment.name,
-                currentAmount = employmentAmount.oldAmount,
-                estIncome = newAmount.toInt,
-                backUrl = controllers.routes.IncomeController.regularIncome(empId).url,
-                empId = empId
-              )
+                val vm = ConfirmAmountEnteredViewModel(
+                  empName = employment.name,
+                  currentAmount = employmentAmount.oldAmount,
+                  estIncome = newAmount.toInt,
+                  backUrl = controllers.routes.IncomeController.regularIncome(empId).url,
+                  empId = empId
+                )
 
-              Future.successful(Ok(confirmAmountEntered(vm)))
+                Future.successful(Ok(confirmAmountEntered(vm)))
 
-            case None =>
-              Future.successful(errorPagesHandler.internalServerError("Exception while reading employment and tax code details"))
-          }.recoverWith {
-            case NonFatal(e) =>
+              case None =>
+                Future.successful(
+                  errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
+                )
+            }
+            .recoverWith { case NonFatal(e) =>
               userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId)) match {
                 case Some(_) =>
                   journeyCacheRepository
@@ -211,7 +215,7 @@ class IncomeController @Inject() (
                 case None =>
                   Future.successful(errorPagesHandler.internalServerError(e.getMessage))
               }
-          }
+            }
 
         case _ =>
           logger.warn(s"Mandatory value missing from UserAnswers for empId $empId")
@@ -219,7 +223,7 @@ class IncomeController @Inject() (
       }
   }
 
-  //Pascal - No API to update the estimated income, can use update previous years API
+  // Pascal - No API to update the estimated income, can use update previous years API
   def updateEstimatedIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
@@ -282,7 +286,7 @@ class IncomeController @Inject() (
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
         editPension(
-          EditIncomeForm.create(employmentAmount),
+          EditIncomeForm.create(employmentAmount, None),
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()
@@ -317,7 +321,7 @@ class IncomeController @Inject() (
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] = {
-    val newAmount = income.toEmploymentAmount.newAmount.toString
+    val newAmount = FormHelper.convertCurrencyToInt(income.newAmount).toString
     val updatedAnswers = request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount)
 
     journeyCacheRepository.set(updatedAnswers).map(_ => Redirect(confirmationCallback))
@@ -365,26 +369,28 @@ class IncomeController @Inject() (
 
       request.userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
-          employmentService.employment(nino, empId).map {
-            case Some(employment) =>
-              val employmentAmount = EmploymentAmount(employment)
+          employmentService
+            .employment(nino, empId)
+            .map {
+              case Some(employment) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
 
-              val vm = ConfirmAmountEnteredViewModel(
-                empName = employment.name,
-                currentAmount = employmentAmount.oldAmount,//Pascal to confirm
-                estIncome = newAmount.toInt,
-                backUrl = "#",
-                empId = empId
-              )
+                val vm = ConfirmAmountEnteredViewModel(
+                  empName = employment.name,
+                  currentAmount = employmentAmount.oldAmount,
+                  estIncome = newAmount.toInt,
+                  backUrl = "#",
+                  empId = empId
+                )
 
-              Ok(confirmAmountEntered(vm))
+                Ok(confirmAmountEntered(vm))
 
-            case None =>
-              throw new RuntimeException("Error while reading employment and tax code details")
-          }.recover {
-            case NonFatal(e) =>
+              case None =>
+                throw new RuntimeException("Error while reading employment and tax code details")
+            }
+            .recover { case NonFatal(e) =>
               errorPagesHandler.internalServerError(e.getMessage)
-          }
+            }
 
         case _ =>
           logger.warn(s"Mandatory value missing from UserAnswers for empId: $empId")

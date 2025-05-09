@@ -267,7 +267,7 @@ class UpdateIncomeNextYearController @Inject() (
                       val samePayViewModel = SameEstimatedPayViewModel(
                         model.employmentName,
                         model.employmentId,
-                        newAmount,
+                        Some(newAmount),
                         model.isPension,
                         controllers.routes.IncomeTaxComparisonController.onPageLoad().url
                       )

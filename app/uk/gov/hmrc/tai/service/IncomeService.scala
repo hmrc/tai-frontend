@@ -42,7 +42,7 @@ class IncomeService @Inject() (
     ec: ExecutionContext
   ): Future[EmploymentAmount] =
     employmentService.employment(nino, id).map {
-      case Some(employment) => EmploymentAmount(employment)
+      case Some(employment) => EmploymentAmount(taxCodeIncome = None, employment = employment)
       case None             => throw new RuntimeException(s"Not able to found employment with id $id")
     }
 

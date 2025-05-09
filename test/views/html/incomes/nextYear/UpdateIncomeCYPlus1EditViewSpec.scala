@@ -60,7 +60,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
       employerName,
       employmentID,
       isPension,
-      currentEstPay,
+      Some(currentEstPay),
       AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay))
     )
 }

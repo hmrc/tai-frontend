@@ -25,12 +25,12 @@ class SameEstimatedPayViewModelSpec extends BaseSpec {
 
   "SameEstimatedPayViewModel" must {
     "have a return link back to pension details" in {
-      val model = SameEstimatedPayViewModel("pension", id, income, isPension = true, "some url")
+      val model = SameEstimatedPayViewModel("pension", id, Some(income), isPension = true, "some url")
       model.returnLinkLabel mustBe messagesApi("tai.updateEmployment.incomeSame.pension.return.link")
     }
 
     "have a return link back to employment details" in {
-      val model = SameEstimatedPayViewModel("employer", id, income, isPension = false, "some url")
+      val model = SameEstimatedPayViewModel("employer", id, Some(income), isPension = false, "some url")
       model.returnLinkLabel mustBe messagesApi("tai.updateEmployment.incomeSame.employment.return.link")
     }
   }

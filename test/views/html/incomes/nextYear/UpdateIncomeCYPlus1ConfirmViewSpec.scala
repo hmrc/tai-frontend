@@ -32,7 +32,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
   val vm: ConfirmAmountEnteredViewModel = ConfirmAmountEnteredViewModel(
     employmentId,
     employerName,
-    currentAmount,
+    Some(currentAmount),
     estimatedAmount,
     IrregularPay,
     "#"

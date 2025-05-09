@@ -50,6 +50,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   def createSUT = new SUT
 
   val mockIncomeService: IncomeService = mock[IncomeService]
+  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
 
@@ -59,7 +61,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         mockIncomeService,
         appConfig,
         mcc,
-        mockTaxAccountService,
         inject[EstimatedPayLandingPageView],
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
@@ -171,7 +172,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
 
@@ -198,7 +199,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
@@ -226,7 +227,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
@@ -259,7 +260,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(150)), Some(BigDecimal(100)))))

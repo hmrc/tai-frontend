@@ -133,7 +133,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
           employmentName,
           employmentId,
           isPension,
-          employmentAmount
+          Some(employmentAmount)
         )
       }
     }
@@ -205,7 +205,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
           employmentName,
           employmentId,
           isPension,
-          employmentAmount
+          Some(employmentAmount)
         )
       }
 
@@ -230,7 +230,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
           employmentName,
           newEmploymentId,
           isPension,
-          employmentAmount
+          Some(employmentAmount)
         )
       }
     }

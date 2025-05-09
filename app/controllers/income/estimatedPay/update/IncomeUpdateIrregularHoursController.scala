@@ -71,7 +71,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
           val estimatedPay = employment.latestAnnualAccount
             .flatMap(_.latestPayment)
             .map(_.amount)
-            .getOrElse(BigDecimal(0))// Check with Pascal is it editing the latest Payment
+            .getOrElse(BigDecimal(0)) // Check with Pascal is it editing the latest Payment
           val cacheMap = Map(
             UpdateIncomeNamePage.toString      -> employment.name,
             UpdateIncomePayToDatePage.toString -> estimatedPay.toString
@@ -112,7 +112,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
             val vm = ConfirmAmountEnteredViewModel(
               employmentId,
               name,
-              paymentToDate.toInt,
+              Some(paymentToDate.toInt),
               newIrregularPay.toInt,
               IrregularPay,
               controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
@@ -178,7 +178,9 @@ class IncomeUpdateIrregularHoursController @Inject() (
       (incomeNameOpt, newPayOpt, incomeIdOpt) match {
         case (Some(incomeName), Some(newPay), Some(incomeId)) =>
           (for {
-            _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) //To Check with Pascal
+            _ <-
+              taxAccountService
+                .updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId) // To Check with Pascal
             result <- cacheAndRespond(incomeName, incomeId, newPay)
           } yield result).recover { case NonFatal(e) =>
             errorPagesHandler.internalServerError(e.getMessage)

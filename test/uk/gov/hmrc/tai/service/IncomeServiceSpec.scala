@@ -31,6 +31,51 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 class IncomeServiceSpec extends BaseSpec {
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
+    Employment(
+      "ABCD",
+      Live,
+      Some("ABC123"),
+      Some(LocalDate.of(2000, 5, 20)),
+      None,
+      accounts,
+      "",
+      "",
+      8,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false,
+      EmploymentIncome
+    )
+  def paymentOnDate(date: LocalDate): Payment =
+    Payment(
+      date = date,
+      amountYearToDate = 2000,
+      taxAmountYearToDate = 200,
+      nationalInsuranceAmountYearToDate = 100,
+      amount = 1000,
+      taxAmount = 100,
+      nationalInsuranceAmount = 50,
+      payFrequency = Monthly,
+      duplicate = None
+    )
+
+  def createSUT = new SUT
+
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taiConnector: TaiConnector = mock[TaiConnector]
+
+  class SUT
+      extends IncomeService(
+        employmentService,
+        taiConnector
+      )
 
   "employmentAmount" must {
     "return employment amount" when {
@@ -50,14 +95,11 @@ class IncomeServiceSpec extends BaseSpec {
           "employment",
           "(Current employer)",
           1,
-          1111,
-          1111,
+          Some(1111),
           None,
           None,
           Some(LocalDate.of(2000, 5, 20)),
-          None,
-          isLive = true,
-          isOccupationalPension = false
+          None
         )
 
       }
@@ -395,53 +437,4 @@ class IncomeServiceSpec extends BaseSpec {
       }
     }
   }
-
-  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
-    Employment(
-      "ABCD",
-      Live,
-      Some("ABC123"),
-      Some(LocalDate.of(2000, 5, 20)),
-      None,
-      accounts,
-      "",
-      "",
-      8,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false,
-      EmploymentIncome
-    )
-
-  def paymentOnDate(date: LocalDate): Payment =
-    Payment(
-      date = date,
-      amountYearToDate = 2000,
-      taxAmountYearToDate = 200,
-      nationalInsuranceAmountYearToDate = 100,
-      amount = 1000,
-      taxAmount = 100,
-      nationalInsuranceAmount = 50,
-      payFrequency = Monthly,
-      duplicate = None
-    )
-
-  def createSUT = new SUT
-
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taiConnector: TaiConnector = mock[TaiConnector]
-
-  class SUT
-      extends IncomeService(
-        taxAccountService,
-        employmentService,
-        taiConnector
-      )
-
 }

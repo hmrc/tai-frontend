@@ -42,11 +42,12 @@ class UpdateNextYearsIncomeService @Inject() (
     Future.successful(userAnswers.get(UpdateNextYearsIncomeSuccessPage).getOrElse(false))
 
   private def setup(employmentId: Int, nino: Nino)(implicit
-                                                   hc: HeaderCarrier, messages: Messages
+    hc: HeaderCarrier,
+    messages: Messages
   ): Future[UpdateNextYearsIncomeCacheModel] =
     employmentService.employment(nino, employmentId).map {
       case Some(employment) =>
-        val employmentAmount = EmploymentAmount(employment)
+        val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
         val isPension = employment.receivingOccupationalPension
         val amount = employmentAmount.oldAmount
         UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, amount)
@@ -57,7 +58,8 @@ class UpdateNextYearsIncomeService @Inject() (
     }
 
   def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
-    hc: HeaderCarrier, messages: Messages
+    hc: HeaderCarrier,
+    messages: Messages
   ): Future[UpdateNextYearsIncomeCacheModel] =
     journeyCacheRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
 
@@ -85,7 +87,7 @@ class UpdateNextYearsIncomeService @Inject() (
   def submit(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext,
-                                                                      messages: Messages
+    messages: Messages
   ): Future[Done] =
     for {
       _ <- get(employmentId, nino, userAnswers)

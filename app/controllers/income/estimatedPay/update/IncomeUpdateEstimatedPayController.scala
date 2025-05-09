@@ -25,9 +25,8 @@ import play.api.libs.json.{JsNumber, JsObject, JsString, Json}
 import play.api.mvc._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService}
+import uk.gov.hmrc.tai.service.IncomeService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -47,7 +46,6 @@ class IncomeUpdateEstimatedPayController @Inject() (
   estimatedPay: EstimatedPayView,
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
   journeyCacheRepository: JourneyCacheRepository,
-  employmentService: EmploymentService,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -55,27 +53,24 @@ class IncomeUpdateEstimatedPayController @Inject() (
   def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers = request.userAnswers
 
-      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
-
-      (incomeNameOpt, incomeTypeOpt) match {
-        case (Some(incomeName), Some(incomeType)) =>
-          employmentService.employmentsOnly(user.nino, TaxYear()).value.map { //Check with Pascal
-            case Right(_) =>
-              Ok(
-                estimatedPayLandingPage(
-                  incomeName,
-                  empId,
-                  incomeType == TaiConstants.IncomeTypePension,
-                  appConfig
-                )
+      (
+        request.userAnswers.get(UpdateIncomeNamePage),
+        request.userAnswers.get(UpdateIncomeTypePage)
+      ).tupled match {
+        case Some((incomeName, incomeType)) =>
+          Future.successful {
+            Ok(
+              estimatedPayLandingPage(
+                incomeName,
+                empId,
+                incomeType == TaiConstants.IncomeTypePension,
+                appConfig
               )
-            case Left(error) =>
-              errorPagesHandler.internalServerError(error.message)
+            )
           }
-        case _ =>
+
+        case None =>
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }
   }

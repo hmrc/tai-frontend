@@ -100,8 +100,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     "employment",
     "(Current employer)",
     1,
-    1111,
-    1111,
+    Some(1111),
     None,
     None,
     Some(LocalDate.of(2000, 5, 20)),
@@ -113,7 +112,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   private val editSuccessView = inject[EditSuccessView]
   private val editPensionSuccessView = inject[EditPensionSuccessView]
 
-  private class TestIncomeController()
+  private class TestIncomeController
       extends IncomeController(
         taxAccountService,
         employmentService,
@@ -140,7 +139,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         editPensionSuccessView(employerName, employerId)
     }
 
-    val editIncomeForm: EditIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)
+    val editIncomeForm: EditIncomeForm = EditIncomeForm("Test", "Test", 1, None, Some(10), None, None, None, None)
   }
 
   "cancel" must {
@@ -342,7 +341,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData = Json.toJson(editIncomeForm)
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
@@ -365,7 +364,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         val testController = createTestIncomeController()
 
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData = Json.toJson(editIncomeForm)
 
         val result =
@@ -860,7 +859,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
           .setOrException(UpdateIncomeNamePage, "employer name")
         setup(userAnswers)
 
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData = Json.toJson(editIncomeForm)
 
         val result =
@@ -876,7 +875,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "nothing is present in the cache" in {
         val testController = createTestIncomeController()
 
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData = Json.toJson(editIncomeForm)
 
         val result =
@@ -962,7 +961,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       }
     }
     "return SEE_OTHER" when {
-      "nohing is present in the cache" in {
+      "nothing is present in the cache" in {
 
         val testController = createTestIncomeController()
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -988,7 +987,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         setup(userAnswers)
 
         val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None)
+          EmploymentAmount("employment", "(Current employer)", 1, Some(11), None, None, None, None)
 
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -1005,7 +1004,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         setup(userAnswers)
 
         val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, 11, 11, None, None, None, None, isLive = false)
+          EmploymentAmount("employment", "(Current employer)", 1, Some(11), None, None, None, None, isLive = false)
 
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
@@ -1026,8 +1025,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
             "employment",
             "(Current employer)",
             1,
-            11,
-            11,
+            Some(11),
             None,
             None,
             None,

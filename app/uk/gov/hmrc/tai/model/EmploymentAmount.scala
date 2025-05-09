@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.model
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, TaxCodeIncomeSourceStatus}
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 
 import java.time.LocalDate
 
@@ -27,8 +27,7 @@ case class EmploymentAmount(
   name: String,
   description: String,
   employmentId: Int,
-  newAmount: Int,
-  oldAmount: Int,
+  oldAmount: Option[Int],
   worksNumber: Option[String] = None,
   jobTitle: Option[String] = None,
   startDate: Option[LocalDate] = None,
@@ -40,30 +39,18 @@ case class EmploymentAmount(
 object EmploymentAmount {
   implicit val formats: OFormat[EmploymentAmount] = Json.format[EmploymentAmount]
 
-  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount =
-    EmploymentAmount(
-      name = taxCodeIncome.name,
-      description = descriptionFrom(taxCodeIncome.componentType, employment.employmentStatus),
-      employmentId = taxCodeIncome.employmentId.getOrElse(0),
-      newAmount = taxCodeIncome.amount.toInt,
-      oldAmount = taxCodeIncome.amount.toInt,
-      startDate = employment.startDate,
-      endDate = employment.endDate,
-      isLive = employment.employmentStatus == Live,
-      isOccupationalPension = taxCodeIncome.componentType == PensionIncome
-    )
-
-  def apply(employment: Employment)(implicit messages: Messages): EmploymentAmount =
+  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment)(implicit
+    messages: Messages
+  ): EmploymentAmount =
     EmploymentAmount(
       name = employment.name,
       description = descriptionFrom(employment.employmentType, employment.employmentStatus),
       employmentId = employment.sequenceNumber,
-      newAmount = 0, //Check with Pascal
-      oldAmount = 0, // Check with Pascal
+      oldAmount = taxCodeIncome.map(_.amount.intValue),
       startDate = employment.startDate,
       endDate = employment.endDate,
       isLive = employment.employmentStatus == Live,
-      isOccupationalPension = employment.employmentType == PensionIncome
+      isOccupationalPension = employment.receivingOccupationalPension
     )
 
   private def descriptionFrom(componentType: Any, employmentStatus: TaxCodeIncomeSourceStatus)(implicit
