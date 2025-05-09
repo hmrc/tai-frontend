@@ -25,6 +25,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Failure
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
@@ -39,7 +40,6 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatDoYouWantToDoController @Inject() (
-  config: ApplicationConfig,
   employmentService: EmploymentService,
   taxCodeChangeService: TaxCodeChangeService,
   taxAccountService: TaxAccountService,
@@ -55,19 +55,20 @@ class WhatDoYouWantToDoController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) with Logging {
 
-  def isAnyPreviousEmployments(
+  private def isAnyCurrentOrPreviousEmployments(
     nino: Nino
   )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] = {
-    val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
-      .map(TaxYear(_))
-      .toList
+    val taxYears =
+      (TaxYear().year to (TaxYear().year - applicationConfig.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
+        .map(TaxYear(_))
+        .toList
 
     taxYears
       .traverse { taxYear =>
         employmentService.employmentsOnly(nino, taxYear).transform {
-          case Right(_)                                     => Right(true)
+          case Right(_) => Right(true)
           case Left(error) if error.statusCode == NOT_FOUND => Right(false)
-          case Left(error)                                  => Left(error)
+          case Left(error) => Left(error)
         }
       }
       .map(_.exists(identity))
@@ -79,7 +80,7 @@ class WhatDoYouWantToDoController @Inject() (
     val messages = request2Messages
 
     (for {
-      anyPastEmployment <- isAnyPreviousEmployments(nino) // home is shown only if any employment exist current or past
+      anyPastEmployment <- isAnyCurrentOrPreviousEmployments(nino)
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
       showJrsLink <-
         EitherT[Future, UpstreamErrorResponse, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
@@ -93,7 +94,6 @@ class WhatDoYouWantToDoController @Inject() (
       cyPlusOneToggle <-
         EitherT[Future, UpstreamErrorResponse, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
       _ <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
-
     } yield
       if (anyPastEmployment) {
         Ok(
@@ -162,17 +162,19 @@ class WhatDoYouWantToDoController @Inject() (
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit
     request: Request[AnyContent]
   ): EitherT[Future, UpstreamErrorResponse, Future[AuditResult]] =
-    taxAccountService.newTaxCodeIncomes(nino, TaxYear()).map { noOfTaxCodes =>
-      employmentService.employments(nino, TaxYear()).flatMap { employments =>
-        auditService
-          .sendUserEntryAuditEvent(
-            nino,
-            request.headers.get("Referer").getOrElse("NA"),
-            employments,
-            noOfTaxCodes,
-            isJrsTileShown
-          )
-      }
+    taxAccountService.newTaxCodeIncomes(nino, TaxYear()).transform {
+      case Left(error) => Right(Future.successful(Failure(error.message)))
+      case Right(noOfTaxCodes) =>
+        Right(employmentService.employments(nino, TaxYear()).flatMap { employments =>
+          auditService
+            .sendUserEntryAuditEvent(
+              nino,
+              request.headers.get("Referer").getOrElse("NA"),
+              employments,
+              noOfTaxCodes,
+              isJrsTileShown
+            )
+        })
     }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =

@@ -776,7 +776,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         val expectedModel =
           AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "Yes", Some("123456789"))
 
-        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
+        when(employmentService.addEmployment(any(), meq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
         when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
@@ -804,7 +804,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       "the request has an authorised session amd no telephone number was provided" in {
         val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
 
-        when(employmentService.addEmployment(any(), meq(expectedModel))(any(), any()))
+        when(employmentService.addEmployment(any(), meq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
         when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
@@ -852,7 +852,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         verify(mockRepository, times(0)).clear(any(), any())
         verify(mockRepository, times(0)).set(any())
-        verify(employmentService, times(0)).addEmployment(any(), any())(any(), any())
+        verify(employmentService, times(0)).addEmployment(any(), any())(any())
       }
     }
   }
