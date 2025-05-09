@@ -17,6 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -26,7 +27,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -94,7 +95,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       setup(mockUserAnswers)
 
       val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn
+        EitherT.rightT(taxAccountSummary)
 
       val result = estimatedPayLandingPage()
 
@@ -108,9 +110,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       setup(mockUserAnswers)
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException("")
-      )
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn
+        EitherT.leftT(UpstreamErrorResponse("Not found", NOT_FOUND))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -119,9 +120,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       setup(mockUserAnswers)
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException("")
-      )
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn
+        EitherT.leftT(UpstreamErrorResponse("Unauthorised", UNAUTHORIZED))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -131,9 +131,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
       setup(mockUserAnswers)
 
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new RuntimeException("")
-      )
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn
+        EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR))
 
       val result = estimatedPayLandingPage()
       status(result) mustBe INTERNAL_SERVER_ERROR

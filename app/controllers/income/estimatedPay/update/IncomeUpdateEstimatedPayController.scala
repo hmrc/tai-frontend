@@ -63,19 +63,18 @@ class IncomeUpdateEstimatedPayController @Inject() (
         case (Some(incomeName), Some(incomeType)) =>
           taxAccountService
             .taxAccountSummary(user.nino, TaxYear())
-            .map { _ =>
-              Ok(
-                estimatedPayLandingPage(
-                  incomeName,
-                  empId,
-                  incomeType == TaiConstants.IncomeTypePension,
-                  appConfig
+            .fold(
+              e => errorPagesHandler.internalServerError(e.getMessage),
+              _ =>
+                Ok(
+                  estimatedPayLandingPage(
+                    incomeName,
+                    empId,
+                    incomeType == TaiConstants.IncomeTypePension,
+                    appConfig
+                  )
                 )
-              )
-            }
-            .recover { case e: Exception =>
-              errorPagesHandler.internalServerError(e.getMessage)
-            }
+            )
 
         case _ =>
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))

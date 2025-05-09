@@ -31,9 +31,10 @@ import scala.language.postfixOps
 
 class TaxCodeChangeConnectorSpec extends BaseSpec {
 
-  private def sut = new TaxCodeChangeConnector(httpHandler, servicesConfig)
+  private def sut = new TaxCodeChangeConnector(httpHandler, servicesConfig, httpClientResponse)
 
   val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpClientResponse: HttpClientResponse = inject[HttpClientResponse]
 
   "tax code change url" must {
     "fetch the url to connect to TAI to retrieve tax code change" in {
@@ -229,8 +230,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
 
         when(httpHandler.getFromApiV2(meq(hasTaxCodeChangedUrl), any())(any(), any())).thenReturn(json)
 
-        val result = Await.result(sut.hasTaxCodeChanged(nino), 5 seconds)
-        result mustEqual true
+        val result = Await.result(sut.hasTaxCodeChanged(nino).value, 5 seconds)
+        result mustBe Right(true)
       }
     }
   }

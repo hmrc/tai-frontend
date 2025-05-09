@@ -29,6 +29,7 @@ import views.html.PotentialUnderpaymentView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
+import uk.gov.hmrc.tai.util.EitherTExtensions._
 
 class PotentialUnderpaymentController @Inject() (
   taxAccountService: TaxAccountService,
@@ -47,7 +48,7 @@ class PotentialUnderpaymentController @Inject() (
       implicit val user: AuthedUser = request.taiUser
       val nino = user.nino
       (
-        taxAccountService.taxAccountSummary(nino, TaxYear()),
+        taxAccountService.taxAccountSummary(nino, TaxYear()).toFutureOrThrow,
         codingComponentService.taxFreeAmountComponents(nino, TaxYear())
       ).mapN { case (tas, ccs) =>
         auditService.createAndSendAuditEvent(

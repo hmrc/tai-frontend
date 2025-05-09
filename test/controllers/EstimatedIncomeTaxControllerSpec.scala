@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{RequestBuilder, UserBuilder}
+import cats.data.EitherT
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -24,6 +25,7 @@ import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -160,7 +162,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         )
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(EitherT.rightT(taxAccountSummary))
 
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
@@ -258,7 +261,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(EitherT.rightT(taxAccountSummary))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
@@ -348,7 +352,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(taxAccountSummary))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(EitherT.rightT(taxAccountSummary))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
@@ -384,7 +389,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
         val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(TaxAccountSummary(0, 0, 0, 0, 0)))
+          .thenReturn(EitherT.rightT(TaxAccountSummary(0, 0, 0, 0, 0)))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
@@ -420,7 +425,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
       "failed to fetch details" in {
         val sut = createSUT
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("Failed")))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, Seq.empty[IncomeCategory], None, None, None)

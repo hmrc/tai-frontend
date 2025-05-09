@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.BadRequestException
+import play.api.http.Status.INTERNAL_SERVER_ERROR
+import uk.gov.hmrc.http.{BadRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -51,7 +53,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val testService = createTestService
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
-          .thenReturn(Future.successful(true))
+          .thenReturn(EitherT.rightT(true))
 
         val result = testService.hasTaxCodeChanged(nino).value
         Await.result(result, 5.seconds) mustBe Right(true)
@@ -63,7 +65,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
         val testService = createTestService
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
-          .thenReturn(Future.successful(true))
+          .thenReturn(EitherT.rightT(true))
 
         val result = testService.hasTaxCodeChanged(nino).value
         Await.result(result, 5.seconds) mustBe Right(true)
@@ -74,10 +76,11 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       "returns a valid error response from taxCodeChangeConnector.hasTaxCodeChanged" in {
         val testService = createTestService
 
-        val taxCodeError = Left(TaxCodeError(nino, Some("Could not fetch tax code change")))
+        val error = UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)
+        val taxCodeError = Left(error)
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
-          .thenReturn(Future.failed(new Exception("ERROR")))
+          .thenReturn(EitherT.leftT(error))
 
         Await.result(testService.hasTaxCodeChanged(nino).value, 5 seconds) mustBe taxCodeError
       }

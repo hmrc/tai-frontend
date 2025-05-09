@@ -20,15 +20,15 @@ import cats.data.EitherT
 import com.google.inject.Inject
 import play.api.Logging
 import play.api.http.Status.{BAD_GATEWAY, LOCKED, NOT_FOUND, TOO_MANY_REQUESTS}
-import uk.gov.hmrc.http.{HttpException, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HttpException, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class HttpClientResponse @Inject() ()(implicit ec: ExecutionContext) extends Logging {
 
-  def read(
-    response: Future[Either[UpstreamErrorResponse, HttpResponse]]
-  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] =
+  def read[A](
+    response: Future[Either[UpstreamErrorResponse, A]]
+  ): EitherT[Future, UpstreamErrorResponse, A] =
     EitherT(response.map {
       case Right(response) =>
         Right(response)

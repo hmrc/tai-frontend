@@ -17,13 +17,14 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.ForbiddenException
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._
@@ -53,7 +54,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
         inject[ErrorPagesHandler]
       ) {
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
-      .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
+      .thenReturn(EitherT.rightT(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
 
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
       Future.successful(
@@ -85,7 +86,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
       "processing a TaxAccountSummary with no CY+1 amount" in {
         val sut = new SUT()
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)))
+          .thenReturn(EitherT.rightT(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)))
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
         doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
@@ -96,7 +97,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
       "processing a TaxAccountSummary with a CY+1 amount" in {
         val sut = new SUT()
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
+          .thenReturn(EitherT.rightT(TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)))
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
         doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
@@ -113,7 +114,7 @@ class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
       when(taxAccountService.taxAccountSummary(any(), any())(any()))
-        .thenReturn(Future.failed(new ForbiddenException("")))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
       val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
       status(res) mustBe INTERNAL_SERVER_ERROR
       val doc = Jsoup.parse(contentAsString(res))
