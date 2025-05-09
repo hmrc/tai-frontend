@@ -91,10 +91,12 @@ class TaxAccountSummaryController @Inject() (
     )
 
   def onPageLoad: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    if (apiBackendChoice.isNewApiBackendEnabled) {
-      onPageLoadNew
-    } else {
-      onPageLoadOld
+    (if (apiBackendChoice.isNewApiBackendEnabled) {
+       onPageLoadNew
+     } else {
+       onPageLoadOld
+     }).recover { case NonFatal(e) =>
+      errorPagesHandler.internalServerError(e.getMessage)
     }
   }
 

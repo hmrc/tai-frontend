@@ -66,9 +66,9 @@ class WhatDoYouWantToDoController @Inject() (
     taxYears
       .traverse { taxYear =>
         employmentService.employmentsOnly(nino, taxYear).transform {
-          case Right(_) => Right(true)
+          case Right(_)                                     => Right(true)
           case Left(error) if error.statusCode == NOT_FOUND => Right(false)
-          case Left(error) => Left(error)
+          case Left(error)                                  => Left(error)
         }
       }
       .map(_.exists(identity))
