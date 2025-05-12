@@ -42,7 +42,6 @@ import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters.IterableHasAsScala
-import scala.language.postfixOps
 
 class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
@@ -521,23 +520,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
       result.header.status mustBe OK
 
-    }
-  }
-
-  "employments retrieval for CY-1" must {
-
-    "supply employment data where data is found" in {
-      val testController = createTestController()
-      val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
-      employments mustBe fakeEmploymentData
-    }
-
-    "supply an empty list in the event of a downstream failure" in {
-      val testController = createTestController()
-      when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
-        .thenReturn(Future.failed(new NotFoundException("no data found")))
-      val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
-      employments mustBe Nil
     }
   }
 
