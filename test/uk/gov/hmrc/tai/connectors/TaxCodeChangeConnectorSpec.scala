@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok}
+import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import play.api.Application
@@ -53,7 +53,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
     "fetch the tax code change" when {
       "provided with valid nino" in {
 
-        val taxCodeChangeUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change"
+        val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+        lazy val localSut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
 
         val startDate = TaxYear().start
         val taxCodeRecord1 = TaxCodeRecord(
@@ -99,25 +100,30 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
         )
 
         val expectedResult = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
-        when(httpHandler.getFromApiV2(meq(taxCodeChangeUrl), any())(any(), any())).thenReturn(Future.successful(json))
 
-        val result = Await.result(sut.taxCodeChange(nino), 5 seconds)
-        result mustEqual expectedResult
+        server.stubFor(
+          get(taxCodeChangeUrl)
+            .willReturn(ok(json.toString()))
+        )
+
+        val result = Await.result(localSut.taxCodeChange(nino).value, 5 seconds)
+        result mustEqual Right(expectedResult)
       }
     }
 
-    "throw RuntimeException" when {
+    "returns Left" when {
       "tax code change returns 500" in {
 
-        val taxCodeChangeUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change"
+        lazy val localSut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
+        val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
-        val expectedMessage = s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''"
+        server.stubFor(
+          get(taxCodeChangeUrl)
+            .willReturn(serverError)
+        )
 
-        when(httpHandler.getFromApiV2(meq(taxCodeChangeUrl), any())(any(), any()))
-          .thenReturn(Future.failed(new RuntimeException(expectedMessage)))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.taxCodeChange(nino), 5 seconds)
-        ex.getMessage must include(s"GET of '$taxCodeChangeUrl' returned 500. Response body: ''")
+        val result = Await.result(localSut.taxCodeChange(nino).value, 5 seconds)
+        result mustBe a[Left[_, _]]
       }
     }
   }
@@ -231,7 +237,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
     "fetch if the tax code has changed" when {
       "provided with valid nino" in {
 
-        lazy val sut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
+        lazy val localSut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
         val hasTaxCodeChangedUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/exists"
         val json = true
 
@@ -240,7 +246,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
             .willReturn(ok(json.toString))
         )
 
-        val result = Await.result(sut.hasTaxCodeChanged(nino).value, 5 seconds)
+        val result = Await.result(localSut.hasTaxCodeChanged(nino).value, 5 seconds)
         result mustBe Right(true)
       }
     }

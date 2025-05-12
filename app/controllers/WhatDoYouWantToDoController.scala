@@ -23,7 +23,6 @@ import play.api.Logging
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException, UpstreamErrorResponse}
-import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Failure
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -31,11 +30,12 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, TaxAccountSummary, TaxCodeChange}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -82,6 +82,56 @@ class WhatDoYouWantToDoController @Inject() (
     }
   }
 
+  private def nonFailingTaxCodeChanged(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[TaxCodeChange]] =
+    for {
+      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino).transform {
+                             case Right(taxCodeChange) => Right(taxCodeChange)
+                             case Left(_)              =>
+                               // don't fail the page when the tax code change banner is failing
+                               Right(false)
+                           }
+      taxCodeChange <- if (hasTaxCodeChanged) {
+                         taxCodeChangeService.taxCodeChange(nino).map(Some[TaxCodeChange](_))
+                       } else {
+                         EitherT.rightT[Future, UpstreamErrorResponse](None)
+                       }
+    } yield taxCodeChange
+
+  private def nonFailingJrsLink(nino: Nino)(implicit hc: HeaderCarrier): EitherT[Future, Nothing, Boolean] =
+    jrsService.checkIfJrsClaimsDataExist(nino).transform {
+      case Right(jrsClaim) => Right(jrsClaim)
+      case Left(_)         =>
+        // don't fail the page when the tax code change banner is failing
+        Right(false)
+    }
+
+  private def nonFailingCyPlusOneTaxAccount(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[TaxAccountSummary]] =
+    for {
+      cyPlusOneToggle <- featureFlagService.getAsEitherT[UpstreamErrorResponse](CyPlusOneToggle)
+      cyPlusOneTaxAccount <- {
+        if (cyPlusOneToggle.isEnabled) {
+          taxAccountService.taxAccountSummary(nino, TaxYear().next).transform {
+            case Right(taxAccount) =>
+              Right[UpstreamErrorResponse, Option[TaxAccountSummary]](Some(taxAccount))
+            case Left(error) if error.statusCode == NOT_FOUND =>
+              logger.error(
+                "No CY+1 tax account summary found, consider disabling the CY+1 toggles"
+              )
+              Right(None)
+            case Left(error) =>
+              // don't fail the page when we get an error for CY+1
+              Right(none)
+          }
+        } else {
+          EitherT.rightT[Future, UpstreamErrorResponse](None: Option[TaxAccountSummary])
+        }
+      }
+    } yield cyPlusOneTaxAccount
+
   def whatDoYouWantToDoPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
     implicit val user: AuthedUser = request.taiUser
@@ -89,37 +139,20 @@ class WhatDoYouWantToDoController @Inject() (
 
     (for {
       anyCurrentOrPastEmployment <- isAnyCurrentOrPreviousEmployments(nino)
-      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino).transform {
-                             case Right(taxCodeChange) => Right(taxCodeChange)
-                             case Left(_)              =>
-                               // don't fail the page when the tax code change banner is failing
-                               Right(false)
-                           }
-      showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino).transform {
-                       case Right(jrsClaim) => Right(jrsClaim)
-                       case Left(_)         =>
-                         // don't fail the page when the tax code change banner is failing
-                         Right(false)
-                     }
-      model <- EitherT[Future, UpstreamErrorResponse, WhatDoYouWantToDoViewModel](
-                 whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
-               )
-      incomeTaxHistoryToggle <-
-        EitherT[Future, UpstreamErrorResponse, FeatureFlag](
-          featureFlagService.get(IncomeTaxHistoryToggle).map(_.asRight)
-        )
-      cyPlusOneToggle <-
-        EitherT[Future, UpstreamErrorResponse, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
-      _ <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
+      taxCodeChange              <- nonFailingTaxCodeChanged(nino)
+      showJrsLink                <- nonFailingJrsLink(nino)
+      cyPlusOneTaxAccount        <- nonFailingCyPlusOneTaxAccount(nino)
+      incomeTaxHistoryToggle     <- featureFlagService.getAsEitherT[UpstreamErrorResponse](IncomeTaxHistoryToggle)
+      _                          <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
     } yield
       if (anyCurrentOrPastEmployment) {
         Ok(
           whatDoYouWantToDoTileView(
             WhatDoYouWantToDoForm.createForm,
-            model,
+            whatToDoView(taxCodeChange, showJrsLink, cyPlusOneTaxAccount),
             applicationConfig,
             incomeTaxHistoryToggle.isEnabled,
-            cyPlusOneToggle.isEnabled
+            cyPlusOneTaxAccount.isDefined
           )
         )
       } else Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
@@ -134,46 +167,17 @@ class WhatDoYouWantToDoController @Inject() (
       }
   }
 
-  private def whatToDoView(nino: Nino, hasTaxCodeChanged: Boolean, showJrsLink: Boolean)(implicit
-    request: Request[AnyContent]
-  ): Future[WhatDoYouWantToDoViewModel] = {
-    val taxCodeChangeDate = if (hasTaxCodeChanged) {
-      taxCodeChangeService.taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate.some)
-    } else {
-      Future.successful(None)
-    }
-    taxCodeChangeDate.flatMap { maybeMostRecentTaxCodeChangeDate =>
-      lazy val successfulResponseModel = WhatDoYouWantToDoViewModel(
-        cyPlusOneDataAvailable = true,
-        showJrsLink = showJrsLink,
-        maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
-      )
-
-      lazy val unsuccessfulResponseModel =
-        WhatDoYouWantToDoViewModel(
-          cyPlusOneDataAvailable = false,
-          showJrsLink = showJrsLink,
-          maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
-        )
-      featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
-        if (toggle.isEnabled) {
-          taxAccountService
-            .taxAccountSummary(nino, TaxYear().next)
-            .map(_ => successfulResponseModel)
-            .fold(
-              {
-                case error if error.statusCode == NOT_FOUND =>
-                  logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
-                  unsuccessfulResponseModel
-                case _ => unsuccessfulResponseModel
-              },
-              _ => successfulResponseModel
-            )
-        } else {
-          Future.successful(successfulResponseModel)
-        }
-      }
-    }
+  private def whatToDoView(
+    taxCodeChanged: Option[TaxCodeChange],
+    showJrsLink: Boolean,
+    maybeCyPlusOneTaxAccount: Option[TaxAccountSummary]
+  ): WhatDoYouWantToDoViewModel = {
+    val maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = taxCodeChanged.map(_.mostRecentTaxCodeChangeDate)
+    WhatDoYouWantToDoViewModel(
+      cyPlusOneDataAvailable = maybeCyPlusOneTaxAccount.isDefined,
+      showJrsLink = showJrsLink,
+      maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
+    )
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit

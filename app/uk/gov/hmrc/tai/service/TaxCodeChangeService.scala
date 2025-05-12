@@ -33,7 +33,7 @@ class TaxCodeChangeService @Inject() (
   implicit val executionContext: ExecutionContext
 ) extends Logging {
 
-  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, TaxCodeChange] =
     taxCodeChangeConnector.taxCodeChange(nino)
 
   def hasTaxCodeChanged(

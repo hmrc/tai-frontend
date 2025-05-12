@@ -20,7 +20,7 @@ import cats.data.EitherT
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HttpReadsInstances._
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
@@ -42,12 +42,17 @@ class TaxCodeChangeConnector @Inject() (
 
   def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
-  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] =
-    httpHandler.getFromApiV2(taxCodeChangeUrl(nino.nino)) map (json => (json \ "data").as[TaxCodeChange]) recover {
-      case e: Exception =>
-        logger.warn(s"${e.getMessage}")
-        throw new RuntimeException(e.getMessage)
-    }
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, TaxCodeChange] = {
+    val url = taxCodeChangeUrl(nino.nino)
+
+    httpClientResponse
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map(httpResponse => (httpResponse.json \ "data").as[TaxCodeChange])
+  }
 
   def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
 

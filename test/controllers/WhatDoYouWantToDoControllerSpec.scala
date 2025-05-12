@@ -153,10 +153,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(auditService, employmentService, mockAppConfig, taxCodeChangeService, jrsService, taxAccountService)
-    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-      Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
-    when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
-      Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
+    when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+      EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+    when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
+      EitherT.rightT(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true))
     when(mockAppConfig.numberOfPreviousYearsToShowIncomeTaxHistory).thenReturn(5)
 
   }
@@ -177,6 +177,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
+        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
 
         val result = controller.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -217,7 +219,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeChanged))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
@@ -240,14 +242,14 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
         when(employmentService.employmentsOnly(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeChanged))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
@@ -275,7 +277,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT(true))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeChanged))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
@@ -297,15 +299,15 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         val testController = createTestController()
         when(employmentService.employmentsOnly(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
           .thenReturn(EitherT.rightT(true))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeChanged))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -436,6 +438,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
+        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(EitherT.rightT(taxAccountSummary))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -451,8 +457,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "cy plus one data is not available and cy plus one is enabled" in {
         val testController = createTestController()
 
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = true))
+        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
         when(employmentService.employmentsOnly(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
@@ -476,8 +482,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "cy plus one data is available and cy plus one is disabled" in {
 
         val testController = createTestController()
-        when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-          Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = false))
+        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = false))
         when(employmentService.employmentsOnly(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
