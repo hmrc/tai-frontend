@@ -92,7 +92,11 @@ class WhatDoYouWantToDoController @Inject() (
                                Right(false)
                            }
       taxCodeChange <- if (hasTaxCodeChanged) {
-                         taxCodeChangeService.taxCodeChange(nino).map(Some[TaxCodeChange](_))
+                         taxCodeChangeService.taxCodeChange(nino).transform {
+                           case Right(taxCodeChange) => Right(Some(taxCodeChange))
+                           // don't fail the page when the tax code change banner is failing
+                           case _ => Right(None)
+                         }: EitherT[Future, UpstreamErrorResponse, Option[TaxCodeChange]]
                        } else {
                          EitherT.rightT[Future, UpstreamErrorResponse](None)
                        }
