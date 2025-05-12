@@ -49,7 +49,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val auditService: AuditService = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val jrsService: JrsService = mock[JrsService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
@@ -63,7 +62,6 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         taxAccountService,
         mock[AuditConnector],
         auditService,
-        jrsService,
         mockAuthJourney,
         mockAppConfig,
         mcc,
@@ -73,12 +71,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       ) {
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any()))
+    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(EitherT.rightT(taxAccountSummary))
-    when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
-      .thenReturn(EitherT.rightT(false))
   }
 
   val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
@@ -152,7 +148,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(auditService, employmentService, mockAppConfig, taxCodeChangeService, jrsService, taxAccountService)
+    reset(auditService, employmentService, mockAppConfig, taxCodeChangeService, taxAccountService)
     when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
       EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
     when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(IncomeTaxHistoryToggle))) thenReturn
@@ -265,16 +261,13 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         doc.select(".card").size mustBe 2
       }
 
-      "there has been a tax code change and cyPlusOne is enabled and jrs claim data exist" in {
+      "there has been a tax code change and cyPlusOne is enabled" in {
         val testController = createTestController()
 
         when(employmentService.employmentsOnly(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
-
-        when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
-          .thenReturn(EitherT.rightT(true))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeChanged))
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
@@ -289,38 +282,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         val body = doc.body().toStringBreak
         body must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
-        body must include(Messages("check.jrs.claims"))
 
         doc.select(".card").size mustBe 3
       }
 
-      "cyPlusOne is disabled and jrs claim data exist" in {
-
-        val testController = createTestController()
-        when(employmentService.employmentsOnly(any(), any())(any()))
-          .thenReturn(EitherT.rightT(fakeEmploymentData))
-        when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
-          EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = false))
-        when(jrsService.checkIfJrsClaimsDataExist(any())(any()))
-          .thenReturn(EitherT.rightT(true))
-        when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
-          .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
-        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
-          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeChanged))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
-
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
-
-        status(result) mustBe OK
-
-        doc.title() must include(Messages("your.paye.income.tax.overview"))
-        val body = doc.body().toStringBreak
-        body must include(Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate))
-        body must include(Messages("check.jrs.claims"))
-
-        doc.select(".card").size mustBe 2
-      }
     }
 
     "return the general 500 error page" when {
@@ -521,7 +486,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
       result.header.status mustBe OK
 
-      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
@@ -538,7 +503,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
       result.header.status mustBe OK
 
-      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
 
     "landed to the page and get not found from taxCodeIncomes" in {

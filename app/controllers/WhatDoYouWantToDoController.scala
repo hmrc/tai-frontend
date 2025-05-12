@@ -45,7 +45,6 @@ class WhatDoYouWantToDoController @Inject() (
   taxAccountService: TaxAccountService,
   val auditConnector: AuditConnector,
   auditService: AuditService,
-  jrsService: JrsService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
@@ -99,14 +98,6 @@ class WhatDoYouWantToDoController @Inject() (
                        }
     } yield taxCodeChange
 
-  private def nonFailingJrsLink(nino: Nino)(implicit hc: HeaderCarrier): EitherT[Future, Nothing, Boolean] =
-    jrsService.checkIfJrsClaimsDataExist(nino).transform {
-      case Right(jrsClaim) => Right(jrsClaim)
-      case Left(_)         =>
-        // don't fail the page when the tax code change banner is failing
-        Right(false)
-    }
-
   private def nonFailingCyPlusOneTaxAccount(
     nino: Nino
   )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Option[TaxAccountSummary]] =
@@ -122,7 +113,7 @@ class WhatDoYouWantToDoController @Inject() (
                 "No CY+1 tax account summary found, consider disabling the CY+1 toggles"
               )
               Right(None)
-            case Left(error) =>
+            case Left(_) =>
               // don't fail the page when we get an error for CY+1
               Right(none)
           }
@@ -140,16 +131,15 @@ class WhatDoYouWantToDoController @Inject() (
     (for {
       anyCurrentOrPastEmployment <- isAnyCurrentOrPreviousEmployments(nino)
       taxCodeChange              <- nonFailingTaxCodeChanged(nino)
-      showJrsLink                <- nonFailingJrsLink(nino)
       cyPlusOneTaxAccount        <- nonFailingCyPlusOneTaxAccount(nino)
       incomeTaxHistoryToggle     <- featureFlagService.getAsEitherT[UpstreamErrorResponse](IncomeTaxHistoryToggle)
-      _                          <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
+      _                          <- auditNumberOfTaxCodesReturned(nino)
     } yield
       if (anyCurrentOrPastEmployment) {
         Ok(
           whatDoYouWantToDoTileView(
             WhatDoYouWantToDoForm.createForm,
-            whatToDoView(taxCodeChange, showJrsLink, cyPlusOneTaxAccount),
+            whatToDoView(taxCodeChange, cyPlusOneTaxAccount),
             applicationConfig,
             incomeTaxHistoryToggle.isEnabled,
             cyPlusOneTaxAccount.isDefined
@@ -169,18 +159,16 @@ class WhatDoYouWantToDoController @Inject() (
 
   private def whatToDoView(
     taxCodeChanged: Option[TaxCodeChange],
-    showJrsLink: Boolean,
     maybeCyPlusOneTaxAccount: Option[TaxAccountSummary]
   ): WhatDoYouWantToDoViewModel = {
     val maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = taxCodeChanged.map(_.mostRecentTaxCodeChangeDate)
     WhatDoYouWantToDoViewModel(
       cyPlusOneDataAvailable = maybeCyPlusOneTaxAccount.isDefined,
-      showJrsLink = showJrsLink,
       maybeMostRecentTaxCodeChangeDate = maybeMostRecentTaxCodeChangeDate
     )
   }
 
-  private def auditNumberOfTaxCodesReturned(nino: Nino, isJrsTileShown: Boolean)(implicit
+  private def auditNumberOfTaxCodesReturned(nino: Nino)(implicit
     request: Request[AnyContent]
   ): EitherT[Future, UpstreamErrorResponse, Future[AuditResult]] =
     taxAccountService.newTaxCodeIncomes(nino, TaxYear()).transform {
@@ -192,8 +180,7 @@ class WhatDoYouWantToDoController @Inject() (
               nino,
               request.headers.get("Referer").getOrElse("NA"),
               employments,
-              noOfTaxCodes,
-              isJrsTileShown
+              noOfTaxCodes
             )
         })
     }
