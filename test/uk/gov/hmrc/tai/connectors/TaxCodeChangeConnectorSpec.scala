@@ -16,22 +16,29 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.github.tomakehurst.wiremock.client.WireMock.{get, ok}
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import utils.BaseSpec
+import utils.{BaseSpec, WireMockHelper}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class TaxCodeChangeConnectorSpec extends BaseSpec {
+class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
 
   private def sut = new TaxCodeChangeConnector(httpHandler, servicesConfig, httpClientResponse)
+
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .configure("microservice.services.tai.port" -> server.port)
+    .build()
 
   val httpHandler: HttpHandler = mock[HttpHandler]
   val httpClientResponse: HttpClientResponse = inject[HttpClientResponse]
@@ -224,11 +231,14 @@ class TaxCodeChangeConnectorSpec extends BaseSpec {
     "fetch if the tax code has changed" when {
       "provided with valid nino" in {
 
-        val hasTaxCodeChangedUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/tax-code-change/exists"
+        lazy val sut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
+        val hasTaxCodeChangedUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/exists"
+        val json = true
 
-        val json = Future.successful(Json.toJson(true))
-
-        when(httpHandler.getFromApiV2(meq(hasTaxCodeChangedUrl), any())(any(), any())).thenReturn(json)
+        server.stubFor(
+          get(hasTaxCodeChangedUrl)
+            .willReturn(ok(json.toString))
+        )
 
         val result = Await.result(sut.hasTaxCodeChanged(nino).value, 5 seconds)
         result mustBe Right(true)

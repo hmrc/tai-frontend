@@ -59,19 +59,27 @@ class WhatDoYouWantToDoController @Inject() (
     nino: Nino
   )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] = {
     val taxYears =
+      // start from the current year which is the most probable year to be present
       (TaxYear().year to (TaxYear().year - applicationConfig.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
         .map(TaxYear(_))
         .toList
 
-    taxYears
-      .traverse { taxYear =>
-        employmentService.employmentsOnly(nino, taxYear).transform {
-          case Right(_)                                     => Right(true)
-          case Left(error) if error.statusCode == NOT_FOUND => Right(false)
-          case Left(error)                                  => Left(error)
-        }
-      }
-      .map(_.exists(identity))
+    taxYears.foldLeft(EitherT.rightT[Future, UpstreamErrorResponse](false)) { (acc, year) =>
+      EitherT(acc.value.flatMap {
+        case Right(true) =>
+          // Short-circuit if we've already found an employment
+          Future.successful(Right[UpstreamErrorResponse, Boolean](true))
+        case _ =>
+          employmentService
+            .employmentsOnly(nino, year)
+            .transform {
+              case Right(_)                                     => Right(true)
+              case Left(error) if error.statusCode == NOT_FOUND => Right(false)
+              case Left(error)                                  => Left(error)
+            }
+            .value
+      })
+    }
   }
 
   def whatDoYouWantToDoPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
@@ -80,10 +88,19 @@ class WhatDoYouWantToDoController @Inject() (
     val messages = request2Messages
 
     (for {
-      anyPastEmployment <- isAnyCurrentOrPreviousEmployments(nino)
-      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino)
-      showJrsLink <-
-        EitherT[Future, UpstreamErrorResponse, Boolean](jrsService.checkIfJrsClaimsDataExist(nino).map(_.asRight))
+      anyCurrentOrPastEmployment <- isAnyCurrentOrPreviousEmployments(nino)
+      hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino).transform {
+                             case Right(taxCodeChange) => Right(taxCodeChange)
+                             case Left(_)              =>
+                               // don't fail the page when the tax code change banner is failing
+                               Right(false)
+                           }
+      showJrsLink <- jrsService.checkIfJrsClaimsDataExist(nino).transform {
+                       case Right(jrsClaim) => Right(jrsClaim)
+                       case Left(_)         =>
+                         // don't fail the page when the tax code change banner is failing
+                         Right(false)
+                     }
       model <- EitherT[Future, UpstreamErrorResponse, WhatDoYouWantToDoViewModel](
                  whatToDoView(nino, hasTaxCodeChanged, showJrsLink).map(_.asRight)
                )
@@ -95,7 +112,7 @@ class WhatDoYouWantToDoController @Inject() (
         EitherT[Future, UpstreamErrorResponse, FeatureFlag](featureFlagService.get(CyPlusOneToggle).map(_.asRight))
       _ <- auditNumberOfTaxCodesReturned(nino, showJrsLink)
     } yield
-      if (anyPastEmployment) {
+      if (anyCurrentOrPastEmployment) {
         Ok(
           whatDoYouWantToDoTileView(
             WhatDoYouWantToDoForm.createForm,

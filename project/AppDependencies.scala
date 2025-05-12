@@ -3,7 +3,7 @@ import sbt.*
 
 private object AppDependencies {
   private val playVersion = "play-30"
-  private val scaWrapperVersion = "2.6.0"
+  private val scaWrapperVersion = "2.10.0"
   private val webChatVersion = "1.6.0"
   private val mongoFeatureToggleVersion = "1.10.0"
 

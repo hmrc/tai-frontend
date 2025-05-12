@@ -16,34 +16,34 @@
 
 package uk.gov.hmrc.tai.service
 
-import cats.data.OptionT
+import cats.data.EitherT
 import cats.implicits.catsStdInstancesForFuture
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import play.api.http.Status.INTERNAL_SERVER_ERROR
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector
 import uk.gov.hmrc.tai.model.{Employers, JrsClaims, YearAndMonth}
 import utils.BaseSpec
 
-import scala.concurrent.Future
-
 class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience {
 
-  val jrsConnector = mock[JrsConnector]
-  val mockAppConfig = mock[ApplicationConfig]
+  val jrsConnector: JrsConnector = mock[JrsConnector]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   val jrsService = new JrsService(jrsConnector, mockAppConfig)
 
   when(mockAppConfig.jrsClaimsEnabled).thenReturn(true)
 
-  val jrsClaimsAPIResponse = JrsClaims(
+  val jrsClaimsAPIResponse: JrsClaims = JrsClaims(
     List(
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12"), YearAndMonth("2020-11"))),
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-02"), YearAndMonth("2021-01")))
     )
   )
 
-  val jrsClaimsServiceResponse = JrsClaims(
+  val jrsClaimsServiceResponse: JrsClaims = JrsClaims(
     List(
       Employers("ASDA", "ABC-DEFGHIJ", List(YearAndMonth("2021-01"), YearAndMonth("2021-02"))),
       Employers("TESCO", "ABC-DEFGHIJ", List(YearAndMonth("2020-12")))
@@ -56,7 +56,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns some jrs data" in {
 
-        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(EitherT.rightT(jrsClaimsAPIResponse))
 
         when(mockAppConfig.jrsClaimsFromDate).thenReturn("2020-12")
 
@@ -73,7 +73,7 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns empty jrs data" in {
 
-        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(EitherT.rightT(JrsClaims(List.empty)))
 
         val result = jrsService.getJrsClaims(nino).value.futureValue
 
@@ -83,7 +83,9 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns None" in {
 
-        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(
+          EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR))
+        )
 
         val result = jrsService.getJrsClaims(nino).value.futureValue
 
@@ -99,11 +101,11 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns jrs claim data" in {
 
-        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](jrsClaimsAPIResponse))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(EitherT.rightT(jrsClaimsAPIResponse))
 
-        val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
+        val result = jrsService.checkIfJrsClaimsDataExist(nino).value.futureValue
 
-        result mustBe true
+        result mustBe Right(true)
       }
 
     }
@@ -112,29 +114,31 @@ class JrsServiceSpec extends BaseSpec with ScalaFutures with IntegrationPatience
 
       "connector returns empty jrs claim data" in {
 
-        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.pure[Future](JrsClaims(List.empty)))
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(EitherT.rightT(JrsClaims(List.empty)))
 
-        val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
+        val result = jrsService.checkIfJrsClaimsDataExist(nino).value.futureValue
 
-        result mustBe false
+        result mustBe Right(false)
       }
 
       "connector returns no jrs claim data" in {
 
-        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(OptionT.none[Future, JrsClaims])
+        when(jrsConnector.getJrsClaimsForIndividual(nino)(hc)).thenReturn(
+          EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR))
+        )
 
-        val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
+        val result = jrsService.checkIfJrsClaimsDataExist(nino).value.futureValue
 
-        result mustBe false
+        result mustBe a[Left[_, _]]
       }
 
       "jrs claim feature toggle is disabled" in {
 
         when(mockAppConfig.jrsClaimsEnabled).thenReturn(false)
 
-        val result = jrsService.checkIfJrsClaimsDataExist(nino).futureValue
+        val result = jrsService.checkIfJrsClaimsDataExist(nino).value.futureValue
 
-        result mustBe false
+        result mustBe Right(false)
       }
     }
   }

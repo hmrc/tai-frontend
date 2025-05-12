@@ -454,7 +454,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
 
         val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value.futureValue
-        result mustBe TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200)
+        result mustBe Right(TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200))
       }
     }
 

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import cats.data.OptionT
+import cats.data.EitherT
 import com.codahale.metrics.MetricRegistry
 import com.google.inject.{Inject, Singleton}
 import play.api.Logging
@@ -40,7 +40,7 @@ class JrsConnector @Inject() (
   ec: ExecutionContext
 ) extends HasMetrics with Logging {
 
-  def getJrsClaimsForIndividual(nino: Nino)(hc: HeaderCarrier): OptionT[Future, JrsClaims] = {
+  def getJrsClaimsForIndividual(nino: Nino)(hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, JrsClaims] = {
 
     def jrsClaimsUrl(nino: String): String =
       s"${applicationConfig.jrsClaimsServiceUrl}/coronavirus-jrs-published-employees/employee/$nino"
@@ -50,25 +50,20 @@ class JrsConnector @Inject() (
         "CorrelationId" -> randomUUID.toString
       )
 
-    OptionT {
+    EitherT {
       withMetricsTimerAsync("jrs-claim-data") { _ =>
-        httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](jrsClaimsUrl(nino.value)) map {
-          case Right(response) if response.status == OK         => response.json.asOpt[JrsClaims]
-          case Right(response) if response.status == NO_CONTENT => Some(JrsClaims(List.empty))
-          case Right(_)                                         => None
-          case Left(error) if error.statusCode == NOT_FOUND     => None
-          case Left(error) if error.statusCode == FORBIDDEN =>
-            logger.warn(error.message)
-            None
+        httpClient.GET[Either[UpstreamErrorResponse, HttpResponse]](jrsClaimsUrl(nino.value)).map {
+          case Right(response) if response.status == NO_CONTENT => Right(JrsClaims(List.empty))
+          case Right(response)                                  => Right(response.json.as[JrsClaims])
           case Left(error) if error.statusCode >= INTERNAL_SERVER_ERROR =>
             logger.error(error.message)
-            None
+            Left(error)
           case Left(error) =>
             logger.error(error.message, error)
-            None
+            Left(error)
         } recover { case exception: HttpException =>
           logger.error(exception.message)
-          None
+          Left(UpstreamErrorResponse("Bad gateway or Timeout", BAD_GATEWAY))
         }
       }
     }

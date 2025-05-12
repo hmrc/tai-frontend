@@ -87,9 +87,9 @@ trait HasMetrics {
       }
     }
 
-  def withMetricsTimerAsync[T](
+  def withMetricsTimerAsync[A, B](
     metric: Metric
-  )(block: MetricsTimer => Future[T])(implicit ec: ExecutionContext): Future[T] =
+  )(block: MetricsTimer => Future[Either[A, B]])(implicit ec: ExecutionContext): Future[Either[A, B]] =
     withMetricsTimer(metric) { timer =>
       try {
         val result = block(timer)

@@ -24,6 +24,7 @@ import org.scalatest.compatible.Assertion
 import org.scalatest.{BeforeAndAfterAll, OptionValues}
 import play.api.mvc.{BaseController, ControllerComponents, Results}
 import play.api.test.{FakeRequest, Helpers}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.BaseSpec
 
 import scala.concurrent.Future
@@ -74,9 +75,11 @@ class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
   "HasMetrics" when {
     "withMetricsTimerAsync" should {
       "increment success counter for a successful future" in withTestMetrics { metrics =>
-        metrics.withMetricsTimerAsync(TestMetric)(_ => Future.successful(())).map { _ =>
-          verifyCompletedWithSuccess(TestMetric, metrics)
-        }
+        metrics
+          .withMetricsTimerAsync(TestMetric)(_ => Future.successful(Right[UpstreamErrorResponse, Boolean](true)))
+          .map { _ =>
+            verifyCompletedWithSuccess(TestMetric, metrics)
+          }
       }
 
       "increment success counter for a successful future where completeWithSuccess is called explicitly" in withTestMetrics {
@@ -84,7 +87,7 @@ class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
           metrics
             .withMetricsTimerAsync(TestMetric) { timer =>
               timer.completeWithSuccess()
-              Future.successful(())
+              Future.successful(Right[UpstreamErrorResponse, Boolean](true))
             }
             .map(_ => verifyCompletedWithSuccess(TestMetric, metrics))
       }
@@ -100,7 +103,7 @@ class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
           metrics
             .withMetricsTimerAsync(TestMetric) { timer =>
               timer.completeWithFailure()
-              Future.successful(())
+              Future.successful(Right[UpstreamErrorResponse, Boolean](true))
             }
             .map(_ => verifyCompletedWithFailure(TestMetric, metrics))
       }
@@ -113,7 +116,7 @@ class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
               Future(timer.completeWithSuccess())
               Future(timer.completeWithSuccess())
               Future(timer.completeWithSuccess())
-              Future.successful(())
+              Future.successful(Right[UpstreamErrorResponse, Boolean](true))
             }
             .map(_ => verifyCompletedWithSuccess(TestMetric, metrics))
       }
@@ -127,7 +130,7 @@ class HasMetricsSpec extends BaseSpec with OptionValues with BeforeAndAfterAll {
               Future(timer.completeWithFailure())
               Future(timer.completeWithFailure())
               timer.completeWithFailure()
-              Future.successful(())
+              Future.successful(Right[UpstreamErrorResponse, Boolean](true))
             }
             .map(_ => verifyCompletedWithFailure(TestMetric, metrics))
       }

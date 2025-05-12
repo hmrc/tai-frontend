@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.service
 
-import cats.data.OptionT
+import cats.data.{EitherT, OptionT}
 import cats.implicits.catsStdInstancesForFuture
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.JrsConnector
 import uk.gov.hmrc.tai.model.JrsClaims
@@ -37,11 +37,12 @@ class JrsService @Inject() (jrsConnector: JrsConnector, appConfig: ApplicationCo
       .getOrElse(None)
   }
 
-  def checkIfJrsClaimsDataExist(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def checkIfJrsClaimsDataExist(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] =
     if (appConfig.jrsClaimsEnabled) {
       jrsConnector
         .getJrsClaimsForIndividual(nino)(hc)
         .map(_.employers.nonEmpty)
-        .getOrElse(false)
-    } else Future.successful(false)
+    } else EitherT.rightT(false)
 }

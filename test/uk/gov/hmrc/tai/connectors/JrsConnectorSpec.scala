@@ -67,7 +67,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
             )
         )
 
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Some(
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Right(
           JrsClaims(jrsClaimsModelResponse)
         )
       }
@@ -84,7 +84,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
             )
         )
 
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Some(JrsClaims(List.empty))
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe Right(JrsClaims(List.empty))
       }
     }
 
@@ -99,7 +99,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
             )
         )
 
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe a[Left[_, _]]
       }
 
       "when Bad Request exception is received from jrs API" in {
@@ -111,7 +111,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
             )
         )
 
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe a[Left[_, _]]
       }
 
       "when Unauthorized is received from jrs API" in {
@@ -123,7 +123,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
             )
         )
 
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe a[Left[_, _]]
       }
 
       "when Forbidden is received from jrs API" in {
@@ -135,7 +135,7 @@ class JrsConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures wi
             )
         )
 
-        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe None
+        jrsConnector.getJrsClaimsForIndividual(nino)(hc).value.futureValue mustBe a[Left[_, _]]
       }
     }
   }
