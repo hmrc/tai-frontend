@@ -12,11 +12,11 @@
 # Add all the application routes to the prod.routes file
 # microservice specific routes
 
-GET        /check-income-tax/test-only/update-income/delete/:id                                                testOnly.controllers.TaiUpdateIncomeController.delete(id: Int)
+GET        /test-only/check-income-tax/test-only/update-income/delete/:id                                                testOnly.controllers.TaiUpdateIncomeController.delete(id: Int)
 
-GET        /check-income-tax/test-only/v1/api/employment/employee/tax-year/:taxYear/employment-details   testOnly.controllers.ApiCallController.employmentDetails(taxYear: Int)
-GET        /check-income-tax/test-only/v1/api/person/tax-account/:taxYear                                testOnly.controllers.ApiCallController.taxAccount(taxYear: Int)
-GET        /check-income-tax/test-only/v1/api/iabd/taxpayer/tax-year/:taxYear                            testOnly.controllers.ApiCallController.iabds(taxYear: Int)
+GET        /test-only/check-income-tax/test-only/v1/api/employment/employee/tax-year/:taxYear/employment-details   testOnly.controllers.ApiCallController.employmentDetails(taxYear: Int)
+GET        /test-only/check-income-tax/test-only/v1/api/person/tax-account/:taxYear                                testOnly.controllers.ApiCallController.taxAccount(taxYear: Int)
+GET        /test-only/check-income-tax/test-only/v1/api/iabd/taxpayer/tax-year/:taxYear                            testOnly.controllers.ApiCallController.iabds(taxYear: Int)
 
 ->         /                          prod.Routes
 
