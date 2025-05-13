@@ -153,20 +153,21 @@ class IncomeController @Inject() (
     val dateOpt = userAnswers.get(UpdatedIncomeDatePage)
 
     (payToDateOpt, nameOpt, dateOpt) match {
-      case (Some(payToDate), Some(employerName), dateOpt) =>
+      case (payToDate, Some(employerName), dateOpt) =>
         val date = Try(dateOpt.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
             None
         }
+        val payToDateValue = payToDate.getOrElse("0")
 
         EditIncomeForm
-          .bind(employerName, BigDecimal(payToDate), date)
+          .bind(employerName, BigDecimal(payToDateValue), date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) =>
               Future.successful(
-                BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, payToDate))
+                BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, payToDateValue))
               ),
             (income: EditIncomeForm) =>
               pickRedirectLocation(income, routes.IncomeController.confirmRegularIncome(empId), empId)
@@ -223,7 +224,6 @@ class IncomeController @Inject() (
       }
   }
 
-  // Pascal - No API to update the estimated income, can use update previous years API
   def updateEstimatedIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
@@ -337,20 +337,22 @@ class IncomeController @Inject() (
     val dateOpt = userAnswers.get(UpdatedIncomeDatePage)
 
     (payToDateOpt, idOpt, nameOpt, dateOpt) match {
-      case (Some(payToDate), Some(id), Some(employerName), dateOpt) =>
+      case (payToDate, Some(id), Some(employerName), dateOpt) =>
         val date = Try(dateOpt.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
             None
         }
+        val payToDateValue = payToDate.getOrElse("0")
+
         EditIncomeForm
-          .bind(employerName, BigDecimal(payToDate), date)
+          .bind(employerName, BigDecimal(payToDateValue), date)
           .fold(
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  editPension(formWithErrors, hasMultipleIncomes = false, id, payToDate)
+                  editPension(formWithErrors, hasMultipleIncomes = false, id, payToDateValue)
                 )
               ),
             (income: EditIncomeForm) =>

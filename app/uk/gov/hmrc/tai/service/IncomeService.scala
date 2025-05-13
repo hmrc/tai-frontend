@@ -50,7 +50,9 @@ class IncomeService @Inject() (
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[Payment]] =
-    employmentService.employment(nino, id).map(_.flatMap(_.latestAnnualAccount.flatMap(_.latestPayment)))
+    employmentService
+      .employment(nino, id)
+      .map(_.flatMap(_.latestAnnualAccount.flatMap(_.latestPayment))) // TODO Use the ATI getPaymentsForYear
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit
     hc: HeaderCarrier

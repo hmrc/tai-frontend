@@ -46,7 +46,9 @@ object EmploymentAmount {
       name = employment.name,
       description = descriptionFrom(employment.employmentType, employment.employmentStatus),
       employmentId = employment.sequenceNumber,
-      oldAmount = taxCodeIncome.map(_.amount.intValue),
+      oldAmount = taxCodeIncome.map(
+        _.amount.intValue
+      ), // Pascal where do I get this value from, Would the employment AnnualPayment value be same
       startDate = employment.startDate,
       endDate = employment.endDate,
       isLive = employment.employmentStatus == Live,

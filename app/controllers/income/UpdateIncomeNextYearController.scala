@@ -258,7 +258,7 @@ class UpdateIncomeNextYearController @Inject() (
               ),
             validForm =>
               validForm.income.fold(throw new RuntimeException) { newIncome =>
-                if (model.currentValue.toString == newIncome) {
+                if (model.currentValue.contains(newIncome.toInt)) {
                   Future
                     .successful(Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
                 } else {
