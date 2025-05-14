@@ -73,5 +73,15 @@ class FandFConnectorSpec extends BaseSpec with WireMockHelper with DefaultAwaitT
       result mustBe Some(trustedHelper)
     }
 
+    "return as None when empty json returned" in new SpecSetup {
+      server.stubFor(
+        WireMock.get(urlEqualTo("/delegation/get")).willReturn(notFound())
+      )
+
+      val result: Option[TrustedHelper] = Await.result(connector.getTrustedHelper(), Duration.Inf)
+
+      result mustBe None
+    }
+
   }
 }

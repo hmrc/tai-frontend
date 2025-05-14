@@ -18,10 +18,11 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
 import play.api.Logging
+import play.api.http.Status.{NOT_FOUND, OK}
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,5 +37,12 @@ class FandFConnector @Inject() (
     httpClient
       .get(url"${appConfig.fandfHost}/delegation/get")
       .execute[HttpResponse]
-      .map(_.json.asOpt[TrustedHelper](uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper.reads))
+      .map { httpResponse =>
+        httpResponse.status match {
+          case NOT_FOUND => None
+          case OK => Some(httpResponse.json.as[TrustedHelper](uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper.reads))
+          case status => throw UpstreamErrorResponse("Invalid response status", status)
+        }
+      }
+
 }
