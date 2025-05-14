@@ -128,6 +128,4 @@ class ApplicationConfig @Inject() (
   val citizenDetailsUrl: String = servicesConfig.baseUrl("citizen-details")
 
   val newApiBulkOnboarding: Seq[Int] = runModeConfiguration.get[Seq[Int]]("tai.newApiOnboarding.bulk.allowed")
-
-  lazy val fandfHost: String = servicesConfig.baseUrl("fandf")
 }

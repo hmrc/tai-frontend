@@ -29,7 +29,6 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
     .configure(
       "auditing.enabled"                           -> "false",
       "microservice.services.auth.port"            -> server.port(),
-      "microservice.services.fandf.port"           -> server.port(),
       "microservice.services.pertax.port"          -> server.port(),
       "microservice.services.tai.port"             -> server.port(),
       "microservice.services.citizen-details.port" -> server.port()
@@ -41,7 +40,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
   "/check-income-tax/income-summary" must {
 
     val url = "/check-income-tax/underpayment-estimate"
-    val fandfDelegationUrl = s"/delegation/get"
+
     val partialsUrl = s"/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"
 
     val taxComponentsUrl = s"/tai/$generatedNino/tax-account/$taxYear/tax-components"
@@ -75,10 +74,6 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       server.stubFor(
         get(urlEqualTo(personUrl))
           .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
-      )
-      server.stubFor(
-        get(urlEqualTo(fandfDelegationUrl))
-          .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
       )
 
       val request =
@@ -120,11 +115,6 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
         server.stubFor(
           get(urlEqualTo(personUrl))
             .willReturn(aResponse().withStatus(httpStatus))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(fandfDelegationUrl))
-            .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
         )
 
         val request =
