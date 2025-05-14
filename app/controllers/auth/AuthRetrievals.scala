@@ -52,7 +52,7 @@ class AuthRetrievalsImpl @Inject() (
     fandFConnector
       .getTrustedHelper()
       .recoverWith { e =>
-        logger.warn(s"Trusted helper retrieval failed", e)
+        logger.error(s"Trusted helper retrieval failed", e)
         Future.successful(None)
       }
       .flatMap { helper =>
