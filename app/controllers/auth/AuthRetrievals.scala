@@ -58,12 +58,26 @@ class AuthRetrievalsImpl @Inject() (
       .flatMap { helper =>
         authorised().retrieve(Retrievals.nino and Retrievals.saUtr) {
           case optNino ~ saUtr =>
-            val user = AuthedUser(
-              nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
-              utr = saUtr,
-              trustedHelper = helper
-            )
-            block(InternalAuthenticatedRequest(request, user))
+            helper match {
+              case Some(helper) =>
+                val user = AuthedUser.apply(
+                  nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+                  trustedHelper = helper,
+                  saUtr = saUtr
+                )
+                println("\nA1" + user)
+                block(InternalAuthenticatedRequest(request, user))
+
+              case _ =>
+                val user = AuthedUser.apply(
+                  nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+                  utr = saUtr,
+                  trustedHelper = None
+                )
+                println("\nA2" + user)
+                block(InternalAuthenticatedRequest(request, user))
+            }
+
           case _ =>
             throw new RuntimeException("Can't find credentials for user")
         }
