@@ -179,6 +179,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "150")
 
         val controller = createSUT
 
