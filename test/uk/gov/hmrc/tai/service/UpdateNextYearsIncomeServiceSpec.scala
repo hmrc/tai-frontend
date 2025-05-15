@@ -139,7 +139,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
 
     "throw a runtime exception" when {
-      "could not retrieve a TaxCodeIncome" in {
+
+      "return cache model with None currentValue when taxCodeIncomeForEmployment returns Right(None)" in {
         val userAnswers = UserAnswers(sessionId, randomNino().nino)
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
 
@@ -154,12 +155,12 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
         val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
 
-        whenReady(result.failed) { e =>
-          e mustBe a[RuntimeException]
-          e.getMessage must include(
-            "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
-          )
-        }
+        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
+          employmentName,
+          employmentId,
+          isPension = false,
+          currentValue = None
+        )
       }
 
       "could not retrieve a Employment" in {
@@ -242,8 +243,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       when(employmentService.employment(meq(nino), meq(employmentId))(any()))
         .thenReturn(Future.successful(Some(employment(employmentName))))
 
-      when(taxAccountService.taxCodeIncomes(meq(nino), meq(TaxYear().next))(any()))
-        .thenReturn(Future.successful(Right(Seq.empty))) // No matching income
+      when(taxAccountService.taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any()))
+        .thenReturn(Future.successful(Right(None)))
 
       val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
 

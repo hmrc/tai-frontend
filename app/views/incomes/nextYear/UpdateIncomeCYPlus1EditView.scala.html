@@ -58,20 +58,22 @@
             @incomeForm.errors(incomeForm("income").name).map { error =>
                 <span class="govuk-error-message" id="incomeFieldError">@messages(error.message)</span>
             }
-            @compareValueInputNew(
-                govukInput,
-                previousLabel = messages("tai.incomes.amount.current"),
-                newLabel = messages("tai.incomes.amount.new"),
-                previousFieldName = "oldAmount",
-                previousFieldValue = currentValue.get.toString,
-                newField = incomeForm("income"),
-                attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty) {
-                    "incomeFieldError"
-                } else {
-                    ""
-                },
-                fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
-            )
+            @currentValue.map { current =>
+                @compareValueInputNew(
+                    govukInput,
+                    previousLabel = messages("tai.incomes.amount.current"),
+                    newLabel = messages("tai.incomes.amount.new"),
+                    previousFieldName = "oldAmount",
+                    previousFieldValue = current.toString,
+                    newField = incomeForm("income"),
+                    attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty) {
+                        "incomeFieldError"
+                    } else {
+                        ""
+                    },
+                    fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
+                )
+            }
         </div>
 
         <button class="govuk-button" type="submit" id="CYPlus1EditButton">@messages("tai.continue")</button>

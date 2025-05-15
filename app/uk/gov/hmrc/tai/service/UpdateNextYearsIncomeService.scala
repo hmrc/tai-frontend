@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.tai.service
 
-import cats.implicits._
 import org.apache.pekko.Done
 import pages.income.{UpdateNextYearsIncomeNewAmountPage, UpdateNextYearsIncomeSuccessPage, UpdateNextYearsIncomeSuccessPageForEmployment}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
-import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 
@@ -45,24 +43,24 @@ class UpdateNextYearsIncomeService @Inject() (
   private def setup(employmentId: Int, nino: Nino)(implicit
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
-    (
-      taxAccountService.taxCodeIncomes(nino, TaxYear().next),
-      employmentService.employment(nino, employmentId)
-    ).mapN {
-      case (taxCodeIncomesResult, Some(employment)) =>
-        val matchingIncomeOpt = taxCodeIncomesResult.toOption.flatMap(_.find(_.employmentId.contains(employmentId)))
-
-        val isPension = matchingIncomeOpt.exists(_.componentType == PensionIncome)
-        val currentValue = matchingIncomeOpt.map(_.amount.toInt)
+    for {
+      taxCodeIncomeResult <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
+      employmentOpt       <- employmentService.employment(nino, employmentId)
+    } yield employmentOpt match {
+      case Some(employment) =>
+        val currentValue = taxCodeIncomeResult match {
+          case Right(Some(tci)) => Some(tci.amount.toInt)
+          case _                => None
+        }
 
         UpdateNextYearsIncomeCacheModel(
           employmentName = employment.name,
           employmentId = employmentId,
-          isPension = isPension,
+          isPension = employment.receivingOccupationalPension,
           currentValue = currentValue
         )
 
-      case _ =>
+      case None =>
         throw new RuntimeException(
           "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
         )

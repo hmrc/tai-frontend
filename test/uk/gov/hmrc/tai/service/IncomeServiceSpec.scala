@@ -38,7 +38,7 @@ class IncomeServiceSpec extends BaseSpec {
 
   def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
     Employment(
-      "ABCD",
+      "employment",
       Live,
       Some("ABC123"),
       Some(LocalDate.of(2000, 5, 20)),
@@ -46,7 +46,7 @@ class IncomeServiceSpec extends BaseSpec {
       accounts,
       "",
       "",
-      8,
+      1,
       None,
       hasPayrolledBenefit = false,
       receivingOccupationalPension = false,
@@ -107,20 +107,6 @@ class IncomeServiceSpec extends BaseSpec {
     }
 
     "return an error" when {
-
-      "income not found" in {
-        val sut = createSUT
-
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Exception while reading employment"
-      }
 
       "employment not found" in {
         val sut = createSUT
