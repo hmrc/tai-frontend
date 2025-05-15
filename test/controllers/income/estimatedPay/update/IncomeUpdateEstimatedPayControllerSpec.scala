@@ -174,6 +174,33 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
       }
+
+      "show incorrectTaxableIncome when grossAnnualPay is None" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+
+        val controller = createSUT
+
+        setup(mockUserAnswers)
+
+        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
+
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
+        when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
+        when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
+          .thenReturn(Future.successful(CalculatedPay(None, Some(BigDecimal(100)))))
+
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
+      }
     }
 
     "display incorrectTaxableIncome page" when {

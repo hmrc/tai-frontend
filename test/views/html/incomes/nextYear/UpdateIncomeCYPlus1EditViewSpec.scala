@@ -29,6 +29,17 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
   val currentEstPay = 1234
   val isPension = false
 
+  private val updateIncomeCYPlus1Edit = inject[UpdateIncomeCYPlus1EditView]
+
+  override def view: Html =
+    updateIncomeCYPlus1Edit(
+      employerName,
+      employmentID,
+      isPension,
+      Some(currentEstPay),
+      AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay))
+    )
+
   "CYPlus1 Edit Page" should {
     behave like pageWithBackLink()
 
@@ -47,20 +58,22 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentEstPay), 0)))
     }
 
+    "not display current amount when currentValue is None" in {
+      val viewWithNoAmount = updateIncomeCYPlus1Edit(
+        employerName,
+        employmentID,
+        isPension,
+        None,
+        AmountComparatorForm.createForm()
+      )
+      val docNoAmount = doc(viewWithNoAmount)
+
+      docNoAmount mustNot haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentEstPay), 0)))
+    }
+
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "income")
       doc must haveElementAtPathWithClass("div", "govuk-input__prefix")
     }
   }
-
-  private val updateIncomeCYPlus1Edit = inject[UpdateIncomeCYPlus1EditView]
-
-  override def view: Html =
-    updateIncomeCYPlus1Edit(
-      employerName,
-      employmentID,
-      isPension,
-      Some(currentEstPay),
-      AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay))
-    )
 }

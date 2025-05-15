@@ -107,19 +107,6 @@ class IncomeServiceSpec extends BaseSpec {
     }
 
     "return an error" when {
-      "employment details not found" in {
-        val sut = createSUT
-
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Not able to found employment with id 1"
-      }
 
       "income not found" in {
         val sut = createSUT
@@ -132,7 +119,7 @@ class IncomeServiceSpec extends BaseSpec {
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Exception while reading employment and tax code details"
+        ex.getMessage mustBe "Exception while reading employment"
       }
 
       "employment not found" in {
@@ -143,7 +130,7 @@ class IncomeServiceSpec extends BaseSpec {
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Exception while reading employment and tax code details"
+        ex.getMessage mustBe "Exception while reading employment"
       }
     }
   }
@@ -213,6 +200,30 @@ class IncomeServiceSpec extends BaseSpec {
         when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds) mustBe CalculatedPay(None, None)
       }
+    }
+
+    "only required fields are present (TotalSalaryKey)" in {
+      val sut = createSUT
+
+      val cache = Map(
+        UpdateIncomeConstants.TotalSalaryKey -> "£1234"
+      )
+
+      val payDetails = PayDetails(
+        paymentFrequency = "",
+        pay = Some(1234),
+        taxablePay = None,
+        days = Some(0),
+        bonus = None,
+        startDate = None
+      )
+
+      when(taiConnector.calculateEstimatedPay(payDetails))
+        .thenReturn(Future.successful(CalculatedPay(Some(1500), Some(1400))))
+
+      val result = Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds)
+
+      result mustBe CalculatedPay(Some(1500), Some(1400))
     }
   }
 

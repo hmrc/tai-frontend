@@ -234,6 +234,26 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         )
       }
     }
+
+    "return cache model with None currentValue when TaxCodeIncome is missing" in {
+      val userAnswers = UserAnswers(sessionId, randomNino().nino)
+      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+
+      when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+        .thenReturn(Future.successful(Some(employment(employmentName))))
+
+      when(taxAccountService.taxCodeIncomes(meq(nino), meq(TaxYear().next))(any()))
+        .thenReturn(Future.successful(Right(Seq.empty))) // No matching income
+
+      val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
+
+      result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
+        employmentName,
+        employmentId,
+        isPension = false,
+        currentValue = None
+      )
+    }
   }
 
   "setNewAmount" must {
@@ -354,6 +374,25 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(emptyUserAnswers)))
 
       service.isEstimatedPayJourneyComplete(emptyUserAnswers).futureValue mustBe false
+    }
+
+    "isEstimatedPayJourneyCompleteForEmployer" must {
+      "return true when success flag for employment is set" in {
+        val answers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
+
+        updateNextYearsIncomeService
+          .isEstimatedPayJourneyCompleteForEmployer(employmentId, answers)
+          .futureValue mustBe true
+      }
+
+      "return false when no flag is set for employment" in {
+        val answers = UserAnswers(sessionId, randomNino().nino)
+
+        updateNextYearsIncomeService
+          .isEstimatedPayJourneyCompleteForEmployer(employmentId, answers)
+          .futureValue mustBe false
+      }
     }
   }
 }

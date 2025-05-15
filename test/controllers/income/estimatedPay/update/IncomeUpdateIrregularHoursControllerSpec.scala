@@ -364,6 +364,21 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         )
       }
     }
+
+    "redirect to /income-details when new pay exists but payToDate is missing" in {
+      val userAnswers = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeNamePage, employer.name)
+        .setOrException(UpdateIncomeIrregularAnnualPayPage, "1200")
+
+      setup(userAnswers)
+
+      val result = createSUT.confirmIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url
+      )
+    }
   }
 
   "submitIncomeIrregularHours" must {

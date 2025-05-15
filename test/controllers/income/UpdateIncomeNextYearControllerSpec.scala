@@ -552,6 +552,27 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     }
   }
 
+  "update" should {
+    "render sameEstimatedPay view with correct model when new amount matches cached new amount" in {
+      val controller = createTestIncomeController()
+      val newEstPay = "999"
+
+      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
+        .thenReturn(Future.successful(Right(newEstPay.toInt)))
+
+      val result = controller.update(employmentID)(
+        RequestBuilder
+          .buildFakeRequestWithOnlySession(POST)
+          .withFormUrlEncodedBody("income" -> newEstPay)
+      )
+
+      status(result) mustBe OK
+      val body = Jsoup.parse(contentAsString(result)).body().text()
+      body must include("999")
+      body must include(employerName)
+    }
+  }
+
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController =
     new TestUpdateIncomeNextYearController() {
       val model: UpdateNextYearsIncomeCacheModel =

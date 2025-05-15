@@ -427,5 +427,19 @@ class IncomeUpdateCalculatorControllerSpec
         )
       }
     }
+
+    "redirect to update estimated income page" when {
+      "income.oldAmount is None (missing old amount)" in {
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, None)))
+
+        val result = HandleCalculationResultHarness
+          .harnessSetup("500")
+          .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.updateEstimatedIncome(1).url)
+      }
+    }
   }
 }

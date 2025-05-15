@@ -17,18 +17,19 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, matching, ok, post, put, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import pages._
 import pages.addEmployment._
 import pages.addPensionProvider._
-import pages.endEmployment._
-import pages.updateEmployment._
-import pages._
 import pages.benefits._
+import pages.endEmployment._
 import pages.income._
+import pages.updateEmployment._
 import pages.updatePensionProvider._
 import play.api.Application
 import play.api.http.ContentTypes
@@ -39,7 +40,6 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
-import org.mockito.Mockito.when
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
@@ -754,6 +754,31 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/employments/years/$year"))
           .willReturn(ok(Json.toJson(employments).toString))
+      )
+
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/employment-only/1/years/$year"))
+          .willReturn(
+            ok(
+              """{
+                |  "data": {
+                |    "name": "Test Employer",
+                |    "employmentStatus": "Live",
+                |    "payrollNumber": "12345",
+                |    "startDate": "2022-01-01",
+                |    "endDate": null,
+                |    "annualAccounts": [],
+                |    "taxDistrictNumber": "123",
+                |    "payeNumber": "321",
+                |    "sequenceNumber": 1,
+                |    "cessationPay": null,
+                |    "hasPayrolledBenefit": false,
+                |    "receivingOccupationalPension": false,
+                |    "employmentType": "EmploymentIncome"
+                |  }
+                |}""".stripMargin
+            )
+          )
       )
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/summary"))

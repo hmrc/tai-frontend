@@ -29,6 +29,10 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
   private val employmentId = 1
   private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]
 
+  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, Some(currentAmount.toString))
+  private val editIncomeForm = AmountComparatorForm.createForm()
+  override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
+
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink()
     behave like pageWithTitle(messages("tai.irregular.heading"))
@@ -55,14 +59,17 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
     }
 
+    "not display current amount when currentAmount is None" in {
+      val viewModelWithNoAmount = EditIncomeIrregularHoursViewModel(employmentId, employerName, None)
+      val viewWithNoAmount = editIncomeIrregularHours(editIncomeForm, viewModelWithNoAmount)
+      val docNoAmount = doc(viewWithNoAmount)
+
+      docNoAmount mustNot haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
+    }
+
     "have an input box for user to enter new amount" in {
       doc(view) must haveInputLabelWithText("income", messages("tai.irregular.newAmount"))
       doc(view).getElementsByClass("govuk-input").size() mustBe 1
     }
-
   }
-
-  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, Some(currentAmount.toString))
-  private val editIncomeForm = AmountComparatorForm.createForm()
-  override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
 }

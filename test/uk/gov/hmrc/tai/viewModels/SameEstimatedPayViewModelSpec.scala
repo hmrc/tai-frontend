@@ -33,5 +33,15 @@ class SameEstimatedPayViewModelSpec extends BaseSpec {
       val model = SameEstimatedPayViewModel("employer", id, Some(income), isPension = false, "some url")
       model.returnLinkLabel mustBe messagesApi("tai.updateEmployment.incomeSame.employment.return.link")
     }
+
+    "format amount as £0 when amount is None" in {
+      val model = SameEstimatedPayViewModel("employer", id, None, isPension = false, "some url")
+      model.amountWithPounds mustBe "£0"
+    }
+
+    "format amount with pound sign when amount is defined" in {
+      val model = SameEstimatedPayViewModel("employer", id, Some(123), isPension = false, "some url")
+      model.amountWithPounds mustBe "£123"
+    }
   }
 }
