@@ -17,18 +17,19 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, matching, ok, post, put, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import pages._
 import pages.addEmployment._
 import pages.addPensionProvider._
-import pages.endEmployment._
-import pages.updateEmployment._
-import pages._
 import pages.benefits._
+import pages.endEmployment._
 import pages.income._
+import pages.updateEmployment._
 import pages.updatePensionProvider._
 import play.api.Application
 import play.api.http.ContentTypes
@@ -39,7 +40,6 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
-import org.mockito.Mockito.when
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
@@ -753,7 +753,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
     server.stubFor(
       get(urlEqualTo(fandfDelegationUrl))
-        .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
+        .willReturn(notFound())
     )
 
     for (year <- startTaxYear - 5 to startTaxYear + 1) {

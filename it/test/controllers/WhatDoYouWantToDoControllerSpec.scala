@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock.{get, notFound, ok, urlEqualTo, urlMatching}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -59,7 +59,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("webchat-test")))
     server.stubFor(
       get(urlEqualTo(fandfDelegationUrl))
-        .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
+        .willReturn(notFound())
     )
   }
 

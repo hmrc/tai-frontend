@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, ok, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, notFound, ok, urlEqualTo}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -78,7 +78,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
       )
       server.stubFor(
         get(urlEqualTo(fandfDelegationUrl))
-          .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
+          .willReturn(notFound())
       )
 
       val request =
@@ -124,7 +124,7 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
         server.stubFor(
           get(urlEqualTo(fandfDelegationUrl))
-            .willReturn(ok(FileHelper.loadFile("./it/resources/trustedHelperDetails.json")))
+            .willReturn(notFound())
         )
 
         val request =
