@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
@@ -41,7 +42,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
       when(codingComponentService.taxFreeAmountComparison(meq(nino))(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
       when(taxCodeChangeService.taxCodeChange(meq(nino))(any()))
-        .thenReturn(Future.successful(taxCodeChange))
+        .thenReturn(EitherT.rightT(taxCodeChange))
 
       val expectedModel: YourTaxFreeAmountComparison =
         YourTaxFreeAmountComparison(

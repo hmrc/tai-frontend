@@ -42,7 +42,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
 
       when(yourTaxFreeAmountService.taxFreeAmountComparison(meq(nino))(any(), any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
+      when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
       when(companyCarService.companyCars(meq(nino))(any(), any()))
         .thenReturn(Future.successful(Seq.empty))
@@ -72,7 +72,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
 
       when(yourTaxFreeAmountService.taxFreeAmountComparison(meq(nino))(any(), any(), any()))
         .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any(), any()))
+      when(employmentService.employmentNames(meq(nino), meq(TaxYear()))(any()))
         .thenReturn(Future.successful(Map.empty[Int, String]))
       when(companyCarService.companyCars(meq(nino))(any(), any()))
         .thenReturn(Future.successful(Seq.empty))

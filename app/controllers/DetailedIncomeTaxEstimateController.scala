@@ -27,6 +27,7 @@ import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
+import uk.gov.hmrc.tai.util.EitherTExtensions._
 
 @Singleton
 class DetailedIncomeTaxEstimateController @Inject() (
@@ -45,7 +46,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
     (
       taxAccountService.totalTax(nino, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      taxAccountService.taxAccountSummary(nino, TaxYear()),
+      taxAccountService.taxAccountSummary(nino, TaxYear()).toFutureOrThrow,
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
       taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
     ).mapN {

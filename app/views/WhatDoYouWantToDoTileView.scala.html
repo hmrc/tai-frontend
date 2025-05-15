@@ -107,14 +107,6 @@ user: controllers.auth.AuthedUser)
 
             </div>
 
-            @if(model.showJrsLink) {
-                <p class="govuk-body-m govuk-!-margin-bottom-3">
-                    <a href=@{controllers.routes.JrsClaimsController.onPageLoad()} class="govuk-link" id="jrs-link">
-                        @messages("check.jrs.claims")
-                    </a>
-                </p>
-            }
-
         </div>
 
     </div>

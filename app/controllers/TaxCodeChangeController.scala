@@ -29,6 +29,7 @@ import views.html.taxCodeChange.{TaxCodeComparisonView, WhatHappensNextView, You
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.tai.util.EitherTExtensions.EitherTThrowableOps
 
 class TaxCodeChangeController @Inject() (
   taxCodeChangeService: TaxCodeChangeService,
@@ -52,7 +53,7 @@ class TaxCodeChangeController @Inject() (
 
     for {
       yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
-      taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino)
+      taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino).toFutureOrThrow
       scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
     } yield {
       val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons

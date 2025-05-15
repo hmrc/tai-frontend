@@ -50,9 +50,10 @@ class IncomeTaxHistoryController @Inject() (
     hc: HeaderCarrier
   ): Future[IncomeTaxYear] =
     for {
-      maybeTaxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
-                                     None
-                                   }
+      maybeTaxCodeIncomeDetails <-
+        taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
+          None
+        }
       employmentDetails <- employmentService.employments(nino, taxYear)
     } yield {
       val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))

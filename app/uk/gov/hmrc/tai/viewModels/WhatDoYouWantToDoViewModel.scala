@@ -20,6 +20,5 @@ import java.time.LocalDate
 
 case class WhatDoYouWantToDoViewModel(
   cyPlusOneDataAvailable: Boolean,
-  showJrsLink: Boolean,
   maybeMostRecentTaxCodeChangeDate: Option[LocalDate]
 )

@@ -20,6 +20,7 @@ import cats.implicits._
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.util.EitherTExtensions.EitherTThrowableOps
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class YourTaxFreeAmountService @Inject() (
     messages: Messages,
     executionContext: ExecutionContext
   ): Future[YourTaxFreeAmountComparison] =
-    (taxCodeChangeService.taxCodeChange(nino), codingComponentService.taxFreeAmountComparison(nino))
+    (taxCodeChangeService.taxCodeChange(nino).toFutureOrThrow, codingComponentService.taxFreeAmountComparison(nino))
       .mapN { case (taxCodeChange, taxFreeAmountComparison) =>
         buildTaxFreeAmount(
           taxCodeChange.mostRecentTaxCodeChangeDate,

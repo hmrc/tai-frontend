@@ -55,8 +55,8 @@ class IncomeTaxComparisonController @Inject() (
     val nextTaxYear = currentTaxYear.next
 
     (
-      taxAccountService.taxAccountSummary(nino, currentTaxYear).attemptTNel,
-      taxAccountService.taxAccountSummary(nino, nextTaxYear).attemptTNel,
+      taxAccountService.taxAccountSummary(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+      taxAccountService.taxAccountSummary(nino, nextTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
       EitherT(taxAccountService.taxCodeIncomes(nino, currentTaxYear)).leftMap(msg =>
         NonEmptyList.one(new Throwable(msg))
       ),

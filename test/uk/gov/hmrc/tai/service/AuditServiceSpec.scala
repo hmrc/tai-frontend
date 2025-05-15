@@ -39,11 +39,10 @@ class AuditServiceSpec extends BaseSpec {
 
   private def auditDetail(
     auditType: String,
-    noOfEmpAndTax: Option[String] = None,
-    isJrsTileShown: Boolean = false
+    noOfEmpAndTax: Option[String] = None
   ): Map[String, String] =
     auditType match {
-      case "userEntersService"               => entryAuditDetails(noOfEmpAndTax.getOrElse("0"), isJrsTileShown.toString)
+      case "userEntersService"               => entryAuditDetails(noOfEmpAndTax.getOrElse("0"))
       case "startedEmploymentPensionJourney" => employmentOrPensionAuditDetails
       case "finishedCompanyCarJourney"       => endCompanyCarDetails
       case "finishedCompanyCarJourneyNoFuel" => endCompanyCarDetailsNoFuel
@@ -206,7 +205,7 @@ class AuditServiceSpec extends BaseSpec {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         Await.result(
-          sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome), isJrsTileShown = true),
+          sut.sendUserEntryAuditEvent(nino, "NA", List(employment), List(taxCodeIncome)),
           5.seconds
         )
 
@@ -214,7 +213,7 @@ class AuditServiceSpec extends BaseSpec {
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = sut.userEnterEvent,
-          detail = auditDetail(sut.userEnterEvent, Some("1"), isJrsTileShown = true)
+          detail = auditDetail(sut.userEnterEvent, Some("1"))
         )
           .copy(generatedAt = now, eventId = eventId)
       }
@@ -230,8 +229,7 @@ class AuditServiceSpec extends BaseSpec {
               nino,
               "NA",
               Seq.empty[Employment],
-              Seq.empty[TaxCodeIncome],
-              isJrsTileShown = false
+              Seq.empty[TaxCodeIncome]
             ),
             5.seconds
           )
@@ -671,12 +669,11 @@ class AuditServiceSpec extends BaseSpec {
     }
   }
 
-  private val entryAuditDetails = (noOfEmpAndTax: String, isJrsTileShown: String) =>
+  private val entryAuditDetails = (noOfEmpAndTax: String) =>
     Map(
       "nino"                       -> nino.nino,
       "noOfCurrentYearEmployments" -> noOfEmpAndTax,
-      "noOfTaxCodes"               -> noOfEmpAndTax,
-      "isJrsTileShown"             -> isJrsTileShown
+      "noOfTaxCodes"               -> noOfEmpAndTax
     )
 
   private val employmentOrPensionAuditDetails = Map("nino" -> nino.nino)

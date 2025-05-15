@@ -95,6 +95,10 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
             .willReturn(ok(Json.toJson(employments).toString))
         )
+        server.stubFor(
+          get(urlEqualTo(s"/tai/$generatedNino/employments-only/years/$startTaxYear"))
+            .willReturn(ok(Json.toJson(employments).toString))
+        )
 
         val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
         server.stubFor(
@@ -291,6 +295,10 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
         server.stubFor(
           get(urlMatching(s"/tai/$generatedNino/employments/years/.*"))
+            .willReturn(ok(Json.toJson(employments).toString))
+        )
+        server.stubFor(
+          get(urlMatching(s"/tai/$generatedNino/employments-only/years/.*"))
             .willReturn(ok(Json.toJson(employments).toString))
         )
 
