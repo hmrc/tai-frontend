@@ -112,7 +112,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   private val editSuccessView = inject[EditSuccessView]
   private val editPensionSuccessView = inject[EditPensionSuccessView]
 
-  private class TestIncomeController()
+  private class TestIncomeController
       extends IncomeController(
         taxAccountService,
         employmentService,
@@ -139,7 +139,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         editPensionSuccessView(employerName, employerId)
     }
 
-    val editIncomeForm: EditIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)
+    val editIncomeForm: EditIncomeForm = EditIncomeForm("Test", "Test", 1, None, Some(10), None, None, None, None)
   }
 
   "cancel" must {

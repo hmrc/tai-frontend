@@ -252,6 +252,8 @@ class IncomeController @Inject() (
       val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
       val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
 
+      print("sandeep" + newAmountOpt)
+
       (incomeNameOpt, newAmountOpt, incomeIdOpt, incomeTypeOpt) match {
         case (Some(incomeName), Some(newAmount), Some(incomeId), Some(incomeType)) =>
           val newAmountInt = FormHelper.stripNumber(newAmount).toInt
@@ -265,6 +267,7 @@ class IncomeController @Inject() (
           }
 
         case _ =>
+          print("sandeep in error")
           logger.warn(s"Mandatory value missing from UserAnswers for empId: $empId")
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }
@@ -316,7 +319,10 @@ class IncomeController @Inject() (
   }
 
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
-    FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
+    income.oldAmount match {
+      case Some(oldAmt) => FormHelper.areEqual(Some(oldAmt.toString), income.newAmount)
+      case None         => false
+    }
 
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
     request: DataRequest[AnyContent]

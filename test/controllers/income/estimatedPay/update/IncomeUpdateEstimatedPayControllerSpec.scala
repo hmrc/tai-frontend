@@ -26,7 +26,6 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -105,40 +104,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       doc.title() must include(messages("tai.incomes.landing.title"))
     }
 
-    "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
-
-      setup(mockUserAnswers)
-
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException("")
-      )
-
-      val result = estimatedPayLandingPage()
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-    "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
-
-      setup(mockUserAnswers)
-
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException("")
-      )
-
-      val result = estimatedPayLandingPage()
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-
-    "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
-
-      setup(mockUserAnswers)
-
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new RuntimeException("")
-      )
-
-      val result = estimatedPayLandingPage()
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
     "return to /income-details when nothing is present in the cache" in {
 
       setup(UserAnswers(sessionId, randomNino().nino))

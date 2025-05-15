@@ -73,6 +73,7 @@ class IncomeServiceSpec extends BaseSpec {
 
   class SUT
       extends IncomeService(
+        taxAccountService,
         employmentService,
         taiConnector
       )

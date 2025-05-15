@@ -18,9 +18,9 @@ package views.html.incomes
 
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 
 class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
@@ -62,7 +62,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
 
   }
 
-  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, currentAmount)
+  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, Some(currentAmount.toString))
   private val editIncomeForm = AmountComparatorForm.createForm()
   override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
 }

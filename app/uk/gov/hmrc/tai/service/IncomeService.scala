@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.implicits._
 import pages.income.{UpdateIncomePayToDatePage, UpdatedIncomeDatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -32,6 +33,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeService @Inject() (
+  taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
   taiConnector: TaiConnector
 ) {
@@ -41,9 +43,14 @@ class IncomeService @Inject() (
     messages: Messages,
     ec: ExecutionContext
   ): Future[EmploymentAmount] =
-    employmentService.employment(nino, id).map {
-      case Some(employment) => EmploymentAmount(taxCodeIncome = None, employment = employment)
-      case None             => throw new RuntimeException(s"Not able to found employment with id $id")
+    (
+      taxAccountService.taxCodeIncomes(nino, TaxYear()),
+      employmentService.employment(nino, id)
+    ) mapN {
+      case (taxCodeIncomes, Some(employment)) =>
+        val oldAmountInTaxCodeIncome = taxCodeIncomes.toOption.flatMap(_.find(_.employmentId.contains(id)))
+        EmploymentAmount(oldAmountInTaxCodeIncome, employment)
+      case _ => throw new RuntimeException("Exception while reading employment")
     }
 
   def latestPayment(nino: Nino, id: Int)(implicit

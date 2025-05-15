@@ -114,11 +114,11 @@ class IncomeUpdateIrregularHoursController @Inject() (
           val isSameAsToDate = FormHelper.areEqual(paymentToDate, Some(newIrregularPay))
 
           val redirect =
-            if (isSameAsConfirmed)
+            if (isSameAsConfirmed) {
               Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
-            else if (isSameAsToDate)
+            } else if (isSameAsToDate) {
               Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-            else {
+            } else {
               val currentAmountOpt = paymentToDate.flatMap(s => scala.util.Try(s.toInt).toOption)
               val vm = ConfirmAmountEnteredViewModel(
                 employmentId,

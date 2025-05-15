@@ -470,7 +470,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, Some(1))
           when(
-            updateNextYearsIncomeService.get(meq(employmentID), meq(nino), any[UserAnswers])(any(), any())
+            updateNextYearsIncomeService.get(meq(employmentID), meq(nino), any[UserAnswers])(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -524,7 +524,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any(), any())
+          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
         ).thenReturn(
           Future.successful(Done)
         )
@@ -540,7 +540,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any(), any())
+          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
         ).thenReturn(
           Future.failed(new Exception("Error"))
         )
@@ -560,7 +560,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
 
-      when(updateNextYearsIncomeService.get(meq(employmentID), any(), any[UserAnswers])(any(), any()))
+      when(updateNextYearsIncomeService.get(meq(employmentID), any(), any[UserAnswers])(any()))
         .thenReturn(Future.successful(model))
 
       when(updateNextYearsIncomeService.getNewAmount(any(), any()))
