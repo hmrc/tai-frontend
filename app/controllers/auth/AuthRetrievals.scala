@@ -65,7 +65,6 @@ class AuthRetrievalsImpl @Inject() (
                   trustedHelper = helper,
                   saUtr = saUtr
                 )
-                println("\nA1" + user)
                 block(InternalAuthenticatedRequest(request, user))
 
               case _ =>
@@ -74,7 +73,6 @@ class AuthRetrievalsImpl @Inject() (
                   utr = saUtr,
                   trustedHelper = None
                 )
-                println("\nA2" + user)
                 block(InternalAuthenticatedRequest(request, user))
             }
 

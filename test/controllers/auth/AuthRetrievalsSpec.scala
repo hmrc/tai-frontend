@@ -92,18 +92,18 @@ class AuthRetrievalsSpec extends BaseSpec {
     reset(mockFandFConnector)
     when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(None))
   }
-//  "Auth Action" when {
-//    "is not logged in" must {
-//      "throw an exception" in {
-//        val controller = Harness.failure(MissingBearerToken())
-//        val result = controller.onPageLoad()(fakeRequest)
-//
-//        whenReady(result.failed) { e =>
-//          e mustBe a[MissingBearerToken]
-//        }
-//      }
-//    }
-//  }
+  "Auth Action" when {
+    "is not logged in" must {
+      "throw an exception" in {
+        val controller = Harness.failure(MissingBearerToken())
+        val result = controller.onPageLoad()(fakeRequest)
+
+        whenReady(result.failed) { e =>
+          e mustBe a[MissingBearerToken]
+        }
+      }
+    }
+  }
 
   "Given the user is authorised" should {
 
@@ -112,19 +112,17 @@ class AuthRetrievalsSpec extends BaseSpec {
       val nino = Nino(new Generator().nextNino.nino)
       val baseRetrieval = Some(nino.nino) ~ saUtr
 
-//      "no trusted helper data is returned" in {
-//        val controller = Harness.successful(baseRetrieval)
-//        val result = controller.onPageLoad()(fakeRequest)
-//        val expectedTaiUser = AuthedUser(nino, saUtr, None)
-//
-//        contentAsString(result) mustBe expectedTaiUser.toString
-//      }
+      "no trusted helper data is returned" in {
+        val controller = Harness.successful(baseRetrieval)
+        val result = controller.onPageLoad()(fakeRequest)
+        val expectedTaiUser = AuthedUser(nino, saUtr, None)
+
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
 
       "trusted helper data is returned" in {
         val nino = new Generator().nextNino
-        val thNino = new Generator().nextNino
-        val baseRetrieval = Some(nino.nino) ~ saUtr
-        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(thNino.nino))
+        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
         when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(Some(trustedHelper)))
 
         val controller =
@@ -134,39 +132,22 @@ class AuthRetrievalsSpec extends BaseSpec {
         val expectedTaiUser =
           AuthedUser(nino, Some("000111222"), Some(trustedHelper))
 
-        println("\nnino:" + nino)
-        println("\nTH nino:" + trustedHelper.principalNino)
-
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
-//      "trusted helper data is returned" in {
-//
-//        val nino = new Generator().nextNino
-//        val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
-//        val controller =
-//          Harness.successful(baseRetrieval ~ Some(trustedHelper))
-//        val result = controller.onPageLoad()(fakeRequest)
-//
-//        val expectedTaiUser =
-//          AuthedUser(nino, Some("000111222"), Some(trustedHelper))
-//
-//        contentAsString(result) mustBe expectedTaiUser.toString
-//      }
+      "trusted helper retrieval returns an exception" in {
+        val nino = new Generator().nextNino
+        val baseRetrieval = Some(nino.nino) ~ saUtr
+        when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.failed(new RuntimeException("error")))
 
-//      "trusted helper retrieval returns an exception" in {
-//        val nino = new Generator().nextNino
-//        val baseRetrieval = Some(nino.nino) ~ saUtr
-//        when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.failed(new RuntimeException("error")))
-//
-//        val controller =
-//          Harness.successful(baseRetrieval)
-//        val result = controller.onPageLoad()(fakeRequest)
-//
-//        val expectedTaiUser =
-//          AuthedUser(nino, Some("000111222"), None)
-//        contentAsString(result) mustBe expectedTaiUser.toString
-//      }
+        val controller =
+          Harness.successful(baseRetrieval)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        val expectedTaiUser =
+          AuthedUser(nino, Some("000111222"), None)
+        contentAsString(result) mustBe expectedTaiUser.toString
+      }
 
     }
   }
