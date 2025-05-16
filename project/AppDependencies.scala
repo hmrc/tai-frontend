@@ -1,11 +1,12 @@
 import play.sbt.PlayImport.*
 import sbt.*
 
+import scala.collection.immutable.Seq
+
 private object AppDependencies {
   private val playVersion = "play-30"
-  private val bootstrapVersion = "9.11.0"
-  private val webChatVersion = "1.6.0"
   private val scaWrapperVersion = "2.10.0"
+  private val webChatVersion = "1.6.0"
   private val mongoFeatureToggleVersion = "1.10.0"
 
   val compile: Seq[ModuleID] = Seq(

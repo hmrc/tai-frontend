@@ -28,8 +28,9 @@
         formForErrorSummary = None,
         mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
         preHeadingText = Messages("taxCode.change.journey.preHeading"),
-        maybeUserName = Some(request.fullName))
-
+        maybeUserName = Some(request.fullName),
+        showPreHeading = false,
+        mainHeadingCssClass= Some("govuk-heading-l"))
 }
 
 @mainTemplate(
@@ -49,7 +50,7 @@
     <div class="govuk-grid-column-two-thirds">
 
         <div class="grid-row">
-            <p class="govuk-caption-l">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
+            <p class="govuk-body">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
         </div>
 
 

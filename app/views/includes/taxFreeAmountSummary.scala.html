@@ -17,103 +17,60 @@
 @(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], taxCodeChange: Boolean = false)(implicit m: Messages)
 
 @oneOrMoreLinksPresent = @{
-    items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
+    items.exists(_.rows.exists(row => row.link.isDisplayed || row.label.link.isDefined))
 }
 
-@for((item, itemIdx) <- items zip (LazyList.from(1));
-      isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption") ) {
+@for((item, itemIdx) <- items.zipWithIndex;
+        isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption")) {
 
     @if(item.rows.nonEmpty) {
 
-            <div id="summaryTable@{itemIdx.toString}" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 1){subsection--wide govuk-!-margin-bottom-0}">
+        <div id="summaryTable@{itemIdx + 1}" class="govuk-!-margin-top-6 tai-tax-summary-table @if(itemIdx == 0){subsection--wide govuk-!-margin-bottom-0}">
 
-                @if(!isAllowanceOrTotalItem){
-                    <h3 class="heading-small govuk-heading-s" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
-                }
+            @if(!isAllowanceOrTotalItem) {
+                <h3 class="heading-small govuk-heading-s" id="summaryTable@{itemIdx + 1}Caption">@item.caption</h3>
+            }
 
-                @if(item.rows.length>1) {
-                    <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list @if(itemIdx == items.length && item.rows.length == 1){subsection} else {flush}">
+            <dl id="summaryTable@{itemIdx + 1}Body" class="govuk-summary-list @if(itemIdx == items.length - 1 && item.rows.length == 1){subsection} else {flush}">
 
-                        @for((row, rowIdx) <- item.rows zip (LazyList.from(1))) {
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}" class="govuk-summary-list__row">
+            @for((row, rowIdx) <- item.rows.zipWithIndex) {
+                <div id="summaryTable@{itemIdx + 1}Row@{rowIdx + 1}" class="govuk-summary-list__row">
 
-                                <dt id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="govuk-summary-list__key govuk-!-font-weight-regular">
-                                    @row.label.value
-                                    @row.label.link.map { link =>
-                                        @includes.link(
-                                            id=Some(link.id),
-                                            copy=link.value,
-                                            url = link.href,
-                                            linkClasses = Seq("link-list__item")
-                                        )
-                                    }
-                                </dt>
+                    <dt id="summaryTable@{itemIdx + 1}Row@{rowIdx + 1}-header" class="govuk-summary-list__key govuk-!-font-weight-regular">
+                    @row.label.value
+                    </dt>
 
-                                <dd id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="govuk-summary-list__value govuk-!-text-align-right">
-                                    @row.value
-                                </dd>
+                    <dd id="summaryTable@{itemIdx + 1}Row@{rowIdx + 1}ValueCell" class="govuk-summary-list__value govuk-!-text-align-right">
+                    @row.value
+                    </dd>
 
-                                @if(!taxCodeChange) {
-                                    @if(row.link.isDisplayed ) {
-                                    <dd id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="govuk-summary-list__actions govuk-!-text-align-right">
-                                        @includes.link(
-                                            id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
-                                            url = row.link.href,
-                                            copy=Messages(row.link.linkText),
-                                            altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value)
-                                        )
-                                    </dd>
-                                    } else @{if(oneOrMoreLinksPresent) {
-                                        <dd class="govuk-summary-list__actions"></dd>
-                                    }}
-                                }
-                            </div>
-                        }
-                    </dl>
-                } else {@if(item.rows.length == 1) {
-
-                <dl id="summaryTable@{itemIdx.toString}Body" class="govuk-summary-list">
-                    <div id="summaryTable@{itemIdx.toString}Row1" class="govuk-summary-list__row">
-
-                        <dt id="summaryTable@{itemIdx.toString}Row1-header" class="govuk-summary-list__key govuk-!-font-weight-regular">
-
-                            @item.rows.head.label.value
-
-                            @item.rows.head.label.link.map { link =>
-                                @includes.link(
-                                    id=Some(link.id),
-                                    copy=link.value,
-                                    url = link.href,
-                                    linkClasses = Seq("link-list__item")
-                                )
-                            }
-                        </dt>
-
-                        <dd id="summaryTable@{itemIdx.toString}Row1ValueCell" class=" govuk-summary-list__value govuk-!-text-align-right">
-                            @item.rows.head.value
-                        </dd>
-
-                    @if(!taxCodeChange) {
-                        @if(item.rows.head.link.isDisplayed) {
-                        <dd id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="govuk-summary-list__actions govuk-!-text-align-right">
+                    @if(row.label.link.isDefined) {
+                        <dd id="summaryTable@{itemIdx + 1}Row@{rowIdx + 1}LabelLinkCell" class="govuk-summary-list__actions govuk-!-text-align-right">
+                        @row.label.link.map { link =>
                             @includes.link(
-                            id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
-                            url = item.rows.head.link.href,
-                            copy=Messages("tai.updateOrRemove"),
-                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows.head.link.value)
+                                id = Some(link.id),
+                                copy = Messages("taxFreeAmountSummaryComparison.viewUnderpayments"),
+                                url = link.href,
+                                linkClasses = Seq("link-list__item")
                             )
+                        }
                         </dd>
-                        } else @{if(oneOrMoreLinksPresent) {
-                        <dd class="govuk-summary-list__actions" aria-hidden="true"></dd>
-                        }}
+                    } else if(!taxCodeChange && row.link.isDisplayed) {
+                    <dd id="summaryTable@{itemIdx + 1}Row@{rowIdx + 1}ChangeLinkCell" class="govuk-summary-list__actions govuk-!-text-align-right">
+                    @includes.link(
+                        id = Some(s"summaryTable${itemIdx + 1}Row${rowIdx + 1}ChangeLink"),
+                        url = row.link.href,
+                        copy = Messages(row.link.linkText),
+                        altCopy = Some(Messages("tai.updateOrRemove") + " " + row.link.value)
+                    )
+                    </dd>
+                    } else if(!taxCodeChange && oneOrMoreLinksPresent) {
+                    <dd class="govuk-summary-list__actions"></dd>
                     }
 
-                   </div>
-                </dl>
-
-                }}
-
-            </div>
-
+                </div>
+            }
+            </dl>
+        </div>
     }
 }
