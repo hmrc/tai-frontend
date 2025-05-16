@@ -145,15 +145,15 @@ class IncomeUpdateIrregularHoursController @Inject() (
     implicit request =>
       val userAnswers: UserAnswers = request.userAnswers
       val name: String = userAnswers.get(UpdateIncomeNamePage).toString
-      val paymentToDate: String = userAnswers.get(UpdateIncomePayToDatePage).getOrElse("")
+      val paymentToDate: Option[String] = userAnswers.get(UpdateIncomePayToDatePage)
       val latestPayDate: Option[String] = userAnswers.get(UpdatedIncomeDatePage)
 
       AmountComparatorForm
-        .createForm(latestPayDate, Some(paymentToDate.toInt))
+        .createForm(latestPayDate, paymentToDate.map(_.toInt))
         .bindFromRequest()
         .fold(
           formWithErrors => {
-            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, Some(paymentToDate))
+            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
             Future.successful(BadRequest(editIncomeIrregularHours(formWithErrors, viewModel)))
           },
           validForm =>
