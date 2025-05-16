@@ -1555,6 +1555,8 @@ global.error.InternalServerError500.tai.message.you.can = Gallwch ddefnyddio’r
 global.error.InternalServerError500.tai.message.contact.hmrc = gysylltu â CThEM
 global.error.InternalServerError500.tai.message.by.phone.post = ar-lein, dros y ffôn neu drwy’r post.
 
+taxFreeAmountSummaryComparison.viewUnderpayments=Gweld gordaliadau
+
 
 claim.tax.relief.claimOtherExpense = Gwirio a allwch hawlio Treuliau Cyflogeion
 

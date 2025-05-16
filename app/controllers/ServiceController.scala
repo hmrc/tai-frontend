@@ -18,11 +18,12 @@ package controllers
 
 import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ServiceController @Inject() (
   authenticate: AuthJourney,
@@ -30,8 +31,10 @@ class ServiceController @Inject() (
   mcc: MessagesControllerComponents,
   timeout: TimeoutView,
   sessionExpired: SessionExpiredView,
-  manualCorrespondence: ManualCorrespondenceView
-) extends TaiBaseController(mcc) {
+  manualCorrespondence: ManualCorrespondenceView,
+  journeyCacheRepository: JourneyCacheRepository
+)(implicit ec: ExecutionContext)
+    extends TaiBaseController(mcc) {
 
   def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(timeout()))
@@ -50,8 +53,10 @@ class ServiceController @Inject() (
     Future.successful(Locked(manualCorrespondence(contactUrl)))
   }
 
-  def keepAlive: Action[AnyContent] = Action {
-    Ok("")
+  def keepAlive(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    journeyCacheRepository.keepAlive(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
+      Ok("")
+    }
   }
 
   def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>

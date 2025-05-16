@@ -934,7 +934,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         when(
           benefitsService
-            .endedCompanyBenefit(any(), any(), any())(any(), any())
+            .endedCompanyBenefit(any(), any(), any())(any())
         )
           .thenReturn(Future.successful("1"))
 
@@ -971,7 +971,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         when(
           benefitsService
-            .endedCompanyBenefit(any(), any(), any())(any(), any())
+            .endedCompanyBenefit(any(), any(), any())(any())
         )
           .thenReturn(Future.successful("1"))
 
@@ -1023,7 +1023,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         when(
           benefitsService
-            .endedCompanyBenefit(any(), any(), any())(any(), any())
+            .endedCompanyBenefit(any(), any(), any())(any())
         )
           .thenReturn(Future.successful("1"))
 
