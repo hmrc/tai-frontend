@@ -25,6 +25,7 @@ import utils.BaseSpec
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
+import uk.gov.hmrc.http.NotFoundException
 
 class BenefitsServiceSpec extends BaseSpec {
 
@@ -36,6 +37,16 @@ class BenefitsServiceSpec extends BaseSpec {
 
       val result = sut.benefits(nino, sampleTaxYear)
       Await.result(result, 5 seconds) mustBe benefits
+    }
+
+    "retun empty benefits in NotFoundException is received" in {
+      val sut = createSut
+      val sampleTaxYear = 2018
+      when(benefitsConnector.benefits(any(), any())(any()))
+        .thenReturn(Future.failed(new NotFoundException("Not found")))
+
+      val result = sut.benefits(nino, sampleTaxYear)
+      Await.result(result, 5 seconds) mustBe Benefits(Seq.empty, Seq.empty)
     }
   }
 
@@ -67,7 +78,7 @@ class BenefitsServiceSpec extends BaseSpec {
     }
   }
 
-  private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
+  private val benefits = Benefits(Seq(CompanyCarBenefit(1, BigDecimal(1), Seq.empty)), Seq.empty[GenericBenefit])
 
   private def createSut = new SUT
 
