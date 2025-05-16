@@ -33,20 +33,20 @@ class TaiConnector @Inject() (httpClientV2: HttpClientV2, servicesConfig: Servic
   def url(path: String): String = s"$serviceUrl$path"
 
   def employmentDetails(nino: String, taxYear: Int)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val urlGET = url(s"/v1/api/employment/employee/$nino/tax-year/$taxYear/employment-details")
+    val urlGET = url(s"/test-only/v1/api/employment/employee/$nino/tax-year/$taxYear/employment-details")
     httpClientV2
       .get(url"$urlGET")
       .execute[HttpResponse]
   }
 
   def taxAccount(nino: String, taxYear: Int)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val urlGET = url(s"/v1/api/person/$nino/tax-account/$taxYear")
+    val urlGET = url(s"/test-only/v1/api/person/$nino/tax-account/$taxYear")
     httpClientV2
       .get(url"$urlGET")
       .execute[HttpResponse]
   }
   def iabds(nino: String, taxYear: Int)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val urlGET = url(s"/v1/api/iabd/taxpayer/$nino/tax-year/$taxYear")
+    val urlGET = url(s"/test-only/v1/api/iabd/taxpayer/$nino/tax-year/$taxYear")
     httpClientV2
       .get(url"$urlGET")
       .execute[HttpResponse]
