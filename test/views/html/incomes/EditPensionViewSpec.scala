@@ -16,6 +16,7 @@
 
 package views.html.incomes
 
+import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.EmploymentAmount
@@ -36,16 +37,16 @@ class EditPensionViewSpec extends TaiViewSpec {
     )
   }
 
-  val editIncomeForm = EditIncomeForm.create(
+  val editIncomeForm: Form[EditIncomeForm] = EditIncomeForm.create(
     EmploymentAmount(
       name = employerName,
       description = employerName,
       employmentId = empId,
-      newAmount = newAmount,
-      oldAmount = oldAmount
-    )
+      oldAmount = Some(oldAmount)
+    ),
+    newAmount = Some(newAmount.toString)
   )
 
   private def editPension = inject[EditPensionView]
-  override def view: Html = editPension(editIncomeForm, hasMultipleIncomes = false, empId, "0")
+  override def view: Html = editPension(editIncomeForm, hasMultipleIncomes = false, empId)
 }

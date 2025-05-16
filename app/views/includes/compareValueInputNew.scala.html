@@ -25,17 +25,19 @@
     newLabel: String,
     newField: Field,
     previousFieldName: String,
-    previousFieldValue: String,
+    maybePreviousFieldValue: Option[String],
     @nowarn attrDescribedBy: String = "",
     @nowarn fieldErrorsEnabled: Boolean = false,
 )
 
 <div class="govuk-grid-row">
+    @for(previousFieldValue <- maybePreviousFieldValue) {
     <div class="govuk-grid-column-one-half">
         <div class="form-label "><h3 class="govuk-heading-s">@previousLabel</h3></div>
         <input type="hidden" id="oldAmount" name='@previousFieldName' value='@previousFieldValue' />
         <p class="govuk-body">@withPoundPrefix(MoneyPounds(previousFieldValue.toInt ,0))</p>
     </div>
+    }
     <div class="govuk-grid-column-one-half">
 
         @govukInput(Input(

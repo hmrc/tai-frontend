@@ -18,9 +18,9 @@ package views.html.incomes
 
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 
 class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
@@ -28,6 +28,10 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
   private val currentAmount = 1000
   private val employmentId = 1
   private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]
+
+  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, Some(currentAmount.toString))
+  private val editIncomeForm = AmountComparatorForm.createForm()
+  override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink()
@@ -55,14 +59,17 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
     }
 
+    "not display current amount when currentAmount is None" in {
+      val viewModelWithNoAmount = EditIncomeIrregularHoursViewModel(employmentId, employerName, None)
+      val viewWithNoAmount = editIncomeIrregularHours(editIncomeForm, viewModelWithNoAmount)
+      val docNoAmount = doc(viewWithNoAmount)
+
+      docNoAmount mustNot haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
+    }
+
     "have an input box for user to enter new amount" in {
       doc(view) must haveInputLabelWithText("income", messages("tai.irregular.newAmount"))
       doc(view).getElementsByClass("govuk-input").size() mustBe 1
     }
-
   }
-
-  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, currentAmount)
-  private val editIncomeForm = AmountComparatorForm.createForm()
-  override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
 }

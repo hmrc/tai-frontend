@@ -34,7 +34,7 @@ case class EditIncomeForm(
   description: String,
   employmentId: Int = 0,
   newAmount: Option[String] = None,
-  oldAmount: Int = 0,
+  oldAmount: Option[Int] = Some(0),
   worksNumber: Option[String] = None,
   jobTitle: Option[String] = None,
   startDate: Option[LocalDate] = None,
@@ -43,38 +43,18 @@ case class EditIncomeForm(
   isOccupationalPension: Boolean = false,
   hasMultipleIncomes: Boolean = false,
   payToDate: Option[String] = None
-) {
-
-  def toEmploymentAmount: EmploymentAmount =
-    new EmploymentAmount(
-      name = name,
-      description = description,
-      employmentId = employmentId,
-      newAmount = FormHelper.convertCurrencyToInt(newAmount),
-      oldAmount = oldAmount,
-      worksNumber = worksNumber,
-      jobTitle = jobTitle,
-      startDate = startDate,
-      endDate = endDate,
-      isLive = isLive,
-      isOccupationalPension = isOccupationalPension
-    )
-}
+) {}
 
 object EditIncomeForm {
   implicit val formats: OFormat[EditIncomeForm] = Json.format[EditIncomeForm]
 
   def create(
     preFillData: EmploymentAmount,
+    newAmount: Option[String],
     hasMultipleIncomes: Boolean = false,
     taxablePayYTD: BigDecimal = BigDecimal(0)
   )(implicit messages: Messages): Form[EditIncomeForm] = {
 
-    val newAmount = if (preFillData.oldAmount != preFillData.newAmount) {
-      Some(preFillData.newAmount.toString)
-    } else {
-      None
-    }
     val editIncomeForm = new EditIncomeForm(
       name = preFillData.name,
       description = preFillData.description,
@@ -139,7 +119,7 @@ object EditIncomeForm {
           messages(errMsg, MoneyPounds(taxablePayYTD, 0, roundUp = true).quantity, monthAndYearName, employerName),
           taxablePayYTD
         ),
-        "oldAmount"             -> number,
+        "oldAmount"             -> optional(number),
         "worksNumber"           -> optional(text),
         "jobTitle"              -> optional(text),
         "startDate"             -> optional(Forms.of[java.time.LocalDate]),
@@ -157,7 +137,7 @@ object EditIncomeForm {
     String,
     Int,
     Option[String],
-    Int,
+    Option[Int],
     Option[String],
     Option[String],
     Option[LocalDate],
@@ -171,7 +151,7 @@ object EditIncomeForm {
     description: String,
     employmentId: Int,
     newAmount: Option[String],
-    oldAmount: Int,
+    oldAmount: Option[Int],
     worksNumber: Option[String],
     jobTitle: Option[String],
     startDate: Option[LocalDate],

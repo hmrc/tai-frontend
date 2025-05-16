@@ -31,6 +31,52 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 class IncomeServiceSpec extends BaseSpec {
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
+    Employment(
+      "employment",
+      Live,
+      Some("ABC123"),
+      Some(LocalDate.of(2000, 5, 20)),
+      None,
+      accounts,
+      "",
+      "",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false,
+      EmploymentIncome
+    )
+  def paymentOnDate(date: LocalDate): Payment =
+    Payment(
+      date = date,
+      amountYearToDate = 2000,
+      taxAmountYearToDate = 200,
+      nationalInsuranceAmountYearToDate = 100,
+      amount = 1000,
+      taxAmount = 100,
+      nationalInsuranceAmount = 50,
+      payFrequency = Monthly,
+      duplicate = None
+    )
+
+  def createSUT = new SUT
+
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taiConnector: TaiConnector = mock[TaiConnector]
+
+  class SUT
+      extends IncomeService(
+        taxAccountService,
+        employmentService,
+        taiConnector
+      )
 
   "employmentAmount" must {
     "return employment amount" when {
@@ -50,47 +96,17 @@ class IncomeServiceSpec extends BaseSpec {
           "employment",
           "(Current employer)",
           1,
-          1111,
-          1111,
+          Some(1111),
           None,
           None,
           Some(LocalDate.of(2000, 5, 20)),
-          None,
-          isLive = true,
-          isOccupationalPension = false
+          None
         )
 
       }
     }
 
     "return an error" when {
-      "employment details not found" in {
-        val sut = createSUT
-
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Not able to found employment with id 1"
-      }
-
-      "income not found" in {
-        val sut = createSUT
-
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Exception while reading employment and tax code details"
-      }
 
       "employment not found" in {
         val sut = createSUT
@@ -100,7 +116,7 @@ class IncomeServiceSpec extends BaseSpec {
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
-        ex.getMessage mustBe "Exception while reading employment and tax code details"
+        ex.getMessage mustBe "Exception while reading employment"
       }
     }
   }
@@ -170,6 +186,30 @@ class IncomeServiceSpec extends BaseSpec {
         when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds) mustBe CalculatedPay(None, None)
       }
+    }
+
+    "only required fields are present (TotalSalaryKey)" in {
+      val sut = createSUT
+
+      val cache = Map(
+        UpdateIncomeConstants.TotalSalaryKey -> "£1234"
+      )
+
+      val payDetails = PayDetails(
+        paymentFrequency = "",
+        pay = Some(1234),
+        taxablePay = None,
+        days = Some(0),
+        bonus = None,
+        startDate = None
+      )
+
+      when(taiConnector.calculateEstimatedPay(payDetails))
+        .thenReturn(Future.successful(CalculatedPay(Some(1500), Some(1400))))
+
+      val result = Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds)
+
+      result mustBe CalculatedPay(Some(1500), Some(1400))
     }
   }
 
@@ -395,53 +435,4 @@ class IncomeServiceSpec extends BaseSpec {
       }
     }
   }
-
-  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
-    Employment(
-      "ABCD",
-      Live,
-      Some("ABC123"),
-      Some(LocalDate.of(2000, 5, 20)),
-      None,
-      accounts,
-      "",
-      "",
-      8,
-      None,
-      hasPayrolledBenefit = false,
-      receivingOccupationalPension = false,
-      EmploymentIncome
-    )
-
-  def paymentOnDate(date: LocalDate): Payment =
-    Payment(
-      date = date,
-      amountYearToDate = 2000,
-      taxAmountYearToDate = 200,
-      nationalInsuranceAmountYearToDate = 100,
-      amount = 1000,
-      taxAmount = 100,
-      nationalInsuranceAmount = 50,
-      payFrequency = Monthly,
-      duplicate = None
-    )
-
-  def createSUT = new SUT
-
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taiConnector: TaiConnector = mock[TaiConnector]
-
-  class SUT
-      extends IncomeService(
-        taxAccountService,
-        employmentService,
-        taiConnector
-      )
-
 }

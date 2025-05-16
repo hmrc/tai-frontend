@@ -30,8 +30,8 @@ import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.model.domain.income.{IncomeSource, Live}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -163,7 +163,7 @@ class IncomeUpdateCalculatorControllerSpec
 
   "duplicateSubmissionWarning" must {
     object DuplicateSubmissionWarningHarness {
-      sealed class DuplicateSubmissionWarningHarness() {
+      sealed class DuplicateSubmissionWarningHarness {
 
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeNamePage, employer.name)
@@ -367,7 +367,7 @@ class IncomeUpdateCalculatorControllerSpec
           .thenReturn(Future.successful(Some(mockUserAnswers)))
 
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
 
         def handleCalculationResult(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
           new SUT()
@@ -425,6 +425,20 @@ class IncomeUpdateCalculatorControllerSpec
         redirectLocation(result) mustBe Some(
           controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
         )
+      }
+    }
+
+    "redirect to update estimated income page" when {
+      "income.oldAmount is None (missing old amount)" in {
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, None)))
+
+        val result = HandleCalculationResultHarness
+          .harnessSetup("500")
+          .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.updateEstimatedIncome(1).url)
       }
     }
   }

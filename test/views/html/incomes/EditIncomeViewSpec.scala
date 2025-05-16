@@ -37,7 +37,7 @@ class EditIncomeViewSpec extends TaiViewSpec {
 
   override def view: Html =
     editIncome(
-      EditIncomeForm.create(preFillData = EmploymentAmount(employerName, "", 1, 1, 1)),
+      EditIncomeForm.create(preFillData = EmploymentAmount(employerName, "", 1, Some(1)), Some("1")),
       hasMultipleIncomes = false,
       empId
     )

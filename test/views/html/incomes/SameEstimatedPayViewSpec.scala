@@ -33,7 +33,7 @@ class SameEstimatedPayViewSpec extends TaiViewSpec {
   override def view: Html = template(createViewModel)
 
   def createViewModel: SameEstimatedPayViewModel =
-    SameEstimatedPayViewModel(employerName, employerId, amount = amountAsInt, isPension = false, url)
+    SameEstimatedPayViewModel(employerName, employerId, amount = Some(amountAsInt), isPension = false, url)
 
   "Same estimated pay page" must {
     behave like pageWithBackLink()

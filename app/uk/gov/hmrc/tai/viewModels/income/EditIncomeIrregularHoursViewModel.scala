@@ -24,32 +24,19 @@ case class EditIncomeIrregularHoursViewModel(
   preHeading: String,
   employmentId: Int,
   employerName: String,
-  currentAmount: String
+  currentAmount: Option[String]
 )
 
 object EditIncomeIrregularHoursViewModel extends ViewModelHelper {
 
-  def apply(employmentId: Int, employerName: String, currentAmount: String)(implicit
+  def apply(employmentId: Int, employerName: String, currentAmount: Option[String])(implicit
     messages: Messages
   ): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
-
     val heading = messages("tai.irregular.heading", taxYearMessage)
     val preHeading = messages("tai.estimatedPay.preHeading", employerName)
 
-    new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount)
-  }
-
-  def apply(employmentId: Int, employerName: String, currentAmount: BigDecimal)(implicit
-    messages: Messages
-  ): EditIncomeIrregularHoursViewModel = {
-
-    val taxYearMessage = currentTaxYearRangeHtmlNonBreak
-
-    val heading = messages("tai.irregular.heading", taxYearMessage)
-    val preHeading = messages("tai.estimatedPay.preHeading", employerName)
-
-    new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount.toString)
+    EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount)
   }
 }

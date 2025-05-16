@@ -32,8 +32,8 @@ import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
-import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 import views.html.incomes.DuplicateSubmissionWarningView
+import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -218,12 +218,12 @@ class IncomeUpdateCalculatorController @Inject() (
           .employmentAmount(nino, id)
           .map { income =>
             val convertedNetAmount = BigDecimal(netAmount).intValue
-            val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
-            if (employmentAmount.newAmount == income.oldAmount) {
-              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-            } else {
-              Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
+            income.oldAmount match {
+              case Some(oldAmount) if convertedNetAmount == oldAmount =>
+                Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+              case _ =>
+                Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
             }
           }
           .recover { case NonFatal(e) =>

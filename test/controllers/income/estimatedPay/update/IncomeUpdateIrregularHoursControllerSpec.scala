@@ -52,6 +52,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   val incomeService: IncomeService = mock[IncomeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val employmentService: EmploymentService = mock[EmploymentService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
@@ -59,6 +60,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         mockAuthJourney,
         incomeService,
         taxAccountService,
+        employmentService,
         mcc,
         inject[EditSuccessView],
         inject[EditIncomeIrregularHoursView],
@@ -70,6 +72,22 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
   }
 
+  val employment: Employment = Employment(
+    "company name",
+    Live,
+    Some("123"),
+    Some(LocalDate.parse("2016-05-26")),
+    Some(LocalDate.parse("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    hasPayrolledBenefit = false,
+    receivingOccupationalPension = false,
+    EmploymentIncome
+  )
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
@@ -79,107 +97,83 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
     when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Right(None: Option[TaxCodeIncome])))
+    when(employmentService.employmentOnly(any(), any(), any())(any()))
+      .thenReturn(Future.successful(Some(employment)))
   }
-
-  def BuildTaxCodeIncomes(incomeCount: Int): Seq[TaxCodeIncome] = {
-
-    val taxCodeIncome1 =
-      TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
-    val taxCodeIncome2 =
-      TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
-
-    incomeCount match {
-      case 2 => Seq(taxCodeIncome1, taxCodeIncome2)
-      case 1 => Seq(taxCodeIncome1)
-      case 0 => Nil
-    }
-  }
-
-  def editIncomeIrregularHours(
-    incomeNumber: Int,
-    request: FakeRequest[AnyContentAsFormUrlEncoded]
-  ): Future[Result] =
-    new SUT()
-      .editIncomeIrregularHours(incomeNumber)(request)
 
   "editIncomeIrregularHours" must {
-    object EditIncomeIrregularHoursHarness {
+    "respond with OK when all services return successfully" in {
+      val nino = randomNino()
+      val userAnswers = UserAnswers(sessionId, nino.nino)
+      setup(userAnswers)
 
-      sealed class EditIncomeIrregularHoursHarness(taxCodeIncome: Option[TaxCodeIncome]) {
+      when(incomeService.latestPayment(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
 
-        when(incomeService.latestPayment(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
+      when(employmentService.employmentOnly(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(name = "Employer Ltd"))))
 
-        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
-
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Right(taxCodeIncome)))
-
-        def editIncomeIrregularHours(
-          incomeNumber: Int,
-          request: FakeRequest[AnyContentAsFormUrlEncoded]
-        ): Future[Result] =
-          new SUT()
-            .editIncomeIrregularHours(incomeNumber)(request)
-      }
-
-      def setup(taxCodeIncome: Option[TaxCodeIncome]): EditIncomeIrregularHoursHarness =
-        new EditIncomeIrregularHoursHarness(taxCodeIncome)
-    }
-    "respond with OK and show the irregular hours edit page" in {
-      reset(mockJourneyCacheRepository)
-
-      val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
-        .setOrException(UpdateIncomeIdPage, 1)
-        .setOrException(UpdateIncomeIrregularAnnualPayPage, "123")
-
-      setup(mockUserAnswers)
-
-      BuildTaxCodeIncomes(1)
-
-      val result = EditIncomeIrregularHoursHarness
-        .setup(
-          Some(
-            TaxCodeIncome(EmploymentIncome, Some(1), 123, "description", "taxCode", "name", OtherBasisOfOperation, Live)
+      when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+        .thenReturn(
+          Future.successful(
+            Right(
+              Some(
+                TaxCodeIncome(
+                  EmploymentIncome,
+                  Some(1),
+                  123,
+                  "desc",
+                  "taxCode",
+                  "Employer Ltd",
+                  OtherBasisOfOperation,
+                  Live
+                )
+              )
+            )
           )
         )
-        .editIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
+
+      when(mockJourneyCacheRepository.set(any[UserAnswers]))
+        .thenReturn(Future.successful(true))
+
+      val result = createSUT.editIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(messages("tai.irregular.heading"))
     }
 
-    "respond with INTERNAL_SERVER_ERROR" when {
-      "the employment income cannot be found" in {
+    "respond with INTERNAL_SERVER_ERROR when employmentOnly returns None" in {
+      when(employmentService.employmentOnly(any(), any(), any())(any()))
+        .thenReturn(Future.successful(None))
 
-        val result = EditIncomeIrregularHoursHarness
-          .setup(Option.empty[TaxCodeIncome])
-          .editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
+      val result = createSUT.editIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
+      status(result) mustBe INTERNAL_SERVER_ERROR
     }
 
-    "redirect to unauthorised page" when {
-      "there is an unauthorised response" in {
+    "respond with OK when taxCodeIncome returns Left (fallback to no amount)" in {
+      when(employmentService.employmentOnly(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(name = "Employer Ltd"))))
 
-        val service = EditIncomeIrregularHoursHarness.setup(Option.empty[TaxCodeIncome])
+      when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Left("error")))
 
-        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Left("error")))
-        val result = service.editIncomeIrregularHours(2, RequestBuilder.buildFakeGetRequestWithAuth())
+      when(mockJourneyCacheRepository.set(any[UserAnswers]))
+        .thenReturn(Future.successful(true))
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
-      }
+      val result = createSUT.editIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(messages("tai.irregular.heading"))
     }
+
   }
 
   "handleIncomeIrregularHours" must {
     object HandleIncomeIrregularHoursHarness {
 
-      sealed class HandleIncomeIrregularHoursHarness() {
+      sealed class HandleIncomeIrregularHoursHarness {
         reset(mockJourneyCacheRepository)
 
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
@@ -408,5 +402,4 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       doc.title() must include(messages("tai.incomes.updated.check.title", employer.name))
     }
   }
-
 }

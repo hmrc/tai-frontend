@@ -118,14 +118,15 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
         (response.json \ "data").asOpt[String]
     }
 
-  def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
+  private def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
 
   def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
 
   def employmentServiceUrl(nino: Nino, year: TaxYear): String = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
 
-  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
+  private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
-  def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/reason"
+  private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

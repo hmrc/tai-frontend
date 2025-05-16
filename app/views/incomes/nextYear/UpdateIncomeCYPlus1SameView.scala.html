@@ -21,7 +21,7 @@
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
 
 
-@(employmentName: String, value: Int)(
+@(employmentName: String, value: Option[Int])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser
@@ -36,7 +36,7 @@
         <p class="govuk-body">
             @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
             <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                @withPoundPrefix(MoneyPounds(value, 0))
+                @withPoundPrefix(MoneyPounds(value.get, 0))
             </span>
         </p>
 

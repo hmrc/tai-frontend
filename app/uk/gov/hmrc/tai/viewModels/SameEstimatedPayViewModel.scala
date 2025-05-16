@@ -22,23 +22,24 @@ import uk.gov.hmrc.tai.util.MonetaryUtil
 case class SameEstimatedPayViewModel(
   employerName: String,
   employerId: Int,
-  amount: Int,
+  amount: Option[Int],
   returnLinkLabel: String,
   returnLinkUrl: String
 ) {
-  def amountWithPounds: String = MonetaryUtil.withPoundPrefix(amount, 0)
+  def amountWithPounds: String = MonetaryUtil.withPoundPrefix(amount.getOrElse(0))
 }
 
 object SameEstimatedPayViewModel {
-  def apply(employerName: String, employerId: Int, amount: Int, isPension: Boolean, returnLinkUrl: String)(implicit
-    messages: Messages
+  def apply(employerName: String, employerId: Int, amount: Option[Int], isPension: Boolean, returnLinkUrl: String)(
+    implicit messages: Messages
   ): SameEstimatedPayViewModel = {
 
     val returnLinkLabel =
-      if (isPension)
+      if (isPension) {
         messages("tai.updateEmployment.incomeSame.pension.return.link")
-      else
+      } else {
         messages("tai.updateEmployment.incomeSame.employment.return.link")
+      }
 
     SameEstimatedPayViewModel(employerName, employerId, amount, returnLinkLabel, returnLinkUrl)
   }

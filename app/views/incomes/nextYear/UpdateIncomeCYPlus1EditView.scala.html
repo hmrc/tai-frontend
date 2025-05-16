@@ -22,7 +22,7 @@
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template, form: FormWithCSRF, govukInput : GovukInput)
 
-@(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
+@(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Option[Int], incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser
@@ -58,20 +58,22 @@
             @incomeForm.errors(incomeForm("income").name).map { error =>
                 <span class="govuk-error-message" id="incomeFieldError">@messages(error.message)</span>
             }
-            @compareValueInputNew(
-                govukInput,
-                previousLabel = messages("tai.incomes.amount.current"),
-                newLabel = messages("tai.incomes.amount.new"),
-                previousFieldName = "oldAmount",
-                previousFieldValue = currentValue.toString,
-                newField = incomeForm("income"),
-                attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty) {
-                    "incomeFieldError"
-                } else {
-                    ""
-                },
-                fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
-            )
+            @currentValue.map { current =>
+                @compareValueInputNew(
+                    govukInput,
+                    previousLabel = messages("tai.incomes.amount.current"),
+                    newLabel = messages("tai.incomes.amount.new"),
+                    previousFieldName = "oldAmount",
+                    maybePreviousFieldValue = Some(current.toString),
+                    newField = incomeForm("income"),
+                    attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty) {
+                        "incomeFieldError"
+                    } else {
+                        ""
+                    },
+                    fieldErrorsEnabled = incomeForm.errors(incomeForm("income").name).nonEmpty
+                )
+            }
         </div>
 
         <button class="govuk-button" type="submit" id="CYPlus1EditButton">@messages("tai.continue")</button>

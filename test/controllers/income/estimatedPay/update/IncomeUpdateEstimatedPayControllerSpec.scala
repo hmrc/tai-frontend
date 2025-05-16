@@ -26,7 +26,6 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -50,6 +49,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   def createSUT = new SUT
 
   val mockIncomeService: IncomeService = mock[IncomeService]
+  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
 
@@ -59,7 +60,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         mockIncomeService,
         appConfig,
         mcc,
-        mockTaxAccountService,
         inject[EstimatedPayLandingPageView],
         inject[EstimatedPayView],
         inject[IncorrectTaxableIncomeView],
@@ -104,40 +104,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       doc.title() must include(messages("tai.incomes.landing.title"))
     }
 
-    "return INTERNAL_SERVER_ERROR when TaiNotFoundResponse is returned from the service" in {
-
-      setup(mockUserAnswers)
-
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException("")
-      )
-
-      val result = estimatedPayLandingPage()
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-    "return INTERNAL_SERVER_ERROR when TaiUnauthorisedResponse is returned from the service" in {
-
-      setup(mockUserAnswers)
-
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new NotFoundException("")
-      )
-
-      val result = estimatedPayLandingPage()
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-
-    "return INTERNAL_SERVER_ERROR when TaiTaxAccountFailureResponse is returned from the service" in {
-
-      setup(mockUserAnswers)
-
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future.failed(
-        new RuntimeException("")
-      )
-
-      val result = estimatedPayLandingPage()
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
     "return to /income-details when nothing is present in the cache" in {
 
       setup(UserAnswers(sessionId, randomNino().nino))
@@ -171,7 +137,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
 
@@ -198,7 +164,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
@@ -207,6 +173,34 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
+      }
+
+      "show incorrectTaxableIncome when grossAnnualPay is None" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "150")
+
+        val controller = createSUT
+
+        setup(mockUserAnswers)
+
+        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
+
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
+        when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
+        when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
+          .thenReturn(Future.successful(CalculatedPay(None, Some(BigDecimal(100)))))
+
+        val result = controller.estimatedPayPage(employer.id)(RequestBuilder.buildFakeGetRequestWithAuth())
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
       }
     }
 
@@ -226,7 +220,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
@@ -259,7 +253,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(EmploymentAmount("", "", 1, 1, 1)))
+          .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
         when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
         when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
           .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(150)), Some(BigDecimal(100)))))
