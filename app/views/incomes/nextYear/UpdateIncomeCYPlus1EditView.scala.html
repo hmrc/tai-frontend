@@ -64,7 +64,7 @@
                     previousLabel = messages("tai.incomes.amount.current"),
                     newLabel = messages("tai.incomes.amount.new"),
                     previousFieldName = "oldAmount",
-                    previousFieldValue = current.toString,
+                    maybePreviousFieldValue = Some(current.toString),
                     newField = incomeForm("income"),
                     attrDescribedBy = if(incomeForm.errors(incomeForm("income").name).nonEmpty) {
                         "incomeFieldError"
