@@ -557,6 +557,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           MenuItemConfig("signout", "Sign out", "link", leftAligned = false, 0, None, None)
         ),
         PtaMinMenuConfig("MenuName", "BackName"),
+        List.empty,
         List.empty
       )
     )
