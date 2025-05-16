@@ -43,17 +43,17 @@ class ApplicationConfig @Inject() (
   lazy val jrsClaimsFromDate: String = servicesConfig.getString("tai.jrs.claims.from.date")
 
   lazy val incomeFromEmploymentPensionLinkUrl: String =
-    s"$dfsFrontendHost/digital-forms/form/tell-us-about-income-from-employment-or-pension/draft/guide"
+    s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-pension-income/"
   lazy val companyBenefitsLinkUrl: String =
-    s"$dfsFrontendHost/digital-forms/form/tell-us-about-company-benefits/draft/guide"
+    s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-company-benefits/"
   lazy val taxableStateBenefitLinkUrl: String =
-    s"$dfsFrontendHost/digital-forms/form/tell-us-about-your-taxable-state-benefit/draft/guide"
+    s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-taxable-state-benefit/"
   lazy val otherIncomeLinkUrl: String =
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-other-income/draft/guide"
   lazy val investmentIncomeLinkUrl: String =
-    s"$dfsFrontendHost/digital-forms/form/tell-us-about-investment-income/draft/guide"
+    s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-investment-income/"
   lazy val taxFreeAllowanceLinkUrl: String =
-    s"$dfsFrontendHost/digital-forms/form/check-income-tax-tell-us-your-tax-free-allowance/draft/guide"
+    s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-tax-free-allowance"
 
   lazy val hicbcUpdateUrl: String =
     runModeConfiguration.get[String]("external-url.hicbcUrl")
