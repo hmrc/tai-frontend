@@ -16,6 +16,7 @@
 
 package controllers
 
+import cats.data.EitherT
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
@@ -33,13 +34,13 @@ import pages.updateEmployment._
 import pages.updatePensionProvider._
 import play.api.Application
 import play.api.http.ContentTypes
-import play.api.http.Status.{LOCKED, OK}
+import play.api.http.Status.{LOCKED, OK, SEE_OTHER}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
+import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, redirectLocation, route, status, writeableOf_AnyContentAsEmpty}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
@@ -50,7 +51,7 @@ import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, In
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
-import uk.gov.hmrc.tai.model.{CalculatedPay, Employers, JrsClaims, TaxYear, UserAnswers, YearAndMonth}
+import uk.gov.hmrc.tai.model.{CalculatedPay, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, TaiConstants}
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
@@ -63,7 +64,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Random
 
 class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
-
+  private val fandfDelegationUrl = s"/delegation/get"
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheRepository = mock[JourneyCacheRepository]
   private val startTaxYear = TaxYear().start.getYear
@@ -82,11 +83,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "what-to-do" =>
         ExpectedData(
           "PAYE Income Tax overview - Check your Income Tax - GOV.UK",
-          navBarExpected = true
-        )
-      case "jrs-claims" =>
-        ExpectedData(
-          "Coronavirus Job Retention Scheme - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "no-info" =>
@@ -415,7 +411,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
   val urls: Map[String, ExpectedData] = Map(
     "/check-income-tax/what-do-you-want-to-do"                   -> getExpectedData("what-to-do"),
-    "/check-income-tax/jrs-claims"                               -> getExpectedData("jrs-claims"),
     "/check-income-tax/income-tax/no-info"                       -> getExpectedData("no-info"),
     s"/check-income-tax/historic-paye/${startTaxYear - 1}"       -> getExpectedData("historic-paye-year"),
     "/check-income-tax/income-tax-history"                       -> getExpectedData("income-tax-history"),
@@ -532,13 +527,13 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       bind[JourneyCacheRepository].toInstance(mockJourneyCacheRepository)
     )
     .configure(
-      "microservice.services.auth.port"                                -> server.port(),
-      "microservice.services.pertax.port"                              -> server.port(),
-      "microservice.services.cachable.session-cache.port"              -> server.port(),
-      "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
-      "microservice.services.tai.port"                                 -> server.port(),
-      "microservice.services.coronavirus-jrs-published-employees.port" -> server.port(),
-      "microservice.services.citizen-details.port"                     -> server.port()
+      "microservice.services.auth.port"                               -> server.port(),
+      "microservice.services.pertax.port"                             -> server.port(),
+      "microservice.services.fandf.port"                              -> server.port(),
+      "microservice.services.cachable.session-cache.port"             -> server.port(),
+      "sca-wrapper.services.single-customer-account-wrapper-data.url" -> s"http://localhost:${server.port()}",
+      "microservice.services.tai.port"                                -> server.port(),
+      "microservice.services.citizen-details.port"                    -> server.port()
     )
     .build()
 
@@ -572,8 +567,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
   )
   val employments: JsObject = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
   val taxAccountSummary: JsObject = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
-  val employer1: Employers = Employers("Employer", "reference", List(YearAndMonth("2020-01"), YearAndMonth("2021-01")))
-  val jrsClaim: JrsClaims = JrsClaims(List(employer1))
 
   val taxBand: TaxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCategories: IncomeCategory = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
@@ -732,6 +725,12 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .thenReturn(Future.successful(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
     when(mockFeatureFlagService.get(DesignatoryDetailsCheck))
       .thenReturn(Future.successful(FeatureFlag(DesignatoryDetailsCheck, isEnabled = true)))
+    when(mockFeatureFlagService.getAsEitherT(CyPlusOneToggle))
+      .thenReturn(EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true)))
+    when(mockFeatureFlagService.getAsEitherT(IncomeTaxHistoryToggle))
+      .thenReturn(EitherT.rightT(FeatureFlag(IncomeTaxHistoryToggle, isEnabled = true)))
+    when(mockFeatureFlagService.getAsEitherT(DesignatoryDetailsCheck))
+      .thenReturn(EitherT.rightT(FeatureFlag(DesignatoryDetailsCheck, isEnabled = true)))
     when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
     when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
@@ -749,6 +748,11 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
         .willReturn(ok("false"))
+    )
+
+    server.stubFor(
+      get(urlEqualTo(fandfDelegationUrl))
+        .willReturn(notFound())
     )
 
     for (year <- startTaxYear - 5 to startTaxYear + 1) {
@@ -781,6 +785,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             )
           )
       )
+
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/summary"))
           .willReturn(ok(Json.toJson(taxAccountSummary).toString))
@@ -802,11 +807,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       get(urlEqualTo(s"/tai/$generatedNino/employments/1"))
         .willReturn(ok(oneEmployment))
     )
-    server.stubFor(
-      get(urlEqualTo(s"/coronavirus-jrs-published-employees/employee/$generatedNino"))
-        .willReturn(ok(Json.toJson(jrsClaim).toString()))
-    )
-
     case class stubValuesData(journeyName: String, keyName: String, valueReturned: String)
 
     val nameValueUrls = List(
@@ -1063,9 +1063,37 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       get(s"/tai/$generatedNino/employments/year/$startTaxYear/status/ceased")
         .willReturn(ok("""{"data": []}"""))
     )
+
     server.stubFor(
       get(s"/tai/$generatedNino/tax-account/year/$startTaxYear/income/EmploymentIncome/status/Live")
         .willReturn(ok("""{"data": []}"""))
+    )
+
+    server.stubFor(
+      get(s"/tai/$generatedNino/employments-only/years/2020")
+        .willReturn(ok("""
+                         |{
+                         |  "data": {
+                         |    "employments": [
+                         |      {
+                         |        "employmentType": "EmploymentIncome",
+                         |        "name": "HM Revenue & Customs Building 9 (Benton Park View)",
+                         |        "annualAccounts": [],
+                         |        "employmentStatus": "Live",
+                         |        "receivingOccupationalPension": false,
+                         |        "payrollNumber": "EMP/EMP0000001",
+                         |        "payeNumber": "MA83247",
+                         |        "hasPayrolledBenefit": false,
+                         |        "sequenceNumber": 1,
+                         |        "startDate": "2013-03-18",
+                         |        "taxDistrictNumber": "120"
+                         |      }
+                         |    ],
+                         |    "etag": 1
+                         |  },
+                         |  "links": []
+                         |}
+                         |""".stripMargin))
     )
     server.stubFor(
       get(s"/tai/$generatedNino/tax-account/year/$startTaxYear/income/EmploymentIncome/status/NotLive")
@@ -1114,6 +1142,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         val result: Future[Result] = route(app, request(url)).get
         val content = Jsoup.parse(contentAsString(result))
 
+        if (expectedData.httpStatus != SEE_OTHER) {
+          redirectLocation(result) mustBe None
+        }
         status(result) mustBe expectedData.httpStatus
 
         content.title() mustBe expectedData.title

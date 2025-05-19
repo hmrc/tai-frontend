@@ -17,6 +17,7 @@
 package controllers.income.estimatedPay.update
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -49,7 +50,6 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
   def createSUT = new SUT
 
   val mockIncomeService: IncomeService = mock[IncomeService]
-  val mockEmploymentService: EmploymentService = mock[EmploymentService]
 
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
   val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
@@ -94,7 +94,8 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       setup(mockUserAnswers)
 
       val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn Future(taxAccountSummary)
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())) thenReturn
+        EitherT.rightT(taxAccountSummary)
 
       val result = estimatedPayLandingPage()
 

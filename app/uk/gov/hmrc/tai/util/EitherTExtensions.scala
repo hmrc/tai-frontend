@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model
+package uk.gov.hmrc.tai.util
 
-import play.api.libs.json.{Json, OFormat}
+import cats.data.EitherT
+import scala.concurrent.{ExecutionContext, Future}
 
-object TaxCalculation {
-  implicit val formats: OFormat[TaxCalculation] = Json.format[TaxCalculation]
+object EitherTExtensions {
+  implicit class EitherTThrowableOps[A <: Throwable, B](val eitherT: EitherT[Future, A, B]) {
+    def toFutureOrThrow(implicit ec: ExecutionContext): Future[B] =
+      eitherT.value.flatMap {
+        case Right(b) => Future.successful(b)
+        case Left(a)  => Future.failed(a)
+      }
+  }
 }
-
-case class TaxCalculation(
-  p800_status: String,
-  amount: BigDecimal,
-  taxYear: Int,
-  paymentStatus: Option[String]
-)

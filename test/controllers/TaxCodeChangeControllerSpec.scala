@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.auth.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
@@ -99,7 +100,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
       when(taxAccountService.totalTax(meq(FakeAuthRetrievals.nino), any())(any()))
         .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
-      when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+      when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
       when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any(), any()))
         .thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
 
