@@ -34,7 +34,10 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class TaxAccountConnector @Inject() (
+  httpHandler: HttpHandler,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends CodingComponentFormatters with Logging {
 
@@ -124,8 +127,20 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
       Seq.empty[CodingComponent]
     }
 
-  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaxAccountSummary] =
-    httpHandler.getFromApiV2(taxAccountSummaryUrl(nino.nino, year)) map (json => (json \ "data").as[TaxAccountSummary])
+  def taxAccountSummary(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, TaxAccountSummary] = {
+    val url = taxAccountSummaryUrl(nino.nino, year)
+    httpHandler
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map { httpResponse =>
+        (httpResponse.json \ "data").as[TaxAccountSummary]
+      }
+  }
 
   def updateEstimatedIncome(nino: Nino, year: TaxYear, newAmount: Int, id: Int)(implicit
     hc: HeaderCarrier

@@ -498,7 +498,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               )
           )
 
-        when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
+        when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any()))
           .thenReturn(Future.successful("1"))
 
         val result =
@@ -523,7 +523,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
               )
           )
 
-        when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any(), any()))
+        when(employmentService.incorrectEmployment(any(), meq(1), meq(incorrectEmployment))(any()))
           .thenReturn(Future.successful("1"))
 
         val result =

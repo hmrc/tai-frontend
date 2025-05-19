@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{verify, when}
@@ -166,7 +167,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
       .thenReturn(Future.successful(Right(taxCodeIncomes)))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
-      .thenReturn(Future.successful(taxAccountSummary))
+      .thenReturn(EitherT.rightT(taxAccountSummary))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
       .thenReturn(Future.successful(Seq.empty[CodingComponent]))
     when(employmentService.employments(any(), meq(TaxYear()))(any()))
