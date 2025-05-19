@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock.{get, notFound, ok, urlEqualTo, urlMatching}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -40,6 +40,7 @@ import utils.{FileHelper, IntegrationSpec}
 import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
+  private val fandfDelegationUrl = s"/delegation/get"
   val url = "/check-income-tax/what-do-you-want-to-do"
   private val personUrl = s"/citizen-details/$generatedNino/designatory-details"
   private val startTaxYear = TaxYear().start.getYear
@@ -56,6 +57,10 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     super.beforeEach()
     when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(Some(Html("webchat-test")))
     when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("webchat-test")))
+    server.stubFor(
+      get(urlEqualTo(fandfDelegationUrl))
+        .willReturn(notFound())
+    )
   }
 
   "What do you want to do page" must {
@@ -68,6 +73,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
             "microservice.services.tai.port"             -> server.port(),
             "microservice.services.citizen-details.port" -> server.port(),
             "microservice.services.pertax.port"          -> server.port(),
+            "microservice.services.fandf.port"           -> server.port(),
             "feature.web-chat.enabled"                   -> true
           )
           .overrides(
@@ -129,6 +135,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
           "microservice.services.auth.port"            -> server.port(),
           "microservice.services.tai.port"             -> server.port(),
           "microservice.services.citizen-details.port" -> server.port(),
+          "microservice.services.fandf.port"           -> server.port(),
           "feature.web-chat.enabled"                   -> false
         )
         .overrides(
@@ -188,6 +195,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         "microservice.services.pertax.port"          -> server.port(),
         "microservice.services.tai.port"             -> server.port(),
         "microservice.services.citizen-details.port" -> server.port(),
+        "microservice.services.fandf.port"           -> server.port(),
         "feature.web-chat.enabled"                   -> false
       )
       .overrides(

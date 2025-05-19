@@ -17,18 +17,19 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.{delete, get, matching, ok, post, put, urlEqualTo, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
+import pages._
 import pages.addEmployment._
 import pages.addPensionProvider._
-import pages.endEmployment._
-import pages.updateEmployment._
-import pages._
 import pages.benefits._
+import pages.endEmployment._
 import pages.income._
+import pages.updateEmployment._
 import pages.updatePensionProvider._
 import play.api.Application
 import play.api.http.ContentTypes
@@ -39,7 +40,6 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CONTENT_TYPE, GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
-import org.mockito.Mockito.when
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
@@ -63,7 +63,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Random
 
 class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
-
+  private val fandfDelegationUrl = s"/delegation/get"
   private val mockFeatureFlagService = mock[FeatureFlagService]
   private val mockJourneyCacheRepository = mock[JourneyCacheRepository]
   private val startTaxYear = TaxYear().start.getYear
@@ -534,6 +534,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .configure(
       "microservice.services.auth.port"                                -> server.port(),
       "microservice.services.pertax.port"                              -> server.port(),
+      "microservice.services.fandf.port"                               -> server.port(),
       "microservice.services.cachable.session-cache.port"              -> server.port(),
       "sca-wrapper.services.single-customer-account-wrapper-data.url"  -> s"http://localhost:${server.port()}",
       "microservice.services.tai.port"                                 -> server.port(),
@@ -748,6 +749,11 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
         .willReturn(ok("false"))
+    )
+
+    server.stubFor(
+      get(urlEqualTo(fandfDelegationUrl))
+        .willReturn(notFound())
     )
 
     for (year <- startTaxYear - 5 to startTaxYear + 1) {
