@@ -17,21 +17,22 @@
 package uk.gov.hmrc.tai.service.benefits
 
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class BenefitsService @Inject() (benefitsConnector: BenefitsConnector) {
+class BenefitsService @Inject() (benefitsConnector: BenefitsConnector)(implicit ec: ExecutionContext) {
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] =
-    benefitsConnector.benefits(nino, taxYear)
+    benefitsConnector.benefits(nino, taxYear).recover { case _: NotFoundException =>
+      Benefits(Seq.empty, Seq.empty)
+    }
 
   def endedCompanyBenefit(nino: Nino, employmentId: Int, endedCompanyBenefit: EndedCompanyBenefit)(implicit
-    hc: HeaderCarrier,
-    executionContext: ExecutionContext
+    hc: HeaderCarrier
   ): Future[String] =
     benefitsConnector.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit) map {
       case Some(envId) => envId
