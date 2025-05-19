@@ -40,8 +40,6 @@ class ApplicationConfig @Inject() (
   lazy val incomeTaxFormPartialLinkUrl: String =
     s"$dfsDigitalFormsFrontend/digital-forms/forms/personal-tax/income-tax/catalogue"
 
-  lazy val jrsClaimsFromDate: String = servicesConfig.getString("tai.jrs.claims.from.date")
-
   lazy val incomeFromEmploymentPensionLinkUrl: String =
     s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-pension-income/"
   lazy val companyBenefitsLinkUrl: String =
@@ -115,7 +113,6 @@ class ApplicationConfig @Inject() (
   private lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   private lazy val taxCalcFrontendHost: String = decorateUrlForLocalDev("taxcalc-frontend.host")
   private lazy val trackFrontendHost: String = decorateUrlForLocalDev("tracking-frontend.host")
-  lazy val jrsClaimsServiceUrl: String = servicesConfig.baseUrl("coronavirus-jrs-published-employees")
   lazy val webChatIsEnabled: Boolean = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String =
     servicesConfig.baseUrl("pertax")
@@ -128,4 +125,6 @@ class ApplicationConfig @Inject() (
   val citizenDetailsUrl: String = servicesConfig.baseUrl("citizen-details")
 
   val newApiBulkOnboarding: Seq[Int] = runModeConfiguration.get[Seq[Int]]("tai.newApiOnboarding.bulk.allowed")
+
+  lazy val fandfHost: String = servicesConfig.baseUrl("fandf")
 }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -85,10 +86,10 @@ class TaxAccountServiceSpec extends BaseSpec {
     "return the tax account summary from the connector" in {
       val sut = createSut
       when(taxAccountConnector.taxAccountSummary(any(), any())(any()))
-        .thenReturn(Future.successful(taxAccountSummary))
+        .thenReturn(EitherT.rightT(taxAccountSummary))
 
-      val result = sut.taxAccountSummary(nino, TaxYear())
-      Await.result(result, 5 seconds) mustBe taxAccountSummary
+      val result = sut.taxAccountSummary(nino, TaxYear()).value
+      Await.result(result, 5 seconds) mustBe Right(taxAccountSummary)
     }
   }
 

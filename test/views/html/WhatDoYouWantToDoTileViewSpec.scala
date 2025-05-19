@@ -132,34 +132,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       }
     }
 
-    "JrsClaimTile is enabled" in {
-      val modelJrsTileEnabled = createViewModel(showJrsLink = true)
-
-      val jrsClaimView: Html = whatDoYouWantToDoTileView(
-        form,
-        modelJrsTileEnabled,
-        appConfig,
-        incomeTaxHistoryEnabled = true,
-        cyPlusOneEnabled = false
-      )
-      val cards = doc(jrsClaimView).getElementsByClass("card")
-
-      cards.size mustBe 2
-
-      cards.toString must include(Messages("current.tax.year"))
-      doc(view) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak))
-      cards.toString mustNot include(Messages("next.year"))
-      cards.toString mustNot include(Messages("check.estimated.income"))
-
-      doc(jrsClaimView) must haveLinkWithUrlWithID(
-        "jrs-link",
-        s"${controllers.routes.JrsClaimsController.onPageLoad()}"
-      )
-      assertThrows[NullPointerException](
-        doc(view) must haveLinkWithUrlWithID("jrs-link", s"${controllers.routes.JrsClaimsController.onPageLoad()}")
-      )
-    }
-
     "IncomeTaxHistory enabled" in {
       val view: Html = whatDoYouWantToDoTileView(
         form,
@@ -198,10 +170,9 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   }
 
   def createViewModel(
-    showJrsLink: Boolean = false,
     maybeMostRecentTaxCodeChangeDate: Option[LocalDate] = None
   ): WhatDoYouWantToDoViewModel =
-    WhatDoYouWantToDoViewModel(cyPlusOneDataAvailable = true, showJrsLink, maybeMostRecentTaxCodeChangeDate)
+    WhatDoYouWantToDoViewModel(cyPlusOneDataAvailable = true, maybeMostRecentTaxCodeChangeDate)
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
