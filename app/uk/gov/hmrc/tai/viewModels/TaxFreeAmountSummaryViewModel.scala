@@ -80,7 +80,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
           personalAllowanceSumFormatted,
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         )
       )
     )
@@ -113,7 +113,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.additions.noAddition"),
           "£0",
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         )
       )
     } else {
@@ -123,7 +123,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.additions.total"),
           totalAmountFormatted,
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         )
       )
       (additionComponents map (TaxFreeAmountSummaryRowViewModel(
@@ -163,7 +163,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.deductions.noDeduction"),
           "£0",
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         )
       )
     } else {
@@ -173,7 +173,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.deductions.total"),
           totalAmountFormatted,
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         )
       )
       (deductionComponents map (TaxFreeAmountSummaryRowViewModel(
@@ -198,7 +198,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.totals.label"),
           totalAmountFormatted,
-          ChangeLinkViewModel(false, "", "")
+          ChangeLinkViewModel(isDisplayed = false)
         )
       )
     )
@@ -215,86 +215,100 @@ case class TaxFreeAmountSummaryRowViewModel(label: TaxSummaryLabel, value: Strin
 
 object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
+  private val blockedAllowanceComponentTypes: Set[AllowanceComponentType] = Set(
+    CommunityInvestmentTaxCredit,
+    ConcessionRelief,
+    DoubleTaxationRelief,
+    EnterpriseInvestmentScheme,
+    MarriedCouplesAllowanceMAE,
+    MarriedCouplesAllowanceMCCP,
+    RetirementAnnuityPayments,
+    SurplusMarriedCouplesAllowanceToWifeWAE,
+    ForeignPensionAllowance,
+    EarlyYearsAdjustment,
+    LoanInterestAmount,
+    LossRelief,
+    MaintenancePayments,
+    GiftsSharesCharity
+  )
   def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel =
-    new TaxFreeAmountSummaryRowViewModel(TaxSummaryLabel(label), value, link)
+    TaxFreeAmountSummaryRowViewModel(TaxSummaryLabel(label), value, link)
 
   def apply(
     codingComponent: CodingComponent,
     taxFreeAmountDetails: TaxFreeAmountDetails,
     applicationConfig: ApplicationConfig
   )(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
-    val label: TaxSummaryLabel = TaxSummaryLabel(codingComponent, taxFreeAmountDetails)
-
+    val label = TaxSummaryLabel(codingComponent, taxFreeAmountDetails)
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
     val link = createChangeLink(codingComponent, applicationConfig)
-
     TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
 
-  private def createChangeLink(codingComponent: CodingComponent, applicationConfig: ApplicationConfig)(implicit
-    messages: Messages
-  ): ChangeLinkViewModel =
+  private def createChangeLink(
+    codingComponent: CodingComponent,
+    applicationConfig: ApplicationConfig
+  )(implicit messages: Messages): ChangeLinkViewModel = {
+
+    def labelKey(componentType: TaxComponentType): String =
+      s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}"
+
     codingComponent.componentType match {
       case MedicalInsurance =>
-        val url = routes.ExternalServiceRedirectController
-          .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
-          .url
-        ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), url)
-      case MarriageAllowanceReceived =>
-        val url = routes.ExternalServiceRedirectController
-          .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
-          .url
         ChangeLinkViewModel(
           isDisplayed = true,
-          Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"),
-          url
+          Messages(labelKey(MedicalInsurance)),
+          routes.ExternalServiceRedirectController
+            .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
+            .url
         )
-      case MarriageAllowanceTransferred =>
-        val url = routes.ExternalServiceRedirectController
-          .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
-          .url
+
+      case MarriageAllowanceReceived | MarriageAllowanceTransferred =>
         ChangeLinkViewModel(
           isDisplayed = true,
-          Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceTransferred"),
-          url
+          Messages(labelKey(codingComponent.componentType)),
+          routes.ExternalServiceRedirectController
+            .auditInvalidateCacheAndRedirectService(TaiConstants.MarriageAllowanceService)
+            .url
         )
-      case CarBenefit =>
+
+      case CarBenefit | CarFuelBenefit =>
         ChangeLinkViewModel(
           isDisplayed = true,
-          Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"),
+          Messages(labelKey(codingComponent.componentType)),
           applicationConfig.cocarFrontendUrl
         )
-      case CarFuelBenefit =>
-        ChangeLinkViewModel(
-          isDisplayed = true,
-          Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"),
-          applicationConfig.cocarFrontendUrl
-        )
+
       case HICBCPaye =>
-        val url = applicationConfig.hicbcUpdateUrl
         ChangeLinkViewModel(
-          isDisplayed = url.nonEmpty,
+          isDisplayed = applicationConfig.hicbcUpdateUrl.nonEmpty,
           Messages(""),
-          url,
+          applicationConfig.hicbcUpdateUrl,
           "tai.updateOrRemove.hicbc"
         )
-      case companyBenefit: BenefitComponentType =>
-        val url = controllers.benefits.routes.CompanyBenefitController
-          .redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit)
-          .url
+
+      case benefit: BenefitComponentType =>
         ChangeLinkViewModel(
           isDisplayed = true,
-          Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"),
-          url
+          Messages(labelKey(benefit)),
+          controllers.benefits.routes.CompanyBenefitController
+            .redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), benefit)
+            .url
         )
-      case allowanceComponentType: AllowanceComponentType =>
-        val url = applicationConfig.taxFreeAllowanceLinkUrl
-        ChangeLinkViewModel(
-          isDisplayed = true,
-          Messages(s"tai.taxFreeAmount.table.taxComponent.${allowanceComponentType.toString}"),
-          url
-        )
+
+      case allowance: AllowanceComponentType =>
+        if (blockedAllowanceComponentTypes.contains(allowance)) {
+          ChangeLinkViewModel(isDisplayed = false)
+        } else {
+          ChangeLinkViewModel(
+            isDisplayed = true,
+            Messages(labelKey(allowance)),
+            applicationConfig.taxFreeAllowanceLinkUrl
+          )
+        }
+
       case _ =>
         ChangeLinkViewModel(isDisplayed = false)
     }
+  }
 }
