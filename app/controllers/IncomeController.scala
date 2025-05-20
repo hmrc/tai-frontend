@@ -76,7 +76,7 @@ class IncomeController @Inject() (
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
         editIncome(
-          EditIncomeForm.create(employmentAmount),
+          EditIncomeForm.create(employmentAmount, None),
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString
@@ -101,7 +101,7 @@ class IncomeController @Inject() (
           val model = SameEstimatedPayViewModel(
             name,
             employerId,
-            confirmedNewAmount.toInt,
+            Some(confirmedNewAmount.toInt),
             isPension = false,
             routes.IncomeSourceSummaryController.onPageLoad(employerId).url
           )
@@ -153,20 +153,21 @@ class IncomeController @Inject() (
     val dateOpt = userAnswers.get(UpdatedIncomeDatePage)
 
     (payToDateOpt, nameOpt, dateOpt) match {
-      case (Some(payToDate), Some(employerName), dateOpt) =>
+      case (payToDate, Some(employerName), dateOpt) =>
         val date = Try(dateOpt.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
             None
         }
+        val payToDateValue = payToDate.getOrElse("0")
 
         EditIncomeForm
-          .bind(employerName, BigDecimal(payToDate), date)
+          .bind(employerName, BigDecimal(payToDateValue), date)
           .fold(
             (formWithErrors: Form[EditIncomeForm]) =>
               Future.successful(
-                BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, payToDate))
+                BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, payToDateValue))
               ),
             (income: EditIncomeForm) =>
               pickRedirectLocation(income, routes.IncomeController.confirmRegularIncome(empId), empId)
@@ -185,26 +186,26 @@ class IncomeController @Inject() (
 
       userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
-          (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
-            .mapN {
-              case (Right(taxCodeIncomes), Some(employment)) =>
-                taxCodeIncomes.find(_.employmentId.contains(empId)) match {
-                  case Some(taxCodeIncome) =>
-                    val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+          employmentService
+            .employment(nino, empId)
+            .flatMap {
+              case Some(employment) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
 
-                    val vm = ConfirmAmountEnteredViewModel(
-                      empName = employment.name,
-                      currentAmount = employmentAmount.oldAmount,
-                      estIncome = newAmount.toInt,
-                      backUrl = controllers.routes.IncomeController.regularIncome(empId).url,
-                      empId = empId
-                    )
-                    Ok(confirmAmountEntered(vm))
+                val vm = ConfirmAmountEnteredViewModel(
+                  empName = employment.name,
+                  currentAmount = employmentAmount.oldAmount,
+                  estIncome = newAmount.toInt,
+                  backUrl = controllers.routes.IncomeController.regularIncome(empId).url,
+                  empId = empId
+                )
 
-                  case _ => throw new RuntimeException(s"Not able to find employment with id $empId")
-                }
-              case _ =>
-                errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
+                Future.successful(Ok(confirmAmountEntered(vm)))
+
+              case None =>
+                Future.successful(
+                  errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
+                )
             }
             .recoverWith { case NonFatal(e) =>
               userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId)) match {
@@ -216,6 +217,7 @@ class IncomeController @Inject() (
                   Future.successful(errorPagesHandler.internalServerError(e.getMessage))
               }
             }
+
         case _ =>
           logger.warn(s"Mandatory value missing from UserAnswers for empId $empId")
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
@@ -284,7 +286,7 @@ class IncomeController @Inject() (
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
         editPension(
-          EditIncomeForm.create(employmentAmount),
+          EditIncomeForm.create(employmentAmount, None),
           hasMultipleIncomes = false,
           employmentAmount.employmentId,
           amountYearToDate.toString()
@@ -314,12 +316,15 @@ class IncomeController @Inject() (
   }
 
   private def isIncomeTheSame(income: EditIncomeForm): Boolean =
-    FormHelper.areEqual(Some(income.oldAmount.toString), income.newAmount)
+    income.oldAmount match {
+      case Some(oldAmt) => FormHelper.areEqual(Some(oldAmt.toString), income.newAmount)
+      case None         => false
+    }
 
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] = {
-    val newAmount = income.toEmploymentAmount.newAmount.toString
+    val newAmount = FormHelper.convertCurrencyToInt(income.newAmount).toString
     val updatedAnswers = request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount)
 
     journeyCacheRepository.set(updatedAnswers).map(_ => Redirect(confirmationCallback))
@@ -335,20 +340,22 @@ class IncomeController @Inject() (
     val dateOpt = userAnswers.get(UpdatedIncomeDatePage)
 
     (payToDateOpt, idOpt, nameOpt, dateOpt) match {
-      case (Some(payToDate), Some(id), Some(employerName), dateOpt) =>
+      case (payToDate, Some(id), Some(employerName), dateOpt) =>
         val date = Try(dateOpt.map(date => LocalDate.parse(date))) match {
           case Success(optDate) => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
             None
         }
+        val payToDateValue = payToDate.getOrElse("0")
+
         EditIncomeForm
-          .bind(employerName, BigDecimal(payToDate), date)
+          .bind(employerName, BigDecimal(payToDateValue), date)
           .fold(
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  editPension(formWithErrors, hasMultipleIncomes = false, id, payToDate)
+                  editPension(formWithErrors, hasMultipleIncomes = false, id, payToDateValue)
                 )
               ),
             (income: EditIncomeForm) =>
@@ -367,27 +374,24 @@ class IncomeController @Inject() (
 
       request.userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
-          (taxAccountService.taxCodeIncomes(nino, TaxYear()), employmentService.employment(nino, empId))
-            .mapN {
-              case (Right(taxCodeIncomes), Some(employment)) =>
-                taxCodeIncomes.find(_.employmentId.contains(empId)) match {
-                  case Some(taxCodeIncome) =>
-                    val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+          employmentService
+            .employment(nino, empId)
+            .map {
+              case Some(employment) =>
+                val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
 
-                    val vm = ConfirmAmountEnteredViewModel(
-                      empName = employment.name,
-                      currentAmount = employmentAmount.oldAmount,
-                      estIncome = newAmount.toInt,
-                      backUrl = "#",
-                      empId = empId
-                    )
+                val vm = ConfirmAmountEnteredViewModel(
+                  empName = employment.name,
+                  currentAmount = employmentAmount.oldAmount,
+                  estIncome = newAmount.toInt,
+                  backUrl = "#",
+                  empId = empId
+                )
 
-                    Ok(confirmAmountEntered(vm))
-                  case None =>
-                    throw new RuntimeException(s"Unable to find employment with id $empId")
-                }
-              case _ =>
-                errorPagesHandler.internalServerError("Error while reading employment and tax code details")
+                Ok(confirmAmountEntered(vm))
+
+              case None =>
+                throw new RuntimeException("Error while reading employment and tax code details")
             }
             .recover { case NonFatal(e) =>
               errorPagesHandler.internalServerError(e.getMessage)

@@ -26,10 +26,9 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.Payment
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService, TaxAccountService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MonthAndYear
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel, IrregularPay}
@@ -44,6 +43,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   authenticate: AuthJourney,
   incomeService: IncomeService,
   taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
   mcc: MessagesControllerComponents,
   editSuccess: EditSuccessView,
   editIncomeIrregularHours: EditIncomeIrregularHoursView,
@@ -55,12 +55,15 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
   private val logger = Logger(this.getClass)
 
-  private val taxCodeIncomeInfoToCache: (TaxCodeIncome, Option[Payment]) => Map[String, String] =
-    (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
-      val defaultCaching = Map[String, String](
-        UpdateIncomeNamePage.toString      -> taxCodeIncome.name,
-        UpdateIncomePayToDatePage.toString -> taxCodeIncome.amount.toString
-      )
+  private val taxCodeIncomeInfoToCache: (String, Option[BigDecimal], Option[Payment]) => Map[String, String] =
+    (name: String, maybeAmount: Option[BigDecimal], payment: Option[Payment]) => {
+
+      val defaultCaching = maybeAmount.fold(Map[String, String](UpdateIncomeNamePage.toString -> name)) { amount =>
+        Map(
+          UpdateIncomeNamePage.toString      -> name,
+          UpdateIncomePayToDatePage.toString -> amount.toString
+        )
+      }
 
       payment.fold(defaultCaching)(payment =>
         defaultCaching + (UpdatedIncomeDatePage.toString -> payment.date.format(
@@ -76,18 +79,19 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
       (
         incomeService.latestPayment(nino, employmentId),
-        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
+        employmentService.employmentOnly(nino, employmentId, TaxYear()).map(_.map(_.name)),
+        taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId).map {
+          case Right(tci) => tci.map(_.amount)
+          case Left(_)    => None
+        }
       ).mapN {
-        case (_, Left(value)) =>
-          logger.error(value)
-          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad()))
-        case (maybePayment, Right(Some(tci))) =>
-          val cacheMap = taxCodeIncomeInfoToCache(tci, maybePayment)
+        case (maybePayment, Some(name), maybeAmount) =>
+          val cacheMap: Map[String, String] = taxCodeIncomeInfoToCache(name, maybeAmount, maybePayment)
           val updatedAnswers =
             request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
 
           journeyCacheRepository.set(updatedAnswers).map { _ =>
-            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
+            val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, maybeAmount.map(_.toString))
             Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
           }
         case _ =>
@@ -106,24 +110,31 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val confirmedNewAmount = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(employmentId))
 
       (name, newIrregularPay, paymentToDate) match {
-        case (Some(name), Some(newIrregularPay), Some(paymentToDate)) =>
-          if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-            Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId)))
-          } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
-            Future.successful(Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay()))
-          } else {
-            val vm = ConfirmAmountEnteredViewModel(
-              employmentId,
-              name,
-              paymentToDate.toInt,
-              newIrregularPay.toInt,
-              IrregularPay,
-              controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
-                .editIncomeIrregularHours(employmentId)
-                .url
-            )
-            Future.successful(Ok(confirmAmountEntered(vm)))
-          }
+        case (Some(name), Some(newIrregularPay), paymentToDate) =>
+          val isSameAsConfirmed = FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))
+          val isSameAsToDate = FormHelper.areEqual(paymentToDate, Some(newIrregularPay))
+
+          val redirect =
+            if (isSameAsConfirmed) {
+              Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(employmentId))
+            } else if (isSameAsToDate) {
+              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+            } else {
+              val currentAmountOpt = paymentToDate.flatMap(s => scala.util.Try(s.toInt).toOption)
+              val vm = ConfirmAmountEnteredViewModel(
+                employmentId,
+                name,
+                currentAmountOpt,
+                newIrregularPay.toInt,
+                IrregularPay,
+                controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
+                  .editIncomeIrregularHours(employmentId)
+                  .url
+              )
+              Ok(confirmAmountEntered(vm))
+            }
+
+          Future.successful(redirect)
         case _ =>
           logger.warn("Required values not found in user answers")
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId)))
@@ -135,11 +146,11 @@ class IncomeUpdateIrregularHoursController @Inject() (
     implicit request =>
       val userAnswers: UserAnswers = request.userAnswers
       val name: String = userAnswers.get(UpdateIncomeNamePage).toString
-      val paymentToDate: String = userAnswers.get(UpdateIncomePayToDatePage).getOrElse("")
+      val paymentToDate: Option[String] = userAnswers.get(UpdateIncomePayToDatePage)
       val latestPayDate: Option[String] = userAnswers.get(UpdatedIncomeDatePage)
 
       AmountComparatorForm
-        .createForm(latestPayDate, Some(paymentToDate.toInt))
+        .createForm(latestPayDate, paymentToDate.map(_.toInt))
         .bindFromRequest()
         .fold(
           formWithErrors => {
@@ -180,7 +191,9 @@ class IncomeUpdateIrregularHoursController @Inject() (
       (incomeNameOpt, newPayOpt, incomeIdOpt) match {
         case (Some(incomeName), Some(newPay), Some(incomeId)) =>
           (for {
-            _      <- taxAccountService.updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
+            _ <-
+              taxAccountService
+                .updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
             result <- cacheAndRespond(incomeName, incomeId, newPay)
           } yield result).recover { case NonFatal(e) =>
             errorPagesHandler.internalServerError(e.getMessage)

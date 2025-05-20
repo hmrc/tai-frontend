@@ -25,12 +25,11 @@ import play.api.libs.json.{JsNumber, JsObject, JsString, Json}
 import play.api.mvc._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.{IncomeService, TaxAccountService}
+import uk.gov.hmrc.tai.service.IncomeService
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache._
-import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
@@ -43,7 +42,6 @@ class IncomeUpdateEstimatedPayController @Inject() (
   incomeService: IncomeService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  taxAccountService: TaxAccountService,
   estimatedPayLandingPage: EstimatedPayLandingPageView,
   estimatedPay: EstimatedPayView,
   incorrectTaxableIncome: IncorrectTaxableIncomeView,
@@ -55,28 +53,24 @@ class IncomeUpdateEstimatedPayController @Inject() (
   def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers = request.userAnswers
 
-      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
-      (incomeNameOpt, incomeTypeOpt) match {
-        case (Some(incomeName), Some(incomeType)) =>
-          taxAccountService
-            .taxAccountSummary(user.nino, TaxYear())
-            .fold(
-              e => errorPagesHandler.internalServerError(e.getMessage),
-              _ =>
-                Ok(
-                  estimatedPayLandingPage(
-                    incomeName,
-                    empId,
-                    incomeType == TaiConstants.IncomeTypePension,
-                    appConfig
-                  )
-                )
+      (
+        request.userAnswers.get(UpdateIncomeNamePage),
+        request.userAnswers.get(UpdateIncomeTypePage)
+      ).tupled match {
+        case Some((incomeName, incomeType)) =>
+          Future.successful {
+            Ok(
+              estimatedPayLandingPage(
+                incomeName,
+                empId,
+                incomeType == TaiConstants.IncomeTypePension,
+                appConfig
+              )
             )
+          }
 
-        case _ =>
+        case None =>
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }
   }

@@ -50,7 +50,7 @@ import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
-  private class TestUpdateIncomeNextYearController()
+  private class TestUpdateIncomeNextYearController
       extends UpdateIncomeNextYearController(
         updateNextYearsIncomeService,
         mock[AuditConnector],
@@ -250,7 +250,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           employerName,
           employmentID,
           isPension,
-          currentEstPay,
+          Some(currentEstPay),
           AmountComparatorForm.createForm()
         )
       }
@@ -368,7 +368,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           employerName,
           employmentID,
           isPension,
-          currentEstPay,
+          Some(currentEstPay),
           AmountComparatorForm
             .createForm()
             .bindFromRequest()
@@ -401,7 +401,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val result: Future[Result] = testController.same(employmentID)(request)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, currentEstPay)(
+          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, Some(currentEstPay))(
             request,
             messages,
             authedUser
@@ -468,7 +468,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val newAmount = newEstPay
           val currentAmount = 1
 
-          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, 1)
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, Some(1))
           when(
             updateNextYearsIncomeService.get(meq(employmentID), meq(nino), any[UserAnswers])(any())
           ).thenReturn(
@@ -478,7 +478,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           val vm = ConfirmAmountEnteredViewModel(
             employmentID,
             employerName,
-            currentAmount,
+            Some(currentAmount),
             newAmount,
             NextYearPay,
             "#"
@@ -552,10 +552,31 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     }
   }
 
+  "update" should {
+    "render sameEstimatedPay view with correct model when new amount matches cached new amount" in {
+      val controller = createTestIncomeController()
+      val newEstPay = "999"
+
+      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
+        .thenReturn(Future.successful(Right(newEstPay.toInt)))
+
+      val result = controller.update(employmentID)(
+        RequestBuilder
+          .buildFakeRequestWithOnlySession(POST)
+          .withFormUrlEncodedBody("income" -> newEstPay)
+      )
+
+      status(result) mustBe OK
+      val body = Jsoup.parse(contentAsString(result)).body().text()
+      body must include("999")
+      body must include(employerName)
+    }
+  }
+
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController =
     new TestUpdateIncomeNextYearController() {
       val model: UpdateNextYearsIncomeCacheModel =
-        UpdateNextYearsIncomeCacheModel("employer name", employmentID, isPension, currentEstPay)
+        UpdateNextYearsIncomeCacheModel("employer name", employmentID, isPension, Some(currentEstPay))
 
       when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
         Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))

@@ -258,7 +258,7 @@ class UpdateIncomeNextYearController @Inject() (
               ),
             validForm =>
               validForm.income.fold(throw new RuntimeException) { newIncome =>
-                if (model.currentValue.toString == newIncome) {
+                if (model.currentValue.contains(newIncome.toInt)) {
                   Future
                     .successful(Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId)))
                 } else {
@@ -267,7 +267,7 @@ class UpdateIncomeNextYearController @Inject() (
                       val samePayViewModel = SameEstimatedPayViewModel(
                         model.employmentName,
                         model.employmentId,
-                        newAmount,
+                        Some(newAmount),
                         model.isPension,
                         controllers.routes.IncomeTaxComparisonController.onPageLoad().url
                       )

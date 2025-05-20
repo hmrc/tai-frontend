@@ -1,6 +1,8 @@
 import play.sbt.PlayImport.*
 import sbt.*
 
+import scala.collection.immutable.Seq
+
 private object AppDependencies {
   private val playVersion = "play-30"
   private val scaWrapperVersion = "2.10.0"
@@ -19,7 +21,7 @@ private object AppDependencies {
   val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"   %% s"mongo-feature-toggles-client-test-$playVersion"  % mongoFeatureToggleVersion,
     "uk.gov.hmrc"   %% s"sca-wrapper-test-$playVersion"                   % scaWrapperVersion,
-    "org.jsoup"     % "jsoup"                         % "1.19.1",
+    "org.jsoup"     % "jsoup"                         % "1.20.1",
     "org.scalatestplus" %% "scalacheck-1-17"               % "3.2.18.0"
   ).map(_ % "test")
 

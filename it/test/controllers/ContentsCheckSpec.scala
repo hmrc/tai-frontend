@@ -760,6 +760,32 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         get(urlEqualTo(s"/tai/$generatedNino/employments/years/$year"))
           .willReturn(ok(Json.toJson(employments).toString))
       )
+
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/employment-only/1/years/$year"))
+          .willReturn(
+            ok(
+              """{
+                |  "data": {
+                |    "name": "Test Employer",
+                |    "employmentStatus": "Live",
+                |    "payrollNumber": "12345",
+                |    "startDate": "2022-01-01",
+                |    "endDate": null,
+                |    "annualAccounts": [],
+                |    "taxDistrictNumber": "123",
+                |    "payeNumber": "321",
+                |    "sequenceNumber": 1,
+                |    "cessationPay": null,
+                |    "hasPayrolledBenefit": false,
+                |    "receivingOccupationalPension": false,
+                |    "employmentType": "EmploymentIncome"
+                |  }
+                |}""".stripMargin
+            )
+          )
+      )
+
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/summary"))
           .willReturn(ok(Json.toJson(taxAccountSummary).toString))

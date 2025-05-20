@@ -40,7 +40,7 @@ object ConfirmAmountEnteredViewModel {
   def apply(
     employmentId: Int,
     empName: String,
-    @nowarn currentAmount: Int,
+    @nowarn currentAmount: Option[Int],
     estIncome: Int,
     payType: PayType,
     backUrl: String
@@ -78,7 +78,7 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, @nowarn currentAmount: Int, estIncome: Int, backUrl: String, empId: Int)(implicit
+  def apply(empName: String, @nowarn currentAmount: Option[Int], estIncome: Int, backUrl: String, empId: Int)(implicit
     messages: Messages
   ): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(

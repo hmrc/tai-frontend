@@ -96,7 +96,7 @@
                 previousLabel = messages("tai.incomes.amount.current"),
                 newLabel = messages("tai.incomes.amount.new"),
                 previousFieldName = income("oldAmount").name,
-                previousFieldValue = income("oldAmount").value.getOrElse("0"),
+                maybePreviousFieldValue = income("oldAmount").value,
                 newField = income("newAmount")
             )
 
