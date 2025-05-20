@@ -97,6 +97,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
+      implicit val user: AuthedUser = request.taiUser
       val userAnswers = request.userAnswers
 
       val name = userAnswers.get(UpdateIncomeNamePage)
