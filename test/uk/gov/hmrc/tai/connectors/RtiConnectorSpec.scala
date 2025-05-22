@@ -60,6 +60,7 @@ class RtiConnectorSpec extends BaseSpec with WireMockHelper {
   private val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   private val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   private val annualAccount: AnnualAccount = AnnualAccount(
+    7,
     taxYear = uk.gov.hmrc.tai.model.TaxYear(),
     realTimeStatus = Available,
     payments = Seq(firstPayment, secondPayment),

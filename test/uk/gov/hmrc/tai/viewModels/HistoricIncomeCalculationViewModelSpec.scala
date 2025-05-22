@@ -71,7 +71,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       "requested employment has end of tax year update details" in {
         val date = LocalDate.parse("2017-06-09")
         val sampleEndOfTaxYearUpdate = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, -10.0)))
-        val sampleAnnualAccount = AnnualAccount(previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
+        val sampleAnnualAccount = AnnualAccount(7, previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
         val sampleEmployment = Employment(
           "emp1",
           Live,
@@ -138,7 +138,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
       "only one endOfYearTaxUpdate is provided with one valid adjustment type" in {
         val eyu = EndOfTaxYearUpdate(LocalDate.parse("2017-05-26"), Seq(Adjustment(NationalInsuranceAdjustment, 10)))
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.filterEndOfYearUpdateAdjustments(annualAccount)
         sut mustBe Seq((Adjustment(NationalInsuranceAdjustment, 10), LocalDate.parse("2017-05-26")))
       }
@@ -150,7 +150,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val date = LocalDate.parse("2017-05-26")
 
         val eyu = EndOfTaxYearUpdate(date, Seq(adj1, adj2, adj3))
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.filterEndOfYearUpdateAdjustments(annualAccount)
         sut mustBe Seq((adj1, date), (adj3, date))
       }
@@ -166,7 +166,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3, adj4))
 
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu1, eyu2))
         val sut = HistoricIncomeCalculationViewModel.filterEndOfYearUpdateAdjustments(annualAccount)
         sut mustBe Seq((adj4, date2))
       }
@@ -182,7 +182,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3, adj4))
 
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu1, eyu2))
         val sut = HistoricIncomeCalculationViewModel.filterEndOfYearUpdateAdjustments(annualAccount)
         sut mustBe Seq((adj1, date1), (adj4, date2))
       }
@@ -196,7 +196,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3))
 
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu1, eyu2))
         val sut = HistoricIncomeCalculationViewModel.filterEndOfYearUpdateAdjustments(annualAccount)
         sut mustBe Seq()
       }
@@ -214,7 +214,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
       "have only TaxAdjustment message" in {
         val eyu = EndOfTaxYearUpdate(date, Seq(Adjustment(TaxAdjustment, 100.0)))
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
           Messages(
@@ -227,7 +227,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
       "have only NationalInsuranceAdjustment message" in {
         val eyu = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, 100.0)))
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
           Messages(
@@ -240,7 +240,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
       "have only IncomeAdjustment message" in {
         val eyu = EndOfTaxYearUpdate(date, Seq(Adjustment(IncomeAdjustment, -100.0)))
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
           Messages(
@@ -262,7 +262,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val date2 = LocalDate.parse("2017-06-09")
         val eyu2 = EndOfTaxYearUpdate(date2, Seq(adj3, adj4))
 
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu1, eyu2))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu1, eyu2))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
 
         sut mustBe Seq(
@@ -285,7 +285,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
         val adj3 = Adjustment(IncomeAdjustment, 100.0)
 
         val eyu = EndOfTaxYearUpdate(date, Seq(adj1, adj2, adj3))
-        val annualAccount = AnnualAccount(previousYear, Available, Nil, Seq(eyu))
+        val annualAccount = AnnualAccount(7, previousYear, Available, Nil, Seq(eyu))
         val sut = HistoricIncomeCalculationViewModel.createEndOfYearTaxUpdateMessages(annualAccount)
         sut mustBe Seq(
           Messages(
@@ -319,7 +319,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
     payFrequency = Monthly
   )
 
-  val sampleAnnualAccount = AnnualAccount(previousYear, Available, List(samplePayment), Nil)
+  val sampleAnnualAccount = AnnualAccount(7, previousYear, Available, List(samplePayment), Nil)
 
   val sampleEmployment1 =
     Employment(

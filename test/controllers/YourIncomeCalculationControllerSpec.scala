@@ -40,6 +40,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
   val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val annualAccount: AnnualAccount = AnnualAccount(
+    7,
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
@@ -68,7 +69,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 6, 9)),
       None,
-      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      Seq(AnnualAccount(7, TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       1,
@@ -83,7 +84,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 7, 9)),
       None,
-      Seq(AnnualAccount(TaxYear().prev, Available, Nil, Nil)),
+      Seq(AnnualAccount(7, TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       2,
@@ -101,7 +102,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 6, 9)),
       None,
-      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      Seq(AnnualAccount(7, TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       1,
@@ -116,7 +117,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 7, 9)),
       None,
-      Seq(AnnualAccount(TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
+      Seq(AnnualAccount(7, TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       2,

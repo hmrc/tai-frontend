@@ -209,7 +209,7 @@ trait TaxAccountSummaryTestData {
     BigDecimal(666.66),
     Monthly
   )
-  val annualAccount: AnnualAccount = AnnualAccount(uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
+  val annualAccount: AnnualAccount = AnnualAccount(7, uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
   val ceasedEmployment: Employment = Employment(
     "Ceased employer name",
     Ceased,

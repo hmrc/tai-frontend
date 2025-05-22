@@ -182,7 +182,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "employment doesn't present" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
@@ -199,7 +199,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "tax code incomes return failure" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
@@ -244,7 +244,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
@@ -278,7 +278,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
@@ -304,7 +304,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
         val formData = Json.toJson(editIncomeForm)
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val userAnswers = baseUserAnswers
@@ -344,7 +344,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData = Json.toJson(editIncomeForm)
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
@@ -395,7 +395,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
         val formData = Json.toJson(editIncomeForm)
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val result =
@@ -612,7 +612,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "employment doesn't present" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
@@ -629,7 +629,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "tax code incomes return failure" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.failed(new RuntimeException("failed")))
@@ -810,7 +810,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "valid values are present in cache" in {
         val testController = createTestIncomeController()
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
 
         val userAnswers = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, cachedUpdateIncomeNewAmount)
