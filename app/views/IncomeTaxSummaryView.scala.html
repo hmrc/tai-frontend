@@ -202,7 +202,7 @@
                     <p class=" govuk-body govuk-!-margin-bottom-0">@messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
                     <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
                         <span class="govuk-visually-hidden">@messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
-                        <span class="display-block heading-36">@viewModel.taxFreeAmount.get</span>
+                        <span id="taxFreeAmount" class="display-block heading-36">@viewModel.taxFreeAmount.get</span>
                     </p>
                     <p class=" govuk-body">
                         @link(
@@ -222,7 +222,7 @@
                     <p class="govuk-body flush--bottom">@messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
                     <p class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
                         <span class="govuk-visually-hidden">@messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
-                        <span class="display-block heading-36">@viewModel.estimatedIncomeTaxAmount.get</span>
+                        <span id="estimatedIncomeTaxAmount" class="display-block heading-36">@viewModel.estimatedIncomeTaxAmount.get</span>
                     </p>
                     <p class="govuk-body">
                         @link(

@@ -53,6 +53,7 @@ object IncomeSourceSummaryViewModel {
     displayName: String,
     optTaxCodeIncome: Option[TaxCodeIncome], // Tax account API response
     employment: Employment, // Employment API response
+    payments: Option[AnnualAccount],
     benefits: Benefits,
     estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
@@ -63,10 +64,7 @@ object IncomeSourceSummaryViewModel {
       optTaxCodeIncome.map(_.amount) // TODO: DDCNL-10088 - pull from iabd if missing from tax account
     val taxCode = optTaxCodeIncome.map(_.taxCode)
 
-    val amountYearToDate = for {
-      latestAnnualAccount <- employment.latestAnnualAccount
-      latestPayment       <- latestAnnualAccount.latestPayment
-    } yield latestPayment.amountYearToDate
+    val amountYearToDate = payments.flatMap(_.latestPayment).map(_.amountYearToDate)
 
     val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
     val displayAddCompanyCar =

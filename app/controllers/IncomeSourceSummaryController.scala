@@ -151,6 +151,7 @@ class IncomeSourceSummaryController @Inject() (
           displayName = request.fullName,
           taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
           employment = employment,
+          payments = payments.toOption.flatMap(_.find(_.sequenceNumber == employment.sequenceNumber)),
           benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,
           rtiAvailable = isRTIAvailable(payments),

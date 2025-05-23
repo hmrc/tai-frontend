@@ -84,7 +84,7 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
@@ -127,7 +127,7 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -147,7 +147,7 @@ class IncomeServiceSpec extends BaseSpec {
       "payments details are not present" in {
         val sut = createSUT
 
-        val annualAccount = AnnualAccount(TaxYear(), Available, Seq.empty[Payment], Nil)
+        val annualAccount = AnnualAccount(7, TaxYear(), Available, Seq.empty[Payment], Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 

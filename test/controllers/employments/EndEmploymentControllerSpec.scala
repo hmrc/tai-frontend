@@ -198,7 +198,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to end employment page if value no is passed in the form and the employment has a payment no more than 6 weeks 1 day in the past" in {
       val payment = paymentOnDate(LocalDate.now().minusWeeks(6).minusDays(1))
-      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
       val employment = employmentWithAccounts(List(annualAccount))
 
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -223,7 +223,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to error page if value no is passed in the form and the employment has a payment is less than 6 weeks 1 day from today in the past" in {
       val payment = paymentOnDate(LocalDate.now().minusWeeks(6))
-      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
       val employment = employmentWithAccounts(List(annualAccount))
 
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -245,7 +245,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to irregular payment page if value No is passed in the form and the employment has an irregular payment frequency" in {
       val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
-      val annualAccount = AnnualAccount(TaxYear(), Available, List(payment), Nil)
+      val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
       val employment = employmentWithAccounts(List(annualAccount))
 
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))

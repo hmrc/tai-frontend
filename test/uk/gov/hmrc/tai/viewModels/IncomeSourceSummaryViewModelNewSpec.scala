@@ -33,6 +33,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
   private val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   private val latestPayment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
   private val annualAccount = AnnualAccount(
+    7,
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
@@ -103,6 +104,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
   private def createViewModel(
     taxCodeIncomeSources: Seq[TaxCodeIncome],
     employment: Employment,
+    payments: Option[AnnualAccount],
     benefits: Benefits,
     empId: Int = 1
   ): IncomeSourceSummaryViewModel =
@@ -111,6 +113,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
       displayName = "User Name",
       taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
       employment = employment,
+      payments = payments,
       benefits = benefits,
       estimatedPayJourneyCompleted = false,
       rtiAvailable = true,
@@ -132,7 +135,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("PENSION-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "475",
           payeNumber = "GA82452",
           sequenceNumber = 2,
@@ -142,7 +145,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedPenisonViewModel
       }
@@ -161,7 +164,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "123",
           payeNumber = "AB12345",
           sequenceNumber = 2,
@@ -171,7 +174,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedEmploymentViewModel
         /*
@@ -224,7 +227,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "",
           payeNumber = "",
           sequenceNumber = 1,
@@ -234,7 +237,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
@@ -251,7 +254,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "",
           payeNumber = "",
           sequenceNumber = 7,
@@ -273,7 +276,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           GenericBenefit(Entertaining, None, BigDecimal(120653.99))
         )
         val benefits = Benefits(companyCars, otherBenefits)
-        val model = createViewModel(taxCodeIncomeSources, employment, benefits, empId = 7)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), benefits, empId = 7)
 
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
@@ -303,7 +306,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "",
           payeNumber = "",
           sequenceNumber = employmentId,
@@ -326,7 +329,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = createViewModel(taxCodeIncomeSources, employment, benefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), benefits)
 
         model.benefits mustBe Seq(
           CompanyBenefitViewModel(
@@ -362,7 +365,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "",
           payeNumber = "",
           sequenceNumber = 1,
@@ -382,7 +385,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = createViewModel(taxCodeIncomeSources, employment, benefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), benefits)
 
         model.benefits must contain theSameElementsAs Seq(
           CompanyBenefitViewModel(
@@ -423,7 +426,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "",
           payeNumber = "",
           sequenceNumber = 1,
@@ -433,7 +436,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model.displayAddCompanyCarLink mustBe true
       }
@@ -451,7 +454,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "",
           payeNumber = "",
           sequenceNumber = 1,
@@ -469,7 +472,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           )
         )
         val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])
-        val model = createViewModel(taxCodeIncomeSources, employment, benefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), benefits)
         model.displayAddCompanyCarLink mustBe false
       }
     }
@@ -479,6 +482,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
         def createViewModel(
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
+          payments: Option[AnnualAccount],
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
@@ -488,6 +492,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
             taxCodeIncomeSources
               .find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
+            payments = payments,
             benefits = benefits,
             estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
@@ -506,7 +511,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("EMPLOYER-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "123",
           payeNumber = "AB12345",
           sequenceNumber = 2,
@@ -516,7 +521,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedEmploymentVmUpdateInProgress
         /*
@@ -531,6 +536,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
         def createViewModel(
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
+          payments: Option[AnnualAccount],
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
@@ -539,6 +545,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
             displayName = "User Name",
             taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
+            payments = payments,
             benefits = benefits,
             estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
@@ -557,7 +564,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("PENSION-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "475",
           payeNumber = "GA82452",
           sequenceNumber = 2,
@@ -567,7 +574,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedPensionVmUpdateInProgress
       }
@@ -579,6 +586,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
         def createViewModel(
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
+          payments: Option[AnnualAccount],
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
@@ -587,6 +595,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
             displayName = "User Name",
             taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
+            payments = payments,
             benefits = benefits,
             estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
@@ -605,7 +614,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           Some("EMPLOYER-1122"),
           Some(LocalDate.now()),
           None,
-          Seq(annualAccount),
+          Seq.empty,
           "123",
           "AB12345",
           2,
@@ -615,7 +624,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedEmploymentViewModel
       }
@@ -623,6 +632,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
         def createViewModel(
           taxCodeIncomeSources: Seq[TaxCodeIncome],
           employment: Employment,
+          payments: Option[AnnualAccount],
           benefits: Benefits,
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
@@ -631,6 +641,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
             displayName = "User Name",
             taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
+            payments = payments,
             benefits = benefits,
             estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
@@ -649,7 +660,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("PENSION-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "475",
           payeNumber = "GA82452",
           sequenceNumber = 2,
@@ -659,7 +670,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedPenisonViewModel
 
@@ -676,7 +687,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payrollNumber = Some("PENSION-1122"),
           startDate = Some(LocalDate.now()),
           endDate = None,
-          annualAccounts = Seq(annualAccount),
+          annualAccounts = Seq.empty,
           taxDistrictNumber = "475",
           payeNumber = "GA82452",
           sequenceNumber = 2,
@@ -686,7 +697,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, Some(annualAccount), emptyBenefits)
 
         model mustBe expectedPenisonViewModel
 
