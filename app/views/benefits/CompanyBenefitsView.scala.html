@@ -19,12 +19,12 @@
 @import uk.gov.hmrc.tai.util.Money.pounds
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
-@import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+@import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitsSummaryViewModel
 
 
 @this(main: MainTemplate)
 
-@(model: IncomeSourceSummaryViewModel)(implicit request:DataRequest[_], messages: Messages)
+@(model: CompanyBenefitsSummaryViewModel)(implicit request:DataRequest[_], messages: Messages)
 
 @mainHeading = @{
     messages("tai.income.details.companyBenefitsHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)

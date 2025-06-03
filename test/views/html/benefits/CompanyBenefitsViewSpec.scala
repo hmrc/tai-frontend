@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.CompanyBenefitViewModel
+import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitsSummaryViewModel
 
 import java.time.Instant
 
@@ -56,49 +57,15 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
     CompanyBenefitViewModel("ben3", BigDecimal(22.44), "url3")
   )
 
-  private lazy val model = IncomeSourceSummaryViewModel(
-    1,
+  private lazy val model = CompanyBenefitsSummaryViewModel(
     "User Name",
     "Employer",
-    Some(100),
-    400,
-    Some("1100L"),
-    "EMPLOYER-1122",
-    isPension = false,
-    estimatedPayJourneyCompleted = false,
-    rtiAvailable = true,
-    taxDistrictNumber = "123",
-    payeNumber = "AB12345"
+    Seq.empty,
+    true
   )
-
-  private lazy val modelWithUpdateInProgressEmployment = IncomeSourceSummaryViewModel(
-    1,
-    "User Name",
-    "Employer",
-    Some(100),
-    400,
-    Some("1100L"),
-    "EMPLOYER-1122",
-    isPension = false,
-    estimatedPayJourneyCompleted = true,
-    rtiAvailable = true,
-    taxDistrictNumber = "123",
-    payeNumber = "AB12345",
-    isUpdateInProgress = true
-  )
-
-  def viewWithUpdateInProgressEmployment: Html = template(modelWithUpdateInProgressEmployment)
-  lazy val docWithUpdateInProgressEmployment: Document = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
 
   "display a company benefit section" in {
     doc must haveDivWithId("companyBenefitsSection")
-  }
-
-  "use conditional logic to display the company benefits section" which {
-    "displays the section otherwise" in {
-      val testDoc = Jsoup.parse(template(model.copy(isPension = false)).toString)
-      testDoc must haveDivWithId("companyBenefitsSection")
-    }
   }
 
   "use conditional logic to display a company benefits list" which {
