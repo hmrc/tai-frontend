@@ -3,7 +3,6 @@ import play.sbt.routes.RoutesKeys.*
 import sbt.Keys.*
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.DefaultBuildSettings.defaultSettings
 
 val appName = "tai-frontend"
 
@@ -62,14 +61,12 @@ val wartRemovedExcludedClasses = Seq(
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(playSettings ++ scoverageSettings: _*)
-  .settings(defaultSettings(): _*)
   .settings(
     libraryDependencies ++= AppDependencies.all,
     retrieveManaged := true,
     routesGenerator := InjectedRoutesGenerator,
     PlayKeys.playDefaultPort := 9230
   )
-  .settings(resolvers ++= Seq(Resolver.jcenterRepo))
   .settings(
     scalacOptions ++= Seq(
       "-feature",
