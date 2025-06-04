@@ -18,16 +18,14 @@ package controllers.benefits
 
 import controllers.auth.AuthJourney
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TemporarilyUnavailable
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitsSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
 
 import javax.inject.Inject
@@ -54,46 +52,42 @@ class CompanyBenefitsSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
-    val hasJourneyCompleted: Boolean = request.userAnswers
-      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
-      .getOrElse(false)
-
     val incomeDetailsResult = for {
       taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employment               <- employmentService.employment(nino, empId)
       benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
-      estimatedPayCompletion   <- Future.successful(hasJourneyCompleted)
       cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
-    } yield (taxCodeIncomes, employment, benefitsDetails, estimatedPayCompletion, cacheUpdatedIncomeAmount)
+    } yield (taxCodeIncomes, employment, benefitsDetails, cacheUpdatedIncomeAmount)
 
     incomeDetailsResult
       .flatMap {
         case (
-              Right(taxCodeIncomes),
+              taxCodeIncomes,
               Some(employment),
               benefitsDetails,
-              estimatedPayCompletion,
               cacheUpdatedIncomeAmount
             ) =>
-          val rtiAvailable = employment.latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-
-          val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
-            empId,
+          val companyBenefitsSummaryViewModel = CompanyBenefitsSummaryViewModel(
+            employment.name,
             request.fullName,
-            taxCodeIncomes,
-            employment,
-            benefitsDetails,
-            estimatedPayCompletion,
-            rtiAvailable,
+            empId,
             applicationConfig,
-            cacheUpdatedIncomeAmount
+            benefitsDetails
           )
-          val result = if (!incomeDetailsViewModel.isUpdateInProgress) {
+
+          val taxCodeIncomeSource = taxCodeIncomes
+            .fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)))
+          val isUpdateInProgress = cacheUpdatedIncomeAmount match {
+            case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.map(_.amount.toInt).getOrElse(0)
+            case None                    => false
+          }
+
+          val result = if (!isUpdateInProgress) {
             journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
           } else {
             Future.successful((): Unit)
           }
-          result.map(_ => Ok(companyBenefits(incomeDetailsViewModel)))
+          result.map(_ => Ok(companyBenefits(companyBenefitsSummaryViewModel)))
 
         case _ =>
           Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))

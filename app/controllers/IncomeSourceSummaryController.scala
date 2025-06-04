@@ -25,10 +25,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
-import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.ApiBackendChoice
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
@@ -42,9 +40,7 @@ class IncomeSourceSummaryController @Inject() (
   val auditConnector: AuditConnector,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
-  benefitsService: BenefitsService,
   authenticate: AuthJourney,
-  applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
   journeyCacheRepository: JourneyCacheRepository,
@@ -75,14 +71,12 @@ class IncomeSourceSummaryController @Inject() (
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       employmentService.employment(nino, empId),
-      benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
       case (
             Right(taxCodeIncomes),
             Some(employment),
-            benefitsDetails,
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
@@ -92,10 +86,8 @@ class IncomeSourceSummaryController @Inject() (
           displayName = request.fullName,
           taxCodeIncomeSources = taxCodeIncomes,
           employment = employment,
-          benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,
           rtiAvailable = !rtiUnavailable,
-          applicationConfig = applicationConfig,
           cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
 
@@ -134,7 +126,6 @@ class IncomeSourceSummaryController @Inject() (
       employmentService.employmentOnly(nino, empId, TaxYear()),
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       rtiService.getPaymentsForYear(nino, TaxYear()).value,
-      benefitsService.benefits(nino, TaxYear().year),
       Future.successful(hasJourneyCompleted),
       cacheUpdatedIncomeAmountFuture
     ).mapN {
@@ -142,7 +133,6 @@ class IncomeSourceSummaryController @Inject() (
             Some(employment),
             taxCodeIncomes,
             payments,
-            benefitsDetails,
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
@@ -152,10 +142,8 @@ class IncomeSourceSummaryController @Inject() (
           taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
           employment = employment,
           payments = payments.toOption.flatMap(_.find(_.sequenceNumber == employment.sequenceNumber)),
-          benefits = benefitsDetails,
           estimatedPayJourneyCompleted = estimatedPayCompletion,
           rtiAvailable = isRTIAvailable(payments),
-          applicationConfig = applicationConfig,
           cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
         )
 
