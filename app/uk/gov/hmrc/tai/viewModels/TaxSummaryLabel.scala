@@ -55,12 +55,12 @@ object TaxSummaryLabel {
     val taxComponentType = codingComponent.componentType
     val employmentId = codingComponent.employmentId
     val amountDue = codingComponent.inputAmount
-
     val labelString = describe(
       codingComponent.componentType,
       employmentId,
       taxFreeAmountDetails.companyCarBenefits,
-      taxFreeAmountDetails.employmentIdNameMap
+      taxFreeAmountDetails.employmentIdNameMap,
+      codingComponent.inputAmount.getOrElse(BigDecimal(0))
     )
 
     val labelLink = amountDue.flatMap { amount =>
@@ -109,7 +109,8 @@ object TaxSummaryLabel {
     componentType: TaxComponentType,
     employmentId: Option[Int],
     companyCarBenefits: Seq[CompanyCarBenefit],
-    employmentIdNameMap: Map[Int, String]
+    employmentIdNameMap: Map[Int, String],
+    inputAmount: BigDecimal
   )(implicit messages: Messages): String =
     (componentType, employmentId) match {
       case (CarBenefit, Some(id)) if employmentIdNameMap.contains(id) =>
@@ -125,6 +126,6 @@ object TaxSummaryLabel {
           s"${messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
 
       case _ =>
-        messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
+        messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}", inputAmount)
     }
 }
