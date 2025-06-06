@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
@@ -28,7 +29,7 @@ case class TaxSummaryLabel(value: String, link: Option[HelpLink] = None)
 
 case class HelpLink(value: String, href: String, id: String)
 
-object TaxSummaryLabel {
+object TaxSummaryLabel extends Logging {
 
   def apply(
     taxComponentType: TaxComponentType,
@@ -55,12 +56,16 @@ object TaxSummaryLabel {
     val taxComponentType = codingComponent.componentType
     val employmentId = codingComponent.employmentId
     val amountDue = codingComponent.inputAmount
+
     val labelString = describe(
-      codingComponent.componentType,
-      employmentId,
-      taxFreeAmountDetails.companyCarBenefits,
-      taxFreeAmountDetails.employmentIdNameMap,
-      codingComponent.inputAmount.getOrElse(BigDecimal(0))
+      componentType = codingComponent.componentType,
+      employmentId = employmentId,
+      companyCarBenefits = taxFreeAmountDetails.companyCarBenefits,
+      employmentIdNameMap = taxFreeAmountDetails.employmentIdNameMap,
+      inputAmount = codingComponent.inputAmount.fold {
+        logger.error(s"No value returned from API for inputAmount: $codingComponent")
+        BigDecimal(0)
+      }(identity)
     )
 
     val labelLink = amountDue.flatMap { amount =>
