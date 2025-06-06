@@ -287,11 +287,17 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         when(mockAppConfig.hicbcUpdateUrl).thenReturn("non empty link")
 
         val row = TaxFreeAmountSummaryRowViewModel(
-          CodingComponent(HICBCPaye, Some(10), 11500, "HICBC PAYE"),
-          taxFreeAmountDetails,
-          mockAppConfig
+          codingComponent = CodingComponent(
+            componentType = HICBCPaye,
+            employmentId = Some(10),
+            amount = 11500,
+            description = "HICBC PAYE",
+            inputAmount = Some(BigDecimal(88))
+          ),
+          taxFreeAmountDetails = taxFreeAmountDetails,
+          applicationConfig = mockAppConfig
         )
-        row.label.value mustBe "Based on High Income Child Benefit Charge"
+        row.label.value mustBe "High Income Child Benefit Charge – based on a charge of £88"
         row.link.href mustBe "non empty link"
         row.link.isDisplayed mustBe true
       }
@@ -300,11 +306,17 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
         when(mockAppConfig.hicbcUpdateUrl).thenReturn("")
 
         val row = TaxFreeAmountSummaryRowViewModel(
-          CodingComponent(HICBCPaye, Some(10), 11500, "HICBC PAYE"),
-          taxFreeAmountDetails,
-          mockAppConfig
+          codingComponent = CodingComponent(
+            componentType = HICBCPaye,
+            employmentId = Some(10),
+            amount = 11500,
+            description = "HICBC PAYE",
+            inputAmount = Some(BigDecimal(77))
+          ),
+          taxFreeAmountDetails = taxFreeAmountDetails,
+          applicationConfig = mockAppConfig
         )
-        row.label.value mustBe "Based on High Income Child Benefit Charge"
+        row.label.value mustBe "High Income Child Benefit Charge – based on a charge of £77"
         row.link.href mustBe ""
         row.link.isDisplayed mustBe false
       }
