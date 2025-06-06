@@ -63,7 +63,7 @@ object TaxSummaryLabel extends Logging {
       companyCarBenefits = taxFreeAmountDetails.companyCarBenefits,
       employmentIdNameMap = taxFreeAmountDetails.employmentIdNameMap,
       inputAmount = codingComponent.inputAmount.fold {
-        logger.error(s"No value returned from API for inputAmount: $codingComponent")
+        logger.error(s"No value returned from API for inputAmount: $codingComponent therefore will default to zero.")
         BigDecimal(0)
       }(identity)
     )
