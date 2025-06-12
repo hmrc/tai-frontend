@@ -6,8 +6,8 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "tai-frontend"
 
-ThisBuild / majorVersion := 2
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / majorVersion := 3
+ThisBuild / scalaVersion := "3.3.6"
 ThisBuild / scalafmtOnCompile := true
 
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
@@ -69,29 +69,25 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(
     scalacOptions ++= Seq(
+      "-unchecked",
       "-feature",
+      "-language:noAutoTupling",
       "-Werror",
-      "-Wdead-code",
-      "-Wunused:_",
-      "-Wextra-implicit",
-      "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
-      "-Wconf:cat=unused-imports&site=<empty>:s",
-      "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
-      "-Wconf:cat=unused&src=.*Routes\\.scala:s",
-      "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
-      "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
-      "-Wconf:cat=deprecation&msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
-      "-Wconf:cat=deprecation&msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
-      "-Wconf:cat=deprecation&msg=trait HttpClient in package http is deprecated \\(since 15.0.0\\).*:s",
-      "-Wconf:cat=deprecation&msg=trait HttpGet in package http is deprecated \\(since 15.0.0\\).*:s",
+      "-Wconf:msg=unused import&src=.*views/.*:s",
+      "-Wconf:msg=unused import&src=<empty>:s",
+      "-Wconf:msg=unused&src=.*RoutesPrefix\\.scala:s",
+      "-Wconf:msg=unused&src=.*Routes\\.scala:s",
+      "-Wconf:msg=unused&src=.*ReverseRoutes\\.scala:s",
+      "-Wconf:msg=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
+      "-Wconf:msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
+      "-Wconf:msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
       "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s",
       "-Wconf:msg=a type was inferred to be `Object`; this may indicate a programming error\\.:s",
+      "-Wconf:msg=Flag.*repeatedly:s"
     )
   )
-  .settings(scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"))
 
 Test / Keys.fork := true
-Test / scalacOptions --= Seq("-Wdead-code", "-Wvalue-discard")
 
 lazy val it = project
   .enablePlugins(play.sbt.PlayScala)
