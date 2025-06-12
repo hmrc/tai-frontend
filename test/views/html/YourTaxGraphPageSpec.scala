@@ -33,11 +33,11 @@ class YourTaxGraphPageSpec extends BaseSpec {
 
     "show Tax-Free Allowance and SSR and DIV" in {
 
-      val bands = List(
+      val bands           = List(
         Band("TaxFree", 99.99, 29000, 0, "ZeroBand")
       )
       val nextBandMessage = "You can have £14,000 more before your income reaches the next tax band."
-      val graphData =
+      val graphData       =
         BandedGraph("taxGraph", bands, 0, 43000, 29000, 99.99, 29000, 99.99, 0, Some(nextBandMessage), None)
 
       val doc =
@@ -48,12 +48,12 @@ class YourTaxGraphPageSpec extends BaseSpec {
     }
 
     "show Tax-Free Allowance and Income basic rate" in {
-      val bands = List(
+      val bands           = List(
         Band("TaxFree", 16.66, 3200, 0, "ZeroBand"),
         Band("Band", 83.33, 16000, 5000, "NonZeroBand")
       )
       val nextBandMessage = "You can have £12,800 more before your income reaches the next tax band."
-      val graphData =
+      val graphData       =
         BandedGraph("taxGraph", bands, 0, 32000, 19200, 16.66, 3200, 83.33, 5000, Some(nextBandMessage), None)
 
       val doc =
@@ -66,12 +66,12 @@ class YourTaxGraphPageSpec extends BaseSpec {
     }
 
     "show Tax-Free Allowance and Taxed Income" in {
-      val bands = List(
+      val bands           = List(
         Band("TaxFree", 6.15, 3000, 0, "ZeroBand"),
         Band("Band", 93.75, 45000, 15000, "NonZeroBand")
       )
       val nextBandMessage = "You can have £102,000 more before your income reaches the next tax band."
-      val graphData =
+      val graphData       =
         BandedGraph("taxGraph", bands, 0, 150000, 48000, 6.15, 3000, 93.75, 15000, Some(nextBandMessage), None)
 
       val doc =

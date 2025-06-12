@@ -44,12 +44,15 @@ import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
-    extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with ScalaFutures {
+    extends BaseSpec
+    with JsoupMatchers
+    with ControllerViewTestHelper
+    with ScalaFutures {
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
-  val employerId = 1
-  val sessionId: String = "testSessionId"
+  val employerId             = 1
+  val sessionId: String      = "testSessionId"
   val employer: IncomeSource = IncomeSource(id = employerId, name = "sample employer")
 
   val defaultEmployment: Employment =
@@ -69,8 +72,8 @@ class IncomeUpdateCalculatorControllerSpec
       EmploymentIncome
     )
 
-  val mockIncomeService: IncomeService = mock[IncomeService]
-  val employmentService: EmploymentService = mock[EmploymentService]
+  val mockIncomeService: IncomeService                   = mock[IncomeService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
@@ -286,15 +289,15 @@ class IncomeUpdateCalculatorControllerSpec
     object CheckYourAnswersPageHarness {
       sealed class CheckYourAnswersPageHarness {
 
-        val employerName = "Employer1"
-        val payFrequency = "monthly"
-        val totalSalary = "10000"
+        val employerName      = "Employer1"
+        val payFrequency      = "monthly"
+        val totalSalary       = "10000"
         val payslipDeductions = "yes"
-        val bonusPayments = "yes"
-        val taxablePay = "8000"
-        val bonusAmount = "1000"
-        val payPeriodInDays = "3"
-        val employerId = "1"
+        val bonusPayments     = "yes"
+        val taxablePay        = "8000"
+        val bonusAmount       = "1000"
+        val payPeriodInDays   = "3"
+        val employerId        = "1"
 
         val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeNamePage, employerName)
@@ -383,7 +386,7 @@ class IncomeUpdateCalculatorControllerSpec
     }
     "redirect to EditSuccessView" when {
       "journey cache returns employment name, net amount and id" in {
-        val empId = 123
+        val empId  = 123
         val result = HandleCalculationResultHarness
           .harnessSetup("100", empId)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
@@ -393,7 +396,7 @@ class IncomeUpdateCalculatorControllerSpec
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
-        val empId = 456
+        val empId  = 456
         val result = HandleCalculationResultHarness
           .harnessSetup("4632.460273972602739726027397260273", empId)
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())

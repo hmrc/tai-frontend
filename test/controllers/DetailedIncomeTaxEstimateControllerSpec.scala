@@ -33,9 +33,9 @@ import scala.concurrent.Future
 
 class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
-  val personService: PersonService = mock[PersonService]
+  val personService: PersonService                   = mock[PersonService]
   val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val taxAccountService: TaxAccountService           = mock[TaxAccountService]
 
   def sut =
     new DetailedIncomeTaxEstimateController(

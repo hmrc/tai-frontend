@@ -88,7 +88,7 @@ class PayeControllerHistoric @Inject() (
   ): PartialFunction[Throwable, Future[Result]] = {
 
     implicit val rl: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
-    val nino = request.taiUser.nino.toString()
+    val nino                                            = request.taiUser.nino.toString()
 
     errorPagesHandler.npsEmploymentAbsentResult(nino) orElse
       errorPagesHandler.rtiEmploymentAbsentResult(nino) orElse

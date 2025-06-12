@@ -56,7 +56,8 @@ class AddPensionProviderController @Inject() (
   addPensionStartDateView: AddPensionStartDateView,
   journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with EmptyCacheRedirect {
+    extends TaiBaseController(mcc)
+    with EmptyCacheRedirect {
 
   private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
@@ -110,7 +111,7 @@ class AddPensionProviderController @Inject() (
             mandatoryValues
           )
         )
-      case (None, _) => Redirect(taxAccountSummaryRedirect)
+      case (None, _)                             => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -131,7 +132,7 @@ class AddPensionProviderController @Inject() (
                   )
                 )
               )
-            case None =>
+            case None                      =>
               Future.successful(InternalServerError("No pension Data present in cache"))
           },
         yesNo =>
@@ -141,7 +142,7 @@ class AddPensionProviderController @Inject() (
           } yield yesNo match {
             case Some(FormValuesConstants.YesValue) =>
               Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
-            case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
+            case _                                  => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
           }
       )
   }
@@ -156,7 +157,7 @@ class AddPensionProviderController @Inject() (
           )
         implicit val user: AuthedUser = request.taiUser
         Ok(addPensionErrorView(pensionProviderName))
-      case None => InternalServerError("Pension provider name missing from cache")
+      case None                      => InternalServerError("Pension provider name missing from cache")
     }
   }
 
@@ -168,8 +169,8 @@ class AddPensionProviderController @Inject() (
     ) match {
       case (Some(name), Some(startDate)) =>
         Ok(addPensionStartDateView(PensionAddDateForm(name).form.fill(LocalDate.parse(startDate)), name))
-      case (Some(name), None) => Ok(addPensionStartDateView(PensionAddDateForm(name).form, name))
-      case (None, _)          => Redirect(taxAccountSummaryRedirect)
+      case (Some(name), None)            => Ok(addPensionStartDateView(PensionAddDateForm(name).form, name))
+      case (None, _)                     => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -247,11 +248,11 @@ class AddPensionProviderController @Inject() (
 
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val telephoneQuestion = request.userAnswers.get(AddPensionProviderTelephoneQuestionPage)
-    val telephoneNo = request.userAnswers.get(AddPensionProviderTelephoneQuestionPage) match {
+    val telephoneNo       = request.userAnswers.get(AddPensionProviderTelephoneQuestionPage) match {
       case Some(FormValuesConstants.YesValue) => request.userAnswers.get(AddPensionProviderTelephoneNumberPage)
       case _                                  => None
     }
-    val user = Some(request.taiUser)
+    val user              = Some(request.taiUser)
 
     Ok(
       canWeContactByPhone(
@@ -297,7 +298,7 @@ class AddPensionProviderController @Inject() (
 
   def checkYourAnswers: Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val uA = request.userAnswers
+    val uA                        = request.userAnswers
     (
       uA.get(AddPensionProviderNamePage),
       uA.get(AddPensionProviderStartDatePage),
@@ -308,13 +309,13 @@ class AddPensionProviderController @Inject() (
       case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
         val model = CheckYourAnswersViewModel(name, startDate, payrollNumber, telephoneQuestion, telephoneNumber)
         Ok(addPensionCheckYourAnswersView(model))
-      case _ => Redirect(taxAccountSummaryRedirect)
+      case _                                                                                            => Redirect(taxAccountSummaryRedirect)
     }
   }
 
   def submitYourAnswers: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val uA = request.userAnswers
+    val uA                        = request.userAnswers
     (
       uA.get(AddPensionProviderNamePage),
       uA.get(AddPensionProviderStartDatePage),

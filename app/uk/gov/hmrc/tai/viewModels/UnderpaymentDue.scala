@@ -32,7 +32,7 @@ object UnderpaymentDue {
           case Some(amount) => UnderpaymentDue(component.amount, amount)
           case _            => UnderpaymentDue(0, 0)
         }
-      case _ =>
+      case _               =>
         UnderpaymentDue(0, 0)
     }
   }

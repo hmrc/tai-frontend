@@ -39,12 +39,12 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       }
       "has the amount field as negative formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeNegative = taxCodeIncome.copy(amount = -1111)
-        val sut = IncomeSourceViewModel(taxCodeIncomeNegative, employment)
+        val sut                   = IncomeSourceViewModel(taxCodeIncomeNegative, employment)
         sut.amount mustBe Some(s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£1,111")
       }
       "has the amount field as zero formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeZero = taxCodeIncome.copy(amount = 0)
-        val sut = IncomeSourceViewModel(taxCodeIncomeZero, employment)
+        val sut               = IncomeSourceViewModel(taxCodeIncomeZero, employment)
         sut.amount mustBe Some("£0")
       }
       "has the displayTaxCode field as true" when {
@@ -55,10 +55,10 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       }
       "has the displayTaxCode field as false" when {
         "employment status is not live" in {
-          val ceasedEmployment = employment.copy(employmentStatus = Ceased)
+          val ceasedEmployment            = employment.copy(employmentStatus = Ceased)
           val potantiallyCeasedEmployment = employment.copy(employmentStatus = PotentiallyCeased)
-          val sut1 = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
-          val sut2 = IncomeSourceViewModel(taxCodeIncome, potantiallyCeasedEmployment)
+          val sut1                        = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
+          val sut2                        = IncomeSourceViewModel(taxCodeIncome, potantiallyCeasedEmployment)
           sut1.displayTaxCode mustBe false
           sut2.displayTaxCode mustBe false
         }
@@ -66,7 +66,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has the payrollNumber field as empty and displayPayrollNumber as false" when {
         "employment model doesn't have payrollNo" in {
           val employmentWithoutPayrollNo = employment.copy(payrollNumber = None)
-          val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
+          val sut                        = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
           sut.payrollNumber mustBe ""
           sut.displayPayrollNumber mustBe false
         }
@@ -81,27 +81,27 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has the endDate field as empty and displayEndDate as false" when {
         "employment model doesn't have endDate and employment status is live" in {
           val employmentWithoutPayrollNo = employment.copy(endDate = None)
-          val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
+          val sut                        = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
           sut.endDate mustBe ""
           sut.displayEndDate mustBe false
         }
         "employment model has endDate and employment status is live" in {
           val employmentWithoutPayrollNo = employment.copy(endDate = Some(LocalDate.of(2018, 4, 21)))
-          val sut = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
+          val sut                        = IncomeSourceViewModel(taxCodeIncome, employmentWithoutPayrollNo)
           sut.endDate mustBe "21 April 2018"
           sut.displayEndDate mustBe false
         }
         "employment model doesn't have endDate and employment status is ceased" in {
           val employmentWithoutPayrollNo = employment.copy(endDate = None)
-          val taxCodeIncomeCeased = taxCodeIncome.copy(status = Ceased)
-          val sut = IncomeSourceViewModel(taxCodeIncomeCeased, employmentWithoutPayrollNo)
+          val taxCodeIncomeCeased        = taxCodeIncome.copy(status = Ceased)
+          val sut                        = IncomeSourceViewModel(taxCodeIncomeCeased, employmentWithoutPayrollNo)
           sut.endDate mustBe ""
           sut.displayEndDate mustBe false
         }
         "employment model doesn't have endDate and employment status is potentially ceased" in {
-          val employmentWithoutPayrollNo = employment.copy(endDate = None)
+          val employmentWithoutPayrollNo     = employment.copy(endDate = None)
           val taxCodeIncomePotentiallyCeased = taxCodeIncome.copy(status = PotentiallyCeased)
-          val sut = IncomeSourceViewModel(taxCodeIncomePotentiallyCeased, employmentWithoutPayrollNo)
+          val sut                            = IncomeSourceViewModel(taxCodeIncomePotentiallyCeased, employmentWithoutPayrollNo)
           sut.endDate mustBe ""
           sut.displayEndDate mustBe false
         }
@@ -109,13 +109,13 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has formatted endDate field as same as employment model and displayEndDate as true" when {
         "employment model has endDate and employment status is ceased" in {
           val ceasedEmployment = employment.copy(employmentStatus = Ceased)
-          val sut = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
+          val sut              = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
           sut.endDate mustBe s"21 April ${TaxYear().next.year}"
           sut.displayEndDate mustBe true
         }
         "employment model has endDate and employment status is potentially ceased" in {
           val potentiallyCeasedEmployment = employment.copy(employmentStatus = PotentiallyCeased)
-          val sut = IncomeSourceViewModel(taxCodeIncome, potentiallyCeasedEmployment)
+          val sut                         = IncomeSourceViewModel(taxCodeIncome, potentiallyCeasedEmployment)
           sut.endDate mustBe s"21 April ${TaxYear().next.year}"
           sut.displayEndDate mustBe true
         }
@@ -139,7 +139,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has details link with pension label" when {
         "income source type is pension" in {
           val pension = taxCodeIncome.copy(componentType = PensionIncome)
-          val sut = IncomeSourceViewModel(pension, employment)
+          val sut     = IncomeSourceViewModel(pension, employment)
           sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.pension.link")
           sut.detailsLinkUrl mustBe controllers.routes.IncomeSourceSummaryController
             .onPageLoad(employment.sequenceNumber)
@@ -149,16 +149,16 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       "has details link with income label" when {
         "income source type is not pension or employment" in {
           val pension = taxCodeIncome.copy(componentType = JobSeekerAllowanceIncome)
-          val sut = IncomeSourceViewModel(pension, employment)
+          val sut     = IncomeSourceViewModel(pension, employment)
           sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.income.link")
         }
       }
       "has correct details link" when {
-        val otherIncomesType = OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "OtherIncomes")
-        val employmentPensionsType = OtherNonTaxCodeIncome(OccupationalPension, None, 0, "EmploymentPensions")
+        val otherIncomesType         = OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "OtherIncomes")
+        val employmentPensionsType   = OtherNonTaxCodeIncome(OccupationalPension, None, 0, "EmploymentPensions")
         val taxableStateBenefitsType = OtherNonTaxCodeIncome(StatePension, None, 0, "TaxableStateBenefits")
         val savingAndInvestmentsType = OtherNonTaxCodeIncome(ForeignDividendIncome, None, 0, "SavingAndInvestments")
-        val genericType = OtherNonTaxCodeIncome(UntaxedInterestIncome, None, 0, "Generic")
+        val genericType              = OtherNonTaxCodeIncome(UntaxedInterestIncome, None, 0, "Generic")
 
         List(
           (otherIncomesType, OtherIncomeIform),
@@ -254,8 +254,8 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
   "createFromTaxedIncome" must {
     "transform a taxedIncome to a IncomeSourceViewModel for a live employment" in {
       val taxedIncome = TaxedIncome(Some(liveEmployment1), empEmployment1)
-      val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
-      val expected =
+      val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+      val expected    =
         IncomeSourceViewModel(
           name = "Employer name1",
           amount = Some("£1,111"),
@@ -284,14 +284,14 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
     "detailsLinkLabel" must {
       "be the correct label for ceased employments" in {
         val taxedIncome = TaxedIncome(Some(taxCodeIncomeCeased), ceasedEmployment)
-        val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+        val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.employment.link")
       }
 
       "be the correct label for pension income" in {
         val taxedIncome = TaxedIncome(Some(livePension3), empEmployment1.copy(employmentType = PensionIncome))
-        val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+        val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.pension.link")
       }
@@ -301,7 +301,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
           Some(livePension3.copy(componentType = OtherIncome)),
           empEmployment1.copy(employmentType = OtherIncome)
         )
-        val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+        val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
         actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.income.link")
       }
@@ -309,7 +309,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
 
     "detailsLinkUrl is yourIncomeCalculationPage for a ceased employment" in {
       val taxedIncome = TaxedIncome(Some(taxCodeIncome), ceasedEmployment)
-      val actual = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+      val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
       actual.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController
         .yourIncomeCalculationPage(taxedIncome.employment.sequenceNumber)

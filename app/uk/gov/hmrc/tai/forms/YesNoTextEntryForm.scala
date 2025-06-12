@@ -28,7 +28,7 @@ object YesNoTextEntryForm {
 
   private def yesNoChoiceValidation(emptySelectionMsg: String) = Constraint[Option[String]]("") {
     case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue => Valid
-    case _ => Invalid(emptySelectionMsg)
+    case _                                                                                      => Invalid(emptySelectionMsg)
   }
 
   def form(
@@ -37,7 +37,7 @@ object YesNoTextEntryForm {
     additionalTextConstraint: Option[Constraint[String]] = None
   ): Form[YesNoTextEntryForm] = Form[YesNoTextEntryForm](
     mapping(
-      FormValuesConstants.YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg)),
+      FormValuesConstants.YesNoChoice    -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg)),
       FormValuesConstants.YesNoTextEntry -> mandatoryIfEqual(
         FormValuesConstants.YesNoChoice,
         FormValuesConstants.YesValue,
@@ -46,9 +46,7 @@ object YesNoTextEntryForm {
             emptyTextFieldMsg,
             _.nonEmpty
           )
-          .verifying(additionalTextConstraint.getOrElse(Constraint[String] { _: String =>
-            Valid
-          }))
+          .verifying(additionalTextConstraint.getOrElse(Constraint[String](_: String => Valid)))
       )
     )(YesNoTextEntryForm.apply)(YesNoTextEntryForm.unapply)
   )

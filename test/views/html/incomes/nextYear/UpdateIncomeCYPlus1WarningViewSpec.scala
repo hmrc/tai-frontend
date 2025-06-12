@@ -43,14 +43,14 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{DuplicateSubmissio
 import views.html.incomes.DuplicateSubmissionWarningView
 
 class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
-  val employmentName = "Employment Name"
-  val empId = 1
-  val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
-  val choice: String = FormValuesConstants.YesNoChoice
-  val newAmount = 20000
+  val employmentName                                                     = "Employment Name"
+  val empId                                                              = 1
+  val duplicateSubmissionWarningForm: Form[YesNoForm]                    = DuplicateSubmissionWarningForm.createForm
+  val choice: String                                                     = FormValuesConstants.YesNoChoice
+  val newAmount                                                          = 20000
   val employmentViewModel: DuplicateSubmissionCYPlus1EmploymentViewModel =
     DuplicateSubmissionCYPlus1EmploymentViewModel(employmentName, newAmount)
-  private val template = inject[UpdateIncomeCYPlus1WarningView]
+  private val template                                                   = inject[UpdateIncomeCYPlus1WarningView]
 
   override def view: Html =
     template(duplicateSubmissionWarningForm, employmentViewModel, empId)
@@ -75,7 +75,7 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
-      val validatedForm = duplicateSubmissionWarningForm.bind(validYesChoice)
+      val validatedForm  = duplicateSubmissionWarningForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.YesValue))
@@ -90,8 +90,8 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
     }
 
     "display an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "")
-      val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
+      val invalidChoice              = Map(choice -> "")
+      val invalidatedForm            = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
       val warningTemplate = inject[DuplicateSubmissionWarningView]
@@ -105,7 +105,7 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
     }
 
     "display the correct content when the income source is a pension" in {
-      val pensionViewModel = DuplicateSubmissionCYPlus1PensionViewModel(employmentName, newAmount)
+      val pensionViewModel  = DuplicateSubmissionCYPlus1PensionViewModel(employmentName, newAmount)
       val pensionView: Html =
         template(duplicateSubmissionWarningForm, pensionViewModel, empId)
 
@@ -117,15 +117,15 @@ class UpdateIncomeCYPlus1WarningViewSpec extends TaiViewSpec {
         ).replaceU00A0
       )
 
-      doc(pensionView) must haveInputLabelWithText(
+      doc(pensionView)                                                         must haveInputLabelWithText(
         FormValuesConstants.YesNoChoice,
         messages("tai.incomes.warning.pension.radio1", employmentName)
       )
-      doc(pensionView) must haveInputLabelWithText(
+      doc(pensionView)                                                         must haveInputLabelWithText(
         s"${FormValuesConstants.YesNoChoice}-2",
         messages("tai.incomes.warning.cyPlus1.radio2")
       )
-      doc(pensionView).getElementById(FormValuesConstants.YesNoChoice) must not be null
+      doc(pensionView).getElementById(FormValuesConstants.YesNoChoice)         must not be null
       doc(pensionView).getElementById(s"${FormValuesConstants.YesNoChoice}-2") must not be null
     }
   }

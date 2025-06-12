@@ -29,7 +29,7 @@ object GoogleAnalyticsSettings {
 
   def createForAnnualIncome(gaKey: String, currentAmount: Int, newAmount: Option[String]): GoogleAnalyticsSettings = {
     val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
-    val poundedNewAmount = MonetaryUtil.withPoundPrefix(FormHelper.stripNumber(newAmount).getOrElse("0").toInt)
+    val poundedNewAmount     = MonetaryUtil.withPoundPrefix(FormHelper.stripNumber(newAmount).getOrElse("0").toInt)
 
     val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
 

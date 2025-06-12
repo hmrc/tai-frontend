@@ -79,7 +79,7 @@ class UpdateEmploymentCheckYourAnswersViewSpec extends TaiViewSpec {
   }
 
   lazy val employmentId = 1
-  val viewModel =
+  val viewModel         =
     UpdateEmploymentCheckYourAnswersViewModel(employmentId, "TEST", "whatYouToldUs", "Yes", Some("123456789"))
 
   private val template = inject[UpdateEmploymentCheckYourAnswersView]

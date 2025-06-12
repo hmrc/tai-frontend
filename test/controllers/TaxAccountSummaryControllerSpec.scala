@@ -39,7 +39,7 @@ import scala.concurrent.Future
 
 class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTestData {
 
-  private val testAmount: BigDecimal = 100
+  private val testAmount: BigDecimal              = 100
   override val nonTaxCodeIncome: NonTaxCodeIncome = NonTaxCodeIncome(
     Some(
       uk.gov.hmrc.tai.model.domain.income
@@ -50,13 +50,13 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     )
   )
 
-  val auditService: AuditService = mock[AuditService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val auditService: AuditService                         = mock[AuditService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
+  val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   val taxAccountSummaryService: TaxAccountSummaryService = mock[TaxAccountSummaryService]
-  val mockTrackingService: TrackingService = mock[TrackingService]
-  val mockEmploymentService: EmploymentService = mock[EmploymentService]
-  val mockApiBackendChoice: ApiBackendChoice = mock[ApiBackendChoice]
+  val mockTrackingService: TrackingService               = mock[TrackingService]
+  val mockEmploymentService: EmploymentService           = mock[EmploymentService]
+  val mockApiBackendChoice: ApiBackendChoice             = mock[ApiBackendChoice]
 
   def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
     taxAccountService,

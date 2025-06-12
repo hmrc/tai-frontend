@@ -28,17 +28,17 @@ class IabdTaxCodeChangeReasons {
 
   private def allowanceReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
     val whatsChangedPairs = iabdPairs.allowances.filter(isChangedAmount)
-    val whatsNewPairs = iabdPairs.allowances.filter(isNewAmount)
+    val whatsNewPairs     = iabdPairs.allowances.filter(isNewAmount)
 
     whatsNewPairs.flatMap(translateNewBenefits(_)) ++
       whatsChangedPairs.flatMap(translateChangedBenefits(_))
   }
 
   private def deductionReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
-    val whatsChangedPairs = iabdPairs.deductions.filter(isChangedAmount)
-    val whatsNewPairs = iabdPairs.deductions.filter(isNewAmount)
+    val whatsChangedPairs         = iabdPairs.deductions.filter(isChangedAmount)
+    val whatsNewPairs             = iabdPairs.deductions.filter(isNewAmount)
     val whatsNewUnderpaymentPairs = whatsNewPairs.filter(reasonIsDebt)
-    val whatsNewOtherPairs = whatsNewPairs.filterNot(reasonIsDebt)
+    val whatsNewOtherPairs        = whatsNewPairs.filterNot(reasonIsDebt)
 
     whatsNewOtherPairs.flatMap(translateNewBenefits(_)) ++
       whatsChangedPairs.flatMap(translateChangedBenefits(_)) ++
@@ -61,16 +61,16 @@ class IabdTaxCodeChangeReasons {
 
     pair.current.map { currentAmount =>
       pair.componentType match {
-        case EarlyYearsAdjustment =>
+        case EarlyYearsAdjustment         =>
           messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
         case UnderPaymentFromPreviousYear =>
           messages("tai.taxCodeComparison.iabd.you.have.underpaid", formattedValue(pair.currentInputAmount))
-        case EstimatedTaxYouOweThisYear =>
+        case EstimatedTaxYouOweThisYear   =>
           messages(
             "tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid",
             formattedValue(pair.currentInputAmount)
           )
-        case taxComponentType =>
+        case taxComponentType             =>
           messages(
             "tai.taxCodeComparison.iabd.added",
             taxComponentType.toMessage(),
@@ -103,7 +103,7 @@ class IabdTaxCodeChangeReasons {
     (pair.previous, pair.current) match {
       case (Some(previousAmount), Some(currentAmount)) if previousAmount != currentAmount =>
         Some(createAmmendmentMessage(previousAmount, currentAmount))
-      case _ => None
+      case _                                                                              => None
     }
   }
 }

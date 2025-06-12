@@ -111,13 +111,13 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
   "dynamicDateRangeHtmlNonBreak " must {
     "given two dates return a formatted string" in {
 
-      implicit lazy val lang: Lang = Lang("en")
+      implicit lazy val lang: Lang         = Lang("en")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val now = LocalDate.now
+      val now          = LocalDate.now
       val endOfTaxYear = TaxYear().end
-      val expectedNow = htmlNonBroken(langUtils.Dates.formatDate(now))
-      val expectedEnd = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
+      val expectedNow  = htmlNonBroken(langUtils.Dates.formatDate(now))
+      val expectedEnd  = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
 
       dynamicDateRangeHtmlNonBreak(now, endOfTaxYear) mustBe s"$expectedNow to $expectedEnd"
 
@@ -125,19 +125,19 @@ class ViewModelHelperSpec extends BaseSpec with ViewModelHelper {
 
     "given two dates return a formatted string in welsh" in {
 
-      implicit lazy val lang: Lang = Lang("cy")
+      implicit lazy val lang: Lang         = Lang("cy")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val now = LocalDate.now
+      val now          = LocalDate.now
       val endOfTaxYear = TaxYear().end
-      val expectedNow = htmlNonBroken(langUtils.Dates.formatDate(now))
-      val expectedEnd = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
+      val expectedNow  = htmlNonBroken(langUtils.Dates.formatDate(now))
+      val expectedEnd  = htmlNonBroken(langUtils.Dates.formatDate(endOfTaxYear))
 
       dynamicDateRangeHtmlNonBreak(now, endOfTaxYear) mustBe s"$expectedNow i $expectedEnd"
     }
 
     "throw an exception if 'from' date is after the 'to' date" in {
-      val now = LocalDate.now
+      val now       = LocalDate.now
       val yesterday = now.minusDays(1)
 
       val caught = intercept[IllegalArgumentException] {

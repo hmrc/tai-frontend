@@ -21,7 +21,7 @@ import utils.BaseSpec
 class SameEstimatedPayViewModelSpec extends BaseSpec {
 
   val income = 123
-  val id = 1
+  val id     = 1
 
   "SameEstimatedPayViewModel" must {
     "have a return link back to pension details" in {

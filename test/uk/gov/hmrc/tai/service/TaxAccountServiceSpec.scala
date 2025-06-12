@@ -126,7 +126,7 @@ class TaxAccountServiceSpec extends BaseSpec {
 
   "totalTax" must {
     "return total tax" in {
-      val sut = createSut
+      val sut      = createSut
       val totalTax = TotalTax(1000, Nil, None, None, None)
       when(taxAccountConnector.totalTax(any(), any())(any()))
         .thenReturn(Future.successful(totalTax))
@@ -139,7 +139,7 @@ class TaxAccountServiceSpec extends BaseSpec {
   "scottishBandRate" must {
     "return a map of tax bands with corresponding rates" when {
       "tai connector returns total tax value with tax bands" in {
-        val sut = createSut
+        val sut      = createSut
         val totalTax = TotalTax(
           1000,
           List(
@@ -185,7 +185,7 @@ class TaxAccountServiceSpec extends BaseSpec {
       }
 
       "tai connector returns total tax value without tax bands" in {
-        val sut = createSut
+        val sut      = createSut
         val totalTax =
           TotalTax(1000, List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, Nil)), None, None, None)
 
@@ -196,7 +196,7 @@ class TaxAccountServiceSpec extends BaseSpec {
       }
 
       "tai connector returns total tax value without income category" in {
-        val sut = createSut
+        val sut      = createSut
         val totalTax = TotalTax(1000, Nil, None, None, None)
 
         when(taxAccountConnector.totalTax(any(), any())(any()))
@@ -211,7 +211,7 @@ class TaxAccountServiceSpec extends BaseSpec {
 
   private val taxCodeIncome1 =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
-  val taxCodeIncomes = Seq(
+  val taxCodeIncomes         = Seq(
     taxCodeIncome1,
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )

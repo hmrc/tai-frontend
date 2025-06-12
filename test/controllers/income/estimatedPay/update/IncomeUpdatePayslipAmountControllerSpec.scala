@@ -41,13 +41,13 @@ import scala.util.Random
 class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val sessionId = "testSessionId"
+  val sessionId              = "testSessionId"
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
-  def createSUT = new SUT
+  def createSUT          = new SUT
 
-  private val payslipAmountView = inject[PayslipAmountView]
-  private val taxablePayslipAmountView = inject[TaxablePayslipAmountView]
+  private val payslipAmountView                          = inject[PayslipAmountView]
+  private val taxablePayslipAmountView                   = inject[TaxablePayslipAmountView]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
@@ -96,7 +96,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
       "journey cache returns a prepopulated pay slip amount" in {
         val cachedAmount = Some("998787")
-        val payPeriod = Some(Monthly)
+        val payPeriod    = Some(Monthly)
 
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeIdPage, employer.id)
@@ -122,7 +122,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
           .fill(PayslipForm(cachedAmount))
 
         val expectedViewModel = PaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
-        val expectedView = payslipAmountView(expectedViewModel)
+        val expectedView      = payslipAmountView(expectedViewModel)
 
         result rendersTheSameViewAs expectedView
       }
@@ -133,7 +133,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
 
-        val SUT = createSUT
+        val SUT                                                       = createSUT
         setup(mockUserAnswers)
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
 
@@ -202,7 +202,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
         val doc = Jsoup.parse(contentAsString(result))
         doc.body().text must include(messages("tai.income.error.form.summary"))
         doc.body().text must include(messages("tai.payslip.title.month"))
-        doc.title() must include(messages("tai.payslip.title.month"))
+        doc.title()     must include(messages("tai.payslip.title.month"))
       }
     }
   }
@@ -211,7 +211,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
         val cachedAmount = Some("5000")
-        val payPeriod = Some(Monthly)
+        val payPeriod    = Some(Monthly)
 
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeIdPage, employer.id)
@@ -233,7 +233,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
 
         status(result) mustBe OK
 
-        val expectedForm = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
+        val expectedForm      = TaxablePayslipForm.createForm().fill(TaxablePayslipForm(cachedAmount))
         val expectedViewModel = TaxablePaySlipAmountViewModel(expectedForm, payPeriod, None, employer)
         result rendersTheSameViewAs taxablePayslipAmountView(expectedViewModel)
       }
@@ -242,7 +242,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     "Redirect to /income-summary page" when {
       "user reaches page with no data in cache" in {
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
-        val SUT = createSUT
+        val SUT             = createSUT
         setup(mockUserAnswers)
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeGetRequestWithAuth()
@@ -264,7 +264,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     "redirect the user to bonusPaymentsPage page" when {
       "user entered valid taxable pay" in {
         val cachedAmount = Some("4000")
-        val payPeriod = Some(Monthly)
+        val payPeriod    = Some(Monthly)
 
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeIdPage, employer.id)
@@ -298,7 +298,7 @@ class IncomeUpdatePayslipAmountControllerSpec extends BaseSpec with ControllerVi
     "redirect user back to how to taxablePayslip page" when {
       "user input has error" in {
         val cachedAmount = Some("4000")
-        val payPeriod = Some(Monthly)
+        val payPeriod    = Some(Monthly)
 
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeIdPage, employer.id)

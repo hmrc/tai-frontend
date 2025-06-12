@@ -23,18 +23,18 @@ class CompanyBenefitDecisionViewModelSpec extends BaseSpec {
 
   "CompanyBenefitDecisionViewModel" must {
     "show the word benefit once when the word benefit is part of the benefit name " in {
-      val benefitType = "NonCashBenefit"
+      val benefitType          = "NonCashBenefit"
       val formattedBenefitName = "Non-cash"
-      val viewModel =
+      val viewModel            =
         CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form, 1)
 
       viewModel.benefitName mustBe formattedBenefitName
     }
 
     "show the word benefit once when the word benefits is part of the benefit name " in {
-      val benefitType = "ServiceBenefit"
+      val benefitType          = "ServiceBenefit"
       val formattedBenefitName = "Service"
-      val viewModel =
+      val viewModel            =
         CompanyBenefitDecisionViewModel(benefitType, employerName, UpdateOrRemoveCompanyBenefitDecisionForm.form, 1)
 
       viewModel.benefitName mustBe formattedBenefitName

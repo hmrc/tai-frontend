@@ -46,13 +46,13 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
 
     "display an error notification" when {
       "no user choice is made" in {
-        val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
-        val expectedErrorMessage = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
+        val noPayrollNumberChooseError           = messages("tai.error.chooseOneOption")
+        val expectedErrorMessage                 = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
           AddEmploymentFirstPayForm.form
             .withError(AddEmploymentFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
-        val add_employment_first_pay_form = inject[AddEmploymentFirstPayFormView]
-        def view: Html = add_employment_first_pay_form(formWithErrors, pensionProviderName)
+        val add_employment_first_pay_form        = inject[AddEmploymentFirstPayFormView]
+        def view: Html                           = add_employment_first_pay_form(formWithErrors, pensionProviderName)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
@@ -69,5 +69,5 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
   )
 
   private val addPensionReceivedFirstPay = inject[AddPensionReceivedFirstPayView]
-  override def view: Html = addPensionReceivedFirstPay(pensionFirstPayForm, pensionProviderName)
+  override def view: Html                = addPensionReceivedFirstPay(pensionFirstPayForm, pensionProviderName)
 }

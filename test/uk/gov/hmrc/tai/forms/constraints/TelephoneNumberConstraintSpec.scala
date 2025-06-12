@@ -30,7 +30,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> "123456789"
       )
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(YesNoTextEntryForm(Some(FormValuesConstants.YesValue), Some("123456789")))
@@ -42,7 +42,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "123456"
         )
-        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+        val invalidatedForm          = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
         invalidatedForm.value mustBe None
@@ -53,7 +53,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "@£-12344556"
         )
-        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+        val invalidatedForm          = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
         invalidatedForm.value mustBe None
@@ -64,7 +64,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "abc-abc-abc"
         )
-        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+        val invalidatedForm          = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
         invalidatedForm.value mustBe None
@@ -75,7 +75,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
           FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
           FormValuesConstants.YesNoTextEntry -> "123-abc-456"
         )
-        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+        val invalidatedForm          = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
         invalidatedForm.value mustBe None
@@ -87,7 +87,7 @@ class TelephoneNumberConstraintSpec extends BaseSpec {
             FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
             FormValuesConstants.YesNoTextEntry -> "123456123456123456123456123456123456"
           )
-        val invalidatedForm = form.bind(invalidPhoneNumberChoice)
+        val invalidatedForm          = form.bind(invalidPhoneNumberChoice)
 
         invalidatedForm.errors.head.messages mustBe List(Messages("tai.canWeContactByPhone.telephone.invalid"))
         invalidatedForm.value mustBe None

@@ -28,24 +28,24 @@ import views.html.help.GetHelpView
 
 class GetHelpPageSpec extends TaiViewSpec {
 
-  implicit val user: AuthedUser = UserBuilder()
+  implicit val user: AuthedUser                             = UserBuilder()
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  private val template = inject[GetHelpView]
+  private val template    = inject[GetHelpView]
   override def view: Html = template(appConfig)
 
   "show get help page" must {
     "show the correct page title and content when the page is displayed and show the english contact URL" in {
       val doc = Jsoup.parseBodyFragment(view.toString)
-      doc must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
-      doc must haveBackLink
+      doc          must haveHeadingWithText(messagesApi("tai.getHelp.h1"))
+      doc          must haveBackLink
       doc.toString must include(appConfig.contactHelplineUrl)
     }
 
     "show the welsh contact URL" in {
       val messages = messagesApi.preferred(Seq(Lang("cy")))
-      val html = template(appConfig)(request, messages, user)
-      val doc = Jsoup.parseBodyFragment(html.toString)
+      val html     = template(appConfig)(request, messages, user)
+      val doc      = Jsoup.parseBodyFragment(html.toString)
       doc.toString must include(appConfig.contactHelplineWelshUrl)
     }
   }

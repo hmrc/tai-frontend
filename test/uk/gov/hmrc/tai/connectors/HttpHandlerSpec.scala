@@ -33,7 +33,7 @@ import scala.language.postfixOps
 
 class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
-  private lazy val httpHandler: HttpHandler = inject[HttpHandler]
+  private lazy val httpHandler: HttpHandler   = inject[HttpHandler]
   private lazy val httpClientV2: HttpClientV2 = inject[HttpClientV2]
 
   private lazy val testUrl: String = server.url("/")
@@ -96,7 +96,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
       )
 
       val responseFuture = httpHandler.getFromApiV2(testUrl)
-      val response = Await.result(responseFuture, 5 seconds)
+      val response       = Await.result(responseFuture, 5 seconds)
 
       response mustBe Json.toJson(responseBodyObject)
 
@@ -343,7 +343,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
           .willReturn(aResponse().withStatus(BAD_REQUEST).withBody("bad request"))
       )
       val responseFuture = httpHandler.deleteFromApi(testUrl)
-      val ex = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
+      val ex             = the[BadRequestException] thrownBy Await.result(responseFuture, 5 seconds)
       ex.message must include("bad request")
     }
 
@@ -353,7 +353,7 @@ class HttpHandlerSpec extends BaseSpec with WireMockHelper with ScalaFutures wit
           .willReturn(aResponse().withStatus(NOT_FOUND).withBody("not found"))
       )
       val responseFuture = httpHandler.deleteFromApi(testUrl)
-      val ex = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
+      val ex             = the[NotFoundException] thrownBy Await.result(responseFuture, 5 seconds)
       ex.message must include("not found")
     }
 

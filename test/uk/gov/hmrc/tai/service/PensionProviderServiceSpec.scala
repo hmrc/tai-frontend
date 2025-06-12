@@ -31,7 +31,7 @@ class PensionProviderServiceSpec extends BaseSpec {
 
   "add pension provider" must {
     "return an envelope id" in {
-      val sut = createSUT
+      val sut   = createSUT
       val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
       when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
@@ -43,7 +43,7 @@ class PensionProviderServiceSpec extends BaseSpec {
 
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
-        val sut = createSUT
+        val sut   = createSUT
         val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
         when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
           .thenReturn(Future.successful(None))
@@ -56,7 +56,7 @@ class PensionProviderServiceSpec extends BaseSpec {
 
   "incorrect pension provider" must {
     "return an envelope id" in {
-      val sut = createSUT
+      val sut   = createSUT
       val model = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",
@@ -72,7 +72,7 @@ class PensionProviderServiceSpec extends BaseSpec {
 
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
-        val sut = createSUT
+        val sut   = createSUT
         val model = IncorrectPensionProvider(
           whatYouToldUs = "TEST",
           telephoneContactAllowed = "Yes",

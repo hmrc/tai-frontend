@@ -35,7 +35,7 @@ import java.time.Instant
 
 class CompanyBenefitsViewSpec extends TaiViewSpec {
 
-  implicit val request: Request[AnyContent] = FakeRequest()
+  implicit val request: Request[AnyContent]         = FakeRequest()
   implicit val dataRequest: DataRequest[AnyContent] = DataRequest[AnyContent](
     request,
     AuthedUser(
@@ -49,7 +49,7 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
 
   private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)
   private val template: CompanyBenefitsView = inject[CompanyBenefitsView]
-  override def view: Html = template(model)
+  override def view: Html                   = template(model)
 
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),

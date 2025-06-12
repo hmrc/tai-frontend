@@ -137,7 +137,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display no content when no CY or CY+1 details are available" in {
       val viewNoDetails: Html =
         views.html.incomeTaxComparison.IncomeSummary(IncomeSourceComparisonViewModel(Nil, Nil))
-      val document = doc(viewNoDetails)
+      val document            = doc(viewNoDetails)
       document mustNot haveH2HeadingWithText(
         messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")
       )
@@ -171,17 +171,17 @@ class IncomeSummarySpec extends TaiViewSpec {
 
   private val employmentIncomeSourceComparisonViewModel =
     IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail, employmentTwoIncomeSourceDetail), Nil)
-  private val pensionIncomeSourceComparisonViewModel =
+  private val pensionIncomeSourceComparisonViewModel    =
     IncomeSourceComparisonViewModel(Nil, Seq(pensionOneIncomeSourceDetail, pensionTwoIncomeSourceDetail))
-  private val combinedIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(
+  private val combinedIncomeSourceComparisonViewModel   = IncomeSourceComparisonViewModel(
     Seq(employmentOneIncomeSourceDetail, employmentTwoIncomeSourceDetail),
     Seq(pensionOneIncomeSourceDetail, pensionTwoIncomeSourceDetail)
   )
 
-  override def view: Html =
+  override def view: Html    =
     views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel)
   def viewPensionsOnly: Html =
     views.html.incomeTaxComparison.IncomeSummary(pensionIncomeSourceComparisonViewModel)
-  def viewCombined: Html =
+  def viewCombined: Html     =
     views.html.incomeTaxComparison.IncomeSummary(combinedIncomeSourceComparisonViewModel)
 }

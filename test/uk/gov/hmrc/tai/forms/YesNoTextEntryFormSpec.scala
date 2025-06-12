@@ -28,7 +28,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> "123456"
       )
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(YesNoTextEntryForm(Some(FormValuesConstants.YesValue), Some("123456")))
@@ -64,7 +64,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return an error for an empty yes/no choice" in {
-      val invalidChoice = Map(FormValuesConstants.YesNoChoice -> "", FormValuesConstants.YesNoTextEntry -> "")
+      val invalidChoice   = Map(FormValuesConstants.YesNoChoice -> "", FormValuesConstants.YesNoTextEntry -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List("select yes or no")
@@ -72,7 +72,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
     }
 
     "return an error for an empty yes/no choice and missing value" in {
-      val invalidChoice = Map(FormValuesConstants.YesNoChoice -> "")
+      val invalidChoice   = Map(FormValuesConstants.YesNoChoice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List("select yes or no")
@@ -84,14 +84,14 @@ class YesNoTextEntryFormSpec extends BaseSpec {
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> ""
       )
-      val invalidatedForm = form.bind(invalidYesChoice)
+      val invalidatedForm  = form.bind(invalidYesChoice)
 
       invalidatedForm.errors.head.messages mustBe List("enter some text")
       invalidatedForm.value mustBe None
     }
 
     "return errors with text field content that does not meet requirements of an additional constraint" in {
-      val extraConstraint = Constraint[String]((_: String) => Invalid("bang"))
+      val extraConstraint         = Constraint[String]((_: String) => Invalid("bang"))
       val formWithExtraConstraint =
         YesNoTextEntryForm.form("select yes or no", "enter some text", Some(extraConstraint))
 
@@ -99,7 +99,7 @@ class YesNoTextEntryFormSpec extends BaseSpec {
         FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
         FormValuesConstants.YesNoTextEntry -> "123"
       )
-      val invalidatedForm = formWithExtraConstraint.bind(validChoiceUntilExtraConstraint)
+      val invalidatedForm                 = formWithExtraConstraint.bind(validChoiceUntilExtraConstraint)
 
       invalidatedForm.errors.head.messages mustBe List("bang")
       invalidatedForm.value mustBe None

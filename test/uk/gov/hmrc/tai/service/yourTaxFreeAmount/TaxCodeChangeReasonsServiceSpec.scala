@@ -24,19 +24,19 @@ import utils.BaseSpec
 
 class TaxCodeChangeReasonsServiceSpec extends BaseSpec {
 
-  val iabdTaxCodeChangeReasons = mock[IabdTaxCodeChangeReasons]
+  val iabdTaxCodeChangeReasons       = mock[IabdTaxCodeChangeReasons]
   val employmentTaxCodeChangeReasons = mock[TaxCodeChangeReasons]
 
   class TaxCodeChangeReasonsServiceTest() extends TaxCodeChangeReasonsService(employmentTaxCodeChangeReasons)
 
   val service = new TaxCodeChangeReasonsServiceTest
 
-  val iabdPairs = mock[AllowancesAndDeductionPairs]
+  val iabdPairs     = mock[AllowancesAndDeductionPairs]
   val taxCodeChange = mock[TaxCodeChange]
 
   "reasons" must {
     "combine the tax code change reasons" in {
-      val iabdReasons = List("iabd changed")
+      val iabdReasons       = List("iabd changed")
       val employmentReasons = List("employment changed")
 
       when(iabdTaxCodeChangeReasons.reasons(any())(any())).thenReturn(iabdReasons)
@@ -80,7 +80,7 @@ class TaxCodeChangeReasonsServiceSpec extends BaseSpec {
 
       "there is a generic reason in the reasons" in {
         val genericReason = messagesApi("taxCode.change.yourTaxCodeChanged.paragraph")
-        val reasons = List("reason 1", genericReason)
+        val reasons       = List("reason 1", genericReason)
         service.isAGenericReason(reasons) mustBe true
       }
     }

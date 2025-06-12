@@ -36,7 +36,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
   "#fromCodingComponents" should {
     "return a AllowancesAndDeductionPairs" in {
       val expected = AllowancesAndDeductionPairs(Seq.empty[CodingComponentPair], Seq.empty[CodingComponentPair])
-      val actual =
+      val actual   =
         AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
 
       expected mustBe actual
@@ -46,7 +46,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       "a single current component type is passed" in {
         val currentCodingComponents =
           Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 5885, inputAmount))
-        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), None, Some(5885), inputAmount))
+        val pairs                   = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), None, Some(5885), inputAmount))
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty, currentCodingComponents)
 
@@ -54,7 +54,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       }
 
       "the current components and previous components where type and employment is the same" in {
-        val currentCodingComponents =
+        val currentCodingComponents  =
           Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 2000, inputAmount))
         val previousCodingComponents =
           Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 1000, inputAmount))
@@ -67,7 +67,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       }
 
       "the current components and previous components where type is the same and employment id is none" in {
-        val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, None, 2000, inputAmount))
+        val currentCodingComponents  = Seq(createCodingComponent(MarriageAllowanceReceived, None, 2000, inputAmount))
         val previousCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, None, 1000, None))
 
         val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, None, Some(1000), Some(2000), inputAmount))
@@ -78,7 +78,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       }
 
       "does not create pairs when component types in current and previous are different" in {
-        val currentCodingComponents =
+        val currentCodingComponents  =
           Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 2000, inputAmount))
         val previousCodingComponents = Seq(createCodingComponent(JobExpenses, Some(123), 1000, None))
 
@@ -93,7 +93,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       }
 
       "does not create pairs when employment id in current and previous are different" in {
-        val currentCodingComponents =
+        val currentCodingComponents  =
           Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 2000, inputAmount))
         val previousCodingComponents =
           Seq(createCodingComponent(MarriageAllowanceReceived, Some(456), 1000, inputAmount))

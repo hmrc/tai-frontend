@@ -58,7 +58,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
             nonTaxCodeIncome
           ) =>
         implicit val user: AuthedUser = request.taiUser
-        val model = DetailedIncomeTaxEstimateViewModel(
+        val model                     = DetailedIncomeTaxEstimateViewModel(
           totalTax,
           taxCodeIncomes,
           taxAccountSummary,

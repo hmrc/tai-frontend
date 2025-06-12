@@ -44,7 +44,8 @@ class IncomeTaxHistoryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Logging {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
@@ -54,34 +55,35 @@ class IncomeTaxHistoryController @Inject() (
         taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
           None
         }
-      employmentDetails <- employmentService.employments(nino, taxYear)
+      employmentDetails         <- employmentService.employments(nino, taxYear)
     } yield {
-      val maybeTaxCodesMap = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
-      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { employment: Employment =>
-        val maybeTaxCode: Option[TaxCodeIncome] = for {
-          taxCodesMap <- maybeTaxCodesMap
-          incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
-          taxCode     <- incomes.headOption
-        } yield taxCode
+      val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
+      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map {
+        employment: Employment =>
+          val maybeTaxCode: Option[TaxCodeIncome] = for {
+            taxCodesMap <- maybeTaxCodesMap
+            incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
+            taxCode     <- incomes.headOption
+          } yield taxCode
 
-        val maybeLastPayment = fetchLastPayment(employment, taxYear)
-        val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
+          val maybeLastPayment = fetchLastPayment(employment, taxYear)
+          val isPension        = maybeTaxCode.exists(_.componentType == PensionIncome)
 
-        IncomeTaxHistoryViewModel(
-          employerName = employment.name,
-          isPension = isPension,
-          ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
-          payrollNumber = employment.payrollNumber,
-          startDate = employment.startDate,
-          maybeEndDate = employment.endDate,
-          maybeTaxableIncome = maybeLastPayment.map { payment =>
-            withPoundPrefix(MoneyPounds(payment.amountYearToDate))
-          },
-          maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
-            withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
-          },
-          maybeTaxCode = maybeTaxCode.map(_.taxCode)
-        )
+          IncomeTaxHistoryViewModel(
+            employerName = employment.name,
+            isPension = isPension,
+            ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
+            payrollNumber = employment.payrollNumber,
+            startDate = employment.startDate,
+            maybeEndDate = employment.endDate,
+            maybeTaxableIncome = maybeLastPayment.map { payment =>
+              withPoundPrefix(MoneyPounds(payment.amountYearToDate))
+            },
+            maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
+              withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
+            },
+            maybeTaxCode = maybeTaxCode.map(_.taxCode)
+          )
       }.toList
       IncomeTaxYear(taxYear, incomeTaxHistory)
     }
@@ -91,7 +93,7 @@ class IncomeTaxHistoryController @Inject() (
     employment.annualAccounts.find(_.taxYear.year == taxYear.year).flatMap(_.payments.lastOption)
 
   def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    val nino = request.taiUser.nino
+    val nino     = request.taiUser.nino
     val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
       .map(TaxYear(_))
       .toList

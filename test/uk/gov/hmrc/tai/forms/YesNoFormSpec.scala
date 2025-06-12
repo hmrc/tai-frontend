@@ -24,7 +24,7 @@ class YesNoFormSpec extends BaseSpec {
   "YesNoFormSpec" must {
     "return no errors with valid 'yes' " in {
       val validYesChoice = Map(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(YesNoForm(Some(FormValuesConstants.YesValue)))
@@ -39,7 +39,7 @@ class YesNoFormSpec extends BaseSpec {
     }
 
     "return an error for an empty yes/no choice" in {
-      val invalidChoice = Map(FormValuesConstants.YesNoChoice -> "")
+      val invalidChoice   = Map(FormValuesConstants.YesNoChoice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(errorMessage)
@@ -48,5 +48,5 @@ class YesNoFormSpec extends BaseSpec {
   }
 
   lazy val errorMessage = "select yes or no"
-  val form = YesNoForm.form(errorMessage)
+  val form              = YesNoForm.form(errorMessage)
 }

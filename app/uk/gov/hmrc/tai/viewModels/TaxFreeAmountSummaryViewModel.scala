@@ -53,9 +53,9 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
   )(implicit messages: Messages): TaxFreeAmountSummaryViewModel = {
 
     val personalAllowance = personalAllowanceVM(codingComponents)
-    val additions = additionsVM(codingComponents, taxFreeAmountDetails, applicationConfig)
-    val deductions = deductionsVM(codingComponents, taxFreeAmountDetails, applicationConfig)
-    val total = totalRow(taxFreeAmountTotal)
+    val additions         = additionsVM(codingComponents, taxFreeAmountDetails, applicationConfig)
+    val deductions        = deductionsVM(codingComponents, taxFreeAmountDetails, applicationConfig)
+    val total             = totalRow(taxFreeAmountTotal)
 
     TaxFreeAmountSummaryViewModel(Seq(personalAllowance, additions, deductions, total))
   }
@@ -63,7 +63,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
   private def personalAllowanceVM(codingComponents: Seq[CodingComponent])(implicit messages: Messages) = {
 
     val personalAllowance: Seq[CodingComponent] = codingComponents.filter(isPersonalAllowanceComponent)
-    val personalAllowanceSum = personalAllowance match {
+    val personalAllowanceSum                    = personalAllowance match {
       case Nil => BigDecimal(0)
       case _   => personalAllowance.map(_.amount).sum
     }
@@ -117,9 +117,9 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         )
       )
     } else {
-      val totalAmount = additionComponents.map(_.amount).sum
+      val totalAmount          = additionComponents.map(_.amount).sum
       val totalAmountFormatted = withPoundPrefixAndSign(MoneyPounds(totalAmount, 0))
-      val totalsRow = Seq(
+      val totalsRow            = Seq(
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.additions.total"),
           totalAmountFormatted,
@@ -167,9 +167,9 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
         )
       )
     } else {
-      val totalAmount = deductionComponents.map(_.amount).sum
+      val totalAmount          = deductionComponents.map(_.amount).sum
       val totalAmountFormatted = withPoundPrefix(MoneyPounds(totalAmount, 0))
-      val totalsRow = Seq(
+      val totalsRow            = Seq(
         TaxFreeAmountSummaryRowViewModel(
           Messages("tai.taxFreeAmount.table.deductions.total"),
           totalAmountFormatted,
@@ -215,7 +215,7 @@ case class TaxFreeAmountSummaryRowViewModel(label: TaxSummaryLabel, value: Strin
 
 object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
-  private val blockedAllowanceComponentTypes: Set[AllowanceComponentType] = Set(
+  private val blockedAllowanceComponentTypes: Set[AllowanceComponentType]                              = Set(
     CommunityInvestmentTaxCredit,
     ConcessionRelief,
     DoubleTaxationRelief,
@@ -241,7 +241,7 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
   )(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
     val label = TaxSummaryLabel(codingComponent, taxFreeAmountDetails)
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
-    val link = createChangeLink(codingComponent, applicationConfig)
+    val link  = createChangeLink(codingComponent, applicationConfig)
     TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
 

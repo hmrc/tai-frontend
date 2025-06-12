@@ -96,14 +96,15 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
           "10000.00"
         )
 
-      forAll(validValues) { monetaryValue: String =>
-        val viewModel = createViewModel(taxablePay = Some(monetaryValue))
-        val taxablePayAnwser = viewModel.journeyConfirmationLines
-          .filter(checkYourAnswerConfirmationLine => checkYourAnswerConfirmationLine.question == taxablePayQuestion)
-          .head
-          .answer
+      forAll(validValues) {
+        monetaryValue: String =>
+          val viewModel        = createViewModel(taxablePay = Some(monetaryValue))
+          val taxablePayAnwser = viewModel.journeyConfirmationLines
+            .filter(checkYourAnswerConfirmationLine => checkYourAnswerConfirmationLine.question == taxablePayQuestion)
+            .head
+            .answer
 
-        taxablePayAnwser mustBe "£10,000"
+          taxablePayAnwser mustBe "£10,000"
       }
     }
 
@@ -210,9 +211,9 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
       "backUrl"
     )
 
-  val totalPay = "10000"
-  val hasDeductions = "Yes"
-  val taxablePay = "1800"
-  val hasBonusOrOvertime = "Yes"
+  val totalPay             = "10000"
+  val hasDeductions        = "Yes"
+  val taxablePay           = "1800"
+  val hasBonusOrOvertime   = "Yes"
   val totalBonusOrOvertime = "3000"
 }

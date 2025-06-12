@@ -245,17 +245,17 @@ class NoCYIncomeTaxErrorViewModelSpec extends BaseSpec {
     }
   }
 
-  private val currentYear: Int = LocalDate.now().getYear
+  private val currentYear: Int           = LocalDate.now().getYear
   private val cyMinusOneTaxYear: TaxYear = model.TaxYear(currentYear - 1)
 
   private val empStartDateOne = cyMinusOneTaxYear.start.plusMonths(2)
-  private val empEndDateOne = cyMinusOneTaxYear.start.plusMonths(7)
+  private val empEndDateOne   = cyMinusOneTaxYear.start.plusMonths(7)
 
   private val empStartDateTwo = cyMinusOneTaxYear.start.plusMonths(1)
-  private val empEndDateTwo = cyMinusOneTaxYear.start.plusMonths(4)
+  private val empEndDateTwo   = cyMinusOneTaxYear.start.plusMonths(4)
 
   private val empStartDateThree = cyMinusOneTaxYear.start.plusMonths(5)
-  private val empEndDateThree = cyMinusOneTaxYear.start.plusMonths(9)
+  private val empEndDateThree   = cyMinusOneTaxYear.start.plusMonths(9)
 
   private def createSut(employments: Seq[Employment]) = NoCYIncomeTaxErrorViewModel(employments)
 }

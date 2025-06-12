@@ -29,7 +29,7 @@ class IncomesSourcesSpec extends BaseSpec with ScalaCheckDrivenPropertyChecks wi
 
   val employmentTaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
-  val pensionTaxCodeIncome =
+  val pensionTaxCodeIncome    =
     TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
   def rtiAvailableIncomeSource: Gen[Seq[TaxedIncome]] = {

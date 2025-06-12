@@ -26,7 +26,7 @@ class TaxFreeAmountComparisonSpec extends PlaySpec {
     "read the previous and current coding component sequences" when {
       "previous and current are non empty" in {
         val previousCodingComponent = Seq(CodingComponent(CarBenefit, Some(1), 1, "Car Benefit", Some(1)))
-        val currentCodingComponent = Seq(CodingComponent(Mileage, Some(2), 100, "Mileage", Some(100)))
+        val currentCodingComponent  = Seq(CodingComponent(Mileage, Some(2), 100, "Mileage", Some(100)))
 
         val model = TaxFreeAmountComparison(previousCodingComponent, currentCodingComponent)
 
@@ -41,7 +41,7 @@ class TaxFreeAmountComparisonSpec extends PlaySpec {
               "inputAmount"   -> 1
             )
           ),
-          "current" -> Json.arr(
+          "current"  -> Json.arr(
             Json.obj(
               "componentType" -> Json.toJson[TaxComponentType](Mileage),
               "employmentId"  -> 2,

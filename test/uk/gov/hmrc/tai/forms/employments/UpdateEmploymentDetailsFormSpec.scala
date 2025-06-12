@@ -71,7 +71,7 @@ class UpdateEmploymentDetailsFormSpec extends BaseSpec {
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Map("employmentDetails" -> "test")
+  private val validDetails        = Map("employmentDetails" -> "test")
   private val exceededCharDetails = Map("employmentDetails" -> exceedingCharacters)
-  private val emptyDetails = Map("employmentDetails" -> "")
+  private val emptyDetails        = Map("employmentDetails" -> "")
 }

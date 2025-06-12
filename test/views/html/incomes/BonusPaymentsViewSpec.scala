@@ -33,8 +33,8 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
     "tai.bonusPayments.error.form.incomes.radioButton.mandatory",
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
   )
-  val bonusPaymentsForm = BonusPaymentsForm.createForm
-  val choice = FormValuesConstants.YesNoChoice
+  val bonusPaymentsForm          = BonusPaymentsForm.createForm
+  val choice                     = FormValuesConstants.YesNoChoice
 
   private val bonusPayments = inject[BonusPaymentsView]
 
@@ -61,7 +61,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
-      val validatedForm = bonusPaymentsForm.bind(validYesChoice)
+      val validatedForm  = bonusPaymentsForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.YesValue))
@@ -76,7 +76,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
     }
 
     "display an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "")
+      val invalidChoice   = Map(choice -> "")
       val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
 
       val errorView = bonusPayments(invalidatedForm, employer, "backUrl")

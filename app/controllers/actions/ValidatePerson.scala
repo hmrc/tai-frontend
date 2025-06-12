@@ -53,7 +53,7 @@ class ValidatePersonImpl @Inject() (
         personService.personDetails(personNino).value.map {
           case Right(person) =>
             Right(AuthenticatedRequest(request, request.taiUser, person))
-          case Left(_) =>
+          case Left(_)       =>
             Right(AuthenticatedRequest(request, request.taiUser, defaultPerson(personNino)))
         }
       } else {

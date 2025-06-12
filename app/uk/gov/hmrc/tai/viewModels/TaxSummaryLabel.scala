@@ -53,8 +53,8 @@ object TaxSummaryLabel {
   ): TaxSummaryLabel = {
 
     val taxComponentType = codingComponent.componentType
-    val employmentId = codingComponent.employmentId
-    val amountDue = codingComponent.inputAmount
+    val employmentId     = codingComponent.employmentId
+    val amountDue        = codingComponent.inputAmount
 
     val labelString = describe(
       codingComponent.componentType,
@@ -76,7 +76,7 @@ object TaxSummaryLabel {
     taxComponentType match {
       case UnderPaymentFromPreviousYear =>
         val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url
-        val id = "underPaymentFromPreviousYear"
+        val id   = "underPaymentFromPreviousYear"
         Some(
           HelpLink(
             Messages(
@@ -90,7 +90,7 @@ object TaxSummaryLabel {
 
       case EstimatedTaxYouOweThisYear =>
         val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url
-        val id = "estimatedTaxOwedLink"
+        val id   = "estimatedTaxOwedLink"
         Some(
           HelpLink(
             Messages(

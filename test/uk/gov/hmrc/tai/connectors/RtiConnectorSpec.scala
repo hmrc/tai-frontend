@@ -38,7 +38,7 @@ class RtiConnectorSpec extends BaseSpec with WireMockHelper {
 
   private val mockHttpClientResponse: HttpClientResponse = mock[HttpClientResponse]
 
-  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
+  private val year: TaxYear    = TaxYear(LocalDateTime.now().getYear)
   val httpHandler: HttpHandler = mock[HttpHandler]
 
   private lazy val url = s"/tai/$nino/rti-payments/years/${year.year}"
@@ -57,8 +57,8 @@ class RtiConnectorSpec extends BaseSpec with WireMockHelper {
 
   private def sut: RtiConnector = new RtiConnector(inject[HttpClientV2], mockHttpClientResponse, appConfig)
 
-  private val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  private val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  private val firstPayment: Payment        = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  private val secondPayment: Payment       = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   private val annualAccount: AnnualAccount = AnnualAccount(
     7,
     taxYear = uk.gov.hmrc.tai.model.TaxYear(),
