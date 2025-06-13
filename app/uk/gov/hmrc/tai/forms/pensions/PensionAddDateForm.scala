@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.time.LocalDate
 case class PensionAddDateForm(employerName: String) {
 
   def form(implicit messages: Messages): Form[LocalDate] = {
-    implicit val dateFormatter = new LocalDateFormatter(
+    implicit val dateFormatter: LocalDateFormatter = new LocalDateFormatter(
       formDay = PensionFormDay,
       formMonth = PensionFormMonth,
       formYear = PensionFormYear,

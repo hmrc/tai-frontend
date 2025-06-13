@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,6 @@ object CalculateIncomeForm {
         "employmentId" -> number,
         "ytdAmount"    -> optional(text),
         "paymentDate"  -> TaiValidator.validateOptionalDate()
-      )(CalculateIncomeForm.apply)(CalculateIncomeForm.unapply)
+      )(CalculateIncomeForm.apply)(form => Some(Tuple4(form.name, form.employmentId, form.ytdAmount, form.paymentDate)))
     )
 }

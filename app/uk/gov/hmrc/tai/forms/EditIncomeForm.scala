@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ object EditIncomeForm {
         "isOccupationalPension" -> boolean,
         "hasMultipleIncomes"    -> boolean,
         "payToDate"             -> optional(text)
-      )(customApply)(EditIncomeForm.unapply)
+      )(customApply)(customUnapply)
     )
   }
 
@@ -177,4 +177,38 @@ object EditIncomeForm {
       payToDate
     )
 
+  val customUnapply: EditIncomeForm => Option[
+    (
+      String,
+      String,
+      Int,
+      Option[String],
+      Option[Int],
+      Option[String],
+      Option[String],
+      Option[LocalDate],
+      Option[LocalDate],
+      Boolean,
+      Boolean,
+      Boolean,
+      Option[String]
+    )
+  ] = form =>
+    Some(
+      (
+        form.name,
+        form.description,
+        form.employmentId,
+        form.newAmount,
+        form.oldAmount,
+        form.worksNumber,
+        form.jobTitle,
+        form.startDate,
+        form.endDate,
+        form.isLive,
+        form.isOccupationalPension,
+        form.hasMultipleIncomes,
+        form.payToDate
+      )
+    )
 }

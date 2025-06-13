@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ object PayPeriodForm {
     def otherInDaysValidation(payPeriod: Option[String]): Constraint[Option[String]] = {
       val digitsOnly = """^\d*$""".r
 
-      Constraint[Option[String]]("days") { days: Option[String] =>
+      Constraint[Option[String]]("days") { (days: Option[String]) =>
         (payPeriod, days) match {
           case (Some(Other), Some(digitsOnly())) => Valid
           case (Some(Other), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
@@ -58,7 +58,7 @@ object PayPeriodForm {
       mapping(
         PayPeriodKey   -> optional(text).verifying(payPeriodValidation),
         OtherInDaysKey -> optional(text).verifying(otherInDaysValidation(payPeriod))
-      )(PayPeriodForm.apply)(PayPeriodForm.unapply)
+      )(PayPeriodForm.apply)(form => Some(Tuple2(form.payPeriod, form.otherInDays)))
     )
   }
 }
