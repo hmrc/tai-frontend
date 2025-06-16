@@ -18,14 +18,13 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@import scala.annotation.nowarn
 
 
 @this(main: MainTemplate, form: FormWithCSRF, govukInput : GovukInput)
 
 
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
-    @nowarn hasMultipleIncomes: Boolean,
+    hasMultipleIncomes: Boolean,
     employmentId: Int,
     payToDate: String = "0",
 )(implicit request: Request[_],
