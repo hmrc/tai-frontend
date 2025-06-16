@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
@@ -28,7 +29,7 @@ case class TaxSummaryLabel(value: String, link: Option[HelpLink] = None)
 
 case class HelpLink(value: String, href: String, id: String)
 
-object TaxSummaryLabel {
+object TaxSummaryLabel extends Logging {
 
   def apply(
     taxComponentType: TaxComponentType,
@@ -57,10 +58,14 @@ object TaxSummaryLabel {
     val amountDue        = codingComponent.inputAmount
 
     val labelString = describe(
-      codingComponent.componentType,
-      employmentId,
-      taxFreeAmountDetails.companyCarBenefits,
-      taxFreeAmountDetails.employmentIdNameMap
+      componentType = codingComponent.componentType,
+      employmentId = employmentId,
+      companyCarBenefits = taxFreeAmountDetails.companyCarBenefits,
+      employmentIdNameMap = taxFreeAmountDetails.employmentIdNameMap,
+      inputAmount = codingComponent.inputAmount.fold {
+        logger.error(s"No value returned from API for inputAmount: $codingComponent therefore will default to zero.")
+        BigDecimal(0)
+      }(identity)
     )
 
     val labelLink = amountDue.flatMap { amount =>
@@ -109,7 +114,8 @@ object TaxSummaryLabel {
     componentType: TaxComponentType,
     employmentId: Option[Int],
     companyCarBenefits: Seq[CompanyCarBenefit],
-    employmentIdNameMap: Map[Int, String]
+    employmentIdNameMap: Map[Int, String],
+    inputAmount: BigDecimal
   )(implicit messages: Messages): String =
     (componentType, employmentId) match {
       case (CarBenefit, Some(id)) if employmentIdNameMap.contains(id) =>
@@ -125,6 +131,6 @@ object TaxSummaryLabel {
           s"${messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
 
       case _ =>
-        messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
+        messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}", inputAmount)
     }
 }
