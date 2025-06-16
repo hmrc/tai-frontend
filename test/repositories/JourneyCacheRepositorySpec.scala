@@ -49,7 +49,7 @@ class JourneyCacheRepositorySpec
   private val userAnswers = UserAnswers("session-id-1", "nino", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[ApplicationConfig]
-  when(mockAppConfig.sessionTimeoutInSeconds) thenReturn 1
+  when(mockAppConfig.sessionTimeoutInSeconds) thenReturn 1L
 
   protected override val repository = new JourneyCacheRepository(
     mongoComponent = mongoComponent,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,32 +58,31 @@ class IncomeTaxHistoryController @Inject() (
       employmentDetails         <- employmentService.employments(nino, taxYear)
     } yield {
       val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
-      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map {
-        employment: Employment =>
-          val maybeTaxCode: Option[TaxCodeIncome] = for {
-            taxCodesMap <- maybeTaxCodesMap
-            incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
-            taxCode     <- incomes.headOption
-          } yield taxCode
+      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { (employment: Employment) =>
+        val maybeTaxCode: Option[TaxCodeIncome] = for {
+          taxCodesMap <- maybeTaxCodesMap
+          incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
+          taxCode     <- incomes.headOption
+        } yield taxCode
 
-          val maybeLastPayment = fetchLastPayment(employment, taxYear)
-          val isPension        = maybeTaxCode.exists(_.componentType == PensionIncome)
+        val maybeLastPayment = fetchLastPayment(employment, taxYear)
+        val isPension        = maybeTaxCode.exists(_.componentType == PensionIncome)
 
-          IncomeTaxHistoryViewModel(
-            employerName = employment.name,
-            isPension = isPension,
-            ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
-            payrollNumber = employment.payrollNumber,
-            startDate = employment.startDate,
-            maybeEndDate = employment.endDate,
-            maybeTaxableIncome = maybeLastPayment.map { payment =>
-              withPoundPrefix(MoneyPounds(payment.amountYearToDate))
-            },
-            maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
-              withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
-            },
-            maybeTaxCode = maybeTaxCode.map(_.taxCode)
-          )
+        IncomeTaxHistoryViewModel(
+          employerName = employment.name,
+          isPension = isPension,
+          ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
+          payrollNumber = employment.payrollNumber,
+          startDate = employment.startDate,
+          maybeEndDate = employment.endDate,
+          maybeTaxableIncome = maybeLastPayment.map { payment =>
+            withPoundPrefix(MoneyPounds(payment.amountYearToDate))
+          },
+          maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
+            withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
+          },
+          maybeTaxCode = maybeTaxCode.map(_.taxCode)
+        )
       }.toList
       IncomeTaxYear(taxYear, incomeTaxHistory)
     }

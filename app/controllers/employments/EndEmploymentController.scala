@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class EndEmploymentController @Inject() (
   endEmploymentIrregularPaymentError: EndEmploymentIrregularPaymentErrorView,
   endEmploymentView: EndEmploymentView,
   canWeContactByPhone: CanWeContactByPhoneView,
-  duplicateSubmissionWarning: DuplicateSubmissionWarningView,
+  duplicateSubmissionWarningView: DuplicateSubmissionWarningView,
   confirmation: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   authenticate: AuthJourney,
@@ -501,7 +501,7 @@ class EndEmploymentController @Inject() (
                 error5xxInBadRequest()
               )(employment =>
                 Ok(
-                  duplicateSubmissionWarning(
+                  duplicateSubmissionWarningView(
                     DuplicateSubmissionWarningForm.createForm,
                     employment.name,
                     empId
@@ -529,7 +529,8 @@ class EndEmploymentController @Inject() (
                 DuplicateSubmissionWarningForm.createForm
                   .bindFromRequest()
                   .fold(
-                    formWithErrors => BadRequest(duplicateSubmissionWarning(formWithErrors, employment.name, empId)),
+                    formWithErrors =>
+                      BadRequest(duplicateSubmissionWarningView(formWithErrors, employment.name, empId)),
                     success =>
                       success.yesNoChoice match {
                         case Some(FormValuesConstants.YesValue) =>

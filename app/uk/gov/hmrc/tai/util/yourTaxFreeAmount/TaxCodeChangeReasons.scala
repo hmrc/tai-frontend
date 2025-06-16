@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,18 +57,17 @@ class TaxCodeChangeReasons @Inject() () {
   }
 
   private def primaryEmploymentsChanged(primaryPairs: List[TaxCodePair])(implicit messages: Messages): List[String] =
-    primaryPairs flatMap {
-      primaryPair: TaxCodePair =>
-        val current  = primaryPair.current.map(_.employerName)
-        val previous = primaryPair.previous.map(_.employerName)
+    primaryPairs flatMap { (primaryPair: TaxCodePair) =>
+      val current  = primaryPair.current.map(_.employerName)
+      val previous = primaryPair.previous.map(_.employerName)
 
-        (current, previous) match {
-          case (Some(current), Some(previous)) if current != previous                    =>
-            removeEmployerMessage(List(previous)) ++ addSingleEmployerMessage(primaryPair.current)
-          case (Some(_), Some(_)) if isDifferentPayRollWithSameEmployerName(primaryPair) =>
-            genericMessage
-          case _                                                                         => List.empty[String]
-        }
+      (current, previous) match {
+        case (Some(current), Some(previous)) if current != previous                    =>
+          removeEmployerMessage(List(previous)) ++ addSingleEmployerMessage(primaryPair.current)
+        case (Some(_), Some(_)) if isDifferentPayRollWithSameEmployerName(primaryPair) =>
+          genericMessage
+        case _                                                                         => List.empty[String]
+      }
     }
 
   private def isDifferentPayRollWithSameEmployerName(primaryPair: TaxCodePair): Boolean = {

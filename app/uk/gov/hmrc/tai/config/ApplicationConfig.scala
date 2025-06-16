@@ -99,7 +99,7 @@ class ApplicationConfig @Inject() (
 
   lazy val basGatewayFrontendSignInUrl: String = s"$basGatewayHost/bas-gateway/sign-in"
 
-  lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
+  lazy val sessionTimeoutInSeconds: Long = getOptional[Int]("tai.session.timeout").getOrElse(900)
 
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   private lazy val basGatewayHost: String           = decorateUrlForLocalDev("bas-gateway-frontend.host")
