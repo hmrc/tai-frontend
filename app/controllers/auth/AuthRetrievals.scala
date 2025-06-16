@@ -77,9 +77,6 @@ class AuthRetrievalsImpl @Inject() (
                 )
                 block(InternalAuthenticatedRequest(request, user))
             }
-
-          case _ =>
-            throw new RuntimeException("Can't find credentials for user")
         }
       }
   }
