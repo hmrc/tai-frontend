@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,10 @@ object YesNoTextEntryForm {
         FormValuesConstants.YesNoChoice,
         FormValuesConstants.YesValue,
         text
-          .verifying(
-            emptyTextFieldMsg,
-            _.nonEmpty
-          )
-          .verifying(additionalTextConstraint.getOrElse(Constraint[String](_: String => Valid)))
+          .verifying(emptyTextFieldMsg, _.nonEmpty)
+          .verifying(additionalTextConstraint.getOrElse(Constraint[String](_ => Valid)))
       )
-    )(YesNoTextEntryForm.apply)(YesNoTextEntryForm.unapply)
+    )(YesNoTextEntryForm.apply)(form => Some(Tuple2(form.yesNoChoice, form.yesNoTextEntry)))
   )
 
 }

@@ -19,7 +19,7 @@ package controllers.auth
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Nino
 
-final case class AuthedUser (
+final case class AuthedUser(
   nino: Nino,
   utr: Option[String],
   trustedHelper: Option[TrustedHelper]

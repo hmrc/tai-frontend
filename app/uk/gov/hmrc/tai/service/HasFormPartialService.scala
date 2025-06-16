@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.service
 
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
@@ -26,8 +25,11 @@ import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasFormPartialService @Inject() (applicationConfig: ApplicationConfig)(implicit ec: ExecutionContext)
-    extends EnhancedPartialRetriever {
+class HasFormPartialService @Inject() (val httpClient: HttpClientV2, applicationConfig: ApplicationConfig)(implicit
+  ec: ExecutionContext
+) extends EnhancedPartialRetriever {
+
+  override val httpClientV2: HttpClientV2 = httpClient
 
   def getIncomeTaxPartial(implicit request: RequestHeader): Future[HtmlPartial] =
     loadPartial(applicationConfig.incomeTaxFormPartialLinkUrl)
