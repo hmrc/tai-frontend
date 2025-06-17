@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,6 @@ class ApplicationConfig @Inject() (
   private lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   private lazy val taxCalcFrontendHost: String      = decorateUrlForLocalDev("taxcalc-frontend.host")
   private lazy val trackFrontendHost: String        = decorateUrlForLocalDev("tracking-frontend.host")
-  lazy val webChatIsEnabled: Boolean                = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String                        =
     servicesConfig.baseUrl("pertax")
 

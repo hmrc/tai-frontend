@@ -544,19 +544,39 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .withSession(SessionKeys.sessionId -> uuid, SessionKeys.authToken -> "Bearer 1")
       .withHeaders("Referer" -> "")
 
-  val wrapperDataResponse: String = Json
-    .toJson(
-      WrapperDataResponse(
-        Seq(
-          MenuItemConfig("id", "NewLayout Item", "link", leftAligned = false, 0, None, None),
-          MenuItemConfig("signout", "Sign out", "link", leftAligned = false, 0, None, None)
-        ),
-        PtaMinMenuConfig("MenuName", "BackName"),
-        List.empty,
-        List.empty
-      )
-    )
-    .toString
+  val wrapperDataResponse: String =
+    """
+      |{
+      |    "menuItemConfig": [
+      |        {
+      |            "id": "home",
+      |            "text": "Check your Income Tax",
+      |            "href": "http://localhost:9230/check-income-tax",
+      |            "leftAligned": true,
+      |            "position": 0,
+      |            "icon": "hmrc-account-icon hmrc-account-icon--home"
+      |        }
+      |    ],
+      |    "ptaMinMenuConfig": {
+      |        "menuName": "Account menu",
+      |        "backName": "Back"
+      |    },
+      |    "urBanners": [
+      |        {
+      |           "page": "test-page",
+      |           "link": "test-link",
+      |           "isEnabled": true
+      |        }
+      |    ],
+      |    "webchatPages": [
+      |        {
+      |            "pattern": "^/check-income-tax",
+      |            "skinElement": "skinElement",
+      |            "isEnabled": true
+      |        }
+      |    ]
+      |}
+      |""".stripMargin
 
   val person: Person = Person(
     generatedNino,

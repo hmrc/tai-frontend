@@ -45,7 +45,7 @@ trait IntegrationSpec
 
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
 
     super.beforeEach()
 
@@ -83,5 +83,45 @@ trait IntegrationSpec
       post(urlEqualTo("/pertax/authorise"))
         .willReturn(aResponse().withBody("""{"code":"ACCESS_GRANTED", "message":"test"}"""))
     )
+
+    val wrapperDataResponse: String =
+      """
+        |{
+        |    "menuItemConfig": [
+        |        {
+        |            "id": "home",
+        |            "text": "Check your Income Tax",
+        |            "href": "http://localhost:9230/check-income-tax",
+        |            "leftAligned": true,
+        |            "position": 0,
+        |            "icon": "hmrc-account-icon hmrc-account-icon--home"
+        |        }
+        |    ],
+        |    "ptaMinMenuConfig": {
+        |        "menuName": "Account menu",
+        |        "backName": "Back"
+        |    },
+        |    "urBanners": [
+        |        {
+        |           "page": "test-page",
+        |           "link": "test-link",
+        |           "isEnabled": true
+        |        }
+        |    ],
+        |    "webchatPages": [
+        |        {
+        |            "pattern": "^/check-income-tax",
+        |            "skinElement": "skinElement",
+        |            "isEnabled": true
+        |        }
+        |    ]
+        |}
+        |""".stripMargin
+
+      server.stubFor(
+        WireMock
+          .get(urlMatching("/single-customer-account-wrapper-data/wrapper-data.*"))
+          .willReturn(ok(wrapperDataResponse))
+      )
   }
 }

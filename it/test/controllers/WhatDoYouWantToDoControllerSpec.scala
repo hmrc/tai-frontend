@@ -53,7 +53,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     )
     .build()
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(Some(Html("webchat-test")))
     when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("webchat-test")))
@@ -64,83 +64,16 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   }
 
   "What do you want to do page" must {
-    "show the webchat" when {
-      "it is enabled" in {
-        lazy val app = new GuiceApplicationBuilder()
-          .configure(
-            "auditing.enabled"                           -> "false",
-            "microservice.services.auth.port"            -> server.port(),
-            "microservice.services.tai.port"             -> server.port(),
-            "microservice.services.citizen-details.port" -> server.port(),
-            "microservice.services.pertax.port"          -> server.port(),
-            "microservice.services.fandf.port"           -> server.port(),
-            "feature.web-chat.enabled"                   -> true
-          )
-          .overrides(
-            bind[WebChatClient].toInstance(mockWebChatClient)
-          )
-          .build()
-
-        server.stubFor(
-          get(urlEqualTo(personUrl))
-            .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
-        )
-
-        server.stubFor(
-          get(urlEqualTo("/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"))
-            .willReturn(ok("""
-                             |{"HMRCEMBEDDEDCHATSKIN":"HMRCEMBEDDEDCHATSKIN",
-                             |"HMRC_Fixed_1":"HMRC_Fixed_1",
-                             |"HMRC_Anchored_1":"HMRC_Anchored_1",
-                             |"HMRCPOPUPCHATSKIN":"HMRCPOPUPCHATSKIN"
-                             |}""".stripMargin))
-        )
-
-        val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
-            .willReturn(ok(Json.toJson(employments).toString))
-        )
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments-only/years/$startTaxYear"))
-            .willReturn(ok(Json.toJson(employments).toString))
-        )
-
-        val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
-            .willReturn(ok(Json.toJson(taxAccountSummary).toString))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
-            .willReturn(ok(Json.toJson(taxAccountSummary).toString))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
-            .willReturn(ok("false"))
-        )
-
-        val request =
-          FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
-
-        val result = route(app, request).get
-        contentAsString(result) must include("webchat-test")
-      }
-    }
-  }
-
-  "not show the webchat" when {
-    "it is disabled" in {
+    "show the webchat" in {
       lazy val app = new GuiceApplicationBuilder()
         .configure(
           "auditing.enabled"                           -> "false",
           "microservice.services.auth.port"            -> server.port(),
           "microservice.services.tai.port"             -> server.port(),
           "microservice.services.citizen-details.port" -> server.port(),
+          "microservice.services.pertax.port"          -> server.port(),
           "microservice.services.fandf.port"           -> server.port(),
-          "feature.web-chat.enabled"                   -> false
+          "sca-wrapper.services.single-customer-account-wrapper-data.url" -> s"http://localhost:${server.port()}"
         )
         .overrides(
           bind[WebChatClient].toInstance(mockWebChatClient)
@@ -167,10 +100,14 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
           .willReturn(ok(Json.toJson(employments).toString))
       )
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/employments-only/years/$startTaxYear"))
+          .willReturn(ok(Json.toJson(employments).toString))
+      )
 
       val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
       server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/summary"))
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
           .willReturn(ok(Json.toJson(taxAccountSummary).toString))
       )
 
@@ -188,9 +125,10 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
       val result = route(app, request).get
-      contentAsString(result) mustNot include("webchat-test")
+      contentAsString(result) must include("webchat-test")
     }
   }
+
   "show the WhatDoYouWantToDo page" should {
     lazy val app = new GuiceApplicationBuilder()
       .configure(
