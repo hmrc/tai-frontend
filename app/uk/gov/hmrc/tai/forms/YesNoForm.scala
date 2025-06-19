@@ -27,7 +27,7 @@ object YesNoForm {
 
   private def yesNoChoiceValidation(emptySelectionMsg: String) = Constraint[Option[String]]("") {
     case Some(txt) if txt == FormValuesConstants.YesValue || txt == FormValuesConstants.NoValue => Valid
-    case _ => Invalid(emptySelectionMsg)
+    case _                                                                                      => Invalid(emptySelectionMsg)
   }
 
   def form(emptySelectionMsg: String = ""): Form[YesNoForm] = Form[YesNoForm](

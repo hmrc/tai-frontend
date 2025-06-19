@@ -41,16 +41,16 @@ object ComplexEstimatedIncomeTaxViewModel {
     taxBands: List[TaxBand]
   )(implicit messages: Messages): ComplexEstimatedIncomeTaxViewModel = {
 
-    val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
+    val paBand         = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
-    val graph = BandedGraph(
+    val graph          = BandedGraph(
       codingComponents,
       mergedTaxBands,
       taxAccountSummary.taxFreeAllowance,
       taxAccountSummary.totalEstimatedTax,
       taxViewType = ComplexTaxView
     )
-    val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
+    val taxRegion      = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
 
     ComplexEstimatedIncomeTaxViewModel(
       taxAccountSummary.totalEstimatedTax,

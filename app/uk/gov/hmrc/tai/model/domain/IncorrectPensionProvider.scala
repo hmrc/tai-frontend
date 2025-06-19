@@ -27,7 +27,7 @@ case class IncorrectPensionProvider(
 
 object IncorrectPensionProvider {
   implicit val formats: Format[IncorrectPensionProvider] = Json.format[IncorrectPensionProvider]
-  implicit val writes: Writes[IncorrectPensionProvider] = Json.writes[IncorrectPensionProvider]
+  implicit val writes: Writes[IncorrectPensionProvider]  = Json.writes[IncorrectPensionProvider]
 
   implicit def jsonBodyWritable[T](implicit
     writes: Writes[T],

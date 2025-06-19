@@ -29,7 +29,7 @@ case class EndedCompanyBenefit(
 
 object EndedCompanyBenefit {
   implicit val formats: Format[EndedCompanyBenefit] = Json.format[EndedCompanyBenefit]
-  implicit val writes: Writes[EndedCompanyBenefit] = Json.writes[EndedCompanyBenefit]
+  implicit val writes: Writes[EndedCompanyBenefit]  = Json.writes[EndedCompanyBenefit]
 
   implicit def jsonBodyWritable[T](implicit
     writes: Writes[T],

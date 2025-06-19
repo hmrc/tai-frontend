@@ -22,8 +22,8 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1SameViewSpec extends TaiViewSpec {
 
-  val employmentID = 1
-  val newAmount = 1234
+  val employmentID                    = 1
+  val newAmount                       = 1234
   private val updateIncomeCYPlus1Same = inject[UpdateIncomeCYPlus1SameView]
 
   override def view: Html = updateIncomeCYPlus1Same(employerName, Some(newAmount))

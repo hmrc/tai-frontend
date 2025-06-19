@@ -71,22 +71,22 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     EmploymentIncome
   )
 
-  val sessionId = "testSessionId"
-  val startOfTaxYear: String = Dates.formatDate(TaxYear().start)
-  val stopDate: String = LocalDate.now().toString
+  val sessionId                 = "testSessionId"
+  val startOfTaxYear: String    = Dates.formatDate(TaxYear().start)
+  val stopDate: String          = LocalDate.now().toString
   val stopDateFormatted: String =
     LocalDate.parse(stopDate).toString.format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
 
-  def createSUT = new SUT
+  def createSUT          = new SUT
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  private val trackingService = mock[TrackingService]
+  val benefitsService: BenefitsService                   = mock[BenefitsService]
+  private val trackingService                            = mock[TrackingService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   private val removeCompanyBenefitCheckYourAnswersView = inject[RemoveCompanyBenefitCheckYourAnswersView]
-  private val removeBenefitTotalValueView = inject[RemoveBenefitTotalValueView]
-  private val removeCompanyBenefitStopDateView = inject[RemoveCompanyBenefitStopDateView]
+  private val removeBenefitTotalValueView              = inject[RemoveBenefitTotalValueView]
+  private val removeCompanyBenefitStopDateView         = inject[RemoveCompanyBenefitStopDateView]
 
   class SUT
       extends RemoveCompanyBenefitController(
@@ -120,7 +120,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         .setOrException(EndCompanyBenefitsEmploymentNamePage, "Test")
         .setOrException(EndCompanyBenefitsNamePage, "Test")
         .setOrException(EndCompanyBenefitsRefererPage, "Test")
-      val SUT = createSUT
+      val SUT             = createSUT
       setup(mockUserAnswers)
 
       when(mockJourneyCacheRepository.get(any(), any()))
@@ -138,20 +138,20 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     "show the prepopulated fields when an EndCompanyBenefitsStopDatePage benefitStopDateKey has been cached" in {
       reset(mockJourneyCacheRepository)
 
-      val stopDate = LocalDate.now()
+      val stopDate        = LocalDate.now()
       val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
         .setOrException(EndCompanyBenefitsEmploymentNamePage, "EmploymentName")
         .setOrException(EndCompanyBenefitsNamePage, "BenefitName")
         .setOrException(EndCompanyBenefitsRefererPage, "Referer")
         .setOrException(EndCompanyBenefitsStopDatePage, stopDate.toString)
-      val SUT = createSUT
+      val SUT             = createSUT
       setup(mockUserAnswers)
 
       when(mockJourneyCacheRepository.get(any(), any()))
         .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val result = SUT.stopDate()(request)
+      val result                                                    = SUT.stopDate()(request)
 
       val expectedView = {
         val form = RemoveCompanyBenefitStopDateForm("BenefitName", "EmploymentName").form
@@ -181,7 +181,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, "employment")
           .setOrException(EndCompanyBenefitsNamePage, "benefit")
-        val SUT = createSUT
+        val SUT             = createSUT
         setup(mockUserAnswers)
 
         val year = TaxYear().year.toString
@@ -225,7 +225,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
 
         val taxYear = TaxYear()
-        val year = taxYear.year.toString
+        val year    = taxYear.year.toString
 
         when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
@@ -295,8 +295,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
   "totalValueOfBenefit" must {
 
     val employmentName = "Employment Name"
-    val benefitName = "Employer Provided Services"
-    val referer = "Url"
+    val benefitName    = "Employer Provided Services"
+    val referer        = "Url"
 
     "show what was the total value page" when {
       "the request has an authorised session with employment name and benefit name" in {
@@ -344,7 +344,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
       val result = SUT.totalValueOfBenefit()(fakeRequest)
 
-      val expectedForm = CompanyBenefitTotalValueForm.form.fill(valueOfBenefit)
+      val expectedForm      = CompanyBenefitTotalValueForm.form.fill(valueOfBenefit)
       val expectedViewModel = BenefitViewModel(employmentName, benefitName)
       result rendersTheSameViewAs removeBenefitTotalValueView(expectedViewModel, expectedForm)
     }
@@ -447,8 +447,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val valueOfBenefit = ""
         val employmentName = "Employment Name"
-        val benefitName = "Employer Provided Services"
-        val referer = "Url"
+        val benefitName    = "Employer Provided Services"
+        val referer        = "Url"
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsEmploymentNamePage, employmentName)
@@ -481,8 +481,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         reset(mockJourneyCacheRepository)
 
         val employmentName = "Employment Name"
-        val benefitName = "Employer Provided Services"
-        val referer = "Url"
+        val benefitName    = "Employer Provided Services"
+        val referer        = "Url"
         val valueOfBenefit = "1234Â£$%@"
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
@@ -548,11 +548,11 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.title()                                                       must include(Messages("tai.canWeContactByPhone.title"))
         doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
         )
-        doc must haveBackLink
+        doc                                                               must haveBackLink
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
@@ -624,11 +624,11 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val doc = Jsoup.parse(contentAsString(result))
 
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.title()                                                       must include(Messages("tai.canWeContactByPhone.title"))
         doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
         )
-        doc must haveBackLink
+        doc                                                               must haveBackLink
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
@@ -1042,7 +1042,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
     "clear the cache and redirect to start of journey" in {
       reset(mockJourneyCacheRepository)
 
-      val testNino = "KH139703B"
+      val testNino        = "KH139703B"
       val mockUserAnswers = UserAnswers(sessionId, testNino)
         .setOrException(EndCompanyBenefitsRefererPage, "Test")
 
@@ -1074,7 +1074,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.previousYears.confirmation.heading"))
       }
     }

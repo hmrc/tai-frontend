@@ -43,16 +43,16 @@ import scala.util.Random
 class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val empId: Int = 1
-  val sessionId: String = "testSessionId"
+  val empId: Int             = 1
+  val sessionId: String      = "testSessionId"
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
-  def createSUT = new SUT
+  def createSUT          = new SUT
 
   val mockIncomeService: IncomeService = mock[IncomeService]
 
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
-  val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
+  val mockTaxAccountService: TaxAccountService           = mock[TaxAccountService]
 
   class SUT
       extends IncomeUpdateEstimatedPayController(
@@ -238,7 +238,7 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     "redirect to sameEstimatedPay page" when {
       "the pay is the same" in {
 
-        val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
+        val payment         = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
         val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateIncomeIdPage, employer.id)
           .setOrException(UpdateIncomeNamePage, employer.name)

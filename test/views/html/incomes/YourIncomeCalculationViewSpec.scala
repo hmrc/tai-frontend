@@ -217,7 +217,7 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
     "show total not equal message" when {
       "total not equal message is present" in {
-        val model = incomeCalculationViewModel(totalNotEqualMessage = Some("Test"))
+        val model             = incomeCalculationViewModel(totalNotEqualMessage = Some("Test"))
         def totalNotEqualView = template(model)
 
         doc(totalNotEqualView) must haveParagraphWithText(model.messageWhenTotalNotEqual.get)
@@ -276,14 +276,14 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
 
   }
 
-  lazy val defaultPayments = Seq(
+  lazy val defaultPayments   = Seq(
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(1), 100, 50, 25),
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(2), 100, 50, 25),
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(3), 100, 50, 25),
     PaymentDetailsViewModel(LocalDate.now.minusWeeks(4), 100, 50, 25)
   )
   lazy val dateFormatPattern = "d MMMM yyyy"
-  lazy val model = incomeCalculationViewModel()
+  lazy val model             = incomeCalculationViewModel()
 
   private val template = inject[YourIncomeCalculationView]
 

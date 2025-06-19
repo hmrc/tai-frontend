@@ -37,7 +37,7 @@ case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxCo
     messages("tai.incomeTaxComparison.dateWithoutWelshAmendment", formatDate(TaxYear().next.start))
 
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
-  def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
+  def nextTaxYearHeader(implicit messages: Messages): String    = nextTaxYearHeaderHtmlNonBreak
 
   lazy val comparisonItemsByYear: Seq[EstimatedIncomeTaxComparisonItem] = items.sortBy(_.year)
 

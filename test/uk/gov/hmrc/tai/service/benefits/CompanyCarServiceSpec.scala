@@ -43,7 +43,7 @@ class CompanyCarServiceSpec extends BaseSpec {
   "companyCarBenefits" must {
     "return empty seq of company car benefits" when {
       "connector returns empty seq" in {
-        val sut = createSut
+        val sut              = createSut
         val codingComponents = Seq(
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
@@ -58,7 +58,7 @@ class CompanyCarServiceSpec extends BaseSpec {
       }
 
       "Coding components don't have company car benefit" in {
-        val sut = createSut
+        val sut              = createSut
         val codingComponents = Seq(
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
@@ -72,7 +72,7 @@ class CompanyCarServiceSpec extends BaseSpec {
 
     "return seq of company car by removing withdrawn company cars" when {
       "Coding components have company car benefit" in {
-        val sut = createSut
+        val sut              = createSut
         val codingComponents = Seq(
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
           CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
@@ -175,7 +175,7 @@ class CompanyCarServiceSpec extends BaseSpec {
     Some(1)
   )
 
-  val employment =
+  val employment  =
     Employment(
       "The Man Plc",
       Live,

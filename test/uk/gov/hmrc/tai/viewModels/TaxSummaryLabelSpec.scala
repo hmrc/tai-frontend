@@ -25,9 +25,9 @@ import utils.BaseSpec
 
 class TaxSummaryLabelSpec extends BaseSpec {
 
-  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val taxBand              = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCatergories    = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax: TotalTax   = TotalTax(1000, Seq(incomeCatergories), None, None, None)
   val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, Seq.empty, totalTax)
   "#TaxSummaryLabel" should {
     "return a human readable coding component and pass through the current and previous amounts" in {
@@ -37,17 +37,17 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
     "return a human readable coding component" when {
       "employment id is found in the employment names map" in {
-        val id = 123
-        val employmentIds = Map(id -> "Employer")
+        val id                   = 123
+        val employmentIds        = Map(id -> "Employer")
         val taxFreeAmountDetails = TaxFreeAmountDetails(employmentIds, Seq.empty, totalTax)
-        val actual = TaxSummaryLabel(GiftAidPayments, Some(id), taxFreeAmountDetails, amount = 1000, None)
+        val actual               = TaxSummaryLabel(GiftAidPayments, Some(id), taxFreeAmountDetails, amount = 1000, None)
 
         actual mustBe TaxSummaryLabel("Gift Aid Payments from Employer", None)
       }
 
       "there is a car benefit" should {
         "display a generic car benefit message when there is no ID" in {
-          val companyCarBenefits = Seq(CompanyCarBenefit(456, 123, Seq.empty))
+          val companyCarBenefits   = Seq(CompanyCarBenefit(456, 123, Seq.empty))
           val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, companyCarBenefits, totalTax)
 
           val actual = {
@@ -59,7 +59,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
         }
 
         "display a generic car benefit message when there is no matching ID" in {
-          val companyCarBenefits = Seq(CompanyCarBenefit(456, 123, Seq.empty))
+          val companyCarBenefits   = Seq(CompanyCarBenefit(456, 123, Seq.empty))
           val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, companyCarBenefits, totalTax)
 
           val actual = {
@@ -77,7 +77,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
             val companyCar = CompanyCar(98, "Make Model", false, None, None, None)
             Seq(CompanyCarBenefit(id, 45678, Seq(companyCar)))
           }
-          val employmentIds = Map(id -> "Employer Name")
+          val employmentIds      = Map(id -> "Employer Name")
 
           val taxFreeAmountDetails = TaxFreeAmountDetails(employmentIds, companyCarBenefits, totalTax)
 
@@ -91,7 +91,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
     "show the underpayment explanation link" when {
       "tax component type is an underPaymentFromPreviousYear" in {
         val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation().url
-        val id = "underPaymentFromPreviousYear"
+        val id   = "underPaymentFromPreviousYear"
         val link =
           Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromPreviousYear.link", "£234"), href, id))
 
@@ -108,7 +108,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
       "tax component type is an EstimatedTaxYouOweThisYear" in {
         val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url
-        val id = "estimatedTaxOwedLink"
+        val id   = "estimatedTaxOwedLink"
         val link =
           Some(HelpLink(Messages("tai.taxFreeAmount.table.underpaymentFromCurrentYear.link", "£456"), href, id))
 
@@ -126,7 +126,7 @@ class TaxSummaryLabelSpec extends BaseSpec {
 
     "do not show the underpayment explanation link" when {
       "there are missing incomeCatergories" in {
-        val totalTax: TotalTax = TotalTax(1000, Seq.empty, None, None, None)
+        val totalTax: TotalTax   = TotalTax(1000, Seq.empty, None, None, None)
         val taxFreeAmountDetails = TaxFreeAmountDetails(Map.empty, Seq.empty, totalTax)
 
         val actual =

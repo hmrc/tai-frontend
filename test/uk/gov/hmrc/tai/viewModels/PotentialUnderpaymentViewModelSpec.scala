@@ -118,11 +118,11 @@ class PotentialUnderpaymentViewModelSpec extends BaseSpec {
 
   }
 
-  val tas = TaxAccountSummary(333.22, 14500, 123.45, 133.46, 10.01)
-  val tasZero = TaxAccountSummary(0, 0, 0, 0, 0)
-  val tasNoCYPlusOne = TaxAccountSummary(333.22, 14500, 123.45, 133.46, 0)
+  val tas              = TaxAccountSummary(333.22, 14500, 123.45, 133.46, 10.01)
+  val tasZero          = TaxAccountSummary(0, 0, 0, 0, 0)
+  val tasNoCYPlusOne   = TaxAccountSummary(333.22, 14500, 123.45, 133.46, 0)
   val tasCYPlusOneOnly = TaxAccountSummary(333.22, 14500, 0, 133.46, 10.01)
-  val ccs = Seq(
+  val ccs              = Seq(
     CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
     CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
   )

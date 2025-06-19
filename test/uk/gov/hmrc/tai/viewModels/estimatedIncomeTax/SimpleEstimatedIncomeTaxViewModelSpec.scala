@@ -42,7 +42,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         CodingComponent(OtherItems, Some(1), 65, "Other Items", None)
       )
 
-      val basicRateTaxBand = TaxBand("B", "", 33500, 6700, Some(0), Some(33500), 20)
+      val basicRateTaxBand  = TaxBand("B", "", 33500, 6700, Some(0), Some(33500), 20)
       val higherRateTaxBand = TaxBand("D0", "", 2835, 1134, Some(33500), Some(150000), 40)
 
       val taxBands = List(
@@ -89,7 +89,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         ).replaceAll("\\s+", "")
       )
 
-      val result = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands)
+      val result  = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands)
       val resCopy = result.copy(
         taxOnIncomeTypeDescription = result.taxOnIncomeTypeDescription.replaceAll("\\s+", "")
       )

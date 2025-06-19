@@ -45,14 +45,14 @@ import scala.util.Random
 class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val sessionId = "testSessionId"
+  val sessionId              = "testSessionId"
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
-  def createSUT = new SUT
+  def createSUT          = new SUT
 
-  val incomeService: IncomeService = mock[IncomeService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val employmentService: EmploymentService = mock[EmploymentService]
+  val incomeService: IncomeService                       = mock[IncomeService]
+  val taxAccountService: TaxAccountService               = mock[TaxAccountService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
@@ -103,7 +103,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
 
   "editIncomeIrregularHours" must {
     "respond with OK when all services return successfully" in {
-      val nino = randomNino()
+      val nino        = randomNino()
       val userAnswers = UserAnswers(sessionId, nino.nino)
       setup(userAnswers)
 
@@ -254,7 +254,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.heading"))
+        doc.title()     must include(messages("tai.irregular.heading"))
         doc.body().text must include(messages("tai.irregular.error.blankValue"))
 
       }
@@ -267,7 +267,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.heading"))
+        doc.title()     must include(messages("tai.irregular.heading"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.maxLength"))
 
       }
@@ -285,7 +285,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       ) {
 
         val defaultUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
-        val mockUserAnswers: UserAnswers = if (isEmptyCache) {
+        val mockUserAnswers: UserAnswers    = if (isEmptyCache) {
           defaultUserAnswers
         } else {
           defaultUserAnswers

@@ -30,12 +30,12 @@ case class TaxFreeAmountComparisonViewModel(
 )(implicit messages: Messages)
     extends ViewModelHelper {
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
-  def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
-  val hasAdditions: Boolean = additions.additions.nonEmpty
-  val hasDeductions: Boolean = deductions.deductions.nonEmpty
-  private val PersonalAllowanceCy = 0
-  private val PersonalAllowanceCyPlusOne = 1
-  val hasPersonalAllowanceIncrease: Boolean =
+  def nextTaxYearHeader(implicit messages: Messages): String    = nextTaxYearHeaderHtmlNonBreak
+  val hasAdditions: Boolean                                     = additions.additions.nonEmpty
+  val hasDeductions: Boolean                                    = deductions.deductions.nonEmpty
+  private val PersonalAllowanceCy                               = 0
+  private val PersonalAllowanceCyPlusOne                        = 1
+  val hasPersonalAllowanceIncrease: Boolean                     =
     personalAllowance.values(PersonalAllowanceCyPlusOne) > personalAllowance.values(PersonalAllowanceCy)
 
   def personalAllowanceIncreaseInfo(implicit messages: Messages): Option[String] =
@@ -65,12 +65,12 @@ object TaxFreeAmountComparisonViewModel {
     codingComponentForYears: Seq[CodingComponentForYear],
     taxAccountSummaryForYears: Seq[TaxAccountSummaryForYear]
   )(implicit messages: Messages): TaxFreeAmountComparisonViewModel = {
-    val sortedcodingComponentsByYear = codingComponentForYears.sortBy(_.year)
+    val sortedcodingComponentsByYear  = codingComponentForYears.sortBy(_.year)
     val sortedTaxAccountSummaryByYear = taxAccountSummaryForYears.sortBy(_.year)
-    val personalAllowance = createPersonalAllowanceRow(sortedcodingComponentsByYear)
-    val additions: Additions = createAdditionsRow(sortedcodingComponentsByYear)
-    val deductions = createDeductionsRow(sortedcodingComponentsByYear)
-    val footer = createFooterRow(sortedTaxAccountSummaryByYear)
+    val personalAllowance             = createPersonalAllowanceRow(sortedcodingComponentsByYear)
+    val additions: Additions          = createAdditionsRow(sortedcodingComponentsByYear)
+    val deductions                    = createDeductionsRow(sortedcodingComponentsByYear)
+    val footer                        = createFooterRow(sortedTaxAccountSummaryByYear)
     TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
   }
 

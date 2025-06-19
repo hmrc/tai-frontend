@@ -45,7 +45,7 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
   ): TaxCodeChangeViewModel = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
-    val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
+    val changeDate   = taxCodeChange.mostRecentTaxCodeChangeDate
 
     TaxCodeChangeViewModel(
       taxCodePairs,

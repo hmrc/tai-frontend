@@ -37,9 +37,9 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       logger.info(error.message)
     case Success(Left(error)) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
       logger.error(error.message)
-    case Success(Left(error)) =>
+    case Success(Left(error))                                                                     =>
       logger.error(error.message, error)
-    case Failure(exception: HttpException) =>
+    case Failure(exception: HttpException)                                                        =>
       logger.error(exception.message)
   }
 
@@ -66,7 +66,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       def customRead(http: String, url: String, response: HttpResponse): HttpResponse =
         response.status match {
           case UNAUTHORIZED => response
-          case _ =>
+          case _            =>
             handleResponseEither(http, url)(response)
               .fold(
                 err =>
@@ -138,7 +138,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
       .execute[HttpResponse]
       .flatMap { httpResponse =>
         httpResponse.status match {
-          case OK =>
+          case OK        =>
             Future.successful(httpResponse)
           case NOT_FOUND =>
             logger.warn(s"HttpHandler - No data can be found")
@@ -172,7 +172,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
         httpResponse.status match {
           case OK | CREATED =>
             Future.successful(httpResponse)
-          case _ =>
+          case _            =>
             logger.warn(
               s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
             )
@@ -192,7 +192,7 @@ class HttpHandler @Inject() (val http: HttpClientV2) extends HttpErrorFunctions 
         httpResponse.status match {
           case OK | NO_CONTENT | ACCEPTED =>
             Future.successful(httpResponse)
-          case _ =>
+          case _                          =>
             logger.warn(
               s"HttpHandler - Error received with status: ${httpResponse.status} and body: ${httpResponse.body}"
             )

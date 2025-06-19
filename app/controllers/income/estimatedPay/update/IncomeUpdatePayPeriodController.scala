@@ -41,15 +41,15 @@ class IncomeUpdatePayPeriodController @Inject() (
   def payPeriodPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val userAnswers = request.userAnswers
-    val payPeriod = userAnswers.get(UpdateIncomePayPeriodPage)
+    val userAnswers     = request.userAnswers
+    val payPeriod       = userAnswers.get(UpdateIncomePayPeriodPage)
     val payPeriodInDays = userAnswers.get(UpdateIncomeOtherInDaysPage)
 
     IncomeSource.create(journeyCacheRepository, userAnswers).map {
       case Right(incomeSource) =>
         val form: Form[PayPeriodForm] = PayPeriodForm.createForm(None).fill(PayPeriodForm(payPeriod, payPeriodInDays))
         Ok(payPeriodView(form, incomeSource.id, incomeSource.name))
-      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      case _                   => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
@@ -68,7 +68,7 @@ class IncomeUpdatePayPeriodController @Inject() (
           } yield incomeSourceEither match {
             case Right(incomeSource) =>
               BadRequest(payPeriodView(formWithErrors, incomeSource.id, incomeSource.name))
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         formData => {
           val updatedUserAnswers = formData.otherInDays match {
@@ -76,7 +76,7 @@ class IncomeUpdatePayPeriodController @Inject() (
               request.userAnswers
                 .set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
                 .flatMap(_.set(UpdateIncomeOtherInDaysPage, days))
-            case _ =>
+            case _          =>
               request.userAnswers.set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
           }
 
@@ -85,7 +85,7 @@ class IncomeUpdatePayPeriodController @Inject() (
               journeyCacheRepository.set(updatedAnswers).map { _ =>
                 Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
               }
-            case Failure(_) =>
+            case Failure(_)              =>
               Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
           }
         }

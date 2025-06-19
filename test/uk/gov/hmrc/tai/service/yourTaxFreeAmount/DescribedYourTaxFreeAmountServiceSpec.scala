@@ -58,7 +58,7 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      val result = service.taxFreeAmountComparison(nino)
+      val result  = service.taxFreeAmountComparison(nino)
 
       Await.result(result, 5.seconds) mustBe expectedModel
     }
@@ -88,30 +88,30 @@ class DescribedYourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      val result = service.taxFreeAmountComparison(nino)
+      val result  = service.taxFreeAmountComparison(nino)
 
       Await.result(result, 5.seconds) mustBe expectedModel
     }
   }
 
-  private val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-  private val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  private val taxBand            = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  private val incomeCatergories  = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
   private val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
   private def createTestService = new TestService
 
   private val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
-  private val companyCarService: CompanyCarService = mock[CompanyCarService]
-  private val employmentService: EmploymentService = mock[EmploymentService]
-  private val taxAccountService = mock[TaxAccountService]
+  private val companyCarService: CompanyCarService               = mock[CompanyCarService]
+  private val employmentService: EmploymentService               = mock[EmploymentService]
+  private val taxAccountService                                  = mock[TaxAccountService]
 
-  private val deductionPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(1000), None)
+  private val deductionPair          = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(1000), None)
   private val describedDeductionPair = CodingComponentPairModel("Car benefit", 1000, 1000)
-  private val allowancePair = CodingComponentPair(GiftAidPayments, None, None, Some(3000), None)
+  private val allowancePair          = CodingComponentPair(GiftAidPayments, None, None, Some(3000), None)
   private val describedAllowancePair = CodingComponentPairModel("Gift Aid Payments", 0, 3000)
 
   private val previousTaxFreeInfo = Some(TaxFreeInfo("Previous", 1000, 1000))
-  private val currentTaxFreeInfo = TaxFreeInfo("Current", 100, 100)
+  private val currentTaxFreeInfo  = TaxFreeInfo("Current", 100, 100)
 
   private class TestService
       extends DescribedYourTaxFreeAmountService(

@@ -59,8 +59,8 @@ object YourIncomeCalculationViewModel {
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
     val latestPayment = latestPaymentDetails(employment)
-    val isPension = taxCodeIncome.exists(_.componentType == PensionIncome)
-    val status = employment.employmentStatus
+    val isPension     = taxCodeIncome.exists(_.componentType == PensionIncome)
+    val status        = employment.employmentStatus
 
     val (incomeCalculationMessage, incomeCalculationEstimateMessage) = taxCodeIncome map { income =>
       incomeExplanationMessage(
@@ -163,7 +163,7 @@ object YourIncomeCalculationViewModel {
     )
 
     Seq(ceasedIncomeMessages, manualIncomeMessages, sameMessages, payFrequencyMessages).find(_ != (None, None)) match {
-      case None =>
+      case None                            =>
         (
           Some(messages(s"tai.income.calculation.default.$pensionOrEmployment", Dates.formatDate(TaxYear().end))),
           Some(messages(s"tai.income.calculation.default.estimate.$pensionOrEmployment", taxCodeIncome.amount))
@@ -243,13 +243,13 @@ object ManualUpdateIncomeMessages {
       (taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
         case (Some(notificationDate), _) if messageKey == "internet" =>
           messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate))
-        case (Some(notificationDate), Some(actionDate)) =>
+        case (Some(notificationDate), Some(actionDate))              =>
           messages(
             s"tai.income.calculation.manual.update.$messageKey",
             Dates.formatDate(actionDate),
             Dates.formatDate(notificationDate)
           )
-        case _ =>
+        case _                                                       =>
           messages(s"tai.income.calculation.manual.update.$messageKey.withoutDate")
       }
 
@@ -266,7 +266,7 @@ object ManualUpdateIncomeMessages {
   )(implicit messages: Messages): Option[String] =
     taxCodeIncome.iabdUpdateSource match {
       case Some(AgentContact) => Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
-      case _ => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
+      case _                  => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
     }
 }
 

@@ -25,13 +25,13 @@ import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 
 class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
 
-  private val currentAmount = 1000
-  private val employmentId = 1
+  private val currentAmount            = 1000
+  private val employmentId             = 1
   private val editIncomeIrregularHours = inject[EditIncomeIrregularHoursView]
 
-  private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, Some(currentAmount.toString))
+  private val viewModel      = EditIncomeIrregularHoursViewModel(employmentId, employerName, Some(currentAmount.toString))
   private val editIncomeForm = AmountComparatorForm.createForm()
-  override def view: Html = editIncomeIrregularHours(editIncomeForm, viewModel)
+  override def view: Html    = editIncomeIrregularHours(editIncomeForm, viewModel)
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink()
@@ -61,8 +61,8 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
 
     "not display current amount when currentAmount is None" in {
       val viewModelWithNoAmount = EditIncomeIrregularHoursViewModel(employmentId, employerName, None)
-      val viewWithNoAmount = editIncomeIrregularHours(editIncomeForm, viewModelWithNoAmount)
-      val docNoAmount = doc(viewWithNoAmount)
+      val viewWithNoAmount      = editIncomeIrregularHours(editIncomeForm, viewModelWithNoAmount)
+      val docNoAmount           = doc(viewWithNoAmount)
 
       docNoAmount mustNot haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
     }

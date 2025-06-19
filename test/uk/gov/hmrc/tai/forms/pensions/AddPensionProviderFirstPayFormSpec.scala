@@ -25,7 +25,7 @@ class AddPensionProviderFirstPayFormSpec extends BaseSpec {
   "AddPensionProviderFirstPayForm" must {
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe Some(FormValuesConstants.YesValue)
@@ -40,7 +40,7 @@ class AddPensionProviderFirstPayFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "")
+      val invalidChoice   = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))

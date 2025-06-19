@@ -42,13 +42,13 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     .configure("microservice.services.tai.port" -> server.port)
     .build()
 
-  lazy val taxAccountUrl = s"/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
-  lazy val codingComponentsUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/tax-components"
-  lazy val incomeSourceUrl =
+  lazy val taxAccountUrl        = s"/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
+  lazy val codingComponentsUrl  = s"/tai/$nino/tax-account/${currentTaxYear.year}/tax-components"
+  lazy val incomeSourceUrl      =
     s"/tai/$nino/tax-account/year/${currentTaxYear.year}/income/${EmploymentIncome.toString}/status/${Live.toString}"
   lazy val taxAccountSummaryUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/summary"
-  lazy val nonTaxCodeIncomeUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/income"
-  lazy val totalTaxUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"
+  lazy val nonTaxCodeIncomeUrl  = s"/tai/$nino/tax-account/${currentTaxYear.year}/income"
+  lazy val totalTaxUrl          = s"/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"
 
   private val income = uk.gov.hmrc.tai.model.domain.income.Incomes(
     Seq.empty[TaxCodeIncome],
@@ -60,9 +60,9 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     )
   )
 
-  val taxCodeIncome: TaxCodeIncome =
+  val taxCodeIncome: TaxCodeIncome             =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "Employer1", OtherBasisOfOperation, Live)
-  val employment: Employment = Employment(
+  val employment: Employment                   = Employment(
     "company name",
     Live,
     Some("888"),
@@ -81,7 +81,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     CodingComponent(EmployerProvidedServices, Some(12), 12321, "Some Description"),
     CodingComponent(GiftsSharesCharity, Some(31), 12345, "Some Description Some")
   )
-  val incomeSource: TaxedIncome = TaxedIncome(Some(taxCodeIncome), employment)
+  val incomeSource: TaxedIncome                = TaxedIncome(Some(taxCodeIncome), employment)
 
   lazy val taxAccountConnector = new TaxAccountConnector(inject[HttpHandler], servicesConfig)
 
@@ -90,7 +90,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   def ninoAsString: String = nino.value
 
   val taxCodeIncomeJson: JsValue = Json.obj(
-    "data" -> JsArray(
+    "data"  -> JsArray(
       Seq(
         Json.obj(
           "componentType"  -> "EmploymentIncome",
@@ -123,7 +123,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           "totalInYearAdjustment"         -> 0,
           "inYearAdjustmentIntoCYPlusOne" -> 0
         ),
-        "employment" -> Json.obj(
+        "employment"    -> Json.obj(
           "name"                         -> "company name",
           "employmentStatus"             -> "Live",
           "payrollNumber"                -> "888",
@@ -146,7 +146,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   )
 
   val codingComponentSampleJson: JsValue = Json.obj(
-    "data" -> Json.arr(
+    "data"  -> Json.arr(
       Json.obj(
         "componentType" -> "EmployerProvidedServices",
         "employmentId"  -> 12,
@@ -166,7 +166,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   )
 
   val corruptJsonResponse: JsValue = Json.obj(
-    "data" -> JsArray(
+    "data"  -> JsArray(
       Seq(
         Json.obj(
           "employmentId"   -> 1,
@@ -182,8 +182,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   )
 
   val incomeJson: JsValue = Json.obj(
-    "data" -> Json.obj(
-      "taxCodeIncomes" -> JsArray(),
+    "data"  -> Json.obj(
+      "taxCodeIncomes"    -> JsArray(),
       "nonTaxCodeIncomes" -> Json.obj(
         "otherNonTaxCodeIncomes" -> Json.arr(
           Json.obj(
@@ -198,21 +198,21 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
   )
 
   private val totalTaxJson = Json.obj(
-    "data" -> Json.obj(
-      "amount" -> 1000,
-      "incomeCategories" -> Json.arr(
+    "data"  -> Json.obj(
+      "amount"               -> 1000,
+      "incomeCategories"     -> Json.arr(
         Json.obj(
           "incomeCategoryType" -> "UkDividendsIncomeCategory",
           "totalTax"           -> 10,
           "totalTaxableIncome" -> 20,
           "totalIncome"        -> 30,
-          "taxBands" -> Json.arr(
+          "taxBands"           -> Json.arr(
             Json.obj(
-              "bandType" -> "",
-              "code"     -> "",
-              "income"   -> 0,
-              "tax"      -> 0,
-              "rate"     -> 0
+              "bandType"  -> "",
+              "code"      -> "",
+              "income"    -> 0,
+              "tax"       -> 0,
+              "rate"      -> 0
             ),
             Json.obj(
               "bandType"  -> "B",
@@ -227,7 +227,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
       ),
       "reliefsGivingBackTax" -> Json.obj(
-        "amount" -> 100,
+        "amount"                  -> 100,
         "taxAdjustmentComponents" -> Json.arr(
           Json.obj(
             "taxAdjustmentType"   -> "EnterpriseInvestmentSchemeRelief",
@@ -235,8 +235,8 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           )
         )
       ),
-      "otherTaxDue" -> Json.obj(
-        "amount" -> 100,
+      "otherTaxDue"          -> Json.obj(
+        "amount"                  -> 100,
         "taxAdjustmentComponents" -> Json.arr(
           Json.obj(
             "taxAdjustmentType"   -> "ExcessGiftAidTax",
@@ -245,7 +245,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
       ),
       "alreadyTaxedAtSource" -> Json.obj(
-        "amount" -> 100,
+        "amount"                  -> 100,
         "taxAdjustmentComponents" -> Json.arr(
           Json.obj(
             "taxAdjustmentType"   -> "TaxOnBankBSInterest",
@@ -434,7 +434,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     "fetch the tax account summary" when {
       "provided with valid nino" in {
         val taxAccountSummaryJson = Json.obj(
-          "data" -> Json.obj(
+          "data"  -> Json.obj(
             "totalEstimatedTax"                  -> 111,
             "taxFreeAmount"                      -> 222,
             "totalInYearAdjustmentIntoCY"        -> 1111.11,
@@ -461,7 +461,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
     "return a TaiTaxAccountFailureResponse" when {
       "tai sends an invalid json" in {
         val corruptTaxAccountSummaryJson = Json.obj(
-          "data" -> Json.obj(
+          "data"  -> Json.obj(
             "totalEstimatedTax222" -> 111,
             "taxFreeAmount11"      -> 222
           ),

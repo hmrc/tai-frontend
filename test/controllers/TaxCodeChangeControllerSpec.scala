@@ -141,12 +141,12 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
   )
   val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
-  val personService: PersonService = mock[PersonService]
-  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val personService: PersonService                                         = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService                           = mock[TaxCodeChangeService]
+  val taxAccountService: TaxAccountService                                 = mock[TaxAccountService]
   val describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
-  val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
-  val taxCodeChangeReasonsService: TaxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
+  val yourTaxFreeAmountService: YourTaxFreeAmountService                   = mock[YourTaxFreeAmountService]
+  val taxCodeChangeReasonsService: TaxCodeChangeReasonsService             = mock[TaxCodeChangeReasonsService]
 
   private def createController() = new TaxCodeChangeTestController
 

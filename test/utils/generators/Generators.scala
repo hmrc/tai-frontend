@@ -36,7 +36,7 @@ trait Generators extends UserAnswersGenerator with PageGenerators with ModelGene
     } yield seq1.toSeq.zip(seq2).foldLeft("") {
       case (acc, (n, Some(v))) =>
         acc + n + v
-      case (acc, (n, _)) =>
+      case (acc, (n, _))       =>
         acc + n
     }
   }

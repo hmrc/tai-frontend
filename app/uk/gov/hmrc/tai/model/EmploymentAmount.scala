@@ -61,9 +61,9 @@ object EmploymentAmount {
     componentType match {
       case EmploymentIncome if employmentStatus == Live =>
         s"${Messages("tai.incomes.status-1")} ${Messages("tai.incomes.type-0")}"
-      case EmploymentIncome =>
+      case EmploymentIncome                             =>
         s"${Messages("tai.incomes.status-2")} ${Messages("tai.incomes.type-0")}"
-      case _ =>
+      case _                                            =>
         Messages("tai.incomes.type-1")
     }
 }

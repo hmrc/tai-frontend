@@ -42,19 +42,19 @@ object CompanyBenefitsSummaryViewModel {
     val otherBenVMs = benefits.otherBenefits collect {
       case GenericBenefit(MedicalInsurance, Some(`empId`), amount) =>
         val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance")
-        val changeUrl = controllers.routes.ExternalServiceRedirectController
+        val changeUrl   = controllers.routes.ExternalServiceRedirectController
           .auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform)
           .url
         CompanyBenefitViewModel(benefitName, amount, changeUrl)
 
       case GenericBenefit(CarFuelBenefit, Some(`empId`), amount) =>
         val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit")
-        val changeUrl = applicationConfig.cocarFrontendUrl
+        val changeUrl   = applicationConfig.cocarFrontendUrl
         CompanyBenefitViewModel(benefitName, amount, changeUrl)
 
       case GenericBenefit(benefitType, Some(`empId`), amount) =>
         val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType.toString}")
-        val changeUrl =
+        val changeUrl   =
           controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, benefitType).url
         CompanyBenefitViewModel(benefitName, amount, changeUrl)
     }
@@ -71,7 +71,7 @@ object CompanyBenefitsSummaryViewModel {
     benefits: Benefits
   )(implicit messages: Messages): CompanyBenefitsSummaryViewModel = {
 
-    val benefitVMs = companyBenefitViewModels(empId, benefits, applicationConfig)
+    val benefitVMs           = companyBenefitViewModels(empId, benefits, applicationConfig)
     val displayAddCompanyCar =
       !benefitVMs.map(_.name).contains(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 

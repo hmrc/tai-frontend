@@ -85,11 +85,11 @@ object IncomeSourceViewModel extends ViewModelHelper {
           messages(s"tai.incomeTaxSummary.$messageKey.link")
         case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
           messages("tai.incomeTaxSummary.employment.link")
-        case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
-        case _             => messages("tai.incomeTaxSummary.income.link")
+        case PensionIncome                                                       => messages("tai.incomeTaxSummary.pension.link")
+        case _                                                                   => messages("tai.incomeTaxSummary.income.link")
       }
 
-    val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
+    val detailsLinkLabel        = getLinkLabel("employmentAndBenefits")
     val companyBenefitLinkLabel = getLinkLabel("companyBenefits")
 
     val detailsLinkUrl =
@@ -148,7 +148,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
         case _                        => messages("tai.incomeTaxSummary.income.link")
       }
 
-    val detailsLinkLabel = getLinkLabel("employmentAndBenefits")
+    val detailsLinkLabel        = getLinkLabel("employmentAndBenefits")
     val companyBenefitLinkLabel = getLinkLabel("companyBenefits")
 
     val incomeSourceSummaryUrl =
@@ -202,19 +202,19 @@ object IncomeSourceViewModel extends ViewModelHelper {
         )
 
         otherNonTaxCodeIncome.incomeComponentType match {
-          case _: OtherIncomes =>
+          case _: OtherIncomes         =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
-          case _: CompanyBenefits =>
+          case _: CompanyBenefits      =>
             model.copy(companyBenefitLinkUrl =
               controllers.routes.AuditController.auditLinksToIForm(CompanyBenefitsIform).url
             )
           case _: TaxableStateBenefits =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url)
-          case _: EmploymentPensions =>
+          case _: EmploymentPensions   =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url)
           case _: SavingAndInvestments =>
             model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url)
-          case _ => model.copy(displayDetailsLink = false)
+          case _                       => model.copy(displayDetailsLink = false)
         }
       }
 }

@@ -49,11 +49,11 @@ import scala.util.Random
 
 class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with ControllerViewTestHelper with Results {
 
-  def createSUT = new SUT
+  def createSUT          = new SUT
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
-  val empId = 1
-  val sessionId = "testSessionId"
+  val empId       = 1
+  val sessionId   = "testSessionId"
   val benefitType = "BenefitInKind"
 
   val employment: Employment = Employment(
@@ -72,7 +72,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
     EmploymentIncome
   )
 
-  val employmentService: EmploymentService = mock[EmploymentService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   private val updateOrRemoveCompanyBenefitDecisionView = inject[UpdateOrRemoveCompanyBenefitDecisionView]
@@ -103,7 +103,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
         .setOrException(EndCompanyBenefitsIdPage, empId)
         .setOrException(EndCompanyBenefitsTypePage, benefitType)
-      val SUT = createSUT
+      val SUT             = createSUT
       setup(mockUserAnswers)
 
       when(mockJourneyCacheRepository.get(any(), any()))
@@ -124,10 +124,10 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       "the request has an authorised session" in {
         reset(mockJourneyCacheRepository)
 
-        val empName = "company name"
+        val empName     = "company name"
         val benefitType = "Expenses"
-        val referer = "referer"
-        val SUT = createSUT
+        val referer     = "referer"
+        val SUT         = createSUT
 
         val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
           .setOrException(EndCompanyBenefitsIdPage, 1)
@@ -173,10 +173,10 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         val expectedForm: Form[Option[String]] =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(Some(YesIGetThisBenefit))
-        val expectedViewModel = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm, 2)
+        val expectedViewModel                  = CompanyBenefitDecisionViewModel(benefitType, empName, expectedForm, 2)
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-        val result = SUT.decision(request)
+        val result                                                    = SUT.decision(request)
 
         status(result) mustBe OK
 

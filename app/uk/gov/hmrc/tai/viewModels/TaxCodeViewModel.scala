@@ -51,10 +51,10 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
       )
     }
 
-    val size = descriptionListViewModels.size
-    val title = taxCodesTitle(size, TaxYear())
+    val size         = descriptionListViewModels.size
+    val title        = taxCodesTitle(size, TaxYear())
     val introMessage = ledeMessage(size)
-    val preHeading = messages("tai.taxCode.preHeader")
+    val preHeading   = messages("tai.taxCode.preHeader")
 
     TaxCodeViewModel(
       title,
@@ -92,10 +92,10 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
   }
 
   private def taxCodesTitle(numberOfRecords: Int, year: TaxYear)(implicit messages: Messages): String = {
-    val titleMessageKey =
+    val titleMessageKey         =
       if (numberOfRecords > 1) "tai.taxCode.multiple.code.title" else "tai.taxCode.single.code.title"
     val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
-    val endOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.end))
+    val endOfTaxYearNonBroken   = htmlNonBroken(Dates.formatDate(year.end))
     messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
   }
 

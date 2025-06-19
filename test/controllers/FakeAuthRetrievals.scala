@@ -26,7 +26,7 @@ import scala.util.Random
 
 object FakeAuthRetrievals extends AuthRetrievals {
 
-  val nino: Nino = new Generator(new Random).nextNino
+  val nino: Nino       = new Generator(new Random).nextNino
   val user: AuthedUser =
     AuthedUser(
       Nino(nino.toString()),
@@ -41,6 +41,6 @@ object FakeAuthRetrievals extends AuthRetrievals {
     block: InternalAuthenticatedRequest[A] => Future[Result]
   ): Future[Result] =
     block(InternalAuthenticatedRequest(request, user))
-  override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+  override def parser: BodyParser[AnyContent]               = cc.parsers.defaultBodyParser
   override protected def executionContext: ExecutionContext = cc.executionContext
 }

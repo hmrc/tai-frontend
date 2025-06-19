@@ -43,14 +43,14 @@ class TaiConnectorTestSpec extends BaseSpec with WireMockHelper with ScalaFuture
   "TaiConnector" must {
     "return estimated pay" in {
       val expectedResponse = CalculatedPay(Some(23000), Some(16000), None, None)
-      val taiConnector = inject[TaiConnector]
-      val payDetails = PayDetails("monthly", Some(1000), Some(500), Some(4), Some(10000), None)
-      implicit val hc = HeaderCarrier()
+      val taiConnector     = inject[TaiConnector]
+      val payDetails       = PayDetails("monthly", Some(1000), Some(500), Some(4), Some(10000), None)
+      implicit val hc      = HeaderCarrier()
       server.stubFor(
         post(anyUrl())
           .willReturn(aResponse().withStatus(OK).withBody(Json.toJson(expectedResponse).toString()))
       )
-      val response = Await.result(taiConnector.calculateEstimatedPay(payDetails), 5.seconds)
+      val response         = Await.result(taiConnector.calculateEstimatedPay(payDetails), 5.seconds)
       response mustBe expectedResponse
     }
   }

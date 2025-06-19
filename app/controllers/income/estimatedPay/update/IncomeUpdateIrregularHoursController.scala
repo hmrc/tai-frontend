@@ -75,7 +75,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
+      val nino                      = user.nino
 
       (
         incomeService.latestPayment(nino, employmentId),
@@ -87,14 +87,14 @@ class IncomeUpdateIrregularHoursController @Inject() (
       ).mapN {
         case (maybePayment, Some(name), maybeAmount) =>
           val cacheMap: Map[String, String] = taxCodeIncomeInfoToCache(name, maybeAmount, maybePayment)
-          val updatedAnswers =
+          val updatedAnswers                =
             request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
 
           journeyCacheRepository.set(updatedAnswers).map { _ =>
             val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, maybeAmount.map(_.toString))
             Ok(editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
           }
-        case _ =>
+        case _                                       =>
           Future.successful(errorPagesHandler.internalServerError("Failed to find tax code income for employment"))
       }.flatten
   }
@@ -102,17 +102,17 @@ class IncomeUpdateIrregularHoursController @Inject() (
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers = request.userAnswers
+      val userAnswers               = request.userAnswers
 
-      val name = userAnswers.get(UpdateIncomeNamePage)
-      val newIrregularPay = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
-      val paymentToDate = userAnswers.get(UpdateIncomePayToDatePage)
+      val name               = userAnswers.get(UpdateIncomeNamePage)
+      val newIrregularPay    = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
+      val paymentToDate      = userAnswers.get(UpdateIncomePayToDatePage)
       val confirmedNewAmount = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(employmentId))
 
       (name, newIrregularPay, paymentToDate) match {
         case (Some(name), Some(newIrregularPay), paymentToDate) =>
           val isSameAsConfirmed = FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))
-          val isSameAsToDate = FormHelper.areEqual(paymentToDate, Some(newIrregularPay))
+          val isSameAsToDate    = FormHelper.areEqual(paymentToDate, Some(newIrregularPay))
 
           val redirect =
             if (isSameAsConfirmed) {
@@ -121,7 +121,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
               Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
             } else {
               val currentAmountOpt = paymentToDate.flatMap(s => scala.util.Try(s.toInt).toOption)
-              val vm = ConfirmAmountEnteredViewModel(
+              val vm               = ConfirmAmountEnteredViewModel(
                 employmentId,
                 name,
                 currentAmountOpt,
@@ -135,7 +135,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
             }
 
           Future.successful(redirect)
-        case _ =>
+        case _                                                  =>
           logger.warn("Required values not found in user answers")
           Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId)))
       }
@@ -144,8 +144,8 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
-      val userAnswers: UserAnswers = request.userAnswers
-      val name: String = userAnswers.get(UpdateIncomeNamePage).toString
+      val userAnswers: UserAnswers      = request.userAnswers
+      val name: String                  = userAnswers.get(UpdateIncomeNamePage).toString
       val paymentToDate: Option[String] = userAnswers.get(UpdateIncomePayToDatePage)
       val latestPayDate: Option[String] = userAnswers.get(UpdatedIncomeDatePage)
 
@@ -169,7 +169,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
+      val nino                      = user.nino
 
       val cacheAndRespond = (incomeName: String, incomeId: Int, newPay: String) => {
 
@@ -183,22 +183,22 @@ class IncomeUpdateIrregularHoursController @Inject() (
             Ok(editSuccess(incomeName, incomeId))
           }
       }
-      val userAnswers = request.userAnswers
+      val userAnswers   = request.userAnswers
       val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val newPayOpt = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
-      val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
+      val newPayOpt     = userAnswers.get(UpdateIncomeIrregularAnnualPayPage)
+      val incomeIdOpt   = userAnswers.get(UpdateIncomeIdPage)
 
       (incomeNameOpt, newPayOpt, incomeIdOpt) match {
         case (Some(incomeName), Some(newPay), Some(incomeId)) =>
           (for {
-            _ <-
+            _      <-
               taxAccountService
                 .updateEstimatedIncome(nino, newPay.toInt, TaxYear(), employmentId)
             result <- cacheAndRespond(incomeName, incomeId, newPay)
           } yield result).recover { case NonFatal(e) =>
             errorPagesHandler.internalServerError(e.getMessage)
           }
-        case _ =>
+        case _                                                =>
           logger.warn("Mandatory values missing from user answers")
           Future.successful(errorPagesHandler.internalServerError("Mandatory values missing from user answers"))
       }

@@ -29,7 +29,11 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext
 
 trait IntegrationSpec
-    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
+    extends PlaySpec
+    with GuiceOneAppPerSuite
+    with WireMockHelper
+    with ScalaFutures
+    with IntegrationPatience
     with Injecting {
   val generatedNino = new Generator().nextNino
 

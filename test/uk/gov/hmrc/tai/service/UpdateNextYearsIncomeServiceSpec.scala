@@ -60,14 +60,14 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   private def taxCodeIncome(name: String, id: Int, amount: Int): TaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(id), amount, "description", "1185L", name, OtherBasisOfOperation, Live)
 
-  private val employmentName = "employmentName"
-  private val employmentId = 1
-  private val isPension = false
+  private val employmentName   = "employmentName"
+  private val employmentId     = 1
+  private val isPension        = false
   private val employmentAmount = 1000
-  private val sessionId = "testSessionId"
+  private val sessionId        = "testSessionId"
 
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
+  val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class UpdateNextYearsIncomeServiceTest
@@ -260,8 +260,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   "setNewAmount" must {
     "cache the amount with the employment ID key" in {
 
-      val key = s"${UpdateNextYearsIncomeConstants.NewAmount}"
-      val amount = convertCurrencyToInt(Some(employmentAmount.toString)).toString
+      val key      = s"${UpdateNextYearsIncomeConstants.NewAmount}"
+      val amount   = convertCurrencyToInt(Some(employmentAmount.toString)).toString
       val expected = Map(key -> amount)
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
@@ -330,7 +330,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
 
     "return an error if getNewAmount returns a Left" in new SubmitSetup {
-      val key: String = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
+      val key: String  = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
       val errorMessage = s"Value for $key not found"
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
@@ -370,7 +370,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
 
     "be false when a journey is incomplete" in {
-      val service = new UpdateNextYearsIncomeServiceTest
+      val service          = new UpdateNextYearsIncomeServiceTest
       val emptyUserAnswers = UserAnswers(sessionId, randomNino().nino)
       when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(emptyUserAnswers)))
 

@@ -24,13 +24,13 @@ import utils.BaseSpec
 
 class UpdateOrRemoveCompanyBenefitDecisionFormSpec extends BaseSpec {
 
-  val choice = UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice
+  val choice       = UpdateOrRemoveCompanyBenefitDecisionConstants.DecisionChoice
   private val form = UpdateOrRemoveCompanyBenefitDecisionForm.form
 
   "UpdateOrRemoveCompanyBenefitDecisionFormSpec" must {
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> YesIGetThisBenefit)
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe Some(YesIGetThisBenefit)
@@ -45,7 +45,7 @@ class UpdateOrRemoveCompanyBenefitDecisionFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "")
+      val invalidChoice   = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(Messages("tai.benefits.updateOrRemove.decision.radio.error"))

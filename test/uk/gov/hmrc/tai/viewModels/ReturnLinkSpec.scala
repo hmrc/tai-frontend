@@ -24,7 +24,7 @@ class ReturnLinkSpec extends BaseSpec {
 
   class ReturnLinkTest extends ReturnLink {}
   def createReturnLinkTest = new ReturnLinkTest
-  val referalPath = "http://somelocation/anotherLocation"
+  val referalPath          = "http://somelocation/anotherLocation"
 
   "createReturnLink" must {
     "create the matching referer's link" when {

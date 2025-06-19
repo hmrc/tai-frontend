@@ -31,7 +31,7 @@ object AllowancesAndDeductionPairs {
     previousCodingComponents: Seq[CodingComponent],
     currentCodingComponents: Seq[CodingComponent]
   ): AllowancesAndDeductionPairs = {
-    val pairs = pairCodingComponents(previousCodingComponents, currentCodingComponents)
+    val pairs      = pairCodingComponents(previousCodingComponents, currentCodingComponents)
     val allowances = getAllowances(pairs)
     val deductions = getDeductions(pairs)
 
@@ -42,7 +42,7 @@ object AllowancesAndDeductionPairs {
     previous: Seq[CodingComponent],
     current: Seq[CodingComponent]
   ): Seq[CodingComponentPair] = {
-    val pairs = findPairs(previous, current)
+    val pairs    = findPairs(previous, current)
     val nonPairs = findNonPairs(pairs, previous)
 
     pairs ++ nonPairs
@@ -59,7 +59,7 @@ object AllowancesAndDeductionPairs {
             Some(addition.amount),
             addition.inputAmount
           )
-        case None =>
+        case None                  =>
           CodingComponentPair(
             addition.componentType,
             addition.employmentId,
@@ -74,7 +74,7 @@ object AllowancesAndDeductionPairs {
     rest.flatMap { addition =>
       pairs.find(matchingCodingComponents(_, addition)) match {
         case Some(_) => None
-        case None =>
+        case None    =>
           Some(
             CodingComponentPair(
               addition.componentType,

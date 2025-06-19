@@ -42,7 +42,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       "has title relating to current tax year" in {
         val expectedTitle =
           Messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRange)
-        val sut = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
+        val sut           = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
         sut.title mustBe expectedTitle
       }
 
@@ -86,7 +86,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
 
       "has correctly formatted lastTaxYearEnd" in {
         val expectedLastTaxYearEnd = TaxYear().end.minusYears(1).format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-        val sut = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
+        val sut                    = TaxAccountSummaryViewModel(taxAccountSummary, ThreeWeeks, nonTaxCodeIncome, noIncomesSources, Seq())
         sut.lastTaxYearEnd mustBe expectedLastTaxYearEnd
       }
 
@@ -208,7 +208,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       }
       "has the iya banner boolean set to false" when {
         "tax account summary shows an in year adjsutment value of zero or less" in {
-          val sut = TaxAccountSummaryViewModel(
+          val sut    = TaxAccountSummaryViewModel(
             TaxAccountSummary(0, 0, 0, 0, 0),
             ThreeWeeks,
             nonTaxCodeIncome,
@@ -271,7 +271,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
 
         "other income sources without untaxed interest are available" in {
           val nonTaxCodeIncomeWithOutUntaxedInterest = nonTaxCodeIncome.copy(untaxedInterest = None)
-          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(
+          val otherIncomeSourceViewModel1            = otherIncomeSourceViewModel.copy(
             name = Messages("tai.typeDecodes.Profit"),
             amount = Some("£100"),
             detailsLinkLabel = Messages("tai.updateOrRemove"),
@@ -350,7 +350,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       "has no other income sources" when {
         "there is no other income sources are available" in {
           val nonTaxCodeIncomeWithOutAnything = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val sut = TaxAccountSummaryViewModel(
+          val sut                             = TaxAccountSummaryViewModel(
             taxAccountSummary,
             ThreeWeeks,
             nonTaxCodeIncomeWithOutAnything,
@@ -413,7 +413,7 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
   )
 
   val noIncomesSources: IncomeSources = IncomeSources(Seq(), Seq(), Seq())
-  val incomeSources: IncomeSources =
+  val incomeSources: IncomeSources    =
     IncomeSources(livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources)
 
 }

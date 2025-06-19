@@ -35,7 +35,7 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
     "return an envelope id on a successful invocation" in {
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      val json = Json.obj("data" -> JsString("123-456-789"))
+      val json  = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
           .postToApi(meq(s"/tai/$nino/employments/years/2016/update"), meq(model), any())(any(), any(), any())

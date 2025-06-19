@@ -40,10 +40,10 @@ case class RemoveCompanyBenefitStopDateForm(benefitName: String, employerName: S
 }
 
 object RemoveCompanyBenefitStopDateForm {
-  val BenefitFormHint = "benefitEndDateForm-hint"
-  val BenefitFormDay = "benefitEndDateForm-day"
+  val BenefitFormHint  = "benefitEndDateForm-hint"
+  val BenefitFormDay   = "benefitEndDateForm-day"
   val BenefitFormMonth = "benefitEndDateForm-month"
-  val BenefitFormYear = "benefitEndDateForm-year"
+  val BenefitFormYear  = "benefitEndDateForm-year"
 
   def errorMsgs(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
     enterDate = Messages("tai.benefits.ended.stopDate.error.enterDate"),

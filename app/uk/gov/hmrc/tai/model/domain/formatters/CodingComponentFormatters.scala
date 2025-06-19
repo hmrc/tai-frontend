@@ -28,7 +28,7 @@ trait CodingComponentFormatters {
   val taxComponentTypeReads: Reads[TaxComponentType] = new Reads[TaxComponentType] {
     override def reads(json: JsValue): JsResult[TaxComponentType] = {
       val taxComponentType = json.as[String]
-      val component = taxComponentTypeMap(taxComponentType)
+      val component        = taxComponentTypeMap(taxComponentType)
       JsSuccess(component)
     }
   }
@@ -36,10 +36,10 @@ trait CodingComponentFormatters {
   val codingComponentReads: Reads[CodingComponent] = new Reads[CodingComponent] {
     override def reads(json: JsValue): JsResult[CodingComponent] = {
       val componentType = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
-      val employmentId = (json \ "employmentId").asOpt[Int]
-      val amount = (json \ "amount").as[BigDecimal]
-      val description = (json \ "description").as[String]
-      val inputAmount = (json \ "inputAmount").asOpt[BigDecimal]
+      val employmentId  = (json \ "employmentId").asOpt[Int]
+      val amount        = (json \ "amount").as[BigDecimal]
+      val description   = (json \ "description").as[String]
+      val inputAmount   = (json \ "inputAmount").asOpt[BigDecimal]
       JsSuccess(CodingComponent(componentType, employmentId, amount, description, inputAmount))
     }
   }
@@ -157,17 +157,17 @@ trait CodingComponentFormatters {
 
   val taxCodeIncomeSourceReads: Reads[TaxCodeIncome] = new Reads[TaxCodeIncome] {
     override def reads(json: JsValue): JsResult[TaxCodeIncome] = {
-      val componentType = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
-      val employmentId = (json \ "employmentId").asOpt[Int]
-      val amount = (json \ "amount").as[BigDecimal]
-      val description = (json \ "description").as[String]
-      val taxCode = (json \ "taxCode").as[String]
-      val name = (json \ "name").as[String]
-      val basisOperation = (json \ "basisOperation").as[BasisOfOperation]
-      val status = (json \ "status").as[TaxCodeIncomeSourceStatus]
-      val iabdUpdateSource = (json \ "iabdUpdateSource").asOpt[IabdUpdateSource]
+      val componentType          = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
+      val employmentId           = (json \ "employmentId").asOpt[Int]
+      val amount                 = (json \ "amount").as[BigDecimal]
+      val description            = (json \ "description").as[String]
+      val taxCode                = (json \ "taxCode").as[String]
+      val name                   = (json \ "name").as[String]
+      val basisOperation         = (json \ "basisOperation").as[BasisOfOperation]
+      val status                 = (json \ "status").as[TaxCodeIncomeSourceStatus]
+      val iabdUpdateSource       = (json \ "iabdUpdateSource").asOpt[IabdUpdateSource]
       val updateNotificationDate = (json \ "updateNotificationDate").asOpt[LocalDate]
-      val updateActionDate = (json \ "updateActionDate").asOpt[LocalDate]
+      val updateActionDate       = (json \ "updateActionDate").asOpt[LocalDate]
 
       JsSuccess(
         TaxCodeIncome(

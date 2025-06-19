@@ -39,7 +39,8 @@ class TaxAccountConnector @Inject() (
   servicesConfig: ServicesConfig
 )(implicit
   ec: ExecutionContext
-) extends CodingComponentFormatters with Logging {
+) extends CodingComponentFormatters
+    with Logging {
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 

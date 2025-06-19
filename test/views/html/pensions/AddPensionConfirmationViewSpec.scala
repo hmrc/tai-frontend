@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class AddPensionConfirmationViewSpec extends TaiViewSpec {
   private val addPensionConfirmation = inject[AddPensionConfirmationView]
-  override def view: Html = addPensionConfirmation()
+  override def view: Html            = addPensionConfirmation()
 
   "Confirmation View" must {
 

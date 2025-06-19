@@ -26,16 +26,16 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.ScottishTaxCodePrefix
 case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pensionTaxCodes: Seq[TaxCodeDetail])
     extends ViewModelHelper {
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
-  def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
+  def nextTaxYearHeader(implicit messages: Messages): String    = nextTaxYearHeaderHtmlNonBreak
 
   private val employmentHasNotScottishTaxCodeCurrentYear =
     !employmentTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
-  private val employmentHasScottishTaxCodeNextYear =
+  private val employmentHasScottishTaxCodeNextYear       =
     employmentTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
 
   private val pensionHasNotScottishTaxCodeCurrentYear =
     !pensionTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
-  private val pensionHasScottishTaxCodeNextYear =
+  private val pensionHasScottishTaxCodeNextYear       =
     pensionTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
 
   val hasScottishTaxCodeNextYear: Boolean =
@@ -47,7 +47,7 @@ object TaxCodeComparisonViewModel {
   def apply(taxCodeForYears: Seq[TaxCodeIncomesForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
 
     val employmentTaxCodes = taxCodeDetails(taxCodeForYears, EmploymentIncome)
-    val pensionTaxCodes = taxCodeDetails(taxCodeForYears, PensionIncome)
+    val pensionTaxCodes    = taxCodeDetails(taxCodeForYears, PensionIncome)
 
     TaxCodeComparisonViewModel(employmentTaxCodes, pensionTaxCodes)
   }
@@ -56,8 +56,8 @@ object TaxCodeComparisonViewModel {
     messages: Messages
   ): Seq[TaxCodeDetail] = {
 
-    val filteredTaxCodeIncomes = filterTaxCodeIncomesForYear(taxCodeForYears, taxComponentType)
-    val sortedTaxCodeIncomes = filteredTaxCodeIncomes.sortWith(_.year < _.year)
+    val filteredTaxCodeIncomes  = filterTaxCodeIncomesForYear(taxCodeForYears, taxComponentType)
+    val sortedTaxCodeIncomes    = filteredTaxCodeIncomes.sortWith(_.year < _.year)
     val uniqueIncomeSourceNames = sortedTaxCodeIncomes.flatMap(_.taxCodeIncomeSources.map(_.name)).distinct
 
     for {

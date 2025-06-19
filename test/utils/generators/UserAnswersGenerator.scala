@@ -36,10 +36,10 @@ trait UserAnswersGenerator extends TryValues {
     Arbitrary {
       for {
         sessionId <- nonEmptyString
-        data <- generators match {
-                  case Nil => Gen.const(Map[QuestionPage[_], JsValue]())
-                  case _   => Gen.mapOf(oneOf(generators))
-                }
+        data      <- generators match {
+                       case Nil => Gen.const(Map[QuestionPage[_], JsValue]())
+                       case _   => Gen.mapOf(oneOf(generators))
+                     }
       } yield UserAnswers(
         sessionId = sessionId,
         nino = generateNino.nino,

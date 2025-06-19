@@ -50,9 +50,9 @@ class IncomeTaxComparisonController @Inject() (
     extends TaiBaseController(mcc) {
 
   def onPageLoad(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val nino = request.taiUser.nino
+    val nino           = request.taiUser.nino
     val currentTaxYear = TaxYear()
-    val nextTaxYear = currentTaxYear.next
+    val nextTaxYear    = currentTaxYear.next
 
     (
       taxAccountService.taxAccountSummary(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
@@ -84,23 +84,23 @@ class IncomeTaxComparisonController @Inject() (
     isEstimatedPayJourneyComplete: Boolean
   )(implicit request: DataRequest[AnyContent]) = {
     val estimatedIncomeTaxComparisonViewModel = {
-      val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
+      val cyEstimatedTax        = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
       val cyPlusOneEstimatedTax =
         EstimatedIncomeTaxComparisonItem(nextTaxYear, taxAccountSummaryCYPlusOne.totalEstimatedTax)
       EstimatedIncomeTaxComparisonViewModel(Seq(cyEstimatedTax, cyPlusOneEstimatedTax))
     }
 
     val taxCodeComparisonModel = {
-      val cyTaxCodeIncomeSources = TaxCodeIncomesForYear(currentTaxYear, taxCodeIncomesCY)
+      val cyTaxCodeIncomeSources        = TaxCodeIncomesForYear(currentTaxYear, taxCodeIncomesCY)
       val cyPlusOneTaxCodeIncomeSources = TaxCodeIncomesForYear(nextTaxYear, taxCodeIncomesCYPlusOne)
       TaxCodeComparisonViewModel(Seq(cyTaxCodeIncomeSources, cyPlusOneTaxCodeIncomeSources))
     }
 
     val taxFreeAmountComparisonModel = {
-      val cyCodingComponents = CodingComponentForYear(currentTaxYear, codingComponentsCY)
+      val cyCodingComponents     = CodingComponentForYear(currentTaxYear, codingComponentsCY)
       val cyPlusOneTaxComponents = CodingComponentForYear(nextTaxYear, codingComponentsCYPlusOne)
-      val cyTaxSummary = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCY)
-      val cyPlusOneTaxSummary = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCYPlusOne)
+      val cyTaxSummary           = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCY)
+      val cyPlusOneTaxSummary    = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCYPlusOne)
 
       TaxFreeAmountComparisonViewModel(
         Seq(cyCodingComponents, cyPlusOneTaxComponents),

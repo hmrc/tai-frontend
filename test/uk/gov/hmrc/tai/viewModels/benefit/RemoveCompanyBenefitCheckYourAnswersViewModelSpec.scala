@@ -106,7 +106,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends BaseSpec {
     controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
   )
 
-  private val stopDate = LocalDate.now()
+  private val stopDate          = LocalDate.now()
   private val stopDateFormatted = stopDate.format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
 
   def baseModel = RemoveCompanyBenefitsCheckYourAnswersViewModel(

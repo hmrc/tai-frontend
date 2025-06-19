@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 
 class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
 
-  val preHeading = "add missing income"
+  val preHeading                        = "add missing income"
   private def addIncomeCheckYourAnswers = inject[AddIncomeCheckYourAnswersView]
 
   "Income Check Your Answers page" must {
@@ -52,7 +52,7 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
 
     "do no display confirm summary paragraph" when {
       "no text is present in view model" in {
-        val viewModel = IncomeCheckYourAnswersViewModel(
+        val viewModel  = IncomeCheckYourAnswersViewModel(
           preHeading,
           "fake/backlink/url",
           lines,

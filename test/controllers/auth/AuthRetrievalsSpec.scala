@@ -49,7 +49,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AuthRetrievalsSpec extends BaseSpec {
   private val mockFandFConnector = mock[FandFConnector]
-  val cc: ControllerComponents = stubControllerComponents()
+  val cc: ControllerComponents   = stubControllerComponents()
 
   abstract class Harness(AuthRetrievals: AuthRetrievals) extends AbstractController(cc) {
 
@@ -96,7 +96,7 @@ class AuthRetrievalsSpec extends BaseSpec {
     "is not logged in" must {
       "throw an exception" in {
         val controller = Harness.failure(MissingBearerToken())
-        val result = controller.onPageLoad()(fakeRequest)
+        val result     = controller.onPageLoad()(fakeRequest)
 
         whenReady(result.failed) { e =>
           e mustBe a[MissingBearerToken]
@@ -108,26 +108,26 @@ class AuthRetrievalsSpec extends BaseSpec {
   "Given the user is authorised" should {
 
     "return the users nino & name in an Ok response" when {
-      val saUtr = Some("000111222")
-      val nino = Nino(new Generator().nextNino.nino)
+      val saUtr         = Some("000111222")
+      val nino          = Nino(new Generator().nextNino.nino)
       val baseRetrieval = Some(nino.nino) ~ saUtr
 
       "no trusted helper data is returned" in {
-        val controller = Harness.successful(baseRetrieval)
-        val result = controller.onPageLoad()(fakeRequest)
+        val controller      = Harness.successful(baseRetrieval)
+        val result          = controller.onPageLoad()(fakeRequest)
         val expectedTaiUser = AuthedUser(nino, saUtr, None)
 
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
       "trusted helper data is returned" in {
-        val nino = new Generator().nextNino
+        val nino          = new Generator().nextNino
         val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
         when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(Some(trustedHelper)))
 
         val controller =
           Harness.successful(baseRetrieval)
-        val result = controller.onPageLoad()(fakeRequest)
+        val result     = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
           AuthedUser(nino, Some("000111222"), Some(trustedHelper))
@@ -136,13 +136,13 @@ class AuthRetrievalsSpec extends BaseSpec {
       }
 
       "trusted helper retrieval returns an exception" in {
-        val nino = new Generator().nextNino
+        val nino          = new Generator().nextNino
         val baseRetrieval = Some(nino.nino) ~ saUtr
         when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.failed(new RuntimeException("error")))
 
         val controller =
           Harness.successful(baseRetrieval)
-        val result = controller.onPageLoad()(fakeRequest)
+        val result     = controller.onPageLoad()(fakeRequest)
 
         val expectedTaiUser =
           AuthedUser(nino, Some("000111222"), None)

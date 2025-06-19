@@ -32,7 +32,7 @@ class PensionProviderService @Inject() (pensionProviderConnector: PensionProvide
   ): Future[String] =
     pensionProviderConnector.addPensionProvider(nino, pensionProvider) map {
       case Some(envId) => envId
-      case _ =>
+      case _           =>
         throw new RuntimeException(
           s"No envelope id was generated when adding the new pension provider for ${nino.nino}"
         )
@@ -44,7 +44,7 @@ class PensionProviderService @Inject() (pensionProviderConnector: PensionProvide
   ): Future[String] =
     pensionProviderConnector.incorrectPensionProvider(nino, id, pensionProvider) map {
       case Some(envId) => envId
-      case _ =>
+      case _           =>
         throw new RuntimeException(s"No envelope id was generated when submitting incorrect pension for ${nino.nino}")
     }
 }

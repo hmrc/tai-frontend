@@ -30,22 +30,22 @@ class HttpClientResponse @Inject() ()(implicit ec: ExecutionContext) extends Log
     response: Future[Either[UpstreamErrorResponse, A]]
   ): EitherT[Future, UpstreamErrorResponse, A] =
     EitherT(response.map {
-      case Right(response) =>
+      case Right(response)                                                                 =>
         Right(response)
       case Left(error) if error.statusCode >= 499 || error.statusCode == TOO_MANY_REQUESTS =>
         logger.error(error.message)
         Left(error)
-      case Left(error) if error.statusCode == NOT_FOUND || error.statusCode == LOCKED =>
+      case Left(error) if error.statusCode == NOT_FOUND || error.statusCode == LOCKED      =>
         logger.info(error.message)
         Left(error)
-      case Left(error) =>
+      case Left(error)                                                                     =>
         logger.error(error.message, error)
         Left(error)
     } recover {
       case exception: HttpException =>
         logger.error(exception.message)
         Left(UpstreamErrorResponse(exception.message, BAD_GATEWAY, BAD_GATEWAY))
-      case exception =>
+      case exception                =>
         throw exception
     })
 

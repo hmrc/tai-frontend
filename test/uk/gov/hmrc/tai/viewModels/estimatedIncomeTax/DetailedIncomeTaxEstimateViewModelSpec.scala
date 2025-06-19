@@ -34,7 +34,9 @@ import utils.BaseSpec
 import views.html.includes.link
 
 class DetailedIncomeTaxEstimateViewModelSpec
-    extends BaseSpec with TableDrivenPropertyChecks with ScalaCheckDrivenPropertyChecks {
+    extends BaseSpec
+    with TableDrivenPropertyChecks
+    with ScalaCheckDrivenPropertyChecks {
 
   "DetailedIncomeTaxEstimateViewModel" when {
 
@@ -140,7 +142,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
 
       "return all dividend bands that have an income" in {
 
-        val taxBands = Seq(
+        val taxBands         = Seq(
           TaxBand(
             bandType = BandTypesConstants.DividendZeroRate,
             code = "",
@@ -181,8 +183,8 @@ class DetailedIncomeTaxEstimateViewModelSpec
         val incomeCategories = Seq(
           IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
         )
-        val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
-        val model =
+        val totalTax         = TotalTax(100, incomeCategories, None, None, None, None)
+        val model            =
           DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.dividends must contain theSameElementsAs taxBands
@@ -195,11 +197,11 @@ class DetailedIncomeTaxEstimateViewModelSpec
       "containsHSR1orHSR2 is called" must {
 
         val nonHigherTaxBandGen: Gen[TaxBand] = for {
-          bandType <- Gen.oneOf(
-                        BandTypesConstants.StarterSavingsRate,
-                        BandTypesConstants.PersonalSavingsRate,
-                        BandTypesConstants.SavingsBasicRate
-                      )
+          bandType  <- Gen.oneOf(
+                         BandTypesConstants.StarterSavingsRate,
+                         BandTypesConstants.PersonalSavingsRate,
+                         BandTypesConstants.SavingsBasicRate
+                       )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
           tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -209,10 +211,10 @@ class DetailedIncomeTaxEstimateViewModelSpec
         } yield TaxBand(bandType, code, income, tax, lowerBand, upperBand, rate)
 
         val higherTaxBandGen: Gen[TaxBand] = for {
-          bandType <- Gen.oneOf(
-                        BandTypesConstants.SavingsHigherRate,
-                        BandTypesConstants.SavingsAdditionalRate
-                      )
+          bandType  <- Gen.oneOf(
+                         BandTypesConstants.SavingsHigherRate,
+                         BandTypesConstants.SavingsAdditionalRate
+                       )
           code      <- arbitrary[String]
           income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
           tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
@@ -251,13 +253,13 @@ class DetailedIncomeTaxEstimateViewModelSpec
       "return additional tax detail rows" when {
 
         "there are additional tax due" in {
-          val otherTaxDue = Seq(
+          val otherTaxDue      = Seq(
             TaxAdjustmentComponent(ExcessGiftAidTax, 100),
             TaxAdjustmentComponent(ExcessWidowsAndOrphans, 100),
             TaxAdjustmentComponent(PensionPaymentsAdjustment, 200),
             TaxAdjustmentComponent(ChildBenefit, 300)
           )
-          val totalTax =
+          val totalTax         =
             TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
           val codingComponents = Seq(
             CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
@@ -572,7 +574,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
         "there is no reduction in tax" in {
 
           val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-          val result = DetailedIncomeTaxEstimateViewModel.createReductionsTable(Seq.empty[CodingComponent], totalTax)
+          val result   = DetailedIncomeTaxEstimateViewModel.createReductionsTable(Seq.empty[CodingComponent], totalTax)
 
           result mustBe Seq.empty[ReductionTaxRow]
         }
@@ -580,7 +582,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
     }
 
     "return tax bands from all categories" in {
-      val taxBand =
+      val taxBand          =
         Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
       val incomeCategories = Seq(
         IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
@@ -590,7 +592,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
         IncomeCategory(BankInterestIncomeCategory, 0, 5000, 0, taxBand),
         IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBand)
       )
-      val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
+      val totalTax         = TotalTax(100, incomeCategories, None, None, None, None)
 
       val model =
         DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
@@ -605,7 +607,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
     "additional Income Tax Self Assessment text" should {
       "be returned when Non-Coded Income is present" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "")))
-        val model =
+        val model            =
           DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.selfAssessmentAndPayeText mustEqual Some(messagesApi("tai.estimatedIncome.selfAssessmentAndPayeText"))
@@ -613,7 +615,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
 
       "not returned when Non-Coded Income is absent" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
-        val model =
+        val model            =
           DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
 
         model.selfAssessmentAndPayeText mustEqual None
@@ -622,9 +624,9 @@ class DetailedIncomeTaxEstimateViewModelSpec
 
   }
 
-  private val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None)
-  private val taxCodeIncomes = Seq.empty[TaxCodeIncome]
-  private val taxCodeSummary = TaxAccountSummary(0, 0, 0, 0, 0, 0, 0)
+  private val totalTax         = TotalTax(100, Seq.empty[IncomeCategory], None, None, None)
+  private val taxCodeIncomes   = Seq.empty[TaxCodeIncome]
+  private val taxCodeSummary   = TaxAccountSummary(0, 0, 0, 0, 0, 0, 0)
   private val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty)
 
   val basicModel =
