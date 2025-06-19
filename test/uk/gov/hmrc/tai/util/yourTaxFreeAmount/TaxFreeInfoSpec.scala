@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,19 @@ import utils.BaseSpec
 
 class TaxFreeInfoSpec extends BaseSpec {
 
-  val date                     = "Date"
-  val taxAccountCalculatorMock = mock[TaxAccountCalculator]
-  val taxFreeAmount            = 123
+  val date: String                                   = "Date"
+  val taxAccountCalculatorMock: TaxAccountCalculator = mock[TaxAccountCalculator]
+  val taxFreeAmount: BigDecimal                      = BigDecimal(123)
+  val employmentId: Int                              = 123
 
-  def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) =
-    CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString())
+  def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal): CodingComponent =
+    CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString)
 
   "#apply" should {
     when(taxAccountCalculatorMock.taxFreeAmount(any())).thenReturn(taxFreeAmount)
 
     "return a TaxFreeInfo" in {
-      when(taxAccountCalculatorMock.taxFreeAmount(meq(Seq.empty))).thenReturn(0)
+      when(taxAccountCalculatorMock.taxFreeAmount(meq(Seq.empty))).thenReturn(BigDecimal(0))
 
       val expected = TaxFreeInfo(date, 0, 0)
       TaxFreeInfo(date, Seq.empty, taxAccountCalculatorMock) mustBe expected
@@ -44,7 +45,7 @@ class TaxFreeInfoSpec extends BaseSpec {
 
     "calculate the annual tax free amount" in {
       val codingComponents =
-        Seq(CodingComponent(MarriageAllowanceReceived, Some(taxFreeAmount), 5885, "MarriageAllowanceReceived"))
+        Seq(CodingComponent(MarriageAllowanceReceived, Some(employmentId), 5885, "MarriageAllowanceReceived"))
       val expected         = TaxFreeInfo(date, taxFreeAmount, 0)
 
       TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
@@ -52,7 +53,7 @@ class TaxFreeInfoSpec extends BaseSpec {
 
     "calculate the personal allowance" in {
       val codingComponents =
-        Seq(CodingComponent(PersonalAllowancePA, Some(taxFreeAmount), 11850, "MarriageAllowanceReceived"))
+        Seq(CodingComponent(PersonalAllowancePA, Some(employmentId), 11850, "MarriageAllowanceReceived"))
       val expected         = TaxFreeInfo(date, taxFreeAmount, 11850)
 
       TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
