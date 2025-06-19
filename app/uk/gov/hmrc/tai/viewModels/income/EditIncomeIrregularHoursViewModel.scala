@@ -34,8 +34,8 @@ object EditIncomeIrregularHoursViewModel extends ViewModelHelper {
   ): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
-    val heading = messages("tai.irregular.heading", taxYearMessage)
-    val preHeading = messages("tai.estimatedPay.preHeading", employerName)
+    val heading        = messages("tai.irregular.heading", taxYearMessage)
+    val preHeading     = messages("tai.estimatedPay.preHeading", employerName)
 
     EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount)
   }

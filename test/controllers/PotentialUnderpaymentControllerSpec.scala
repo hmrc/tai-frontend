@@ -39,9 +39,9 @@ import scala.language.postfixOps
 class PotentialUnderpaymentControllerSpec extends BaseSpec with I18nSupport {
 
   val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val auditService: AuditService = mock[AuditService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val referralMap: (String, String) = "Referer" -> "http://somelocation/somePageResource"
+  val auditService: AuditService                     = mock[AuditService]
+  val taxAccountService: TaxAccountService           = mock[TaxAccountService]
+  val referralMap: (String, String)                  = "Referer" -> "http://somelocation/somePageResource"
 
   private class SUT()
       extends PotentialUnderpaymentController(

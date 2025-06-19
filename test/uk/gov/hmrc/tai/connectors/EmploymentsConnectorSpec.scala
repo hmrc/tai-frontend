@@ -517,7 +517,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
 
     "return an exception" when {
       "json is invalid" in {
-        val json = Json.obj("test" -> JsString("123-456-789"))
+        val json              = Json.obj("test" -> JsString("123-456-789"))
         when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
         val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
@@ -538,7 +538,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789")
       )
-      val json = Json.obj("data" -> JsString("123-456-789"))
+      val json          = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
           .postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment), any())(any(), any(), any())
@@ -555,7 +555,7 @@ class EmploymentsConnectorSpec extends BaseSpec {
     "return an envelope id on a successful invocation" in {
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      val json = Json.obj("data" -> JsString("123-456-789"))
+      val json  = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model), any())(any(), any(), any())
       )

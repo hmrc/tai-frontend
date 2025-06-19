@@ -29,7 +29,7 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
 
   "previous years income" must {
     "return an envelope id" in {
-      val sut = createSUT
+      val sut   = createSUT
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       when(previousYearsIncomeConnector.incorrectIncome(meq(nino), meq(2016), meq(model))(any()))
@@ -42,7 +42,7 @@ class PreviousYearsIncomeServiceSpec extends BaseSpec {
 
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
-        val sut = createSUT
+        val sut   = createSUT
         val model =
           IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
         when(previousYearsIncomeConnector.incorrectIncome(meq(nino), meq(2016), meq(model))(any()))

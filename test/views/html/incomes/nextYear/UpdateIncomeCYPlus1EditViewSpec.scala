@@ -25,9 +25,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
 
-  val employmentID = 1
+  val employmentID  = 1
   val currentEstPay = 1234
-  val isPension = false
+  val isPension     = false
 
   private val updateIncomeCYPlus1Edit = inject[UpdateIncomeCYPlus1EditView]
 
@@ -66,7 +66,7 @@ class UpdateIncomeCYPlus1EditViewSpec extends TaiViewSpec {
         None,
         AmountComparatorForm.createForm()
       )
-      val docNoAmount = doc(viewWithNoAmount)
+      val docNoAmount      = doc(viewWithNoAmount)
 
       docNoAmount mustNot haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentEstPay), 0)))
     }

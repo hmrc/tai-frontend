@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.util.constants
 
 object UpdateOrRemoveCompanyBenefitDecisionConstants {
-  val DecisionChoice: String = "decisionChoice"
-  val YesIGetThisBenefit: String = "yesIGetThisBenefit"
+  val DecisionChoice: String        = "decisionChoice"
+  val YesIGetThisBenefit: String    = "yesIGetThisBenefit"
   val NoIDontGetThisBenefit: String = "noIDontGetThisBenefit"
 }

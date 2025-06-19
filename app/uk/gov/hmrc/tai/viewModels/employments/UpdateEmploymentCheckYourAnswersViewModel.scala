@@ -32,17 +32,17 @@ case class UpdateEmploymentCheckYourAnswersViewModel(
       messages("tai.label.yes"),
       controllers.employments.routes.EndEmploymentController.onPageLoad(id).url
     )
-    val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
+    val whatYouToldUsLine     = CheckYourAnswersConfirmationLine(
       messages("tai.checkYourAnswers.whatYouToldUs"),
       whatYouToldUs,
       controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url
     )
-    val contactByPhoneLine = CheckYourAnswersConfirmationLine(
+    val contactByPhoneLine    = CheckYourAnswersConfirmationLine(
       messages("tai.checkYourAnswers.contactByPhone"),
       contactByPhone,
       controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
     )
-    val phoneNumberLine = CheckYourAnswersConfirmationLine(
+    val phoneNumberLine       = CheckYourAnswersConfirmationLine(
       messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
       controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url

@@ -54,7 +54,9 @@ class UpdateEmploymentController @Inject() (
   errorPagesHandler: ErrorPagesHandler,
   journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Referral with EmptyCacheRedirect {
+    extends TaiBaseController(mcc)
+    with Referral
+    with EmptyCacheRedirect {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
@@ -75,7 +77,7 @@ class UpdateEmploymentController @Inject() (
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
       (for {
-        employment <- employmentService.employment(user.nino, empId)
+        employment   <- employmentService.employment(user.nino, empId)
         futureResult <- employment match {
                           case Some(emp) =>
                             for {
@@ -130,9 +132,9 @@ class UpdateEmploymentController @Inject() (
 
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val employmentId = request.userAnswers.get(UpdateEmploymentIdPage)
-    val telephoneQuestion = request.userAnswers.get(UpdateEmploymentTelephoneQuestionPage)
-    val telephoneNumber = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
+    val employmentId              = request.userAnswers.get(UpdateEmploymentIdPage)
+    val telephoneQuestion         = request.userAnswers.get(UpdateEmploymentTelephoneQuestionPage)
+    val telephoneNumber           = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
 
     employmentId match {
       case Some(empId) =>
@@ -145,7 +147,7 @@ class UpdateEmploymentController @Inject() (
             )
           )
         )
-      case _ => Future.successful(Redirect(taxAccountSummaryRedirect))
+      case _           => Future.successful(Redirect(taxAccountSummaryRedirect))
     }
   }
 
@@ -166,7 +168,7 @@ class UpdateEmploymentController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val employmentId = request.userAnswers.get(UpdateEmploymentIdPage)
+          val employmentId              = request.userAnswers.get(UpdateEmploymentIdPage)
           implicit val user: AuthedUser = request.taiUser
           Future.successful(
             BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel(employmentId.get), formWithErrors))
@@ -179,7 +181,7 @@ class UpdateEmploymentController @Inject() (
                 setNoValueForTelephoneQuestion(form)
                   .setOrException(UpdateEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
               )
-            case _ =>
+            case _                                              =>
               journeyCacheRepository.set(
                 setNoValueForTelephoneQuestion(form)
                   .setOrException(UpdateEmploymentTelephoneNumberPage, "")
@@ -194,12 +196,12 @@ class UpdateEmploymentController @Inject() (
 
   def updateEmploymentCheckYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      val employmentId = request.userAnswers.get(UpdateEmploymentIdPage)
-      val employmentName = request.userAnswers.get(UpdateEmploymentNamePage)
-      val employmentDetails = request.userAnswers.get(UpdateEmploymentDetailsPage)
+      implicit val user: AuthedUser   = request.taiUser
+      val employmentId                = request.userAnswers.get(UpdateEmploymentIdPage)
+      val employmentName              = request.userAnswers.get(UpdateEmploymentNamePage)
+      val employmentDetails           = request.userAnswers.get(UpdateEmploymentDetailsPage)
       val employmentTelephoneQuestion = request.userAnswers.get(UpdateEmploymentTelephoneQuestionPage)
-      val employmentTelephoneNumber = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
+      val employmentTelephoneNumber   = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
 
       (employmentId, employmentName, employmentDetails, employmentTelephoneQuestion, employmentTelephoneNumber) match {
 
@@ -217,17 +219,17 @@ class UpdateEmploymentController @Inject() (
               )
             )
           )
-        case _ =>
+        case _                                                                       =>
           Future.successful(Redirect(taxAccountSummaryRedirect))
       }
   }
 
   def submitYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val employmentId = request.userAnswers.get(UpdateEmploymentIdPage)
-    val employmentDetails = request.userAnswers.get(UpdateEmploymentDetailsPage)
+    implicit val user: AuthedUser   = request.taiUser
+    val employmentId                = request.userAnswers.get(UpdateEmploymentIdPage)
+    val employmentDetails           = request.userAnswers.get(UpdateEmploymentDetailsPage)
     val employmentTelephoneQuestion = request.userAnswers.get(UpdateEmploymentTelephoneQuestionPage)
-    val employmentTelephoneNumber = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
+    val employmentTelephoneNumber   = request.userAnswers.get(UpdateEmploymentTelephoneNumberPage)
 
     (employmentId, employmentDetails, employmentTelephoneQuestion) match {
 

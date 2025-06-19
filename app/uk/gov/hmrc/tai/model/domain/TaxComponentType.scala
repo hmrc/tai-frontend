@@ -126,37 +126,37 @@ case object EmployerProvidedServices extends BenefitComponentType { val name = "
 // scalastyle:off cyclomatic.complexity
 object BenefitComponentType {
   def apply(name: String): Option[BenefitComponentType] = name match {
-    case BenefitInKind.name                            => Some(BenefitInKind)
-    case CarFuelBenefit.name                           => Some(CarFuelBenefit)
-    case MedicalInsurance.name                         => Some(MedicalInsurance)
-    case CarBenefit.name                               => Some(CarBenefit)
-    case Telephone.name                                => Some(Telephone)
-    case ServiceBenefit.name                           => Some(ServiceBenefit)
-    case TaxableExpensesBenefit.name                   => Some(TaxableExpensesBenefit)
-    case VanBenefit.name                               => Some(VanBenefit)
-    case VanFuelBenefit.name                           => Some(VanFuelBenefit)
-    case BeneficialLoan.name                           => Some(BeneficialLoan)
-    case Accommodation.name                            => Some(Accommodation)
-    case Assets.name                                   => Some(Assets)
-    case AssetTransfer.name                            => Some(AssetTransfer)
-    case EducationalServices.name                      => Some(EducationalServices)
-    case Entertaining.name                             => Some(Entertaining)
-    case Expenses.name                                 => Some(Expenses)
-    case Mileage.name                                  => Some(Mileage)
-    case NonQualifyingRelocationExpenses.name          => Some(NonQualifyingRelocationExpenses)
-    case NurseryPlaces.name                            => Some(NurseryPlaces)
-    case OtherItems.name                               => Some(OtherItems)
-    case PaymentsOnEmployeesBehalf.name                => Some(PaymentsOnEmployeesBehalf)
-    case PersonalIncidentalExpenses.name               => Some(PersonalIncidentalExpenses)
-    case QualifyingRelocationExpenses.name             => Some(QualifyingRelocationExpenses)
-    case EmployerProvidedProfessionalSubscription.name => Some(EmployerProvidedProfessionalSubscription)
+    case BenefitInKind.name                                        => Some(BenefitInKind)
+    case CarFuelBenefit.name                                       => Some(CarFuelBenefit)
+    case MedicalInsurance.name                                     => Some(MedicalInsurance)
+    case CarBenefit.name                                           => Some(CarBenefit)
+    case Telephone.name                                            => Some(Telephone)
+    case ServiceBenefit.name                                       => Some(ServiceBenefit)
+    case TaxableExpensesBenefit.name                               => Some(TaxableExpensesBenefit)
+    case VanBenefit.name                                           => Some(VanBenefit)
+    case VanFuelBenefit.name                                       => Some(VanFuelBenefit)
+    case BeneficialLoan.name                                       => Some(BeneficialLoan)
+    case Accommodation.name                                        => Some(Accommodation)
+    case Assets.name                                               => Some(Assets)
+    case AssetTransfer.name                                        => Some(AssetTransfer)
+    case EducationalServices.name                                  => Some(EducationalServices)
+    case Entertaining.name                                         => Some(Entertaining)
+    case Expenses.name                                             => Some(Expenses)
+    case Mileage.name                                              => Some(Mileage)
+    case NonQualifyingRelocationExpenses.name                      => Some(NonQualifyingRelocationExpenses)
+    case NurseryPlaces.name                                        => Some(NurseryPlaces)
+    case OtherItems.name                                           => Some(OtherItems)
+    case PaymentsOnEmployeesBehalf.name                            => Some(PaymentsOnEmployeesBehalf)
+    case PersonalIncidentalExpenses.name                           => Some(PersonalIncidentalExpenses)
+    case QualifyingRelocationExpenses.name                         => Some(QualifyingRelocationExpenses)
+    case EmployerProvidedProfessionalSubscription.name             => Some(EmployerProvidedProfessionalSubscription)
     case IncomeTaxPaidButNotDeductedFromDirectorsRemuneration.name =>
       Some(IncomeTaxPaidButNotDeductedFromDirectorsRemuneration)
-    case TravelAndSubsistence.name     => Some(TravelAndSubsistence)
-    case VouchersAndCreditCards.name   => Some(VouchersAndCreditCards)
-    case NonCashBenefit.name           => Some(NonCashBenefit)
-    case EmployerProvidedServices.name => Some(EmployerProvidedServices)
-    case _                             => None
+    case TravelAndSubsistence.name                                 => Some(TravelAndSubsistence)
+    case VouchersAndCreditCards.name                               => Some(VouchersAndCreditCards)
+    case NonCashBenefit.name                                       => Some(NonCashBenefit)
+    case EmployerProvidedServices.name                             => Some(EmployerProvidedServices)
+    case _                                                         => None
   }
 }
 
@@ -198,7 +198,7 @@ case object OtherIncome extends TaxCodeIncomeComponentType
 
 object TaxComponentType {
   implicit val formatTaxComponentType: Format[TaxComponentType] = new Format[TaxComponentType] {
-    override def reads(json: JsValue): JsResult[TaxComponentType] = json.as[String] match {
+    override def reads(json: JsValue): JsResult[TaxComponentType]     = json.as[String] match {
       case "EmploymentIncome"         => JsSuccess(EmploymentIncome)
       case "PensionIncome"            => JsSuccess(PensionIncome)
       case "JobSeekerAllowanceIncome" => JsSuccess(JobSeekerAllowanceIncome)
@@ -213,7 +213,7 @@ object TaxComponentType {
 object NonTaxCodeIncomeComponentType {
   implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] =
     new Format[NonTaxCodeIncomeComponentType] {
-      override def reads(json: JsValue): JsResult[NonTaxCodeIncomeComponentType] = json.as[String] match {
+      override def reads(json: JsValue): JsResult[NonTaxCodeIncomeComponentType]                  = json.as[String] match {
         case "NonCodedIncome"                 => JsSuccess(NonCodedIncome)
         case "Commission"                     => JsSuccess(Commission)
         case "OtherIncomeEarned"              => JsSuccess(OtherIncomeEarned)

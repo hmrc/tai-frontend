@@ -44,7 +44,8 @@ class TaxCodeChangeController @Inject() (
   yourTaxFreeAmountView: YourTaxFreeAmountView,
   whatHappensNextView: WhatHappensNextView
 )(implicit val ec: ExecutionContext)
-    extends TaiBaseController(mcc) with YourTaxFreeAmount {
+    extends TaiBaseController(mcc)
+    with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino: Nino = request.taiUser.nino
@@ -57,10 +58,10 @@ class TaxCodeChangeController @Inject() (
       scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
     } yield {
       val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
-      val taxCodeChangeReasons = taxCodeChangeReasonsService
+      val taxCodeChangeReasons                               = taxCodeChangeReasonsService
         .combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
-      val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
-      val maybeUserName = Some(request.fullName)
+      val isAGenericReason                                   = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
+      val maybeUserName                                      = Some(request.fullName)
 
       val viewModel =
         TaxCodeChangeViewModel(
@@ -77,7 +78,7 @@ class TaxCodeChangeController @Inject() (
   }
 
   def yourTaxFreeAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    val nino: Nino = request.taiUser.nino
+    val nino: Nino             = request.taiUser.nino
     val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
     implicit val user: AuthedUser = request.taiUser

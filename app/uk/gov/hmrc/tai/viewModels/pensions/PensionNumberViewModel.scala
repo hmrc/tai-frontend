@@ -27,7 +27,7 @@ object PensionNumberViewModel {
 
   def apply(cache: Map[String, String]): PensionNumberViewModel = {
     val pensionProviderName = cache.getOrElse(AddPensionProviderConstants.NameKey, "")
-    val firstPayChoice = cache.get(AddPensionProviderConstants.StartDateWithinSixWeeks) match {
+    val firstPayChoice      = cache.get(AddPensionProviderConstants.StartDateWithinSixWeeks) match {
       case Some(FormValuesConstants.YesValue) => true
       case _                                  => false
     }

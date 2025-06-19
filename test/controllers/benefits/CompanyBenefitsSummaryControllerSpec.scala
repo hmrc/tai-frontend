@@ -46,16 +46,16 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
-  val employmentId = 1
-  val empId = "1"
-  val pensionId = 2
-  val sessionId = "testSessionId"
+  val employmentId       = 1
+  val empId              = "1"
+  val pensionId          = 2
+  val sessionId          = "testSessionId"
   val cacheKeyEmployment = s"$UpdateIncomeConfirmedAmountKey-$employmentId"
-  val cacheKeyPension = s"$UpdateIncomeConfirmedAmountKey-$pensionId"
+  val cacheKeyPension    = s"$UpdateIncomeConfirmedAmountKey-$pensionId"
 
-  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val firstPayment: Payment  = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment  = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val annualAccount: AnnualAccount = AnnualAccount(
@@ -89,11 +89,11 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
 
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val benefitsService: BenefitsService                   = mock[BenefitsService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
+  val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
-  val mockPerson: Person = mock[Person]
+  val mockPerson: Person                                 = mock[Person]
 
   def sut: CompanyBenefitsSummaryController = new CompanyBenefitsSummaryController(
     taxAccountService,

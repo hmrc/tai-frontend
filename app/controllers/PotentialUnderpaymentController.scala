@@ -40,13 +40,15 @@ class PotentialUnderpaymentController @Inject() (
   potentialUnderpayment: PotentialUnderpaymentView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Referral with Logging {
+    extends TaiBaseController(mcc)
+    with Referral
+    with Logging {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     {
 
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
+      val nino                      = user.nino
       (
         taxAccountService.taxAccountSummary(nino, TaxYear()).toFutureOrThrow,
         codingComponentService.taxFreeAmountComponents(nino, TaxYear())

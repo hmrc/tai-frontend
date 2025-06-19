@@ -72,8 +72,8 @@ class UpdateNextYearsIncomeService @Inject() (
     journeyCacheRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
 
   def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
-    val value = convertCurrencyToInt(Some(newValue)).toString
-    val amountKey = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
+    val value          = convertCurrencyToInt(Some(newValue)).toString
+    val amountKey      = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
     val updatedAnswers = userAnswers.setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), value)
 
     journeyCacheRepository.set(updatedAnswers).map { _ =>
@@ -97,18 +97,18 @@ class UpdateNextYearsIncomeService @Inject() (
     ec: ExecutionContext
   ): Future[Done] =
     for {
-      _ <- get(employmentId, nino, userAnswers)
+      _         <- get(employmentId, nino, userAnswers)
       newAmount <- getNewAmount(employmentId, userAnswers).flatMap {
                      case Right(amount) => Future.successful(amount)
                      case Left(error)   => Future.failed(new Exception(error))
                    }
-      _ <- {
+      _         <- {
         val updatedUserAnswers = userAnswers
           .setOrException(UpdateNextYearsIncomeSuccessPage, true)
           .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
 
         journeyCacheRepository.set(updatedUserAnswers)
       }
-      _ <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
+      _         <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
     } yield Done
 }

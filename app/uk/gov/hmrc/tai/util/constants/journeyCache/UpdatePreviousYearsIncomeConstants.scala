@@ -18,9 +18,9 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object UpdatePreviousYearsIncomeConstants {
 
-  val JourneyKey = "update-previous-years-income"
-  val TaxYearKey = "taxYear"
-  val IncomeDetailsKey = "incomeDetails"
+  val JourneyKey           = "update-previous-years-income"
+  val TaxYearKey           = "taxYear"
+  val IncomeDetailsKey     = "incomeDetails"
   val TelephoneQuestionKey = "updateIncomeTelephoneContactAllowed"
-  val TelephoneNumberKey = "updateIncomeTelephoneNumber"
+  val TelephoneNumberKey   = "updateIncomeTelephoneNumber"
 }

@@ -18,14 +18,14 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object EndCompanyBenefitConstants {
 
-  val JourneyKey = "end-company-benefit"
-  val EmploymentIdKey = "employmentId"
-  val EmploymentNameKey = "benefitEmploymentName"
-  val BenefitTypeKey = "benefitType"
-  val BenefitStopDateKey = "stopDate"
-  val BenefitValueKey = "benefitValue"
+  val JourneyKey           = "end-company-benefit"
+  val EmploymentIdKey      = "employmentId"
+  val EmploymentNameKey    = "benefitEmploymentName"
+  val BenefitTypeKey       = "benefitType"
+  val BenefitStopDateKey   = "stopDate"
+  val BenefitValueKey      = "benefitValue"
   val TelephoneQuestionKey = "telephoneContactAllowed"
-  val TelephoneNumberKey = "telephoneNumber"
-  val BenefitNameKey = "benefitName"
-  val RefererKey = "referer"
+  val TelephoneNumberKey   = "telephoneNumber"
+  val BenefitNameKey       = "benefitName"
+  val RefererKey           = "referer"
 }

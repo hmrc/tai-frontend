@@ -24,11 +24,11 @@ import java.time.LocalDate
 
 class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
 
-  private val firstPayment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  private val secondPayment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  private val thirdPayment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  private val latestPayment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  private val annualAccount = AnnualAccount(
+  private val firstPayment             = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  private val secondPayment            = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  private val thirdPayment             = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  private val latestPayment            = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  private val annualAccount            = AnnualAccount(
     7,
     uk.gov.hmrc.tai.model.TaxYear(),
     Available,

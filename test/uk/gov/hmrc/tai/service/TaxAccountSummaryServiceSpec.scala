@@ -213,8 +213,8 @@ class TaxAccountSummaryServiceSpec extends BaseSpec with TaxAccountSummaryTestDa
 
   def createSUT = new SUT()
 
-  val personService: PersonService = mock[PersonService]
-  val trackingService: TrackingService = mock[TrackingService]
+  val personService: PersonService         = mock[PersonService]
+  val trackingService: TrackingService     = mock[TrackingService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
 

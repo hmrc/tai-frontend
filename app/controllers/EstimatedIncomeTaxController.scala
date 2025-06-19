@@ -67,7 +67,7 @@ class EstimatedIncomeTaxController @Inject() (
             ) =>
           implicit val user: AuthedUser = request.taiUser
 
-          val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
+          val taxBands    = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
           val taxViewType = EstimatedIncomeTaxService.taxViewType(
             codingComponents,
             totalTaxDetails,
@@ -79,15 +79,15 @@ class EstimatedIncomeTaxController @Inject() (
           )
           taxViewType match {
             case NoIncomeTaxView => Ok(noCurrentIncome())
-            case ComplexTaxView =>
+            case ComplexTaxView  =>
               val model =
                 ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            case SimpleTaxView =>
+            case SimpleTaxView   =>
               val model =
                 SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
-            case ZeroTaxView =>
+            case ZeroTaxView     =>
               val model =
                 ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
               Ok(zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))

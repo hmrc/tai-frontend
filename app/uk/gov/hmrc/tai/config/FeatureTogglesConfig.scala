@@ -18,8 +18,8 @@ package uk.gov.hmrc.tai.config
 
 trait FeatureTogglesConfig {
   self: ApplicationConfig =>
-  val jrsClaimsEnabled: Boolean = getOptional[Boolean]("tai.jrsClaims.enabled").getOrElse(false)
-  val trackingEnabled: Boolean = getOptional[Boolean]("tai.tracking.enabled").getOrElse(false)
-  val numberOfPreviousYearsToShow: Int = 5 // Always 5 in all configs
+  val jrsClaimsEnabled: Boolean                        = getOptional[Boolean]("tai.jrsClaims.enabled").getOrElse(false)
+  val trackingEnabled: Boolean                         = getOptional[Boolean]("tai.tracking.enabled").getOrElse(false)
+  val numberOfPreviousYearsToShow: Int                 = 5 // Always 5 in all configs
   val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 5
 }

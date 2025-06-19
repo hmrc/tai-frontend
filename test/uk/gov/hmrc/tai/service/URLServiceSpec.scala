@@ -26,8 +26,8 @@ import java.io.File
 
 class URLServiceSpec extends BaseSpec {
 
-  private val testEnv: Environment = Environment(new File(""), classOf[URLServiceSpec].getClassLoader, Mode.Test)
-  private val devEnv: Environment = Environment(new File(""), classOf[URLServiceSpec].getClassLoader, Mode.Dev)
+  private val testEnv: Environment  = Environment(new File(""), classOf[URLServiceSpec].getClassLoader, Mode.Test)
+  private val devEnv: Environment   = Environment(new File(""), classOf[URLServiceSpec].getClassLoader, Mode.Dev)
   private val mockApplicationConfig = mock[ApplicationConfig]
 
   override def beforeEach(): Unit = {

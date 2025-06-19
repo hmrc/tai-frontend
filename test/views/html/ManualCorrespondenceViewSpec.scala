@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class ManualCorrespondenceViewSpec extends TaiViewSpec {
 
   private val manualCorrespondence = inject[ManualCorrespondenceView]
-  override def view = manualCorrespondence("https://contacturl")
+  override def view                = manualCorrespondence("https://contacturl")
 
   "manual correspondence page" should {
     behave like pageWithTitle(messages("mci.title"))

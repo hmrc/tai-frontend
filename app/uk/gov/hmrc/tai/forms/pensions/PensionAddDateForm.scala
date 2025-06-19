@@ -43,9 +43,9 @@ case class PensionAddDateForm(employerName: String) {
 
 object PensionAddDateForm {
 
-  val PensionFormDay = "tellUsStartDateForm-day"
+  val PensionFormDay   = "tellUsStartDateForm-day"
   val PensionFormMonth = "tellUsStartDateForm-month"
-  val PensionFormYear = "tellUsStartDateForm-year"
+  val PensionFormYear  = "tellUsStartDateForm-year"
 
   def errorMsgs(employerName: String)(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
     enterDate = Messages("tai.addPensionProvider.date.enterDate", employerName),

@@ -55,7 +55,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     "have informative text when payment data is not available" when {
 
       "there is no RTI data for cy - 1" in {
-        val view: Html = customView(realTimeStatus = Unavailable)
+        val view: Html    = customView(realTimeStatus = Unavailable)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(
           messages(
@@ -66,7 +66,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "there is no RTI data for cy - 2" in {
-        val view: Html = customView(realTimeStatus = Unavailable, year = TaxYear(TaxYear().year - 2))
+        val view: Html    = customView(realTimeStatus = Unavailable, year = TaxYear(TaxYear().year - 2))
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(
           messages(
@@ -77,7 +77,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "RTI is available but payment data is not available" in {
-        val view: Html = customView(realTimeStatus = Available)
+        val view: Html    = customView(realTimeStatus = Available)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(
           messages(
@@ -90,7 +90,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
     "display payment information" when {
       "payment information is available on previous year summary message" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(
           messages(
@@ -102,13 +102,13 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "payment information, employer name but no EYU messages are available" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.previous", "Foo"))
       }
 
       "payment information, employer name and EYU messages are available" in {
-        val view: Html = customView(payments = samplePayments, eyuMessage = Seq("EyuMessage1", "EyuMessag2"))
+        val view: Html    = customView(payments = samplePayments, eyuMessage = Seq("EyuMessage1", "EyuMessag2"))
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.eyu.previous", "Foo"))
       }
@@ -116,7 +116,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
     "display RTI table" when {
       "payment information is available and should have valid table headings" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
           messages("tai.income.calculation.incomeTable.dateHeader")
@@ -133,7 +133,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "payment information is available and should have valid table footers with no NIC paid" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(messages("tai.taxFree.total"))
         doc.getElementById("taxable-income-table").text must include(f"${samplePayments.last.amountYearToDate}%,.2f")
@@ -141,7 +141,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "payment information is available and should have valid table footers with NIC paid" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(messages("tai.taxFree.total"))
         doc.getElementById("taxable-income-table").text must include(
@@ -150,7 +150,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "payment information is available and should have valid content in table with no NIC paid" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
           samplePaymentWithoutNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
@@ -160,7 +160,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
       }
 
       "payment information is available and should have valid content in table without NIC paid" in {
-        val view: Html = customView(payments = samplePayments)
+        val view: Html    = customView(payments = samplePayments)
         val doc: Document = Jsoup.parse(view.toString)
         doc.getElementById("taxable-income-table").text must include(
           samplePaymentWithNic.date.format(DateTimeFormatter.ofPattern(dateFormatPattern))
@@ -175,14 +175,14 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
 
     "display rti eyu messages" when {
       "there is only one eyu message" in {
-        val view: Html = customView(payments = samplePayments, eyuMessage = Seq("EyuMessage1"))
+        val view: Html    = customView(payments = samplePayments, eyuMessage = Seq("EyuMessage1"))
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.eyu.summary.single", "Foo"))
         doc must haveParagraphWithText("EyuMessage1")
       }
 
       "there are multiple eyu messages" in {
-        val view: Html = customView(payments = samplePayments, eyuMessage = Seq("EyuMessage1", "EyuMessage2"))
+        val view: Html    = customView(payments = samplePayments, eyuMessage = Seq("EyuMessage1", "EyuMessage2"))
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.eyu.summary.multi", "Foo"))
         doc must haveBulletPointWithText("EyuMessage1")
@@ -191,8 +191,8 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     }
   }
 
-  val dateFormatPattern = "d MMMM yyyy"
-  val samplePaymentWithoutNic = Payment(
+  val dateFormatPattern            = "d MMMM yyyy"
+  val samplePaymentWithoutNic      = Payment(
     date = LocalDate.of(2016, 4, 7),
     amount = 111,
     amountYearToDate = 150,
@@ -202,7 +202,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     nationalInsuranceAmountYearToDate = 0,
     payFrequency = BiAnnually
   )
-  val samplePaymentWithNic = Payment(
+  val samplePaymentWithNic         = Payment(
     date = LocalDate.of(2017, 4, 7),
     amount = 222,
     amountYearToDate = 150,

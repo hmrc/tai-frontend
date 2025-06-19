@@ -35,7 +35,7 @@ case class UpdatePensionCheckYourAnswersViewModel(
       receivePension,
       controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
     )
-    val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
+    val whatYouToldUsLine  = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
       whatYouToldUs,
       controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
@@ -45,7 +45,7 @@ case class UpdatePensionCheckYourAnswersViewModel(
       contactByPhone,
       controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
     )
-    val phoneNumberLine = CheckYourAnswersConfirmationLine(
+    val phoneNumberLine    = CheckYourAnswersConfirmationLine(
       Messages("tai.phoneNumber"),
       phoneNumber.getOrElse(""),
       controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url

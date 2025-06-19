@@ -28,8 +28,13 @@ import utils.{BaseSpec, WireMockHelper}
 import scala.concurrent.Future
 
 class HttpClientResponseSpec
-    extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience with RecoverMethods
-    with LogCapturing with Logging {
+    extends BaseSpec
+    with WireMockHelper
+    with ScalaFutures
+    with IntegrationPatience
+    with RecoverMethods
+    with LogCapturing
+    with Logging {
 
   private lazy val httpClientResponseUsingMockLogger: HttpClientResponse = new HttpClientResponse() with Logging
 

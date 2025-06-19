@@ -18,13 +18,13 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object AddEmploymentConstants {
 
-  val JourneyKey = "add-employment"
-  val NameKey = "employmentName"
-  val StartDateKey = "employmentStartDate"
-  val ReceivedFirstPayKey = "employmentFirstPayReceived"
+  val JourneyKey               = "add-employment"
+  val NameKey                  = "employmentName"
+  val StartDateKey             = "employmentStartDate"
+  val ReceivedFirstPayKey      = "employmentFirstPayReceived"
   val PayrollNumberQuestionKey = "employmentPayrollNumberKnown"
-  val PayrollNumberKey = "employmentPayrollNumber"
-  val TelephoneQuestionKey = "employmentTelephoneContactAllowed"
-  val TelephoneNumberKey = "employmentTelephoneNumber"
-  val StartDateWithinSixWeeks = "employmentStartDateWithinSixWeeks"
+  val PayrollNumberKey         = "employmentPayrollNumber"
+  val TelephoneQuestionKey     = "employmentTelephoneContactAllowed"
+  val TelephoneNumberKey       = "employmentTelephoneNumber"
+  val StartDateWithinSixWeeks  = "employmentStartDateWithinSixWeeks"
 }

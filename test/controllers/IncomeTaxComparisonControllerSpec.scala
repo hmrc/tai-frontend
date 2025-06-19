@@ -145,9 +145,9 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
-  val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val codingComponentService: CodingComponentService             = mock[CodingComponentService]
+  val employmentService: EmploymentService                       = mock[EmploymentService]
+  val taxAccountService: TaxAccountService                       = mock[TaxAccountService]
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
 
   class TestController()
@@ -183,7 +183,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
   "onPageLoad" must {
     "display the cy plus one page" in {
       val controller = new TestController
-      val result = controller.onPageLoad()(request)
+      val result     = controller.onPageLoad()(request)
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -216,7 +216,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       status(result) mustBe OK
 
       def doc = Jsoup.parse(contentAsString(result))
-      doc.getElementById("amount-cy-0").text must equal("£1,111")
+      doc.getElementById("amount-cy-0").text          must equal("£1,111")
       doc.getElementById("amount-cy-plus-one-0").text must equal("£2,222")
     }
 
@@ -233,9 +233,9 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.getElementById("amount-cy-1").text must equal("£1,111")
+      doc.getElementById("amount-cy-1").text          must equal("£1,111")
       doc.getElementById("amount-cy-plus-one-1").text must equal("£2,222")
-      doc.getElementById("amount-cy-0").text must equal("£3,234")
+      doc.getElementById("amount-cy-0").text          must equal("£3,234")
       doc.getElementById("amount-cy-plus-one-0").text must equal("£4,000")
     }
 
@@ -252,9 +252,9 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.getElementById("pension-amount-cy-0").text must equal("£4,321")
+      doc.getElementById("pension-amount-cy-0").text          must equal("£4,321")
       doc.getElementById("pension-amount-cy-plus-one-0").text must equal("£4,444")
-      doc.getElementById("pension-amount-cy-1").text must equal("£1,234")
+      doc.getElementById("pension-amount-cy-1").text          must equal("£1,234")
       doc.getElementById("pension-amount-cy-plus-one-1").text must equal("£3,333")
     }
 
@@ -269,7 +269,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.getElementById("amount-cy-0").text must equal("£1,111")
+      doc.getElementById("amount-cy-0").text          must equal("£1,111")
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
 
@@ -282,7 +282,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
-      val doc = Jsoup.parse(contentAsString(result))
+      val doc    = Jsoup.parse(contentAsString(result))
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
   }

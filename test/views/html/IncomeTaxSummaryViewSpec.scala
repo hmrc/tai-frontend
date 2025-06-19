@@ -173,7 +173,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       }
 
       "there are multiple income source view model instance supplied within the 'employments' view model sequnce" in {
-        val vm = TaxAccountSummaryViewModel(
+        val vm                         = TaxAccountSummaryViewModel(
           "",
           "",
           Some(""),
@@ -224,7 +224,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       }
 
       "there are multiple income source view model instance supplied within the 'pensions' view model sequnce" in {
-        val vm = TaxAccountSummaryViewModel(
+        val vm                            = TaxAccountSummaryViewModel(
           "",
           "",
           Some(""),
@@ -274,7 +274,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       }
 
       "there are multiple income source view model instance supplied within the 'ceasedEmployments' view model sequnce" in {
-        val vm = TaxAccountSummaryViewModel(
+        val vm                          = TaxAccountSummaryViewModel(
           "",
           "",
           Some(""),
@@ -390,7 +390,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     "show an end date when instructed" in {
       val inactiveEmployment = activeEmployment.copy(displayEndDate = true, endDate = "31 July 2017")
-      val vm = TaxAccountSummaryViewModel(
+      val vm                 = TaxAccountSummaryViewModel(
         "",
         "",
         Some(""),
@@ -663,8 +663,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
   private val template = inject[IncomeTaxSummaryView]
 
-  val employerId: Int = 9876543
-  val taxCode: String = "1150L"
+  val employerId: Int                               = 9876543
+  val taxCode: String                               = "1150L"
   val taxCodeDescription1: DescriptionListViewModel =
     DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
 

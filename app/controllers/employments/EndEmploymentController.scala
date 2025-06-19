@@ -62,7 +62,9 @@ class EndEmploymentController @Inject() (
   authenticate: AuthJourney,
   journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with EmptyCacheRedirect with Logging {
+    extends TaiBaseController(mcc)
+    with EmptyCacheRedirect
+    with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
@@ -169,7 +171,7 @@ class EndEmploymentController @Inject() (
                               .updateEmploymentDetails(empId)
                           )
                         )
-                      case _ =>
+                      case _                                  =>
                         hasIrregularPayment(employment, user.nino.nino)
                     }
                   )
@@ -181,7 +183,7 @@ class EndEmploymentController @Inject() (
   private def hasIrregularPayment(employment: Employment, nino: String)(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] = {
-    val today = LocalDate.now
+    val today                                = LocalDate.now
     val latestPaymentDate: Option[LocalDate] = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment       <- latestAnnualAccount.latestPayment
@@ -237,7 +239,7 @@ class EndEmploymentController @Inject() (
                 )
               )
             )
-        case _ =>
+        case _                                  =>
           Future.successful(error5xxInBadRequest())
       }
     }
@@ -298,14 +300,14 @@ class EndEmploymentController @Inject() (
                              .setOrException(EndEmploymentIrregularPaymentPage, IrregularPayConstants.ContactEmployer)
                          )
                   } yield Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-                case Some(value) =>
+                case Some(value)                                 =>
                   for {
                     _ <- journeyCacheRepository
                            .set(request.userAnswers.setOrException(EndEmploymentIrregularPaymentPage, value))
                   } yield Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
               }
             )
-        case None =>
+        case None        =>
           Future.successful(error5xxInBadRequest())
       }
     }
@@ -332,7 +334,7 @@ class EndEmploymentController @Inject() (
                 )
               }
             )
-        case _ =>
+        case _                      =>
           Future.successful(error5xxInBadRequest())
       }
     }
@@ -340,7 +342,7 @@ class EndEmploymentController @Inject() (
   def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
+      val nino                      = user.nino
 
       employmentService
         .employment(nino, employmentId)
@@ -384,7 +386,7 @@ class EndEmploymentController @Inject() (
               )
             )
           )
-        case _ =>
+        case _                                                 =>
           Future.successful(error5xxInBadRequest())
       }
     }
@@ -426,7 +428,7 @@ class EndEmploymentController @Inject() (
         request.userAnswers
           .setOrException(EndEmploymentTelephoneQuestionPage, questionCached)
           .setOrException(EndEmploymentTelephoneNumberPage, form.yesNoTextEntry.getOrElse(""))
-      case _ =>
+      case _                                                =>
         val questionCached = Messages(
           s"tai.label.${form.yesNoChoice.getOrElse(FormValuesConstants.NoValue).toLowerCase}"
         )
@@ -454,7 +456,7 @@ class EndEmploymentController @Inject() (
             cancelUrl = controllers.employments.routes.EndEmploymentController.cancel(empId).url
           )
           Future.successful(Ok(addIncomeCheckYourAnswers(model)))
-        case _ =>
+        case _                                                                      =>
           Future.successful(error5xxInBadRequest())
       }
     }
@@ -462,12 +464,12 @@ class EndEmploymentController @Inject() (
   def confirmAndSendEndEmployment(): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
       implicit val authUser: AuthedUser = request.taiUser
-      val result = for {
+      val result                        = for {
         empId             <- request.userAnswers.get(EndEmploymentIdPage)
         endDate           <- request.userAnswers.get(EndEmploymentEndDatePage)
         telephoneQuestion <- request.userAnswers.get(EndEmploymentTelephoneQuestionPage)
         telephoneNumber   <- request.userAnswers.get(EndEmploymentTelephoneNumberPage)
-        model = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
+        model              = EndEmployment(endDate, telephoneQuestion, Some(telephoneNumber))
       } yield for {
         _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
         _ <- {
@@ -534,7 +536,7 @@ class EndEmploymentController @Inject() (
                           Redirect(
                             controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision()
                           )
-                        case Some(FormValuesConstants.NoValue) =>
+                        case Some(FormValuesConstants.NoValue)  =>
                           Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
                       }
                   )

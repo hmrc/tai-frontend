@@ -31,10 +31,10 @@ import scala.concurrent.Future
 class PersonServiceSpec extends BaseSpec {
 
   val mockConnector: CitizenDetailsConnector = mock[CitizenDetailsConnector]
-  val sut: PersonService = new PersonService(mockConnector)
+  val sut: PersonService                     = new PersonService(mockConnector)
 
   val mockService: PersonService = mock[PersonService]
-  val person: Person = Person(nino, "John", "Doe", isDeceased = false, address)
+  val person: Person             = Person(nino, "John", "Doe", isDeceased = false, address)
 
   "personDetails" must {
     "return a Person model instance" when {

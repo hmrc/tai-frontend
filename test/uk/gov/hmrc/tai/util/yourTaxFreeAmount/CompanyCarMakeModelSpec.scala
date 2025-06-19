@@ -21,9 +21,9 @@ import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 
 class CompanyCarMakeModelSpec extends PlaySpec {
 
-  val companyCarBenefit10 =
+  val companyCarBenefit10      =
     CompanyCarBenefit(10, 1000, List(CompanyCar(10, "Make Model1", true, None, None, None)), Some(1))
-  val companyCarBenefit12 =
+  val companyCarBenefit12      =
     CompanyCarBenefit(12, 1000, List(CompanyCar(10, "Make Model2", true, None, None, None)), Some(1))
   val companyCarBenefitTwoCars = CompanyCarBenefit(
     1,
@@ -31,8 +31,8 @@ class CompanyCarMakeModelSpec extends PlaySpec {
     List(CompanyCar(10, "Make Model1", true, None, None, None), CompanyCar(12, "Make Model1", true, None, None, None)),
     Some(1)
   )
-  val companyBenefitNoCars = CompanyCarBenefit(2, 1000, List(), Some(1))
-  val companyCarBenefits = Seq(companyCarBenefit10, companyCarBenefit12, companyCarBenefitTwoCars, companyBenefitNoCars)
+  val companyBenefitNoCars     = CompanyCarBenefit(2, 1000, List(), Some(1))
+  val companyCarBenefits       = Seq(companyCarBenefit10, companyCarBenefit12, companyCarBenefitTwoCars, companyBenefitNoCars)
 
   "CompanyCarMakeModel" must {
     "return company car model from list of company car benefits" when {

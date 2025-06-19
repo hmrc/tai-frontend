@@ -38,14 +38,14 @@ class YourTaxGraphSpec extends TaiViewSpec {
     }
   }
 
-  private lazy val bands = List(
+  private lazy val bands           = List(
     Band("TaxFree", 2.00, 3000, 0, "S"),
     Band("TaxFree", 2.00, 3000, 0, "PSR"),
     Band("TaxFree", 2.00, 3000, 0, "SR"),
     Band("Band", 30.00, 45000, 15000, "TaxedIncome")
   )
   private lazy val nextBandMessage = "You can have £102,000 more before your income reaches the next tax band."
-  private lazy val graphData =
+  private lazy val graphData       =
     BandedGraph("taxGraph", bands, 0, 150000, 48000, 2.00, 3000, 32.00, 15000, Some(nextBandMessage), None)
 
   override def view: Html = views.html.includes.yourTaxGraph(graphData, ScottishTaxRegion, SimpleTaxView)

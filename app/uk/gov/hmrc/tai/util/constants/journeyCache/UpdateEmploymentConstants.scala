@@ -18,10 +18,10 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object UpdateEmploymentConstants {
 
-  val JourneyKey = "update-employment"
-  val EmploymentIdKey = "employmentId"
-  val NameKey = "employmentName"
+  val JourneyKey           = "update-employment"
+  val EmploymentIdKey      = "employmentId"
+  val NameKey              = "employmentName"
   val EmploymentDetailsKey = "employmentDetails"
   val TelephoneQuestionKey = "employmentTelephoneContactAllowed"
-  val TelephoneNumberKey = "employmentTelephoneNumber"
+  val TelephoneNumberKey   = "employmentTelephoneNumber"
 }

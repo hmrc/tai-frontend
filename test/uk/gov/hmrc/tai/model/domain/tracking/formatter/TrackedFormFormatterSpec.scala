@@ -25,7 +25,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
   "trackingReads" should {
     "be able to parse incoming tracking" when {
       "the milestone is Received status" in {
-        val json =
+        val json     =
           """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016",
             "milestones":[
@@ -41,7 +41,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
       }
 
       "the milestone is Acquired status" in {
-        val json =
+        val json     =
           """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016",
             "milestones":[
@@ -57,7 +57,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
       }
 
       "the milestone is In Progress status" in {
-        val json =
+        val json     =
           """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016",
             "milestones":[
@@ -73,7 +73,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
       }
 
       "the milestone is Done status" in {
-        val json =
+        val json     =
           """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016",
             "milestones":[
@@ -92,7 +92,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
 
     "throw an exception" when {
       "formId doesn't exist in the json" in {
-        val json =
+        val json   =
           """{"formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016", "milestones":[{"milestone":"Received","status":"current"}]}"""
         val result = the[JsResultException] thrownBy Json.parse(json).as[TrackedForm](trackedFormReads)
@@ -100,7 +100,7 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
       }
 
       "form name doesn't exist in the json" in {
-        val json =
+        val json   =
           """{"formId":"R39_EN","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016", "milestones":[{"milestone":"Received","status":"current"}]}"""
         val result = the[JsResultException] thrownBy Json.parse(json).as[TrackedForm](trackedFormReads)
@@ -108,21 +108,21 @@ class TrackedFormFormatterSpec extends PlaySpec with TrackedFormFormatters {
       }
 
       "milestones doesn't exist in the json" in {
-        val json = """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
+        val json   = """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016"}"""
         val result = the[JsResultException] thrownBy Json.parse(json).as[TrackedForm](trackedFormReads)
         result.getMessage must include("'milestones' is undefined")
       }
 
       "milestones list is empty in the json" in {
-        val json = """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
+        val json   = """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016", "milestones":[]}"""
         val result = the[JsResultException] thrownBy Json.parse(json).as[TrackedForm](trackedFormReads)
         result.getMessage must include("milestones list is empty")
       }
 
       "the milestone doesn't have an item with current status" in {
-        val json =
+        val json   =
           """{"formId":"R39_EN","formName":"TES1","dfsSubmissionReference":"123-ABCD-456","businessArea":"PSA",
             "receivedDate":"01 Apr 2016","completionDate":"06 May 2016",
             "milestones":[

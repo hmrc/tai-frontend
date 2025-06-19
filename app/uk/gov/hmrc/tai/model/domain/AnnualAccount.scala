@@ -43,5 +43,5 @@ case class AnnualAccount(
 
 object AnnualAccount {
   implicit val annualAccountOrdering: Ordering[AnnualAccount] = Ordering.by(_.taxYear.year)
-  implicit val annualAccountFormat: Format[AnnualAccount] = Json.format[AnnualAccount]
+  implicit val annualAccountFormat: Format[AnnualAccount]     = Json.format[AnnualAccount]
 }

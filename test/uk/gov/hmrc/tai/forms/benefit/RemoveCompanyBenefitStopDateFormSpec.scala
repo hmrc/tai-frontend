@@ -27,7 +27,7 @@ class RemoveCompanyBenefitStopDateFormSpec extends BaseSpec {
 
   "RemoveCompanyBenefitStopDateFormSpec" must {
     "return no errors with valid date" in {
-      val validDate = Map(
+      val validDate     = Map(
         RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "15",
         RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "01",
         RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> "2023"
@@ -39,7 +39,7 @@ class RemoveCompanyBenefitStopDateFormSpec extends BaseSpec {
     }
 
     "return an error for invalid date" in {
-      val invalidDate = Map(
+      val invalidDate     = Map(
         RemoveCompanyBenefitStopDateForm.BenefitFormDay   -> "",
         RemoveCompanyBenefitStopDateForm.BenefitFormMonth -> "",
         RemoveCompanyBenefitStopDateForm.BenefitFormYear  -> ""

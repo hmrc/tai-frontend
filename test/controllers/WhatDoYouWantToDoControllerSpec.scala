@@ -46,10 +46,10 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
 class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val auditService: AuditService = mock[AuditService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  val auditService: AuditService                 = mock[AuditService]
+  val employmentService: EmploymentService       = mock[EmploymentService]
+  val taxAccountService: TaxAccountService       = mock[TaxAccountService]
+  val mockAppConfig: ApplicationConfig           = mock[ApplicationConfig]
 
   private def createTestController() =
     new WhatDoYouWantToDoControllerTest()
@@ -91,11 +91,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       Some(LocalDate.of(2015, 11, 26))
     )
   )
-  val taxCodeNotChanged = false
-  val taxCodeChanged = true
+  val taxCodeNotChanged                  = false
+  val taxCodeChanged                     = true
 
-  val startDate: LocalDate = LocalDate.now()
-  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
+  val startDate: LocalDate                = LocalDate.now()
+  val taxCodeRecord1: TaxCodeRecord       = TaxCodeRecord(
     "D0",
     startDate,
     startDate.plusDays(1),
@@ -105,8 +105,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
     Some("1234"),
     primary = true
   )
-  val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
-  val taxCodeChange: TaxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
+  val taxCodeRecord2: TaxCodeRecord       = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
+  val taxCodeChange: TaxCodeChange        = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
   val mostRecentTaxCodeChangeDate: String =
     TaxYearRangeUtil.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate).replace("\u00A0", " ")
 
@@ -176,7 +176,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
 
         val result = controller.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
 
@@ -196,7 +196,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
 
@@ -219,11 +219,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
 
-        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.title()              must include(Messages("your.paye.income.tax.overview"))
         doc.body().toStringBreak must include(
           Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate)
         )
@@ -249,11 +249,11 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
 
-        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.title()              must include(Messages("your.paye.income.tax.overview"))
         doc.body().toStringBreak must include(
           Messages("tai.WhatDoYouWantToDo.ChangedTaxCode", mostRecentTaxCodeChangeDate)
         )
@@ -274,7 +274,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
 
@@ -300,10 +300,10 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem with the service")
-        doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
-        doc must haveParagraphWithText(Messages("tai.technical.error.message"))
+        doc         must haveHeadingWithText(Messages("tai.technical.error.heading"))
+        doc         must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
     }
 
@@ -355,7 +355,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any())
           verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev))(any())
           verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any())
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("your.paye.income.tax.overview"))
         }
 
@@ -389,7 +389,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any())
           verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev))(any())
           verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any())
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("your.paye.income.tax.overview"))
         }
 
@@ -407,8 +407,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val result    = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc       = Jsoup.parse(contentAsString(result))
         val cyPlusOne = Option(doc.getElementById("nextTaxYear")).flatMap(_.asScala.toList.headOption)
 
         status(result) mustBe OK
@@ -432,8 +432,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         when(taxAccountService.taxAccountSummary(any(), meq(TaxYear().next))(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
 
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val result    = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc       = Jsoup.parse(contentAsString(result))
         verify(taxAccountService, times(1)).taxAccountSummary(any(), meq(TaxYear().next))(any())
         val cyPlusOne = Option(doc.getElementById("nextTaxYear")).flatMap(_.asScala.toList.headOption)
 
@@ -455,8 +455,8 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
 
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+        val result    = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc       = Jsoup.parse(contentAsString(result))
         val cyPlusOne = Option(doc.getElementById("nextTaxYear")).flatMap(_.asScala.toList.headOption)
         verify(taxAccountService, times(0)).taxAccountSummary(any(), meq(TaxYear().next))(any())
 

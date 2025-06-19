@@ -64,14 +64,14 @@ class RemoveCompanyBenefitController @Inject() (
 
   def stopDate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val userAnswers = request.userAnswers
-    val benefitNameOption = userAnswers.get(EndCompanyBenefitsNamePage)
-    val employmentNameOption = userAnswers.get(EndCompanyBenefitsEmploymentNamePage)
+    val userAnswers               = request.userAnswers
+    val benefitNameOption         = userAnswers.get(EndCompanyBenefitsNamePage)
+    val employmentNameOption      = userAnswers.get(EndCompanyBenefitsEmploymentNamePage)
 
     (benefitNameOption, employmentNameOption) match {
       case (Some(benefitName), Some(employmentName)) =>
-        val currentBenefitName = benefitName
-        val currentEmploymentName = employmentName
+        val currentBenefitName       = benefitName
+        val currentEmploymentName    = employmentName
         val removeCompanyBenefitForm = RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName)
 
         val form = userAnswers
@@ -88,7 +88,7 @@ class RemoveCompanyBenefitController @Inject() (
             )
           )
         }
-      case _ => throw new Exception("Benefit name or employment name not found")
+      case _                                         => throw new Exception("Benefit name or employment name not found")
     }
   }
 
@@ -103,7 +103,7 @@ class RemoveCompanyBenefitController @Inject() (
       for {
         _ <- journeyCacheRepository.clear(userAnswers.sessionId, user.nino.nino)
         _ <- {
-          val updatedData = userAnswers.data - EndCompanyBenefitsValuePage.toString
+          val updatedData        = userAnswers.data - EndCompanyBenefitsValuePage.toString
           val updatedUserAnswers = userAnswers
             .copy(data = updatedData)
             .setOrException(EndCompanyBenefitsStopDatePage, dateString)
@@ -124,10 +124,10 @@ class RemoveCompanyBenefitController @Inject() (
 
   def submitStopDate: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val taxYear = TaxYear()
-    val userAnswers = request.userAnswers
+    val taxYear                   = TaxYear()
+    val userAnswers               = request.userAnswers
 
-    val currentBenefitName = userAnswers.get(EndCompanyBenefitsNamePage).toString
+    val currentBenefitName    = userAnswers.get(EndCompanyBenefitsNamePage).toString
     val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).toString
 
     RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form
@@ -157,7 +157,7 @@ class RemoveCompanyBenefitController @Inject() (
       userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
       userAnswers.get(EndCompanyBenefitsNamePage)
     )
-    val optionalValue = userAnswers.get(EndCompanyBenefitsValuePage)
+    val optionalValue          = userAnswers.get(EndCompanyBenefitsValuePage)
 
     (mandatoryJourneyValues, optionalValue) match {
       case (mandatory, _) if mandatory.forall(_.isDefined) =>
@@ -170,7 +170,7 @@ class RemoveCompanyBenefitController @Inject() (
             )
           )
         )
-      case _ =>
+      case _                                               =>
         Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
     }
   }
@@ -196,7 +196,7 @@ class RemoveCompanyBenefitController @Inject() (
           )
         },
         totalValue => {
-          val rounded = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
+          val rounded            = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
           val updatedUserAnswers = request.userAnswers.setOrException(EndCompanyBenefitsValuePage, rounded.toString)
           journeyCacheRepository
             .set(updatedUserAnswers)
@@ -207,18 +207,18 @@ class RemoveCompanyBenefitController @Inject() (
 
   def telephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val userAnswers = request.userAnswers
+    val userAnswers               = request.userAnswers
 
     val cache: Map[String, String] = Map(
-      BenefitDecisionPage.toString            -> userAnswers.get(BenefitDecisionPage).toString,
-      EndCompanyBenefitsStopDatePage.toString -> userAnswers.get(EndCompanyBenefitsStopDatePage).toString,
-      EndCompanyBenefitsTypePage.toString     -> userAnswers.get(EndCompanyBenefitsTypePage).toString,
-      EndCompanyBenefitsNamePage.toString     -> userAnswers.get(EndCompanyBenefitsNamePage).toString,
-      EndCompanyBenefitsValuePage.toString    -> userAnswers.get(EndCompanyBenefitsValuePage).toString,
+      BenefitDecisionPage.toString                     -> userAnswers.get(BenefitDecisionPage).toString,
+      EndCompanyBenefitsStopDatePage.toString          -> userAnswers.get(EndCompanyBenefitsStopDatePage).toString,
+      EndCompanyBenefitsTypePage.toString              -> userAnswers.get(EndCompanyBenefitsTypePage).toString,
+      EndCompanyBenefitsNamePage.toString              -> userAnswers.get(EndCompanyBenefitsNamePage).toString,
+      EndCompanyBenefitsValuePage.toString             -> userAnswers.get(EndCompanyBenefitsValuePage).toString,
       EndCompanyBenefitsTelephoneQuestionPage.toString -> userAnswers
         .get(EndCompanyBenefitsTelephoneQuestionPage)
         .toString,
-      EndCompanyBenefitsTelephoneNumberPage.toString -> userAnswers.get(EndCompanyBenefitsTelephoneNumberPage).toString
+      EndCompanyBenefitsTelephoneNumberPage.toString   -> userAnswers.get(EndCompanyBenefitsTelephoneNumberPage).toString
     )
 
     val telephoneNumberViewModel = extractViewModelFromCache(cache)
@@ -235,7 +235,7 @@ class RemoveCompanyBenefitController @Inject() (
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val user = request.taiUser
+    val user        = request.taiUser
     val userAnswers = request.userAnswers
 
     YesNoTextEntryForm
@@ -250,7 +250,7 @@ class RemoveCompanyBenefitController @Inject() (
 
           val cache: Map[String, String] =
             userAnswers.data.as[Map[String, JsValue]].view.mapValues(_.toString).toMap
-          val telephoneNumberViewModel = extractViewModelFromCache(cache)
+          val telephoneNumberViewModel   = extractViewModelFromCache(cache)
 
           Future.successful(BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors)))
         },
@@ -264,12 +264,12 @@ class RemoveCompanyBenefitController @Inject() (
           val dataForCache = form.yesNoChoice match {
             case Some(FormValuesConstants.YesValue) =>
               mandatoryData ++ Map(EndCompanyBenefitConstants.TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-            case _ =>
+            case _                                  =>
               mandatoryData ++ Map(EndCompanyBenefitConstants.TelephoneNumberKey -> "")
           }
 
           val updatedData: JsObject = Json.toJson(dataForCache).as[JsObject]
-          val updatedUserAnswers = userAnswers.copy(data = userAnswers.data ++ updatedData)
+          val updatedUserAnswers    = userAnswers.copy(data = userAnswers.data ++ updatedData)
 
           journeyCacheRepository.set(updatedUserAnswers) map { _ =>
             Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers())
@@ -290,7 +290,7 @@ class RemoveCompanyBenefitController @Inject() (
       userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage),
       userAnswers.get(EndCompanyBenefitsRefererPage)
     )
-    val optionalSeq = Seq(
+    val optionalSeq            = Seq(
       userAnswers.get(EndCompanyBenefitsValuePage),
       userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
     )
@@ -312,7 +312,7 @@ class RemoveCompanyBenefitController @Inject() (
             )
           )
         )
-      case _ =>
+      case _                                               =>
         Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
     }
   }
@@ -368,7 +368,7 @@ class RemoveCompanyBenefitController @Inject() (
 
         Future.successful(userAnswers.get(EndCompanyBenefitsRefererPage))
       }
-      _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
+      _                      <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
     } yield Redirect(mandatoryJourneyValues.head)
   }
 

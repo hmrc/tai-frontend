@@ -62,7 +62,7 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
           case Success(value) if value >= taxablePayYTD => Valid
           case _                                        => Invalid(validateTaxablePayYTDError, "validateInputAmount")
         }
-      case _ => Invalid(validateTaxablePayYTDError, "validateInputAmount")
+      case _               => Invalid(validateTaxablePayYTDError, "validateInputAmount")
     }
 
   def notBlank(value: String): Boolean = value.trim.nonEmpty
@@ -96,9 +96,9 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
 
     Constraint[Option[String]]("taxablePay") {
       case taxablePay if BigDecimal(FormHelper.stripNumber(taxablePay).getOrElse("0")) <= netSalaryValue => Valid
-      case _ if netSalary.isDefined =>
+      case _ if netSalary.isDefined                                                                      =>
         Invalid(messages("tai.taxablePayslip.error.form.payTooHigh", withPoundPrefixAndSign(displayNetSalary), 0))
-      case _ => Valid
+      case _                                                                                             => Valid
     }
   }
 

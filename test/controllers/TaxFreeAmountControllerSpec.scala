@@ -43,9 +43,9 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
   )
 
   val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val companyCarService: CompanyCarService = mock[CompanyCarService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val companyCarService: CompanyCarService           = mock[CompanyCarService]
+  val employmentService: EmploymentService           = mock[EmploymentService]
+  val taxAccountService: TaxAccountService           = mock[TaxAccountService]
 
   private class SUT()
       extends TaxFreeAmountController(
@@ -62,9 +62,9 @@ class TaxFreeAmountControllerSpec extends BaseSpec {
 
   "taxFreeAmount" must {
     "show tax free amount page" in {
-      val SUT = createSUT()
-      val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-      val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+      val SUT                = createSUT()
+      val taxBand            = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+      val incomeCatergories  = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
       val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
       when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))

@@ -109,10 +109,10 @@ object EditIncomeForm {
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
       mapping(
-        "name"         -> text,
-        "description"  -> text,
-        "employmentId" -> number,
-        "newAmount" -> TaiValidator.validateTaxAmounts(
+        "name"                  -> text,
+        "description"           -> text,
+        "employmentId"          -> number,
+        "newAmount"             -> TaiValidator.validateTaxAmounts(
           messages("error.tai.updateDataEmployment.blankValue"),
           messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
           messages("error.tai.updateDataEmployment.maxLength"),

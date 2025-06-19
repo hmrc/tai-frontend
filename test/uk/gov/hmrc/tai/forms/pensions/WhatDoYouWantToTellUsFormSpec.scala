@@ -68,7 +68,7 @@ class WhatDoYouWantToTellUsFormSpec extends BaseSpec {
 
   private val exceedingCharacters = "a" * 501
 
-  private val validDetails = Map("pensionDetails" -> "test")
+  private val validDetails        = Map("pensionDetails" -> "test")
   private val exceededCharDetails = Map("pensionDetails" -> exceedingCharacters)
-  private val emptyDetails = Map("pensionDetails" -> "")
+  private val emptyDetails        = Map("pensionDetails" -> "")
 }

@@ -32,5 +32,5 @@ case class Activity(
 
 object Activity {
   implicit val taxIdsFormat: Format[TaxIds] = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
-  implicit val formats: OFormat[Activity] = Json.format[Activity]
+  implicit val formats: OFormat[Activity]   = Json.format[Activity]
 }

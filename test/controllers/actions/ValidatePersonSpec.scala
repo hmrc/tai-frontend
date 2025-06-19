@@ -50,9 +50,9 @@ import utils.BaseSpec
 import scala.concurrent.Future
 
 class ValidatePersonSpec extends BaseSpec with I18nSupport {
-  val personService: PersonService = mock[PersonService]
+  val personService: PersonService         = mock[PersonService]
   val errorPagesHandler: ErrorPagesHandler = inject[ErrorPagesHandler]
-  val cc: ControllerComponents = stubControllerComponents()
+  val cc: ControllerComponents             = stubControllerComponents()
 
   class Harness(vp: ValidatePerson) extends AbstractController(cc) {
     def onPageLoad(): Action[AnyContent] = (FakeAuthRetrievals andThen vp) { r =>
@@ -74,7 +74,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
       val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
 
       val controller = new Harness(validatePerson)
-      val result = controller.onPageLoad()(fakeRequest)
+      val result     = controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
       verify(personService, times(0)).personDetails(any())(any(), any())
@@ -90,7 +90,7 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
       val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
 
       val controller = new Harness(validatePerson)
-      val result = controller.onPageLoad()(fakeRequest)
+      val result     = controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
       verify(personService, times(1)).personDetails(any())(any(), any())
@@ -107,8 +107,8 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
           )
 
         val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
-        val controller = new Harness(validatePerson)
-        val result = controller.onPageLoad()(fakeRequest)
+        val controller     = new Harness(validatePerson)
+        val result         = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe " /empty"
       }
@@ -124,8 +124,8 @@ class ValidatePersonSpec extends BaseSpec with I18nSupport {
           )
 
         val validatePerson = new ValidatePersonImpl(personService, mockFeatureFlagService)
-        val controller = new Harness(validatePerson)
-        val result = controller.onPageLoad()(fakeRequest)
+        val controller     = new Harness(validatePerson)
+        val result         = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe " /empty"
       }

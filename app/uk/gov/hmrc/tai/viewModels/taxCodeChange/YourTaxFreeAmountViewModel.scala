@@ -28,7 +28,7 @@ case class YourTaxFreeAmountViewModel(
 ) {
 
   val showPreviousColumn: Boolean = previousTaxFreeInfo.isDefined
-  val columns: Int =
+  val columns: Int                =
     if (previousTaxFreeInfo.isDefined) {
       4
     } else {

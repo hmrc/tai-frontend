@@ -50,7 +50,7 @@ class IncomeService @Inject() (
       case (taxCodeIncomes, Some(employment)) =>
         val oldAmountInTaxCodeIncome = taxCodeIncomes.toOption.flatMap(_.find(_.employmentId.contains(id)))
         EmploymentAmount(oldAmountInTaxCodeIncome, employment)
-      case _ => throw new RuntimeException("Exception while reading employment")
+      case _                                  => throw new RuntimeException("Exception while reading employment")
     }
 
   def latestPayment(nino: Nino, id: Int)(implicit
@@ -69,10 +69,10 @@ class IncomeService @Inject() (
       if (cache.contains(key)) Some(BigDecimal(FormHelper.convertCurrencyToInt(cache.get(key)))) else None
 
     val paymentFrequency = cache.getOrElse(UpdateIncomeConstants.PayPeriodKey, "")
-    val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncomeConstants.TotalSalaryKey))
-    val taxablePay = isCacheAvailable(UpdateIncomeConstants.TaxablePayKey)
-    val days = cache.getOrElse(UpdateIncomeConstants.OtherInDaysKey, "0").toInt
-    val bonus = isCacheAvailable(UpdateIncomeConstants.BonusOvertimeAmountKey)
+    val pay              = FormHelper.convertCurrencyToInt(cache.get(UpdateIncomeConstants.TotalSalaryKey))
+    val taxablePay       = isCacheAvailable(UpdateIncomeConstants.TaxablePayKey)
+    val days             = cache.getOrElse(UpdateIncomeConstants.OtherInDaysKey, "0").toInt
+    val bonus            = isCacheAvailable(UpdateIncomeConstants.BonusOvertimeAmountKey)
 
     val payDetails = PayDetails(
       paymentFrequency = paymentFrequency,
@@ -103,7 +103,7 @@ class IncomeService @Inject() (
         userAnswers
           .setOrException(UpdateIncomePayToDatePage, payment.amountYearToDate.toString)
           .setOrException(UpdatedIncomeDatePage, payment.date.toString)
-      case None =>
+      case None          =>
         userAnswers.setOrException(UpdateIncomePayToDatePage, "0")
     }
 }

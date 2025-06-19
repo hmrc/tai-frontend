@@ -36,7 +36,7 @@ class BenefitsService @Inject() (benefitsConnector: BenefitsConnector)(implicit 
   ): Future[String] =
     benefitsConnector.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit) map {
       case Some(envId) => envId
-      case _ =>
+      case _           =>
         throw new RuntimeException(
           s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
         )

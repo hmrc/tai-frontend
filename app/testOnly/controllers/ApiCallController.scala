@@ -31,7 +31,9 @@ class ApiCallController @Inject() (
   taiConnector: TaiConnector,
   authenticate: AuthJourney
 )(implicit ec: ExecutionContext)
-    extends FrontendController(mcc) with I18nSupport with Logging {
+    extends FrontendController(mcc)
+    with I18nSupport
+    with Logging {
 
   def employmentDetails(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async {
     implicit request =>
@@ -45,7 +47,7 @@ class ApiCallController @Inject() (
       Status(httpResponse.status)(httpResponse.json)
     }
   }
-  def iabds(taxYear: Int): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
+  def iabds(taxYear: Int): Action[AnyContent]      = authenticate.authWithoutValidatePerson.async { implicit request =>
     taiConnector.iabds(request.taiUser.nino.nino, taxYear).map { httpResponse =>
       Status(httpResponse.status)(httpResponse.json)
     }

@@ -34,7 +34,7 @@ class CitizenDetailsConnectorSpec extends BaseSpec with WireMockHelper {
     .configure("microservice.services.citizen-details.port" -> server.port())
     .build()
 
-  val person: Person = fakePerson(nino)
+  val person: Person                = fakePerson(nino)
   val designatoryDetailsUrl: String = s"/citizen-details/$nino/designatory-details"
 
   lazy val citizenDetailsConnector: CitizenDetailsConnector = {
@@ -45,7 +45,7 @@ class CitizenDetailsConnectorSpec extends BaseSpec with WireMockHelper {
 
   def stubGet(url: String, responseStatus: Int, responseBody: Option[String]): StubMapping = server.stubFor {
     val baseResponse = aResponse().withStatus(responseStatus).withHeader(CONTENT_TYPE, JSON)
-    val response = responseBody.fold(baseResponse)(body => baseResponse.withBody(body))
+    val response     = responseBody.fold(baseResponse)(body => baseResponse.withBody(body))
     get(url).willReturn(response)
   }
 

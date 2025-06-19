@@ -140,7 +140,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
             s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
           )
           Some(BadRequest(errorNoPrimary()))
-        case _ =>
+        case _   =>
           logger.info(
             s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
           )
@@ -158,7 +158,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
           )
           Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-        case _ =>
+        case _   =>
           logger.warn(
             s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
           )
@@ -188,7 +188,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
             s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
           )
           Some(BadRequest(errorNoPrimary()))
-        case _ =>
+        case _   =>
           logger.info(
             s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
           )

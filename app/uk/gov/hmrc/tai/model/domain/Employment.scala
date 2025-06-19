@@ -56,7 +56,7 @@ case class AddEmployment(
 object AddEmployment {
 
   implicit val addEmploymentFormat: Format[AddEmployment] = Json.format[AddEmployment]
-  implicit val writes: Writes[AddEmployment] = Json.writes[AddEmployment]
+  implicit val writes: Writes[AddEmployment]              = Json.writes[AddEmployment]
 
   implicit def jsonBodyWritable[T](implicit
     writes: Writes[T],
@@ -69,7 +69,7 @@ case class EndEmployment(endDate: LocalDate, telephoneContactAllowed: String, te
 object EndEmployment {
 
   implicit val addEmploymentFormat: Format[EndEmployment] = Json.format[EndEmployment]
-  implicit val writes: Writes[EndEmployment] = Json.writes[EndEmployment]
+  implicit val writes: Writes[EndEmployment]              = Json.writes[EndEmployment]
 
   implicit def jsonBodyWritable[T](implicit
     writes: Writes[T],
@@ -82,7 +82,7 @@ case class IncorrectIncome(whatYouToldUs: String, telephoneContactAllowed: Strin
 
 object IncorrectIncome {
   implicit val formats: Format[IncorrectIncome] = Json.format[IncorrectIncome]
-  implicit val writes: Writes[IncorrectIncome] = Json.writes[IncorrectIncome]
+  implicit val writes: Writes[IncorrectIncome]  = Json.writes[IncorrectIncome]
 
   implicit def jsonBodyWritable[T](implicit
     writes: Writes[T],

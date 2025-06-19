@@ -37,8 +37,8 @@ class TupleFormatSpec extends BaseSpec with ScalaFutures {
   "JSON serialization/deserialize" should {
 
     s"Successfully serialize/deserialize Tuple2" in {
-      val rawJson = Json.parse("""{"a":[["a","b"],["c","d"]]}""")
-      val tuple2 = ExampleTuple2(Seq(("a", "b"), ("c", "d")).toList)
+      val rawJson    = Json.parse("""{"a":[["a","b"],["c","d"]]}""")
+      val tuple2     = ExampleTuple2(Seq(("a", "b"), ("c", "d")).toList)
       val jsonObject = Json.toJson(tuple2)
 
       jsonObject mustBe rawJson
@@ -46,8 +46,8 @@ class TupleFormatSpec extends BaseSpec with ScalaFutures {
     }
 
     s"Successfully serialize/deserialize Tuple3" in {
-      val rawJson = Json.parse("""{"a":[["a","b","c"],["d","e","f"]]}""")
-      val tuple3 = ExampleTuple3(Seq(("a", "b", "c"), ("d", "e", "f")).toList)
+      val rawJson    = Json.parse("""{"a":[["a","b","c"],["d","e","f"]]}""")
+      val tuple3     = ExampleTuple3(Seq(("a", "b", "c"), ("d", "e", "f")).toList)
       val jsonObject = Json.toJson(tuple3)
 
       jsonObject mustBe rawJson

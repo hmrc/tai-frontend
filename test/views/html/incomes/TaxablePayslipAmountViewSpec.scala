@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmoun
 
 class TaxablePayslipAmountViewSpec extends TaiViewSpec {
 
-  private val employer = IncomeSource(id = 1, employerName)
+  private val employer                = IncomeSource(id = 1, employerName)
   private val taxablePayslipViewModel = createViewModel()
 
   def createViewModel(form: Form[TaxablePayslipForm] = TaxablePayslipForm.createForm(None, Some(Monthly), None)) =
@@ -59,7 +59,7 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec {
     "the taxable pay has not been entered" in {
       val formWithErrors = TaxablePayslipForm.createForm(None, Some("blah"), None).bind(Map("taxablePay" -> ""))
       val viewModelError = createViewModel(formWithErrors)
-      val errorView = template(viewModelError)
+      val errorView      = template(viewModelError)
       doc(errorView) must haveErrorLinkWithTextNew(
         messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory")
       )

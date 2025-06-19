@@ -28,10 +28,10 @@ object TaxPeriodLabelService {
 
   def taxPeriodLabelSingleLine(year: Int)(implicit messages: Messages): String = {
 
-    val dateFrom = TaxYearRangeUtil.formatDate(TaxYear(year).start)
-    val dateTo = TaxYearRangeUtil.formatDate(TaxYear(year).end)
+    val dateFrom  = TaxYearRangeUtil.formatDate(TaxYear(year).start)
+    val dateTo    = TaxYearRangeUtil.formatDate(TaxYear(year).end)
     val messageto = messages("language.to")
-    val message = s"$dateFrom $messageto $dateTo"
+    val message   = s"$dateFrom $messageto $dateTo"
 
     s"${HtmlFormatter.htmlNonBroken(message)}"
   }

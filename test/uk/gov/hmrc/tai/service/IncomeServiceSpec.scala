@@ -52,7 +52,7 @@ class IncomeServiceSpec extends BaseSpec {
       receivingOccupationalPension = false,
       EmploymentIncome
     )
-  def paymentOnDate(date: LocalDate): Payment =
+  def paymentOnDate(date: LocalDate): Payment                           =
     Payment(
       date = date,
       amountYearToDate = 2000,
@@ -69,7 +69,7 @@ class IncomeServiceSpec extends BaseSpec {
 
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val employmentService: EmploymentService = mock[EmploymentService]
-  val taiConnector: TaiConnector = mock[TaiConnector]
+  val taiConnector: TaiConnector           = mock[TaiConnector]
 
   class SUT
       extends IncomeService(
@@ -83,9 +83,9 @@ class IncomeServiceSpec extends BaseSpec {
       "valid inputs are passed" in {
         val sut = createSUT
 
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
+        val employment    = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -126,9 +126,9 @@ class IncomeServiceSpec extends BaseSpec {
       "valid inputs are passed" in {
         val sut = createSUT
 
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
+        val employment    = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
@@ -148,7 +148,7 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val annualAccount = AnnualAccount(7, TaxYear(), Available, Seq.empty[Payment], Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
+        val employment    = employmentWithAccounts(List(annualAccount))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
@@ -354,7 +354,7 @@ class IncomeServiceSpec extends BaseSpec {
   "getSingularIncomeId" must {
     "return singular income employment id" when {
       "income size is 1" in {
-        val sut = createSUT
+        val sut            = createSUT
         val taxCodeIncomes = Seq(
           TaxCodeIncome(
             EmploymentIncome,
@@ -384,7 +384,7 @@ class IncomeServiceSpec extends BaseSpec {
 
     "return none" when {
       "income size is not 1" in {
-        val sut = createSUT
+        val sut            = createSUT
         val taxCodeIncomes = Seq(
           TaxCodeIncome(
             EmploymentIncome,
@@ -416,7 +416,7 @@ class IncomeServiceSpec extends BaseSpec {
   "cachePaymentForRegularIncome" must {
     "update UserAnswers correctly" when {
       "payment is None" in {
-        val sut = createSUT
+        val sut         = createSUT
         val userAnswers = UserAnswers("testSessionId", nino.nino)
 
         val updatedAnswers = sut.cachePaymentForRegularIncome(None, userAnswers)
@@ -425,9 +425,9 @@ class IncomeServiceSpec extends BaseSpec {
       }
 
       "payment has value" in {
-        val sut = createSUT
+        val sut         = createSUT
         val userAnswers = UserAnswers("testSessionId", nino.nino)
-        val payment = paymentOnDate(LocalDate.of(2017, 9, 6))
+        val payment     = paymentOnDate(LocalDate.of(2017, 9, 6))
 
         val updatedAnswers = sut.cachePaymentForRegularIncome(Some(payment), userAnswers)
         updatedAnswers.get(UpdateIncomePayToDatePage) mustBe Some("2000")

@@ -101,7 +101,7 @@ class TaxAdjustmentSpec extends PlaySpec {
 
   private def taxAdjustmentTypeJson(taxAdjustmentType: String) =
     Json.obj(
-      "amount" -> 10,
+      "amount"                  -> 10,
       "taxAdjustmentComponents" -> Json.arr(
         Json.obj(
           "taxAdjustmentType"   -> taxAdjustmentType,

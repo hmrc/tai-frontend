@@ -18,11 +18,11 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object UpdatePensionProviderConstants {
 
-  val JourneyKey = "update-pension-provider"
-  val NameKey = "pensionProviderName"
-  val IdKey = "pensionProviderId"
+  val JourneyKey                = "update-pension-provider"
+  val NameKey                   = "pensionProviderName"
+  val IdKey                     = "pensionProviderId"
   val ReceivePensionQuestionKey = "receivePension"
-  val TelephoneQuestionKey = "telephoneContactAllowed"
-  val TelephoneNumberKey = "telephoneNumber"
-  val DetailsKey = "pensionDetails"
+  val TelephoneQuestionKey      = "telephoneContactAllowed"
+  val TelephoneNumberKey        = "telephoneNumber"
+  val DetailsKey                = "pensionDetails"
 }

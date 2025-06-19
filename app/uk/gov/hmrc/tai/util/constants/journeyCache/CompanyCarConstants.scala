@@ -18,16 +18,16 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object CompanyCarConstants {
 
-  val JourneyKey = "company-car"
-  val EmployerIdKey = "employerId"
-  val Version = "version"
-  val CarModelKey = "carModel"
-  val CarProviderKey = "carProvider"
-  val CarSeqNoKey = "carSeqNo"
-  val DateGivenBackKey = "carGivenBackDate"
+  val JourneyKey                = "company-car"
+  val EmployerIdKey             = "employerId"
+  val Version                   = "version"
+  val CarModelKey               = "carModel"
+  val CarProviderKey            = "carProvider"
+  val CarSeqNoKey               = "carSeqNo"
+  val DateGivenBackKey          = "carGivenBackDate"
   val DateFuelBenefitStoppedKey = "carFuelBenefitStoppedDate"
-  val DateStartedKey = "carStartDate"
+  val DateStartedKey            = "carStartDate"
   val DateFuelBenefitStartedKey = "carFuelStartDate"
-  val HasActiveFuelBenefitdKey = "hasActiveFuelBenefit"
-  val DateWithdrawnKey = "dateWithdrawn"
+  val HasActiveFuelBenefitdKey  = "hasActiveFuelBenefit"
+  val DateWithdrawnKey          = "dateWithdrawn"
 }

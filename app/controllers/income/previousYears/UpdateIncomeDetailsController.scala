@@ -72,7 +72,7 @@ class UpdateIncomeDetailsController @Inject() (
 
   def decision(taxYear: TaxYear): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val updatedAnswers = request.userAnswers.setOrException(UpdatePreviousYearsIncomeTaxYearPage, taxYear.year.toString)
+    val updatedAnswers            = request.userAnswers.setOrException(UpdatePreviousYearsIncomeTaxYearPage, taxYear.year.toString)
 
     journeyCacheRepository.set(updatedAnswers).map { _ =>
       Ok(UpdateIncomeDetailsDecision(UpdateIncomeDetailsDecisionForm.form, taxYear))
@@ -89,17 +89,17 @@ class UpdateIncomeDetailsController @Inject() (
         {
           case Some(FormValuesConstants.NoValue) =>
             Future.successful(Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.details()))
-          case _ => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
+          case _                                 => Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
         }
       )
   }
 
   def details(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val userAnswers = request.userAnswers
+    val userAnswers               = request.userAnswers
 
     val userSuppliedDetails = userAnswers.get(UpdatePreviousYearsIncomePage)
-    val currentCache = userAnswers.data
+    val currentCache        = userAnswers.data
 
     val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
 
@@ -124,7 +124,7 @@ class UpdateIncomeDetailsController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val userAnswers = request.userAnswers
+          val userAnswers  = request.userAnswers
           val currentCache = userAnswers.data
 
           val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
@@ -139,11 +139,11 @@ class UpdateIncomeDetailsController @Inject() (
           )
         },
         incomeDetails => {
-          val userAnswers = request.userAnswers
+          val userAnswers    = request.userAnswers
           val updatedAnswers = userAnswers.set(UpdatePreviousYearsIncomePage, incomeDetails.replace("\r", ""))
 
           updatedAnswers match {
-            case Success(answers) =>
+            case Success(answers)   =>
               journeyCacheRepository.set(answers).map { _ =>
                 Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber())
               }
@@ -162,9 +162,9 @@ class UpdateIncomeDetailsController @Inject() (
 
     val userAnswers = request.userAnswers
 
-    val isTelephone = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
+    val isTelephone     = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
     val telephoneNumber = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
-    val currentCache = userAnswers.data
+    val currentCache    = userAnswers.data
 
     val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
 
@@ -195,8 +195,8 @@ class UpdateIncomeDetailsController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val userAnswers = request.userAnswers
-          val currentCache = userAnswers.data
+          val userAnswers   = request.userAnswers
+          val currentCache  = userAnswers.data
           val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
 
           Future.successful(
@@ -214,15 +214,15 @@ class UpdateIncomeDetailsController @Inject() (
             UpdatePreviousYearsIncomeTelephoneQuestionPage -> form.yesNoChoice
               .getOrElse(FormValuesConstants.NoValue)
           )
-          val dataForCache = form.yesNoChoice match {
+          val dataForCache  = form.yesNoChoice match {
             case Some(FormValuesConstants.YesValue) =>
               mandatoryData ++ Map(
                 UpdatePreviousYearsIncomeTelephoneNumberPage -> form.yesNoTextEntry.getOrElse("")
               )
-            case _ => mandatoryData ++ Map(UpdatePreviousYearsIncomeTelephoneNumberPage -> "")
+            case _                                  => mandatoryData ++ Map(UpdatePreviousYearsIncomeTelephoneNumberPage -> "")
           }
 
-          val userAnswers = request.userAnswers
+          val userAnswers    = request.userAnswers
           val updatedAnswers = dataForCache.foldLeft(userAnswers) { case (answers, (key, value)) =>
             answers.setOrException(key, value)
           }
@@ -239,12 +239,12 @@ class UpdateIncomeDetailsController @Inject() (
 
   def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val userAnswers = request.userAnswers
+    val userAnswers               = request.userAnswers
 
-    val taxYearOpt = userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage)
-    val incomeOpt = userAnswers.get(UpdatePreviousYearsIncomePage)
+    val taxYearOpt           = userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage)
+    val incomeOpt            = userAnswers.get(UpdatePreviousYearsIncomePage)
     val telephoneQuestionOpt = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
-    val telephoneNumberOpt = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
+    val telephoneNumberOpt   = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
 
     Future
       .successful(
@@ -260,7 +260,7 @@ class UpdateIncomeDetailsController @Inject() (
                 )
               )
             )
-          case _ =>
+          case _                                                                          =>
             Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
         }
       )
@@ -271,25 +271,25 @@ class UpdateIncomeDetailsController @Inject() (
 
   def submitYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+    val nino                      = user.nino
 
     for {
-      userAnswers <- Future.successful(request.userAnswers)
+      userAnswers      <- Future.successful(request.userAnswers)
       mandatoryCacheSeq = Seq(
                             userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage).getOrElse(""),
                             userAnswers.get(UpdatePreviousYearsIncomePage).getOrElse(""),
                             userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage).getOrElse("")
                           )
-      optionalCacheSeq = Seq(userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage))
-      model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
-      _ <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
-      _ <- journeyCacheRepository.set(
-             userAnswers.copy(
-               data =
-                 userAnswers.data + (TrackSuccessfulJourneyConstantsUpdatePreviousYearPage.toString -> JsBoolean(true))
-             )
-           )
-      _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino)
+      optionalCacheSeq  = Seq(userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage))
+      model             = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
+      _                <- previousYearsIncomeService.incorrectIncome(nino, mandatoryCacheSeq.head.toInt, model)
+      _                <- journeyCacheRepository.set(
+                            userAnswers.copy(
+                              data =
+                                userAnswers.data + (TrackSuccessfulJourneyConstantsUpdatePreviousYearPage.toString -> JsBoolean(true))
+                            )
+                          )
+      _                <- journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino)
     } yield Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.confirmation())
   }
 

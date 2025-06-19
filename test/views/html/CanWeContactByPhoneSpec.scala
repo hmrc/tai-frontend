@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 
 class CanWeContactByPhoneSpec extends TaiViewSpec {
-  private val template = inject[CanWeContactByPhoneView]
+  private val template    = inject[CanWeContactByPhoneView]
   override def view: Html = template(Some(authedUser), viewModel, form)
 
   "CanWeContactByPhone page" must {
@@ -46,8 +46,8 @@ class CanWeContactByPhoneSpec extends TaiViewSpec {
 
     "display an input field for text entry" in {
       doc.getElementById("yesNoTextEntry") must not be null
-      doc must haveInputLabelWithText("yesNoTextEntry", Messages("tai.phoneNumber"))
-      doc must haveHintWithText(
+      doc                                  must haveInputLabelWithText("yesNoTextEntry", Messages("tai.phoneNumber"))
+      doc                                  must haveHintWithText(
         "yesNoTextEntry-hint",
         Messages("tai.canWeContactByPhone.telephoneNumber.hint")
       )

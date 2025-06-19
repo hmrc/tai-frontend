@@ -53,7 +53,7 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
   ): Future[String] =
     employmentsConnector.addEmployment(nino, employment) map {
       case Some(envId) => envId
-      case _ =>
+      case _           =>
         throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
     }
 
@@ -62,7 +62,7 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
   ): Future[String] =
     employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
       case Some(envId) => envId
-      case _ =>
+      case _           =>
         throw new RuntimeException(
           s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
         )

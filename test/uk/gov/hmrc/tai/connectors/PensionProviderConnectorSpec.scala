@@ -35,7 +35,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
     "return an envelope id on a successful invocation" in {
       val addPensionProvider =
         AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "Yes", Some("123456789"))
-      val json = Json.obj("data" -> JsString("123-456-789"))
+      val json               = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
           .postToApi(meq(sut.addPensionProviderServiceUrl(nino)), meq(addPensionProvider), any())(
@@ -59,7 +59,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789")
       )
-      val json = Json.obj("data" -> JsString("123-456-789"))
+      val json                     = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler
           .postToApi(meq(sut.incorrectPensionProviderServiceUrl(nino, 1)), meq(incorrectPensionProvider), any())(

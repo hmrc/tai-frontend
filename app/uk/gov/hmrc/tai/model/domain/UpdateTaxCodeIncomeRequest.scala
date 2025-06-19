@@ -23,7 +23,7 @@ case class UpdateTaxCodeIncomeRequest(amount: Int)
 
 object UpdateTaxCodeIncomeRequest {
   implicit val formats: OFormat[UpdateTaxCodeIncomeRequest] = Json.format[UpdateTaxCodeIncomeRequest]
-  implicit val writes: Writes[UpdateTaxCodeIncomeRequest] = Json.writes[UpdateTaxCodeIncomeRequest]
+  implicit val writes: Writes[UpdateTaxCodeIncomeRequest]   = Json.writes[UpdateTaxCodeIncomeRequest]
 
   implicit def jsonBodyWritable[T](implicit
     writes: Writes[T],

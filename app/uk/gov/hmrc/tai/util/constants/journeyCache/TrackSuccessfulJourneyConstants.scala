@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object TrackSuccessfulJourneyConstants {
 
-  val JourneyKey = "successful-journey"
-  val AddEmploymentKey = "addEmployment"
-  val UpdateEndEmploymentKey = "updateEndEmployment"
-  val UpdatePensionKey = "updatePensionProvider"
+  val JourneyKey                   = "successful-journey"
+  val AddEmploymentKey             = "addEmployment"
+  val UpdateEndEmploymentKey       = "updateEndEmployment"
+  val UpdatePensionKey             = "updatePensionProvider"
   val UpdatePreviousYearsIncomeKey = "updatePreviousYearsIncome"
-  val AddPensionProviderKey = "addPensionProvider"
-  val EndEmploymentBenefitKey = "endEmploymentBenefit"
-  val EstimatedPayKey = "updateEstimatedPay"
+  val AddPensionProviderKey        = "addPensionProvider"
+  val EndEmploymentBenefitKey      = "endEmploymentBenefit"
+  val EstimatedPayKey              = "updateEstimatedPay"
 }

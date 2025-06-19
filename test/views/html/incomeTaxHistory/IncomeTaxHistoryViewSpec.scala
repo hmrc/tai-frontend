@@ -28,8 +28,8 @@ import scala.jdk.CollectionConverters.ListHasAsScala
 
 class IncomeTaxHistoryViewSpec extends TaiViewSpec {
 
-  val incomeTaxHistoryView: IncomeTaxHistoryView = inject[IncomeTaxHistoryView]
-  val taxYear: TaxYear = TaxYear()
+  val incomeTaxHistoryView: IncomeTaxHistoryView  = inject[IncomeTaxHistoryView]
+  val taxYear: TaxYear                            = TaxYear()
   val historyViewModel: IncomeTaxHistoryViewModel = IncomeTaxHistoryViewModel(
     "employerName",
     isPension = true,
@@ -110,8 +110,8 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     IncomeTaxYear(TaxYear(taxYear.year - 4), List(historyViewModel5))
   )
 
-  val person: Person = fakePerson(nino)
-  val personWithNoAddress: Person = fakePersonWithNoAddress(nino)
+  val person: Person                   = fakePerson(nino)
+  val personWithNoAddress: Person      = fakePersonWithNoAddress(nino)
   val personWithPartialAddress: Person = fakePersonWithPartialAddress(nino)
 
   override def view: Html =
@@ -121,8 +121,8 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     personWithNoAddress,
     List(IncomeTaxYear(taxYear, List(historyViewModel.copy(startDate = None))))
   )
-  lazy val viewWithNoAddress: Html = incomeTaxHistoryView(personWithNoAddress, incomeTaxYears)
-  lazy val viewWithPartialAddress: Html = incomeTaxHistoryView(personWithPartialAddress, incomeTaxYears)
+  lazy val viewWithNoAddress: Html        = incomeTaxHistoryView(personWithNoAddress, incomeTaxYears)
+  lazy val viewWithPartialAddress: Html   = incomeTaxHistoryView(personWithPartialAddress, incomeTaxYears)
 
   "Income tax history view" must {
     behave like pageWithTitle(messages("tai.incomeTax.history.pageTitle"))
@@ -181,7 +181,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     }
 
     "display Not available when startDate is None" in {
-      val doc = Jsoup.parse(viewWithMissingStartDate.toString())
+      val doc              = Jsoup.parse(viewWithMissingStartDate.toString())
       println(doc.getElementsByClass("govuk-summary-list__row").asScala.toList)
       val startDateElement =
         doc.getElementsByClass("govuk-summary-list__row").asScala.toList.filter(_.text.contains("Start date")).head
@@ -205,7 +205,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
         maybeTaxCode match {
           case Some(taxCode) =>
             doc must haveDivItemWithText(s"Tax code $taxCode")
-          case None =>
+          case None          =>
             doc must haveDivItemWithText("Tax code " + messages("tai.incomeTax.history.unavailable"))
         }
       }

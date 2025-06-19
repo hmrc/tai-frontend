@@ -180,7 +180,7 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val companyCars = Seq(
+        val companyCars   = Seq(
           CompanyCarBenefit(
             2,
             BigDecimal(200.22),
@@ -191,8 +191,8 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
           GenericBenefit(MedicalInsurance, Some(2), BigDecimal(321.12)),
           GenericBenefit(Entertaining, None, BigDecimal(120653.99))
         )
-        val benefits = Benefits(companyCars, otherBenefits)
-        val model = createViewModel(employment, benefits, empId = 7)
+        val benefits      = Benefits(companyCars, otherBenefits)
+        val model         = createViewModel(employment, benefits, empId = 7)
 
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
@@ -219,7 +219,7 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val companyCars = Seq(
+        val companyCars   = Seq(
           CompanyCarBenefit(
             employmentId,
             BigDecimal(200.22),
@@ -230,7 +230,7 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
           GenericBenefit(MedicalInsurance, Some(employmentId), BigDecimal(321.12)),
           GenericBenefit(Entertaining, Some(employmentId), BigDecimal(120653.99))
         )
-        val benefits = Benefits(companyCars, otherBenefits)
+        val benefits      = Benefits(companyCars, otherBenefits)
 
         val model = createViewModel(employment, benefits)
 
@@ -273,7 +273,7 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
           employmentType = EmploymentIncome
         )
 
-        val companyCars = Seq(
+        val companyCars   = Seq(
           CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", true, Some(LocalDate.now), None, None)))
         )
         val otherBenefits = Seq(
@@ -281,7 +281,7 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
           GenericBenefit(MedicalInsurance, Some(1), BigDecimal(321.12)),
           GenericBenefit(Entertaining, Some(1), BigDecimal(120653.99))
         )
-        val benefits = Benefits(companyCars, otherBenefits)
+        val benefits      = Benefits(companyCars, otherBenefits)
 
         val model = createViewModel(employment, benefits)
 
@@ -361,8 +361,8 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
             Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))
           )
         )
-        val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])
-        val model = createViewModel(employment, benefits)
+        val benefits    = Benefits(companyCars, Seq.empty[GenericBenefit])
+        val model       = createViewModel(employment, benefits)
         model.displayAddCompanyCarLink mustBe false
       }
     }

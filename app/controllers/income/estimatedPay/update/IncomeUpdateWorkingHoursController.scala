@@ -42,7 +42,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
   def workingHoursPage: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val userAnswers = request.userAnswers
+    val userAnswers  = request.userAnswers
     val workingHours = userAnswers.get(UpdateIncomeWorkingHoursPage)
 
     (IncomeSource.create(journeyCacheRepository, userAnswers), Future.successful(workingHours)).mapN {
@@ -54,7 +54,7 @@ class IncomeUpdateWorkingHoursController @Inject() (
             incomeSource.name
           )
         )
-      case _ =>
+      case _                            =>
         Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
@@ -70,12 +70,12 @@ class IncomeUpdateWorkingHoursController @Inject() (
           IncomeSource.create(journeyCacheRepository, request.userAnswers).map {
             case Right(incomeSource) =>
               BadRequest(workingHoursView(formWithErrors, incomeSource.id, incomeSource.name))
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         (formData: HoursWorkedForm) =>
           for {
             id <- Future.successful(request.userAnswers.get(UpdateIncomeIdPage))
-            _ <- {
+            _  <- {
               val updatedAnswers = request.userAnswers.copy(
                 data = request.userAnswers.data ++ Json
                   .obj(UpdateIncomeWorkingHoursPage.toString -> JsString(formData.workingHours.getOrElse("")))
@@ -85,12 +85,12 @@ class IncomeUpdateWorkingHoursController @Inject() (
           } yield id match {
             case Some(id) =>
               formData.workingHours match {
-                case Some(EditIncomeIrregularPayConstants.RegularHours) =>
+                case Some(EditIncomeIrregularPayConstants.RegularHours)   =>
                   Redirect(routes.IncomeUpdatePayPeriodController.payPeriodPage())
                 case Some(EditIncomeIrregularPayConstants.IrregularHours) =>
                   Redirect(routes.IncomeUpdateIrregularHoursController.editIncomeIrregularHours(id))
               }
-            case None => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case None     => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           }
       )
   }

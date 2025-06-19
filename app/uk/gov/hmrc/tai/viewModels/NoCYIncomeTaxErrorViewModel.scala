@@ -34,9 +34,9 @@ object NoCYIncomeTaxErrorViewModel {
   def mostRecentEmploymentEndDate(employments: Seq[Employment])(implicit messages: Messages): Option[String] =
     employments match {
       case Nil => None
-      case _ =>
+      case _   =>
         val endDateSeq: Seq[LocalDate] = employments.flatMap(_.endDate)
-        val findLatest = (x: LocalDate, y: LocalDate) => if (x.isAfter(y)) x else y
+        val findLatest                 = (x: LocalDate, y: LocalDate) => if (x.isAfter(y)) x else y
         endDateSeq.reduceLeftOption(findLatest).map(Dates.formatDate)
     }
 }

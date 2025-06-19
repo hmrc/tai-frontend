@@ -49,10 +49,10 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
   val companyCarForEmploymentJson: JsObject =
     Json.obj(
-      "data" -> Json.obj(
+      "data"  -> Json.obj(
         "employmentSeqNo" -> 10,
         "grossAmount"     -> 1000,
-        "companyCars" -> Json.arr(
+        "companyCars"     -> Json.arr(
           Json.obj(
             "carSeqNo"                           -> 10,
             "makeModel"                          -> "Make Model",
@@ -61,7 +61,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
             "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
           )
         ),
-        "version" -> 1
+        "version"         -> 1
       ),
       "links" -> Json.arr()
     )
@@ -80,12 +80,12 @@ class CompanyCarConnectorSpec extends BaseSpec {
 
   val companyCars: JsObject =
     Json.obj(
-      "data" -> Json.obj(
+      "data"  -> Json.obj(
         "companyCarBenefits" -> Json.arr(
           Json.obj(
             "employmentSeqNo" -> 10,
             "grossAmount"     -> 1000,
-            "companyCars" -> Json.arr(
+            "companyCars"     -> Json.arr(
               Json.obj(
                 "carSeqNo"                           -> 10,
                 "makeModel"                          -> "Make Model",
@@ -94,7 +94,7 @@ class CompanyCarConnectorSpec extends BaseSpec {
                 "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
               )
             ),
-            "version" -> 1
+            "version"         -> 1
           )
         )
       ),

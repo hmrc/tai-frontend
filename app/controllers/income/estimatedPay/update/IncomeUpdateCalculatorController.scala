@@ -64,7 +64,7 @@ class IncomeUpdateCalculatorController @Inject() (
     ).mapN {
       case (true, _) =>
         Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
-      case _ =>
+      case _         =>
         Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
     }.recover { case NonFatal(e) =>
       errorPagesHandler.internalServerError(e.getMessage)
@@ -77,7 +77,7 @@ class IncomeUpdateCalculatorController @Inject() (
   )(maybeEmployment: Option[Employment]): Future[UserAnswers] =
     maybeEmployment match {
       case Some(employment) =>
-        val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+        val incomeType         = incomeTypeIdentifier(employment.receivingOccupationalPension)
         val updatedUserAnswers = userAnswers
           .setOrException(UpdateIncomeNamePage, employment.name)
           .setOrException(UpdateIncomeIdPage, id)
@@ -92,12 +92,12 @@ class IncomeUpdateCalculatorController @Inject() (
   def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers = request.userAnswers
+      val userAnswers               = request.userAnswers
 
-      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
+      val incomeNameOpt              = userAnswers.get(UpdateIncomeNamePage)
+      val incomeIdOpt                = userAnswers.get(UpdateIncomeIdPage)
       val previouslyUpdatedAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
-      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+      val incomeTypeOpt              = userAnswers.get(UpdateIncomeTypePage)
 
       (incomeNameOpt, incomeIdOpt, previouslyUpdatedAmountOpt, incomeTypeOpt) match {
         case (Some(incomeName), Some(incomeId), Some(previouslyUpdatedAmount), Some(incomeType)) =>
@@ -107,7 +107,7 @@ class IncomeUpdateCalculatorController @Inject() (
             DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
           }
           Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId))
-        case _ =>
+        case _                                                                                   =>
           errorPagesHandler.internalServerError("Mandatory values missing")
       }
   }
@@ -115,10 +115,10 @@ class IncomeUpdateCalculatorController @Inject() (
   def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers = request.userAnswers
-      val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val newAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
-      val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
+      val userAnswers               = request.userAnswers
+      val incomeNameOpt             = userAnswers.get(UpdateIncomeNamePage)
+      val newAmountOpt              = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
+      val incomeTypeOpt             = userAnswers.get(UpdateIncomeTypePage)
 
       (incomeNameOpt, newAmountOpt, incomeTypeOpt) match {
         case (Some(incomeName), Some(newAmount), Some(incomeType)) =>
@@ -138,11 +138,11 @@ class IncomeUpdateCalculatorController @Inject() (
                   case Some(FormValuesConstants.YesValue) =>
                     Future
                       .successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId)))
-                  case Some(FormValuesConstants.NoValue) =>
+                  case Some(FormValuesConstants.NoValue)  =>
                     Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
                 }
             )
-        case _ => Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
+        case _                                                     => Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
       }
   }
 
@@ -150,7 +150,7 @@ class IncomeUpdateCalculatorController @Inject() (
   def checkYourAnswersPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers = request.userAnswers
+      val userAnswers               = request.userAnswers
 
       val mandatoryJourneyValues = Seq(
         userAnswers.get(UpdateIncomeNamePage),
@@ -160,7 +160,7 @@ class IncomeUpdateCalculatorController @Inject() (
         userAnswers.get(UpdateIncomeBonusPaymentsPage),
         userAnswers.get(UpdateIncomeIdPage)
       )
-      val optionalSeq = Seq(
+      val optionalSeq            = Seq(
         userAnswers.get(UpdateIncomeTaxablePayPage),
         userAnswers.get(UpdateIncomeBonusOvertimeAmountPage),
         userAnswers.get(UpdateIncomeOtherInDaysPage)
@@ -168,20 +168,20 @@ class IncomeUpdateCalculatorController @Inject() (
 
       (mandatoryJourneyValues, optionalSeq) match {
         case (mandatory, _) if mandatory.forall(_.isDefined) =>
-          val employer = IncomeSource(id = mandatory(5).get.toString.toInt, name = mandatory.head.get.toString)
-          val payPeriodFrequency = mandatory(1).get
-          val totalSalaryAmount = mandatory(2).get
+          val employer             = IncomeSource(id = mandatory(5).get.toString.toInt, name = mandatory.head.get.toString)
+          val payPeriodFrequency   = mandatory(1).get
+          val totalSalaryAmount    = mandatory(2).get
           val hasPayslipDeductions = mandatory(3).get
-          val hasBonusPayments = mandatory(4).get
+          val hasBonusPayments     = mandatory(4).get
 
-          val taxablePay = optionalSeq.head
+          val taxablePay         = optionalSeq.head
           val bonusPaymentAmount = optionalSeq(1)
-          val payPeriodInDays = optionalSeq(2)
+          val payPeriodInDays    = optionalSeq(2)
 
           val backUrl = bonusPaymentAmount match {
             case None =>
               controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
-            case _ =>
+            case _    =>
               controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
           }
 
@@ -198,18 +198,18 @@ class IncomeUpdateCalculatorController @Inject() (
           )
 
           Future.successful(Ok(checkYourAnswers(viewModel)))
-        case _ => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+        case _                                               => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }
   }
 
   def handleCalculationResult: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
-    val userAnswers: UserAnswers = request.userAnswers
+    val nino                      = user.nino
+    val userAnswers: UserAnswers  = request.userAnswers
 
-    val netAmountOpt = userAnswers.get(UpdateIncomeNewAmountPage)
+    val netAmountOpt      = userAnswers.get(UpdateIncomeNewAmountPage)
     val employmentNameOpt = userAnswers.get(UpdateIncomeNamePage)
-    val idStrOpt = userAnswers.get(UpdateIncomeIdPage)
+    val idStrOpt          = userAnswers.get(UpdateIncomeIdPage)
 
     (netAmountOpt, employmentNameOpt, idStrOpt) match {
       case (Some(netAmount), Some(_), Some(idStr)) =>
@@ -222,7 +222,7 @@ class IncomeUpdateCalculatorController @Inject() (
             income.oldAmount match {
               case Some(oldAmount) if convertedNetAmount == oldAmount =>
                 Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-              case _ =>
+              case _                                                  =>
                 Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
             }
           }

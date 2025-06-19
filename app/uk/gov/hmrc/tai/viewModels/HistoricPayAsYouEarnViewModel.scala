@@ -38,7 +38,7 @@ object HistoricPayAsYouEarnViewModel {
     employments: Seq[Employment],
     showTaxCodeDescriptionLink: Boolean
   ): HistoricPayAsYouEarnViewModel = {
-    val incomeSources: Seq[EmploymentViewModel] = filterIncomeSources(taxYear, employments) sortBy (_.id)
+    val incomeSources: Seq[EmploymentViewModel]                                             = filterIncomeSources(taxYear, employments) sortBy (_.id)
     val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) =
       incomeSources.partition(_.isPension)
 

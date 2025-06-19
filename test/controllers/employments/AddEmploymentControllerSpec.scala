@@ -49,7 +49,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   private def fakeGetRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-  val auditService: AuditService = mock[AuditService]
+  val auditService: AuditService           = mock[AuditService]
   val employmentService: EmploymentService = mock[EmploymentService]
 
   val userAnswers: UserAnswers = UserAnswers(
@@ -108,7 +108,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addEmployment.addNameForm.title"))
+        doc.title()  must include(Messages("tai.addEmployment.addNameForm.title"))
         doc.toString must include("TEST-Employer")
       }
     }
@@ -135,7 +135,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
     "reload the page with errors" when {
       "the form entry is invalid" in {
-        val sut = createSUT()
+        val sut    = createSUT()
         val result = sut.submitEmploymentName()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(("employmentName", ""))
         )
@@ -162,14 +162,14 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
 
       "the request has an authorised session and a previously supplied start date is present in cache" in {
-        val request = fakeGetRequest
+        val request            = fakeGetRequest
         val updatedUserAnswers =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(AddEmploymentStartDatePage.toString -> LocalDate.parse("2017-12-12"))
           )
-        val application = applicationBuilder(userAnswers = updatedUserAnswers).build()
+        val application        = applicationBuilder(userAnswers = updatedUserAnswers).build()
         running(application) {
-          val sut = createSUT(Some(updatedUserAnswers))
+          val sut    = createSUT(Some(updatedUserAnswers))
           val result = sut.addEmploymentStartDate()(request)
 
           status(result) mustBe OK
@@ -180,12 +180,12 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
 
       "redirect to the tax summary page if a value is missing from the cache " in {
-        val request = fakeGetRequest
+        val request                = fakeGetRequest
         val userAnswersWithYesOrNo =
           userAnswers.copy(data = Json.obj())
-        val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
+        val application            = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
         running(application) {
-          val sut = createSUT(Some(userAnswersWithYesOrNo))
+          val sut    = createSUT(Some(userAnswersWithYesOrNo))
           val result = sut.addEmploymentStartDate()(request)
 
           status(result) mustBe SEE_OTHER
@@ -220,7 +220,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
 
       "form is valid and start date is less than 6 weeks" in {
-        val sut = createSUT()
+        val sut  = createSUT()
         val date = LocalDate.now.minusDays(4)
 
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
@@ -284,7 +284,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
 
       "form is valid and start date is less than 6 weeks" in {
-        val sut = createSUT()
+        val sut  = createSUT()
         val date = LocalDate.now.minusDays(4)
 
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
@@ -309,12 +309,12 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     "show the first pay choice page" when {
       "the request has an authorised session and no previous response is held in cache" in {
         val employmentName = "TEST-Employer"
-        val request = fakeGetRequest
+        val request        = fakeGetRequest
 
         val application = applicationBuilder(userAnswers).build()
         running(application) {
           val result = createSUT(Some(userAnswers)).receivedFirstPay()(request)
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
           doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 0
           doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 0
@@ -322,15 +322,15 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
 
       "the request has an authorised session and a previous response is held in cache" in {
-        val request = fakeGetRequest
+        val request                = fakeGetRequest
         val userAnswersWithYesOrNo =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(AddEmploymentReceivedFirstPayPage.toString -> FormValuesConstants.YesValue)
           )
-        val application = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
+        val application            = applicationBuilder(userAnswers = userAnswersWithYesOrNo).build()
         running(application) {
           val result = createSUT(Some(userAnswersWithYesOrNo)).receivedFirstPay()(request)
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.select("input[id=firstPayChoice][checked]").size() mustBe 1
           doc.select("input[id=firstPayChoice-2][checked]").size() mustBe 0
         }
@@ -400,7 +400,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
     "return BadRequest" when {
       "there is a form validation error" in {
-        val sut = createSUT()
+        val sut            = createSUT()
         val employmentName = "TEST-Employer"
 
         val result = sut.submitFirstPay()(
@@ -419,18 +419,18 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   "add employment payroll number" must {
     "show the add payroll number page" when {
       "the request has an authorised session and no previous response is held in cache" in {
-        val request = fakeGetRequest
+        val request            = fakeGetRequest
         val updatedUserAnswers =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
               AddEmploymentStartDateWithinSixWeeksPage.toString -> FormValuesConstants.YesValue
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).addEmploymentPayrollNumber()(request)
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
           doc.select("input[id=payrollNumberChoice][checked=checked]").size() mustBe 0
           doc.select("input[id=payrollNumberChoice-2][checked=checked]").size() mustBe 0
@@ -439,7 +439,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
 
       "the request has an authorised session and a previous 'no' response is held in cache" in {
-        val request = fakeGetRequest
+        val request            = fakeGetRequest
         val updatedUserAnswers =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
@@ -448,11 +448,11 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentPayrollNumberPage.toString           -> "should be ignored"
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).addEmploymentPayrollNumber()(request)
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
           doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
           doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 0
@@ -461,7 +461,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         }
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
-        val request = fakeGetRequest
+        val request            = fakeGetRequest
         val updatedUserAnswers =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
@@ -470,11 +470,11 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentPayrollNumberPage.toString           -> "should be displayed"
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).addEmploymentPayrollNumber()(request)
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
           doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
           doc.select("input[id=payrollNumberChoice][checked]").size() mustBe 1
@@ -488,7 +488,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
   "submit employment payroll number" must {
     "cache payroll number" when {
       "the form is valid and user knows their payroll number" in {
-        val sut = createSUT()
+        val sut       = createSUT()
         val payrollNo = "1234"
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -510,7 +510,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
     "redirect to add telephone number page" when {
       "the form is valid and user knows their payroll number" in {
-        val sut = createSUT()
+        val sut       = createSUT()
         val payrollNo = "1234"
 
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
@@ -605,7 +605,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
       }
       "the request has an authorised session and a previous 'no' response is held in cache" in {
-        val request = fakeGetRequest
+        val request            = fakeGetRequest
         val updatedUserAnswers =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
@@ -613,11 +613,11 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentTelephoneNumberPage.toString   -> "should be ignored"
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).addTelephoneNumber()(request)
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.canWeContactByPhone.title"))
           doc.select("input[id=yesNoChoice][checked]").size() mustBe 0
           doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 1
@@ -625,7 +625,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         }
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
-        val request = fakeGetRequest
+        val request            = fakeGetRequest
         val updatedUserAnswers =
           userAnswers.copy(data =
             userAnswers.data ++ Json.obj(
@@ -633,11 +633,11 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentTelephoneNumberPage.toString   -> "should be displayed"
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).addTelephoneNumber()(request)
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.canWeContactByPhone.title"))
           doc.select("input[id=yesNoChoice][checked]").size() mustBe 1
           doc.select("input[id=yesNoChoice-2][checked]").size() mustBe 0
@@ -716,7 +716,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
             )
         )
         status(tooFewCharsResult) mustBe BAD_REQUEST
-        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooFewDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = sut.submitTelephoneNumber()(
@@ -728,7 +728,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
             )
         )
         status(tooManyCharsResult) mustBe BAD_REQUEST
-        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooManyDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
@@ -749,11 +749,11 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentTelephoneNumberPage.toString   -> "should be displayed"
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).addEmploymentCheckYourAnswers()(request)
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
+          val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.checkYourAnswers.title"))
         }
       }
@@ -793,7 +793,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).submitYourAnswers()(request)
           status(result) mustBe SEE_OTHER
@@ -821,7 +821,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).submitYourAnswers()(request)
           status(result) mustBe SEE_OTHER
@@ -844,7 +844,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
             )
           )
-        val application = applicationBuilder(updatedUserAnswers).build()
+        val application        = applicationBuilder(updatedUserAnswers).build()
         running(application) {
           val result = createSUT(Some(updatedUserAnswers)).submitYourAnswers()(request)
           status(result) mustBe BAD_REQUEST
@@ -864,7 +864,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.employmentConfirmation.heading"))
       }
     }

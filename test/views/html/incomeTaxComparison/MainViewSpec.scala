@@ -209,10 +209,10 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     }
   }
 
-  private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+  private lazy val currentYearItem    = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
   private lazy val startOfNextTaxYear = Dates.formatDate(TaxYear().next.start)
-  private lazy val nextYearItemMore = EstimatedIncomeTaxComparisonItem(TaxYear().next, 101)
-  private lazy val nextYearItemLess = EstimatedIncomeTaxComparisonItem(TaxYear().next, 99)
+  private lazy val nextYearItemMore   = EstimatedIncomeTaxComparisonItem(TaxYear().next, 101)
+  private lazy val nextYearItemLess   = EstimatedIncomeTaxComparisonItem(TaxYear().next, 99)
 
   def buildIncomeTaxComparisonViewModel(
     currentYearItem: EstimatedIncomeTaxComparisonItem,
@@ -252,5 +252,5 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
     main(incomeTaxComparisonViewModelLess, appConfig)(dataRequest, currMessages)
   def viewWithSame(implicit currMessages: Messages): Html =
     main(incomeTaxComparisonViewModelSame, appConfig)(dataRequest, currMessages)
-  override def view: Html = viewWithSame
+  override def view: Html                                 = viewWithSame
 }

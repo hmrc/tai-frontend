@@ -54,7 +54,7 @@ object IncomeSourceSummaryViewModel {
     cacheUpdatedIncomeAmount: Option[Int]
   ): IncomeSourceSummaryViewModel = {
     val estimatedPayAmount = optTaxCodeIncome.map(_.amount)
-    val taxCode = optTaxCodeIncome.map(_.taxCode)
+    val taxCode            = optTaxCodeIncome.map(_.taxCode)
 
     val amountYearToDate = payments.flatMap(_.latestPayment).map(_.amountYearToDate)
 

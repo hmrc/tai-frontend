@@ -51,7 +51,8 @@ class TaxAccountSummaryController @Inject() (
   implicit val
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Logging {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   private def optionalTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
@@ -155,7 +156,7 @@ class TaxAccountSummaryController @Inject() (
   }
 
   def onPageLoadOld(implicit request: DataRequest[AnyContent]): Future[Result] = {
-    val nino = request.taiUser.nino
+    val nino     = request.taiUser.nino
     val messages = request2Messages
 
     auditService
@@ -163,14 +164,14 @@ class TaxAccountSummaryController @Inject() (
 
     (for {
       taxAccountSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
-      vm <- EitherT[Future, UpstreamErrorResponse, TaxAccountSummaryViewModel](
-              taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary).map(Right(_))
-            )
+      vm                <- EitherT[Future, UpstreamErrorResponse, TaxAccountSummaryViewModel](
+                             taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary).map(Right(_))
+                           )
     } yield Ok(incomeTaxSummary(vm, appConfig))).fold(
       {
         case error if error.statusCode == NOT_FOUND =>
           Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-        case _ => InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
+        case _                                      => InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
       },
       identity
     )

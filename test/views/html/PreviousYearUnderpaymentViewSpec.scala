@@ -65,11 +65,11 @@ class PreviousYearUnderpaymentViewSpec extends TaiViewSpec {
   }
 
   val allowanceReducedBy = 500
-  val poundedAmountDue = "£100.00"
+  val poundedAmountDue   = "£100.00"
 
   val test: String = Dates.formatDate(TaxYear().start)
 
-  private val previousYearUnderpayment = inject[PreviousYearUnderpaymentView]
+  private val previousYearUnderpayment     = inject[PreviousYearUnderpaymentView]
   override def view: HtmlFormat.Appendable =
     previousYearUnderpayment(PreviousYearUnderpaymentViewModel(allowanceReducedBy, poundedAmountDue, Html("some-link")))
 

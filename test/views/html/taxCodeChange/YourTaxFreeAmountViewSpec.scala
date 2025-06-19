@@ -227,13 +227,13 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     YourTaxFreeAmountViewModel(previous, TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0), Seq.empty, Seq.empty)
   }
 
-  val taxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()
+  val taxFreeAmount: YourTaxFreeAmountViewModel            = createViewModel()
   val currentOnlyTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel(showPreviousTaxFreeInfo = false)
 
-  private val yourTaxFreeAmount = inject[YourTaxFreeAmountView]
+  private val yourTaxFreeAmount                                                                = inject[YourTaxFreeAmountView]
   def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount): HtmlFormat.Appendable =
     yourTaxFreeAmount(viewModel)
 
   override def view: HtmlFormat.Appendable = createView()
-  private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
+  private lazy val currentOnlyView         = createView(viewModel = currentOnlyTaxFreeAmount)
 }

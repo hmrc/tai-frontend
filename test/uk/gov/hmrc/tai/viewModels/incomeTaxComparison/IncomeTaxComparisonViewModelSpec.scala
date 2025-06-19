@@ -25,8 +25,8 @@ class IncomeTaxComparisonViewModelSpec extends BaseSpec {
   def createIncomeTaxComparisonViewModel(
     isEstimatedCYPlusOneJourneyCompleted: Boolean
   ): IncomeTaxComparisonViewModel = {
-    val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
-    val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
+    val currentYearItem                       = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+    val nextYearItem                          = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
     val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(
       Seq(currentYearItem, nextYearItem)
     )

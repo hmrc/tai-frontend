@@ -78,7 +78,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
     }
   }
 
-  val viewModel = UpdateIncomeDetailsCheckYourAnswersViewModel("2016", "whatYouToldUs", "Yes", Some("123456789"))
-  private val CheckYourAnswers = inject[CheckYourAnswersView]
+  val viewModel                            = UpdateIncomeDetailsCheckYourAnswersViewModel("2016", "whatYouToldUs", "Yes", Some("123456789"))
+  private val CheckYourAnswers             = inject[CheckYourAnswersView]
   override def view: HtmlFormat.Appendable = CheckYourAnswers(viewModel)
 }

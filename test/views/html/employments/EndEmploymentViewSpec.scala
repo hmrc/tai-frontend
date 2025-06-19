@@ -29,10 +29,10 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
   private val employmentId: Int = 0
 //  private val employmentName = "employer name"
-  private val eedf = EmploymentEndDateForm(employerName)
+  private val eedf              = EmploymentEndDateForm(employerName)
 
-  private val globalErrorMessage: String = "day error message"
-  private val formWithErrors: Form[LocalDate] = eedf.form.withError("", globalErrorMessage)
+  private val globalErrorMessage: String                  = "day error message"
+  private val formWithErrors: Form[LocalDate]             = eedf.form.withError("", globalErrorMessage)
   private lazy val employmentEndDateForm: Form[LocalDate] = eedf.form.bind(
     Map(
       EmploymentEndDateForm.EmploymentFormDay -> "1",
@@ -63,7 +63,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     "have an error box at the top of the page with a link to the error field" when {
       "a form with errors is passed into the view" in {
-        def view: Html = template(formWithErrors, viewmodel)
+        def view: Html   = template(formWithErrors, viewmodel)
         val errorSummary = doc(view).select(".govuk-list.govuk-error-summary__list a").text
 
         errorSummary mustBe globalErrorMessage
@@ -71,7 +71,7 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     }
 
     "have a legend in the form" in {
-      def view: Html = template(employmentEndDateForm, viewmodel)
+      def view: Html  = template(employmentEndDateForm, viewmodel)
       val legendItem1 = doc(view).select("#date-you-left-hint").text
 
       legendItem1 mustBe Messages("tai.endEmployment.endDateForm.label", employerName)
@@ -84,8 +84,8 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select("label[for=tellUsAboutEmploymentForm-day]")
-      val inputLabelDay = labelDay.text
+      val labelDay       = doc(view).select("label[for=tellUsAboutEmploymentForm-day]")
+      val inputLabelDay  = labelDay.text
       val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-day").size
 
       inputLabelDay mustBe Messages("tai.label.day")
@@ -93,16 +93,16 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select("label[for=tellUsAboutEmploymentForm-month]")
+      val labelMonth      = doc(view).select("label[for=tellUsAboutEmploymentForm-month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-month").size
+      val numberOfInputs  = doc(view).select("#tellUsAboutEmploymentForm-month").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select("label[for=tellUsAboutEmploymentForm-year]")
+      val labelYear      = doc(view).select("label[for=tellUsAboutEmploymentForm-year]")
       val inputLabelYear = labelYear.text
       val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-year").size
 
@@ -112,8 +112,8 @@ class EndEmploymentViewSpec extends TaiViewSpec {
 
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
-        def view: Html = template(formWithErrors, viewmodel)
-        val errorMessage = doc(view).select(".govuk-error-message").text
+        def view: Html    = template(formWithErrors, viewmodel)
+        val errorMessage  = doc(view).select(".govuk-error-message").text
         val fieldSetError = doc(view).select("form div").hasClass("govuk-form-group--error")
 
         fieldSetError mustBe true

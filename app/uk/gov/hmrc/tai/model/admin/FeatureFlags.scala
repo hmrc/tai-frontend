@@ -19,21 +19,21 @@ package uk.gov.hmrc.tai.model.admin
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagName
 
 case object CyPlusOneToggle extends FeatureFlagName {
-  override val name: String = "cy-plus-one-toggle"
+  override val name: String                = "cy-plus-one-toggle"
   override val description: Option[String] = Some(
     "Enable/disable cy plus one"
   )
 }
 
 case object IncomeTaxHistoryToggle extends FeatureFlagName {
-  override val name: String = "income-tax-history-toggle"
+  override val name: String                = "income-tax-history-toggle"
   override val description: Option[String] = Some(
     "Enable/disable the income ta history"
   )
 }
 
 case object DesignatoryDetailsCheck extends FeatureFlagName {
-  override val name: String = "designatory-details-check"
+  override val name: String                = "designatory-details-check"
   override val description: Option[String] = Some(
     "Enable/disable designatory details call for personal details on citizen details"
   )

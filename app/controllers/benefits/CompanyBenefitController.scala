@@ -43,7 +43,8 @@ class CompanyBenefitController @Inject() (
   journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Logging {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   lazy val journeyStartRedirection: Result = Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
 
@@ -78,10 +79,10 @@ class CompanyBenefitController @Inject() (
         val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
           case Some(value) =>
             value
-          case None =>
+          case None        =>
             request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
         }
-        val form =
+        val form    =
           UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
 
         val viewModel = CompanyBenefitDecisionViewModel(
@@ -110,12 +111,12 @@ class CompanyBenefitController @Inject() (
     decision match {
       case UpdateOrRemoveCompanyBenefitDecisionConstants.NoIDontGetThisBenefit =>
         Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
-      case UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit =>
+      case UpdateOrRemoveCompanyBenefitDecisionConstants.YesIGetThisBenefit    =>
         Redirect(
           controllers.routes.ExternalServiceRedirectController
             .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
         )
-      case _ =>
+      case _                                                                   =>
         failureRoute
     }
 
@@ -135,7 +136,7 @@ class CompanyBenefitController @Inject() (
           Future.successful(BadRequest(updateOrRemoveCompanyBenefitDecision(viewModel)))
         },
         success => {
-          val decision = success.getOrElse("")
+          val decision                          = success.getOrElse("")
           val benefitTypeFuture: Option[String] = request.userAnswers.get(EndCompanyBenefitsTypePage)
 
           benefitTypeFuture match {
@@ -143,7 +144,7 @@ class CompanyBenefitController @Inject() (
               journeyCacheRepository.set(request.userAnswers.setOrException(BenefitDecisionPage, decision)).map { _ =>
                 submitDecisionRedirect(decision, journeyStartRedirection)
               }
-            case None =>
+            case None    =>
               Future.successful(journeyStartRedirection)
           }
         }

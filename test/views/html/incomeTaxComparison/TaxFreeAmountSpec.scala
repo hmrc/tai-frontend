@@ -29,9 +29,9 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
     }
 
     "display personal allowance increase message when CY+1 PA is greater than CY PA" in {
-      val startOfNextTaxYear =
+      val startOfNextTaxYear               =
         HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start)).replaceAll("\u00A0", " ")
-      val PA_CY_PLUS_ONE_INDEX = 1
+      val PA_CY_PLUS_ONE_INDEX             = 1
       val personalAllowanceCYPlusOneAmount =
         MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(model.personalAllowance.values(PA_CY_PLUS_ONE_INDEX), 0))
       doc must haveGovukWarningWithText(
@@ -102,21 +102,21 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper {
   }
 
   private lazy val personalAllowance = PersonalAllowance(Seq(11500, 11850))
-  private lazy val additionsRow1 = Row("GiftAidPayments", Seq(Some(1000), Some(1100)))
-  private lazy val additionsRow2 = Row("PartTimeEarnings", Seq(Some(1000), None))
-  private lazy val additions = Additions(Seq(additionsRow1, additionsRow2))
+  private lazy val additionsRow1     = Row("GiftAidPayments", Seq(Some(1000), Some(1100)))
+  private lazy val additionsRow2     = Row("PartTimeEarnings", Seq(Some(1000), None))
+  private lazy val additions         = Additions(Seq(additionsRow1, additionsRow2))
 
   private lazy val deductionsRow1 = Row("OtherEarnings", Seq(Some(1000), Some(1100)))
   private lazy val deductionsRow2 = Row("CasualEarnings", Seq(None, Some(1100)))
-  private lazy val deductions = Deductions(Seq(deductionsRow1, deductionsRow2))
+  private lazy val deductions     = Deductions(Seq(deductionsRow1, deductionsRow2))
 
   private lazy val footer = Footer(Seq(3000, 3300))
 
-  private lazy val model = TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
+  private lazy val model                              = TaxFreeAmountComparisonViewModel(personalAllowance, additions, deductions, footer)
   private lazy val modelWithOutAdditionsAndDeductions =
     TaxFreeAmountComparisonViewModel(personalAllowance, Additions(Nil), Deductions(Nil), footer)
 
-  override def view: Html = views.html.incomeTaxComparison.TaxFreeAmount(model)
+  override def view: Html                    = views.html.incomeTaxComparison.TaxFreeAmount(model)
   def viewWithoutAdditionAndDeductions: Html =
     views.html.incomeTaxComparison.TaxFreeAmount(modelWithOutAdditionsAndDeductions)
 }

@@ -76,7 +76,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
       "returns a valid error response from taxCodeChangeConnector.hasTaxCodeChanged" in {
         val testService = createTestService
 
-        val error = UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)
+        val error        = UpstreamErrorResponse("server error", INTERNAL_SERVER_ERROR)
         val taxCodeError = Left(error)
 
         when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any()))
@@ -89,7 +89,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
 
   "lastTaxCodeRecordsInYearPerEmployment" must {
     "return a sequence of TaxCodeRecords when given a valid nino and year" in {
-      val testService = createTestService
+      val testService    = createTestService
       val taxCodeRecords = List(taxCodeRecord1)
 
       when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
@@ -136,7 +136,7 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     }
   }
 
-  val startDate = TaxYear().start
+  val startDate      = TaxYear().start
   val taxCodeRecord1 = TaxCodeRecord(
     "code",
     startDate,

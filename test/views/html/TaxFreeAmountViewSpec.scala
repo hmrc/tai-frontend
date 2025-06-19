@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.viewModels._
 
 class TaxFreeAmountViewSpec extends TaiViewSpec {
 
-  val rowViewModels: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
+  val rowViewModels: Seq[TaxFreeAmountSummaryRowViewModel]         = Seq(
     TaxFreeAmountSummaryRowViewModel(
       "An example addition benefit",
       "£11,500",
@@ -90,7 +90,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
         )
       )
     )
-  val viewModel: TaxFreeAmountViewModel =
+  val viewModel: TaxFreeAmountViewModel                            =
     TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
   private val template = inject[TaxFreeAmountView]
@@ -218,10 +218,10 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     }
 
     "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
-      val labelVm = TaxSummaryLabel("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
+      val labelVm                                   = TaxSummaryLabel("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
       val vm: Seq[TaxFreeAmountSummaryRowViewModel] =
         Seq(TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(isDisplayed = false)))
-      val svm: TaxFreeAmountSummaryViewModel = TaxFreeAmountSummaryViewModel(
+      val svm: TaxFreeAmountSummaryViewModel        = TaxFreeAmountSummaryViewModel(
         Seq(
           TaxFreeAmountSummaryCategoryViewModel(
             "header1",
@@ -233,7 +233,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
           )
         )
       )
-      val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
+      val viewModel: TaxFreeAmountViewModel         = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
       val document = doc(template(viewModel, appConfig, "test user"))
 

@@ -23,15 +23,15 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersVie
 
 class CheckYourAnswersViewSpec extends TaiViewSpec {
 
-  val employer = IncomeSource(id = 1, name = "employer1")
-  val paymentFrequency = "monthly"
-  val totalPay = "10000"
-  val hasDeductions = "Yes"
-  val taxablePay = Some("1800")
-  val hasBonusOrOvertime = "Yes"
+  val employer                = IncomeSource(id = 1, name = "employer1")
+  val paymentFrequency        = "monthly"
+  val totalPay                = "10000"
+  val hasDeductions           = "Yes"
+  val taxablePay              = Some("1800")
+  val hasBonusOrOvertime      = "Yes"
   val hasExtraBonusOrOvertime = "Yes"
-  val totalBonusOrOvertime = Some("3000")
-  val payPeriodInDays = Some("3")
+  val totalBonusOrOvertime    = Some("3000")
+  val payPeriodInDays         = Some("3")
 
   private val template = inject[CheckYourAnswersView]
 
@@ -63,7 +63,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
     "display journey confirmation lines" in {
 
       val monthlyPaymentFrequency = "Monthly"
-      val totalPay = "£10,000"
+      val totalPay                = "£10,000"
 
       doc must haveCheckYourAnswersSummaryLineNew(
         1,

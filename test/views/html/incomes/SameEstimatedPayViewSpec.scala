@@ -23,10 +23,10 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 class SameEstimatedPayViewSpec extends TaiViewSpec {
 
-  val amount = "£20,000"
+  val amount      = "£20,000"
   val amountAsInt = 20000
-  val employerId = 1
-  val url = "some url"
+  val employerId  = 1
+  val url         = "some url"
 
   private val template = inject[SameEstimatedPayView]
 

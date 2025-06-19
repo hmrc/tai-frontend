@@ -18,13 +18,13 @@ package uk.gov.hmrc.tai.util.constants.journeyCache
 
 object AddPensionProviderConstants {
 
-  val JourneyKey = "add-pension-provider"
-  val NameKey = "pensionProviderName"
-  val FirstPaymentKey = "pensionFirstPayment"
-  val StartDateKey = "pensionProviderStartDate"
-  val PayrollNumberChoice = "pensionProviderPayrollChoice"
-  val PayrollNumberKey = "pensionProviderPayrollNumber"
-  val TelephoneQuestionKey = "pensionProviderTelephoneContactAllowed"
-  val TelephoneNumberKey = "pensionProviderTelephoneNumber"
+  val JourneyKey              = "add-pension-provider"
+  val NameKey                 = "pensionProviderName"
+  val FirstPaymentKey         = "pensionFirstPayment"
+  val StartDateKey            = "pensionProviderStartDate"
+  val PayrollNumberChoice     = "pensionProviderPayrollChoice"
+  val PayrollNumberKey        = "pensionProviderPayrollNumber"
+  val TelephoneQuestionKey    = "pensionProviderTelephoneContactAllowed"
+  val TelephoneNumberKey      = "pensionProviderTelephoneNumber"
   val StartDateWithinSixWeeks = "pensionProviderStartDateWithinSixWeeks"
 }

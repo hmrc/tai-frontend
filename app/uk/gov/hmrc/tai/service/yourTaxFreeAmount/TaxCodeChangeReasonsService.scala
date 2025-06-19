@@ -42,7 +42,7 @@ class TaxCodeChangeReasonsService @Inject() (employmentTaxCodeChangeReasons: Tax
     val genericTaxCodeReasonMessage = messages("taxCode.change.yourTaxCodeChanged.paragraph")
 
     val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeReasonMessage)
-    val maxReasonsAllowed = 6
+    val maxReasonsAllowed              = 6
 
     genericReasonsForTaxCodeChange.nonEmpty ||
     (reasons.size > maxReasonsAllowed || reasons.isEmpty)

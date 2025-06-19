@@ -31,7 +31,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
             AddEmploymentConstants.NameKey                 -> "XJ",
             AddEmploymentConstants.StartDateWithinSixWeeks -> FormValuesConstants.YesValue
           )
-        val result = PayrollNumberViewModel(cacheMap)
+        val result   = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
           true,
@@ -42,7 +42,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
 
       "employment name and firstPayChoice is no" in {
         val cacheMap = Map(AddEmploymentConstants.NameKey -> "XJ")
-        val result = PayrollNumberViewModel(cacheMap)
+        val result   = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
           false,
@@ -52,7 +52,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
 
       "back url changes if AddEmploymentConstants.ReceivedFirstPayKey is present" in {
         val cacheMap = Map(AddEmploymentConstants.NameKey -> "XJ", AddEmploymentConstants.ReceivedFirstPayKey -> "asdf")
-        val result = PayrollNumberViewModel(cacheMap)
+        val result   = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
           false,

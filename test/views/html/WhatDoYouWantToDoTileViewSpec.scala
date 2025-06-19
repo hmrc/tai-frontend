@@ -51,7 +51,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         cards.size mustBe 2
         cards.toString must include(Messages("current.tax.year"))
-        doc(view) must haveParagraphWithText(
+        doc(view)      must haveParagraphWithText(
           Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
         cards.toString mustNot include(Messages("next.year"))
@@ -72,14 +72,14 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
           incomeTaxHistoryEnabled = true,
           cyPlusOneEnabled = true
         )
-        val cards = doc(nextYearView).getElementsByClass("card")
+        val cards              = doc(nextYearView).getElementsByClass("card")
 
         cards.size mustBe 3
-        cards.toString must include(Messages("current.tax.year"))
+        cards.toString    must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(
           Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
-        cards.toString must include(Messages("next.year"))
+        cards.toString    must include(Messages("next.year"))
         doc(nextYearView) must haveParagraphWithText(
           Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)).replaceU00A0
         )
@@ -95,7 +95,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
           incomeTaxHistoryEnabled = true,
           cyPlusOneEnabled = true
         )
-        val cards = doc(nextYearView).getElementsByClass("card")
+        val cards              = doc(nextYearView).getElementsByClass("card")
 
         cards.size mustBe 3
         cards.toString mustNot include("Check your latest tax code change")

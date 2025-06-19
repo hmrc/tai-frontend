@@ -34,10 +34,16 @@ import java.time.{Clock, Instant, ZoneId}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyCacheRepositorySpec
-    extends AnyFreeSpec with Matchers with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures
-    with IntegrationPatience with OptionValues with MockitoSugar with CleanMongoCollectionSupport {
+    extends AnyFreeSpec
+    with Matchers
+    with DefaultPlayMongoRepositorySupport[UserAnswers]
+    with ScalaFutures
+    with IntegrationPatience
+    with OptionValues
+    with MockitoSugar
+    with CleanMongoCollectionSupport {
 
-  private val instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
+  private val instant          = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
   private val userAnswers = UserAnswers("session-id-1", "nino", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
@@ -55,7 +61,7 @@ class JourneyCacheRepositorySpec
     "must set the last updated time on the supplied user answers to `now`, and save them" in {
       val expectedResult = userAnswers copy (lastUpdated = instant)
 
-      val setResult = repository.set(userAnswers).futureValue
+      val setResult     = repository.set(userAnswers).futureValue
       val updatedRecord = find(
         Filters.and(
           Filters.equal("sessionId", userAnswers.sessionId),
@@ -118,7 +124,7 @@ class JourneyCacheRepositorySpec
       "must update the lastUpdated time and get the record" in {
         insert(userAnswers).futureValue
 
-        val result = repository.get(userAnswers.sessionId, userAnswers.nino).futureValue
+        val result         = repository.get(userAnswers.sessionId, userAnswers.nino).futureValue
         val expectedResult = userAnswers copy (lastUpdated = instant)
 
         result.value mustEqual expectedResult

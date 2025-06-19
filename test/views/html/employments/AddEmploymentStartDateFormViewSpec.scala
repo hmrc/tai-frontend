@@ -25,10 +25,10 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import java.time.LocalDate
 
 class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
-  private val employmentName = "Employer name"
-  private val addDateForm = EmploymentAddDateForm(employmentName)
-  private val globalErrorMessage: String = "day error message"
-  private val formWithErrors: Form[LocalDate] = addDateForm.form.withError("", globalErrorMessage)
+  private val employmentName                                = "Employer name"
+  private val addDateForm                                   = EmploymentAddDateForm(employmentName)
+  private val globalErrorMessage: String                    = "day error message"
+  private val formWithErrors: Form[LocalDate]               = addDateForm.form.withError("", globalErrorMessage)
   private lazy val employmentStartDateForm: Form[LocalDate] = addDateForm.form.bind(
     Map(
       EmploymentAddDateForm.EmploymentFormDay -> "1",
@@ -36,7 +36,7 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
       "year"                                  -> "2017"
     )
   )
-  private val template = inject[AddEmploymentStartDateFormView]
+  private val template                                      = inject[AddEmploymentStartDateFormView]
 
   override def view: Html =
     template(employmentStartDateForm, employmentName)
@@ -68,8 +68,8 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select("label[for=tellUsStartDateForm-day]")
-      val inputLabelDay = labelDay.text
+      val labelDay       = doc(view).select("label[for=tellUsStartDateForm-day]")
+      val inputLabelDay  = labelDay.text
       val numberOfInputs = doc(view).select("#tellUsStartDateForm-day").size
 
       inputLabelDay mustBe Messages("tai.label.day")
@@ -77,16 +77,16 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select("label[for=tellUsStartDateForm-month]")
+      val labelMonth      = doc(view).select("label[for=tellUsStartDateForm-month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select("#tellUsStartDateForm-month").size
+      val numberOfInputs  = doc(view).select("#tellUsStartDateForm-month").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select("label[for=tellUsStartDateForm-year]")
+      val labelYear      = doc(view).select("label[for=tellUsStartDateForm-year]")
       val inputLabelYear = labelYear.text
       val numberOfInputs = doc(view).select("#tellUsStartDateForm-year").size
 
@@ -98,7 +98,7 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
       "there is a form with an error" in {
         def view: Html = template(formWithErrors, employmentName)
 
-        val errorMessage = doc(view).select(".govuk-error-message").text
+        val errorMessage  = doc(view).select(".govuk-error-message").text
         val fieldSetError = doc(view).select("form div").hasClass("govuk-form-group--error")
         fieldSetError mustBe true
         errorMessage contains globalErrorMessage

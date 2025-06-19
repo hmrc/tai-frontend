@@ -17,11 +17,11 @@
 package uk.gov.hmrc.tai.util.constants
 
 object PayPeriodConstants {
-  val Monthly: String = "monthly"
-  val Weekly: String = "weekly"
-  val Fortnightly: String = "fortnightly"
-  val FourWeekly: String = "fourWeekly"
-  val Other: String = "other"
+  val Monthly: String        = "monthly"
+  val Weekly: String         = "weekly"
+  val Fortnightly: String    = "fortnightly"
+  val FourWeekly: String     = "fourWeekly"
+  val Other: String          = "other"
   val OtherInDaysKey: String = "otherInDays"
-  val PayPeriodKey: String = "payPeriod"
+  val PayPeriodKey: String   = "payPeriod"
 }

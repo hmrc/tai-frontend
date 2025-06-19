@@ -40,10 +40,10 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
-  val employmentName = "Employment Name"
-  val empId = 1
+  val employmentName                                  = "Employment Name"
+  val empId                                           = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
-  val choice: String = FormValuesConstants.YesNoChoice
+  val choice: String                                  = FormValuesConstants.YesNoChoice
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.employment.warning.customGaTitle"))
@@ -66,7 +66,7 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
-      val validatedForm = duplicateSubmissionWarningForm.bind(validYesChoice)
+      val validatedForm  = duplicateSubmissionWarningForm.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe YesNoForm(Some(FormValuesConstants.YesValue))
@@ -81,8 +81,8 @@ class DuplicateSubmissionWarningViewSpec extends TaiViewSpec {
     }
 
     "display an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "")
-      val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
+      val invalidChoice              = Map(choice -> "")
+      val invalidatedForm            = duplicateSubmissionWarningForm.bind(invalidChoice)
       val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
       val errorView = template(invalidatedForm, employmentName, empId)

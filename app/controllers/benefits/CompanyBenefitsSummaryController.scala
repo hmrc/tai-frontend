@@ -77,7 +77,7 @@ class CompanyBenefitsSummaryController @Inject() (
 
           val taxCodeIncomeSource = taxCodeIncomes
             .fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)))
-          val isUpdateInProgress = cacheUpdatedIncomeAmount match {
+          val isUpdateInProgress  = cacheUpdatedIncomeAmount match {
             case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.map(_.amount.toInt).getOrElse(0)
             case None                    => false
           }

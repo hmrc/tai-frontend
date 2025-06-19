@@ -42,9 +42,9 @@ import scala.concurrent.Future
 
 class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
 
-  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val firstPayment: Payment  = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment  = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val annualAccount: AnnualAccount = AnnualAccount(
@@ -54,7 +54,7 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     Nil
   )
-  val employment: Employment = Employment(
+  val employment: Employment       = Employment(
     name = "test employment",
     employmentStatus = Live,
     payrollNumber = Some("EMPLOYER-1122"),
@@ -77,14 +77,14 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
 
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
 
-  val personService: PersonService = mock[PersonService]
-  val benefitsService: BenefitsService = mock[BenefitsService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val personService: PersonService                       = mock[PersonService]
+  val benefitsService: BenefitsService                   = mock[BenefitsService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
+  val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
-  private val mockRtiService = mock[RtiService]
-  private val mockApiBackendChoice: ApiBackendChoice = mock[ApiBackendChoice] // TODO: DDCNL-10086 New API
-  val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
+  private val mockRtiService                             = mock[RtiService]
+  private val mockApiBackendChoice: ApiBackendChoice     = mock[ApiBackendChoice] // TODO: DDCNL-10086 New API
+  val baseUserAnswers: UserAnswers                       = UserAnswers("testSessionId", nino.nino)
 
   def sut = new IncomeSourceSummaryController(
     mock[AuditConnector],
@@ -108,7 +108,7 @@ class IncomeSourceSummaryControllerOldSpec extends BaseSpec {
   }
 
   val employmentId = 1
-  val pensionId = 2
+  val pensionId    = 2
 
   "onPageLoad" must {
     "display the income details page" when {

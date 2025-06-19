@@ -39,5 +39,5 @@ class PayslipDeductionsViewSpec extends TaiViewSpec {
   }
 
   private def payslipDeductions = inject[PayslipDeductionsView]
-  override def view: Html = payslipDeductions(PayslipDeductionsForm.createForm(), employer)
+  override def view: Html       = payslipDeductions(PayslipDeductionsForm.createForm(), employer)
 }

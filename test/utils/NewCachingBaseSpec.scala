@@ -41,7 +41,11 @@ import scala.reflect.ClassTag
 import scala.util.Random
 
 trait NewCachingBaseSpec
-    extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with BeforeAndAfterEach {
+    extends PlaySpec
+    with FakeTaiPlayApplication
+    with MockitoSugar
+    with I18nSupport
+    with BeforeAndAfterEach {
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId, nino)
 
@@ -70,21 +74,21 @@ trait NewCachingBaseSpec
 
   def inject[T](implicit evidence: ClassTag[T]): T = app.injector.instanceOf[T]
 
-  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
-  lazy val appConfig: ApplicationConfig = inject[ApplicationConfig]
-  lazy val servicesConfig: ServicesConfig = inject[ServicesConfig]
-  lazy val langUtils: LanguageUtils = inject[LanguageUtils]
+  lazy val mcc: MessagesControllerComponents      = inject[MessagesControllerComponents]
+  lazy val appConfig: ApplicationConfig           = inject[ApplicationConfig]
+  lazy val servicesConfig: ServicesConfig         = inject[ServicesConfig]
+  lazy val langUtils: LanguageUtils               = inject[LanguageUtils]
   lazy val mockRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
-  implicit lazy val messagesApi: MessagesApi = inject[MessagesApi]
+  implicit lazy val messagesApi: MessagesApi   = inject[MessagesApi]
   implicit lazy val provider: MessagesProvider = inject[MessagesProvider]
-  implicit lazy val lang: Lang = Lang("en")
-  implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
+  implicit lazy val lang: Lang                 = Lang("en")
+  implicit lazy val messages: Messages         = messagesApi.preferred(Seq(lang))
 
   protected val nino: String = new Generator(new Random).nextNino.nino
 
-  implicit val authedUser: AuthedUser = UserBuilder()
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val authedUser: AuthedUser             = UserBuilder()
+  implicit val hc: HeaderCarrier                  = HeaderCarrier()
   override implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   implicit class ElemUtil(elem: Element) {
@@ -93,7 +97,7 @@ trait NewCachingBaseSpec
 
   implicit class StringUtils(str: String) {
     def replaceU00A0 = str.replace("\u00A0", " ")
-    def replaceNbsp = str.replaceAll("&nbsp;", " ")
+    def replaceNbsp  = str.replaceAll("&nbsp;", " ")
   }
 
 }

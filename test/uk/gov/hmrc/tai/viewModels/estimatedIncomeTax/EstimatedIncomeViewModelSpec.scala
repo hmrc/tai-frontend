@@ -93,7 +93,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 102000))
-      val dataF = BandedGraph(Seq.empty[CodingComponent], taxBand, 3000, 15000, taxViewType = ComplexTaxView)
+      val dataF           = BandedGraph(Seq.empty[CodingComponent], taxBand, 3000, 15000, taxViewType = ComplexTaxView)
       dataF mustBe BandedGraph(
         "taxGraph",
         bands,
@@ -599,7 +599,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
 
     "return a swatch when given a total estimated tax and total estimated income is provided" in {
       val totalEstimatedIncome = 20000
-      val totalEstimatedTax = 1700
+      val totalEstimatedTax    = 1700
       BandedGraph.createSwatch(totalEstimatedTax, totalEstimatedIncome) mustEqual Swatch(8.5, totalEstimatedTax)
     }
 
@@ -608,7 +608,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
   "getUpperBand" must {
 
     "return 0 when empty list" in {
-      val taxBands = Nil
+      val taxBands  = Nil
       val upperBand = BandedGraph.getUpperBand(taxBands, personalAllowance = None, taxFreeAllowanceBandSum = 0)
       upperBand mustBe 0
     }
@@ -616,7 +616,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
     "return default value when only pa band has been passed" in {
       val taxBands: List[TaxBand] =
         List(TaxBand("pa", "", income = 11500, tax = 0, lowerBand = None, upperBand = None, rate = 0))
-      val upperBand = BandedGraph.getUpperBand(taxBands, personalAllowance = None, taxFreeAllowanceBandSum = 0)
+      val upperBand               = BandedGraph.getUpperBand(taxBands, personalAllowance = None, taxFreeAllowanceBandSum = 0)
       upperBand mustBe 11500
     }
 

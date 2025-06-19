@@ -27,7 +27,7 @@ object TaxFreeInfo {
     codingComponents: Seq[CodingComponent],
     taxAccountCalculator: TaxAccountCalculator
   ): TaxFreeInfo = {
-    val annualTaxFreeAmount = taxAccountCalculator.taxFreeAmount(codingComponents)
+    val annualTaxFreeAmount     = taxAccountCalculator.taxFreeAmount(codingComponents)
     val personalAllowanceAmount = sumOfPersonalAllowances(codingComponents)
 
     TaxFreeInfo(date, annualTaxFreeAmount, personalAllowanceAmount)

@@ -80,7 +80,7 @@ class IncomeSourceSummaryController @Inject() (
             estimatedPayCompletion,
             cacheUpdatedIncomeAmount
           ) =>
-        val rtiUnavailable = employment.latestAnnualAccount.exists(_.realTimeStatus == TemporarilyUnavailable)
+        val rtiUnavailable         = employment.latestAnnualAccount.exists(_.realTimeStatus == TemporarilyUnavailable)
         val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyOld(
           empId = empId,
           displayName = request.fullName,

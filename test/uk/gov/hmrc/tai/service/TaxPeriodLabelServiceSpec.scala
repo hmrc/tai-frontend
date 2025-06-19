@@ -26,7 +26,7 @@ class TaxPeriodLabelServiceSpec extends BaseSpec {
   "TaxPeriodLabelService " should {
 
     "generate tax period label" in {
-      implicit lazy val lang: Lang = Lang("en")
+      implicit lazy val lang: Lang         = Lang("en")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
       TaxPeriodLabelService.taxPeriodLabel(2017) mustBe s"${HtmlFormatter.htmlNonBroken("6 April 2017")} " +
@@ -36,7 +36,7 @@ class TaxPeriodLabelServiceSpec extends BaseSpec {
     }
 
     "generate tax period label in welsh" in {
-      implicit lazy val lang: Lang = Lang("cy")
+      implicit lazy val lang: Lang         = Lang("cy")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
       TaxPeriodLabelService.taxPeriodLabel(2017) mustBe s"${HtmlFormatter.htmlNonBroken("6 Ebrill 2017")} " +
@@ -46,21 +46,21 @@ class TaxPeriodLabelServiceSpec extends BaseSpec {
     }
 
     "generate single line tax period label" in {
-      implicit lazy val lang: Lang = Lang("en")
+      implicit lazy val lang: Lang         = Lang("en")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val year = TaxYear()
-      val message = s"${langUtils.Dates.formatDate(year.start)} to ${langUtils.Dates.formatDate(year.end)}"
+      val year          = TaxYear()
+      val message       = s"${langUtils.Dates.formatDate(year.start)} to ${langUtils.Dates.formatDate(year.end)}"
       val expectedLabel = s"${HtmlFormatter.htmlNonBroken(message)}"
       TaxPeriodLabelService.taxPeriodLabelSingleLine(TaxYear().year) mustBe expectedLabel
     }
 
     "generate single line tax period label in welsh" in {
-      implicit lazy val lang: Lang = Lang("cy")
+      implicit lazy val lang: Lang         = Lang("cy")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val year = TaxYear()
-      val message = s"${langUtils.Dates.formatDate(year.start)} i ${langUtils.Dates.formatDate(year.end)}"
+      val year          = TaxYear()
+      val message       = s"${langUtils.Dates.formatDate(year.start)} i ${langUtils.Dates.formatDate(year.end)}"
       val expectedLabel = s"${HtmlFormatter.htmlNonBroken(message)}"
       TaxPeriodLabelService.taxPeriodLabelSingleLine(TaxYear().year) mustBe expectedLabel
     }

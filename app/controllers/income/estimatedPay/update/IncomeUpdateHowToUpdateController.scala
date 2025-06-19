@@ -59,7 +59,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
   ): Future[UserAnswers] =
     employmentFuture flatMap {
       case Some(employment) =>
-        val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+        val incomeType         = incomeTypeIdentifier(employment.receivingOccupationalPension)
         val updatedUserAnswers = userAnswers
           .setOrException(UpdateIncomeNamePage, employment.name)
           .setOrException(UpdateIncomeIdPage, id)
@@ -72,11 +72,11 @@ class IncomeUpdateHowToUpdateController @Inject() (
 
   def howToUpdatePage(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+    val nino                      = user.nino
 
     employmentService.employment(nino, id).flatMap {
       case Some(employment) =>
-        val incomeToEditFuture = incomeService.employmentAmount(nino, id)
+        val incomeToEditFuture           = incomeService.employmentAmount(nino, id)
         val cacheEmploymentDetailsFuture =
           cacheEmploymentDetails(id, Future.successful(Some(employment)), request.userAnswers)
 
@@ -102,7 +102,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension) match {
       case (true, false) =>
         val howToUpdate = userAnswers.get(UpdateIncomeUpdateKeyPage)
-        val form = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
+        val form        = HowToUpdateForm.createForm().fill(HowToUpdateForm(howToUpdate))
         Future.successful(Ok(howToUpdateView(form, id, employmentName)))
 
       case (false, false) =>
@@ -124,7 +124,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
           } yield incomeSourceEither match {
             case Right(incomeSource) =>
               BadRequest(howToUpdateView(formWithErrors, incomeSource.id, incomeSource.name))
-            case Left(_) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+            case Left(_)             => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
           },
         formData => {
           val updatedAnswers = request.userAnswers.copy(
@@ -136,7 +136,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
             formData.howToUpdate match {
               case Some("incomeCalculator") =>
                 Redirect(routes.IncomeUpdateWorkingHoursController.workingHoursPage())
-              case _ => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
+              case _                        => Redirect(controllers.routes.IncomeController.viewIncomeForEdit())
             }
           }
         }

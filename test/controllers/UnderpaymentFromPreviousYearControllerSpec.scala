@@ -47,7 +47,7 @@ class UnderpaymentFromPreviousYearControllerSpec extends BaseSpec {
     "respond with OK" when {
       "underpaymentExplanation is called" in {
         val controller = new SUT
-        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
+        val result     = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         status(result) mustBe OK
         contentAsString(result) must include(messagesApi("tai.previous.year.underpayment.title"))
       }

@@ -55,9 +55,9 @@ package object model {
                 .map(JsSuccess(_))
                 .getOrElse {
                   second match {
-                    case _: KeyPathNode =>
+                    case _: KeyPathNode     =>
                       JsSuccess(Json.obj())
-                    case _: IdxPathNode =>
+                    case _: IdxPathNode     =>
                       JsSuccess(Json.arr())
                     case _: RecursiveSearch =>
                       JsError("recursive search is not supported")
@@ -82,9 +82,9 @@ package object model {
           } else {
             JsSuccess(JsArray(oldValue.value.updated(index, newValue)))
           }
-        case oldValue: JsArray =>
+        case oldValue: JsArray                                                 =>
           JsError(s"array index out of bounds: $index, $oldValue")
-        case _ =>
+        case _                                                                 =>
           JsError(s"cannot set an index on $oldValue")
       }
     }
@@ -97,8 +97,8 @@ package object model {
           val updatedJsArray = valueToRemoveFrom.value.slice(0, index) ++ valueToRemoveFrom.value
             .slice(index + 1, valueToRemoveFrom.value.size)
           JsSuccess(JsArray(updatedJsArray))
-        case valueToRemoveFrom: JsArray => JsError(s"array index out of bounds: $index, $valueToRemoveFrom")
-        case _                          => JsError(s"cannot set an index on $valueToRemoveFrom")
+        case valueToRemoveFrom: JsArray                                                         => JsError(s"array index out of bounds: $index, $valueToRemoveFrom")
+        case _                                                                                  => JsError(s"cannot set an index on $valueToRemoveFrom")
       }
     }
 
@@ -109,20 +109,20 @@ package object model {
       oldValue match {
         case oldValue: JsObject =>
           JsSuccess(oldValue + (key -> newValue))
-        case _ =>
+        case _                  =>
           JsError(s"cannot set a key on $oldValue")
       }
     }
 
     def remove(path: JsPath): JsResult[JsValue] =
       (path.path, jsValue) match {
-        case (Nil, _)                                                                 => JsError("path cannot be empty")
-        case ((n: KeyPathNode) :: Nil, value: JsObject) if value.keys.contains(n.key) => JsSuccess(value - n.key)
+        case (Nil, _)                                                                  => JsError("path cannot be empty")
+        case ((n: KeyPathNode) :: Nil, value: JsObject) if value.keys.contains(n.key)  => JsSuccess(value - n.key)
         case ((n: KeyPathNode) :: Nil, value: JsObject) if !value.keys.contains(n.key) =>
           JsError("cannot find value at path")
-        case ((n: IdxPathNode) :: Nil, value: JsArray) => removeIndexNode(n, value)
-        case ((_: KeyPathNode) :: Nil, _)              => JsError(s"cannot remove a key on $jsValue")
-        case (first :: second :: rest, oldValue) =>
+        case ((n: IdxPathNode) :: Nil, value: JsArray)                                 => removeIndexNode(n, value)
+        case ((_: KeyPathNode) :: Nil, _)                                              => JsError(s"cannot remove a key on $jsValue")
+        case (first :: second :: rest, oldValue)                                       =>
           Reads
             .optionNoError(Reads.at[JsValue](JsPath(first :: Nil)))
             .reads(oldValue)
@@ -131,9 +131,9 @@ package object model {
                 .map(JsSuccess(_))
                 .getOrElse {
                   second match {
-                    case _: KeyPathNode =>
+                    case _: KeyPathNode     =>
                       JsSuccess(Json.obj())
-                    case _: IdxPathNode =>
+                    case _: IdxPathNode     =>
                       JsSuccess(Json.arr())
                     case _: RecursiveSearch =>
                       JsError("recursive search is not supported")

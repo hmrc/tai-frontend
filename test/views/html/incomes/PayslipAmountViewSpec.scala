@@ -43,5 +43,5 @@ class PayslipAmountViewSpec extends TaiViewSpec {
   val payslipViewModel = PaySlipAmountViewModel(PayslipForm.createForm("errText"), Some(Monthly), None, employer)
 
   private def payslipAmount = inject[PayslipAmountView]
-  override def view: Html = payslipAmount(payslipViewModel)
+  override def view: Html   = payslipAmount(payslipViewModel)
 }

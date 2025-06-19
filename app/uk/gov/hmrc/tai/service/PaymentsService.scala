@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class PaymentsService @Inject() () {
   def filterDuplicates(employment: Employment): Seq[PaymentDetailsViewModel] = {
-    val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
+    val payments                  = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
     val paymentsWithoutDuplicates = payments.filterNot(_.duplicate.getOrElse(false))
 
     paymentsWithoutDuplicates.map(PaymentDetailsViewModel(_))

@@ -34,7 +34,7 @@ class CompanyCarConnector @Inject() (httpHandler: HttpHandler, servicesConfig: S
 
   def companyCarEmploymentUrl(nino: Nino, empId: Int): String =
     s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car"
-  def companyCarUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
+  def companyCarUrl(nino: Nino): String                       = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
 
   def companyCarBenefitForEmployment(nino: Nino, empId: Int)(implicit
     hc: HeaderCarrier

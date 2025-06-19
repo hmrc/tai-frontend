@@ -32,8 +32,8 @@ import scala.concurrent.Future
 
 class ServiceControllerSpec extends BaseSpec {
   private val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
-  private val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
-  def createSut(authAction: AuthJourney = mockAuthJourney) = new SUT(authAction)
+  private val baseUserAnswers: UserAnswers                       = UserAnswers("testSessionId", nino.nino)
+  def createSut(authAction: AuthJourney = mockAuthJourney)       = new SUT(authAction)
 
   class SUT(authAction: AuthJourney = mockAuthJourney)
       extends ServiceController(
@@ -55,8 +55,8 @@ class ServiceControllerSpec extends BaseSpec {
   "Time Out page" should {
     "return page when called" in {
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
-      val sut = createSut()
-      val result = sut.timeoutPage()(fakeRequest)
+      val sut         = createSut()
+      val result      = sut.timeoutPage()(fakeRequest)
       status(result) mustBe 200
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -101,10 +101,10 @@ class ServiceControllerSpec extends BaseSpec {
   "mciErrorPage" should {
     "return manualCorrespondence page when called" in {
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
-      val sut = createSut()
-      val result = sut.mciErrorPage()(fakeRequest)
+      val sut         = createSut()
+      val result      = sut.mciErrorPage()(fakeRequest)
       status(result) mustBe LOCKED
-      val doc = Jsoup.parse(contentAsString(result))
+      val doc         = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("mci.title"))
     }
   }

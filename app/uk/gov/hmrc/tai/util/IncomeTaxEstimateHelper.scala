@@ -28,8 +28,8 @@ trait IncomeTaxEstimateHelper {
   private def determineIncomeTypes(taxCodeIncomes: Seq[TaxCodeIncome]): (Boolean, Boolean, Boolean) = {
 
     val employments: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == EmploymentIncome)
-    val pensions: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == PensionIncome)
-    val other: Boolean = taxCodeIncomes.exists(taxCodeIncome =>
+    val pensions: Boolean    = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == PensionIncome)
+    val other: Boolean       = taxCodeIncomes.exists(taxCodeIncome =>
       taxCodeIncome.componentType == JobSeekerAllowanceIncome ||
         taxCodeIncome.componentType == OtherIncome
     )

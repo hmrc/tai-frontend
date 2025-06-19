@@ -60,7 +60,8 @@ class AddEmploymentController @Inject() (
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with EmptyCacheRedirect {
+    extends TaiBaseController(mcc)
+    with EmptyCacheRedirect {
 
   def cancel(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino) map { _ =>
@@ -112,9 +113,9 @@ class AddEmploymentController @Inject() (
     ) match {
       case (Some(name), Some(date)) =>
         Ok(addEmploymentStartDateForm(EmploymentAddDateForm(name).form.fill(date), name))
-      case (Some(name), None) =>
+      case (Some(name), None)       =>
         Ok(addEmploymentStartDateForm(EmploymentAddDateForm(name).form, name))
-      case _ => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      case _                        => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
 
@@ -134,8 +135,8 @@ class AddEmploymentController @Inject() (
             },
             date => {
               val startDateBoundary = LocalDate.now.minusWeeks(6)
-              val startDateAnswers = request.userAnswers.setOrException(AddEmploymentStartDatePage, date)
-              val wholeAnswers = if (date.isAfter(startDateBoundary)) {
+              val startDateAnswers  = request.userAnswers.setOrException(AddEmploymentStartDatePage, date)
+              val wholeAnswers      = if (date.isAfter(startDateBoundary)) {
                 startDateAnswers.setOrException(AddEmploymentStartDateWithinSixWeeksPage, FormValuesConstants.YesValue)
               } else {
                 startDateAnswers.setOrException(AddEmploymentStartDateWithinSixWeeksPage, FormValuesConstants.NoValue)
@@ -158,7 +159,7 @@ class AddEmploymentController @Inject() (
     (request.userAnswers.get(AddEmploymentNamePage), request.userAnswers.get(AddEmploymentReceivedFirstPayPage)) match {
       case (Some(name), bool) =>
         Ok(addEmploymentFirstPayForm(AddEmploymentFirstPayForm.form.fill(bool), name))
-      case _ =>
+      case _                  =>
         error5xxInBadRequest()
     }
   }
@@ -186,7 +187,7 @@ class AddEmploymentController @Inject() (
               } yield firstPayYesNo match {
                 case Some(FormValuesConstants.YesValue) =>
                   Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
-                case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
+                case _                                  => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
               }
           )
       )
@@ -204,7 +205,7 @@ class AddEmploymentController @Inject() (
   }
 
   def addEmploymentPayrollNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
-    val viewModel = NewCachePayrollNumberViewModel(request.userAnswers)
+    val viewModel                 = NewCachePayrollNumberViewModel(request.userAnswers)
     implicit val user: AuthedUser = request.taiUser
 
     (
@@ -218,7 +219,7 @@ class AddEmploymentController @Inject() (
             viewModel
           )
         )
-      case (optionalChoice, _) =>
+      case (optionalChoice, _)                                                            =>
         Ok(
           addEmploymentPayrollNumberForm(
             AddEmploymentPayrollNumberForm.form.fill(AddEmploymentPayrollNumberForm(optionalChoice, None)),
@@ -230,7 +231,7 @@ class AddEmploymentController @Inject() (
 
   def submitEmploymentPayrollNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
-      val viewModel = NewCachePayrollNumberViewModel(request.userAnswers)
+      val viewModel                 = NewCachePayrollNumberViewModel(request.userAnswers)
       implicit val user: AuthedUser = request.taiUser
 
       AddEmploymentPayrollNumberForm.form
@@ -268,7 +269,7 @@ class AddEmploymentController @Inject() (
             YesNoTextEntryForm.form().fill(YesNoTextEntryForm(Some(FormValuesConstants.YesValue), telNoToDisplay))
           )
         )
-      case (response, _) =>
+      case (response, _)                                        =>
         Ok(
           canWeContactByPhone(
             Some(user),
@@ -302,7 +303,7 @@ class AddEmploymentController @Inject() (
                   AddEmploymentTelephoneQuestionPage,
                   form.yesNoChoice.getOrElse(FormValuesConstants.NoValue)
                 )
-            case _ =>
+            case _                                              =>
               request.userAnswers.setOrException(
                 AddEmploymentTelephoneQuestionPage,
                 form.yesNoChoice.getOrElse(FormValuesConstants.NoValue)
@@ -371,7 +372,7 @@ class AddEmploymentController @Inject() (
             journeyCacheRepository.set(updatedUserAnswers)
           }
         } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
-      case _ => Future.successful(error5xxInBadRequest())
+      case _                                                                                            => Future.successful(error5xxInBadRequest())
     }
   }
 

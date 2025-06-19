@@ -32,7 +32,8 @@ class TrackingConnector @Inject() (
   servicesConfig: ServicesConfig,
   applicationConfig: ApplicationConfig
 )(implicit ec: ExecutionContext)
-    extends TrackedFormFormatters with Logging {
+    extends TrackedFormFormatters
+    with Logging {
 
   lazy val serviceUrl: String = servicesConfig.baseUrl("tracking")
 
@@ -43,7 +44,7 @@ class TrackingConnector @Inject() (
   def getUserTracking(nino: String)(implicit hc: HeaderCarrier): Future[Seq[TrackedForm]] =
     if (applicationConfig.trackingEnabled) {
       (httpHandler.getFromApiV2(trackingUrl(nino), Some(5)) map (_.as[Seq[TrackedForm]](trackedFormSeqReads))).recover {
-        case NonFatal(x) =>
+        case NonFatal(x)                =>
           logger.warn(
             s"Tracking service returned error, therefore returning an empty response. Error: ${x.getMessage}"
           )

@@ -71,7 +71,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
     )
 
     employmentDataFailure match {
-      case None =>
+      case None            =>
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
       case Some(throwable) =>
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
@@ -87,9 +87,9 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
   "Calling the Current Year Page method" should {
 
     "call noCYIncomeTaxErrorPage() successfully with an authorised session " in {
-      val sut = createSUT()
+      val sut    = createSUT()
       val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      val doc = Jsoup.parse(contentAsString(result))
+      val doc    = Jsoup.parse(contentAsString(result))
       status(result) mustBe OK
       doc.title() must include(Messages("tai.noCYIncomeError.title"))
     }
@@ -102,7 +102,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
     "display the page" when {
       "employment service throws NotFound exception" in {
-        val sut = createSUT(employmentDataFailure = Some(new NotFoundException("no data found")))
+        val sut    = createSUT(employmentDataFailure = Some(new NotFoundException("no data found")))
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
@@ -111,7 +111,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
       }
 
       "employment service throws BadRequest exception" in {
-        val sut = createSUT(employmentDataFailure = Some(new BadRequestException("bad request")))
+        val sut    = createSUT(employmentDataFailure = Some(new BadRequestException("bad request")))
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)

@@ -90,5 +90,5 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
   )
 
   private val addPensionCheckYourAnswers = inject[AddPensionCheckYourAnswersView]
-  override def view: Html = addPensionCheckYourAnswers(viewModel)
+  override def view: Html                = addPensionCheckYourAnswers(viewModel)
 }

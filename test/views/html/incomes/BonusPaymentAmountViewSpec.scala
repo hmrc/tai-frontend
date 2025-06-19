@@ -26,9 +26,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
-  val employer: IncomeSource = IncomeSource(id = 1, name = "Employer")
+  val employer: IncomeSource                                 = IncomeSource(id = 1, name = "Employer")
   val bonusPaymentsAmountForm: Form[BonusOvertimeAmountForm] = BonusOvertimeAmountForm.createForm
-  private val bonusPaymentAmount = inject[BonusPaymentAmountView]
+  private val bonusPaymentAmount                             = inject[BonusPaymentAmountView]
 
   override def view: Html = bonusPaymentAmount(bonusPaymentsAmountForm, employer)
 
@@ -61,9 +61,9 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
     "return no errors when a valid monetary amount is entered" in {
 
-      val monetaryAmount = "£10,000"
+      val monetaryAmount        = "£10,000"
       val monetaryAmountRequest = Map("amount" -> monetaryAmount)
-      val validatedForm = bonusPaymentsAmountForm.bind(monetaryAmountRequest)
+      val validatedForm         = bonusPaymentsAmountForm.bind(monetaryAmountRequest)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe BonusOvertimeAmountForm(Some(monetaryAmount))
@@ -76,8 +76,8 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
             "tai.bonusPaymentsAmount.error.form.mandatory",
             TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited.replaceAll("\u00A0", " ")
           )
-        val invalidRequest = Map("amount" -> "")
-        val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
+        val invalidRequest             = Map("amount" -> "")
+        val invalidatedForm            = bonusPaymentsAmountForm.bind(invalidRequest)
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithTextNew(emptySelectionErrorMessage)
@@ -89,8 +89,8 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
 
       "the user enters an invalid monetary amount" in {
         val invalidAmountErrorMessage = messages("tai.bonusPaymentsAmount.error.form.input.invalid")
-        val invalidRequest = Map("amount" -> "£10,0")
-        val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
+        val invalidRequest            = Map("amount" -> "£10,0")
+        val invalidatedForm           = bonusPaymentsAmountForm.bind(invalidRequest)
 
         val errorView: HtmlFormat.Appendable = bonusPaymentAmount(invalidatedForm, employer)
         doc(errorView) must haveErrorLinkWithTextNew(invalidAmountErrorMessage)

@@ -27,8 +27,8 @@ import scala.collection.immutable.ListMap
 
 class TaxCodeChangeViewModelSpec extends BaseSpec {
 
-  val endOfTaxYear = TaxYear().end
-  val startDate = TaxYear().start
+  val endOfTaxYear           = TaxYear().end
+  val startDate              = TaxYear().start
   val previousTaxCodeRecord1 = TaxCodeRecord(
     "1185L",
     startDate,
@@ -39,9 +39,9 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
     Some("1234"),
     false
   )
-  val currentTaxCodeRecord1 =
+  val currentTaxCodeRecord1  =
     previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
-  val fullYearTaxCode = TaxCodeRecord(
+  val fullYearTaxCode        = TaxCodeRecord(
     "1185L",
     startDate,
     endOfTaxYear,
@@ -62,7 +62,7 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
     "translate the taxCodeChange object into a TaxCodePairs" in {
       val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal](), maybeUserName = None)
 
-      val primaryPairs = List(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
+      val primaryPairs   = List(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
       val secondaryPairs = List(TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1)))
 
       model.pairs mustEqual TaxCodePairs(
@@ -116,8 +116,8 @@ class TaxCodeChangeViewModelSpec extends BaseSpec {
       }
 
       "Using a scottish tax rate band" in {
-        val taxCode = "D2"
-        val scottishTaxCode = TaxCodeRecord(
+        val taxCode              = "D2"
+        val scottishTaxCode      = TaxCodeRecord(
           taxCode,
           startDate,
           startDate.plusMonths(1),

@@ -28,7 +28,8 @@ private[mappings] class LocalDateFormatter(
   twoRequiredKey: String,
   requiredKey: String,
   args: Seq[String] = Seq.empty
-) extends Formatter[LocalDate] with Formatters {
+) extends Formatter[LocalDate]
+    with Formatters {
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
@@ -36,7 +37,7 @@ private[mappings] class LocalDateFormatter(
     Try(LocalDate.of(year, month, day)) match {
       case Success(date) =>
         Right(date)
-      case Failure(_) =>
+      case Failure(_)    =>
         Left(Seq(FormError(key, invalidKey, args)))
     }
 

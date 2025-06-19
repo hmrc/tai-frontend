@@ -38,8 +38,8 @@ trait DateValidator {
         (data._1, data._2, data._3) match {
           case (Some(y), Some(m), Some(d)) =>
             Try(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt)).isSuccess
-          case (None, None, None) => true
-          case _                  => false
+          case (None, None, None)          => true
+          case _                           => false
         }
     ).verifying(
       "error.invalid.date.future",
@@ -48,7 +48,7 @@ trait DateValidator {
           case (Some(y), Some(m), Some(d)) =>
             val now = LocalDate.now()
             Try(!now.isBefore(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
-          case _ => true
+          case _                           => true
         }
     ).verifying(
       "error.invalid.date.past",
@@ -56,7 +56,7 @@ trait DateValidator {
         (data._1, data._2, data._3) match {
           case (Some(y), Some(m), Some(d)) =>
             Try(!TaxYear().start.isAfter(LocalDate.of(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
-          case _ => true
+          case _                           => true
         }
     ).transform(
       {
@@ -72,7 +72,7 @@ trait DateValidator {
 }
 
 object DateValidator {
-  val day = "day"
+  val day   = "day"
   val month = "month"
-  val year = "year"
+  val year  = "year"
 }

@@ -29,9 +29,9 @@ class IncomeTaxSpec extends TaiViewSpec {
       "a view model is supplied to the view with appropriate data" in {
 
         val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
-        val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 201.83)
+        val nextYearItem    = EstimatedIncomeTaxComparisonItem(TaxYear().next, 201.83)
 
-        val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
+        val viewmodel  = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
         def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
         doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£101"))
       }
@@ -41,9 +41,9 @@ class IncomeTaxSpec extends TaiViewSpec {
       "a view model is supplied to the view with appropriate data" in {
 
         val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 200.83)
-        val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100)
+        val nextYearItem    = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100)
 
-        val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
+        val viewmodel  = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
         def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
 
         doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.less", "£100"))
@@ -81,9 +81,9 @@ class IncomeTaxSpec extends TaiViewSpec {
   }
 
   private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"
-  private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100.83)
-  private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100.83)
+  private val currentYearItem           = EstimatedIncomeTaxComparisonItem(TaxYear(), 100.83)
+  private val nextYearItem              = EstimatedIncomeTaxComparisonItem(TaxYear().next, 100.83)
 
-  private val viewmodel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
+  private val viewmodel   = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
   override def view: Html = views.html.incomeTaxComparison.IncomeTax(viewmodel)
 }

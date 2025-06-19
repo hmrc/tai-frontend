@@ -47,7 +47,7 @@ class CodingComponentServiceSpec extends BaseSpec {
 
     "filter out Zero Amount Coding Components" when {
       "provided with valid nino" in {
-        val service = createSut
+        val service                     = createSut
         val incomeType: CodingComponent = CodingComponent(BalancingCharge, None, 0, "BalancingCharge Description")
         when(taxAccountConnector.codingComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents :+ incomeType))
@@ -138,7 +138,7 @@ class CodingComponentServiceSpec extends BaseSpec {
 
   private def createSut = new SUT
 
-  val taxAccountConnector = mock[TaxAccountConnector]
+  val taxAccountConnector              = mock[TaxAccountConnector]
   val taxFreeAmountComparisonConnector = mock[TaxFreeAmountComparisonConnector]
 
   private class SUT extends CodingComponentService(taxAccountConnector, taxFreeAmountComparisonConnector, ec)

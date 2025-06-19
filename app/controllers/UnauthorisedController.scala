@@ -33,8 +33,8 @@ class UnauthorisedController @Inject() (
   implicit val ec: ExecutionContext
 ) extends TaiBaseController(mcc) {
 
-  def upliftUrl: String = applicationConfig.sa16UpliftUrl
-  def failureUrl: String = applicationConfig.pertaxServiceUpliftFailedUrl
+  def upliftUrl: String     = applicationConfig.sa16UpliftUrl
+  def failureUrl: String    = applicationConfig.pertaxServiceUpliftFailedUrl
   def completionUrl: String = applicationConfig.taiHomePageUrl
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>

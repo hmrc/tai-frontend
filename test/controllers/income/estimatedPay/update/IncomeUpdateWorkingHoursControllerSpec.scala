@@ -36,10 +36,10 @@ import scala.util.Random
 class IncomeUpdateWorkingHoursControllerSpec extends BaseSpec {
 
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
-  val sessionId = "testSessionId"
+  val sessionId              = "testSessionId"
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
-  def createSUT = new SUT
+  def createSUT          = new SUT
 
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 

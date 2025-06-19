@@ -25,9 +25,9 @@ import utils.BaseSpec
 
 class TaxFreeInfoSpec extends BaseSpec {
 
-  val date = "Date"
+  val date                     = "Date"
   val taxAccountCalculatorMock = mock[TaxAccountCalculator]
-  val taxFreeAmount = 123
+  val taxFreeAmount            = 123
 
   def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) =
     CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString())
@@ -45,7 +45,7 @@ class TaxFreeInfoSpec extends BaseSpec {
     "calculate the annual tax free amount" in {
       val codingComponents =
         Seq(CodingComponent(MarriageAllowanceReceived, Some(taxFreeAmount), 5885, "MarriageAllowanceReceived"))
-      val expected = TaxFreeInfo(date, taxFreeAmount, 0)
+      val expected         = TaxFreeInfo(date, taxFreeAmount, 0)
 
       TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
     }
@@ -53,7 +53,7 @@ class TaxFreeInfoSpec extends BaseSpec {
     "calculate the personal allowance" in {
       val codingComponents =
         Seq(CodingComponent(PersonalAllowancePA, Some(taxFreeAmount), 11850, "MarriageAllowanceReceived"))
-      val expected = TaxFreeInfo(date, taxFreeAmount, 11850)
+      val expected         = TaxFreeInfo(date, taxFreeAmount, 11850)
 
       TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
     }
@@ -61,13 +61,13 @@ class TaxFreeInfoSpec extends BaseSpec {
     "ignores non personal allowances when accumulating taxable amount" in {
       val marriageAllowanceRecieved = createCodingComponent(MarriageAllowanceReceived, 555)
 
-      val allowancePa = createCodingComponent(PersonalAllowancePA, 100)
-      val allowanceAgedPAA = createCodingComponent(PersonalAllowanceAgedPAA, 200)
+      val allowancePa         = createCodingComponent(PersonalAllowancePA, 100)
+      val allowanceAgedPAA    = createCodingComponent(PersonalAllowanceAgedPAA, 200)
       val allowanceElderlyPAE = createCodingComponent(PersonalAllowanceElderlyPAE, 300)
 
       val codingComponents = Seq(marriageAllowanceRecieved, allowancePa, allowanceAgedPAA, allowanceElderlyPAE)
 
-      val actual = TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock)
+      val actual   = TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock)
       val expected = TaxFreeInfo(date, taxFreeAmount, 600)
 
       actual mustBe expected

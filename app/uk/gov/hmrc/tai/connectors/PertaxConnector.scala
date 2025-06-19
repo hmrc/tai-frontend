@@ -68,7 +68,7 @@ class PertaxConnector @Inject() (
       e match {
         case ex: HttpException =>
           HtmlPartial.Failure(Some(ex.responseCode))
-        case _ =>
+        case _                 =>
           HtmlPartial.Failure(None)
       }
     }

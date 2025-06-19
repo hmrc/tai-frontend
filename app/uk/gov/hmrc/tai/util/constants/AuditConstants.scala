@@ -17,10 +17,10 @@
 package uk.gov.hmrc.tai.util.constants
 
 object AuditConstants {
-  val AddEmploymentCantAddEmployer: String = "cantAddEmployer"
-  val EndEmploymentWithinSixWeeksError: String = "sixWeeksErrorEmployment"
-  val EndEmploymentIrregularPayment: String = "irregularPaidEmployment"
-  val PotentialUnderpaymentInYearAdjustment: String = "inYearAdjustment"
+  val AddEmploymentCantAddEmployer: String           = "cantAddEmployer"
+  val EndEmploymentWithinSixWeeksError: String       = "sixWeeksErrorEmployment"
+  val EndEmploymentIrregularPayment: String          = "irregularPaidEmployment"
+  val PotentialUnderpaymentInYearAdjustment: String  = "inYearAdjustment"
   val TaxAccountSummaryUserEntersSummaryPage: String = "userEntersSummaryPage"
-  val AddPensionCantAddPensionProvider: String = "cantAddPensionProvider"
+  val AddPensionCantAddPensionProvider: String       = "cantAddPensionProvider"
 }

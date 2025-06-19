@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class YourTaxCodeControllerSpec extends BaseSpec {
 
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val taxAccountService: TaxAccountService       = mock[TaxAccountService]
 
   def sut = new YourTaxCodeController(
     taxAccountService,
@@ -73,7 +73,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
   }
 
   "tax code pages" must {
-    val empId = 1
+    val empId          = 1
     val taxCodeIncomes = Seq(
       TaxCodeIncome(
         EmploymentIncome,
@@ -95,7 +95,7 @@ class YourTaxCodeControllerSpec extends BaseSpec {
 
       val startOfTaxYear: String =
         TaxYear().start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-      val endOfTaxYear: String =
+      val endOfTaxYear: String   =
         TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
       val result = sut.taxCodes(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -125,12 +125,12 @@ class YourTaxCodeControllerSpec extends BaseSpec {
   "prevTaxCodes" must {
     "display tax code page" in {
       val startOfTaxYear: String = TaxYear().prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
-      val endOfTaxYear: String = TaxYear().prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+      val endOfTaxYear: String   = TaxYear().prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
-      val startDate = TaxYear().start
+      val startDate              = TaxYear().start
       val previousTaxCodeRecord1 = TaxCodeRecord(
         "1185L",
         startDate,
@@ -150,9 +150,9 @@ class YourTaxCodeControllerSpec extends BaseSpec {
       val result = sut.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
-      val doc = Jsoup.parse(contentAsString(result))
+      val doc                 = Jsoup.parse(contentAsString(result))
       val startOfYearNonBreak = startOfTaxYear
-      val endOfYearNonBreak = endOfTaxYear
+      val endOfYearNonBreak   = endOfTaxYear
 
       doc.title must include(Messages("tai.taxCode.prev.single.code.title", startOfYearNonBreak, endOfYearNonBreak))
     }

@@ -36,8 +36,8 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
   "taxFreeAmountComparison" must {
     "return a TaxFreeAmountComparison with a previous and current" in {
       val previousCodingComponents = List(codingComponent1)
-      val currentCodingComponents = List(codingComponent2)
-      val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
+      val currentCodingComponents  = List(codingComponent2)
+      val taxFreeAmountComparison  = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
       when(codingComponentService.taxFreeAmountComparison(meq(nino))(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
@@ -52,7 +52,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      val result = service.taxFreeAmountComparison(nino)
+      val result  = service.taxFreeAmountComparison(nino)
 
       Await.result(result, 5.seconds) mustBe expectedModel
     }
@@ -77,10 +77,10 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
 
   private def createTestService = new TestService
 
-  private val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  private val taxCodeChangeService: TaxCodeChangeService     = mock[TaxCodeChangeService]
   private val codingComponentService: CodingComponentService = mock[CodingComponentService]
 
-  val startDate = TaxYear().start
+  val startDate      = TaxYear().start
   val taxCodeRecord1 = TaxCodeRecord(
     "D0",
     startDate,
@@ -92,7 +92,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
     true
   )
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
-  val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
+  val taxCodeChange  = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
   private val codingComponent1 = CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description")
   private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
@@ -101,5 +101,6 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
       extends YourTaxFreeAmountService(
         taxCodeChangeService: TaxCodeChangeService,
         codingComponentService: CodingComponentService
-      ) with YourTaxFreeAmountMock
+      )
+      with YourTaxFreeAmountMock
 }

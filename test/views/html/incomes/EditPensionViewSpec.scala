@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EditPensionViewSpec extends TaiViewSpec {
 
-  private val empId = 1
+  private val empId     = 1
   private val newAmount = 321
   private val oldAmount = 123
 

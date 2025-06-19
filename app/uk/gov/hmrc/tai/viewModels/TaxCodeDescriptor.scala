@@ -58,8 +58,8 @@ trait TaxCodeDescriptor {
     messages: Messages
   ): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
-    val scottishRegex = "^S".r
-    val taxCode = taxCodeDescription.taxCode
+    val scottishRegex     = "^S".r
+    val taxCode           = taxCodeDescription.taxCode
 
     scottishRegex.findFirstIn(taxCode) match {
       case Some(code) =>
@@ -72,7 +72,7 @@ trait TaxCodeDescriptor {
             )
           )
         )
-      case _ => ListMap[String, String]()
+      case _          => ListMap[String, String]()
     }
   }
 
@@ -81,8 +81,8 @@ trait TaxCodeDescriptor {
   ): TaxCodeDescriptionTranslator =
     (taxCodeDescription: TaxCodeDescription) => {
       val previousOrCurrent = if (isCurrent) "" else ".prev"
-      val welshRegex = "^C".r
-      val taxCode = taxCodeDescription.taxCode
+      val welshRegex        = "^C".r
+      val taxCode           = taxCodeDescription.taxCode
       welshRegex.findFirstIn(taxCode) match {
         case Some(code) =>
           ListMap(
@@ -97,25 +97,25 @@ trait TaxCodeDescriptor {
               )
             )
           )
-        case _ => ListMap[String, String]()
+        case _          => ListMap[String, String]()
       }
     }
 
   private def untaxedTaxCodeExplanation(isCurrent: Boolean)(implicit messages: Messages): TaxCodeDescriptionTranslator =
     (taxCodeDescription: TaxCodeDescription) => {
       val previousOrCurrent = if (isCurrent) "" else ".prev"
-      val untaxedRegex = "K".r
-      val taxCode = taxCodeDescription.taxCode
+      val untaxedRegex      = "K".r
+      val taxCode           = taxCodeDescription.taxCode
 
       untaxedRegex.findFirstIn(taxCode) match {
         case Some(code) =>
-          val amount = taxAmount(taxCode)
+          val amount        = taxAmount(taxCode)
           val messageAmount = MoneyPounds(amount * TaiConstants.TaxAmountFactor, 0).quantity
           ListMap(
             code            -> messages(s"tai.taxCode$previousOrCurrent.$code"),
             amount.toString -> messages(s"tai.taxCode.untaxedAmount", messageAmount)
           )
-        case _ => ListMap[String, String]()
+        case _          => ListMap[String, String]()
       }
     }
 
@@ -137,7 +137,7 @@ trait TaxCodeDescriptor {
     taxCodeDescription.basisOperation match {
       case Week1Month1BasisOfOperation =>
         ListMap(TaiConstants.EmergencyTaxCode -> messages(s"tai.taxCode$previousOrCurrent.X"))
-      case _ => ListMap[String, String]()
+      case _                           => ListMap[String, String]()
     }
   }
 
@@ -146,7 +146,7 @@ trait TaxCodeDescriptor {
   ): ListMap[String, String] = {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
 
-    val standAloneRegex = "0T|BR|NT".r
+    val standAloneRegex         = "0T|BR|NT".r
     val scottishStandAloneRegex = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r
 
     val taxCode = taxCodeDescription.taxCode
@@ -160,7 +160,7 @@ trait TaxCodeDescriptor {
             taxCodeDescription.scottishTaxRateBands.getOrElse(code, BigDecimal(0))
           )
         )
-      case _ => ListMap[String, String]()
+      case _                  => ListMap[String, String]()
     }
   }
 
@@ -168,24 +168,24 @@ trait TaxCodeDescriptor {
     messages: Messages
   ): ListMap[String, String] = {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
-    val suffixRegex = """L|M|\d[0-9]*N|\d[1-9]T|\d+0T|[1-9]T""".r
-    val taxCode = taxCodeDescription.taxCode
+    val suffixRegex       = """L|M|\d[0-9]*N|\d[1-9]T|\d+0T|[1-9]T""".r
+    val taxCode           = taxCodeDescription.taxCode
 
     suffixRegex.findFirstIn(taxCode) match {
       case Some(code) =>
-        val amount = taxAmount(taxCode)
+        val amount        = taxAmount(taxCode)
         val messageAmount = MoneyPounds(amount * TaiConstants.TaxAmountFactor, 0).quantity
         ListMap(
           amount.toString    -> messages(s"tai.taxCode$previousOrCurrent.amount", messageAmount),
           code.last.toString -> messages(s"tai.taxCode$previousOrCurrent.${code.last.toString}")
         )
-      case _ => ListMap[String, String]()
+      case _          => ListMap[String, String]()
     }
   }
 
   private def taxAmount(taxCode: String): Int = {
     val digitsRegex = """(\d+)""".r
-    val amount = digitsRegex.findAllIn(taxCode).toList.headOption
+    val amount      = digitsRegex.findAllIn(taxCode).toList.headOption
     amount.map(_.toInt).getOrElse(0)
   }
 }

@@ -60,9 +60,9 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
 
   val employerName = "employer name"
 
-  val address: Address = Address("line1", "line2", "line3", "postcode", "country")
+  val address: Address        = Address("line1", "line2", "line3", "postcode", "country")
   val partialAddress: Address = Address(Some("line1"), None, None, Some("postcode"), Some("country"))
-  val emptyAddress: Address = Address(None, None, None, None, None)
+  val emptyAddress: Address   = Address(None, None, None, None, None)
 
   def fakePerson(nino: Nino): Person =
     Person(nino, "Firstname", "Surname", isDeceased = false, address)
@@ -72,7 +72,7 @@ trait FakeTaiPlayApplication extends GuiceOneServerPerSuite with PatienceConfigu
 
   def fakePersonWithPartialAddress(nino: Nino): Person =
     Person(nino, "Firstname", "Surname", isDeceased = false, partialAddress)
-  val fakeRequest: FakeRequest[AnyContent] = FakeRequest("GET", "/")
+  val fakeRequest: FakeRequest[AnyContent]             = FakeRequest("GET", "/")
 
   abstract override def run(testName: Option[String], args: Args): Status =
     super[GuiceOneServerPerSuite].run(testName, args)

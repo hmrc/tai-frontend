@@ -36,9 +36,9 @@ object PayPeriodForm {
       case Some(txt) =>
         txt match {
           case Other | Monthly | Weekly | Fortnightly | FourWeekly => Valid
-          case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
+          case _                                                   => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
         }
-      case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
+      case _         => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
     }
 
     def otherInDaysValidation(payPeriod: Option[String]): Constraint[Option[String]] = {
@@ -47,9 +47,9 @@ object PayPeriodForm {
       Constraint[Option[String]]("days") { days: Option[String] =>
         (payPeriod, days) match {
           case (Some(Other), Some(digitsOnly())) => Valid
-          case (Some(Other), None) => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-          case (Some(Other), _)    => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
-          case _                   => Valid
+          case (Some(Other), None)               => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+          case (Some(Other), _)                  => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+          case _                                 => Valid
         }
       }
     }

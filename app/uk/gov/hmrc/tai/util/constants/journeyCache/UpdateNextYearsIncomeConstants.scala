@@ -21,6 +21,6 @@ object UpdateNextYearsIncomeConstants {
   val JourneyKey = "update-next-years-income"
 
   val EmploymentName = "update-next-years-employment-name"
-  val NewAmount = "update-next-years-new-amount"
-  val Successful = "update-next-years-successful"
+  val NewAmount      = "update-next-years-new-amount"
+  val Successful     = "update-next-years-successful"
 }

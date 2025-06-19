@@ -23,7 +23,7 @@ import views.html.pensions.update.ConfirmationView
 
 class ConfirmationSpec extends TaiViewSpec {
   private val template: ConfirmationView = inject[ConfirmationView]
-  override def view: Html = template()
+  override def view: Html                = template()
 
   "Confirmation View" must {
 

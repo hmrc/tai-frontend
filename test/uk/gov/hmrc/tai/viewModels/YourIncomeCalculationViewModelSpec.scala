@@ -1165,7 +1165,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
   "incomeExplanationMessage" must {
     "return messages" when {
       "getCeasedMsg returns both messages" in {
-        val employment = Employment(
+        val employment    = Employment(
           "employment",
           Live,
           None,
@@ -1201,7 +1201,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "getCeasedMsg returns first message" in {
-        val employment = Employment(
+        val employment    = Employment(
           "employment",
           Live,
           None,
@@ -1241,7 +1241,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "getManualUpdateMsg returns both messages" in {
-        val employment = Employment(
+        val employment    = Employment(
           "employment",
           Live,
           None,
@@ -1283,7 +1283,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "getSameMsg returns the first message" in {
-        val employment =
+        val employment    =
           Employment(
             "employment",
             Live,
@@ -1326,7 +1326,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "getPayFreqMsg returns both messages" in {
-        val employment = Employment(
+        val employment    = Employment(
           "employment",
           Live,
           None,
@@ -1362,7 +1362,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       }
 
       "getPayFreqMsg returns the first message" in {
-        val employment = Employment(
+        val employment    = Employment(
           "employment",
           Live,
           None,
@@ -1399,7 +1399,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
     "returns default messages" when {
       "none of the conditions are matched" in {
-        val employment = Employment(
+        val employment    = Employment(
           "employment",
           Live,
           None,
@@ -1436,7 +1436,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     }
   }
 
-  lazy val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  lazy val firstPayment: Payment  = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   lazy val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val paymentDetails: Seq[PaymentDetailsViewModel] = Seq(
@@ -1455,7 +1455,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
   ) = {
     val annualAccount = AnnualAccount(7, uk.gov.hmrc.tai.model.TaxYear(), realTimeStatus, payments, Nil)
 
-    val employment = Employment(
+    val employment    = Employment(
       "test employment",
       employmentStatus,
       Some("EMPLOYER1"),

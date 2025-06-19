@@ -46,7 +46,11 @@ class PertaxAuthActionImpl @Inject() (
   cc: ControllerComponents,
   appConfig: ApplicationConfig,
   urlService: URLService
-) extends PertaxAuthAction with AuthorisedFunctions with Results with I18nSupport with Logging {
+) extends PertaxAuthAction
+    with AuthorisedFunctions
+    with Results
+    with I18nSupport
+    with Logging {
 
   override def messagesApi: MessagesApi = cc.messagesApi
 
@@ -54,7 +58,7 @@ class PertaxAuthActionImpl @Inject() (
   // scalastyle:off cyclomatic.complexity
   override def filter[A](request: Request[A]): Future[Option[Result]] = {
     implicit val implicitRequest: Request[A] = request
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    implicit val hc: HeaderCarrier           = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     def continueUrl: String = urlService.localFriendlyUrl(request.uri, request.host)
 
@@ -62,24 +66,24 @@ class PertaxAuthActionImpl @Inject() (
       .pertaxPostAuthorise()
       .value
       .flatMap {
-        case Left(UpstreamErrorResponse(_, status, _, _)) if status == UNAUTHORIZED =>
+        case Left(UpstreamErrorResponse(_, status, _, _)) if status == UNAUTHORIZED          =>
           Future.successful(Some(signInJourney))
-        case Left(_) =>
+        case Left(_)                                                                         =>
           Future.successful(Some(InternalServerError(internalServerErrorView(appConfig))))
-        case Right(PertaxResponse("ACCESS_GRANTED", _, _, _)) =>
+        case Right(PertaxResponse("ACCESS_GRANTED", _, _, _))                                =>
           Future.successful(None)
-        case Right(PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect))) =>
+        case Right(PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect)))             =>
           Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(continueUrl).encodedUrl}")))
         case Right(PertaxResponse("CONFIDENCE_LEVEL_UPLIFT_REQUIRED", _, _, Some(redirect))) =>
           Future.successful(Some(upliftJourney(redirect, request)))
-        case Right(PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(_))) =>
+        case Right(PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(_)))     =>
           val ex =
             new RuntimeException(
               s"Weak credentials should be dealt before the service"
             )
           logger.error(ex.getMessage, ex)
           Future.successful(Some(InternalServerError(internalServerErrorView(appConfig))))
-        case Right(PertaxResponse(_, _, Some(errorView), _)) =>
+        case Right(PertaxResponse(_, _, Some(errorView), _))                                 =>
           pertaxConnector.loadPartial(errorView.url).map {
             case partial: HtmlPartial.Success =>
               Some(
@@ -92,11 +96,11 @@ class PertaxAuthActionImpl @Inject() (
                   )(partial.content)
                 )
               )
-            case _: HtmlPartial.Failure =>
+            case _: HtmlPartial.Failure       =>
               logger.error(s"The partial ${errorView.url} failed to be retrieved")
               Some(InternalServerError(internalServerErrorView(appConfig)))
           }
-        case Right(response) =>
+        case Right(response)                                                                 =>
           val ex = new RuntimeException(
             s"Pertax response `${response.code}` with message ${response.message} is not handled"
           )

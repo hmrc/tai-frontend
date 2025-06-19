@@ -92,7 +92,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     payeNumber = "AB12345"
   )
 
-  private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
+  private lazy val pensionDoc                   = Jsoup.parse(pensionView.toString())
   private val template: IncomeSourceSummaryView = inject[IncomeSourceSummaryView]
 
   protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
@@ -115,7 +115,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   def viewWithUpdateInProgressPension: Html = template(modelWithUpdateInProgressPension)
 
   lazy val docWithUpdateInProgressEmployment: Document = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
-  lazy val docWithUpdateInProgressPension: Document = Jsoup.parse(viewWithUpdateInProgressPension.toString())
+  lazy val docWithUpdateInProgressPension: Document    = Jsoup.parse(viewWithUpdateInProgressPension.toString())
 
   "Income details spec" must {
     behave like pageWithCombinedHeaderNewFormatNew(
@@ -135,7 +135,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is pension" in {
         pensionDoc must havePreHeadingWithTextGdsNew(pensionModel.displayName)
 
-        pensionDoc must haveHeadingWithText(
+        pensionDoc       must haveHeadingWithText(
           messages(
             "tai.pension.income.details.mainHeading",
             pensionModel.empOrPensionName,

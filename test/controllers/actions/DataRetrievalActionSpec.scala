@@ -50,7 +50,7 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
   "Data Retrieval Action" when {
     "when there is no data in the cache" must {
       "must set an empty UserAnswers in the DataRequest with correct id + nino where not acting as trusted helper" in {
-        val userId = s"session-$uuid"
+        val userId  = s"session-$uuid"
         val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
 
         when(repository.get(any, any)).thenReturn(Future.successful(None))
@@ -66,13 +66,13 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
       }
 
       "must set an empty UserAnswers in the DataRequest with correct id + nino where acting as trusted helper" in {
-        val userId = s"session-$uuid"
+        val userId  = s"session-$uuid"
         val request = FakeRequest(GET, "/").withSession(SessionKeys.sessionId -> userId)
 
         when(repository.get(any, any)).thenReturn(Future.successful(None))
         val action = new Harness(repository)
 
-        val helperNino = "helper-nino"
+        val helperNino             = "helper-nino"
         val authedUser: AuthedUser = UserBuilder(
           utr = "utr",
           principalName = "",
@@ -91,10 +91,10 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
 
     "when there is data in the cache" must {
       "must set the UserAnswers in the DataRequest which exists in the cache where not acting as helper" in {
-        val userId = s"session-$uuid"
+        val userId  = s"session-$uuid"
         val request = FakeRequest().withSession(SessionKeys.sessionId -> userId)
         val instant = Instant.now()
-        val data = Json.obj("testKey" -> "testValue")
+        val data    = Json.obj("testKey" -> "testValue")
 
         when(repository.get(ArgumentMatchers.eq(userId), ArgumentMatchers.eq(authedUser.nino.nino))).thenReturn(
           Future(Some(UserAnswers(userId, authedUser.nino.nino, Json.obj("testKey" -> "testValue"), instant)))
@@ -112,12 +112,12 @@ class DataRetrievalActionSpec extends BaseSpec with ScalaFutures {
       }
 
       "must set the UserAnswers in the DataRequest which exists in the cache where acting as helper" in {
-        val userId = s"session-$uuid"
+        val userId  = s"session-$uuid"
         val request = FakeRequest().withSession(SessionKeys.sessionId -> userId)
         val instant = Instant.now()
-        val data = Json.obj("testKey" -> "testValue")
+        val data    = Json.obj("testKey" -> "testValue")
 
-        val helperNino = "helper-nino"
+        val helperNino             = "helper-nino"
         val authedUser: AuthedUser = UserBuilder(
           utr = "utr",
           principalName = "",

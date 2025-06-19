@@ -43,19 +43,19 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends BaseSpec {
       }
     }
     "return a view model with correct table header based on tax year" in {
-      implicit lazy val lang: Lang = Lang("en")
+      implicit lazy val lang: Lang         = Lang("en")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
+      val model     = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
       val dateRange = HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
       model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)
     }
 
     "return a view model with correct table header based on tax year in welsh" in {
-      implicit lazy val lang: Lang = Lang("cy")
+      implicit lazy val lang: Lang         = Lang("cy")
       implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang))
 
-      val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
+      val model     = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016), "something", "Yes", Some("1234567890"))
       val dateRange =
         HtmlFormatter.htmlNonBroken("6 Ebrill 2016") + " i " + HtmlFormatter.htmlNonBroken("5 Ebrill 2017")
       model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)

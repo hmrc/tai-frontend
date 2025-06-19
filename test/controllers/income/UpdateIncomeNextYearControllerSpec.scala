@@ -69,20 +69,20 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
   private val updateIncomeCYPlus1ConfirmView = inject[UpdateIncomeCYPlus1ConfirmView]
   private val updateIncomeCYPlus1SuccessView = inject[UpdateIncomeCYPlus1SuccessView]
-  private val updateIncomeCYPlus1SameView = inject[UpdateIncomeCYPlus1SameView]
-  private val updateIncomeCYPlus1EditView = inject[UpdateIncomeCYPlus1EditView]
-  private val updateIncomeCYPlus1StartView = inject[UpdateIncomeCYPlus1StartView]
+  private val updateIncomeCYPlus1SameView    = inject[UpdateIncomeCYPlus1SameView]
+  private val updateIncomeCYPlus1EditView    = inject[UpdateIncomeCYPlus1EditView]
+  private val updateIncomeCYPlus1StartView   = inject[UpdateIncomeCYPlus1StartView]
   private val updateIncomeCYPlus1WarningView = inject[UpdateIncomeCYPlus1WarningView]
 
-  val employmentID = 1
-  val currentEstPay = 1234
-  val newEstPay = 9999
-  val isPension = false
-  val sessionId = "testSessionId"
+  val employmentID       = 1
+  val currentEstPay      = 1234
+  val newEstPay          = 9999
+  val isPension          = false
+  val sessionId          = "testSessionId"
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
-  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository         = mock[JourneyCacheRepository]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -123,7 +123,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     "show employment duplicateSubmissionWarning view" in {
       val testController = createTestIncomeController()
 
-      val vm = DuplicateSubmissionCYPlus1EmploymentViewModel(employerName, newEstPay)
+      val vm      = DuplicateSubmissionCYPlus1EmploymentViewModel(employerName, newEstPay)
       val request = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
       val result = testController.duplicateWarning(employmentID)(request)
@@ -274,7 +274,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     "redirect to the confirm page" when {
       "valid input is passed that is different from the current estimated income" in {
         val testController = createTestIncomeController()
-        val newEstPay = "999"
+        val newEstPay      = "999"
 
         val expectedResult = Map(UpdateNextYearsIncomeNewAmountPage(employmentID).toString -> newEstPay)
 
@@ -297,8 +297,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       "redirect to the no change page" when {
         "valid input is passed that matches the current estimated income" in {
           val testController = createTestIncomeController()
-          val newEstPay = "1234"
-          val result = testController.update(employmentID)(
+          val newEstPay      = "1234"
+          val result         = testController.update(employmentID)(
             RequestBuilder
               .buildFakeRequestWithOnlySession(POST)
               .withFormUrlEncodedBody("income" -> newEstPay)
@@ -309,7 +309,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         "valid input is passed and no current amount has been cached" in {
           val testController = createTestIncomeController()
-          val newEstPay = "1234"
+          val newEstPay      = "1234"
 
           when(
             updateNextYearsIncomeService.getNewAmount(any(), any())
@@ -329,7 +329,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
         "valid input is passed and the new amount is the same as the current cached amount" in {
           val testController = createTestIncomeController()
-          val newEstPay = "999"
+          val newEstPay      = "999"
 
           when(
             updateNextYearsIncomeService.getNewAmount(any(), any())
@@ -355,7 +355,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     "respond with a BAD_REQUEST" when {
       "no input is passed" in {
         val testController = createTestIncomeController()
-        val newEstPay = ""
+        val newEstPay      = ""
 
         implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
           RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
@@ -462,10 +462,10 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
     "for valid user" must {
       "that has entered an estimated amount" must {
         "respond with and ok and the view" in {
-          val request = RequestBuilder.buildFakeGetRequestWithAuth()
+          val request    = RequestBuilder.buildFakeGetRequestWithAuth()
           val controller = createTestIncomeController()
 
-          val newAmount = newEstPay
+          val newAmount     = newEstPay
           val currentAmount = 1
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, Some(1))
@@ -475,7 +475,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             Future.successful(serviceResponse)
           )
 
-          val vm = ConfirmAmountEnteredViewModel(
+          val vm           = ConfirmAmountEnteredViewModel(
             employmentID,
             employerName,
             Some(currentAmount),
@@ -499,7 +499,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
 
       "that did not enter an estimated amount" must {
         "redirect to the start of the journey" in {
-          val request = RequestBuilder.buildFakeGetRequestWithAuth()
+          val request    = RequestBuilder.buildFakeGetRequestWithAuth()
           val controller = createTestIncomeController()
 
           when(
@@ -520,7 +520,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   "handleConfirm" must {
     "for valid user" must {
       "for successful submit, redirect user to success page" in {
-        val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        val request    = RequestBuilder.buildFakeGetRequestWithAuth()
         val controller = createTestIncomeController()
 
         when(
@@ -536,7 +536,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       }
 
       "for unsuccessful submit, return an Internal Server error Response" in {
-        val request = RequestBuilder.buildFakeGetRequestWithAuth()
+        val request    = RequestBuilder.buildFakeGetRequestWithAuth()
         val controller = createTestIncomeController()
 
         when(
@@ -555,7 +555,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   "update" should {
     "render sameEstimatedPay view with correct model when new amount matches cached new amount" in {
       val controller = createTestIncomeController()
-      val newEstPay = "999"
+      val newEstPay  = "999"
 
       when(updateNextYearsIncomeService.getNewAmount(any(), any()))
         .thenReturn(Future.successful(Right(newEstPay.toInt)))

@@ -23,7 +23,7 @@ import utils.BaseSpec
 
 class PaySlipAmountViewModelSpec extends BaseSpec {
 
-  val form = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
+  val form     = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
   val employer = IncomeSource(id = 1, name = "employer name")
 
   "PaySlipAmountViewModel" must {
@@ -43,7 +43,7 @@ class PaySlipAmountViewModelSpec extends BaseSpec {
 
     "have a X-day title for a X-pay period" in {
       val payPeriod = Some(Other)
-      val days = Some("123")
+      val days      = Some("123")
       val viewModel = PaySlipAmountViewModel(form, payPeriod, days, employer)
 
       viewModel.payPeriodTitle mustBe messagesApi("tai.payslip.title.days", days.getOrElse(""))
@@ -60,7 +60,7 @@ class PaySlipAmountViewModelSpec extends BaseSpec {
 
     "throw an exception if there is no pay period in days defined" in {
       val exception = intercept[RuntimeException] {
-        val payPeriod = Some(Other)
+        val payPeriod       = Some(Other)
         val payPeriodInDays = None
         PaySlipAmountViewModel(form, payPeriod, payPeriodInDays, employer)
       }

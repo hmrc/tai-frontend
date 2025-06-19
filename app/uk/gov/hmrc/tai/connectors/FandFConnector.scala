@@ -40,8 +40,8 @@ class FandFConnector @Inject() (
       .map { httpResponse =>
         httpResponse.status match {
           case NOT_FOUND => None
-          case OK => Some(httpResponse.json.as[TrustedHelper](uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper.reads))
-          case status => throw UpstreamErrorResponse("Invalid response status", status)
+          case OK        => Some(httpResponse.json.as[TrustedHelper](uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper.reads))
+          case status    => throw UpstreamErrorResponse("Invalid response status", status)
         }
       }
 

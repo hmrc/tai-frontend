@@ -43,5 +43,5 @@ object Payment {
   private implicit val asdf: Ordering[LocalDate] = (x: LocalDate, y: LocalDate) => x.compareTo(y)
 
   implicit val dateOrdering: Ordering[Payment] = Ordering.by(_.date)
-  implicit val paymentFormat: Format[Payment] = Json.format[Payment]
+  implicit val paymentFormat: Format[Payment]  = Json.format[Payment]
 }

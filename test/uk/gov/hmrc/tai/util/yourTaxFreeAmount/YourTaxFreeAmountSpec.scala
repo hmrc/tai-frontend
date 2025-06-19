@@ -29,7 +29,7 @@ class YourTaxFreeAmountSpec extends BaseSpec with YourTaxFreeAmount {
 
   def createYourTaxFreeAmountComparison(): YourTaxFreeAmountComparison = {
 
-    val formattedDate = Dates.formatDate(date)
+    val formattedDate      = Dates.formatDate(date)
     val formattedDateRange = createFormattedDate(date)
 
     val allowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq.empty)

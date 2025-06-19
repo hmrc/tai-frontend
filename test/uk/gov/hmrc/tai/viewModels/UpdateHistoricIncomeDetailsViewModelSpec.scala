@@ -26,12 +26,12 @@ class UpdateHistoricIncomeDetailsViewModelSpec extends BaseSpec {
   "UpdateHistoricIncomeDetailsViewModel" must {
     "return given tax year" in {
       val givenYear = UpdateHistoricIncomeDetailsViewModel(2016)
-      val result = givenYear.givenTaxYear
+      val result    = givenYear.givenTaxYear
       result mustBe TaxYear(2016)
     }
     "return formatted tax year" in {
       val dynamicYear = UpdateHistoricIncomeDetailsViewModel(2016)
-      val result = dynamicYear.formattedTaxYear
+      val result      = dynamicYear.formattedTaxYear
       result mustBe TaxPeriodLabelService.taxPeriodLabelSingleLine(2016)
     }
   }

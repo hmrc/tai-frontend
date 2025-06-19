@@ -22,11 +22,11 @@ case class CompanyCarChoiceViewModel(carModel: String, carProvider: String)
 
 object CompanyCarChoiceViewModel {
 
-  val missingCarModelMessage = "No company car model found in supplied cache map"
+  val missingCarModelMessage    = "No company car model found in supplied cache map"
   val missingCarProviderMessage = "No company car provider found in supplied cache map"
 
   def apply(carDetails: Map[String, String]): CompanyCarChoiceViewModel = {
-    val carModel =
+    val carModel    =
       carDetails.getOrElse(CompanyCarConstants.CarModelKey, throw new RuntimeException(missingCarModelMessage))
     val carProvider =
       carDetails.getOrElse(CompanyCarConstants.CarProviderKey, throw new RuntimeException(missingCarProviderMessage))

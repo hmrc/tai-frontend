@@ -35,7 +35,7 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
   def createSut = new SUT
 
   val sessionService: SessionService = mock[SessionService]
-  val auditService: AuditService = mock[AuditService]
+  val auditService: AuditService     = mock[AuditService]
 
   class SUT
       extends ExternalServiceRedirectController(

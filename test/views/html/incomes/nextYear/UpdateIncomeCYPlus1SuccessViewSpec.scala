@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateIncomeCYPlus1SuccessViewSpec extends TaiViewSpec {
 
-  val isPension = false
+  val isPension        = false
   private val template = inject[UpdateIncomeCYPlus1SuccessView]
 
   override def view: Html = template(employerName, isPension)
@@ -50,7 +50,7 @@ class UpdateIncomeCYPlus1SuccessViewSpec extends TaiViewSpec {
     }
 
     "contain the may change paragraph when income is from pension" in {
-      val isPension = true
+      val isPension         = true
       val pensionView: Html = template(employerName, isPension)
       doc(pensionView).getElementsByTag("p").text must include(
         messages("tai.updateIncome.CYPlus1.success.pension.p2", employerName)

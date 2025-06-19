@@ -45,7 +45,7 @@ class TaiConnector @Inject() (httpClientV2: HttpClientV2, servicesConfig: Servic
       .get(url"$urlGET")
       .execute[HttpResponse]
   }
-  def iabds(nino: String, taxYear: Int)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def iabds(nino: String, taxYear: Int)(implicit hc: HeaderCarrier): Future[HttpResponse]      = {
     val urlGET = url(s"/test-only/v1/api/iabd/taxpayer/$nino/tax-year/$taxYear")
     httpClientV2
       .get(url"$urlGET")

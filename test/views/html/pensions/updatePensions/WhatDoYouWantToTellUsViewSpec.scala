@@ -24,8 +24,8 @@ import views.html.pensions.update.WhatDoYouWantToTellUsView
 
 class WhatDoYouWantToTellUsViewSpec extends TaiViewSpec {
 
-  private val pensionName = "testPension"
-  private val pensionId = 1
+  private val pensionName               = "testPension"
+  private val pensionId                 = 1
   private val whatDoYouWantToTellUsView = inject[WhatDoYouWantToTellUsView]
 
   override def view: Html =

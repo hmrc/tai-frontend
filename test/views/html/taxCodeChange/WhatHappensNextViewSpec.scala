@@ -61,7 +61,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
 
   }
 
-  private val whatHappensNext = inject[WhatHappensNextView]
+  private val whatHappensNext              = inject[WhatHappensNextView]
   override def view: HtmlFormat.Appendable = whatHappensNext()
 
 }

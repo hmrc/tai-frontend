@@ -49,7 +49,7 @@ class TrackingService @Inject() (
     val currentCache = getCurrentCacheDataAsMap
 
     trackingConnector.getUserTracking(nino).map { trackedForms =>
-      val haveAnyLongProcesses = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
+      val haveAnyLongProcesses  = hasIncompleteTrackingForms(trackedForms, "TES[1|7]")
       val haveAnyShortProcesses = hasIncompleteTrackingForms(trackedForms, "TES[2-6]")
 
       val filteredJournies = currentCache.keySet.filterNot(key =>

@@ -43,14 +43,14 @@ class BenefitsConnectorSpec extends BaseSpec {
   )
 
   val companyCarBenefit: CompanyCarBenefit = CompanyCarBenefit(10, 1000, companyCars, Some(1))
-  val genericBenefit: GenericBenefit = GenericBenefit(MedicalInsurance, Some(10), 1000)
-  val benefits: Benefits = Benefits(Seq(companyCarBenefit), Seq(genericBenefit))
+  val genericBenefit: GenericBenefit       = GenericBenefit(MedicalInsurance, Some(10), 1000)
+  val benefits: Benefits                   = Benefits(Seq(companyCarBenefit), Seq(genericBenefit))
 
   val companyCarsJson: JsObject =
     Json.obj(
       "employmentSeqNo" -> 10,
       "grossAmount"     -> 1000,
-      "companyCars" -> Json.arr(
+      "companyCars"     -> Json.arr(
         Json.obj(
           "carSeqNo"                           -> 100,
           "makeModel"                          -> "Make Model",
@@ -59,7 +59,7 @@ class BenefitsConnectorSpec extends BaseSpec {
           "dateActiveFuelBenefitMadeAvailable" -> "2016-10-11"
         )
       ),
-      "version" -> 1
+      "version"         -> 1
     )
 
   val otherBenefitsJson: JsObject = Json.obj(
@@ -70,7 +70,7 @@ class BenefitsConnectorSpec extends BaseSpec {
 
   val benefitsJson: JsObject =
     Json.obj(
-      "data" -> Json
+      "data"  -> Json
         .obj("companyCarBenefits" -> Json.arr(companyCarsJson), "otherBenefits" -> Json.arr(otherBenefitsJson)),
       "links" -> Json.arr()
     )
@@ -83,7 +83,7 @@ class BenefitsConnectorSpec extends BaseSpec {
 
   val invalidBenefitsJson: JsObject =
     Json.obj(
-      "data" -> Json.obj(
+      "data"  -> Json.obj(
         "companyCarBenefits" -> Json.arr(invalidOtherBenefitsJson),
         "otherBenefits"      -> Json.arr(otherBenefitsJson)
       ),
@@ -119,10 +119,10 @@ class BenefitsConnectorSpec extends BaseSpec {
   "removeCompanyBenefit" must {
 
     "return an envelope id on a successful invocation" in {
-      val employmentId = 1
+      val employmentId        = 1
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
-      val json = Json.obj("data" -> JsString("123-456-789"))
+      val json                = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler.postToApi(
           meq(

@@ -41,9 +41,9 @@ object ZeroTaxEstimatedIncomeTaxViewModel {
     taxBands: List[TaxBand]
   )(implicit messages: Messages): ZeroTaxEstimatedIncomeTaxViewModel = {
 
-    val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
+    val paBand         = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
-    val graph = BandedGraph(
+    val graph          = BandedGraph(
       codingComponents,
       mergedTaxBands,
       taxAccountSummary.taxFreeAllowance,
@@ -51,7 +51,7 @@ object ZeroTaxEstimatedIncomeTaxViewModel {
       taxAccountSummary.totalEstimatedIncome,
       ZeroTaxView
     )
-    val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
+    val taxRegion      = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
 
     ZeroTaxEstimatedIncomeTaxViewModel(
       taxAccountSummary.totalEstimatedTax,

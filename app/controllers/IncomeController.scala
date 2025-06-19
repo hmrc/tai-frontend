@@ -56,7 +56,8 @@ class IncomeController @Inject() (
   journeyCacheRepository: JourneyCacheRepository,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Logging {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
@@ -66,12 +67,12 @@ class IncomeController @Inject() (
 
   def regularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+    val nino                      = user.nino
     (for {
-      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
-      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
+      employmentAmount  <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
+      latestPayment     <- EitherT.right[String](incomeService.latestPayment(nino, empId))
       updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
-      _ <- EitherT.right[String](journeyCacheRepository.set(updatedUserAnswers))
+      _                 <- EitherT.right[String](journeyCacheRepository.set(updatedUserAnswers))
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -92,8 +93,8 @@ class IncomeController @Inject() (
     implicit request =>
       val userAnswers = request.userAnswers
 
-      val nameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val idOpt = userAnswers.get(UpdateIncomeIdPage)
+      val nameOpt               = userAnswers.get(UpdateIncomeNamePage)
+      val idOpt                 = userAnswers.get(UpdateIncomeIdPage)
       val confirmedNewAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
 
       (nameOpt, idOpt, confirmedNewAmountOpt) match {
@@ -116,10 +117,10 @@ class IncomeController @Inject() (
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     val userAnswers = request.userAnswers
-    val nino = request.taiUser.nino
+    val nino        = request.taiUser.nino
 
     val nameOpt = userAnswers.get(UpdateIncomeNamePage)
-    val idOpt = userAnswers.get(UpdateIncomeIdPage)
+    val idOpt   = userAnswers.get(UpdateIncomeIdPage)
 
     (nameOpt, idOpt) match {
       case (Some(name), Some(id)) =>
@@ -147,15 +148,15 @@ class IncomeController @Inject() (
   def editRegularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val userAnswers = request.userAnswers
+    val userAnswers  = request.userAnswers
     val payToDateOpt = userAnswers.get(UpdateIncomePayToDatePage)
-    val nameOpt = userAnswers.get(UpdateIncomeNamePage)
-    val dateOpt = userAnswers.get(UpdatedIncomeDatePage)
+    val nameOpt      = userAnswers.get(UpdateIncomeNamePage)
+    val dateOpt      = userAnswers.get(UpdatedIncomeDatePage)
 
     (payToDateOpt, nameOpt, dateOpt) match {
       case (payToDate, Some(employerName), dateOpt) =>
-        val date = Try(dateOpt.map(date => LocalDate.parse(date))) match {
-          case Success(optDate) => optDate
+        val date           = Try(dateOpt.map(date => LocalDate.parse(date))) match {
+          case Success(optDate)   => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
             None
@@ -172,7 +173,7 @@ class IncomeController @Inject() (
             (income: EditIncomeForm) =>
               pickRedirectLocation(income, routes.IncomeController.confirmRegularIncome(empId), empId)
           )
-      case _ =>
+      case _                                        =>
         logger.warn(s"Mandatory value missing from UserAnswers for empId: $empId")
         Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
     }
@@ -181,8 +182,8 @@ class IncomeController @Inject() (
   def confirmRegularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
-      val userAnswers = request.userAnswers
+      val nino                      = user.nino
+      val userAnswers               = request.userAnswers
 
       userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
@@ -213,7 +214,7 @@ class IncomeController @Inject() (
                   journeyCacheRepository
                     .clear(userAnswers.sessionId, request.userAnswers.nino)
                     .map(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-                case None =>
+                case None    =>
                   Future.successful(errorPagesHandler.internalServerError(e.getMessage))
               }
             }
@@ -248,8 +249,8 @@ class IncomeController @Inject() (
       val userAnswers = request.userAnswers
 
       val incomeNameOpt = userAnswers.get(UpdateIncomeNamePage)
-      val newAmountOpt = userAnswers.get(UpdateIncomeNewAmountPage)
-      val incomeIdOpt = userAnswers.get(UpdateIncomeIdPage)
+      val newAmountOpt  = userAnswers.get(UpdateIncomeNewAmountPage)
+      val incomeIdOpt   = userAnswers.get(UpdateIncomeIdPage)
       val incomeTypeOpt = userAnswers.get(UpdateIncomeTypePage)
 
       (incomeNameOpt, newAmountOpt, incomeIdOpt, incomeTypeOpt) match {
@@ -272,12 +273,12 @@ class IncomeController @Inject() (
 
   def pensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+    val nino                      = user.nino
 
     (for {
       employmentAmount <- incomeService.employmentAmount(nino, empId)
       latestPayment    <- incomeService.latestPayment(nino, empId)
-      _ <- {
+      _                <- {
         val updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
         journeyCacheRepository.set(updatedUserAnswers)
       }
@@ -324,7 +325,7 @@ class IncomeController @Inject() (
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] = {
-    val newAmount = FormHelper.convertCurrencyToInt(income.newAmount).toString
+    val newAmount      = FormHelper.convertCurrencyToInt(income.newAmount).toString
     val updatedAnswers = request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount)
 
     journeyCacheRepository.set(updatedAnswers).map(_ => Redirect(confirmationCallback))
@@ -333,16 +334,16 @@ class IncomeController @Inject() (
   def editPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val userAnswers = request.userAnswers
+    val userAnswers  = request.userAnswers
     val payToDateOpt = userAnswers.get(UpdateIncomePayToDatePage)
-    val idOpt = userAnswers.get(UpdateIncomeIdPage)
-    val nameOpt = userAnswers.get(UpdateIncomeNamePage)
-    val dateOpt = userAnswers.get(UpdatedIncomeDatePage)
+    val idOpt        = userAnswers.get(UpdateIncomeIdPage)
+    val nameOpt      = userAnswers.get(UpdateIncomeNamePage)
+    val dateOpt      = userAnswers.get(UpdatedIncomeDatePage)
 
     (payToDateOpt, idOpt, nameOpt, dateOpt) match {
       case (payToDate, Some(id), Some(employerName), dateOpt) =>
-        val date = Try(dateOpt.map(date => LocalDate.parse(date))) match {
-          case Success(optDate) => optDate
+        val date           = Try(dateOpt.map(date => LocalDate.parse(date))) match {
+          case Success(optDate)   => optDate
           case Failure(exception) =>
             logger.warn(s"Unable to parse updateIncomeDateKey  $exception")
             None
@@ -361,7 +362,7 @@ class IncomeController @Inject() (
             (income: EditIncomeForm) =>
               pickRedirectLocation(income, routes.IncomeController.confirmPensionIncome(empId), empId)
           )
-      case _ =>
+      case _                                                  =>
         logger.warn(s"Mandatory value missing from UserAnswers for empId: $empId")
         Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
     }
@@ -370,7 +371,7 @@ class IncomeController @Inject() (
   def confirmPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
+      val nino                      = user.nino
 
       request.userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmount) =>
@@ -407,7 +408,7 @@ class IncomeController @Inject() (
     request.userAnswers.get(UpdateIncomeIdPage) match {
       case Some(id) =>
         processEmploymentAmount(id)
-      case None =>
+      case None     =>
         Future.successful(Redirect(routes.TaxAccountSummaryController.onPageLoad()))
     }
   }

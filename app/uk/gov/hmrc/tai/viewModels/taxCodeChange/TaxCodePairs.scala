@@ -58,10 +58,10 @@ object TaxCodePairs {
         acc: List[TaxCodePair]
       ): List[TaxCodePair] =
         (previous, current) match {
-          case (Nil, Nil) => acc
-          case (Nil, head :: tail) =>
+          case (Nil, Nil)             => acc
+          case (Nil, head :: tail)    =>
             innerCreateAllPairs(List.empty, tail, acc ++ List(TaxCodePair(None, Some(head))))
-          case (head :: tail, Nil) =>
+          case (head :: tail, Nil)    =>
             innerCreateAllPairs(tail, List.empty, acc ++ List(TaxCodePair(Some(head), None)))
           case (pHead :: pTail, curr) =>
             curr

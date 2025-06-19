@@ -27,7 +27,7 @@ class EmploymentAddDateFormSpec extends BaseSpec {
 
   "EmploymentAddDateForm" must {
     "return no errors with valid data" in {
-      val validatedFormForValidDate = form.bind(validDate)
+      val validatedFormForValidDate         = form.bind(validDate)
       val validatedFormForValidLeapYearDate = form.bind(validLeapYearDate)
 
       validatedFormForValidDate.errors mustBe empty
@@ -68,15 +68,15 @@ class EmploymentAddDateFormSpec extends BaseSpec {
       }
 
       "date format is not a valid date" in {
-        val validatedFormForInvalidDay = form.bind(invalidDay)
+        val validatedFormForInvalidDay   = form.bind(invalidDay)
         val validatedFormForInvalidMonth = form.bind(invalidMonth)
-        val validatedFormForInvalidYear = form.bind(invalidYear)
-        val validatedFormForInvalidDate = form.bind(invalidLeapYearDate)
+        val validatedFormForInvalidYear  = form.bind(invalidYear)
+        val validatedFormForInvalidDate  = form.bind(invalidLeapYearDate)
 
-        validatedFormForInvalidDay.errors must contain(FormError(DayTag, List(errorMsgs.mustBeValidDay)))
+        validatedFormForInvalidDay.errors   must contain(FormError(DayTag, List(errorMsgs.mustBeValidDay)))
         validatedFormForInvalidMonth.errors must contain(FormError(MonthTag, List(errorMsgs.mustBeValidMonth)))
-        validatedFormForInvalidYear.errors must contain(FormError(YearTag, List(errorMsgs.mustBeValidYear)))
-        validatedFormForInvalidDate.errors must contain(FormError(DayTag, List(errorMsgs.mustBeReal)))
+        validatedFormForInvalidYear.errors  must contain(FormError(YearTag, List(errorMsgs.mustBeValidYear)))
+        validatedFormForInvalidDate.errors  must contain(FormError(DayTag, List(errorMsgs.mustBeReal)))
       }
 
       "date is in future" in {
@@ -89,23 +89,23 @@ class EmploymentAddDateFormSpec extends BaseSpec {
   }
 
   private val employmentAddDateForm = EmploymentAddDateForm("employer")
-  private val form = employmentAddDateForm.form
+  private val form                  = employmentAddDateForm.form
 
-  private val DayTag: String = EmploymentAddDateForm.EmploymentFormDay
+  private val DayTag: String   = EmploymentAddDateForm.EmploymentFormDay
   private val MonthTag: String = EmploymentAddDateForm.EmploymentFormMonth
-  private val YearTag: String = EmploymentAddDateForm.EmploymentFormYear
+  private val YearTag: String  = EmploymentAddDateForm.EmploymentFormYear
 
-  private val validDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> "2015")
-  private val validFutureDate = Map(DayTag -> "10", MonthTag -> "4", YearTag -> s"${LocalDate.now().getYear + 1}")
+  private val validDate         = Map(DayTag -> "10", MonthTag -> "4", YearTag -> "2015")
+  private val validFutureDate   = Map(DayTag -> "10", MonthTag -> "4", YearTag -> s"${LocalDate.now().getYear + 1}")
   private val validLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2016")
 
-  private val invalidDay = Map(DayTag -> "Bar", MonthTag -> "4", YearTag -> "2015")
-  private val invalidMonth = Map(DayTag -> "1", MonthTag -> "Foo", YearTag -> "2015")
-  private val invalidYear = Map(DayTag -> "1", MonthTag -> "4", YearTag -> "Baz")
+  private val invalidDay          = Map(DayTag -> "Bar", MonthTag -> "4", YearTag -> "2015")
+  private val invalidMonth        = Map(DayTag -> "1", MonthTag -> "Foo", YearTag -> "2015")
+  private val invalidYear         = Map(DayTag -> "1", MonthTag -> "4", YearTag -> "Baz")
   private val invalidLeapYearDate = Map(DayTag -> "29", MonthTag -> "2", YearTag -> "2015")
 
-  private val invalidNoDayValue = Map(DayTag -> "", MonthTag -> "4", YearTag -> "2015")
-  private val invalidNoMonthValue = Map(DayTag -> "4", MonthTag -> "", YearTag -> "2015")
-  private val invalidNoYearValue = Map(DayTag -> "4", MonthTag -> "12", YearTag -> "")
+  private val invalidNoDayValue       = Map(DayTag -> "", MonthTag -> "4", YearTag -> "2015")
+  private val invalidNoMonthValue     = Map(DayTag -> "4", MonthTag -> "", YearTag -> "2015")
+  private val invalidNoYearValue      = Map(DayTag -> "4", MonthTag -> "12", YearTag -> "")
   private val invalidNoDayNoYearValue = Map(DayTag -> "", MonthTag -> "12", YearTag -> "")
 }

@@ -28,7 +28,7 @@ case class Address(
 
 object Address {
   implicit val formats: Format[Address] = Json.format[Address]
-  val emptyAddress: Address = Address(None, None, None, None, None)
+  val emptyAddress: Address             = Address(None, None, None, None, None)
 
   def apply(
     line1: String,

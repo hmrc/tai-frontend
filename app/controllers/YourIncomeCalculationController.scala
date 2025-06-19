@@ -48,7 +48,7 @@ class YourIncomeCalculationController @Inject() (
     val nino = request.taiUser.nino
 
     lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    lazy val employmentFuture = employmentService.employment(nino, empId)
+    lazy val employmentFuture     = employmentService.employment(nino, empId)
 
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
@@ -57,7 +57,7 @@ class YourIncomeCalculationController @Inject() (
       case (Right(taxCodeIncomes), Some(employment)) =>
         val paymentDetails = paymentsService.filterDuplicates(employment)
 
-        val model = YourIncomeCalculationViewModel(
+        val model                     = YourIncomeCalculationViewModel(
           taxCodeIncomes.find(_.employmentId.contains(empId)),
           employment,
           paymentDetails,
@@ -65,7 +65,7 @@ class YourIncomeCalculationController @Inject() (
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
-      case _ => errorPagesHandler.internalServerError("Error while fetching RTI details")
+      case _                                         => errorPagesHandler.internalServerError("Error while fetching RTI details")
     }
   }
 
@@ -85,7 +85,7 @@ class YourIncomeCalculationController @Inject() (
               errorPagesHandler.internalServerError(
                 "Employment contains stub annual account data found meaning payment information can't be displayed"
               )
-            case _ => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            case _                          => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
           }
         }
 

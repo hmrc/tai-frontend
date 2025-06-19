@@ -85,14 +85,14 @@ class IncomeUpdateEstimatedPayController @Inject() (
 
   def estimatedPayPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-    val nino = user.nino
+    val nino                      = user.nino
 
     val employerFuture = IncomeSource.create(journeyCacheRepository, request.userAnswers)
 
     val result = for {
-      incomeSource <- OptionT(employerFuture.map(_.toOption))
-      income       <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
-      cache <- {
+      incomeSource  <- OptionT(employerFuture.map(_.toOption))
+      income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
+      cache         <- {
         val cacheMap = request.userAnswers.data.fields.collect {
           case (key, JsString(value)) => key -> value
           case (key, JsNumber(value)) => key -> value.toString
@@ -102,13 +102,13 @@ class IncomeUpdateEstimatedPayController @Inject() (
       calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
       payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
     } yield {
-      val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+      val payYearToDate: BigDecimal      = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
       val paymentDate: Option[LocalDate] = payment.map(_.date)
 
       calculatedPay.grossAnnualPay match {
         case newAmount if isCachedAmountSameAsEnteredAmount(cache, newAmount, empId) =>
           Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(empId)))
-        case Some(newAmount) if newAmount > payYearToDate =>
+        case Some(newAmount) if newAmount > payYearToDate                            =>
           val cacheMap = Map(
             UpdateIncomeGrossAnnualPayPage.toString -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
             UpdateIncomeNewAmountPage.toString      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
@@ -129,7 +129,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
             )
             Ok(estimatedPay(viewModel))
           }
-        case _ =>
+        case _                                                                       =>
           Future.successful(
             Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id, empId))
           )

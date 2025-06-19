@@ -36,9 +36,9 @@ object EstimatedIncomeTaxService {
   ): TaxViewType =
     hasCurrentIncome match {
       case false => NoIncomeTaxView
-      case true =>
+      case true  =>
         isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome) match {
-          case true => ComplexTaxView
+          case true  => ComplexTaxView
           case false =>
             (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
               case true  => ZeroTaxView
@@ -53,11 +53,11 @@ object EstimatedIncomeTaxService {
     nonTaxCodeIncome: NonTaxCodeIncome
   ): Boolean = {
 
-    val reductionsExist = hasReductions(totalTax)
-    val additionalTaxDue = hasAdditionalTax(codingComponents, totalTax)
-    val dividendsExist = hasDividends(totalTax.incomeCategories)
+    val reductionsExist      = hasReductions(totalTax)
+    val additionalTaxDue     = hasAdditionalTax(codingComponents, totalTax)
+    val dividendsExist       = hasDividends(totalTax.incomeCategories)
     val nonCodedIncomeExists = hasNonCodedIncome(nonTaxCodeIncome.otherNonTaxCodeIncomes)
-    val savingsExist = hasSavings(totalTax)
+    val savingsExist         = hasSavings(totalTax)
 
     reductionsExist ||
     additionalTaxDue ||
@@ -68,16 +68,16 @@ object EstimatedIncomeTaxService {
 
   def hasReductions(totalTax: TotalTax): Boolean = {
 
-    val nonCodedIncome = totalTax.taxOnOtherIncome
-    val ukDividend = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends)
-    val bankInterest = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest)
-    val marriageAllowance = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
-    val maintenancePayment = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
-    val enterpriseInvestmentScheme =
+    val nonCodedIncome                = totalTax.taxOnOtherIncome
+    val ukDividend                    = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends)
+    val bankInterest                  = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest)
+    val marriageAllowance             = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
+    val maintenancePayment            = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
+    val enterpriseInvestmentScheme    =
       taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief)
-    val concessionRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief)
-    val doubleTaxationRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief)
-    val giftAidPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
+    val concessionRelief              = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief)
+    val doubleTaxationRelief          = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief)
+    val giftAidPaymentsRelief         = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
     val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
 
     nonCodedIncome.isDefined ||
@@ -95,13 +95,13 @@ object EstimatedIncomeTaxService {
 
   def hasAdditionalTax(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
 
-    val underPayment = underPaymentFromPreviousYear(codingComponent)
-    val inYearAdjust = inYearAdjustment(codingComponent)
-    val debtOutstanding = outstandingDebt(codingComponent)
-    val childBenefit = taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit)
-    val excessGiftAid = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax)
+    val underPayment          = underPaymentFromPreviousYear(codingComponent)
+    val inYearAdjust          = inYearAdjustment(codingComponent)
+    val debtOutstanding       = outstandingDebt(codingComponent)
+    val childBenefit          = taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit)
+    val excessGiftAid         = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax)
     val excessWidowAndOrphans = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans)
-    val pensionPayments = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
+    val pensionPayments       = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
 
     underPayment.isDefined ||
     inYearAdjust.isDefined ||
@@ -121,7 +121,7 @@ object EstimatedIncomeTaxService {
       .flatMap(_.taxBands)
       .filter(_.income > 0)
 
-  def hasSavings(totalTax: TotalTax): Boolean =
+  def hasSavings(totalTax: TotalTax): Boolean                                        =
     savingsBands(totalTax).nonEmpty
   def hasNonCodedIncome(otherNonTaxCodeIncomes: Seq[OtherNonTaxCodeIncome]): Boolean =
     otherNonTaxCodeIncomes.exists(_.incomeComponentType == NonCodedIncome)
@@ -157,8 +157,8 @@ object EstimatedIncomeTaxService {
 
   def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
     val mergedPsaBands = mergeAllowanceTaxBands(taxBands, BandTypesConstants.PersonalSavingsRate)
-    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, BandTypesConstants.StarterSavingsRate)
-    val bands = mergeAllowanceTaxBands(mergedSrBands, BandTypesConstants.TaxFreeAllowanceBand)
+    val mergedSrBands  = mergeAllowanceTaxBands(mergedPsaBands, BandTypesConstants.StarterSavingsRate)
+    val bands          = mergeAllowanceTaxBands(mergedSrBands, BandTypesConstants.TaxFreeAllowanceBand)
     bands.filter(_.income > 0).sortBy(_.rate)
   }
 
@@ -166,7 +166,7 @@ object EstimatedIncomeTaxService {
     val (bands, remBands) = taxBands.partition(_.bandType == bandType)
     bands match {
       case Nil => remBands
-      case _ =>
+      case _   =>
         TaxBand(
           bands.map(_.bandType).head,
           bands.map(_.code).head,

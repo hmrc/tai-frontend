@@ -26,7 +26,7 @@ class TaxCodeChangeReasons @Inject() () {
 
   def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): List[String] = {
 
-    val taxCodePairs = TaxCodePairs(taxCodeChange)
+    val taxCodePairs      = TaxCodePairs(taxCodeChange)
     val employmentReasons = primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++
       secondaryEmploymentsChanged(taxCodePairs.unMatchedPreviousCodes, taxCodePairs.unMatchedCurrentCodes)
 
@@ -41,10 +41,10 @@ class TaxCodeChangeReasons @Inject() () {
     val previous = unMatchedPreviousCodes.flatMap(_.previous).map(record => record.employerName)
 
     val currentTaxCodeRecords: List[TaxCodeRecord] = unMatchedCurrentCodes.flatMap(_.current)
-    val current = currentTaxCodeRecords.map(record => record.employerName)
+    val current                                    = currentTaxCodeRecords.map(record => record.employerName)
 
     val uniquePrevious = previous.distinct.sorted
-    val uniqueCurrent = current.distinct.sorted
+    val uniqueCurrent  = current.distinct.sorted
 
     val currentAndPreviousEmployerNamesAreSame: Boolean =
       (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
@@ -58,22 +58,22 @@ class TaxCodeChangeReasons @Inject() () {
 
   private def primaryEmploymentsChanged(primaryPairs: List[TaxCodePair])(implicit messages: Messages): List[String] =
     primaryPairs flatMap { primaryPair: TaxCodePair =>
-      val current = primaryPair.current.map(_.employerName)
+      val current  = primaryPair.current.map(_.employerName)
       val previous = primaryPair.previous.map(_.employerName)
 
       (current, previous) match {
-        case (Some(current), Some(previous)) if current != previous =>
+        case (Some(current), Some(previous)) if current != previous                    =>
           removeEmployerMessage(List(previous)) ++ addSingleEmployerMessage(primaryPair.current)
         case (Some(_), Some(_)) if isDifferentPayRollWithSameEmployerName(primaryPair) =>
           genericMessage
-        case _ => List.empty[String]
+        case _                                                                         => List.empty[String]
       }
     }
 
   private def isDifferentPayRollWithSameEmployerName(primaryPair: TaxCodePair): Boolean = {
 
     val isEmployerNameSame = {
-      val currentName = primaryPair.current.map(_.employerName)
+      val currentName  = primaryPair.current.map(_.employerName)
       val previousName = primaryPair.previous.map(_.employerName)
 
       currentName == previousName
@@ -81,7 +81,7 @@ class TaxCodeChangeReasons @Inject() () {
 
     val isPayRollSame = {
       val previousPayRoll = primaryPair.previous.flatMap(_.payrollNumber)
-      val currentPayRoll = primaryPair.current.flatMap(_.payrollNumber)
+      val currentPayRoll  = primaryPair.current.flatMap(_.payrollNumber)
 
       previousPayRoll == currentPayRoll
     }
@@ -138,7 +138,7 @@ class TaxCodeChangeReasons @Inject() () {
       }
 
     (taxCodeChange.currentEmploymentCount > 0, taxCodeChange.currentPensionCount > 0) match {
-      case (true, true) =>
+      case (true, true)  =>
         messages(
           "tai.taxCodeComparison.incomeSources.count",
           taxCodeChange.currentEmploymentCount + taxCodeChange.currentPensionCount

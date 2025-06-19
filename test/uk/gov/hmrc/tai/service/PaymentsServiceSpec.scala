@@ -29,8 +29,8 @@ class PaymentsServiceSpec extends PlaySpec {
 
   val testDate = LocalDate.parse("2019-08-08")
 
-  val taxableIncome = 1234
-  val taxAmount = 4567
+  val taxableIncome           = 1234
+  val taxAmount               = 4567
   val nationalInsuranceAmount = 789
 
   def createEmployment(payments: Seq[Payment]): Employment = {
@@ -57,7 +57,7 @@ class PaymentsServiceSpec extends PlaySpec {
     "convert empty annualAccounts to an empty PaymentDetailsViewModel" in {
 
       val emptyAnnualAccounts = Seq.empty[AnnualAccount]
-      val employment = Employment(
+      val employment          = Employment(
         "test employment",
         Live,
         Some("EMPLOYER1"),

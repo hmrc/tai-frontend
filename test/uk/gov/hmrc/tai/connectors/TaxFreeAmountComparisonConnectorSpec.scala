@@ -57,7 +57,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
                 "inputAmount"   -> 1
               )
             ),
-            "current" -> Json.arr(
+            "current"  -> Json.arr(
               Json.obj(
                 "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
                 "employmentId"  -> 1,

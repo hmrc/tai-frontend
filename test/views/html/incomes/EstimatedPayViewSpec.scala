@@ -29,14 +29,14 @@ import java.time.LocalDate
 class EstimatedPayViewSpec extends TaiViewSpec {
 
   private val estimatedPay = inject[EstimatedPayView]
-  override def view: Html = estimatedPay(createViewModel())
+  override def view: Html  = estimatedPay(createViewModel())
 
   val employer = IncomeSource(id = 1, name = "Employer")
 
   def createViewModel(employmentStartDate: Option[LocalDate] = None) = {
 
     val grossAnnualPay = Some(BigDecimal(20000))
-    val netAnnualPay = Some(BigDecimal(20000))
+    val netAnnualPay   = Some(BigDecimal(20000))
     EstimatedPayViewModel(grossAnnualPay, netAnnualPay, false, Some(20000), employmentStartDate, employer)
   }
 

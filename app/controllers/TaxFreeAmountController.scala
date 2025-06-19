@@ -42,7 +42,8 @@ class TaxFreeAmountController @Inject() (
   taxFreeAmount: TaxFreeAmountView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Logging {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   def taxFreeAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
@@ -53,7 +54,7 @@ class TaxFreeAmountController @Inject() (
       companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
       totalTax           <- taxAccountService.totalTax(nino, TaxYear())
     } yield {
-      val viewModel = TaxFreeAmountViewModel(
+      val viewModel                 = TaxFreeAmountViewModel(
         codingComponents,
         TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax),
         applicationConfig
@@ -64,7 +65,7 @@ class TaxFreeAmountController @Inject() (
       case e: NotFoundException =>
         logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")
         Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      case NonFatal(e) => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))
+      case NonFatal(e)          => errorPagesHandler.internalServerError(s"Could not get tax free amount", Some(e))
     }
   }
 }

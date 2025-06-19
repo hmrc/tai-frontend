@@ -30,20 +30,20 @@ import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 class PotentialUnderpaymentViewSpec extends TaiViewSpec {
 
   val tas: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-  val ccs = Seq(
+  val ccs                    = Seq(
     CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
     CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
   )
 
-  val tasNoUnderpay: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 0, 44.44, 0)
-  val tasCYOnly: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
+  val tasNoUnderpay: TaxAccountSummary     = TaxAccountSummary(11.11, 22.22, 0, 44.44, 0)
+  val tasCYOnly: TaxAccountSummary         = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
   val tasCYAndCyPlusOne: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-  val tasCyPlusOneOnly: TaxAccountSummary = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
-  val referalPath = "http://somelocation/tax-free-allowance"
-  val resourceName = "tax-free-allowance"
+  val tasCyPlusOneOnly: TaxAccountSummary  = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
+  val referalPath                          = "http://somelocation/tax-free-allowance"
+  val resourceName                         = "tax-free-allowance"
 
-  val viewModel: PotentialUnderpaymentViewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
-  private val potentialUnderpayment = inject[PotentialUnderpaymentView]
+  val viewModel: PotentialUnderpaymentViewModel                                 = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
+  private val potentialUnderpayment                                             = inject[PotentialUnderpaymentView]
   def document(viewModel: PotentialUnderpaymentViewModel = viewModel): Document =
     Jsoup.parseBodyFragment(potentialUnderpayment(viewModel).toString)
 
@@ -83,7 +83,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     "cater for a CY IYA, when only a CY amount is present and " should {
 
       def cyOnlyViewModel = PotentialUnderpaymentViewModel(tasCYOnly, ccs, "", "")
-      def cyOnlyDoc = document(cyOnlyViewModel)
+      def cyOnlyDoc       = document(cyOnlyViewModel)
 
       "display amount owing" in {
         cyOnlyDoc must haveH2HeadingWithText(withPoundPrefix(MoneyPounds(cyOnlyViewModel.iyaCYAmount, 2)))
@@ -104,7 +104,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     "cater for a CY IYA, when both CY and CY+1 are present and " should {
 
       def cyAndCYPlusOneViewModel = PotentialUnderpaymentViewModel(tasCYAndCyPlusOne, ccs, "", "")
-      def cyAndCYPlusOneDoc = document(cyAndCYPlusOneViewModel)
+      def cyAndCYPlusOneDoc       = document(cyAndCYPlusOneViewModel)
 
       "display amount owing" in {
         cyAndCYPlusOneDoc must haveH2HeadingWithText(
@@ -128,7 +128,7 @@ class PotentialUnderpaymentViewSpec extends TaiViewSpec {
     "cater for a CY+1 IYA, when only a CY+1 amount is present and " should {
 
       def cyPlusOneOnlyViewModel = PotentialUnderpaymentViewModel(tasCyPlusOneOnly, ccs, "", "")
-      def cyPlusOneOnlyDoc = document(cyPlusOneOnlyViewModel)
+      def cyPlusOneOnlyDoc       = document(cyPlusOneOnlyViewModel)
 
       "display amount owing" in {
         cyPlusOneOnlyDoc must haveParagraphWithText(

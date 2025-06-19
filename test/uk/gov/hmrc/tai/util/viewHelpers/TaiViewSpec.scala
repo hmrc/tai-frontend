@@ -215,10 +215,10 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
     noLabelText: String = Messages("tai.label.no")
   ): Unit =
     "have a yes/no radio button" in {
-      doc must haveInputLabelWithText(idYes, yesLabelText)
-      doc must haveInputLabelWithText(idNo, noLabelText)
+      doc                       must haveInputLabelWithText(idYes, yesLabelText)
+      doc                       must haveInputLabelWithText(idNo, noLabelText)
       doc.getElementById(idYes) must not be null
-      doc.getElementById(idNo) must not be null
+      doc.getElementById(idNo)  must not be null
 
     }
 

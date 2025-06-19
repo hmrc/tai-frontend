@@ -21,12 +21,12 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class ErrorTemplateNoAuthSpec extends TaiViewSpec {
 
-  val pageTitle = "Unauthorised Title"
+  val pageTitle   = "Unauthorised Title"
   val pageHeading = "You are unauthorised"
   val pageMessage = "You are not signed in so you cannot use this service"
 
   val additionalMessage = "Please sign in"
-  val link = """<a id="sign-in-link" href="fake-path/fake-endpoint">Sign in</a>"""
+  val link              = """<a id="sign-in-link" href="fake-path/fake-endpoint">Sign in</a>"""
 
   lazy val error_template_noauth: ErrorTemplateNoauth = inject[ErrorTemplateNoauth]
 

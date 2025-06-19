@@ -173,7 +173,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), employmentCY, Seq(taxCodeIncomesCYPlusOne))
 
-        val incomeSourceComparisonDetailCY = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
+        val incomeSourceComparisonDetailCY        = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(0)
         val incomeSourceComparisonDetailCYPlusOne = incomeSourceComparisonViewModel.employmentIncomeSourceDetail(1)
 
         incomeSourceComparisonDetailCY.name mustBe "employment1"
@@ -257,7 +257,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         val incomeSourceComparisonViewModel =
           IncomeSourceComparisonViewModel(Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
 
-        val incomeSourceComparisonDetailCY = incomeSourceComparisonViewModel.pensionIncomeSourceDetail(0)
+        val incomeSourceComparisonDetailCY        = incomeSourceComparisonViewModel.pensionIncomeSourceDetail(0)
         val incomeSourceComparisonDetailCYPlusOne = incomeSourceComparisonViewModel.pensionIncomeSourceDetail(1)
 
         incomeSourceComparisonDetailCY.name mustBe employmentCY.name

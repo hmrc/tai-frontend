@@ -21,9 +21,9 @@ import play.api.data.validation.{Invalid, Valid, ValidationError}
 
 class BaseValidatorSpec extends PlaySpec {
 
-  val taxablePayYTD = BigDecimal("10000")
+  val taxablePayYTD              = BigDecimal("10000")
   val validateTaxablePayYTDError = "testErrorMessage"
-  val invalidResult = Invalid(List(ValidationError(List(validateTaxablePayYTDError), "validateInputAmount")))
+  val invalidResult              = Invalid(List(ValidationError(List(validateTaxablePayYTDError), "validateInputAmount")))
 
   "validateInputAmount" should {
     "return Valid " when {

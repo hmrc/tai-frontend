@@ -122,11 +122,11 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
       HtmlFormatter.htmlNonBroken(TaxYear().end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
     )
 
-  val taxBand: TaxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-  val incomeCatergories: IncomeCategory = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
-  val employmentNames = Map.empty[Int, String]
-  val companyCarBenefits = Seq.empty[CompanyCarBenefit]
+  val taxBand: TaxBand                           = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCatergories: IncomeCategory          = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax: TotalTax                         = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val employmentNames                            = Map.empty[Int, String]
+  val companyCarBenefits                         = Seq.empty[CompanyCarBenefit]
   val taxFreeAmountDetails: TaxFreeAmountDetails = TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax)
 
   "apply method" must {
@@ -146,7 +146,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
           )
-          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
+          val sut           = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
           sut.annualTaxFreeAmount mustBe "£10,000"
         }
@@ -158,7 +158,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
           )
-          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
+          val sut           = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
           sut.annualTaxFreeAmount mustBe "£11,000"
         }
@@ -171,7 +171,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
           )
-          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
+          val sut           = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
           sut.annualTaxFreeAmount mustBe "£13,000"
         }
@@ -185,7 +185,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             CodingComponent(ForeignDividendIncome, Some(12), 1000, "Income"),
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction")
           )
-          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
+          val sut           = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
           sut.annualTaxFreeAmount mustBe s"${uk.gov.hmrc.tai.util.constants.TaiConstants.EncodedMinusSign}£1,200"
         }
@@ -223,7 +223,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
             )
           )
 
-          val sut = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
+          val sut          = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
           val additionRows = sut.taxFreeAmountSummary.summaryItems(1).rows
           additionRows mustBe result
         }
@@ -588,7 +588,7 @@ class TaxFreeAmountViewModelSpec extends BaseSpec {
   "TaxFreeAmountViewModel with empty components" must {
     "create a view model with empty personal allowance, additions, deductions, and totals" in {
       val taxComponents = Seq.empty[CodingComponent]
-      val viewModel = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
+      val viewModel     = TaxFreeAmountViewModel(taxComponents, taxFreeAmountDetails, appConfig)
 
       viewModel.header mustBe expectedHeader
       viewModel.title mustBe expectedTitle

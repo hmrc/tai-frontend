@@ -32,7 +32,7 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
 
   "TaxFreeAmountSummaryRowViewModel apply method" must {
     "build a label generated specifically to the coding component" in {
-      val personalAllowance = TaxFreeAmountSummaryRowViewModel(
+      val personalAllowance     = TaxFreeAmountSummaryRowViewModel(
         CodingComponent(PersonalAllowancePA, Some(123), 111, "PersonalAllowancePA"),
         taxFreeAmountDetails,
         appConfig
@@ -325,13 +325,13 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
 
   val employmentNames = Map(1 -> "Employer1", 2 -> "Employer2", 3 -> "Employer3")
 
-  val companyCarBenefit10 =
+  val companyCarBenefit10  =
     CompanyCarBenefit(10, 1000, List(CompanyCar(10, "Make Model1", true, None, None, None)), Some(1))
-  val companyCarBenefit12 =
+  val companyCarBenefit12  =
     CompanyCarBenefit(12, 1000, List(CompanyCar(10, "Make Model2", true, None, None, None)), Some(1))
-  val companyCarBenefits = Seq(companyCarBenefit10, companyCarBenefit12)
-  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
-  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val companyCarBenefits   = Seq(companyCarBenefit10, companyCarBenefit12)
+  val taxBand              = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCatergories    = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax: TotalTax   = TotalTax(1000, Seq(incomeCatergories), None, None, None)
   val taxFreeAmountDetails = TaxFreeAmountDetails(employmentNames, companyCarBenefits, totalTax)
 }

@@ -45,13 +45,13 @@ class ErrorHandlerSpec extends BaseSpec {
           .toString()
       )
     doc.getElementsByTag("h1").toString must include(messages("tai.technical.error.heading"))
-    doc.getElementsByTag("p").toString must include(messages("tai.technical.error.message"))
+    doc.getElementsByTag("p").toString  must include(messages("tai.technical.error.message"))
   }
 
   "badRequestTemplate" in {
     def doc: Document = Jsoup.parse(errorHandler.badRequestTemplate(request).toString())
-    doc.getElementsByTag("h1").toString must include(messages("tai.errorMessage.heading"))
-    doc.getElementsByTag("p").toString must include(messages("tai.errorMessage.frontend400.message1"))
+    doc.getElementsByTag("h1").toString       must include(messages("tai.errorMessage.heading"))
+    doc.getElementsByTag("p").toString        must include(messages("tai.errorMessage.frontend400.message1"))
     doc.getElementsByTag("p").get(1).toString must include(
       messages(
         "tai.errorMessage.frontend400.message2",
@@ -64,7 +64,7 @@ class ErrorHandlerSpec extends BaseSpec {
 
   "notFoundTemplate" in {
     def doc: Document = Jsoup.parse(errorHandler.notFoundTemplate(request).toString())
-    doc.getElementsByTag("h1").toString must include(messages("tai.errorMessage.pageNotFound.heading"))
+    doc.getElementsByTag("h1").toString       must include(messages("tai.errorMessage.pageNotFound.heading"))
     doc.getElementsByTag("p").get(0).toString must include(messages("tai.errorMessage.pageNotFound.ifYouTyped"))
     doc.getElementsByTag("p").get(1).toString must include(messages("tai.errorMessage.pageNotFound.ifYouPasted"))
     doc.getElementsByTag("p").get(2).toString must include(
@@ -81,7 +81,7 @@ class ErrorHandlerSpec extends BaseSpec {
     def doc: Document = Jsoup.parse(errorHandler.internalServerErrorTemplate(request).toString())
 
     doc.getElementsByTag("h1").toString must include(messages("global.error.InternalServerError500.tai.title"))
-    doc.getElementsByTag("p").toString must include(
+    doc.getElementsByTag("p").toString  must include(
       messages(
         "global.error.InternalServerError500.tai.message.you.can"
       ) + " <a class=\"govuk-link\" href=\"https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees\">" + messages(

@@ -29,7 +29,7 @@ object TaxYearRangeUtil {
 
   private def toDate(date: LocalDate): java.util.Date = java.sql.Date.valueOf(date)
 
-  private val messageRangeKeyBetween = "tai.taxYear.between"
+  private val messageRangeKeyBetween   = "tai.taxYear.between"
   private val messageRangeKeyFromAndTo = "tai.taxYear"
 
   def dynamicDateRange(from: LocalDate, to: LocalDate)(implicit messages: Messages): String =
@@ -54,16 +54,16 @@ object TaxYearRangeUtil {
 
   def currentTaxYearRangeYearOnly(implicit messages: Messages): String = {
     val start = TaxYear().start.format(DateTimeFormatter.ofPattern("yyyy"))
-    val end = TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy"))
+    val end   = TaxYear().end.format(DateTimeFormatter.ofPattern("yyyy"))
 
     messages("tai.taxYear", start, end)
   }
 
   private def createDateFormatForPattern(pattern: String)(implicit messages: Messages): SimpleDateFormat = {
-    val uLocale = new ULocale(messages.lang.code)
+    val uLocale            = new ULocale(messages.lang.code)
     val validLang: Boolean = ULocale.getAvailableLocales.contains(uLocale)
-    val locale: ULocale = if (validLang) uLocale else ULocale.getDefault
-    val sdf = new SimpleDateFormat(pattern, locale)
+    val locale: ULocale    = if (validLang) uLocale else ULocale.getDefault
+    val sdf                = new SimpleDateFormat(pattern, locale)
     sdf.setTimeZone(TimeZone.getTimeZone(LondonEuropeTimezone))
     sdf
   }

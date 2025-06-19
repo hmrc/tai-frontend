@@ -50,7 +50,8 @@ class MainTemplateImpl @Inject() (
   wrapperService: WrapperService,
   scripts: AdditionalJavascript,
   headBlock: HeadBlock
-) extends MainTemplate with Logging {
+) extends MainTemplate
+    with Logging {
   override def apply(
     title: String,
     authedUser: Option[controllers.auth.AuthedUser] = None,
@@ -65,7 +66,7 @@ class MainTemplateImpl @Inject() (
     formForErrorSummary: Option[Form[_]] = None
   )(content: Html)(implicit requestHeader: RequestHeader, messages: Messages): HtmlFormat.Appendable = {
 
-    val prefix =
+    val prefix        =
       if (formForErrorSummary.exists(_.errors.nonEmpty)) {
         s"${Messages("tai.page.title.error")} "
       } else {

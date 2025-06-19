@@ -28,7 +28,7 @@ class EstimatedPayViewModelSpec extends PlaySpec {
 
     "return true if the gross annual pay equals the net annual pay" in {
       val grossAnnualPay = 20000
-      val netAnnualPay = 20000
+      val netAnnualPay   = 20000
 
       val viewModel =
         EstimatedPayViewModel(Some(grossAnnualPay), Some(netAnnualPay), false, Some(20000), None, employer)
@@ -38,9 +38,9 @@ class EstimatedPayViewModelSpec extends PlaySpec {
 
     "return true if the gross pay is apportioned" in {
 
-      val grossAnnualPay = 20000
-      val netAnnualPay = 18000
-      val annualSalary = 25000
+      val grossAnnualPay      = 20000
+      val netAnnualPay        = 18000
+      val annualSalary        = 25000
       val employmentStartDate = TaxYear().start.plusMonths(2)
 
       val viewModel = EstimatedPayViewModel(

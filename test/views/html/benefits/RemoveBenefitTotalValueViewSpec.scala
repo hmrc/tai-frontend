@@ -47,7 +47,7 @@ class RemoveBenefitTotalValueViewSpec extends TaiViewSpec {
       doc must haveBulletPointWithText(Messages("tai.remove.company.benefit.total.value.enter"))
     }
     "contain list with static text" in {
-      doc(view).select("#totalValueAsk").get(0).text must include(
+      doc(view).select("#totalValueAsk").get(0).text   must include(
         Messages("tai.remove.company.benefit.total.value.ask")
       )
       doc(view).select("#totalValueEnter").get(0).text must include(

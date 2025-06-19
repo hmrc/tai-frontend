@@ -38,16 +38,16 @@ class AuditService @Inject() (
   implicit val executionContext: ExecutionContext
 ) {
 
-  val userEnterEvent = "userEntersService"
-  val employmentPensionEvent = "startedEmploymentPensionJourney"
-  val companyBenefitsEvent = "startedCompanyBenefitJourney"
-  val companyCarEvent = "startedCompanyCarJourney"
+  val userEnterEvent          = "userEntersService"
+  val employmentPensionEvent  = "startedEmploymentPensionJourney"
+  val companyBenefitsEvent    = "startedCompanyBenefitJourney"
+  val companyCarEvent         = "startedCompanyCarJourney"
   val finishedCompanyCarEvent = "finishedCompanyCarJourney"
-  val medicalBenefitsEvent = "startedMedBenJourney"
-  val otherIncomeEvent = "startedOtherIncomeJourney"
-  val investIncomeEvent = "startedInvestmentIncomeJourney"
-  val stateBenefitEvent = "startedStateBenefitJourney"
-  val marriageAllowanceEvent = "startedMarriageAllowanceJourney"
+  val medicalBenefitsEvent    = "startedMedBenJourney"
+  val otherIncomeEvent        = "startedOtherIncomeJourney"
+  val investIncomeEvent       = "startedInvestmentIncomeJourney"
+  val stateBenefitEvent       = "startedStateBenefitJourney"
+  val marriageAllowanceEvent  = "startedMarriageAllowanceJourney"
 
   def createAndSendAuditEvent(eventName: String, details: Map[String, String])(implicit
     hc: HeaderCarrier,

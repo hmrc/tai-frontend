@@ -23,9 +23,9 @@ import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, Irregul
 
 class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
 
-  val currentAmount = 1234
-  val estimatedAmount = 1000
-  val employmentId = 1
+  val currentAmount                = 1234
+  val estimatedAmount              = 1000
+  val employmentId                 = 1
   private val confirmAmountEntered = inject[ConfirmAmountEnteredView]
 
   val vm: ConfirmAmountEnteredViewModel =
@@ -37,7 +37,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
       IrregularPay,
       "backUrl"
     )
-  override lazy val view: Html = confirmAmountEntered(vm)
+  override lazy val view: Html          = confirmAmountEntered(vm)
 
   "Confirm income Irregular Hours view" should {
     behave like haveBackLinkWithUrl("backUrl")
@@ -49,7 +49,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
 
     "display the users current estimated income" in {
       val mainText = messages("tai.incomes.confirm.save.message")
-      val amount = MonetaryUtil.withPoundPrefix(estimatedAmount)
+      val amount   = MonetaryUtil.withPoundPrefix(estimatedAmount)
       doc(view) must haveParagraphWithText(s"$mainText $amount")
     }
 
@@ -74,7 +74,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income Annual Amount view" should {
 
     "display the correct confirm and send button" in {
-      val vm =
+      val vm                  =
         ConfirmAmountEnteredViewModel(employerName, Some(currentAmount), estimatedAmount, "backUrl", employmentId)
       val annualPayView: Html = confirmAmountEntered(vm)
 
@@ -89,7 +89,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
   "Confirm income CY+1 view" should {
 
     "display the correct confirm and send button" in {
-      val vm = ConfirmAmountEnteredViewModel(
+      val vm                   = ConfirmAmountEnteredViewModel(
         employmentId,
         employerName,
         Some(currentAmount),

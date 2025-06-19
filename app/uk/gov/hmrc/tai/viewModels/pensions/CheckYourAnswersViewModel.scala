@@ -44,7 +44,7 @@ object CheckYourAnswersViewModel {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
-      val mandatoryLines = Seq(
+      val mandatoryLines      = Seq(
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q1"),
           pensionProviderName,

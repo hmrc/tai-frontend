@@ -118,40 +118,40 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
     "heading and text for non savings income section displays" should {
       "be 'Tax on your employment income' when income is only from employment" in {
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+        val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val viewModel = DetailedIncomeTaxEstimateViewModel(
+        val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel                         = DetailedIncomeTaxEstimateViewModel(
           totalTax,
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
           nonTaxCodeIncome
         )
-        val document = doc(view(viewModel))
-        val message = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
+        val document                          = doc(view(viewModel))
+        val message                           = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
         document must haveParagraphWithText(message)
       }
 
       "be 'Tax on your private pension income' when income is only from pension" in {
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+        val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val viewModel = DetailedIncomeTaxEstimateViewModel(
+        val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel                         = DetailedIncomeTaxEstimateViewModel(
           totalTax,
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
           nonTaxCodeIncome
         )
-        val document = doc(view(viewModel))
-        val message = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
+        val document                          = doc(view(viewModel))
+        val message                           = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
         document must haveParagraphWithText(message)
@@ -159,62 +159,62 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
 
       "be 'Tax on your PAYE income' when income is only from any other combination" when {
         "Employment and pension income" in {
-          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
           val taxCodeIncome: Seq[TaxCodeIncome] = List(
             TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live),
             TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live)
           )
-          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val viewModel = DetailedIncomeTaxEstimateViewModel(
+          val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel                         = DetailedIncomeTaxEstimateViewModel(
             totalTax,
             taxCodeIncome,
             taxAccountSummary,
             Seq.empty[CodingComponent],
             nonTaxCodeIncome
           )
-          val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
+          val document                          = doc(view(viewModel))
+          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
         }
 
         "JSA income" in {
-          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
           val taxCodeIncome: Seq[TaxCodeIncome] =
             List(TaxCodeIncome(JobSeekerAllowanceIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val viewModel = DetailedIncomeTaxEstimateViewModel(
+          val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel                         = DetailedIncomeTaxEstimateViewModel(
             totalTax,
             taxCodeIncome,
             taxAccountSummary,
             Seq.empty[CodingComponent],
             nonTaxCodeIncome
           )
-          val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
+          val document                          = doc(view(viewModel))
+          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
         }
 
         "Other income" in {
-          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
           val taxCodeIncome: Seq[TaxCodeIncome] =
             List(TaxCodeIncome(OtherIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          val viewModel = DetailedIncomeTaxEstimateViewModel(
+          val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel                         = DetailedIncomeTaxEstimateViewModel(
             totalTax,
             taxCodeIncome,
             taxAccountSummary,
             Seq.empty[CodingComponent],
             nonTaxCodeIncome
           )
-          val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
+          val document                          = doc(view(viewModel))
+          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -230,12 +230,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           TaxBand("D0", "", 36466, 36466, None, None, 40)
         )
 
-        val incomeCategories = Seq(
+        val incomeCategories                  = Seq(
           IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
         )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax                          = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary                 = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
 
@@ -268,12 +268,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           TaxBand("D3", "", 36466, 36466, None, None, 40)
         )
 
-        val incomeCategories = Seq(
+        val incomeCategories                  = Seq(
           IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
         )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax                          = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary                 = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
@@ -307,12 +307,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           TaxBand("HSR1", "", 36466, 36466, None, None, 40)
         )
 
-        val incomeCategories = Seq(
+        val incomeCategories                  = Seq(
           IncomeCategory(UntaxedInterestIncomeCategory, 42868, 42868, 68476, taxBands)
         )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax                          = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary                 = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
 
@@ -342,12 +342,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           TaxBand("HSR1", "", 36466, 36466, None, None, 40)
         )
 
-        val incomeCategories = Seq(
+        val incomeCategories                  = Seq(
           IncomeCategory(UntaxedInterestIncomeCategory, 42868, 42868, 68476, taxBands)
         )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax                          = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary                 = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
@@ -377,12 +377,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           TaxBand("HDR1", "", 36466, 36466, None, None, 40)
         )
 
-        val incomeCategories = Seq(
+        val incomeCategories                  = Seq(
           IncomeCategory(UkDividendsIncomeCategory, 42868, 42868, 68476, taxBands)
         )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax                          = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary                 = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOfOperation, Live))
 
@@ -413,12 +413,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           TaxBand("HDR1", "", 36466, 36466, None, None, 40)
         )
 
-        val incomeCategories = Seq(
+        val incomeCategories                  = Seq(
           IncomeCategory(UkDividendsIncomeCategory, 42868, 42868, 68476, taxBands)
         )
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
-        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
+        val nonTaxCodeIncome                  = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax                          = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary                 = TaxAccountSummary(42868, 11500, 0, 0, 0, 68476, 11500)
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOfOperation, Live))
 
@@ -469,15 +469,15 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     "have tax on your savings income section" when {
 
       val incomeFromSavingsId = "income-from-savings"
-      val higherRateParaId = "higher-rate-para"
+      val higherRateParaId    = "higher-rate-para"
 
       "savings income does NOT include HSR1 or HSR2 bands" in {
-        val taxBandSR =
+        val taxBandSR    =
           TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val taxBandPSR =
+        val taxBandPSR   =
           TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
         val savingsBands = Seq(taxBandSR, taxBandPSR)
-        val model = defaultViewModel.copy(savings = savingsBands)
+        val model        = defaultViewModel.copy(savings = savingsBands)
 
         def view: HtmlFormat.Appendable = detailedIncomeTaxEstimate(model)
 
@@ -492,11 +492,11 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       }
 
       "savings income does include HSR1 or HSR2 bands" in {
-        val taxBandPSR =
+        val taxBandPSR   =
           TaxBand(bandType = "PSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val taxBandSR =
+        val taxBandSR    =
           TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val taxBandHSR1 = TaxBand(
+        val taxBandHSR1  = TaxBand(
           bandType = "HSR1",
           code = "",
           income = 500,
@@ -506,7 +506,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           rate = 0
         )
         val savingsBands = Seq(taxBandSR, taxBandPSR, taxBandHSR1)
-        val model = defaultViewModel.copy(savings = savingsBands)
+        val model        = defaultViewModel.copy(savings = savingsBands)
 
         def view: Html = detailedIncomeTaxEstimate(model)
 
@@ -558,7 +558,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessWidowsAndOrphans.title")), 100),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")), 200)
     )
-    val model = createViewModel(additionalRows, Seq.empty[ReductionTaxRow])
+    val model          = createViewModel(additionalRows, Seq.empty[ReductionTaxRow])
 
     def additionalDetailView: Html = detailedIncomeTaxEstimate(model)
 

@@ -42,9 +42,9 @@ case class DateForm(validations: Seq[(LocalDate => Boolean, String)], blankDateM
 }
 
 object DateForm {
-  val DateFormDay = "DateForm_day"
+  val DateFormDay   = "DateForm_day"
   val DateFormMonth = "DateForm_month"
-  val DateFormYear = "DateForm_year"
+  val DateFormYear  = "DateForm_year"
 
   def errorMsgs(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
     enterDate = Messages("tai.date.error.enterDate"),

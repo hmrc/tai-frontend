@@ -41,9 +41,9 @@ import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   private val fandfDelegationUrl = s"/delegation/get"
-  val url = "/check-income-tax/what-do-you-want-to-do"
-  private val personUrl = s"/citizen-details/$generatedNino/designatory-details"
-  private val startTaxYear = TaxYear().start.getYear
+  val url                        = "/check-income-tax/what-do-you-want-to-do"
+  private val personUrl          = s"/citizen-details/$generatedNino/designatory-details"
+  private val startTaxYear       = TaxYear().start.getYear
 
   private val mockWebChatClient = mock[WebChatClient]
 
@@ -275,7 +275,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     }
     "see the tax code change banner with the latest tax code change date" when {
 
-      val startYear = 2023
+      val startYear     = 2023
       val numberOfYears = Random.between(2, 10)
 
       def taxCodeRecord(year: Int) = TaxCodeRecord(
@@ -291,7 +291,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
       lazy val taxCodeChange: TaxCodeChange = {
         val previousYears = (startYear - numberOfYears until startYear).map(taxCodeRecord).toList
-        val currentYears = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
+        val currentYears  = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
         TaxCodeChange(previousYears, currentYears)
       }
 
@@ -344,7 +344,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
         val result = route(app, request).get
         status(result) mustBe OK
-        contentAsString(result) must include("We changed your tax code on")
+        contentAsString(result)                        must include("We changed your tax code on")
         contentAsString(result).replace("\u00A0", " ") must include(formatDate(taxCodeRecord(startYear).startDate))
       }
     }

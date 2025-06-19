@@ -73,7 +73,7 @@ class RemoveCompanyBenefitStopDateViewSpec extends TaiViewSpec {
   }
 
   private lazy val benefitType = "Expenses"
-  private lazy val empName = "EmployerA"
+  private lazy val empName     = "EmployerA"
 
   private lazy val formWithErrors: Form[LocalDate] = RemoveCompanyBenefitStopDateForm(benefitType, empName).form.bind(
     Map(
