@@ -80,9 +80,7 @@ lazy val microservice = Project(appName, file("."))
       "-Wconf:msg=unused&src=.*ReverseRoutes\\.scala:s",
       "-Wconf:msg=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
       "-Wconf:msg=\\.*value readRaw in object HttpReads is deprecated\\.*:s",
-      "-Wconf:msg=\\.*method handleResponse in trait HttpErrorFunctions is deprecated\\.*:s",
       "-Wconf:msg=\\.*match may not be exhaustive.\\.*:s",
-      "-Wconf:msg=a type was inferred to be `Object`; this may indicate a programming error\\.:s",
       "-Wconf:msg=Flag.*repeatedly:s"
     )
   )
