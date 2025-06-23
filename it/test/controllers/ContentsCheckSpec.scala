@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package controllers
 
 import cats.data.EitherT
+import cats.instances.future.*
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
@@ -64,10 +65,10 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Random
 
 class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers {
-  private val fandfDelegationUrl = s"/delegation/get"
-  private val mockFeatureFlagService = mock[FeatureFlagService]
+  private val fandfDelegationUrl         = s"/delegation/get"
+  private val mockFeatureFlagService     = mock[FeatureFlagService]
   private val mockJourneyCacheRepository = mock[JourneyCacheRepository]
-  private val startTaxYear = TaxYear().start.getYear
+  private val startTaxYear               = TaxYear().start.getYear
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
@@ -80,50 +81,50 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
   def getExpectedData(key: String): ExpectedData =
     key match {
-      case "what-to-do" =>
+      case "what-to-do"               =>
         ExpectedData(
           "PAYE Income Tax overview - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "no-info" =>
+      case "no-info"                  =>
         ExpectedData(
           "Your PAYE Income Tax - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "historic-paye-year" =>
+      case "historic-paye-year"       =>
         ExpectedData(
           s"Your taxable income for 6 April ${startTaxYear - 1} to 5 April $startTaxYear - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "income-tax-history" =>
+      case "income-tax-history"       =>
         ExpectedData("Income tax history - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "timeout" => ExpectedData("Log In - Check your Income Tax - GOV.UK", navBarExpected = false)
+      case "timeout"                  => ExpectedData("Log In - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "tax-estimate-unavailable" =>
         ExpectedData("We cannot access your details - Check your Income Tax - GOV.UK", navBarExpected = false, LOCKED)
 
-      case "session-expired" =>
+      case "session-expired"                                                  =>
         ExpectedData("For your security, we signed you out - Check your Income Tax - GOV.UK", navBarExpected = false)
-      case "add-employment-name" =>
+      case "add-employment-name"                                              =>
         ExpectedData(
           "What is the name of the employer you want to add? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-employment-start-date" =>
+      case "add-employment-start-date"                                        =>
         ExpectedData(
           "When did you start working for this employer? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-employment-first-pay" =>
+      case "add-employment-first-pay"                                         =>
         ExpectedData(
           "Have you received your first pay from H M Revenue and Customs? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-employment-six-weeks" =>
+      case "add-employment-six-weeks"                                         =>
         ExpectedData(
           "We cannot add this employer yet - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-employment-payroll-number" =>
+      case "add-employment-payroll-number"                                    =>
         ExpectedData(
           "Do you know your payroll number for this employer? - Check your Income Tax - GOV.UK",
           navBarExpected = true
@@ -138,111 +139,111 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       case "add-employment-cya" | "add-pension-cya" | "end-employment-cya" | "update-employment-cya" |
           "update-income-cya" | "update-income-details-cya" | "remove-cya" | "incorrect-pension-cya" =>
         ExpectedData("Check your answers - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "add-employment-success" =>
+      case "add-employment-success"                                           =>
         ExpectedData(
           "Your update about an employment has been received - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-pension-name" =>
+      case "add-pension-name"                                                 =>
         ExpectedData(
           "What is the name of the pension provider you want to add? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-pension-first-payment" =>
+      case "add-pension-first-payment"                                        =>
         ExpectedData(
           "Have you received your first pension payment from this employer? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-pension-number" =>
+      case "add-pension-number"                                               =>
         ExpectedData(
           "Do you know your pension number from your this employer? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "add-pension-success" =>
+      case "add-pension-success"                                              =>
         ExpectedData(
           "Your update about a pension has been received - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "remove-employment-warning" =>
+      case "remove-employment-warning"                                        =>
         ExpectedData(
           "You have already sent an update about this employment - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "end-employment-decision" =>
+      case "end-employment-decision"                                          =>
         ExpectedData("Do you currently work for company name? - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "end-employment-six-weeks" =>
+      case "end-employment-six-weeks"                                         =>
         ExpectedData("We cannot update your details yet - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "end-employment-irregular-payment" =>
+      case "end-employment-irregular-payment"                                 =>
         ExpectedData("End employment - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "end-employment-date" =>
+      case "end-employment-date"                                              =>
         ExpectedData(
           "When did you finish working for this employer? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-employment-tell-us" =>
+      case "update-employment-tell-us"                                        =>
         ExpectedData(
           "What do you want to tell us about this employer? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-employment-success" =>
+      case "update-employment-success"                                        =>
         ExpectedData(
           "Your update about an employment has been received - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "previous-underpayment" =>
+      case "previous-underpayment"                                            =>
         ExpectedData("What is a previous year underpayment? - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "underpayment-estimate" =>
+      case "underpayment-estimate"                                            =>
         ExpectedData("Estimated tax you owe - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "tax-free-allowance" =>
+      case "tax-free-allowance"                                               =>
         ExpectedData(
           s"Your tax-free amount for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "tax-code" =>
+      case "tax-code"                                                         =>
         ExpectedData(
           s"Your tax code for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "year-tax-codes" =>
+      case "year-tax-codes"                                                   =>
         ExpectedData(
           s"Your last tax code for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "paye-income-tax-estimate" =>
+      case "paye-income-tax-estimate"                                         =>
         ExpectedData(
           "Your PAYE Income Tax estimate - Check your Income Tax - GOV.UK",
           navBarExpected = true,
           headerTitle = "Your PAYE Income Tax estimate"
         )
-      case "detailed-income-tax-estimate" =>
+      case "detailed-income-tax-estimate"                                     =>
         ExpectedData("Your detailed PAYE Income Tax estimate - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "income-tax-comparison" =>
+      case "income-tax-comparison"                                            =>
         ExpectedData(
           "Income Tax comparison: current tax year and next tax year - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "your-income-calculation-details" =>
+      case "your-income-calculation-details"                                  =>
         ExpectedData("Taxable income from company name - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "update-income-warning" =>
+      case "update-income-warning"                                            =>
         ExpectedData(
           "You have already sent a new estimated income - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-start" =>
+      case "update-income-start"                                              =>
         ExpectedData("Update your estimated income - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "update-income-estimated-pay" =>
+      case "update-income-estimated-pay"                                      =>
         ExpectedData("There is an error with your calculation - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "how-to-update-income" =>
+      case "how-to-update-income"                                             =>
         ExpectedData(
           "How do you want to update your estimated income - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-working-hours" =>
+      case "update-income-working-hours"                                      =>
         ExpectedData(
           "What are your working hours through the year? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "edit-income-irregular-hours" =>
+      case "edit-income-irregular-hours"                                      =>
         ExpectedData(
           "We cannot calculate your annual income as you have irregular working hours - Check your Income Tax - GOV.UK",
           navBarExpected = true
@@ -252,157 +253,157 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           s"Confirm your estimated income for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "edit-income-irregular-hours-submit" =>
+      case "edit-income-irregular-hours-submit"                               =>
         ExpectedData(
           "Your taxable income has been updated - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-pay-period" =>
+      case "update-income-pay-period"                                         =>
         ExpectedData(
           "How often do you get paid? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-payslip-amount" =>
+      case "update-income-payslip-amount"                                     =>
         ExpectedData("Enter your gross pay for the month - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "update-income-payslip-deductions" =>
+      case "update-income-payslip-deductions"                                 =>
         ExpectedData(
           "Does your payslip show deductions before tax and National Insurance? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-taxable-payslip-amount" =>
+      case "update-income-taxable-payslip-amount"                             =>
         ExpectedData("Enter your taxable pay for the month - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "update-income-bonus-payments" =>
+      case "update-income-bonus-payments"                                     =>
         ExpectedData(
           s"Will you get any bonus, commission or overtime between 6 April $startTaxYear and 5 April ${startTaxYear + 1}? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-bonus-overtime-amount" =>
+      case "update-income-bonus-overtime-amount"                              =>
         ExpectedData(
           s"How much do you think you will get in bonus, commission or overtime between 6 April $startTaxYear and 5 April ${startTaxYear + 1}? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-edit-taxable-pay" | "update-income-edit-pension" =>
+      case "update-income-edit-taxable-pay" | "update-income-edit-pension"    =>
         ExpectedData(
           s"Update your estimated income for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-same-estimated-pay" =>
+      case "update-income-same-estimated-pay"                                 =>
         ExpectedData(
           s"Your estimated income for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-success-page" =>
+      case "update-income-success-page"                                       =>
         ExpectedData("Your taxable income has been updated - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "get-help" =>
+      case "get-help"                                                         =>
         ExpectedData("Cannot pay the tax you owe this year - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "update-income-details-decision" =>
+      case "update-income-details-decision"                                   =>
         ExpectedData(
           s"Update income details for 6 April ${startTaxYear - 1} to 5 April $startTaxYear - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-what-to-tell" =>
+      case "update-income-what-to-tell"                                       =>
         ExpectedData(
           "What do you want to tell us about your income details? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-income-details-success" =>
+      case "update-income-details-success"                                    =>
         ExpectedData("Your update has been received - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "income" =>
+      case "income"                                                           =>
         ExpectedData(
           s"Your tax-free amount for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "income-tax-refresh" =>
+      case "income-tax-refresh"                                               =>
         ExpectedData(
           s"Your PAYE Income Tax summary for 6 April $startTaxYear to 5 April ${startTaxYear + 1} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "remove-stop-date" =>
+      case "remove-stop-date"                                                 =>
         ExpectedData(
           "When did you stop getting benefitName benefit from employmentName? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "remove-total-value-of-benefit" =>
+      case "remove-total-value-of-benefit"                                    =>
         ExpectedData(
           "What was the total value of your benefitName benefit from employmentName? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "remove-success" =>
+      case "remove-success"                                                   =>
         ExpectedData(
           "Your update has been received - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "company-benefit-decision" =>
+      case "company-benefit-decision"                                         =>
         ExpectedData(
           "Do you currently get Telephone benefit from company name? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "incorrect-pension-decision" =>
+      case "incorrect-pension-decision"                                       =>
         ExpectedData(
           "Confirm your pension provider - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "incorrect-pension-what-to-tell" =>
+      case "incorrect-pension-what-to-tell"                                   =>
         ExpectedData(
           "What do you want to tell us about your pension provider? - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "incorrect-pension-success" =>
+      case "incorrect-pension-success"                                        =>
         ExpectedData(
           "Your update about a pension has been received - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "incorrect-pension-warning" =>
+      case "incorrect-pension-warning"                                        =>
         ExpectedData(
           "You have already sent an update about this pension - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "tax-code-comparison" =>
+      case "tax-code-comparison"                                              =>
         ExpectedData(
           "Your tax code change - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "your-tax-free-amount" =>
+      case "your-tax-free-amount"                                             =>
         ExpectedData(
           "How we worked out your tax code - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "what-happens-next" =>
+      case "what-happens-next"                                                =>
         ExpectedData(
           "What happens next - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "unauthorised" =>
+      case "unauthorised"                                                     =>
         ExpectedData(
           "You have been signed out for your security - Check your Income Tax - GOV.UK",
           navBarExpected = false
         )
-      case "update-next-income-warning" =>
+      case "update-next-income-warning"                                       =>
         ExpectedData(
           "You have already sent a new estimated income - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-next-income-start" =>
+      case "update-next-income-start"                                         =>
         ExpectedData(
           "Update your estimated income from <span class=\"carry-over\">company name</span> for next tax year - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-next-income-edit" =>
+      case "update-next-income-edit"                                          =>
         ExpectedData(
           s"Update your estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-next-income-no-change" =>
+      case "update-next-income-no-change"                                     =>
         ExpectedData(
           s"Your estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-next-income-confirm" =>
+      case "update-next-income-confirm"                                       =>
         ExpectedData(
           s"Confirm your estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "update-next-income-success" =>
+      case "update-next-income-success"                                       =>
         ExpectedData(
           s"Your updated estimated income for 6 April ${startTaxYear + 1} to 5 April ${startTaxYear + 2} - Check your Income Tax - GOV.UK",
           navBarExpected = true
@@ -410,114 +411,114 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     }
 
   val urls: Map[String, ExpectedData] = Map(
-    "/check-income-tax/what-do-you-want-to-do"                   -> getExpectedData("what-to-do"),
-    "/check-income-tax/income-tax/no-info"                       -> getExpectedData("no-info"),
-    s"/check-income-tax/historic-paye/${startTaxYear - 1}"       -> getExpectedData("historic-paye-year"),
-    "/check-income-tax/income-tax-history"                       -> getExpectedData("income-tax-history"),
-    "/check-income-tax/timeout"                                  -> getExpectedData("timeout"),
-    "/check-income-tax/tax-estimate-unavailable"                 -> getExpectedData("tax-estimate-unavailable"),
-    "/check-income-tax/session-expired"                          -> getExpectedData("session-expired"),
-    "/check-income-tax/add-employment/employment-name"           -> getExpectedData("add-employment-name"),
-    "/check-income-tax/add-employment/employment-start-date"     -> getExpectedData("add-employment-start-date"),
-    "/check-income-tax/add-employment/employment-first-pay"      -> getExpectedData("add-employment-first-pay"),
-    "/check-income-tax/add-employment/six-weeks"                 -> getExpectedData("add-employment-six-weeks"),
-    "/check-income-tax/add-employment/employment-payroll-number" -> getExpectedData("add-employment-payroll-number"),
-    "/check-income-tax/add-employment/telephone-number"          -> getExpectedData("add-employment-telephone-number"),
-    "/check-income-tax/add-employment/check-your-answers"        -> getExpectedData("add-employment-cya"),
-    "/check-income-tax/add-employment/employment-success"        -> getExpectedData("add-employment-success"),
-    "/check-income-tax/add-pension-provider/name"                -> getExpectedData("add-pension-name"),
-    "/check-income-tax/add-pension-provider/received-first-payment" -> getExpectedData("add-pension-first-payment"),
-    "/check-income-tax/add-pension-provider/pension-number"         -> getExpectedData("add-pension-number"),
-    "/check-income-tax/add-pension-provider/telephone-number"       -> getExpectedData("add-pension-telephone-number"),
-    "/check-income-tax/add-pension-provider/check-your-answers"     -> getExpectedData("add-pension-cya"),
-    "/check-income-tax/add-pension-provider/success"                -> getExpectedData("add-pension-success"),
-    "/check-income-tax/update-remove-employment/warning"            -> getExpectedData("remove-employment-warning"),
-    "/check-income-tax/update-remove-employment/decision-page"      -> getExpectedData("end-employment-decision"),
-    "/check-income-tax/end-employment/six-weeks"                    -> getExpectedData("end-employment-six-weeks"),
-    "/check-income-tax/end-employment/irregular-payment"  -> getExpectedData("end-employment-irregular-payment"),
-    "/check-income-tax/end-employment/telephone-number"   -> getExpectedData("end-employment-telephone-number"),
-    "/check-income-tax/end-employment/date"               -> getExpectedData("end-employment-date"),
-    "/check-income-tax/end-employment/check-your-answers" -> getExpectedData("end-employment-cya"),
-    "/check-income-tax/update-employment/what-do-you-want-to-tell-us/1" -> getExpectedData("update-employment-tell-us"),
-    "/check-income-tax/update-employment/telephone-number"   -> getExpectedData("update-employment-telephone-number"),
-    "/check-income-tax/update-employment/check-your-answers" -> getExpectedData("update-employment-cya"),
-    "/check-income-tax/update-employment/success"            -> getExpectedData("update-employment-success"),
-    "/check-income-tax/previous-underpayment"                -> getExpectedData("previous-underpayment"),
-    "/check-income-tax/underpayment-estimate"                -> getExpectedData("underpayment-estimate"),
-    "/check-income-tax/tax-free-allowance"                   -> getExpectedData("tax-free-allowance"),
-    "/check-income-tax/tax-code/1"                           -> getExpectedData("tax-code"),
-    s"/check-income-tax/tax-codes/$startTaxYear"             -> getExpectedData("year-tax-codes"),
-    "/check-income-tax/paye-income-tax-estimate"             -> getExpectedData("paye-income-tax-estimate"),
-    "/check-income-tax/detailed-income-tax-estimate"         -> getExpectedData("detailed-income-tax-estimate"),
-    "/check-income-tax/income-tax-comparison"                -> getExpectedData("income-tax-comparison"),
-    "/check-income-tax/your-income-calculation-details/1"    -> getExpectedData("your-income-calculation-details"),
-    "/check-income-tax/update-income/warning/1"              -> getExpectedData("update-income-warning"),
-    "/check-income-tax/update-income/check-your-answers/1"   -> getExpectedData("update-income-cya"),
-    "/check-income-tax/update-income/start/1"                -> getExpectedData("update-income-start"),
-    "/check-income-tax/update-income/estimated-pay/1"        -> getExpectedData("update-income-estimated-pay"),
-    "/check-income-tax/update-income/how-to-update-income/1" -> getExpectedData("how-to-update-income"),
-    "/check-income-tax/update-income/working-hours"          -> getExpectedData("update-income-working-hours"),
-    "/check-income-tax/update-income/edit-income-irregular-hours/1" -> getExpectedData("edit-income-irregular-hours"),
-    "/check-income-tax/update-income/edit-income-irregular-hours/1/confirm" -> getExpectedData(
+    "/check-income-tax/what-do-you-want-to-do"                                 -> getExpectedData("what-to-do"),
+    "/check-income-tax/income-tax/no-info"                                     -> getExpectedData("no-info"),
+    s"/check-income-tax/historic-paye/${startTaxYear - 1}"                     -> getExpectedData("historic-paye-year"),
+    "/check-income-tax/income-tax-history"                                     -> getExpectedData("income-tax-history"),
+    "/check-income-tax/timeout"                                                -> getExpectedData("timeout"),
+    "/check-income-tax/tax-estimate-unavailable"                               -> getExpectedData("tax-estimate-unavailable"),
+    "/check-income-tax/session-expired"                                        -> getExpectedData("session-expired"),
+    "/check-income-tax/add-employment/employment-name"                         -> getExpectedData("add-employment-name"),
+    "/check-income-tax/add-employment/employment-start-date"                   -> getExpectedData("add-employment-start-date"),
+    "/check-income-tax/add-employment/employment-first-pay"                    -> getExpectedData("add-employment-first-pay"),
+    "/check-income-tax/add-employment/six-weeks"                               -> getExpectedData("add-employment-six-weeks"),
+    "/check-income-tax/add-employment/employment-payroll-number"               -> getExpectedData("add-employment-payroll-number"),
+    "/check-income-tax/add-employment/telephone-number"                        -> getExpectedData("add-employment-telephone-number"),
+    "/check-income-tax/add-employment/check-your-answers"                      -> getExpectedData("add-employment-cya"),
+    "/check-income-tax/add-employment/employment-success"                      -> getExpectedData("add-employment-success"),
+    "/check-income-tax/add-pension-provider/name"                              -> getExpectedData("add-pension-name"),
+    "/check-income-tax/add-pension-provider/received-first-payment"            -> getExpectedData("add-pension-first-payment"),
+    "/check-income-tax/add-pension-provider/pension-number"                    -> getExpectedData("add-pension-number"),
+    "/check-income-tax/add-pension-provider/telephone-number"                  -> getExpectedData("add-pension-telephone-number"),
+    "/check-income-tax/add-pension-provider/check-your-answers"                -> getExpectedData("add-pension-cya"),
+    "/check-income-tax/add-pension-provider/success"                           -> getExpectedData("add-pension-success"),
+    "/check-income-tax/update-remove-employment/warning"                       -> getExpectedData("remove-employment-warning"),
+    "/check-income-tax/update-remove-employment/decision-page"                 -> getExpectedData("end-employment-decision"),
+    "/check-income-tax/end-employment/six-weeks"                               -> getExpectedData("end-employment-six-weeks"),
+    "/check-income-tax/end-employment/irregular-payment"                       -> getExpectedData("end-employment-irregular-payment"),
+    "/check-income-tax/end-employment/telephone-number"                        -> getExpectedData("end-employment-telephone-number"),
+    "/check-income-tax/end-employment/date"                                    -> getExpectedData("end-employment-date"),
+    "/check-income-tax/end-employment/check-your-answers"                      -> getExpectedData("end-employment-cya"),
+    "/check-income-tax/update-employment/what-do-you-want-to-tell-us/1"        -> getExpectedData("update-employment-tell-us"),
+    "/check-income-tax/update-employment/telephone-number"                     -> getExpectedData("update-employment-telephone-number"),
+    "/check-income-tax/update-employment/check-your-answers"                   -> getExpectedData("update-employment-cya"),
+    "/check-income-tax/update-employment/success"                              -> getExpectedData("update-employment-success"),
+    "/check-income-tax/previous-underpayment"                                  -> getExpectedData("previous-underpayment"),
+    "/check-income-tax/underpayment-estimate"                                  -> getExpectedData("underpayment-estimate"),
+    "/check-income-tax/tax-free-allowance"                                     -> getExpectedData("tax-free-allowance"),
+    "/check-income-tax/tax-code/1"                                             -> getExpectedData("tax-code"),
+    s"/check-income-tax/tax-codes/$startTaxYear"                               -> getExpectedData("year-tax-codes"),
+    "/check-income-tax/paye-income-tax-estimate"                               -> getExpectedData("paye-income-tax-estimate"),
+    "/check-income-tax/detailed-income-tax-estimate"                           -> getExpectedData("detailed-income-tax-estimate"),
+    "/check-income-tax/income-tax-comparison"                                  -> getExpectedData("income-tax-comparison"),
+    "/check-income-tax/your-income-calculation-details/1"                      -> getExpectedData("your-income-calculation-details"),
+    "/check-income-tax/update-income/warning/1"                                -> getExpectedData("update-income-warning"),
+    "/check-income-tax/update-income/check-your-answers/1"                     -> getExpectedData("update-income-cya"),
+    "/check-income-tax/update-income/start/1"                                  -> getExpectedData("update-income-start"),
+    "/check-income-tax/update-income/estimated-pay/1"                          -> getExpectedData("update-income-estimated-pay"),
+    "/check-income-tax/update-income/how-to-update-income/1"                   -> getExpectedData("how-to-update-income"),
+    "/check-income-tax/update-income/working-hours"                            -> getExpectedData("update-income-working-hours"),
+    "/check-income-tax/update-income/edit-income-irregular-hours/1"            -> getExpectedData("edit-income-irregular-hours"),
+    "/check-income-tax/update-income/edit-income-irregular-hours/1/confirm"    -> getExpectedData(
       "edit-income-irregular-hours-confirm"
     ),
-    "/check-income-tax/update-income/edit-income-irregular-hours/1/submit" -> getExpectedData(
+    "/check-income-tax/update-income/edit-income-irregular-hours/1/submit"     -> getExpectedData(
       "edit-income-irregular-hours-submit"
     ),
-    "/check-income-tax/update-income/pay-period"             -> getExpectedData("update-income-pay-period"),
-    "/check-income-tax/update-income/payslip-amount"         -> getExpectedData("update-income-payslip-amount"),
-    "/check-income-tax/update-income/payslip-deductions"     -> getExpectedData("update-income-payslip-deductions"),
-    "/check-income-tax/update-income/taxable-payslip-amount" -> getExpectedData("update-income-taxable-payslip-amount"),
-    "/check-income-tax/update-income/bonus-payments"         -> getExpectedData("update-income-bonus-payments"),
-    "/check-income-tax/update-income/bonus-overtime-amount"  -> getExpectedData("update-income-bonus-overtime-amount"),
-    "/check-income-tax/update-income/edit-taxable-pay/1"     -> getExpectedData("update-income-edit-taxable-pay"),
-    "/check-income-tax/update-income/edit-pension/1"         -> getExpectedData("update-income-edit-pension"),
-    "/check-income-tax/update-income/income/1/check-save"    -> getExpectedData("update-income-check-save"),
-    "/check-income-tax/update-income/income/same-estimated-pay/1" -> getExpectedData(
+    "/check-income-tax/update-income/pay-period"                               -> getExpectedData("update-income-pay-period"),
+    "/check-income-tax/update-income/payslip-amount"                           -> getExpectedData("update-income-payslip-amount"),
+    "/check-income-tax/update-income/payslip-deductions"                       -> getExpectedData("update-income-payslip-deductions"),
+    "/check-income-tax/update-income/taxable-payslip-amount"                   -> getExpectedData("update-income-taxable-payslip-amount"),
+    "/check-income-tax/update-income/bonus-payments"                           -> getExpectedData("update-income-bonus-payments"),
+    "/check-income-tax/update-income/bonus-overtime-amount"                    -> getExpectedData("update-income-bonus-overtime-amount"),
+    "/check-income-tax/update-income/edit-taxable-pay/1"                       -> getExpectedData("update-income-edit-taxable-pay"),
+    "/check-income-tax/update-income/edit-pension/1"                           -> getExpectedData("update-income-edit-pension"),
+    "/check-income-tax/update-income/income/1/check-save"                      -> getExpectedData("update-income-check-save"),
+    "/check-income-tax/update-income/income/same-estimated-pay/1"              -> getExpectedData(
       "update-income-same-estimated-pay"
     ),
-    "/check-income-tax/update-income/success-page/1" -> getExpectedData("update-income-success-page"),
-    "/check-income-tax/get-help"                     -> getExpectedData("get-help"),
+    "/check-income-tax/update-income/success-page/1"                           -> getExpectedData("update-income-success-page"),
+    "/check-income-tax/get-help"                                               -> getExpectedData("get-help"),
     s"/check-income-tax/update-income-details/decision/${TaxYear().prev.year}" -> getExpectedData(
       "update-income-details-decision"
     ),
-    "/check-income-tax/update-income-details/what-do-you-want-to-tell-us" -> getExpectedData(
+    "/check-income-tax/update-income-details/what-do-you-want-to-tell-us"      -> getExpectedData(
       "update-income-what-to-tell"
     ),
-    "/check-income-tax/update-income-details/telephone-number" -> getExpectedData(
+    "/check-income-tax/update-income-details/telephone-number"                 -> getExpectedData(
       "update-income-details-number"
     ),
-    "/check-income-tax/update-income-details/success" -> getExpectedData(
+    "/check-income-tax/update-income-details/success"                          -> getExpectedData(
       "update-income-details-success"
     ),
-    "/check-income-tax/income"                           -> getExpectedData("income"),
-    "/check-income-tax/income-tax-refresh"               -> getExpectedData("income-tax-refresh"),
-    "/check-income-tax/remove-company-benefit/stop-date" -> getExpectedData("remove-stop-date"),
-    "/check-income-tax/remove-company-benefit/total-value-of-benefit" -> getExpectedData(
+    "/check-income-tax/income"                                                 -> getExpectedData("income"),
+    "/check-income-tax/income-tax-refresh"                                     -> getExpectedData("income-tax-refresh"),
+    "/check-income-tax/remove-company-benefit/stop-date"                       -> getExpectedData("remove-stop-date"),
+    "/check-income-tax/remove-company-benefit/total-value-of-benefit"          -> getExpectedData(
       "remove-total-value-of-benefit"
     ),
-    "/check-income-tax/remove-company-benefit/telephone-number"   -> getExpectedData("remove-telephone-number"),
-    "/check-income-tax/remove-company-benefit/check-your-answers" -> getExpectedData("remove-cya"),
-    "/check-income-tax/remove-company-benefit/success"            -> getExpectedData("remove-success"),
-    "/check-income-tax/company-benefit/decision"                  -> getExpectedData("company-benefit-decision"),
-    "/check-income-tax/incorrect-pension/decision"                -> getExpectedData("incorrect-pension-decision"),
-    "/check-income-tax/incorrect-pension/what-do-you-want-to-tell-us" -> getExpectedData(
+    "/check-income-tax/remove-company-benefit/telephone-number"                -> getExpectedData("remove-telephone-number"),
+    "/check-income-tax/remove-company-benefit/check-your-answers"              -> getExpectedData("remove-cya"),
+    "/check-income-tax/remove-company-benefit/success"                         -> getExpectedData("remove-success"),
+    "/check-income-tax/company-benefit/decision"                               -> getExpectedData("company-benefit-decision"),
+    "/check-income-tax/incorrect-pension/decision"                             -> getExpectedData("incorrect-pension-decision"),
+    "/check-income-tax/incorrect-pension/what-do-you-want-to-tell-us"          -> getExpectedData(
       "incorrect-pension-what-to-tell"
     ),
-    "/check-income-tax/incorrect-pension/telephone-number"   -> getExpectedData("incorrect-pension-telephone-number"),
-    "/check-income-tax/incorrect-pension/check-your-answers" -> getExpectedData("incorrect-pension-cya"),
-    "/check-income-tax/incorrect-pension/success"            -> getExpectedData("incorrect-pension-success"),
-    "/check-income-tax/incorrect-pension/warning"            -> getExpectedData("incorrect-pension-warning"),
-    "/check-income-tax/tax-code-change/tax-code-comparison"  -> getExpectedData("tax-code-comparison"),
-    "/check-income-tax/tax-code-change/your-tax-free-amount" -> getExpectedData("your-tax-free-amount"),
-    "/check-income-tax/tax-code-change/what-happens-next"    -> getExpectedData("what-happens-next"),
-    "/check-income-tax/unauthorised"                         -> getExpectedData("unauthorised"),
-    "/check-income-tax/update-income/next-year/income/1/warning"   -> getExpectedData("update-next-income-warning"),
-    "/check-income-tax/update-income/next-year/income/1/start"     -> getExpectedData("update-next-income-start"),
-    "/check-income-tax/update-income/next-year/income/1/edit"      -> getExpectedData("update-next-income-edit"),
-    "/check-income-tax/update-income/next-year/income/1/no-change" -> getExpectedData("update-next-income-no-change"),
-    "/check-income-tax/update-income/next-year/income/1/confirm"   -> getExpectedData("update-next-income-confirm"),
-    "/check-income-tax/update-income/next-year/income/1/success"   -> getExpectedData("update-next-income-success")
+    "/check-income-tax/incorrect-pension/telephone-number"                     -> getExpectedData("incorrect-pension-telephone-number"),
+    "/check-income-tax/incorrect-pension/check-your-answers"                   -> getExpectedData("incorrect-pension-cya"),
+    "/check-income-tax/incorrect-pension/success"                              -> getExpectedData("incorrect-pension-success"),
+    "/check-income-tax/incorrect-pension/warning"                              -> getExpectedData("incorrect-pension-warning"),
+    "/check-income-tax/tax-code-change/tax-code-comparison"                    -> getExpectedData("tax-code-comparison"),
+    "/check-income-tax/tax-code-change/your-tax-free-amount"                   -> getExpectedData("your-tax-free-amount"),
+    "/check-income-tax/tax-code-change/what-happens-next"                      -> getExpectedData("what-happens-next"),
+    "/check-income-tax/unauthorised"                                           -> getExpectedData("unauthorised"),
+    "/check-income-tax/update-income/next-year/income/1/warning"               -> getExpectedData("update-next-income-warning"),
+    "/check-income-tax/update-income/next-year/income/1/start"                 -> getExpectedData("update-next-income-start"),
+    "/check-income-tax/update-income/next-year/income/1/edit"                  -> getExpectedData("update-next-income-edit"),
+    "/check-income-tax/update-income/next-year/income/1/no-change"             -> getExpectedData("update-next-income-no-change"),
+    "/check-income-tax/update-income/next-year/income/1/confirm"               -> getExpectedData("update-next-income-confirm"),
+    "/check-income-tax/update-income/next-year/income/1/success"               -> getExpectedData("update-next-income-success")
   )
 
   // TODO SHOULD I RUN THESE WITH TOGGLE ON OR OFF????
@@ -578,26 +579,26 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       |}
       |""".stripMargin
 
-  val person: Person = Person(
+  val person: Person              = Person(
     generatedNino,
     "Firstname",
     "Surname",
     isDeceased = false,
     Address("", "", "", "", "")
   )
-  val employments: JsObject = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
+  val employments: JsObject       = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
   val taxAccountSummary: JsObject = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
 
-  val taxBand: TaxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val taxBand: TaxBand                 = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCategories: IncomeCategory = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCategories), None, None, None)
+  val totalTax: TotalTax               = TotalTax(1000, Seq(incomeCategories), None, None, None)
 
   val taxCodeRecordJson =
     """[{"taxCodeId":2,"taxCode":"1100L","basisOfOperation":"Week 1 Month 1","startDate":"2023-09-14","endDate":"2024-04-05","employerName":"Asda","payrollNumber":"NPSQAR-62","pensionIndicator":false,"primary":true}]"""
 
   val incomeJson: JsValue = Json.obj(
-    "data" -> Json.obj(
-      "taxCodeIncomes" -> JsArray(),
+    "data"  -> Json.obj(
+      "taxCodeIncomes"    -> JsArray(),
       "nonTaxCodeIncomes" -> Json.obj(
         "otherNonTaxCodeIncomes" -> Json.arr(
           Json.obj(
@@ -630,7 +631,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           }
         }"""
 
-  val startYear = 2023
+  val startYear          = 2023
   val numberOfYears: Int = Random.between(2, 10)
 
   def taxCodeRecord(year: Int): TaxCodeRecord = TaxCodeRecord(
@@ -646,7 +647,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
   lazy val taxCodeChange: TaxCodeChange = {
     val previousYears = (startYear - numberOfYears until startYear).map(taxCodeRecord).toList
-    val currentYears = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
+    val currentYears  = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
     TaxCodeChange(previousYears, currentYears)
   }
 
@@ -662,7 +663,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           "inputAmount"   -> 1
         )
       ),
-      "current" -> Json.arr(
+      "current"  -> Json.arr(
         Json.obj(
           "componentType" -> Json.toJson[TaxComponentType](CarBenefit),
           "employmentId"  -> 1,
@@ -1160,7 +1161,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
 
         val result: Future[Result] = route(app, request(url)).get
-        val content = Jsoup.parse(contentAsString(result))
+        val content                = Jsoup.parse(contentAsString(result))
 
         if (expectedData.httpStatus != SEE_OTHER) {
           redirectLocation(result) mustBe None

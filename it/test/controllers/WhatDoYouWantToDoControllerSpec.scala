@@ -41,9 +41,9 @@ import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   private val fandfDelegationUrl = s"/delegation/get"
-  val url = "/check-income-tax/what-do-you-want-to-do"
-  private val personUrl = s"/citizen-details/$generatedNino/designatory-details"
-  private val startTaxYear = TaxYear().start.getYear
+  val url                        = "/check-income-tax/what-do-you-want-to-do"
+  private val personUrl          = s"/citizen-details/$generatedNino/designatory-details"
+  private val startTaxYear       = TaxYear().start.getYear
 
   private val mockWebChatClient = mock[WebChatClient]
 
@@ -55,8 +55,8 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(Some(Html("webchat-test")))
-    when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("webchat-test")))
+    when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("loadRequiredElements")))
+    when(mockWebChatClient.loadHMRCChatSkinElement(any())(any())).thenReturn(Some(Html("loadHMRCChatSkinElement")))
     server.stubFor(
       get(urlEqualTo(fandfDelegationUrl))
         .willReturn(notFound())
@@ -67,12 +67,12 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     "show the webchat" in {
       lazy val app = new GuiceApplicationBuilder()
         .configure(
-          "auditing.enabled"                           -> "false",
-          "microservice.services.auth.port"            -> server.port(),
-          "microservice.services.tai.port"             -> server.port(),
-          "microservice.services.citizen-details.port" -> server.port(),
-          "microservice.services.pertax.port"          -> server.port(),
-          "microservice.services.fandf.port"           -> server.port(),
+          "auditing.enabled"                                              -> "false",
+          "microservice.services.auth.port"                               -> server.port(),
+          "microservice.services.tai.port"                                -> server.port(),
+          "microservice.services.citizen-details.port"                    -> server.port(),
+          "microservice.services.pertax.port"                             -> server.port(),
+          "microservice.services.fandf.port"                              -> server.port(),
           "sca-wrapper.services.single-customer-account-wrapper-data.url" -> s"http://localhost:${server.port()}"
         )
         .overrides(
@@ -125,7 +125,8 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
 
       val result = route(app, request).get
-      contentAsString(result) must include("webchat-test")
+      contentAsString(result) must include("loadRequiredElements")
+      contentAsString(result) must include("loadHMRCChatSkinElement")
     }
   }
 
@@ -137,8 +138,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         "microservice.services.pertax.port"          -> server.port(),
         "microservice.services.tai.port"             -> server.port(),
         "microservice.services.citizen-details.port" -> server.port(),
-        "microservice.services.fandf.port"           -> server.port(),
-        "feature.web-chat.enabled"                   -> false
+        "microservice.services.fandf.port"           -> server.port()
       )
       .overrides(
         bind[WebChatClient].toInstance(mockWebChatClient)
@@ -213,7 +213,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
     }
     "see the tax code change banner with the latest tax code change date" when {
 
-      val startYear = 2023
+      val startYear     = 2023
       val numberOfYears = Random.between(2, 10)
 
       def taxCodeRecord(year: Int) = TaxCodeRecord(
@@ -229,7 +229,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
       lazy val taxCodeChange: TaxCodeChange = {
         val previousYears = (startYear - numberOfYears until startYear).map(taxCodeRecord).toList
-        val currentYears = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
+        val currentYears  = (startYear - numberOfYears to startYear).map(taxCodeRecord).toList
         TaxCodeChange(previousYears, currentYears)
       }
 
@@ -282,7 +282,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
 
         val result = route(app, request).get
         status(result) mustBe OK
-        contentAsString(result) must include("We changed your tax code on")
+        contentAsString(result)                        must include("We changed your tax code on")
         contentAsString(result).replace("\u00A0", " ") must include(formatDate(taxCodeRecord(startYear).startDate))
       }
     }

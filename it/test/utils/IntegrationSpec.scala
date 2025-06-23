@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,35 @@
 
 package utils
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, ok, post, urlEqualTo, urlMatching}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.Injecting
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.domain.{AtedUtr, Generator, Nino}
 import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.ExecutionContext
 
 trait IntegrationSpec
-    extends PlaySpec with GuiceOneAppPerSuite with WireMockHelper with ScalaFutures with IntegrationPatience
+    extends PlaySpec
+    with GuiceOneAppPerSuite
+    with WireMockHelper
+    with ScalaFutures
+    with IntegrationPatience
     with Injecting {
-  val generatedNino = new Generator().nextNino
+  val generatedNino: Nino = new Generator().nextNino
 
-  val generatedSaUtr = new Generator().nextAtedUtr
+  val generatedSaUtr: AtedUtr = new Generator().nextAtedUtr
 
-  lazy val messagesApi = inject[MessagesApi]
+  lazy val messagesApi: MessagesApi = inject[MessagesApi]
 
   implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
-  val taxYear = TaxYear().year
+  val taxYear: Int = TaxYear().year
 
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
 
@@ -118,10 +123,10 @@ trait IntegrationSpec
         |}
         |""".stripMargin
 
-      server.stubFor(
-        WireMock
-          .get(urlMatching("/single-customer-account-wrapper-data/wrapper-data.*"))
-          .willReturn(ok(wrapperDataResponse))
-      )
+    server.stubFor(
+      WireMock
+        .get(urlMatching("/single-customer-account-wrapper-data/wrapper-data.*"))
+        .willReturn(ok(wrapperDataResponse))
+    )
   }
 }
