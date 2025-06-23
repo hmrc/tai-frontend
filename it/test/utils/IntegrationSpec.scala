@@ -96,7 +96,7 @@ trait IntegrationSpec
         |        {
         |            "id": "home",
         |            "text": "Check your Income Tax",
-        |            "href": "http://localhost:9230/check-income-tax",
+        |            "href": "http://localhost:9230/check-income-tax/what-do-you-want-to-do",
         |            "leftAligned": true,
         |            "position": 0,
         |            "icon": "hmrc-account-icon hmrc-account-icon--home"
@@ -115,7 +115,7 @@ trait IntegrationSpec
         |    ],
         |    "webchatPages": [
         |        {
-        |            "pattern": "^/check-income-tax",
+        |            "pattern": "^/check-income-tax/.*",
         |            "skinElement": "skinElement",
         |            "isEnabled": true
         |        }

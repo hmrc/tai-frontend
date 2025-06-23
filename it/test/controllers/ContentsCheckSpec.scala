@@ -47,7 +47,6 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
-import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
