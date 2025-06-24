@@ -549,32 +549,27 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       |{
       |    "menuItemConfig": [
       |        {
-      |            "id": "home",
-      |            "text": "Check your Income Tax",
-      |            "href": "http://localhost:9230/check-income-tax",
-      |            "leftAligned": true,
-      |            "position": 0,
-      |            "icon": "hmrc-account-icon hmrc-account-icon--home"
-      |        }
+      |            "id": "id",
+      |            "text": "NewLayout Item",
+      |            "href": "link",
+      |            "leftAligned": false,
+      |            "position": 0
+      |        },
+      |        {
+      |            "id": "signout",
+      |            "text": "Sign out",
+      |            "href": "link",
+      |            "leftAligned": false,
+      |            "position": 0
+      |        },
+      |
       |    ],
       |    "ptaMinMenuConfig": {
-      |        "menuName": "Account menu",
+      |        "menuName": "MenuName",
       |        "backName": "Back"
       |    },
-      |    "urBanners": [
-      |        {
-      |           "page": "test-page",
-      |           "link": "test-link",
-      |           "isEnabled": true
-      |        }
-      |    ],
-      |    "webchatPages": [
-      |        {
-      |            "pattern": "^/check-income-tax",
-      |            "skinElement": "skinElement",
-      |            "isEnabled": true
-      |        }
-      |    ]
+      |    "urBanners": [],
+      |    "webchatPages": []
       |}
       |""".stripMargin
 
