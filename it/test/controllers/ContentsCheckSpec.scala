@@ -561,8 +561,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       |            "href": "link",
       |            "leftAligned": false,
       |            "position": 0
-      |        },
-      |
+      |        }
       |    ],
       |    "ptaMinMenuConfig": {
       |        "menuName": "MenuName",
