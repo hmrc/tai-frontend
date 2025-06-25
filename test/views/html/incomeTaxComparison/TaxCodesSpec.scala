@@ -59,7 +59,7 @@ class TaxCodesSpec extends TaiViewSpec {
   }
 
   private lazy val employmentTaxCode = Seq(TaxCodeDetail("EMPLOYER", Seq("1115L", "S975L")))
-  private lazy val pensionTaxCode = Seq(TaxCodeDetail("PENSION", Seq("1150L", "1250L")))
-  private lazy val model = TaxCodeComparisonViewModel(employmentTaxCode, pensionTaxCode)
-  override def view: Html = views.html.incomeTaxComparison.TaxCodes(model, appConfig)
+  private lazy val pensionTaxCode    = Seq(TaxCodeDetail("PENSION", Seq("1150L", "1250L")))
+  private lazy val model             = TaxCodeComparisonViewModel(employmentTaxCode, pensionTaxCode)
+  override def view: Html            = views.html.incomeTaxComparison.TaxCodes(model, appConfig)
 }

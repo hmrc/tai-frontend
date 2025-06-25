@@ -22,6 +22,6 @@ import uk.gov.hmrc.domain.TaxIds
 case class PersonDetails(taxIds: TaxIds, name: String)
 
 object PersonDetails {
-  implicit val taxIdsFormat: Format[TaxIds] = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
+  implicit val taxIdsFormat: Format[TaxIds]   = TaxIds.format(TaxIds.defaultSerialisableIds: _*)
   implicit val formats: Format[PersonDetails] = Json.format[PersonDetails]
 }

@@ -24,9 +24,9 @@ object GenericBenefit {
   implicit val format: Format[GenericBenefit] = new Format[GenericBenefit] {
     override def reads(json: JsValue): JsSuccess[GenericBenefit] = {
       val benefitTypeKey = (json \ "benefitType").as[String]
-      val employmentId = (json \ "employmentId").asOpt[Int]
-      val amount = (json \ "amount").as[BigDecimal]
-      val benefitType = benefitComponentTypeMap
+      val employmentId   = (json \ "employmentId").asOpt[Int]
+      val amount         = (json \ "amount").as[BigDecimal]
+      val benefitType    = benefitComponentTypeMap
         .getOrElse(benefitTypeKey, throw new RuntimeException("Not able to parse benefit components"))
       JsSuccess(GenericBenefit(benefitType, employmentId, amount))
     }

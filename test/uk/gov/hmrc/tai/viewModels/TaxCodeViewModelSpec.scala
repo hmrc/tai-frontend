@@ -27,8 +27,8 @@ import scala.collection.immutable.ListMap
 
 class TaxCodeViewModelSpec extends BaseSpec {
 
-  val taxYear = uk.gov.hmrc.tai.model.TaxYear()
-  val taxYearSuffix =
+  val taxYear                = uk.gov.hmrc.tai.model.TaxYear()
+  val taxYearSuffix          =
     Messages(
       "tai.taxCode.title.pt2",
       taxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
@@ -40,8 +40,8 @@ class TaxCodeViewModelSpec extends BaseSpec {
     taxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
   )
 
-  val prevTaxYear = uk.gov.hmrc.tai.model.TaxYear().prev
-  val prevTaxYearSuffix = Messages(
+  val prevTaxYear                = uk.gov.hmrc.tai.model.TaxYear().prev
+  val prevTaxYearSuffix          = Messages(
     "tai.taxCode.title.pt2",
     prevTaxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")),
     prevTaxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
@@ -87,14 +87,14 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "taxCode has scottish indicator" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "S1150L")
       }
 
       "provide taxCodeExplanation" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems.head mustBe ("S", Messages(
           s"tai.taxCode.S",
           link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
@@ -106,14 +106,14 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "taxCode has untaxed indicator" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "K100", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "K100")
       }
 
       "provide taxCodeExplanation" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "K100", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "K"   -> Messages("tai.taxCode.K"),
           "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000)
@@ -125,14 +125,14 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "taxCode has untaxed indicator" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "0T", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "0T")
       }
 
       "provide taxCodeExplanation" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "0T", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap("0T" -> Messages("tai.taxCode.0T"))
       }
     }
@@ -141,14 +141,14 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "taxCode has basic tax free personal allowance" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "1150L")
       }
 
       "provide taxCodeExplanation" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "L"    -> Messages("tai.taxCode.L")
@@ -158,7 +158,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "provide taxCodeExplanation when only single digit proceeds letter T" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "2T", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "2" -> Messages(s"tai.taxCode.amount", 20),
           "T" -> Messages("tai.taxCode.T")
@@ -168,7 +168,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "provide taxCodeExplanation when only single digit proceeds letter N" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "2N", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "2" -> Messages(s"tai.taxCode.amount", 20),
           "N" -> Messages("tai.taxCode.N")
@@ -188,7 +188,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live
         )
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer", "1150L")
       }
 
@@ -203,7 +203,7 @@ class TaxCodeViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live
         )
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "L"    -> Messages("tai.taxCode.L"),
@@ -216,9 +216,9 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "provide taxCodeExplanation for scottish and untaxed code" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "SK100", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
-          "S" -> Messages(
+          "S"   -> Messages(
             s"tai.taxCode.S",
             link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
@@ -230,9 +230,9 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "provide taxCodeExplanation for scottish and 0 personal allowance code" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S0T", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
-          "S" -> Messages(
+          "S"  -> Messages(
             s"tai.taxCode.S",
             link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
@@ -243,9 +243,9 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "provide taxCodeExplanation for scottish and suffix code" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150M", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
-          "S" -> Messages(
+          "S"    -> Messages(
             s"tai.taxCode.S",
             link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
@@ -257,9 +257,9 @@ class TaxCodeViewModelSpec extends BaseSpec {
       "provide taxCodeExplanation for scottish and suffix code with 0T to clash with stand-alone tax code" in {
         val taxCodeIncome =
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150T", "employer", OtherBasisOfOperation, Live)
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
-          "S" -> Messages(
+          "S"    -> Messages(
             s"tai.taxCode.S",
             link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
@@ -279,9 +279,9 @@ class TaxCodeViewModelSpec extends BaseSpec {
           Week1Month1BasisOfOperation,
           Live
         )
-        val result = testViewModel(Seq(taxCodeIncome))
+        val result        = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap(
-          "S" -> Messages(
+          "S"    -> Messages(
             s"tai.taxCode.S",
             link(url = appConfig.scottishRateIncomeTaxUrl, copy = Messages("tai.taxCode.scottishIncomeText.link"))
           ),
@@ -300,23 +300,23 @@ class TaxCodeViewModelSpec extends BaseSpec {
 
     "contain the income details message for pension" in {
       val pensionIncome = taxCodeIncomes1.copy(componentType = PensionIncome)
-      val result = testViewModel(Seq(pensionIncome))
+      val result        = testViewModel(Seq(pensionIncome))
 
       result.incomeDetailsMessage == Messages("tai.taxCode.check_pension")
     }
   }
 
   val taxYearStartNonBreak = taxYear.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
-  val taxYearEndNonBreak = taxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
+  val taxYearEndNonBreak   = taxYear.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
   val previousTaxYearStartNonBreak =
     taxYear.prev.start.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
-  val previousTaxYearEndNonBreak =
+  val previousTaxYearEndNonBreak   =
     taxYear.prev.end.format(DateTimeFormatter.ofPattern("d MMMM yyyy")).replaceAll(" ", "\u00A0")
 
-  private val taxCodeIncomes1 =
+  private val taxCodeIncomes1      =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
-  private val taxCodeIncomes2 =
+  private val taxCodeIncomes2      =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 

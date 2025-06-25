@@ -54,7 +54,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
 
     "contain a link to the income details for this employer" in {
       val view = template(viewModel)
-      val doc = Jsoup.parse(view.toString())
+      val doc  = Jsoup.parse(view.toString())
 
       doc must haveLinkElement(
         "employmentDetails",
@@ -65,14 +65,14 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
 
     "contain details element with tax code information" in {
       val view = template(viewModel)
-      val doc = Jsoup.parse(view.toString())
+      val doc  = Jsoup.parse(view.toString())
 
       doc must haveElementAtPathWithText("#taxCodeTerm_1_1", messages("tai.taxCode.part.announce", "K") + " K")
       doc must haveElementWithId("taxCodeDescription_1_1")
     }
   }
 
-  val employerId = 9876543
+  val employerId          = 9876543
   val taxCodeDescription1 =
     DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
   val taxCodeDescription2 = DescriptionListViewModel(

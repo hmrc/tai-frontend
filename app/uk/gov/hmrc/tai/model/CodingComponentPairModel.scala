@@ -47,7 +47,7 @@ object CodingComponentPairModel {
   ): CodingComponentPairModel = {
 
     val previousAmount: BigDecimal = codingComponentPair.previous.getOrElse(0)
-    val currentAmount: BigDecimal = codingComponentPair.current.getOrElse(0)
+    val currentAmount: BigDecimal  = codingComponentPair.current.getOrElse(0)
 
     val label = TaxSummaryLabel(
       codingComponentPair.componentType,

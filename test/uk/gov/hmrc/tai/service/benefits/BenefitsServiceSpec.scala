@@ -31,7 +31,7 @@ class BenefitsServiceSpec extends BaseSpec {
 
   "benefits" must {
     "return benefits" in {
-      val sut = createSut
+      val sut           = createSut
       val sampleTaxYear = 2018
       when(benefitsConnector.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
@@ -40,7 +40,7 @@ class BenefitsServiceSpec extends BaseSpec {
     }
 
     "retun empty benefits in NotFoundException is received" in {
-      val sut = createSut
+      val sut           = createSut
       val sampleTaxYear = 2018
       when(benefitsConnector.benefits(any(), any())(any()))
         .thenReturn(Future.failed(new NotFoundException("Not found")))
@@ -52,7 +52,7 @@ class BenefitsServiceSpec extends BaseSpec {
 
   "Ended company benefit" must {
     "return an envelope id" in {
-      val sut = createSut
+      val sut                 = createSut
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       when(benefitsConnector.endedCompanyBenefit(meq(nino), meq(1), meq(endedCompanyBenefit))(any()))
@@ -65,7 +65,7 @@ class BenefitsServiceSpec extends BaseSpec {
 
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
-        val sut = createSut
+        val sut                 = createSut
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
         when(benefitsConnector.endedCompanyBenefit(meq(nino), meq(1), meq(endedCompanyBenefit))(any()))

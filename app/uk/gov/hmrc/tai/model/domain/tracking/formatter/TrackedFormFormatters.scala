@@ -28,10 +28,10 @@ trait TrackedFormFormatters extends Logging {
       implicit val stringMapFormat: Format[Map[String, String]] =
         JsonExtra.mapFormat[String, String]("milestone", "status")
 
-      val id = (json \ "formId").as[String]
-      val name = (json \ "formName").as[String]
+      val id                  = (json \ "formId").as[String]
+      val name                = (json \ "formName").as[String]
       val submissionReference = (json \ "dfsSubmissionReference").as[String]
-      val milestones = (json \ "milestones").as[Map[String, String]]
+      val milestones          = (json \ "milestones").as[Map[String, String]]
       if (milestones.isEmpty) {
         logger.warn(s"no milestones for the form with reference: $submissionReference")
         JsError("milestones list is empty")
@@ -41,7 +41,7 @@ trait TrackedFormFormatters extends Logging {
           case Some(("InProgress", _)) => JsSuccess(TrackedForm(id, name, TrackedFormInProgress))
           case Some(("Acquired", _))   => JsSuccess(TrackedForm(id, name, TrackedFormAcquired))
           case Some(("Done", _))       => JsSuccess(TrackedForm(id, name, TrackedFormDone))
-          case None =>
+          case None                    =>
             logger.warn(s"no milestones with 'current' status for the form with reference: $submissionReference")
             JsError("there is no milestone with status 'current'")
         }

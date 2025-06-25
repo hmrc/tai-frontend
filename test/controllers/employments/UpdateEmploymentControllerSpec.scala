@@ -58,8 +58,8 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     EmploymentIncome
   )
 
-  val personService: PersonService = mock[PersonService]
-  val employmentService: EmploymentService = mock[EmploymentService]
+  val personService: PersonService                = mock[PersonService]
+  val employmentService: EmploymentService        = mock[EmploymentService]
   lazy val mockRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override val userAnswers: UserAnswers = UserAnswers(
@@ -157,7 +157,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"))
+        doc.title()  must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.pagetitle"))
         doc.toString must include("updateDetails")
         verify(mockRepository, times(1)).set(any[UserAnswers])
       }
@@ -173,7 +173,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
                 UpdateEmploymentDetailsPage.toString -> "updateDetails"
               )
           )
-        val result = controller(Some(userAnswersUpdated)).updateEmploymentDetails(1)(
+        val result             = controller(Some(userAnswersUpdated)).updateEmploymentDetails(1)(
           RequestBuilder.buildFakeRequestWithAuth("GET")
         )
 
@@ -244,7 +244,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
                 UpdateEmploymentNamePage.toString -> "Test"
               )
           )
-        val result = controller(Some(userAnswersUpdated)).submitUpdateEmploymentDetails(0)(
+        val result             = controller(Some(userAnswersUpdated)).submitUpdateEmploymentDetails(0)(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(employmentDetailsFormData)
@@ -258,7 +258,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
       "the form submission is invalid" in {
 
         val employmentDetailsFormData = ("employmentDetails", "")
-        val userAnswersUpdated =
+        val userAnswersUpdated        =
           userAnswers.copy(data =
             Json
               .obj(
@@ -431,7 +431,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
             )
         )
         status(tooFewCharsResult) mustBe BAD_REQUEST
-        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooFewDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = controller(Some(userAnswersUpdated)).submitTelephoneNumber()(
@@ -443,7 +443,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
             )
         )
         status(tooManyCharsResult) mustBe BAD_REQUEST
-        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooManyDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
@@ -541,7 +541,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
       "the request has an authorised session" in {
         val result = controller().confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.employmentConfirmation.heading"))
       }
     }

@@ -27,7 +27,7 @@ class AmountComparatorFormSpec extends BaseSpec {
 
     "return no errors when a valid monetary amount is entered" in {
       val validMonetaryAmount = Map("income" -> "11000")
-      val validatedForm = form.bind(validMonetaryAmount)
+      val validatedForm       = form.bind(validMonetaryAmount)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(AmountComparatorForm(Some("11000")))
@@ -35,13 +35,13 @@ class AmountComparatorFormSpec extends BaseSpec {
 
     "return no errors when a valid monetary amount is entered with non numeric characters" in {
       val validMonetaryAmount = Map("income" -> "£11,000")
-      val validatedForm = form.bind(validMonetaryAmount)
+      val validatedForm       = form.bind(validMonetaryAmount)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(AmountComparatorForm(Some("11000")))
     }
     "return an error for an invalid monetary amount" in {
-      val invalidChoice = Map("income" -> "11,00")
+      val invalidChoice   = Map("income" -> "11,00")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -51,7 +51,7 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return an error for no input value" in {
-      val invalidChoice = Map("income" -> "")
+      val invalidChoice   = Map("income" -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(messagesApi("tai.irregular.error.blankValue"))
@@ -59,7 +59,7 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return an error when new amount is less than current amount" in {
-      val newAmount = Map("income" -> "9000")
+      val newAmount       = Map("income" -> "9000")
       val invalidatedForm = form.bind(newAmount)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -70,7 +70,7 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
 
     "return an error when new amount is greater than max length" in {
-      val newAmount = Map("income" -> "1000000000")
+      val newAmount       = Map("income" -> "1000000000")
       val invalidatedForm = form.bind(newAmount)
 
       invalidatedForm.errors.head.messages mustBe List(messagesApi("error.tai.updateDataEmployment.maxLength"))
@@ -79,8 +79,8 @@ class AmountComparatorFormSpec extends BaseSpec {
     }
   }
 
-  val currentDate = LocalDate.now().toString()
+  val currentDate   = LocalDate.now().toString()
   val taxablePayYTD = BigDecimal(10000)
-  val form = AmountComparatorForm.createForm(Some(currentDate), Some(taxablePayYTD))
+  val form          = AmountComparatorForm.createForm(Some(currentDate), Some(taxablePayYTD))
 
 }

@@ -31,8 +31,8 @@ class UnauthorisedControllerSpec extends BaseSpec {
     inject[ErrorTemplateNoauth],
     ec
   ) {
-    override def upliftUrl: String = "/uplift"
-    override def failureUrl: String = "/failure"
+    override def upliftUrl: String     = "/uplift"
+    override def failureUrl: String    = "/failure"
     override def completionUrl: String = "/complete"
   }
 
@@ -47,7 +47,7 @@ class UnauthorisedControllerSpec extends BaseSpec {
       val result = controller.onPageLoad(fakeRequest)
 
       val content = contentAsString(result)
-      val doc = Jsoup.parse(content)
+      val doc     = Jsoup.parse(content)
 
       val title = doc.select("title").text()
       title must include("You have been signed out for your security")
@@ -56,7 +56,7 @@ class UnauthorisedControllerSpec extends BaseSpec {
 
   "loginGG" must {
     "redirect to a login page" in {
-      val result = controller.loginGG(fakeRequest)
+      val result      = controller.loginGG(fakeRequest)
       val expectedUrl =
         "http://localhost:9553/bas-gateway/sign-in?continue_url=http%3A%2F%2Flocalhost%3A9232%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
 

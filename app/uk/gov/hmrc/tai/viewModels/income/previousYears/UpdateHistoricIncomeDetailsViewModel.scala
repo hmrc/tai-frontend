@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 
 case class UpdateHistoricIncomeDetailsViewModel(taxYear: Int) {
 
-  val givenTaxYear: TaxYear = TaxYear(taxYear)
+  val givenTaxYear: TaxYear                                 = TaxYear(taxYear)
   def formattedTaxYear(implicit messages: Messages): String = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
 
 }

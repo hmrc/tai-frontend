@@ -229,7 +229,7 @@ class EmploymentServiceSpec extends BaseSpec {
 
   private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-  private val employment = Employment(
+  private val employment        = Employment(
     "company name",
     Live,
     Some("123"),
@@ -245,7 +245,7 @@ class EmploymentServiceSpec extends BaseSpec {
     EmploymentIncome
   )
   private val employmentDetails = List(employment)
-  private val employments = employmentDetails.head :: employmentDetails.head :: Nil
+  private val employments       = employmentDetails.head :: employmentDetails.head :: Nil
 
   private def createSUT = new EmploymentServiceTest
 

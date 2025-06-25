@@ -40,9 +40,9 @@ class PotentialUnderpaymentControllerErrorHandlingSpec extends IntegrationSpec {
 
   "/check-income-tax/income-summary" must {
 
-    val url = "/check-income-tax/underpayment-estimate"
+    val url                = "/check-income-tax/underpayment-estimate"
     val fandfDelegationUrl = s"/delegation/get"
-    val partialsUrl = s"/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"
+    val partialsUrl        = s"/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"
 
     val taxComponentsUrl = s"/tai/$generatedNino/tax-account/$taxYear/tax-components"
 

@@ -72,9 +72,9 @@ case class DateForm(emptyDateMessage: String) {
     Form(localDateMapping)
   }
 
-  val DateFormDay = "dateForm_day"
+  val DateFormDay   = "dateForm_day"
   val DateFormMonth = "dateForm_month"
-  val DateFormYear = "dateForm_year"
+  val DateFormYear  = "dateForm_year"
 }
 
 object DateForm {
@@ -83,21 +83,21 @@ object DateForm {
     messages: Messages
   ): Form[LocalDate] =
     if (!dateForm.hasErrors) {
-      val day = dateForm.data.get("dateForm_day").map(Integer.parseInt)
+      val day   = dateForm.data.get("dateForm_day").map(Integer.parseInt)
       val month = dateForm.data.get("dateForm_month").map(Integer.parseInt)
-      val year = dateForm.data.get("dateForm_year").map(Integer.parseInt)
+      val year  = dateForm.data.get("dateForm_year").map(Integer.parseInt)
 
       val formErrors =
         (year, month, day) match {
           case (Some(y), Some(m), Some(d)) if LocalDate.of(y, m, d).isAfter(LocalDate.now()) =>
             Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
-          case (Some(y), Some(m), Some(d)) =>
+          case (Some(y), Some(m), Some(d))                                                   =>
             startDateInString match {
               case Some(dateInString) if LocalDate.of(y, m, d).isBefore(LocalDate.parse(dateInString)) =>
                 Seq(FormError(key = "dateForm", Messages("tai.date.error.invalid")))
-              case _ => Nil
+              case _                                                                                   => Nil
             }
-          case _ => Nil
+          case _                                                                             => Nil
         }
       addErrorsToForm(dateForm, formErrors)
     } else dateForm

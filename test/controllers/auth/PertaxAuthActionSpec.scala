@@ -43,14 +43,14 @@ import scala.concurrent.Future
 
 class PertaxAuthActionSpec extends BaseSpec {
 
-  lazy val mockPertaxConnector: PertaxConnector = mock[PertaxConnector]
-  lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  private lazy val mockURLService = mock[URLService]
+  lazy val mockPertaxConnector: PertaxConnector                = mock[PertaxConnector]
+  lazy val mockAuthConnector: AuthConnector                    = mock[AuthConnector]
+  private lazy val mockURLService                              = mock[URLService]
   override lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
 
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
-  private val mainTemplateView: MainTemplate = inject[MainTemplate]
-  private val testAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  private val mainTemplateView: MainTemplate                   = inject[MainTemplate]
+  private val testAppConfig: ApplicationConfig                 = mock[ApplicationConfig]
 
   val testAction: PertaxAuthActionImpl = new PertaxAuthActionImpl(
     mockAuthConnector,

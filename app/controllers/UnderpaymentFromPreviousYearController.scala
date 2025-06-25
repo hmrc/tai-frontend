@@ -33,13 +33,14 @@ class UnderpaymentFromPreviousYearController @Inject() (
   mcc: MessagesControllerComponents,
   previousYearUnderpayment: PreviousYearUnderpaymentView
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) with Referral {
+    extends TaiBaseController(mcc)
+    with Referral {
 
   def underpaymentExplanation: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    val nino = user.nino
-    val year = TaxYear()
+    val nino                   = user.nino
+    val year                   = TaxYear()
     val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
     for {

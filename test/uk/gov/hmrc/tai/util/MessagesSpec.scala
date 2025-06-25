@@ -115,7 +115,7 @@ class MessagesSpec extends BaseSpec {
 
   override implicit lazy val messages: Messages = messagesApi.preferred(Seq(lang, Lang("cy")))
 
-  val MatchSingleQuoteOnly: Regex = """\w+'\w+""".r
+  val MatchSingleQuoteOnly: Regex   = """\w+'\w+""".r
   val MatchBacktickQuoteOnly: Regex = """`+""".r
 
   "Application" should {
@@ -162,9 +162,9 @@ class MessagesSpec extends BaseSpec {
       val englishWithArgsMsgKeys = defaultMessages collect {
         case (msgKey, msgValue) if countArgs(msgValue) > 0 => msgKey
       }
-      val welshWithArgsMsgKeys = welshMessages collect { case (msgKey, msgValue) if countArgs(msgValue) > 0 => msgKey }
-      val missingFromEnglish = englishWithArgsMsgKeys.toList diff welshWithArgsMsgKeys.toList
-      val missingFromWelsh = welshWithArgsMsgKeys.toList diff englishWithArgsMsgKeys.toList
+      val welshWithArgsMsgKeys   = welshMessages collect { case (msgKey, msgValue) if countArgs(msgValue) > 0 => msgKey }
+      val missingFromEnglish     = englishWithArgsMsgKeys.toList diff welshWithArgsMsgKeys.toList
+      val missingFromWelsh       = welshWithArgsMsgKeys.toList diff englishWithArgsMsgKeys.toList
       missingFromEnglish foreach { msgKey =>
         println(s"Key which has arguments in English but not in Welsh: $msgKey")
       }
@@ -177,10 +177,10 @@ class MessagesSpec extends BaseSpec {
       val englishWithArgsMsgKeysAndArgList = defaultMessages collect {
         case (msgKey, msgValue) if countArgs(msgValue) > 0 => (msgKey, listArgs(msgValue))
       }
-      val welshWithArgsMsgKeysAndArgList = welshMessages collect {
+      val welshWithArgsMsgKeysAndArgList   = welshMessages collect {
         case (msgKey, msgValue) if countArgs(msgValue) > 0 => (msgKey, listArgs(msgValue))
       }
-      val mismatchedArgSequences = englishWithArgsMsgKeysAndArgList collect {
+      val mismatchedArgSequences           = englishWithArgsMsgKeysAndArgList collect {
         case (msgKey, engArgSeq) if engArgSeq != welshWithArgsMsgKeysAndArgList(msgKey) =>
           (msgKey, engArgSeq, welshWithArgsMsgKeysAndArgList(msgKey))
       }

@@ -46,9 +46,9 @@ import scala.concurrent.Future
 
 class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
-  private val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  private val firstPayment: Payment  = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   private val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  private val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  private val thirdPayment: Payment  = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   private val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   private val annualAccount: AnnualAccount = AnnualAccount(
@@ -58,7 +58,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
     payments = Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     endOfTaxYearUpdates = Nil
   )
-  private val employment: Employment = Employment(
+  private val employment: Employment       = Employment(
     name = "test employment",
     employmentStatus = Live,
     payrollNumber = Some("EMPLOYER-1122"),
@@ -81,13 +81,13 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
   private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
 
-  private val benefitsService: BenefitsService = mock[BenefitsService]
-  private val mockEploymentService: EmploymentService = mock[EmploymentService]
-  private val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  private val benefitsService: BenefitsService                   = mock[BenefitsService]
+  private val mockEploymentService: EmploymentService            = mock[EmploymentService]
+  private val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   private val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
-  private val mockRtiService = mock[RtiService]
-  private val mockApiBackendChoice: ApiBackendChoice = mock[ApiBackendChoice] // TODO: DDCNL-10086 New API
-  private val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
+  private val mockRtiService                                     = mock[RtiService]
+  private val mockApiBackendChoice: ApiBackendChoice             = mock[ApiBackendChoice] // TODO: DDCNL-10086 New API
+  private val baseUserAnswers: UserAnswers                       = UserAnswers("testSessionId", nino.nino)
 
   private def sut = new IncomeSourceSummaryController(
     mock[AuditConnector],
@@ -119,7 +119,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
   }
 
   private val employmentId = 1
-  private val pensionId = 2
+  private val pensionId    = 2
 
   "onPageLoad" must {
     "display the income details page" when {
@@ -223,7 +223,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
           .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,111"
         ) withClue "html id estimatedIncome"
@@ -240,7 +240,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,111"
         ) withClue "html id estimatedIncome"
@@ -256,7 +256,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         setUpPension(Left(INTERNAL_SERVER_ERROR))
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,111"
         ) withClue "html id estimatedIncome"
@@ -272,7 +272,7 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
         setUpPension(Left(NOT_FOUND))
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,111"
         ) withClue "html id estimatedIncome"

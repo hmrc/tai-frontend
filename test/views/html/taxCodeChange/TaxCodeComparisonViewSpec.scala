@@ -30,8 +30,8 @@ import java.time.LocalDate
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
-  val startDate: LocalDate = TaxYear().start
-  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
+  val startDate: LocalDate              = TaxYear().start
+  val taxCodeRecord1: TaxCodeRecord     = TaxCodeRecord(
     "1185L",
     startDate,
     startDate.plusMonths(1),
@@ -41,26 +41,26 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     Some("1234"),
     primary = true
   )
-  val taxCodeRecord2: TaxCodeRecord =
+  val taxCodeRecord2: TaxCodeRecord     =
     taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().end, payrollNumber = None)
-  val taxCodeRecord3: TaxCodeRecord = taxCodeRecord1.copy(
+  val taxCodeRecord3: TaxCodeRecord     = taxCodeRecord1.copy(
     taxCode = "BR",
     startDate = startDate.plusDays(3),
     endDate = TaxYear().end,
     pensionIndicator = false,
     payrollNumber = Some("Payroll Number")
   )
-  val taxCodeChange: TaxCodeChange =
+  val taxCodeChange: TaxCodeChange      =
     TaxCodeChange(List(taxCodeRecord1, taxCodeRecord3), List(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel =
     TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal](), maybeUserName = None)
 
-  private val taxCodeComparison = inject[TaxCodeComparisonView]
+  private val taxCodeComparison            = inject[TaxCodeComparisonView]
   override def view: HtmlFormat.Appendable = taxCodeComparison(viewModel, appConfig)
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord): Unit = {
-    doc must haveHeadingH3WithText(record.employerName)
-    doc must haveClassWithText(
+    doc                must haveHeadingH3WithText(record.employerName)
+    doc                must haveClassWithText(
       Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)),
       "tax-code-change__date"
     )

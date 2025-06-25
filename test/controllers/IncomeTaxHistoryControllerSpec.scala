@@ -37,9 +37,9 @@ import scala.concurrent.Future
 class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData with JsoupMatchers {
 
   val numberOfPreviousYearsToShowIncomeTaxHistory: Int = 5
-  val totalInvocations: Int = numberOfPreviousYearsToShowIncomeTaxHistory + 1
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val totalInvocations: Int                            = numberOfPreviousYearsToShowIncomeTaxHistory + 1
+  val employmentService: EmploymentService             = mock[EmploymentService]
+  val taxAccountService: TaxAccountService             = mock[TaxAccountService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -77,7 +77,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         }
 
         val controller = new TestController
-        val result = controller.onPageLoad()(request)
+        val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -100,7 +100,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         }
 
         val controller = new TestController
-        val result = controller.onPageLoad()(request)
+        val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -120,7 +120,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         }
 
         val controller = new TestController
-        val result = controller.onPageLoad()(request)
+        val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -138,7 +138,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         }
 
         val controller = new TestController
-        val result = controller.onPageLoad()(request)
+        val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -154,7 +154,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
 
       val controller = new TestController
-      val result = controller.getIncomeTaxYear(nino, TaxYear())
+      val result     = controller.getIncomeTaxYear(nino, TaxYear())
 
       result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
     }
@@ -164,7 +164,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
 
       val controller = new TestController
-      val result = controller.getIncomeTaxYear(nino, TaxYear())
+      val result     = controller.getIncomeTaxYear(nino, TaxYear())
 
       result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(None)
     }
@@ -181,12 +181,12 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         }
 
         val controller = new TestController
-        val result = controller.onPageLoad()(request)
+        val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
-        doc must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
+        doc         must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
 
         verify(taxAccountService, times(totalInvocations))
           .taxCodeIncomes(any(), any())(any())
@@ -203,7 +203,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       when(employmentService.employments(any(), any())(any())) thenReturn Future.successful(Seq(empEmployment1))
 
       val controller = new TestController
-      val result = controller.getIncomeTaxYear(nino, TaxYear())
+      val result     = controller.getIncomeTaxYear(nino, TaxYear())
 
       result.futureValue.incomeTaxHistory.map(_.maybeTaxCode) mustBe List(Some(taxCodeIncome.taxCode))
     }

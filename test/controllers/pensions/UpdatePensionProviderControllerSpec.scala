@@ -42,19 +42,19 @@ import scala.concurrent.Future
 class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   private def createController = new UpdatePensionProviderTestController
-  private def fakeGetRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
-  private def fakePostRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+  private def fakeGetRequest   = RequestBuilder.buildFakeRequestWithAuth("GET")
+  private def fakePostRequest  = RequestBuilder.buildFakeRequestWithAuth("POST")
 
   val pensionName = "Pension 1"
-  val pensionId = 1
+  val pensionId   = 1
 
   val pensionTaxCodeIncome: TaxCodeIncome =
     TaxCodeIncome(PensionIncome, Some(pensionId), 100, "", "", pensionName, Week1Month1BasisOfOperation, Live)
-  val empTaxCodeIncome: TaxCodeIncome =
+  val empTaxCodeIncome: TaxCodeIncome     =
     TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
 
-  val pensionProviderService: PensionProviderService = mock[PensionProviderService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val pensionProviderService: PensionProviderService     = mock[PensionProviderService]
+  val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
@@ -86,7 +86,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
     "show the doYouGetThisPension view" in {
 
       val PensionQuestionKey = "yes"
-      val userAnswers = baseUserAnswers
+      val userAnswers        = baseUserAnswers
         .setOrException(UpdatePensionProviderIdPage, pensionId)
         .setOrException(UpdatePensionProviderNamePage, pensionName)
         .setOrException(UpdatePensionProviderReceivePensionPage, PensionQuestionKey)
@@ -174,7 +174,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
   }
 
-  "whatDoYouWantToTellUs" must {
+  "whatDoYouWantToTellUs"         must {
     "show the whatDoYouWantToTellUs page" when {
       "an authorised user calls the page" in {
 
@@ -238,7 +238,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       "the form submission is invalid" in {
 
         val pensionDetailsFormData = ("pensionDetails", "")
-        val userAnswers = baseUserAnswers
+        val userAnswers            = baseUserAnswers
           .setOrException(UpdatePensionProviderIdPage, pensionId)
           .setOrException(UpdatePensionProviderNamePage, pensionName)
 
@@ -283,7 +283,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.title()  must include(Messages("tai.canWeContactByPhone.title"))
         doc.toString must include("123456789")
       }
 
@@ -372,7 +372,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
           )
         )
         status(tooFewCharsResult) mustBe BAD_REQUEST
-        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooFewDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = controller.submitTelephoneNumber()(
@@ -383,7 +383,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
             )
         )
         status(tooManyCharsResult) mustBe BAD_REQUEST
-        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooManyDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
@@ -483,7 +483,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
 
         val result = createController.confirmation()(fakeGetRequest)
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.updatePension.confirmation.heading"))
       }
     }
@@ -553,7 +553,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
       setup(userAnswers)
 
       val result = createController.duplicateSubmissionWarning(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
+      val doc    = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.pension.warning.customGaTitle"))

@@ -45,8 +45,8 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   private def createSUT(userAnswersAsArg: Option[UserAnswers]) = new SUT(userAnswersAsArg)
 
   val pensionProviderService: PensionProviderService = mock[PensionProviderService]
-  val auditService: AuditService = mock[AuditService]
-  val personService: PersonService = mock[PersonService]
+  val auditService: AuditService                     = mock[AuditService]
+  val personService: PersonService                   = mock[PersonService]
 
   private class SUT(
     userAnswersAsArg: Option[UserAnswers] = None
@@ -92,7 +92,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
+        doc.title()  must include(Messages("tai.addPensionProvider.addNameForm.title"))
         doc.toString must not include "testPensionName123"
       }
     }
@@ -102,7 +102,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "show the pensionProvider name form page" when {
       "the request has an authorised session and previous value exists in cache" in {
         val expectectedName = "testPensionName123"
-        val sut =
+        val sut             =
           createSUT(Some(userAnswers.copy(data = Json.obj(AddPensionProviderNamePage.toString -> expectectedName))))
 
         val result = sut.addPensionProviderName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -110,7 +110,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
+        doc.title()  must include(Messages("tai.addPensionProvider.addNameForm.title"))
         doc.toString must include(expectectedName)
       }
     }
@@ -148,7 +148,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
     "reload the page with errors" when {
       "the form entry is invalid" in {
-        val sut = createSUT(Some(userAnswers))
+        val sut    = createSUT(Some(userAnswers))
         val result = sut.submitPensionProviderName()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(("pensionProviderName", ""))
         )
@@ -162,7 +162,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
     "store the pensionProvider name in the cache" when {
       "the name is valid" in {
-        val sut = createSUT(Some(userAnswers))
+        val sut                 = createSUT(Some(userAnswers))
         val pensionProviderName = "the pension provider"
 
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
@@ -183,7 +183,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
     "show the first pay choice page" when {
       "the request has an authorised session and no previous value is held in the cache" in {
         val pensionProviderName = "Pension Provider"
-        val sut =
+        val sut                 =
           createSUT(Some(userAnswers.copy(data = Json.obj(AddPensionProviderNamePage.toString -> pensionProviderName))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -195,7 +195,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       "the request has an authorised session and a previous value of 'No' is held in the cache" in {
         val pensionProviderName = "Pension Provider"
-        val sut = createSUT(
+        val sut                 = createSUT(
           Some(
             userAnswers.copy(data =
               Json.obj(
@@ -216,7 +216,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
         val pensionProviderName = "Pension Provider"
-        val sut = createSUT(
+        val sut                 = createSUT(
           Some(
             userAnswers.copy(data =
               Json.obj(
@@ -336,13 +336,13 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
+        doc.title()  must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
         doc.toString must not include "2037"
       }
 
       "the request has an authorised session and a previously cached date is present" in {
         val pensionProviderName = "TEST"
-        val sut = createSUT(
+        val sut                 = createSUT(
           Some(
             userAnswers.copy(data =
               Json.obj(
@@ -357,7 +357,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
+        doc.title()  must include(Messages("tai.addPensionProvider.startDateForm.pagetitle"))
         doc.toString must include("2037")
       }
 
@@ -468,7 +468,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       "the request has an authorised session and previously cached pension number choice is 'No', and no payroll number is held in cache" in {
         val pensionProviderName = "TEST"
-        val sut = createSUT(
+        val sut                 = createSUT(
           Some(
             userAnswers.copy(data =
               Json.obj(
@@ -492,7 +492,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       "the request has an authorised session and previously cached pension number choice is 'No', and a payroll number is held in cache" in {
         val pensionProviderName = "TEST"
-        val sut = createSUT(
+        val sut                 = createSUT(
           Some(
             userAnswers.copy(data =
               Json.obj(
@@ -541,7 +541,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       "the request has an authorised session and previously cached pension number choice is 'Yes' and payroll number added" in {
         val pensionProviderName = "TEST"
-        val sut = createSUT(
+        val sut                 = createSUT(
           Some(
             userAnswers.copy(data =
               Json.obj(
@@ -568,7 +568,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   "submit pension number" must {
     "cache pension number" when {
       "the form is valid and user knows their pension number" in {
-        val sut = createSUT(Some(userAnswers))
+        val sut       = createSUT(Some(userAnswers))
         val payrollNo = "1234"
         when(mockRepository.set(any()))
           .thenReturn(Future.successful(true))
@@ -588,7 +588,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
     "redirect to add telephone number page" when {
       "the form is valid and user knows their pension number" in {
-        val sut = createSUT(Some(userAnswers))
+        val sut       = createSUT(Some(userAnswers))
         val payrollNo = "1234"
         when(mockRepository.set(any()))
           .thenReturn(Future.successful(true))
@@ -864,7 +864,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
             )
         )
         status(tooFewCharsResult) mustBe BAD_REQUEST
-        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooFewDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = sut.submitTelephoneNumber()(
@@ -876,7 +876,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
             )
         )
         status(tooManyCharsResult) mustBe BAD_REQUEST
-        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooManyDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
@@ -885,11 +885,11 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   "check your answers" must {
     "show the check answers summary page" when {
       "the request has an authorised session" in {
-        val pensionName = "a pension provider"
-        val pensionDate = "2017-06-09"
-        val pensionPayrollNumber = "pension-ref-1234"
+        val pensionName           = "a pension provider"
+        val pensionDate           = "2017-06-09"
+        val pensionPayrollNumber  = "pension-ref-1234"
         val telephoneQuestionPage = "Yes"
-        val telephoneNumberPage = "123456789"
+        val telephoneNumberPage   = "123456789"
 
         val sut = createSUT(
           Some(
@@ -926,12 +926,12 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
   "submit your answers" must {
     "redirect to the confirmation page" in {
-      val pensionName = "a pension provider"
-      val pensionDate = "2017-06-09"
-      val pensionPayrollNumber = "pension-ref-1234"
+      val pensionName           = "a pension provider"
+      val pensionDate           = "2017-06-09"
+      val pensionPayrollNumber  = "pension-ref-1234"
       val telephoneQuestionPage = "Yes"
-      val telephoneNumberPage = "123456789"
-      val sut = createSUT(
+      val telephoneNumberPage   = "123456789"
+      val sut                   = createSUT(
         Some(
           userAnswers.copy(data =
             Json.obj(
@@ -969,7 +969,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
       val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
-      val doc = Jsoup.parse(contentAsString(result))
+      val doc    = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.pensionConfirmation.heading"))
     }
   }

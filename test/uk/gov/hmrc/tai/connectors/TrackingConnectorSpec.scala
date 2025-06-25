@@ -50,7 +50,7 @@ class TrackingConnectorSpec extends BaseSpec {
 
   val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut: TrackingConnector = new TrackingConnector(httpHandler, servicesConfig, appConfig) {
+  def sut: TrackingConnector      = new TrackingConnector(httpHandler, servicesConfig, appConfig) {
     override lazy val serviceUrl: String = "mockUrl"
   }
   override def beforeEach(): Unit = {

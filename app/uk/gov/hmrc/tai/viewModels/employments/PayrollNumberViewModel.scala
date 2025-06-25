@@ -26,12 +26,12 @@ case class PayrollNumberViewModel(employmentName: String, firstPayChoice: Boolea
 object PayrollNumberViewModel {
 
   def apply(cache: Map[String, String]): PayrollNumberViewModel = {
-    val employerName = cache.getOrElse(AddEmploymentConstants.NameKey, "")
+    val employerName   = cache.getOrElse(AddEmploymentConstants.NameKey, "")
     val firstPayChoice = cache.get(AddEmploymentConstants.StartDateWithinSixWeeks) match {
       case Some(FormValuesConstants.YesValue) => true
       case _                                  => false
     }
-    val backUrl = cache.get(AddEmploymentConstants.ReceivedFirstPayKey) match {
+    val backUrl        = cache.get(AddEmploymentConstants.ReceivedFirstPayKey) match {
       case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
     }
@@ -44,12 +44,12 @@ case class NewCachePayrollNumberViewModel(employmentName: String, firstPayChoice
 object NewCachePayrollNumberViewModel {
 
   def apply(userAnswers: UserAnswers): PayrollNumberViewModel = {
-    val employerName = userAnswers.get(AddEmploymentNamePage).getOrElse("")
+    val employerName   = userAnswers.get(AddEmploymentNamePage).getOrElse("")
     val firstPayChoice = userAnswers.get(AddEmploymentStartDateWithinSixWeeksPage) match {
       case Some(FormValuesConstants.YesValue) => true
       case _                                  => false
     }
-    val backUrl = userAnswers.get(AddEmploymentReceivedFirstPayPage) match {
+    val backUrl        = userAnswers.get(AddEmploymentReceivedFirstPayPage) match {
       case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
       case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
     }

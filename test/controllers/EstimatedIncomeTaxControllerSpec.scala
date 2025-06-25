@@ -45,12 +45,12 @@ import scala.concurrent.Future
 
 class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[_]                                 = FakeRequest()
   implicit val fakeAuthenticatedRequest: AuthenticatedRequest[Any] =
     AuthenticatedRequest(request, authedUser, fakePerson(nino))
 
-  private val noCurrentIncomeView = inject[NoCurrentIncomeView]
-  private val simpleEstimatedIncomeTaxView = inject[SimpleEstimatedIncomeTaxView]
+  private val noCurrentIncomeView           = inject[NoCurrentIncomeView]
+  private val simpleEstimatedIncomeTaxView  = inject[SimpleEstimatedIncomeTaxView]
   private val complexEstimatedIncomeTaxView = inject[ComplexEstimatedIncomeTaxView]
   private val zeroTaxEstimatedIncomeTaxView = inject[ZeroTaxEstimatedIncomeTaxView]
 
@@ -59,8 +59,8 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
   private def createSUT = new SUT
 
   val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val partialService: HasFormPartialService = mock[HasFormPartialService]
+  val taxAccountService: TaxAccountService           = mock[TaxAccountService]
+  val partialService: HasFormPartialService          = mock[HasFormPartialService]
 
   class SUT
       extends EstimatedIncomeTaxController(
@@ -95,15 +95,15 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         )
 
         val taxAccountSummary = TaxAccountSummary(7834, 2772, 0, 0, 0, 47835, 11500)
-        val codingComponents = Seq(
+        val codingComponents  = Seq(
           CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance", Some(11500)),
           CodingComponent(CarBenefit, Some(1), 8026, "Car Benefit", None),
           CodingComponent(MedicalInsurance, Some(1), 637, "Medical Insurance", None),
           CodingComponent(OtherItems, Some(1), 65, "Other Items", None)
         )
 
-        val basicRateBand = TaxBand("B", "", 33500, 6700, Some(0), Some(33500), 20)
-        val higherRateBand = TaxBand("D0", "", 2835, 1134, Some(33500), Some(150000), 40)
+        val basicRateBand      = TaxBand("B", "", 33500, 6700, Some(0), Some(33500), 20)
+        val higherRateBand     = TaxBand("D0", "", 2835, 1134, Some(33500), Some(150000), 40)
         val additionalRateBand = TaxBand("D1", "", 0, 0, Some(150000), Some(0), 45)
 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
@@ -120,7 +120,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           None
         )
 
-        val viewModelBands = List(
+        val viewModelBands       = List(
           Band("TaxFree", 24.04, 11500, 0, BandTypesConstants.ZeroBand),
           Band("Band", 75.95, 36335, 7834, BandTypesConstants.NonZeroBand)
         )
@@ -220,11 +220,11 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         )
 
         val startingSaversRateBand = TaxBand("SR", "", 1500, 0, Some(0), Some(5000), 0)
-        val basicRateBand = TaxBand("B", "", 3500, 700, Some(0), Some(33500), 20)
-        val higherRateBand = TaxBand("D0", "", 0, 0, Some(33500), Some(150000), 40)
-        val additionalRateBand = TaxBand("D1", "", 0, 0, Some(150000), Some(0), 45)
+        val basicRateBand          = TaxBand("B", "", 3500, 700, Some(0), Some(33500), 20)
+        val higherRateBand         = TaxBand("D0", "", 0, 0, Some(33500), Some(150000), 40)
+        val additionalRateBand     = TaxBand("D1", "", 0, 0, Some(150000), Some(0), 45)
 
-        val nonSavingsTaxBands = List(basicRateBand, higherRateBand, additionalRateBand)
+        val nonSavingsTaxBands      = List(basicRateBand, higherRateBand, additionalRateBand)
         val untaxedInterestTaxBands = List(startingSaversRateBand)
 
         val totalTax = TotalTax(
@@ -240,7 +240,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           None
         )
 
-        val viewModelBands = List(
+        val viewModelBands       = List(
           Band(BandTypesConstants.TaxFree, 78.78, 13000, 0, BandTypesConstants.ZeroBand),
           Band("Band", 21.21, 3500, 700, BandTypesConstants.NonZeroBand)
         )
@@ -343,7 +343,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           None
         )
 
-        val viewModelBands = List(
+        val viewModelBands       = List(
           Band(BandTypesConstants.TaxFree, 78.26, 11500, 0, "pa")
         )
         val viewModelBandedGraph =

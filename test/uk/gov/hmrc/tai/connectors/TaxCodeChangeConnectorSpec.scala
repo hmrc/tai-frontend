@@ -40,7 +40,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
     .configure("microservice.services.tai.port" -> server.port)
     .build()
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpHandler               = mock[HttpHandler]
   val httpClientResponse: HttpClientResponse = inject[HttpClientResponse]
 
   "tax code change url" must {
@@ -53,10 +53,10 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
     "fetch the tax code change" when {
       "provided with valid nino" in {
 
-        val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+        val taxCodeChangeUrl                      = s"/tai/${nino.nino}/tax-account/tax-code-change"
         lazy val localSut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
 
-        val startDate = TaxYear().start
+        val startDate      = TaxYear().start
         val taxCodeRecord1 = TaxCodeRecord(
           "code",
           startDate,
@@ -70,7 +70,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
         val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
         val json = Json.obj(
-          "data" -> Json.obj(
+          "data"  -> Json.obj(
             "previous" -> Json.arr(
               Json.obj(
                 "taxCode"          -> "code",
@@ -83,7 +83,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
                 "primary"          -> true
               )
             ),
-            "current" -> Json.arr(
+            "current"  -> Json.arr(
               Json.obj(
                 "taxCode"          -> "code",
                 "startDate"        -> startDate.plusDays(2).toString(),
@@ -115,7 +115,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
       "tax code change returns 500" in {
 
         lazy val localSut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
-        val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+        val taxCodeChangeUrl                      = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
         server.stubFor(
           get(taxCodeChangeUrl)
@@ -134,8 +134,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
 
       val latestTaxCodeRecordUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
 
-      val startDate = TaxYear().start
-      val taxCodeRecord = TaxCodeRecord(
+      val startDate      = TaxYear().start
+      val taxCodeRecord  = TaxCodeRecord(
         "code",
         startDate,
         startDate.plusDays(1),
@@ -157,7 +157,7 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
       )
 
       val json = Json.obj(
-        "data" -> Json.arr(
+        "data"  -> Json.arr(
           Json.obj(
             "taxCode"          -> "code",
             "startDate"        -> startDate.toString(),
@@ -210,9 +210,9 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
 
     "throw Exception" when {
       "tax code change returns 500" in {
-        val year = TaxYear().prev.year
+        val year                   = TaxYear().prev.year
         val latestTaxCodeRecordUrl = s"${sut.serviceUrl}/tai/${nino.nino}/tax-account/$year/tax-code/latest"
-        val expectedMessage = s"Couldn't retrieve tax code records for $nino for year $year with exception: bad request"
+        val expectedMessage        = s"Couldn't retrieve tax code records for $nino for year $year with exception: bad request"
         when(httpHandler.getFromApiV2(meq(latestTaxCodeRecordUrl), any())(any(), any()))
           .thenReturn(Future.failed(new BadRequestException(expectedMessage)))
 
@@ -238,8 +238,8 @@ class TaxCodeChangeConnectorSpec extends BaseSpec with WireMockHelper {
       "provided with valid nino" in {
 
         lazy val localSut: TaxCodeChangeConnector = app.injector.instanceOf[TaxCodeChangeConnector]
-        val hasTaxCodeChangedUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/exists"
-        val json = true
+        val hasTaxCodeChangedUrl                  = s"/tai/${nino.nino}/tax-account/tax-code-change/exists"
+        val json                                  = true
 
         server.stubFor(
           get(hasTaxCodeChangedUrl)

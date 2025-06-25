@@ -24,9 +24,9 @@ import utils.BaseSpec
 
 class TaxCodeChangeReasonsSpec extends BaseSpec {
 
-  val startDate = TaxYear().start
-  val previousEmployer = "Previous Employer"
-  val currentEmployer = "Current Employer"
+  val startDate                      = TaxYear().start
+  val previousEmployer               = "Previous Employer"
+  val currentEmployer                = "Current Employer"
   val employmentTaxCodeChangeReasons = new TaxCodeChangeReasons
 
   def createTaxRecord(employerName: String): TaxCodeRecord =
@@ -95,15 +95,15 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
   "reasons taxCodeReasons" when {
     "employment has changed" must {
       "return empty when nothing has changed" in {
-        val taxRecord = List(createTaxRecord(previousEmployer), createPrimaryTaxRecord(currentEmployer))
+        val taxRecord     = List(createTaxRecord(previousEmployer), createPrimaryTaxRecord(currentEmployer))
         val taxCodeChange = TaxCodeChange(taxRecord, taxRecord)
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List.empty[String]
       }
 
       "return a reason when an employment been removed" in {
-        val previous = List(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
-        val current = List(createTaxRecord(currentEmployer))
+        val previous      = List(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
+        val current       = List(createTaxRecord(currentEmployer))
         val taxCodeChange = TaxCodeChange(previous, current)
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe List(
@@ -114,7 +114,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
       "return a reason when an employment been added" in {
         val previous = List(createTaxRecord(previousEmployer))
-        val current = List(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
+        val current  = List(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
@@ -126,7 +126,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
       "return multiple reasons when employments have changed" in {
         val previous = List(createTaxRecord(previousEmployer), createTaxRecord(previousEmployer + "1"))
-        val current = List(createTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+        val current  = List(createTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
@@ -141,7 +141,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
       "return primary and secondary employment have changed at the same time" in {
         val previous = List(createPrimaryTaxRecord(previousEmployer), createTaxRecord(previousEmployer + "1"))
-        val current = List(createPrimaryTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+        val current  = List(createPrimaryTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
@@ -156,7 +156,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
       "return an add and remove message when primary employment has changed" in {
         val previous = List(createPrimaryTaxRecord(previousEmployer))
-        val current = List(createPrimaryTaxRecord(currentEmployer))
+        val current  = List(createPrimaryTaxRecord(currentEmployer))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
@@ -170,7 +170,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
       "if you can match by employer name but can't match with payroll" should {
         "go to the generic message for primary tax records" in {
           val previous = createPrimaryTaxRecord(previousEmployer)
-          val current = previous.copy(payrollNumber = Some("54321"))
+          val current  = previous.copy(payrollNumber = Some("54321"))
 
           val taxCodeChange = TaxCodeChange(List(previous), List(current))
 
@@ -181,7 +181,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
         "go to the generic message for secondary tax records" in {
           val previous = createTaxRecord(previousEmployer)
-          val current = previous.copy(payrollNumber = Some("54321"))
+          val current  = previous.copy(payrollNumber = Some("54321"))
 
           val taxCodeChange = TaxCodeChange(List(previous), List(current))
 
@@ -195,7 +195,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
     "pensions has changed" must {
       "return a reason when primary has changed to a primary pension" in {
         val previous = List(createPrimaryTaxRecord(previousEmployer))
-        val current = List(createPrimaryPensionTaxRecord(currentEmployer))
+        val current  = List(createPrimaryPensionTaxRecord(currentEmployer))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
@@ -208,7 +208,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
 
       "return a reason when a secondary pension been added" in {
         val previous = List(createPensionTaxRecord(previousEmployer))
-        val current = List(createPensionTaxRecord(previousEmployer), createPensionTaxRecord(currentEmployer))
+        val current  = List(createPensionTaxRecord(previousEmployer), createPensionTaxRecord(currentEmployer))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
@@ -222,7 +222,7 @@ class TaxCodeChangeReasonsSpec extends BaseSpec {
     "current employment(s) and pension(s) exist" must {
       "return how many current income sources there are" in {
         val previous = List(createPrimaryTaxRecord(previousEmployer))
-        val current = List(createPrimaryPensionTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+        val current  = List(createPrimaryPensionTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
 
         val taxCodeChange = TaxCodeChange(previous, current)
 

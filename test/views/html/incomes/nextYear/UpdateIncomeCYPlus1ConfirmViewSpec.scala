@@ -25,9 +25,9 @@ import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, Irregul
 
 class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
 
-  val currentAmount = 1234
+  val currentAmount   = 1234
   val estimatedAmount = 1000
-  val employmentId = 1
+  val employmentId    = 1
 
   val vm: ConfirmAmountEnteredViewModel = ConfirmAmountEnteredViewModel(
     employmentId,
@@ -37,7 +37,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
     IrregularPay,
     "#"
   )
-  private val template = inject[UpdateIncomeCYPlus1ConfirmView]
+  private val template                  = inject[UpdateIncomeCYPlus1ConfirmView]
 
   override lazy val view: Html = template(vm)
 

@@ -78,7 +78,7 @@ trait Formatters {
           .flatMap {
             case s if s.matches(decimalRegexp) =>
               Left(Seq(FormError(key, wholeNumberKey, args)))
-            case s =>
+            case s                             =>
               nonFatalCatch
                 .either(s.toInt)
                 .left

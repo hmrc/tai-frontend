@@ -20,23 +20,23 @@ import org.scalatestplus.play.PlaySpec
 
 class GoogleAnalyticsSettingsSpec extends PlaySpec {
 
-  val gaKey = "key"
+  val gaKey         = "key"
   val currentAmount = 12345
-  val newAmount = 67890
+  val newAmount     = 67890
 
   val expectedDimensions = Some(Map(gaKey -> "currentAmount=£12,345;newAmount=£67,890"))
 
   "createForAnnualIncome" must {
     "create a google analytics settings for ints" in {
       val newAmount = 67890
-      val actual = GoogleAnalyticsSettings.createForAnnualIncome(gaKey, currentAmount, newAmount)
+      val actual    = GoogleAnalyticsSettings.createForAnnualIncome(gaKey, currentAmount, newAmount)
 
       actual mustBe GoogleAnalyticsSettings(expectedDimensions)
     }
 
     "create a google analytics settings for strings" in {
       val newAmount = Some("67890")
-      val actual = GoogleAnalyticsSettings.createForAnnualIncome(gaKey, currentAmount, newAmount)
+      val actual    = GoogleAnalyticsSettings.createForAnnualIncome(gaKey, currentAmount, newAmount)
       actual mustBe GoogleAnalyticsSettings(expectedDimensions)
     }
   }

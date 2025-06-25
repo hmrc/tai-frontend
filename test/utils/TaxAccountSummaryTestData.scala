@@ -60,13 +60,13 @@ trait TaxAccountSummaryTestData {
     )
   )
 
-  val liveEmployment1: TaxCodeIncome =
+  val liveEmployment1: TaxCodeIncome              =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
-  val liveEmployment2: TaxCodeIncome =
+  val liveEmployment2: TaxCodeIncome              =
     TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
-  val livePension3: TaxCodeIncome =
+  val livePension3: TaxCodeIncome                 =
     TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
-  val livePension4: TaxCodeIncome =
+  val livePension4: TaxCodeIncome                 =
     TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live)
   val potentiallyCeasedEmployment9: TaxCodeIncome = TaxCodeIncome(
     EmploymentIncome,
@@ -78,7 +78,7 @@ trait TaxAccountSummaryTestData {
     OtherBasisOfOperation,
     PotentiallyCeased
   )
-  val ceasedEmployment10: TaxCodeIncome = TaxCodeIncome(
+  val ceasedEmployment10: TaxCodeIncome           = TaxCodeIncome(
     EmploymentIncome,
     Some(10),
     2222,
@@ -88,7 +88,7 @@ trait TaxAccountSummaryTestData {
     Week1Month1BasisOfOperation,
     Ceased
   )
-  val empEmployment1: Employment = Employment(
+  val empEmployment1: Employment                  = Employment(
     "Employer name1",
     Live,
     Some("1ABC"),
@@ -103,7 +103,7 @@ trait TaxAccountSummaryTestData {
     receivingOccupationalPension = false,
     EmploymentIncome
   )
-  val empEmployment2: Employment = Employment(
+  val empEmployment2: Employment                  = Employment(
     "Employer name2",
     Live,
     Some("1ABC"),
@@ -118,7 +118,7 @@ trait TaxAccountSummaryTestData {
     receivingOccupationalPension = false,
     EmploymentIncome
   )
-  val pensionEmployment3: Employment = Employment(
+  val pensionEmployment3: Employment              = Employment(
     "Pension name1",
     Live,
     Some("3ABC"),
@@ -133,7 +133,7 @@ trait TaxAccountSummaryTestData {
     receivingOccupationalPension = false,
     PensionIncome
   )
-  val pensionEmployment4: Employment = Employment(
+  val pensionEmployment4: Employment              = Employment(
     "Pension name2",
     Live,
     Some("4ABC"),
@@ -148,7 +148,7 @@ trait TaxAccountSummaryTestData {
     receivingOccupationalPension = false,
     PensionIncome
   )
-  val empEmployment9: Employment = Employment(
+  val empEmployment9: Employment                  = Employment(
     "Employer name3",
     Live,
     Some("9ABC"),
@@ -163,7 +163,7 @@ trait TaxAccountSummaryTestData {
     receivingOccupationalPension = false,
     EmploymentIncome
   )
-  val empEmployment10: Employment = Employment(
+  val empEmployment10: Employment                 = Employment(
     "Employer name4",
     Live,
     Some("10ABC"),
@@ -193,13 +193,13 @@ trait TaxAccountSummaryTestData {
     TaxedIncome(Some(potentiallyCeasedEmployment9), empEmployment9),
     TaxedIncome(Some(ceasedEmployment10), empEmployment10)
   )
-  val taxCodeIncome: TaxCodeIncome =
+  val taxCodeIncome: TaxCodeIncome                    =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
 
   val taxCodeIncomeCeased: TaxCodeIncome =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Ceased)
 
-  val payment: Payment = Payment(
+  val payment: Payment             = Payment(
     LocalDate.now,
     BigDecimal(123.45),
     BigDecimal(678.90),

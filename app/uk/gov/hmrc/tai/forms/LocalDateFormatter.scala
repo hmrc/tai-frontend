@@ -31,9 +31,9 @@ case class LocalDateFormatter(
   import errorMsgs._
 
   override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
-    val emptyDay: Boolean = data.getOrElse(formDay, "").isEmpty
+    val emptyDay: Boolean   = data.getOrElse(formDay, "").isEmpty
     val emptyMonth: Boolean = data.getOrElse(formMonth, "").isEmpty
-    val emptyYear: Boolean = data.getOrElse(formYear, "").isEmpty
+    val emptyYear: Boolean  = data.getOrElse(formYear, "").isEmpty
 
     val errors = errorIfEmpty(emptyDay, emptyMonth, emptyYear)
 
@@ -79,9 +79,9 @@ case class LocalDateFormatter(
       .leftMap(_ => List(FormError(key = formDay, message = mustBeValidDay)))
 
   private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String]) = {
-    val dayOrError = extractDay(maybeDay)
+    val dayOrError   = extractDay(maybeDay)
     val monthOrError = extractMonth(maybeMonth)
-    val yearOrError = extractYear(maybeYear)
+    val yearOrError  = extractYear(maybeYear)
 
     val inputDate = (dayOrError, monthOrError, yearOrError)
       .parMapN { case (day, month, year) =>
@@ -97,33 +97,33 @@ case class LocalDateFormatter(
       .leftMap {
         case errs if errs.size > 1 =>
           List(FormError(key = formDay, message = mustBeReal))
-        case errs =>
+        case errs                  =>
           errs
       }
 
     inputDate.flatMap {
       case date if date.isAfter(LocalDate.now()) =>
         Left(Seq(FormError(key = formDay, message = mustBeFuture)))
-      case x =>
+      case x                                     =>
         Right(x)
     }
   }
 
   def errorIfEmpty(emptyDay: Boolean, emptyMonth: Boolean, emptyYear: Boolean): Seq[FormError] = {
     (emptyDay, emptyMonth, emptyYear) match {
-      case (true, true, true) =>
+      case (true, true, true)    =>
         FormError(key = formDay, enterDate).some
-      case (true, false, false) =>
+      case (true, false, false)  =>
         FormError(key = formDay, enterDay).some
-      case (false, true, false) =>
+      case (false, true, false)  =>
         FormError(key = formMonth, enterMonth).some
-      case (false, false, true) =>
+      case (false, false, true)  =>
         FormError(key = formYear, enterYear).some
-      case (true, true, false) =>
+      case (true, true, false)   =>
         FormError(key = formDay, enterDayAndMonth).some
-      case (true, false, true) =>
+      case (true, false, true)   =>
         FormError(key = formDay, enterDayAndYear).some
-      case (false, true, true) =>
+      case (false, true, true)   =>
         FormError(key = formMonth, enterMonthAndYear).some
       case (false, false, false) =>
         none

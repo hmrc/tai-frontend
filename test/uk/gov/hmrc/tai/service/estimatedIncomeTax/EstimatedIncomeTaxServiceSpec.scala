@@ -155,7 +155,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
     "return true" when {
       "there is an underpayment" in {
 
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
+        val totalTax         = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
         val codingComponents = Seq(
           CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10))
         )
@@ -165,7 +165,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
       "there is an inYearAdjustment" in {
 
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
+        val totalTax         = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
         val codingComponents = Seq(
           CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50))
         )
@@ -175,7 +175,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
       "there is outstanding debt" in {
 
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
+        val totalTax         = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
         val codingComponents = Seq(
           CodingComponent(OutstandingDebt, None, 150, "")
         )
@@ -188,7 +188,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
         val otherTaxDue = Seq(
           TaxAdjustmentComponent(tax.ChildBenefit, 300)
         )
-        val totalTax =
+        val totalTax    =
           TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(300, otherTaxDue)), None, None)
         EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
       }
@@ -198,7 +198,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
         val otherTaxDue = Seq(
           TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100)
         )
-        val totalTax =
+        val totalTax    =
           TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(100, otherTaxDue)), None, None)
         EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
       }
@@ -208,7 +208,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
         val otherTaxDue = Seq(
           TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100)
         )
-        val totalTax =
+        val totalTax    =
           TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(100, otherTaxDue)), None, None)
         EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
       }
@@ -218,7 +218,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
         val otherTaxDue = Seq(
           TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200)
         )
-        val totalTax =
+        val totalTax    =
           TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(200, otherTaxDue)), None, None)
         EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
       }
@@ -434,7 +434,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
   "hasSavings" must {
     "return true when there are savings present in totalTax" in {
-      val taxBands = Seq(
+      val taxBands         = Seq(
         TaxBand(
           bandType = BandTypesConstants.DividendZeroRate,
           code = "",
@@ -477,14 +477,14 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
         IncomeCategory(BankInterestIncomeCategory, 0, 6000, 0, taxBands),
         IncomeCategory(ForeignInterestIncomeCategory, 0, 6000, 0, taxBands)
       )
-      val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
+      val totalTax         = TotalTax(100, incomeCategories, None, None, None, None)
 
       EstimatedIncomeTaxService.hasSavings(totalTax) mustBe true
 
     }
 
     "return false when there are no savings present in totalTax" in {
-      val taxBands = Seq(
+      val taxBands         = Seq(
         TaxBand(
           bandType = BandTypesConstants.DividendZeroRate,
           code = "",
@@ -525,7 +525,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
       val incomeCategories = Seq(
         IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
       )
-      val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
+      val totalTax         = TotalTax(100, incomeCategories, None, None, None, None)
 
       EstimatedIncomeTaxService.hasSavings(totalTax) mustBe false
 

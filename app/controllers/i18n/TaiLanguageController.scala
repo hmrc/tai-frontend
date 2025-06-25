@@ -34,5 +34,5 @@ class TaiLanguageController @Inject() (languageUtils: LanguageUtils, cc: Control
     controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url
 
   def english(): Action[AnyContent] = switchToLanguage(language = "english")
-  def welsh(): Action[AnyContent] = switchToLanguage(language = "cymraeg")
+  def welsh(): Action[AnyContent]   = switchToLanguage(language = "cymraeg")
 }

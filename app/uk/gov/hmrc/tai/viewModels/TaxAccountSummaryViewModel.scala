@@ -50,9 +50,9 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
-    val title = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+    val title  = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
 
-    val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
+    val taxFreeAmount            = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
     val employmentViewModels =
@@ -105,9 +105,9 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
-    val title = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
+    val title  = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
 
-    val taxFreeAmount = taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.taxFreeAmount, 0)))
+    val taxFreeAmount            = taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.taxFreeAmount, 0)))
     val estimatedIncomeTaxAmount =
       taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedTax, 0)))
 

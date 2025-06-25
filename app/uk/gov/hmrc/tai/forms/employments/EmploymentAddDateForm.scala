@@ -43,9 +43,9 @@ case class EmploymentAddDateForm(employerName: String) {
 }
 
 object EmploymentAddDateForm {
-  val EmploymentFormDay = "tellUsStartDateForm-day"
+  val EmploymentFormDay   = "tellUsStartDateForm-day"
   val EmploymentFormMonth = "tellUsStartDateForm-month"
-  val EmploymentFormYear = "tellUsStartDateForm-year"
+  val EmploymentFormYear  = "tellUsStartDateForm-year"
 
   def errorMsgs(employerName: String)(implicit messages: Messages) = LocalDateFormatter.ErrorMessages(
     enterDate = Messages("tai.addEmployment.startDateForm.error.enterDate", employerName),

@@ -40,7 +40,7 @@ object TaxFreeAmountViewModel extends ViewModelHelper {
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 
     val headerWithAdditionalMarkup = s"""$taxFreeAmountMsg $currentTaxYearRangeHtmlNonBreak"""
-    val title = s"$taxFreeAmountMsg $currentTaxYearRangeHtmlNonBreak"
+    val title                      = s"$taxFreeAmountMsg $currentTaxYearRangeHtmlNonBreak"
 
     val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 

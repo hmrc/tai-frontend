@@ -30,5 +30,5 @@ case class WithinSixWeeksViewModel(
   empId: Int
 ) {
   def earliestUpdateDateInHtml(implicit messages: Messages): String = Dates.formatDate(earliestUpdateDate)
-  def latestPayDateInHtml(implicit messages: Messages): String = Dates.formatDate(latestPayDate)
+  def latestPayDateInHtml(implicit messages: Messages): String      = Dates.formatDate(latestPayDate)
 }

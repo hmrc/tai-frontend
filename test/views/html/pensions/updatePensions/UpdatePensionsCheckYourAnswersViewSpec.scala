@@ -82,10 +82,10 @@ class UpdatePensionsCheckYourAnswersViewSpec extends TaiViewSpec {
     }
   }
 
-  lazy val pensionId = 1
+  lazy val pensionId                                    = 1
   val viewModel: UpdatePensionCheckYourAnswersViewModel =
     UpdatePensionCheckYourAnswersViewModel(pensionId, "TEST", "Yes", "whatYouToldUs", "Yes", Some("123456789"))
-  private val updatePensionCheckYourAnswersView = inject[UpdatePensionCheckYourAnswersView]
+  private val updatePensionCheckYourAnswersView         = inject[UpdatePensionCheckYourAnswersView]
 
   override def view: Html = updatePensionCheckYourAnswersView(viewModel)
 }

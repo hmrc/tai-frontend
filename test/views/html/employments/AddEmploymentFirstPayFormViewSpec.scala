@@ -41,12 +41,12 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
 
     "have an error message with the form inputs" when {
       "no first number choice is selected" in {
-        val noPayrollNumberChooseError = messages("tai.error.chooseOneOption")
-        val expectedErrorMessage = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
+        val noPayrollNumberChooseError           = messages("tai.error.chooseOneOption")
+        val expectedErrorMessage                 = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
           AddEmploymentFirstPayForm.form
             .withError(AddEmploymentFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
-        def view: Html = template(formWithErrors, employerName)
+        def view: Html                           = template(formWithErrors, employerName)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
@@ -59,7 +59,7 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
       AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
     )
   )
-  private val template = inject[AddEmploymentFirstPayFormView]
+  private val template                                     = inject[AddEmploymentFirstPayFormView]
 
   override def view: Html = template(employmentFirstPayForm, employerName)
 }

@@ -25,7 +25,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
   "AddEmploymentPayrollNumberFormSpec" must {
     "return no errors with valid 'yes' choice and payroll number" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue, payroll -> "123456")
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value mustBe Some(
@@ -58,7 +58,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "", payroll -> "")
+      val invalidChoice   = Map(choice -> "", payroll -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -68,7 +68,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice with empty values" in {
-      val invalidChoice = Map(payroll -> "")
+      val invalidChoice   = Map(payroll -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(
@@ -89,7 +89,7 @@ class AddEmploymentPayrollNumberFormSpec extends BaseSpec {
 
   }
 
-  val choice = AddEmploymentPayrollNumberConstants.PayrollNumberChoice
+  val choice  = AddEmploymentPayrollNumberConstants.PayrollNumberChoice
   val payroll = AddEmploymentPayrollNumberConstants.PayrollNumberEntry
 
   private val form = AddEmploymentPayrollNumberForm.form

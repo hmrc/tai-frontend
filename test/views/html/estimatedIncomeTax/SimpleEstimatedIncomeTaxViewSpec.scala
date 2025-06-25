@@ -108,15 +108,15 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       "be 'Tax on your employment income' when income is only from employment" in {
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-        val viewModel = SimpleEstimatedIncomeTaxViewModel(
+        val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+        val viewModel                         = SimpleEstimatedIncomeTaxViewModel(
           Seq.empty[CodingComponent],
           taxAccountSummary,
           taxCodeIncome,
           List.empty[TaxBand]
         )
-        val document = doc(view(viewModel))
-        val message = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
+        val document                          = doc(view(viewModel))
+        val message                           = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
         document must haveParagraphWithText(message)
@@ -125,15 +125,15 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       "be 'Tax on your private pension income' when income is only from pension" in {
         val taxCodeIncome: Seq[TaxCodeIncome] =
           List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-        val viewModel = SimpleEstimatedIncomeTaxViewModel(
+        val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+        val viewModel                         = SimpleEstimatedIncomeTaxViewModel(
           Seq.empty[CodingComponent],
           taxAccountSummary,
           taxCodeIncome,
           List.empty[TaxBand]
         )
-        val document = doc(view(viewModel))
-        val message = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
+        val document                          = doc(view(viewModel))
+        val message                           = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
         document must haveParagraphWithText(message)
@@ -145,15 +145,15 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
             TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live),
             TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOfOperation, Live)
           )
-          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-          val viewModel = SimpleEstimatedIncomeTaxViewModel(
+          val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+          val viewModel                         = SimpleEstimatedIncomeTaxViewModel(
             Seq.empty[CodingComponent],
             taxAccountSummary,
             taxCodeIncome,
             List.empty[TaxBand]
           )
-          val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
+          val document                          = doc(view(viewModel))
+          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -162,15 +162,15 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
         "JSA income" in {
           val taxCodeIncome: Seq[TaxCodeIncome] =
             List(TaxCodeIncome(JobSeekerAllowanceIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-          val viewModel = SimpleEstimatedIncomeTaxViewModel(
+          val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+          val viewModel                         = SimpleEstimatedIncomeTaxViewModel(
             Seq.empty[CodingComponent],
             taxAccountSummary,
             taxCodeIncome,
             List.empty[TaxBand]
           )
-          val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
+          val document                          = doc(view(viewModel))
+          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -179,15 +179,15 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
         "Other income" in {
           val taxCodeIncome: Seq[TaxCodeIncome] =
             List(TaxCodeIncome(OtherIncome, None, 0, "", "", "", OtherBasisOfOperation, Live))
-          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
-          val viewModel = SimpleEstimatedIncomeTaxViewModel(
+          val taxAccountSummary                 = TaxAccountSummary(0, 0, 0, 0, 0)
+          val viewModel                         = SimpleEstimatedIncomeTaxViewModel(
             Seq.empty[CodingComponent],
             taxAccountSummary,
             taxCodeIncome,
             List.empty[TaxBand]
           )
-          val document = doc(view(viewModel))
-          val message = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
+          val document                          = doc(view(viewModel))
+          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)

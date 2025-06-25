@@ -32,7 +32,8 @@ case class CheckYourAnswersViewModel(
   totalBonusOrOvertime: Option[String],
   employer: IncomeSource,
   backUrl: String
-) extends ViewModelHelper with DynamicPayPeriodTitle {
+) extends ViewModelHelper
+    with DynamicPayPeriodTitle {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true
@@ -125,7 +126,7 @@ case class CheckYourAnswersViewModel(
     val zeroDecimalPlaces = 0
 
     (answer, isMonetaryValue) match {
-      case (Some(answer), true) =>
+      case (Some(answer), true)  =>
         Some(
           CheckYourAnswersConfirmationLine(
             message,

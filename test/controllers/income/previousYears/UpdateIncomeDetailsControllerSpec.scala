@@ -41,13 +41,13 @@ import scala.util.Random
 class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
   private val previousTaxYear = TaxYear().prev
-  val sessionId = "testSessionId"
+  val sessionId               = "testSessionId"
 
-  private def createSUT = new SUT
+  private def createSUT  = new SUT
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
   val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
-  val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
+  val mockJourneyCacheRepository: JourneyCacheRepository     = mock[JourneyCacheRepository]
 
   private class SUT
       extends UpdateIncomeDetailsController(
@@ -94,14 +94,14 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
   "submitDecision" must {
     "redirect to the details page" when {
       "the form has the value Yes in UpdateIncomeDecision" in {
-        val SUT = createSUT
+        val SUT     = createSUT
         val request =
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.YesValue
             )
-        val result = SUT.submitDecision()(request)
+        val result  = SUT.submitDecision()(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.PayeControllerHistoric.payePage(previousTaxYear).url)
@@ -110,14 +110,14 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "redirect to the Historic Paye page" when {
       "the form has the value No in UpdateIncomeDecision" in {
-        val SUT = createSUT
+        val SUT     = createSUT
         val request =
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
             .withFormUrlEncodedBody(
               UpdateHistoricIncomeChoiceConstants.UpdateIncomeChoice -> FormValuesConstants.NoValue
             )
-        val result = SUT.submitDecision()(request)
+        val result  = SUT.submitDecision()(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
@@ -128,7 +128,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
     "return Bad Request" when {
       "the form submission is invalid" in {
-        val sut = createSUT
+        val sut    = createSUT
         val result = sut.submitDecision()(
           RequestBuilder
             .buildFakeRequestWithAuth("POST")
@@ -359,7 +359,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
             )
         )
         status(tooFewCharsResult) mustBe BAD_REQUEST
-        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        val tooFewDoc         = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
 
@@ -384,7 +384,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
             )
         )
         status(tooManyCharsResult) mustBe BAD_REQUEST
-        val tooManyDoc = Jsoup.parse(contentAsString(tooManyCharsResult))
+        val tooManyDoc         = Jsoup.parse(contentAsString(tooManyCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
 
@@ -504,7 +504,7 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
 
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc    = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.previousYears.confirmation.heading"))
       }
     }

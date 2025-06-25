@@ -28,11 +28,11 @@ object TaxYearObjectBinder {
 
         val taxYearRequired: TaxYear = TaxYear(value)
 
-        val currentYear: Int = TaxYear().year
+        val currentYear: Int       = TaxYear().year
         val latestSupportedTaxYear = TaxYear().next
 
         val numberOfPreviousYearsToShow = 5
-        val earliestSupportedTaxYear = TaxYear(currentYear - numberOfPreviousYearsToShow)
+        val earliestSupportedTaxYear    = TaxYear(currentYear - numberOfPreviousYearsToShow)
 
         if (taxYearRequired >= earliestSupportedTaxYear && taxYearRequired <= latestSupportedTaxYear) {
           Right(taxYearRequired)

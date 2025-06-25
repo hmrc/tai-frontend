@@ -47,13 +47,13 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
       recordToDescriptionListViewModel(_, scottishTaxRateBands, appConfig)
     }
 
-    val titleMessageKey =
+    val titleMessageKey         =
       if (taxCodeRecords.size > 1) "tai.taxCode.prev.multiple.code.title" else "tai.taxCode.prev.single.code.title"
     val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
-    val endOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.end))
-    val taxCodesTitle = messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
+    val endOfTaxYearNonBroken   = htmlNonBroken(Dates.formatDate(year.end))
+    val taxCodesTitle           = messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
 
-    val title = taxCodesTitle
+    val title       = taxCodesTitle
     val mainHeading = taxCodesTitle
 
     val ledeMessage = if (taxCodeRecords.size > 1) {
@@ -76,7 +76,7 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
     scottishTaxRateBands: Map[String, BigDecimal],
     appConfig: ApplicationConfig
   )(implicit messages: Messages): DescriptionListViewModel = {
-    val taxCode = record.taxCode
+    val taxCode     = record.taxCode
     val explanation =
       describeTaxCode(taxCode, record.basisOfOperation, scottishTaxRateBands, isCurrentYear = false, appConfig)
 

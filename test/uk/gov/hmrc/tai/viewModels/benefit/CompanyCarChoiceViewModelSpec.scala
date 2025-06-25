@@ -30,7 +30,7 @@ class CompanyCarChoiceViewModelSpec extends BaseSpec {
           CompanyCarConstants.CarModelKey    -> "XJ",
           CompanyCarConstants.CarProviderKey -> "company name"
         )
-        val result = CompanyCarChoiceViewModel(cacheMap)
+        val result   = CompanyCarChoiceViewModel(cacheMap)
         result mustBe CompanyCarChoiceViewModel("XJ", "company name")
       }
 
@@ -38,13 +38,13 @@ class CompanyCarChoiceViewModelSpec extends BaseSpec {
 
         "car model is absent from the provided cache map" in {
           val cacheMap = Map[String, String](CompanyCarConstants.CarProviderKey -> "company name")
-          val ex = the[RuntimeException] thrownBy CompanyCarChoiceViewModel(cacheMap)
+          val ex       = the[RuntimeException] thrownBy CompanyCarChoiceViewModel(cacheMap)
           ex.getMessage mustBe "No company car model found in supplied cache map"
         }
 
         "car provider is absent from the provided cache map" in {
           val cacheMap = Map[String, String](CompanyCarConstants.CarModelKey -> "XJ")
-          val ex = the[RuntimeException] thrownBy CompanyCarChoiceViewModel(cacheMap)
+          val ex       = the[RuntimeException] thrownBy CompanyCarChoiceViewModel(cacheMap)
           ex.getMessage mustBe "No company car provider found in supplied cache map"
         }
       }

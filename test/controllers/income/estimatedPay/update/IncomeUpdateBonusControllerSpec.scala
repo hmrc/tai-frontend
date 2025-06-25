@@ -42,14 +42,14 @@ class IncomeUpdateBonusControllerSpec extends BaseSpec with ControllerViewTestHe
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
-  val empId: Int = 1
-  val sessionId: String = "testSessionId"
-  val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
+  val empId: Int                                         = 1
+  val sessionId: String                                  = "testSessionId"
+  val employer: IncomeSource                             = IncomeSource(id = 1, name = "sample employer")
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   override implicit val fakeRequest: FakeRequest[AnyContent] = RequestBuilder.buildFakeGetRequestWithAuth()
 
-  private val bonusPaymentsView = inject[BonusPaymentsView]
+  private val bonusPaymentsView      = inject[BonusPaymentsView]
   private val bonusPaymentAmountView = inject[BonusPaymentAmountView]
 
   class TestIncomeUpdateBonusController()

@@ -31,7 +31,7 @@ class BenefitsConnector @Inject() (httpHandler: HttpHandler, servicesConfig: Ser
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def benefitsUrl(nino: String, taxYear: Int): String = s"$serviceUrl/tai/$nino/tax-account/$taxYear/benefits"
+  def benefitsUrl(nino: String, taxYear: Int): String                 = s"$serviceUrl/tai/$nino/tax-account/$taxYear/benefits"
   def endedCompanyBenefitUrl(nino: String, employmentId: Int): String =
     s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 

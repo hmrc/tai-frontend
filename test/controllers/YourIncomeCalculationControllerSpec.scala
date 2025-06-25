@@ -34,9 +34,9 @@ import scala.concurrent.Future
 
 class YourIncomeCalculationControllerSpec extends BaseSpec {
 
-  val firstPayment: Payment = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val firstPayment: Payment  = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment: Payment = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment: Payment  = Payment(LocalDate.now.minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment: Payment = Payment(LocalDate.now.minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
   val annualAccount: AnnualAccount = AnnualAccount(
@@ -46,7 +46,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     Nil
   )
-  val employment: Employment = Employment(
+  val employment: Employment       = Employment(
     "test employment",
     Live,
     Some("EMPLOYER1"),
@@ -133,7 +133,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
   )
 
-  val personService: PersonService = mock[PersonService]
+  val personService: PersonService         = mock[PersonService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
@@ -151,7 +151,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       inject[ErrorPagesHandler]
     )
 
-  "Your Income Calculation" must {
+  "Your Income Calculation"   must {
     "return rti details page" when {
       "rti details are present" in {
 
@@ -209,7 +209,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         status(result) mustBe OK
 
         val content = contentAsString(result)
-        val doc = Jsoup.parse(content)
+        val doc     = Jsoup.parse(content)
 
         doc.select(".govuk-back-link").text() mustBe Messages("tai.back-link.upper")
       }

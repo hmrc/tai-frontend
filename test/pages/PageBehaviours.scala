@@ -27,7 +27,12 @@ import uk.gov.hmrc.tai.model.UserAnswers
 import utils.generators.Generators
 
 trait PageBehaviours
-    extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks with Generators with OptionValues with TryValues {
+    extends AnyWordSpec
+    with Matchers
+    with ScalaCheckPropertyChecks
+    with Generators
+    with OptionValues
+    with TryValues {
 
   class BeRetrievable[A] {
     def apply[P <: QuestionPage[A]](genP: Gen[P])(implicit ev1: Arbitrary[A], ev2: Format[A]): Unit =

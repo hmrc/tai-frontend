@@ -34,7 +34,7 @@ object JsonExtra {
       def reads(jv: JsValue): JsResult[Map[K, V]] = jv match {
         case JsArray(b) =>
           JsSuccess(b.map(x => (x \ keyLabel).as[K] -> (x \ valueLabel).as[V]).toMap)
-        case x => JsError(s"Expected JsArray(...), found $x")
+        case x          => JsError(s"Expected JsArray(...), found $x")
       }
     }
 }

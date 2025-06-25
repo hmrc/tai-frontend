@@ -40,7 +40,9 @@ class AuthRetrievalsImpl @Inject() (
   mcc: MessagesControllerComponents,
   fandFConnector: FandFConnector
 )(implicit ec: ExecutionContext)
-    extends AuthRetrievals with AuthorisedFunctions with Logging {
+    extends AuthRetrievals
+    with AuthorisedFunctions
+    with Logging {
 
   override def invokeBlock[A](
     request: Request[A],

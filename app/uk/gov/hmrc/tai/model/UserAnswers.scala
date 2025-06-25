@@ -39,7 +39,7 @@ final case class UserAnswers(
     val updatedData = data.setObject(page.path, Json.toJson(value)) match {
       case JsSuccess(jsValue, _) =>
         Success(jsValue)
-      case JsError(errors) =>
+      case JsError(errors)       =>
         logger.error(s"Failed to set value at path ${page.path}: $errors. Value: $value")
         Failure(JsResultException(errors))
     }

@@ -22,7 +22,7 @@ object FormHelper {
     stringValue.map { value =>
       val toRemove = "£, ".toSet
       val newValue = value.filterNot(toRemove)
-      val pos = newValue.indexOf(".")
+      val pos      = newValue.indexOf(".")
       if (pos != -1) newValue.substring(0, pos) else newValue
     }
 
@@ -39,12 +39,12 @@ object FormHelper {
     stringValue match {
       case Some(value) =>
         FormHelper.isCurrency(value, isWholeNumRequired)
-      case _ => true
+      case _           => true
     }
 
   def isCurrency(stringValue: String, isWholeNumRequired: Boolean): Boolean = {
     val currencyRegex: String = "^\\£?(([1-9]\\d{0,2}(,\\d{3})*)|(([1-9]\\d*)?\\d))?"
-    val regex: String = if (isWholeNumRequired) currencyRegex else currencyRegex + "(\\.\\d\\d)?"
+    val regex: String         = if (isWholeNumRequired) currencyRegex else currencyRegex + "(\\.\\d\\d)?"
 
     stringValue matches regex.r.toString()
   }

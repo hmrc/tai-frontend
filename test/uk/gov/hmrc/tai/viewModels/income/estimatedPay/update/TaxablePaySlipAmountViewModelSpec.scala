@@ -30,7 +30,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec {
   "TaxablePaySlipAmountViewModel" must {
     "have a monthly title for a monthly pay period" in {
       val payPeriod = Some(Monthly)
-      val form = TaxablePayslipForm.createForm(None, payPeriod, None)
+      val form      = TaxablePayslipForm.createForm(None, payPeriod, None)
       val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.title mustBe messagesApi("tai.taxablePayslip.title.month")
@@ -38,7 +38,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec {
 
     "have a weekly title for a weekly pay period" in {
       val payPeriod = Some(Weekly)
-      val form = TaxablePayslipForm.createForm(None, payPeriod, None)
+      val form      = TaxablePayslipForm.createForm(None, payPeriod, None)
       val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
 
       viewModel.title mustBe messagesApi("tai.taxablePayslip.title.week")
@@ -46,8 +46,8 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec {
 
     "have a X-day title for a X-pay period" in {
       val payPeriod = Some(Other)
-      val days = Some("123")
-      val form = TaxablePayslipForm.createForm(None, payPeriod, days)
+      val days      = Some("123")
+      val form      = TaxablePayslipForm.createForm(None, payPeriod, days)
       val viewModel = TaxablePaySlipAmountViewModel(form, payPeriod, days, employer)
 
       viewModel.title mustBe messagesApi("tai.taxablePayslip.title.days", days.getOrElse(""))
@@ -65,7 +65,7 @@ class TaxablePaySlipAmountViewModelSpec extends BaseSpec {
     "throw an exception if there is no pay period in days defined" in {
       val exception = intercept[RuntimeException] {
         val payPeriod = Some(Other)
-        val form = TaxablePayslipForm.createForm(None, payPeriod, None)
+        val form      = TaxablePayslipForm.createForm(None, payPeriod, None)
         TaxablePaySlipAmountViewModel(form, payPeriod, None, employer)
       }
 

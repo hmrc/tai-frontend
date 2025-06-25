@@ -66,7 +66,7 @@ class YourTaxCodeController @Inject() (
     }
 
   def taxCode(employmentId: Int): Action[AnyContent] = renderTaxCodes(Some(employmentId))
-  def taxCodes: Action[AnyContent] = renderTaxCodes(None)
+  def taxCodes: Action[AnyContent]                   = renderTaxCodes(None)
 
   def prevTaxCodes(year: TaxYear): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino = request.taiUser.nino
@@ -75,7 +75,7 @@ class YourTaxCodeController @Inject() (
       taxCodeRecords       <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
       scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
     } yield {
-      val taxCodeViewModel =
+      val taxCodeViewModel          =
         TaxCodeViewModelPreviousYears(
           taxCodeRecords,
           scottishTaxRateBands,

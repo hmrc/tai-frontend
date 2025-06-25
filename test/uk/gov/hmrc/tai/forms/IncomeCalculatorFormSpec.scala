@@ -33,7 +33,7 @@ class IncomeCalculatorFormSpec extends BaseSpec {
       }
 
       "provided with a 'other' payPeriod and a valid number of days" in {
-        val validDaysMap = Map("payPeriod" -> "other", "otherInDays" -> "3")
+        val validDaysMap  = Map("payPeriod" -> "other", "otherInDays" -> "3")
         val payPeriodForm = PayPeriodForm.createForm(Some("other")).bind(validDaysMap)
         payPeriodForm.errors mustBe empty
       }
@@ -56,7 +56,7 @@ class IncomeCalculatorFormSpec extends BaseSpec {
 
       "provided with a 'other' payPeriod with no number of days passed" in {
         val invalidDaysMap = Map("otherInDays" -> "")
-        val payPeriodForm = PayPeriodForm.createForm(Some("other")).bind(invalidDaysMap)
+        val payPeriodForm  = PayPeriodForm.createForm(Some("other")).bind(invalidDaysMap)
         payPeriodForm.errors must contain(
           FormError("otherInDays", List(Messages("tai.payPeriod.error.form.incomes.other.mandatory")))
         )
@@ -65,7 +65,7 @@ class IncomeCalculatorFormSpec extends BaseSpec {
       Seq("Nope", "123A", "A123", "2232.00", "Ten", "3 Days").foreach { invalidInput =>
         s"provided with a 'other' payPeriod with invalid input '$invalidInput' for number of days" in {
           val invalidDaysMap = Map("payPeriod" -> "other", "otherInDays" -> invalidInput)
-          val payPeriodForm = PayPeriodForm.createForm(Some("other")).bind(invalidDaysMap)
+          val payPeriodForm  = PayPeriodForm.createForm(Some("other")).bind(invalidDaysMap)
           payPeriodForm.errors must contain(
             FormError("otherInDays", List(Messages("tai.payPeriod.error.form.incomes.other.invalid")))
           )

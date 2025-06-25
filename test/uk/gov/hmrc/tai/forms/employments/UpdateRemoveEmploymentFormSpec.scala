@@ -25,7 +25,7 @@ class UpdateRemoveEmploymentFormSpec extends BaseSpec {
   "UpdateRemoveEmploymentForm" must {
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Map(choice -> FormValuesConstants.YesValue)
-      val validatedForm = form.bind(validYesChoice)
+      val validatedForm  = form.bind(validYesChoice)
 
       validatedForm.errors mustBe empty
       validatedForm.value.get mustBe Some(FormValuesConstants.YesValue)
@@ -40,7 +40,7 @@ class UpdateRemoveEmploymentFormSpec extends BaseSpec {
     }
 
     "return an error for invalid choice" in {
-      val invalidChoice = Map(choice -> "")
+      val invalidChoice   = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
       invalidatedForm.errors.head.messages mustBe List(Messages("tai.employment.decision.error.empty", "Some employer"))
@@ -49,5 +49,5 @@ class UpdateRemoveEmploymentFormSpec extends BaseSpec {
   }
 
   val choice: String = EmploymentDecisionConstants.EmploymentDecision
-  private val form = UpdateRemoveEmploymentForm.form("Some employer")
+  private val form   = UpdateRemoveEmploymentForm.form("Some employer")
 }

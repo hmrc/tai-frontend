@@ -32,7 +32,7 @@ class IdentifierActionImpl @Inject() ()(implicit val executionContext: Execution
     hc.sessionId match {
       case Some(session) =>
         Future.successful(IdentifierRequest(request, session.value))
-      case None =>
+      case None          =>
         throw new RuntimeException("Missing Session Id in request")
     }
   }

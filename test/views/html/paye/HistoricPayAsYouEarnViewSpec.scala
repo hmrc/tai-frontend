@@ -27,12 +27,12 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewMo
 
 class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
-  private val currentYear: Int = TaxYear().year
-  private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
-  private val cyMinusTwoTaxYear: TaxYear = TaxYear(currentYear - 2)
-  private val cyMinusThreeTaxYear: TaxYear = TaxYear(currentYear - 3)
-  private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
-  private val historicPayAsYouEarn = inject[HistoricPayAsYouEarnView]
+  private val currentYear: Int                = TaxYear().year
+  private val cyMinusOneTaxYear: TaxYear      = TaxYear(currentYear - 1)
+  private val cyMinusTwoTaxYear: TaxYear      = TaxYear(currentYear - 2)
+  private val cyMinusThreeTaxYear: TaxYear    = TaxYear(currentYear - 3)
+  private val cyMinusFourTaxYear: TaxYear     = TaxYear(currentYear - 4)
+  private val historicPayAsYouEarn            = inject[HistoricPayAsYouEarnView]
   private val employment: EmploymentViewModel =
     EmploymentViewModel("test employment", 123.32, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
 
@@ -64,7 +64,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
-      val newDoc = doc(view)
+      val newDoc  = doc(view)
 
       newDoc.body.text must include(authRequest.fullName)
       newDoc.body.text must include(
@@ -76,7 +76,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "taxCodeChangeEnabled is true && showTaxCodeDescription is true" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-        val view: Html = historicPayAsYouEarn(
+        val view: Html                      = historicPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
             Nil,
@@ -97,7 +97,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "showTaxCodeDescription is false" in {
       val employment: EmploymentViewModel =
         EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-      val view: Html = historicPayAsYouEarn(
+      val view: Html                      = historicPayAsYouEarn(
         HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
@@ -129,7 +129,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "when you have a employment" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-        val view: Html = historicPayAsYouEarn(
+        val view: Html                      = historicPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
             Nil,
@@ -146,7 +146,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "when you have a pension" in {
         val pension: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("payrollNumber"))
-        val view: Html = historicPayAsYouEarn(
+        val view: Html                   = historicPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
             Seq(pension),
@@ -163,9 +163,9 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "when you have a pension and employment" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("test employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-        val pension: EmploymentViewModel =
+        val pension: EmploymentViewModel    =
           EmploymentViewModel("test employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("payrollNumber"))
-        val view: Html = historicPayAsYouEarn(
+        val view: Html                      = historicPayAsYouEarn(
           HistoricPayAsYouEarnViewModel(
             cyMinusOneTaxYear,
             Seq(pension),
@@ -193,7 +193,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
         val employment: EmploymentViewModel =
           EmploymentViewModel("employment", 0.00, 1, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(
+        val vm                              = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
           Seq(employment),
@@ -201,7 +201,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveElementAtPathWithId("div", "employment1")
@@ -229,7 +229,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the income source of type Employment has a employer paye reference" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("employment", 0.00, 1, isPension = false, "123", "A100", Some("pensionNumber"))
-        val viewModelEmployment = HistoricPayAsYouEarnViewModel(
+        val viewModelEmployment             = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
           Seq(employment),
@@ -237,7 +237,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(viewModelEmployment)
+        val sut: Html     = createSut(viewModelEmployment)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveSpanWithText("Employer PAYE reference: 123/A100")
@@ -246,7 +246,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the income source of type Pension has a employer paye reference that is not displayed" in {
         val pension: EmploymentViewModel =
           EmploymentViewModel("employment", 50.00, 1, isPension = true, "754", "NZ00014", Some("pensionNumber"))
-        val viewModelPension = HistoricPayAsYouEarnViewModel(
+        val viewModelPension             = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
           Nil,
@@ -254,7 +254,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(viewModelPension)
+        val sut: Html     = createSut(viewModelPension)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc mustNot haveSpanWithText("Employer PAYE reference:754/NZ00014")
@@ -266,7 +266,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the income source of type pension has a payroll number" in {
         val pension: EmploymentViewModel =
           EmploymentViewModel("employment", 0.00, 1, isPension = true, "754", "NZ00014", Some("pensionNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(
+        val vm                           = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
           Nil,
@@ -274,7 +274,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveSpanWithText("Pension number: pensionNumber")
@@ -286,7 +286,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the income source of type employer does not have a payroll number" in {
         val employment: EmploymentViewModel =
           EmploymentViewModel("employment", 0.00, 1, isPension = false, "754", "NZ00014", None)
-        val vm = HistoricPayAsYouEarnViewModel(
+        val vm                              = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
           Seq(employment),
@@ -294,7 +294,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc mustNot haveSpanWithText("Payroll number: payrollNumber")
@@ -305,7 +305,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
       "the income source of type pension does not have a payroll number" in {
         val pension: EmploymentViewModel =
           EmploymentViewModel("employment", 0.00, 1, isPension = true, "754", "NZ00014", None)
-        val vm = HistoricPayAsYouEarnViewModel(
+        val vm                           = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
           Nil,
@@ -313,7 +313,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc mustNot haveSpanWithText("Pension number: pensionNumber")
@@ -326,7 +326,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
         val pension: EmploymentViewModel =
           EmploymentViewModel("pension", 0.00, 1, isPension = true, "754", "NZ00014", Some("payrollNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(
+        val vm                           = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Seq(pension),
           Nil,
@@ -334,7 +334,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveElementAtPathWithId("div", "pension1")
@@ -370,7 +370,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveLinkWithText(messages("tai.paye.lastTaxYear.incorrectInformation.link"))
@@ -392,7 +392,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveElementAtPathWithId("div", "employment1")
@@ -436,7 +436,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
             "NZ00014",
             Some("payrollNumber")
           )
-        val vm = HistoricPayAsYouEarnViewModel(
+        val vm                               = HistoricPayAsYouEarnViewModel(
           cyMinusOneTaxYear,
           Nil,
           Seq(employment1, employment2),
@@ -444,7 +444,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           showTaxCodeDescriptionLink = true
         )
 
-        val sut: Html = createSut(vm)
+        val sut: Html     = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
         doc must haveElementAtPathWithId("div", "employment1")
@@ -490,7 +490,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm)
+      val sut: Html     = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
       doc must haveElementAtPathWithId("div", "employment1")
@@ -516,7 +516,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm)
+      val sut: Html     = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
       doc.select("#rtiDown").size mustBe 1
@@ -542,7 +542,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm)
+      val sut: Html     = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
       doc.select("#p800Link").size() mustBe 0
@@ -558,7 +558,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm)
+      val sut: Html     = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
       doc.select("#p800Link").size() mustBe 0
@@ -574,7 +574,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm)
+      val sut: Html     = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
       doc.select("#p800Link").size() mustBe 0
@@ -592,7 +592,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
         showTaxCodeDescriptionLink = true
       )
 
-      val sut: Html = createSut(vm)
+      val sut: Html     = createSut(vm)
       val doc: Document = Jsoup.parse(sut.toString)
 
       doc must haveLinkWithUrlWithID("p800Link", appConfig.taxYouPaidStatus)
@@ -604,7 +604,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "number of previous years to show is greater than zero" in {
       val employment: EmploymentViewModel =
         EmploymentViewModel("", 0.00, 0, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-      val vm = HistoricPayAsYouEarnViewModel(
+      val vm                              = HistoricPayAsYouEarnViewModel(
         cyMinusOneTaxYear,
         Nil,
         Seq(employment),
@@ -624,7 +624,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "number of previous years to show is 1" in {
       val employment: EmploymentViewModel =
         EmploymentViewModel("", 0.00, 0, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-      val vm = HistoricPayAsYouEarnViewModel(
+      val vm                              = HistoricPayAsYouEarnViewModel(
         cyMinusOneTaxYear,
         Nil,
         Seq(employment),
@@ -642,7 +642,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
     "number of previous years to show is less than 1" in {
       val employment: EmploymentViewModel =
         EmploymentViewModel("", 0.00, 0, isPension = false, "754", "NZ00014", Some("payrollNumber"))
-      val vm = HistoricPayAsYouEarnViewModel(
+      val vm                              = HistoricPayAsYouEarnViewModel(
         cyMinusOneTaxYear,
         Nil,
         Seq(employment),

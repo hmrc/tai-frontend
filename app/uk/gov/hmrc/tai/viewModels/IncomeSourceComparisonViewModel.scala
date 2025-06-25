@@ -35,19 +35,19 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
     taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome]
   ): IncomeSourceComparisonViewModel = {
 
-    val employmentTaxCodeIncomes = taxCodeIncomesCY filter isEmployment
+    val employmentTaxCodeIncomes       = taxCodeIncomesCY filter isEmployment
     val employmentIncomeSourceDetailCY =
       incomeSourceDetailCy(employmentTaxCodeIncomes, employmentsCY)
 
-    val employmentTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter isEmployment
+    val employmentTaxCodeIncomesCYPlusOne     = taxCodeIncomesCYPlusOne filter isEmployment
     val employmentIncomeSourceDetailCYPlusOne =
       incomeSourceDetailCyPlusOne(employmentTaxCodeIncomesCYPlusOne)
 
-    val pensionTaxCodeIncomes = taxCodeIncomesCY filter isPension
+    val pensionTaxCodeIncomes       = taxCodeIncomesCY filter isPension
     val pensionIncomeSourceDetailCY =
       incomeSourceDetailCy(pensionTaxCodeIncomes, employmentsCY)
 
-    val pensionTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter isPension
+    val pensionTaxCodeIncomesCYPlusOne     = taxCodeIncomesCYPlusOne filter isPension
     val pensionIncomeSourceDetailCYPlusOne =
       incomeSourceDetailCyPlusOne(pensionTaxCodeIncomesCYPlusOne)
 
@@ -110,7 +110,7 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
       incomeSourceDetailSeq.size match {
         case 1 =>
           incomeSourceDetailSeq.head match {
-            case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear, isLive) =>
+            case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear, isLive)        =>
               IncomeSourceComparisonDetail(id, name, amount, TaiConstants.NotApplicable.toLowerCase(), isLive)
             case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYearPlusOne, isLive) =>
               IncomeSourceComparisonDetail(id, name, TaiConstants.NotApplicable.toLowerCase(), amount, isLive)

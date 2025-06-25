@@ -41,10 +41,10 @@ import scala.util.Random
 class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
 
   def randomNino(): Nino = new Generator(new Random()).nextNino
-  def createSUT = new SUT
+  def createSUT          = new SUT
 
-  val empId: Int = 1
-  val sessionId: String = "testSessionId"
+  val empId: Int             = 1
+  val sessionId: String      = "testSessionId"
   val employer: IncomeSource = IncomeSource(id = 1, name = "sample employer")
 
   val defaultEmployment: Employment =
@@ -64,8 +64,8 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       EmploymentIncome
     )
 
-  val mockIncomeService: IncomeService = mock[IncomeService]
-  val employmentService: EmploymentService = mock[EmploymentService]
+  val mockIncomeService: IncomeService                   = mock[IncomeService]
+  val employmentService: EmploymentService               = mock[EmploymentService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
 
   class SUT
