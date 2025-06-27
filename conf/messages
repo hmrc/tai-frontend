@@ -1304,7 +1304,6 @@ tai.taxFreeAmount.tableV2.taxComponent.BpaReceivedFromSpouseOrCivilPartner=Basic
 tai.taxFreeAmount.tableV2.taxComponent.BRDifferenceTaxCharge=basic rate difference tax charge
 tai.taxFreeAmount.tableV2.taxComponent.BRDifferenceTaxReduction=basic rate difference tax reduction
 tai.taxFreeAmount.tableV2.taxComponent.CarBenefit=car benefit
-tai.taxFreeAmount.tableV2.taxComponent.CarBenefitMakeModel={0}
 tai.taxFreeAmount.tableV2.taxComponent.CarFuelBenefit=car fuel benefit
 tai.taxFreeAmount.tableV2.taxComponent.CasualEarnings=casual earnings
 tai.taxFreeAmount.tableV2.taxComponent.ChargeableEventGain=chargeable event gain
@@ -1410,7 +1409,6 @@ tai.taxFreeAmount.tableV2.taxComponent.VanFuelBenefit=van fuel benefit
 tai.taxFreeAmount.tableV2.taxComponent.VehicleExpenses=vehicle expenses
 tai.taxFreeAmount.tableV2.taxComponent.VentureCapitalTrust=venture capital trust
 tai.taxFreeAmount.tableV2.taxComponent.VouchersAndCreditCards=vouchers and credit cards
-tai.taxFreeAmount.tableV2.taxComponent.from.employment=from {0}
 tai.taxFreeAmount.tableV2.taxComponent.JobSeekersAllowance=Jobseeker’s Allowance
 tai.taxFreeAmount.tableV2.taxComponent.StatePension=State Pension
 

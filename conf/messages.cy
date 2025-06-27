@@ -1297,7 +1297,6 @@ tai.taxFreeAmount.tableV2.taxComponent.BpaReceivedFromSpouseOrCivilPartner=Lwfan
 tai.taxFreeAmount.tableV2.taxComponent.BRDifferenceTaxCharge=charg treth gwahaniaeth cyfradd sylfaenol
 tai.taxFreeAmount.tableV2.taxComponent.BRDifferenceTaxReduction=lleihad treth gwahaniaeth cyfradd sylfaenol
 tai.taxFreeAmount.tableV2.taxComponent.CarBenefit=budd car
-tai.taxFreeAmount.tableV2.taxComponent.CarBenefitMakeModel={0}
 tai.taxFreeAmount.tableV2.taxComponent.CarFuelBenefit=budd tanwydd car
 tai.taxFreeAmount.tableV2.taxComponent.CasualEarnings=enillion achlysurol
 tai.taxFreeAmount.tableV2.taxComponent.ChargeableEventGain=ennill digwyddiad y gellir ei godi
@@ -1403,7 +1402,6 @@ tai.taxFreeAmount.tableV2.taxComponent.VanFuelBenefit=buddiant tanwydd fan
 tai.taxFreeAmount.tableV2.taxComponent.VehicleExpenses=treuliau cerbyd
 tai.taxFreeAmount.tableV2.taxComponent.VentureCapitalTrust=ymddiriedolaeth cyfalaf menter
 tai.taxFreeAmount.tableV2.taxComponent.VouchersAndCreditCards=talebau a chardiau credyd
-tai.taxFreeAmount.tableV2.taxComponent.from.employment=o {0}
 tai.taxFreeAmount.tableV2.taxComponent.JobSeekersAllowance=Lwfans Ceisio Gwaith
 tai.taxFreeAmount.tableV2.taxComponent.StatePension=Pensiwn y Wladwriaeth
 
