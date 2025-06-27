@@ -148,4 +148,35 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
       )
     }
   }
+
+  "handle HICBCPaye with ammended message correctly" in {
+    val hicbcIncrease = CodingComponentPair(HICBCPaye, Some(1), Some(100), Some(200), None)
+    val hicbcDecrease = CodingComponentPair(HICBCPaye, Some(1), Some(300), Some(200), None)
+
+    val increasePairs = AllowancesAndDeductionPairs(Seq(hicbcIncrease), Seq.empty)
+    val decreasePairs = AllowancesAndDeductionPairs(Seq(hicbcDecrease), Seq.empty)
+
+    val increaseReasons = iabdTaxCodeChangeReasons.reasons(increasePairs)
+    val decreaseReasons = iabdTaxCodeChangeReasons.reasons(decreasePairs)
+
+    increaseReasons mustBe Seq(
+      messagesApi(
+        "tai.taxCodeComparison.iabd.ammended",
+        HICBCPaye.toV2Message(),
+        messagesApi("tai.taxCodeComparison.iabd.increased"),
+        "£100",
+        "£200"
+      )
+    )
+
+    decreaseReasons mustBe Seq(
+      messagesApi(
+        "tai.taxCodeComparison.iabd.ammended",
+        HICBCPaye.toV2Message(),
+        messagesApi("tai.taxCodeComparison.iabd.reduced"),
+        "£300",
+        "£200"
+      )
+    )
+  }
 }
