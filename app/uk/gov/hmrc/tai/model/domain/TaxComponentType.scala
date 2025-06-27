@@ -22,6 +22,9 @@ import play.api.libs.json._
 sealed trait TaxComponentType {
   def toMessage()(implicit messages: Messages): String =
     s"${messages(s"tai.taxFreeAmount.table.taxComponent.${this.toString}")}"
+
+  def toV2Message()(implicit messages: Messages): String =
+    s"${messages(s"tai.taxFreeAmount.tableV2.taxComponent.${this.toString}")}"
 }
 
 sealed trait AllowanceComponentType extends TaxComponentType

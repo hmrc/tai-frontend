@@ -70,10 +70,27 @@ class IabdTaxCodeChangeReasons {
             "tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid",
             formattedValue(pair.currentInputAmount)
           )
-        case taxComponentType             =>
+        case HICBCPaye                    =>
+          val previousAmount: BigDecimal = pair.previous.getOrElse(0)
+          val adjustmentMessage          =
+            if (previousAmount < currentAmount) {
+              messages("tai.taxCodeComparison.iabd.increased")
+            } else {
+              messages("tai.taxCodeComparison.iabd.reduced")
+            }
+
+          messages(
+            "tai.taxCodeComparison.iabd.amended",
+            HICBCPaye.toV2Message(),
+            adjustmentMessage,
+            MonetaryUtil.withPoundPrefixBD(previousAmount),
+            MonetaryUtil.withPoundPrefixBD(currentAmount)
+          )
+
+        case taxComponentType =>
           messages(
             "tai.taxCodeComparison.iabd.added",
-            taxComponentType.toMessage(),
+            taxComponentType.toV2Message(),
             MonetaryUtil.withPoundPrefix(currentAmount.toInt)
           )
       }
@@ -82,7 +99,7 @@ class IabdTaxCodeChangeReasons {
 
   private def translateChangedBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
-    val createAmmendmentMessage: (BigDecimal, BigDecimal) => String =
+    val createAmendmentMessage: (BigDecimal, BigDecimal) => String =
       (previousAmount: BigDecimal, currentAmount: BigDecimal) => {
         val adjustmentMessage: String =
           if (previousAmount < currentAmount) {
@@ -93,7 +110,7 @@ class IabdTaxCodeChangeReasons {
 
         messages(
           "tai.taxCodeComparison.iabd.ammended",
-          pair.componentType.toMessage(),
+          pair.componentType.toV2Message(),
           adjustmentMessage,
           MonetaryUtil.withPoundPrefixBD(previousAmount),
           MonetaryUtil.withPoundPrefixBD(currentAmount)
@@ -102,7 +119,7 @@ class IabdTaxCodeChangeReasons {
 
     (pair.previous, pair.current) match {
       case (Some(previousAmount), Some(currentAmount)) if previousAmount != currentAmount =>
-        Some(createAmmendmentMessage(previousAmount, currentAmount))
+        Some(createAmendmentMessage(previousAmount, currentAmount))
       case _                                                                              => None
     }
   }
