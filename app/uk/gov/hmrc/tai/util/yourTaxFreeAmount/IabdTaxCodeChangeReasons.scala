@@ -70,10 +70,27 @@ class IabdTaxCodeChangeReasons {
             "tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid",
             formattedValue(pair.currentInputAmount)
           )
-        case taxComponentType             =>
+        case HICBCPaye                    =>
+          val previousAmount: BigDecimal = pair.previous.getOrElse(0)
+          val adjustmentMessage          =
+            if (previousAmount < currentAmount) {
+              messages("tai.taxCodeComparison.iabd.increased")
+            } else {
+              messages("tai.taxCodeComparison.iabd.reduced")
+            }
+
+          messages(
+            "tai.taxCodeComparison.iabd.ammended",
+            HICBCPaye.toV2Message(),
+            adjustmentMessage,
+            MonetaryUtil.withPoundPrefixBD(previousAmount),
+            MonetaryUtil.withPoundPrefixBD(currentAmount)
+          )
+
+        case taxComponentType =>
           messages(
             "tai.taxCodeComparison.iabd.added",
-            taxComponentType.toMessage(),
+            taxComponentType.toV2Message(),
             MonetaryUtil.withPoundPrefix(currentAmount.toInt)
           )
       }
@@ -93,7 +110,7 @@ class IabdTaxCodeChangeReasons {
 
         messages(
           "tai.taxCodeComparison.iabd.ammended",
-          pair.componentType.toMessage(),
+          pair.componentType.toV2Message(),
           adjustmentMessage,
           MonetaryUtil.withPoundPrefixBD(previousAmount),
           MonetaryUtil.withPoundPrefixBD(currentAmount)
