@@ -19,8 +19,6 @@ package uk.gov.hmrc.tai.viewModels.income
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-import scala.annotation.nowarn
-
 sealed trait PayType
 case object IrregularPay extends PayType
 case object NextYearPay extends PayType
@@ -40,7 +38,7 @@ object ConfirmAmountEnteredViewModel {
   def apply(
     employmentId: Int,
     empName: String,
-    @nowarn currentAmount: Option[Int],
+    currentAmount: Option[Int],
     estIncome: Int,
     payType: PayType,
     backUrl: String
@@ -78,7 +76,7 @@ object ConfirmAmountEnteredViewModel {
 
   }
 
-  def apply(empName: String, @nowarn currentAmount: Option[Int], estIncome: Int, backUrl: String, empId: Int)(implicit
+  def apply(empName: String, currentAmount: Option[Int], estIncome: Int, backUrl: String, empId: Int)(implicit
     messages: Messages
   ): ConfirmAmountEnteredViewModel =
     ConfirmAmountEnteredViewModel(

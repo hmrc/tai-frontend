@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package uk.gov.hmrc.tai.util
 
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.HttpGet
-import uk.gov.hmrc.play.partials.HtmlPartial._
+import uk.gov.hmrc.http.StringContextOps
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.play.partials.HtmlPartial.*
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartialsConverter, HtmlPartial}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 trait EnhancedPartialRetriever extends HeaderCarrierForPartialsConverter {
 
-  val http: HttpGet
+  val httpClientV2: HttpClientV2
 
-  def loadPartial(url: String)(implicit request: RequestHeader, ec: ExecutionContext): Future[HtmlPartial] =
-    http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure
+  def loadPartial(partialUrl: String)(implicit request: RequestHeader, ec: ExecutionContext): Future[HtmlPartial] =
+    httpClientV2.get(url"$partialUrl").execute[HtmlPartial] recover connectionExceptionsAsHtmlPartialFailure
 }

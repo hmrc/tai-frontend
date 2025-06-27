@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,13 +92,12 @@ package object model {
     private def removeIndexNode(node: IdxPathNode, valueToRemoveFrom: JsArray): JsResult[JsValue] = {
       val index: Int = node.idx
 
-      valueToRemoveFrom match {
-        case valueToRemoveFrom: JsArray if index >= 0 && index < valueToRemoveFrom.value.length =>
-          val updatedJsArray = valueToRemoveFrom.value.slice(0, index) ++ valueToRemoveFrom.value
-            .slice(index + 1, valueToRemoveFrom.value.size)
-          JsSuccess(JsArray(updatedJsArray))
-        case valueToRemoveFrom: JsArray                                                         => JsError(s"array index out of bounds: $index, $valueToRemoveFrom")
-        case _                                                                                  => JsError(s"cannot set an index on $valueToRemoveFrom")
+      if (index >= 0 && index < valueToRemoveFrom.value.length) {
+        val updatedJsArray = valueToRemoveFrom.value.slice(0, index) ++ valueToRemoveFrom.value
+          .slice(index + 1, valueToRemoveFrom.value.size)
+        JsSuccess(JsArray(updatedJsArray))
+      } else {
+        JsError(s"array index out of bounds: $index, $valueToRemoveFrom")
       }
     }
 
@@ -126,7 +125,7 @@ package object model {
           Reads
             .optionNoError(Reads.at[JsValue](JsPath(first :: Nil)))
             .reads(oldValue)
-            .flatMap { opt: Option[JsValue] =>
+            .flatMap { (opt: Option[JsValue]) =>
               opt
                 .map(JsSuccess(_))
                 .getOrElse {

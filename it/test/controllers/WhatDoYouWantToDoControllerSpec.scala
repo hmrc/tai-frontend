@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,17 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, notFound, ok, urlEqualTo, urlMatching}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Application
 import play.api.http.Status.OK
-import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
-import play.twirl.api.Html
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
-import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 import utils.{FileHelper, IntegrationSpec}
 
@@ -45,152 +39,16 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
   private val personUrl          = s"/citizen-details/$generatedNino/designatory-details"
   private val startTaxYear       = TaxYear().start.getYear
 
-  private val mockWebChatClient = mock[WebChatClient]
+  override lazy val app: Application = new GuiceApplicationBuilder().build()
 
-  override lazy val app: Application = new GuiceApplicationBuilder()
-    .overrides(
-      bind[WebChatClient].toInstance(mockWebChatClient)
-    )
-    .build()
-
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockWebChatClient.loadWebChatContainer(any())(any())).thenReturn(Some(Html("webchat-test")))
-    when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("webchat-test")))
     server.stubFor(
       get(urlEqualTo(fandfDelegationUrl))
         .willReturn(notFound())
     )
   }
 
-  "What do you want to do page" must {
-    "show the webchat" when {
-      "it is enabled" in {
-        lazy val app = new GuiceApplicationBuilder()
-          .configure(
-            "auditing.enabled"                           -> "false",
-            "microservice.services.auth.port"            -> server.port(),
-            "microservice.services.tai.port"             -> server.port(),
-            "microservice.services.citizen-details.port" -> server.port(),
-            "microservice.services.pertax.port"          -> server.port(),
-            "microservice.services.fandf.port"           -> server.port(),
-            "feature.web-chat.enabled"                   -> true
-          )
-          .overrides(
-            bind[WebChatClient].toInstance(mockWebChatClient)
-          )
-          .build()
-
-        server.stubFor(
-          get(urlEqualTo(personUrl))
-            .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
-        )
-
-        server.stubFor(
-          get(urlEqualTo("/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"))
-            .willReturn(ok("""
-                             |{"HMRCEMBEDDEDCHATSKIN":"HMRCEMBEDDEDCHATSKIN",
-                             |"HMRC_Fixed_1":"HMRC_Fixed_1",
-                             |"HMRC_Anchored_1":"HMRC_Anchored_1",
-                             |"HMRCPOPUPCHATSKIN":"HMRCPOPUPCHATSKIN"
-                             |}""".stripMargin))
-        )
-
-        val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
-            .willReturn(ok(Json.toJson(employments).toString))
-        )
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/employments-only/years/$startTaxYear"))
-            .willReturn(ok(Json.toJson(employments).toString))
-        )
-
-        val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
-            .willReturn(ok(Json.toJson(taxAccountSummary).toString))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
-            .willReturn(ok(Json.toJson(taxAccountSummary).toString))
-        )
-
-        server.stubFor(
-          get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
-            .willReturn(ok("false"))
-        )
-
-        val request =
-          FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
-
-        val result = route(app, request).get
-        contentAsString(result) must include("webchat-test")
-      }
-    }
-  }
-
-  "not show the webchat" when {
-    "it is disabled" in {
-      lazy val app = new GuiceApplicationBuilder()
-        .configure(
-          "auditing.enabled"                           -> "false",
-          "microservice.services.auth.port"            -> server.port(),
-          "microservice.services.tai.port"             -> server.port(),
-          "microservice.services.citizen-details.port" -> server.port(),
-          "microservice.services.fandf.port"           -> server.port(),
-          "feature.web-chat.enabled"                   -> false
-        )
-        .overrides(
-          bind[WebChatClient].toInstance(mockWebChatClient)
-        )
-        .build()
-
-      server.stubFor(
-        get(urlEqualTo(personUrl))
-          .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
-      )
-
-      server.stubFor(
-        get(urlEqualTo("/engagement-platform-partials/partials/%5B%22HMRC_Fixed_1%22%2C%22HMRC_Anchored_1%22%5D"))
-          .willReturn(ok("""
-                           |{"HMRCEMBEDDEDCHATSKIN":"HMRCEMBEDDEDCHATSKIN",
-                           |"HMRC_Fixed_1":"HMRC_Fixed_1",
-                           |"HMRC_Anchored_1":"HMRC_Anchored_1",
-                           |"HMRCPOPUPCHATSKIN":"HMRCPOPUPCHATSKIN"
-                           |}""".stripMargin))
-      )
-
-      val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
-      server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
-          .willReturn(ok(Json.toJson(employments).toString))
-      )
-
-      val taxAccountSummary = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
-      server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/tax-account/$startTaxYear/summary"))
-          .willReturn(ok(Json.toJson(taxAccountSummary).toString))
-      )
-
-      server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/tax-account/${startTaxYear + 1}/summary"))
-          .willReturn(ok(Json.toJson(taxAccountSummary).toString))
-      )
-
-      server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
-          .willReturn(ok("false"))
-      )
-
-      val request =
-        FakeRequest(GET, url).withSession(SessionKeys.authToken -> "Bearer 1")
-
-      val result = route(app, request).get
-      contentAsString(result) mustNot include("webchat-test")
-    }
-  }
   "show the WhatDoYouWantToDo page" should {
     lazy val app = new GuiceApplicationBuilder()
       .configure(
@@ -199,11 +57,7 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         "microservice.services.pertax.port"          -> server.port(),
         "microservice.services.tai.port"             -> server.port(),
         "microservice.services.citizen-details.port" -> server.port(),
-        "microservice.services.fandf.port"           -> server.port(),
-        "feature.web-chat.enabled"                   -> false
-      )
-      .overrides(
-        bind[WebChatClient].toInstance(mockWebChatClient)
+        "microservice.services.fandf.port"           -> server.port()
       )
       .build()
 

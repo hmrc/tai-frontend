@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ object YesNoForm {
   def form(emptySelectionMsg: String = ""): Form[YesNoForm] = Form[YesNoForm](
     mapping(
       FormValuesConstants.YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg))
-    )(YesNoForm.apply)(YesNoForm.unapply)
+    )(YesNoForm.apply)(form => Some(form.yesNoChoice))
   )
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class IncomeTaxHistoryController @Inject() (
       employmentDetails         <- employmentService.employments(nino, taxYear)
     } yield {
       val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
-      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { employment: Employment =>
+      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { (employment: Employment) =>
         val maybeTaxCode: Option[TaxCodeIncome] = for {
           taxCodesMap <- maybeTaxCodesMap
           incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))

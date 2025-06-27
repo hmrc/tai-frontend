@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import play.api.Logging
 import play.api.http.HeaderNames
 import play.api.mvc.RequestHeader
+import play.api.libs.ws.WSBodyWritables.writeableOf_String
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -31,8 +32,7 @@ import uk.gov.hmrc.tai.model.{PertaxRequestDetails, PertaxResponse}
 import scala.concurrent.{ExecutionContext, Future}
 
 class PertaxConnector @Inject() (
-  httpClient: HttpClient,
-  http: HttpClientV2,
+  httpClientV2: HttpClientV2,
   appConfig: ApplicationConfig,
   httpClientResponse: HttpHandler,
   headerCarrierForPartialsConverter: HeaderCarrierForPartialsConverter
@@ -46,7 +46,7 @@ class PertaxConnector @Inject() (
   ): EitherT[Future, UpstreamErrorResponse, PertaxResponse] =
     httpClientResponse
       .read(
-        http
+        httpClientV2
           .post(url"$pertaxUrl/pertax/authorise")
           .setHeader(HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+json")
           .withBody(PertaxRequestDetails().toString)
@@ -56,12 +56,13 @@ class PertaxConnector @Inject() (
 
   def loadPartial(url: String)(implicit request: RequestHeader, ec: ExecutionContext): Future[HtmlPartial] = {
     implicit val hc: HeaderCarrier = headerCarrierForPartialsConverter.fromRequestWithEncryptedCookie(request)
+    val partialUrl                 = s"$pertaxUrl$url"
 
-    httpClient.GET[HtmlPartial](s"$pertaxUrl$url") map {
+    httpClientV2.get(url"$partialUrl").execute[HtmlPartial].map {
       case partial: HtmlPartial.Success =>
         partial
       case partial: HtmlPartial.Failure =>
-        logger.error(s"Failed to load partial from $url, partial info: $partial")
+        logger.error(s"Failed to load partial from $url, partial info: $partial, body: ${partial.body}")
         partial
     } recover { case e =>
       logger.error(s"Failed to load partial from $url", e)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class ApplicationConfig @Inject() (
 
   lazy val basGatewayFrontendSignInUrl: String = s"$basGatewayHost/bas-gateway/sign-in"
 
-  lazy val sessionTimeoutInSeconds: Int = getOptional[Int]("tai.session.timeout").getOrElse(900)
+  lazy val sessionTimeoutInSeconds: Long = getOptional[Int]("tai.session.timeout").getOrElse(900)
 
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   private lazy val basGatewayHost: String           = decorateUrlForLocalDev("bas-gateway-frontend.host")
@@ -114,7 +114,6 @@ class ApplicationConfig @Inject() (
   private lazy val identityVerificationHost: String = decorateUrlForLocalDev("identity-verification.host")
   private lazy val taxCalcFrontendHost: String      = decorateUrlForLocalDev("taxcalc-frontend.host")
   private lazy val trackFrontendHost: String        = decorateUrlForLocalDev("tracking-frontend.host")
-  lazy val webChatIsEnabled: Boolean                = getOptional[Boolean]("feature.web-chat.enabled").getOrElse(false)
   lazy val pertaxUrl: String                        =
     servicesConfig.baseUrl("pertax")
 

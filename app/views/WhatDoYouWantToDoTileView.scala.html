@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@
 @import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 @import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil => Dates}
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-@import scala.annotation.nowarn
 @this(mainTemplate: MainTemplate)
 
-@(@nowarn wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
+@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
         model: WhatDoYouWantToDoViewModel,
         appConfig: ApplicationConfig,
         incomeTaxHistoryEnabled: Boolean,

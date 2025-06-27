@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ object AddEmploymentPayrollNumberForm {
         FormValuesConstants.YesValue,
         text.verifying(Messages("tai.addEmployment.employmentPayrollNumber.error.blank"), _.nonEmpty)
       )
-    )(AddEmploymentPayrollNumberForm.apply)(AddEmploymentPayrollNumberForm.unapply)
+    )(AddEmploymentPayrollNumberForm.apply)(form => Some(Tuple2(form.payrollNumberChoice, form.payrollNumberEntry)))
   )
 
 }

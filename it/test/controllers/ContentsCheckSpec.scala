@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package controllers
 
 import cats.data.EitherT
+import cats.instances.future.*
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
@@ -46,7 +47,6 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
-import uk.gov.hmrc.sca.models.{MenuItemConfig, PtaMinMenuConfig, WrapperDataResponse}
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
@@ -544,19 +544,33 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       .withSession(SessionKeys.sessionId -> uuid, SessionKeys.authToken -> "Bearer 1")
       .withHeaders("Referer" -> "")
 
-  val wrapperDataResponse: String = Json
-    .toJson(
-      WrapperDataResponse(
-        Seq(
-          MenuItemConfig("id", "NewLayout Item", "link", leftAligned = false, 0, None, None),
-          MenuItemConfig("signout", "Sign out", "link", leftAligned = false, 0, None, None)
-        ),
-        PtaMinMenuConfig("MenuName", "BackName"),
-        List.empty,
-        List.empty
-      )
-    )
-    .toString
+  val wrapperDataResponse: String =
+    """
+      |{
+      |    "menuItemConfig": [
+      |        {
+      |            "id": "id",
+      |            "text": "NewLayout Item",
+      |            "href": "link",
+      |            "leftAligned": false,
+      |            "position": 0
+      |        },
+      |        {
+      |            "id": "signout",
+      |            "text": "Sign out",
+      |            "href": "link",
+      |            "leftAligned": false,
+      |            "position": 0
+      |        }
+      |    ],
+      |    "ptaMinMenuConfig": {
+      |        "menuName": "MenuName",
+      |        "backName": "Back"
+      |    },
+      |    "urBanners": [],
+      |    "webchatPages": []
+      |}
+      |""".stripMargin
 
   val person: Person              = Person(
     generatedNino,

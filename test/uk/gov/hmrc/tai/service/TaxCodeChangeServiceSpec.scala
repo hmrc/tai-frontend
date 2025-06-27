@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
+import cats.instances.future.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status.INTERNAL_SERVER_ERROR
@@ -27,7 +28,8 @@ import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import utils.BaseSpec
 
-import scala.concurrent.duration._
+import java.time.LocalDate
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -136,8 +138,8 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     }
   }
 
-  val startDate      = TaxYear().start
-  val taxCodeRecord1 = TaxCodeRecord(
+  val startDate: LocalDate          = TaxYear().start
+  val taxCodeRecord1: TaxCodeRecord = TaxCodeRecord(
     "code",
     startDate,
     startDate.plusDays(1),
@@ -147,11 +149,11 @@ class TaxCodeChangeServiceSpec extends BaseSpec {
     Some("1234"),
     true
   )
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
+  val taxCodeRecord2: TaxCodeRecord = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
   private def createTestService = new TestService
 
-  val taxCodeChangeConnector = mock[TaxCodeChangeConnector]
+  val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]
 
   private class TestService extends TaxCodeChangeService(taxCodeChangeConnector, ec)
 }

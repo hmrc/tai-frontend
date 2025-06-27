@@ -17,14 +17,13 @@
 @import includes.printBanner
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import scala.annotation.nowarn
 
 @(formForErrorSummary: Option[Form[_]] = None,
         mainHeadingText: String,
         preHeadingText: String,
         maybeUserName: Option[String] = None,
         preHeadingAccessibleAnnouncement: String = "",
-        @nowarn customBackLinkContent: Option[Html] = None,
+        customBackLinkContent: Option[Html] = None,
         govukErrorSummary: Option[GovukErrorSummary] = None,
         showPreHeading: Boolean = true,
         mainHeadingCssClass: Option[String] = None

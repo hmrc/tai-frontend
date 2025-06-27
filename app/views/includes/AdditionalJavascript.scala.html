@@ -15,11 +15,8 @@
  *@
 
 @import views.html.helper.CSPNonce
-@import uk.gov.hmrc.webchat.client.WebChatClient
-@import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@this(appConfig: ApplicationConfig,
-webChatClient: WebChatClient)
+@this()
 @()(implicit requestHeader: RequestHeader)
 
     <script @CSPNonce.attr src='@controllers.routes.AssetsController.versioned("javascripts/print.js")'></script>
@@ -31,8 +28,3 @@ webChatClient: WebChatClient)
                     htmlElem.setAttribute("lang", lang);
                 }
         </script>
-    @if(appConfig.webChatIsEnabled) {
-        @{webChatClient.loadRequiredElements()(requestHeader.withBody(""))}
-        @{webChatClient.loadWebChatContainer("HMRC_Anchored_1")(requestHeader.withBody(""))}
-    }
-

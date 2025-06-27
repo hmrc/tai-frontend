@@ -97,12 +97,10 @@ messages: Messages)
             @for(incomeTaxYear <- incomeTaxYears) {
                 <h2 class="govuk-heading-m govuk-!-margin-top-0" >@TaxPeriodLabelService.taxPeriodLabel(incomeTaxYear.taxYear.year)</h2>
 
-                @{
-                    if (incomeTaxYear.incomeTaxHistory.isEmpty){
-                        <div class="govuk-inset-text">
-                            <p>{messages("tai.incomeTax.history.noTaxHistory")}</p>
-                        </div>
-                    }
+                @if(incomeTaxYear.incomeTaxHistory.isEmpty) {
+                    <div class="govuk-inset-text">
+                        <p>@Messages("tai.incomeTax.history.noTaxHistory")</p>
+                    </div>
                 }
 
                 @for(summary <- incomeTaxYear.incomeTaxHistory) {

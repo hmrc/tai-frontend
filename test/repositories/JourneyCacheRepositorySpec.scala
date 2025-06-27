@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ class JourneyCacheRepositorySpec
   private val userAnswers = UserAnswers("session-id-1", "nino", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
 
   private val mockAppConfig = mock[ApplicationConfig]
-  when(mockAppConfig.sessionTimeoutInSeconds) thenReturn 1
+  when(mockAppConfig.sessionTimeoutInSeconds) thenReturn 1L
 
-  protected override val repository = new JourneyCacheRepository(
+  protected override val repository: JourneyCacheRepository = new JourneyCacheRepository(
     mongoComponent = mongoComponent,
     appConfig = mockAppConfig,
     clock = stubClock

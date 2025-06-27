@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
           "10000.00"
         )
 
-      forAll(validValues) { monetaryValue: String =>
+      forAll(validValues) { (monetaryValue: String) =>
         val viewModel        = createViewModel(taxablePay = Some(monetaryValue))
         val taxablePayAnwser = viewModel.journeyConfirmationLines
           .filter(checkYourAnswerConfirmationLine => checkYourAnswerConfirmationLine.question == taxablePayQuestion)
