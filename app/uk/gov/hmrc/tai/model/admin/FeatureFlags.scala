@@ -21,20 +21,20 @@ import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagName
 case object CyPlusOneToggle extends FeatureFlagName {
   override val name: String                = "cy-plus-one-toggle"
   override val description: Option[String] = Some(
-    "Enable/disable cy plus one"
+    "Enable/disable CY+1 (next tax year) features, including income comparison and estimated pay updates."
   )
 }
 
 case object IncomeTaxHistoryToggle extends FeatureFlagName {
   override val name: String                = "income-tax-history-toggle"
   override val description: Option[String] = Some(
-    "Enable/disable the income ta history"
+    "Enable/disable access to the income tax history section showing previous tax years"
   )
 }
 
 case object DesignatoryDetailsCheck extends FeatureFlagName {
   override val name: String                = "designatory-details-check"
   override val description: Option[String] = Some(
-    "Enable/disable designatory details call for personal details on citizen details"
+    "Enable/disable fetching of personal designatory details (e.g., name, address) from Citizen Details service."
   )
 }
