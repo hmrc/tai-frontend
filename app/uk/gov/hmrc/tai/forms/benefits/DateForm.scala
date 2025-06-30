@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import scala.util.Try
 case class DateForm(emptyDateMessage: String) {
 
   def form(implicit messages: Messages): Form[LocalDate] = {
-    implicit val dateFormatter = new Formatter[LocalDate] {
+    implicit val dateFormatter: Formatter[LocalDate] = new Formatter[LocalDate] {
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
 
         val dayErrors: Boolean = data.getOrElse(DateFormDay, "").isEmpty

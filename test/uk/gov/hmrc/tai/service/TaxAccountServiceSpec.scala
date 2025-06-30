@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
+import cats.instances.future.*
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -207,16 +208,16 @@ class TaxAccountServiceSpec extends BaseSpec {
     }
   }
 
-  val taxAccountSummary = TaxAccountSummary(111, 222, 333.23, 444.44, 111.11)
+  val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333.23, 444.44, 111.11)
 
-  private val taxCodeIncome1 =
+  private val taxCodeIncome1             =
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
-  val taxCodeIncomes         = Seq(
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
     taxCodeIncome1,
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
-  val taxCodes = Seq("SD0", "1150L")
+  val taxCodes: Seq[String] = Seq("SD0", "1150L")
 
   private val nonTaxCodeIncome = NonTaxCodeIncome(
     Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")),
@@ -225,7 +226,7 @@ class TaxAccountServiceSpec extends BaseSpec {
 
   private def createSut = new SUT
 
-  val taxAccountConnector = mock[TaxAccountConnector]
+  val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
 
   private class SUT
       extends TaxAccountService(

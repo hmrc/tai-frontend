@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class TaxFreeAmountController @Inject() (
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  taxFreeAmount: TaxFreeAmountView,
+  taxFreeAmountView: TaxFreeAmountView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
@@ -60,7 +60,7 @@ class TaxFreeAmountController @Inject() (
         applicationConfig
       )
       implicit val user: AuthedUser = request.taiUser
-      Ok(taxFreeAmount(viewModel, applicationConfig, request.fullName))
+      Ok(taxFreeAmountView(viewModel, applicationConfig, request.fullName))
     }) recover {
       case e: NotFoundException =>
         logger.warn(s"Total tax - No tax account information found: ${e.getMessage}")

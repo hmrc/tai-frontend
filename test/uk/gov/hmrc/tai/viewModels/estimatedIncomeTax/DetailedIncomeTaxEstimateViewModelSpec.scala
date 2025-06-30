@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -230,7 +230,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
             nonHigherBands <- Gen.listOf(nonHigherTaxBandGen)
           } yield higherBands ++ nonHigherBands
 
-          forAll(gen) { taxBands: Seq[TaxBand] =>
+          forAll(gen) { (taxBands: Seq[TaxBand]) =>
             DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
           }
         }
@@ -240,7 +240,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
           val gen: Gen[Seq[TaxBand]] =
             Gen.listOf[TaxBand](nonHigherTaxBandGen)
 
-          forAll(gen) { taxBands: Seq[TaxBand] =>
+          forAll(gen) { (taxBands: Seq[TaxBand]) =>
             DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
           }
         }

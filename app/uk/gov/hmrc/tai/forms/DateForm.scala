@@ -27,7 +27,7 @@ import java.time.LocalDate
 case class DateForm(validations: Seq[(LocalDate => Boolean, String)], blankDateMessage: String) extends FormValidator {
 
   def form(implicit messages: Messages): Form[LocalDate] = {
-    implicit val dateFormatter = new LocalDateFormatter(
+    implicit val dateFormatter: LocalDateFormatter = new LocalDateFormatter(
       formDay = DateFormDay,
       formMonth = DateFormMonth,
       formYear = DateFormYear,

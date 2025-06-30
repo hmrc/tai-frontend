@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ object IncomeSelectorForm {
   def incomeSelectorForm: Form[IncomeSelectorForm] = Form[IncomeSelectorForm](
     mapping(
       "incomeId" -> number()
-    )(IncomeSelectorForm.apply)(IncomeSelectorForm.unapply)
+    )(IncomeSelectorForm.apply)(form => Some(form.incomeId))
   )
 
-  def createForm(): Form[IncomeSelectorForm] =
+  private def createForm(): Form[IncomeSelectorForm] =
     Form[IncomeSelectorForm](
       mapping(
         "incomeId" -> number()
-      )(IncomeSelectorForm.apply)(IncomeSelectorForm.unapply)
+      )(IncomeSelectorForm.apply)(form => Some(form.incomeId))
     )
 }

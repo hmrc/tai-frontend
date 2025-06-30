@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package utils
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, ok, post, urlEqualTo, urlMatching}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.Injecting
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.domain.{AtedUtr, Generator, Nino}
 import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.ExecutionContext
@@ -35,21 +36,21 @@ trait IntegrationSpec
     with ScalaFutures
     with IntegrationPatience
     with Injecting {
-  val generatedNino = new Generator().nextNino
+  val generatedNino: Nino = new Generator().nextNino
 
-  val generatedSaUtr = new Generator().nextAtedUtr
+  val generatedSaUtr: AtedUtr = new Generator().nextAtedUtr
 
-  lazy val messagesApi = inject[MessagesApi]
+  lazy val messagesApi: MessagesApi = inject[MessagesApi]
 
   implicit lazy val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
-  val taxYear = TaxYear().year
+  val taxYear: Int = TaxYear().year
 
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
 
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
 
     super.beforeEach()
 
@@ -86,6 +87,46 @@ trait IntegrationSpec
     server.stubFor(
       post(urlEqualTo("/pertax/authorise"))
         .willReturn(aResponse().withBody("""{"code":"ACCESS_GRANTED", "message":"test"}"""))
+    )
+
+    val wrapperDataResponse: String =
+      """
+        |{
+        |    "menuItemConfig": [
+        |        {
+        |            "id": "home",
+        |            "text": "Check your Income Tax",
+        |            "href": "http://localhost:9230/check-income-tax/what-do-you-want-to-do",
+        |            "leftAligned": true,
+        |            "position": 0,
+        |            "icon": "hmrc-account-icon hmrc-account-icon--home"
+        |        }
+        |    ],
+        |    "ptaMinMenuConfig": {
+        |        "menuName": "Account menu",
+        |        "backName": "Back"
+        |    },
+        |    "urBanners": [
+        |        {
+        |           "page": "test-page",
+        |           "link": "test-link",
+        |           "isEnabled": true
+        |        }
+        |    ],
+        |    "webchatPages": [
+        |        {
+        |            "pattern": "^/check-income-tax/.*",
+        |            "skinElement": "skinElement",
+        |            "isEnabled": true
+        |        }
+        |    ]
+        |}
+        |""".stripMargin
+
+    server.stubFor(
+      WireMock
+        .get(urlMatching("/single-customer-account-wrapper-data/wrapper-data.*"))
+        .willReturn(ok(wrapperDataResponse))
     )
   }
 }
