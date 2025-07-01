@@ -17,14 +17,26 @@
 package uk.gov.hmrc.tai.model.domain
 
 import play.api.i18n.Messages
-import play.api.libs.json._
+import play.api.libs.json.*
 
 sealed trait TaxComponentType {
   def toMessage()(implicit messages: Messages): String =
     s"${messages(s"tai.taxFreeAmount.table.taxComponent.${this.toString}")}"
 
-  def toV2Message()(implicit messages: Messages): String =
-    s"${messages(s"tai.taxFreeAmount.tableV2.taxComponent.${this.toString}")}"
+  case class MessageInfo(msg: String, isSingular: Boolean)
+  def toV2Message()(implicit messages: Messages): MessageInfo = {
+    def buildMsgKey(singularPluralIndicator: String) =
+      s"tai.taxFreeAmount.tableV2.taxComponent.$singularPluralIndicator.${this.toString}"
+    val singularMsgKey                               = buildMsgKey("singular")
+
+    val (msgKey, isSingular) = if (messages.isDefinedAt(singularMsgKey)) {
+      (singularMsgKey, true)
+    } else {
+      (buildMsgKey("plural"), false)
+    }
+
+    MessageInfo(s"${messages(msgKey)}", isSingular)
+  }
 }
 
 sealed trait AllowanceComponentType extends TaxComponentType

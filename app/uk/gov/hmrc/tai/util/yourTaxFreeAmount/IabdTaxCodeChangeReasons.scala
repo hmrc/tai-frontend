@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.CodingComponentPair
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
 class IabdTaxCodeChangeReasons {
@@ -54,6 +54,8 @@ class IabdTaxCodeChangeReasons {
   private def isChangedAmount(pair: CodingComponentPair): Boolean =
     pair.previous.isDefined && pair.current.isDefined
 
+  private def buildMsgKey(msgKey: String, isSingular: Boolean) = s"$msgKey.${if (isSingular) "singular" else "plural"}"
+
   private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
     def formattedValue(value: Option[BigDecimal]) =
@@ -78,19 +80,20 @@ class IabdTaxCodeChangeReasons {
             } else {
               messages("tai.taxCodeComparison.iabd.reduced")
             }
-
+          val msgInfo                    = HICBCPaye.toV2Message()
           messages(
-            "tai.taxCodeComparison.iabd.amended",
-            HICBCPaye.toV2Message(),
+            buildMsgKey("tai.taxCodeComparison.iabd.amended", msgInfo.isSingular),
+            msgInfo.msg,
             adjustmentMessage,
             MonetaryUtil.withPoundPrefixBD(previousAmount),
             MonetaryUtil.withPoundPrefixBD(currentAmount)
           )
 
         case taxComponentType =>
+          val msgInfo = taxComponentType.toV2Message()
           messages(
             "tai.taxCodeComparison.iabd.added",
-            taxComponentType.toV2Message(),
+            msgInfo.msg,
             MonetaryUtil.withPoundPrefix(currentAmount.toInt)
           )
       }
@@ -108,9 +111,11 @@ class IabdTaxCodeChangeReasons {
             messages("tai.taxCodeComparison.iabd.reduced")
           }
 
+        val msgInfo = pair.componentType.toV2Message()
+
         messages(
-          "tai.taxCodeComparison.iabd.amended",
-          pair.componentType.toV2Message(),
+          buildMsgKey("tai.taxCodeComparison.iabd.amended", msgInfo.isSingular),
+          msgInfo.msg,
           adjustmentMessage,
           MonetaryUtil.withPoundPrefixBD(previousAmount),
           MonetaryUtil.withPoundPrefixBD(currentAmount)
