@@ -1640,7 +1640,7 @@ tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
 
 tai.taxCodeComparison.iabd.increased=gynyddu
 tai.taxCodeComparison.iabd.reduced=gostwng
-tai.taxCodeComparison.iabd.ammended=mae’ch {0} wedi’u {1} o {2} i {3}
+tai.taxCodeComparison.iabd.amended=mae’ch {0} wedi’u {1} o {2} i {3}
 
 tai.taxCodeComparison.iabd.added=rydych nawr yn cael {0} gwerth {1}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=rydych wedi hawlio treuliau ar gyfer blynyddoedd blaenorol

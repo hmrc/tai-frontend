@@ -81,7 +81,7 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
       reasons mustBe Seq(
         messagesApi("tai.taxCodeComparison.iabd.added", "job expenses", "£123"),
         messagesApi(
-          "tai.taxCodeComparison.iabd.ammended",
+          "tai.taxCodeComparison.iabd.amended",
           "vehicle expenses",
           messagesApi("tai.taxCodeComparison.iabd.increased"),
           "£100",
@@ -89,7 +89,7 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
         ),
         messagesApi("tai.taxCodeComparison.iabd.added", "car benefit", "£123"),
         messagesApi(
-          "tai.taxCodeComparison.iabd.ammended",
+          "tai.taxCodeComparison.iabd.amended",
           "medical insurance",
           messagesApi("tai.taxCodeComparison.iabd.reduced"),
           "£200",
@@ -149,7 +149,7 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
     }
   }
 
-  "handle HICBCPaye with ammended message correctly" in {
+  "handle HICBCPaye with amended message correctly" in {
     val hicbcIncrease = CodingComponentPair(HICBCPaye, Some(1), Some(100), Some(200), None)
     val hicbcDecrease = CodingComponentPair(HICBCPaye, Some(1), Some(300), Some(200), None)
 
@@ -161,7 +161,7 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
 
     increaseReasons mustBe Seq(
       messagesApi(
-        "tai.taxCodeComparison.iabd.ammended",
+        "tai.taxCodeComparison.iabd.amended",
         HICBCPaye.toV2Message(),
         messagesApi("tai.taxCodeComparison.iabd.increased"),
         "£100",
@@ -171,7 +171,7 @@ class IabdTaxCodeChangeReasonsSpec extends BaseSpec {
 
     decreaseReasons mustBe Seq(
       messagesApi(
-        "tai.taxCodeComparison.iabd.ammended",
+        "tai.taxCodeComparison.iabd.amended",
         HICBCPaye.toV2Message(),
         messagesApi("tai.taxCodeComparison.iabd.reduced"),
         "£300",
