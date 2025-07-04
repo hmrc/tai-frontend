@@ -21,11 +21,23 @@ import utils.BaseSpec
 
 class TaxComponentTypeSpec extends BaseSpec {
 
-  "toMessage" must {
+  "toMessage"   must {
     "return the tax component type as a user friendly label" in {
       val taxComponentType = GiftAidPayments
 
       taxComponentType.toMessage() mustBe "Gift Aid Payments"
+    }
+  }
+  "toV2Message" must {
+    "return the tax component type as a user friendly label for a singular item" in {
+      val result = Accommodation.toV2Message()
+      result.msg mustBe "accommodation"
+      result.isSingular mustBe true
+    }
+    "return the tax component type as a user friendly label for a plural item" in {
+      val result = Assets.toV2Message()
+      result.msg mustBe "assets"
+      result.isSingular mustBe false
     }
   }
 
