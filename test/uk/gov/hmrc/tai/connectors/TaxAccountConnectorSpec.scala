@@ -611,7 +611,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(TaxOnBankBSInterest, 100))))
         )
 
-        val result = taxAccountConnector.totalTax(nino, currentTaxYear).futureValue
+        val result = taxAccountConnector.totalTax(nino, currentTaxYear).value.futureValue
         result mustBe expectedTotalTax
       }
     }
@@ -626,7 +626,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
 
         assertThrows[NotFoundException] {
-          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
+          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear).value, 5.seconds)
         }
       }
     }
@@ -642,7 +642,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
 
         assertThrows[RuntimeException] {
-          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
+          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear).value, 5.seconds)
         }
       }
     }
@@ -658,7 +658,7 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
 
         assertThrows[UnauthorizedException] {
-          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear), 5.seconds)
+          Await.result(taxAccountConnector.totalTax(nino, currentTaxYear).value, 5.seconds)
         }
       }
     }

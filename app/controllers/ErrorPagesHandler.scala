@@ -196,6 +196,12 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
       }
   }
 
+  def internalServerError(implicit
+    request: Request[_],
+    messages: Messages
+  ): Result =
+    InternalServerError(error5xx(messages("tai.technical.error.message")))
+
   def internalServerError(logMessage: String, ex: Option[Throwable] = None)(implicit
     request: Request[_],
     messages: Messages

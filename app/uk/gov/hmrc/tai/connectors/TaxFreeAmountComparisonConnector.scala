@@ -16,18 +16,23 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import cats.data.EitherT
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
+import uk.gov.hmrc.http.HttpReadsInstances._
 
 @Singleton
-class TaxFreeAmountComparisonConnector @Inject() (val httpHandler: HttpHandler, servicesConfig: ServicesConfig)(implicit
+class TaxFreeAmountComparisonConnector @Inject() (
+  httpClientResponse: HttpClientResponse,
+  httpHandler: HttpHandler,
+  servicesConfig: ServicesConfig
+)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -35,11 +40,20 @@ class TaxFreeAmountComparisonConnector @Inject() (val httpHandler: HttpHandler, 
 
   def taxFreeAmountComparisonUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
-  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
-    httpHandler.getFromApiV2(taxFreeAmountComparisonUrl(nino.nino)).map { json =>
-      (json \ "data").as[TaxFreeAmountComparison]
-    } recover { case NonFatal(e) =>
-      logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception: ${e.getMessage}")
-      throw e
-    }
+  def taxFreeAmountComparison(
+    nino: Nino
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, TaxFreeAmountComparison] = {
+
+    val url = taxFreeAmountComparisonUrl(nino.nino)
+
+    httpClientResponse
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map { httpResponse =>
+        (httpResponse.json \ "data").as[TaxFreeAmountComparison]
+      }
+  }
 }

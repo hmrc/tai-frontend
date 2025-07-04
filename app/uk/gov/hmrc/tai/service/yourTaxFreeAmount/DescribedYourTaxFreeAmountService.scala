@@ -24,12 +24,13 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxFreeAmountDetails, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService, YourTaxFreeAmountService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.tai.util.EitherTExtensions._
 
 class DescribedYourTaxFreeAmountService @Inject() (
   yourTaxFreeAmountService: YourTaxFreeAmountService,
@@ -43,16 +44,9 @@ class DescribedYourTaxFreeAmountService @Inject() (
     messages: Messages,
     executionContext: ExecutionContext
   ): Future[YourTaxFreeAmountViewModel] =
-    taxFreeAmount(nino, yourTaxFreeAmountService.taxFreeAmountComparison)
-
-  private def taxFreeAmount(nino: Nino, getTaxFreeAmount: Nino => Future[YourTaxFreeAmountComparison])(implicit
-    hc: HeaderCarrier,
-    messages: Messages,
-    executionContext: ExecutionContext
-  ): Future[YourTaxFreeAmountViewModel] =
     (
       employmentService.employmentNames(nino, TaxYear()),
-      getTaxFreeAmount(nino),
+      yourTaxFreeAmountService.taxFreeAmountComparison(nino).toFutureOrThrow,
       companyCarService.companyCars(nino),
       taxAccountService.totalTax(nino, TaxYear())
     ).mapN { (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>

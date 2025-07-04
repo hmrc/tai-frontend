@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
@@ -39,7 +40,7 @@ class CodingComponentService @Inject() (
 
   def taxFreeAmountComparison(
     nino: Nino
-  )(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] =
+  )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, TaxFreeAmountComparison] =
     taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino).map(filterOutZeroAmountsComponents)
 
   private def filterOutZeroAmountsComponents(

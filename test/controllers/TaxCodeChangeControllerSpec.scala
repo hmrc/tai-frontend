@@ -157,6 +157,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
   private val taxCodeComparisonView = inject[TaxCodeComparisonView]
 
+  private val errorPagesHandler = inject[ErrorPagesHandler]
+
   private class TaxCodeChangeTestController
       extends TaxCodeChangeController(
         taxCodeChangeService,
@@ -169,7 +171,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         mcc,
         taxCodeComparisonView,
         yourTaxFreeAmountView,
-        whatHappensNextView
+        whatHappensNextView,
+        errorPagesHandler
       ) {}
 
 }

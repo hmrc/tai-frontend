@@ -53,7 +53,7 @@ class YourTaxFreeAmountServiceSpec extends BaseSpec {
         )
 
       val service = createTestService
-      val result  = service.taxFreeAmountComparison(nino)
+      val result  = service.taxFreeAmountComparison(nino).value
 
       Await.result(result, 5.seconds) mustBe expectedModel
     }

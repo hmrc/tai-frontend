@@ -150,6 +150,18 @@ class TaxAccountConnector @Inject() (
       .putToApi(updateTaxCodeIncome(nino.nino, year, id), UpdateTaxCodeIncomeRequest(newAmount))
       .map(_ => Done)
 
-  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
-    httpHandler.getFromApiV2(totalTaxUrl(nino.nino, year)) map (json => (json \ "data").as[TotalTax])
+  def totalTax(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, TotalTax] = {
+    val url = totalTaxUrl(nino.nino, year)
+    httpHandler
+      .read(
+        httpHandler.httpClient
+          .get(url"$url")
+          .execute[Either[UpstreamErrorResponse, HttpResponse]]
+      )
+      .map { httpResponse =>
+        (httpResponse.json \ "data").as[TotalTax]
+      }
+  }
 }

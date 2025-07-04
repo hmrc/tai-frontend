@@ -16,12 +16,14 @@
 
 package controllers
 
+import cats.data.EitherT
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
@@ -29,7 +31,6 @@ import views.html.taxCodeChange.{TaxCodeComparisonView, WhatHappensNextView, You
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.tai.util.EitherTExtensions.EitherTThrowableOps
 
 class TaxCodeChangeController @Inject() (
   taxCodeChangeService: TaxCodeChangeService,
@@ -42,7 +43,8 @@ class TaxCodeChangeController @Inject() (
   mcc: MessagesControllerComponents,
   taxCodeComparisonView: TaxCodeComparisonView,
   yourTaxFreeAmountView: YourTaxFreeAmountView,
-  whatHappensNextView: WhatHappensNextView
+  whatHappensNextView: WhatHappensNextView,
+  errorPagesHandler: ErrorPagesHandler
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc)
     with YourTaxFreeAmount {
@@ -52,10 +54,13 @@ class TaxCodeChangeController @Inject() (
 
     val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
-    for {
+    (for {
       yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
-      taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino).toFutureOrThrow
-      scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
+      taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino)
+      scottishTaxRateBands        <-
+        EitherT[Future, UpstreamErrorResponse, Map[String, BigDecimal]](
+          taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes).map(Right(_))
+        )
     } yield {
       val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
       val taxCodeChangeReasons                               = taxCodeChangeReasonsService
@@ -74,16 +79,16 @@ class TaxCodeChangeController @Inject() (
 
       implicit val user: AuthedUser = request.taiUser
       Ok(taxCodeComparisonView(viewModel, appConfig))
-    }
+    }).fold(_ => errorPagesHandler.internalServerError, identity)
   }
 
   def yourTaxFreeAmount: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    val nino: Nino             = request.taiUser.nino
-    val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
-
+    val nino: Nino                = request.taiUser.nino
     implicit val user: AuthedUser = request.taiUser
 
-    taxFreeAmountViewModel.map(viewModel => Ok(yourTaxFreeAmountView(viewModel)))
+    describedYourTaxFreeAmountService
+      .taxFreeAmountComparison(nino)
+      .map(viewModel => Ok(yourTaxFreeAmountView(viewModel)))
   }
 
   def whatHappensNext: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>

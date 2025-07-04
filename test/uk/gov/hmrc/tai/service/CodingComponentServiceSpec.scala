@@ -81,7 +81,7 @@ class CodingComponentServiceSpec extends BaseSpec {
       when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
 
-      val result = service.taxFreeAmountComparison(generateNino)
+      val result = service.taxFreeAmountComparison(generateNino).value
 
       Await.result(result, 5.seconds) mustBe taxFreeAmountComparison
     }
@@ -97,7 +97,7 @@ class CodingComponentServiceSpec extends BaseSpec {
       when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
         .thenReturn(Future.successful(taxFreeAmountComparison))
 
-      val result = service.taxFreeAmountComparison(generateNino)
+      val result = service.taxFreeAmountComparison(generateNino).value
 
       Await.result(result, 5.seconds) mustBe TaxFreeAmountComparison(Seq.empty, Seq.empty)
     }
@@ -110,7 +110,7 @@ class CodingComponentServiceSpec extends BaseSpec {
           .thenReturn(Future.failed(new BadRequestException("Bad request")))
 
         val exceptionThrown = the[BadRequestException] thrownBy Await
-          .result(service.taxFreeAmountComparison(generateNino), 5.seconds)
+          .result(service.taxFreeAmountComparison(generateNino).value, 5.seconds)
         exceptionThrown.getMessage must include("Bad request")
       }
 
@@ -121,7 +121,7 @@ class CodingComponentServiceSpec extends BaseSpec {
           .thenReturn(Future.successful(null))
 
         assertThrows[NullPointerException] {
-          Await.result(service.taxFreeAmountComparison(generateNino), 5.seconds)
+          Await.result(service.taxFreeAmountComparison(generateNino).value, 5.seconds)
         }
       }
     }

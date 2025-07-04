@@ -30,9 +30,10 @@ import scala.language.postfixOps
 
 class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpHandler               = mock[HttpHandler]
+  val httpClientResponse: HttpClientResponse = inject[HttpClientResponse]
 
-  def sut = new TaxFreeAmountComparisonConnector(httpHandler, servicesConfig)
+  def sut = new TaxFreeAmountComparisonConnector(httpClientResponse, httpHandler, servicesConfig)
 
   "tax free amount url" must {
     "fetch the url to connect to TAI to retrieve tax free amount comparison" in {
@@ -78,7 +79,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
 
         val expected = TaxFreeAmountComparison(codingComponents, codingComponents)
 
-        val result = sut.taxFreeAmountComparison(nino)
+        val result = sut.taxFreeAmountComparison(nino).value
 
         Await.result(result, 5.seconds) mustBe expected
       }
@@ -90,7 +91,7 @@ class TaxFreeAmountComparisonConnectorSpec extends BaseSpec {
         when(httpHandler.getFromApiV2(any(), any())(any(), any()))
           .thenReturn(Future.failed(new BadRequestException(exceptionMessage)))
 
-        val ex = the[BadRequestException] thrownBy Await.result(sut.taxFreeAmountComparison(nino), 5 seconds)
+        val ex = the[BadRequestException] thrownBy Await.result(sut.taxFreeAmountComparison(nino).value, 5 seconds)
 
         ex.getMessage must include(exceptionMessage)
       }

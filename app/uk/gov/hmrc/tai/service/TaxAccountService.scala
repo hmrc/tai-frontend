@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentTy
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.tai.util.EitherTExtensions._
 
 class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(implicit ec: ExecutionContext) {
 
@@ -83,7 +84,7 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(imp
     taxAccountConnector.updateEstimatedIncome(nino, year, newAmount, id)
 
   def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TotalTax] =
-    taxAccountConnector.totalTax(nino, year)
+    taxAccountConnector.totalTax(nino, year).toFutureOrThrow
 
   def scottishBandRates(nino: Nino, year: TaxYear, taxCodes: Seq[String])(implicit
     hc: HeaderCarrier
@@ -91,11 +92,12 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(imp
     def isScottishStandAloneTaxcode(taxCode: String) = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r.findFirstIn(taxCode).isDefined
 
     if (taxCodes.exists(isScottishStandAloneTaxcode)) {
-      taxAccountConnector.totalTax(nino, year).map {
-        _.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
-      } recover { case _: Exception =>
-        Map.empty[String, BigDecimal]
-      }
+      taxAccountConnector
+        .totalTax(nino, year)
+        .fold(
+          _ => Map.empty[String, BigDecimal],
+          totalTax => totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
+        )
     } else {
       Future.successful(Map.empty[String, BigDecimal])
     }
