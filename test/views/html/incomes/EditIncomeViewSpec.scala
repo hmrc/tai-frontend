@@ -24,15 +24,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EditIncomeViewSpec extends TaiViewSpec {
 
-  val empId = 1
-  "Edit income view" should {
-    behave like pageWithBackLink()
-    behave like pageWithCombinedHeaderNewFormatNew(
-      messages("tai.incomes.edit.preHeading", employerName),
-      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
-    )
-  }
-
   private val editIncome = inject[EditIncomeView]
 
   override def view: Html =
@@ -41,4 +32,39 @@ class EditIncomeViewSpec extends TaiViewSpec {
       hasMultipleIncomes = false,
       empId
     )
+
+  val empId = 1
+  "Edit income view" should {
+    behave like pageWithBackLink()
+    behave like pageWithCombinedHeaderNewFormatNew(
+      messages("tai.incomes.edit.preHeading", employerName),
+      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
+    )
+  }
+  "Edit income view" should {
+    "have the New amount label when income is present" in {
+      val docWithAmount = doc(
+        editIncome(
+          EditIncomeForm.create(preFillData = EmploymentAmount(employerName, "", 1, Some(0)), Some("1")),
+          hasMultipleIncomes = false,
+          empId
+        )
+      )
+
+      docWithAmount must haveClassWithText("New amount", "govuk-label--s")
+      docWithAmount mustNot haveClassWithText("Estimated Income", "govuk-label--s")
+    }
+    "have the Estimated Income label when income is non" in {
+      val docNoAmount = doc(
+        editIncome(
+          EditIncomeForm.create(preFillData = EmploymentAmount(employerName, "", 1, None), Some("1")),
+          hasMultipleIncomes = false,
+          empId
+        )
+      )
+
+      docNoAmount must haveClassWithText("Estimated Income", "govuk-label--s")
+      docNoAmount mustNot haveClassWithText("New amount", "govuk-label--s")
+    }
+  }
 }

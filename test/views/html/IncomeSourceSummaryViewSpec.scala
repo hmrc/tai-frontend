@@ -77,6 +77,21 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     isUpdateInProgress = true
   )
 
+  private lazy val modelWithEstimateUnavailable = IncomeSourceSummaryViewModel(
+    1,
+    "User Name",
+    "Pension",
+    None,
+    400,
+    Some("1100L"),
+    "PENSION-1122",
+    isPension = true,
+    estimatedPayJourneyCompleted = false,
+    rtiAvailable = true,
+    taxDistrictNumber = "123",
+    payeNumber = "AB12345"
+  )
+
   private lazy val pensionModel = IncomeSourceSummaryViewModel(
     1,
     "User Name",
@@ -114,8 +129,11 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
   def viewWithUpdateInProgressPension: Html = template(modelWithUpdateInProgressPension)
 
+  def viewWithNoEstimatedIncome: Html = template(modelWithEstimateUnavailable)
+
   lazy val docWithUpdateInProgressEmployment: Document = Jsoup.parse(viewWithUpdateInProgressEmployment.toString())
   lazy val docWithUpdateInProgressPension: Document    = Jsoup.parse(viewWithUpdateInProgressPension.toString())
+  lazy val docWithNoEstimatedIncome: Document          = Jsoup.parse(viewWithNoEstimatedIncome.toString())
 
   "Income details spec" must {
     behave like pageWithCombinedHeaderNewFormatNew(
@@ -220,6 +238,23 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         )
         doc mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
 
+      }
+    }
+
+    "display message to add estimated income details" when {
+      "income source is employment" in {
+        docWithNoEstimatedIncome must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
+        docWithNoEstimatedIncome must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
+        docWithNoEstimatedIncome must haveParagraphWithText(
+          "Your estimated taxable income is missing. Add your estimated taxable income."
+        )
+        docWithNoEstimatedIncome must haveLinkWithText("Add your estimated taxable income.")
+        docWithNoEstimatedIncome must haveLinkWithUrlWithID(
+          "updateIncome",
+          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url
+        )
+        docWithNoEstimatedIncome mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
+        docWithNoEstimatedIncome mustNot haveSpanWithText("£")
       }
     }
 

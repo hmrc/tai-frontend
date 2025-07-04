@@ -59,7 +59,7 @@
 
             <p></p>
 
-            <h3 class="govuk-heading-m carry-over">@messages("tai.incomes.edit.incomeTax.update.heading", viewModel.employerName)</h3>
+            <h3 class="govuk-heading-m carry-over">@messages("tai.incomes.edit.estimateIncomeTax.update.heading", viewModel.employerName)</h3>
 
             <p class="govuk-body">@messages("tai.irregular.instruction.wholePounds")</p>
 
@@ -72,7 +72,9 @@
                     @compareValueInputNew(
                         govukInput,
                         previousLabel = messages("tai.incomes.amount.current"),
-                        newLabel = messages("tai.incomes.amount.new"),
+                        newLabel = viewModel.currentAmount.fold(messages("tai.incomes.amount.estimated")) {_ =>
+                            messages("tai.incomes.amount.new")
+                        },
                         previousFieldName = "oldAmount",
                         maybePreviousFieldValue = viewModel.currentAmount,
                         newField = incomeUpdateForm("income"),
