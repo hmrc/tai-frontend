@@ -776,6 +776,11 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       )
 
       server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/employments-only/years/$year"))
+          .willReturn(ok(Json.toJson(employments).toString))
+      )
+
+      server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/employment-only/1/years/$year"))
           .willReturn(
             ok(
