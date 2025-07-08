@@ -138,19 +138,18 @@ class MessagesSpec extends BaseSpec {
         assert(welshMessages.keySet equals defaultMessages.keySet)
       }
     }
-    // TODO: Uncomment once we have all the Welsh
-//    "not have the same messages" in {
-//      val same = defaultMessages.keys.collect {
-//        case msgKey if defaultMessages.get(msgKey) == welshMessages.get(msgKey) =>
-//          (msgKey, defaultMessages.get(msgKey))
-//      }
-//
-//      // 94% of app needs to be translated into Welsh. 94% allows for:
-//      //   - Messages which just can't be different from English
-//      //     E.g. addresses, acronyms, numbers, etc.
-//      //   - Content which is pending translation to Welsh
-//      same.size.toDouble / defaultMessages.size.toDouble < 0.06 mustBe true
-//    }
+    "not have the same messages" in {
+      val same = defaultMessages.keys.collect {
+        case msgKey if defaultMessages.get(msgKey) == welshMessages.get(msgKey) =>
+          (msgKey, defaultMessages.get(msgKey))
+      }
+
+      // 94% of app needs to be translated into Welsh. 94% allows for:
+      //   - Messages which just can't be different from English
+      //     E.g. addresses, acronyms, numbers, etc.
+      //   - Content which is pending translation to Welsh
+      same.size.toDouble / defaultMessages.size.toDouble < 0.06 mustBe true
+    }
     "have a non-empty message for each key" in {
       assertNonEmptyValuesForDefaultMessages()
       assertNonEmptyValuesForWelshMessages()

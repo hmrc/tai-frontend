@@ -810,7 +810,7 @@ tai.incomes.edit.average.hours=Defnyddiwch eich oriau gwaith cyfartalog i amcang
 tai.incomes.edit.what.should.you.include=Beth ddylech ei gynnwys?
 tai.incomes.edit.what.should.you.include.payments=Dylech gynnwys unrhyw fonws, comisiwn neu daliadau goramser.
 tai.incomes.edit.what.should.you.deduct=Beth ddylech ei ddidynnu?
-tai.incomes.edit.what.should.you.deduct.payments=Dylech dynnu unrhyw gyfraniadau pensiwn, aberthu cyflog, treuliau caniataol, talebau gofal plant a rhoddion elusennol megis ‘Rhodd Cymorth’ neu ‘Rhoi Trwy’r Gyflogres'.
+tai.incomes.edit.what.should.you.deduct.payments=Dylech dynnu unrhyw gyfraniadau pensiwn, aberthu cyflog, treuliau caniataol, talebau gofal plant a rhoddion elusennol megis ‘Rhodd Cymorth’ neu ‘Rhoi Trwy’r Gyflogres’.
 tai.incomes.edit.incomeTax.update.ceased.heading=Rhowch gyfanswm eich cyflog hyd yn hyn
 tai.incomes.edit.incomeTax.update.heading=Nodwch eich amcangyfrif newydd ar gyfer {0}
 tai.incomes.edit.pension.text=Os yw’r swm presennol yn anghywir, rhowch swm newydd.
@@ -1283,7 +1283,7 @@ tai.taxFreeAmount.table.taxComponent.JobSeekersAllowance=Lwfans Ceisio Gwaith
 tai.taxFreeAmount.table.taxComponent.StatePension=Pensiwn y Wladwriaeth
 
 tai.taxFreeAmount.tableV2.taxComponent.singular.Accommodation=llety
-tai.taxFreeAmount.tableV2.taxComponent.singular.AdjustmentToRateBand=addasiad i'r haen cyfradd
+tai.taxFreeAmount.tableV2.taxComponent.singular.AdjustmentToRateBand=addasiad i’r haen cyfradd
 tai.taxFreeAmount.tableV2.taxComponent.plural.AssetTransfer=asedion sydd wedi’u trosglwyddo
 tai.taxFreeAmount.tableV2.taxComponent.plural.Assets=asedion
 tai.taxFreeAmount.tableV2.taxComponent.singular.BPATransferredSpouseCivilPartner=Lwfans Personol Sylfaenol a drosglwyddwyd i briod/partner sifil
@@ -1325,7 +1325,7 @@ tai.taxFreeAmount.tableV2.taxComponent.singular.ForeignPropertyIncome=incwm o ei
 tai.taxFreeAmount.tableV2.taxComponent.singular.GiftAidAdjustment=addasiad Rhodd Cymorth
 tai.taxFreeAmount.tableV2.taxComponent.singular.GiftAidAfterEndOfTaxYear=Rhodd Cymorth ar ôl diwedd y flwyddyn dreth
 tai.taxFreeAmount.tableV2.taxComponent.plural.GiftAidPayments=taliadau Rhodd Cymorth
-tai.taxFreeAmount.tableV2.taxComponent.singular.GiftAidTreatedAsPaidInPreviousTaxYear=taliadau Rhodd Cymorth sydd i'w trin fel petaent wedi'u gwneud yn ystod y flwyddyn dreth flaenorol
+tai.taxFreeAmount.tableV2.taxComponent.singular.GiftAidTreatedAsPaidInPreviousTaxYear=taliadau Rhodd Cymorth sydd i’w trin fel petaent wedi’u gwneud yn ystod y flwyddyn dreth flaenorol
 tai.taxFreeAmount.tableV2.taxComponent.plural.GiftsSharesCharity=rhoddion o gyfranddaliadau i elusennau
 tai.taxFreeAmount.tableV2.taxComponent.singular.HICBCPaye=Tâl Treth Budd-dal Plant Incwm Uchel
 tai.taxFreeAmount.tableV2.taxComponent.singular.HigherPersonalAllowanceRestriction=cyfyngiad lwfans personol uwch
@@ -1393,7 +1393,7 @@ tai.taxFreeAmount.tableV2.taxComponent.plural.TrustsSettlementsAndEstatesAtLower
 tai.taxFreeAmount.tableV2.taxComponent.plural.TrustsSettlementsAndEstatesAtNonPayableDividendRate=ymddiriedolaethau, setliadau ac ystadau ar y gyfradd difidend nad yw’n daladwy
 tai.taxFreeAmount.tableV2.taxComponent.plural.TrustsSettlementsAndEstatesAtTrustRate=ymddiriedolaethau, setliadau ac ystadau ar y gyfradd ymddiriedolaeth
 tai.taxFreeAmount.tableV2.taxComponent.plural.UkDividend=difidendau
-tai.taxFreeAmount.tableV2.taxComponent.singular.UnderPaymentFromPreviousYear=tandaliad o'r flwyddyn flaenorol
+tai.taxFreeAmount.tableV2.taxComponent.singular.UnderPaymentFromPreviousYear=tandaliad o’r flwyddyn flaenorol
 tai.taxFreeAmount.tableV2.taxComponent.singular.UnderpaymentRestriction=cyfyngiad tandaliad
 tai.taxFreeAmount.tableV2.taxComponent.singular.UnitTrust=ymddiriedolaeth unedol
 tai.taxFreeAmount.tableV2.taxComponent.plural.UntaxedInterestIncome=llog heb ei drethu ar gynilion a buddsoddiadau
@@ -1731,7 +1731,7 @@ label.timeout.dialog.keepAlive.button=Parhau i fod wedi’ch mewngofnodi
 label.timeout.dialog.signout.button=Allgofnodi nawr
 
 session_expired.title = Er eich diogelwch, gwnaethom eich allgofnodi
-session_expired.guidance = Ni wnaethom gadw''ch atebion.
+session_expired.guidance = Ni wnaethom gadw’’ch atebion.
 
 mci.title=Ni allwn gael at eich manylion
 mci.p1=Mae hyn oherwydd problem MCI. Mae’n golygu bod angen i ni wirio rhai manylion gyda chi, cyn i chi allu mewngofnodi eto.
