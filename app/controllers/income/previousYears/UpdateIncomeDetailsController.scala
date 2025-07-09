@@ -18,17 +18,17 @@ package controllers.income.previousYears
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.{QuestionPage, TrackSuccessfulJourneyConstantsUpdatePreviousYearPage}
-import pages.income._
+import pages.TrackSuccessfulJourneyConstantsUpdatePreviousYearPage
+import pages.income.*
 import play.api.i18n.Messages
 import play.api.libs.json.{JsBoolean, JsObject, JsString}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -38,8 +38,8 @@ import views.html.incomes.previousYears.{CheckYourAnswersView, UpdateIncomeDetai
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 import scala.util.control.NonFatal
+import scala.util.{Failure, Success}
 
 class UpdateIncomeDetailsController @Inject() (
   previousYearsIncomeService: PreviousYearsIncomeService,
@@ -64,10 +64,10 @@ class UpdateIncomeDetailsController @Inject() (
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
 
-  def extractTaxYearString(currentCache: JsObject, page: QuestionPage[String]): String =
-    (currentCache \ page.toString).asOpt[JsString] match {
-      case Some(JsString(value)) => value
-      case _                     => throw new IllegalArgumentException("Expected a JsString")
+  private def withTaxYear(userAnswers: UserAnswers)(block: String => Future[Result]): Future[Result] =
+    (userAnswers.data \ UpdatePreviousYearsIncomeTaxYearPage.toString).asOpt[JsString] match {
+      case Some(JsString(taxYearString)) => block(taxYearString)
+      case _                             => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
     }
 
   def decision(taxYear: TaxYear): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -99,22 +99,21 @@ class UpdateIncomeDetailsController @Inject() (
     val userAnswers               = request.userAnswers
 
     val userSuppliedDetails = userAnswers.get(UpdatePreviousYearsIncomePage)
-    val currentCache        = userAnswers.data
 
-    val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
-
-    Future
-      .successful(
-        Ok(
-          UpdateIncomeDetails(
-            UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
-            UpdateIncomeDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))
+    withTaxYear(userAnswers) { taxYearString =>
+      Future
+        .successful(
+          Ok(
+            UpdateIncomeDetails(
+              UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
+              UpdateIncomeDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))
+            )
           )
         )
-      )
-      .recover { case NonFatal(exception) =>
-        errorPagesHandler.internalServerError(exception.getMessage)
-      }
+        .recover { case NonFatal(exception) =>
+          errorPagesHandler.internalServerError(exception.getMessage)
+        }
+    }
   }
 
   def submitDetails(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -124,19 +123,18 @@ class UpdateIncomeDetailsController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val userAnswers  = request.userAnswers
-          val currentCache = userAnswers.data
+          val userAnswers = request.userAnswers
 
-          val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
-
-          Future.successful(
-            BadRequest(
-              UpdateIncomeDetails(
-                UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
-                formWithErrors
+          withTaxYear(userAnswers) { taxYearString =>
+            Future.successful(
+              BadRequest(
+                UpdateIncomeDetails(
+                  UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
+                  formWithErrors
+                )
               )
             )
-          )
+          }
         },
         incomeDetails => {
           val userAnswers    = request.userAnswers
@@ -164,23 +162,22 @@ class UpdateIncomeDetailsController @Inject() (
 
     val isTelephone     = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
     val telephoneNumber = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
-    val currentCache    = userAnswers.data
 
-    val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
-
-    Future
-      .successful(
-        Ok(
-          canWeContactByPhone(
-            Some(user),
-            telephoneNumberViewModel(taxYearString.toInt),
-            YesNoTextEntryForm.form().fill(YesNoTextEntryForm(isTelephone, telephoneNumber))
+    withTaxYear(userAnswers) { taxYearString =>
+      Future
+        .successful(
+          Ok(
+            canWeContactByPhone(
+              Some(user),
+              telephoneNumberViewModel(taxYearString.toInt),
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(isTelephone, telephoneNumber))
+            )
           )
         )
-      )
-      .recover { case NonFatal(exception) =>
-        errorPagesHandler.internalServerError(exception.getMessage)
-      }
+        .recover { case NonFatal(exception) =>
+          errorPagesHandler.internalServerError(exception.getMessage)
+        }
+    }
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -195,19 +192,18 @@ class UpdateIncomeDetailsController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val userAnswers   = request.userAnswers
-          val currentCache  = userAnswers.data
-          val taxYearString = extractTaxYearString(currentCache, UpdatePreviousYearsIncomeTaxYearPage)
-
-          Future.successful(
-            BadRequest(
-              canWeContactByPhone(
-                Some(user),
-                telephoneNumberViewModel(taxYearString.toInt),
-                formWithErrors
+          val userAnswers = request.userAnswers
+          withTaxYear(userAnswers) { taxYearString =>
+            Future.successful(
+              BadRequest(
+                canWeContactByPhone(
+                  Some(user),
+                  telephoneNumberViewModel(taxYearString.toInt),
+                  formWithErrors
+                )
               )
             )
-          )
+          }
         },
         form => {
           val mandatoryData = Map(
