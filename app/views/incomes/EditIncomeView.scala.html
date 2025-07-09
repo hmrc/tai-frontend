@@ -76,7 +76,7 @@
     </div>
 
     <div class = "govuk-!-margin-top-8">
-        <h2 class="govuk-heading-m" >@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
+        <h2 class="govuk-heading-m" >@messages("tai.incomes.edit.estimateIncomeTax.update.heading", income("name").value.getOrElse(""))</h2>
         <p class="govuk-body">@messages("tai.incomes.monetaryAmount.format.valid")</p>
 
         @form(action = controllers.routes.IncomeController.editRegularIncome(employmentId)){
@@ -93,7 +93,9 @@
             @compareValueInputNew(
                 govukInput,
                 previousLabel = messages("tai.incomes.amount.current"),
-                newLabel = messages("tai.incomes.amount.new"),
+                newLabel = income("oldAmount").value.fold(messages("tai.incomes.amount.estimated")) {_ =>
+                    messages("tai.incomes.amount.new")
+                },
                 previousFieldName = income("oldAmount").name,
                 maybePreviousFieldValue = income("oldAmount").value,
                 newField = income("newAmount")

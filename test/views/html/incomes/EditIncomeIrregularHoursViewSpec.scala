@@ -52,6 +52,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
       )
       document must haveHeadingH2WithText(messages("tai.incomes.edit.what.should.you.include"))
       document must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
+      doc(view) mustNot haveClassWithText("Estimated Income", "govuk-label--s")
     }
 
     "display the users current estimated income" in {
@@ -65,6 +66,7 @@ class EditIncomeIrregularHoursViewSpec extends TaiViewSpec {
       val docNoAmount           = doc(viewWithNoAmount)
 
       docNoAmount mustNot haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount), 0)))
+      docNoAmount must haveClassWithText("Estimated Income", "govuk-label--s")
     }
 
     "have an input box for user to enter new amount" in {
