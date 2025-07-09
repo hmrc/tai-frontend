@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.CodingComponentPair
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
 class IabdTaxCodeChangeReasons {
@@ -54,6 +54,8 @@ class IabdTaxCodeChangeReasons {
   private def isChangedAmount(pair: CodingComponentPair): Boolean =
     pair.previous.isDefined && pair.current.isDefined
 
+  private def buildMsgKey(msgKey: String, isSingular: Boolean) = s"$msgKey.${if (isSingular) "singular" else "plural"}"
+
   private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
     def formattedValue(value: Option[BigDecimal]) =
@@ -70,10 +72,28 @@ class IabdTaxCodeChangeReasons {
             "tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid",
             formattedValue(pair.currentInputAmount)
           )
-        case taxComponentType             =>
+        case HICBCPaye                    =>
+          val previousAmount: BigDecimal = pair.previous.getOrElse(0)
+          val adjustmentMessage          =
+            if (previousAmount < currentAmount) {
+              messages("tai.taxCodeComparison.iabd.increased")
+            } else {
+              messages("tai.taxCodeComparison.iabd.reduced")
+            }
+          val msgInfo                    = HICBCPaye.toV2Message()
+          messages(
+            buildMsgKey("tai.taxCodeComparison.iabd.amended", msgInfo.isSingular),
+            msgInfo.msg,
+            adjustmentMessage,
+            MonetaryUtil.withPoundPrefixBD(previousAmount),
+            MonetaryUtil.withPoundPrefixBD(currentAmount)
+          )
+
+        case taxComponentType =>
+          val msgInfo = taxComponentType.toV2Message()
           messages(
             "tai.taxCodeComparison.iabd.added",
-            taxComponentType.toMessage(),
+            msgInfo.msg,
             MonetaryUtil.withPoundPrefix(currentAmount.toInt)
           )
       }
@@ -82,7 +102,7 @@ class IabdTaxCodeChangeReasons {
 
   private def translateChangedBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
-    val createAmmendmentMessage: (BigDecimal, BigDecimal) => String =
+    val createAmendmentMessage: (BigDecimal, BigDecimal) => String =
       (previousAmount: BigDecimal, currentAmount: BigDecimal) => {
         val adjustmentMessage: String =
           if (previousAmount < currentAmount) {
@@ -91,9 +111,11 @@ class IabdTaxCodeChangeReasons {
             messages("tai.taxCodeComparison.iabd.reduced")
           }
 
+        val msgInfo = pair.componentType.toV2Message()
+
         messages(
-          "tai.taxCodeComparison.iabd.ammended",
-          pair.componentType.toMessage(),
+          buildMsgKey("tai.taxCodeComparison.iabd.amended", msgInfo.isSingular),
+          msgInfo.msg,
           adjustmentMessage,
           MonetaryUtil.withPoundPrefixBD(previousAmount),
           MonetaryUtil.withPoundPrefixBD(currentAmount)
@@ -102,7 +124,7 @@ class IabdTaxCodeChangeReasons {
 
     (pair.previous, pair.current) match {
       case (Some(previousAmount), Some(currentAmount)) if previousAmount != currentAmount =>
-        Some(createAmmendmentMessage(previousAmount, currentAmount))
+        Some(createAmendmentMessage(previousAmount, currentAmount))
       case _                                                                              => None
     }
   }
