@@ -55,6 +55,12 @@ class UpdateIncomeDetailsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
+  private def withTaxYear(userAnswers: UserAnswers)(block: String => Future[Result]): Future[Result] =
+    (userAnswers.data \ UpdatePreviousYearsIncomeTaxYearPage.toString).asOpt[JsString] match {
+      case Some(JsString(taxYearString)) => block(taxYearString)
+      case _                             => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+    }
+
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
       messages("tai.income.previousYears.journey.preHeader"),
@@ -63,12 +69,6 @@ class UpdateIncomeDetailsController @Inject() (
       controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )
-
-  private def withTaxYear(userAnswers: UserAnswers)(block: String => Future[Result]): Future[Result] =
-    (userAnswers.data \ UpdatePreviousYearsIncomeTaxYearPage.toString).asOpt[JsString] match {
-      case Some(JsString(taxYearString)) => block(taxYearString)
-      case _                             => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-    }
 
   def decision(taxYear: TaxYear): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -98,15 +98,13 @@ class UpdateIncomeDetailsController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val userAnswers               = request.userAnswers
 
-    val userSuppliedDetails = userAnswers.get(UpdatePreviousYearsIncomePage)
-
     withTaxYear(userAnswers) { taxYearString =>
       Future
         .successful(
           Ok(
             UpdateIncomeDetails(
               UpdateHistoricIncomeDetailsViewModel(taxYearString.toInt),
-              UpdateIncomeDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))
+              UpdateIncomeDetailsForm.form.fill(userAnswers.get(UpdatePreviousYearsIncomePage).getOrElse(""))
             )
           )
         )
@@ -122,10 +120,8 @@ class UpdateIncomeDetailsController @Inject() (
     UpdateIncomeDetailsForm.form
       .bindFromRequest()
       .fold(
-        formWithErrors => {
-          val userAnswers = request.userAnswers
-
-          withTaxYear(userAnswers) { taxYearString =>
+        formWithErrors =>
+          withTaxYear(request.userAnswers) { taxYearString =>
             Future.successful(
               BadRequest(
                 UpdateIncomeDetails(
@@ -134,12 +130,9 @@ class UpdateIncomeDetailsController @Inject() (
                 )
               )
             )
-          }
-        },
+          },
         incomeDetails => {
-          val userAnswers    = request.userAnswers
-          val updatedAnswers = userAnswers.set(UpdatePreviousYearsIncomePage, incomeDetails.replace("\r", ""))
-
+          val updatedAnswers = request.userAnswers.set(UpdatePreviousYearsIncomePage, incomeDetails.replace("\r", ""))
           updatedAnswers match {
             case Success(answers)   =>
               journeyCacheRepository.set(answers).map { _ =>
@@ -157,13 +150,10 @@ class UpdateIncomeDetailsController @Inject() (
 
   def telephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
-
-    val userAnswers = request.userAnswers
-
-    val isTelephone     = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
-    val telephoneNumber = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
-
+    val userAnswers               = request.userAnswers
     withTaxYear(userAnswers) { taxYearString =>
+      val isTelephone     = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
+      val telephoneNumber = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
       Future
         .successful(
           Ok(
@@ -191,9 +181,8 @@ class UpdateIncomeDetailsController @Inject() (
       )
       .bindFromRequest()
       .fold(
-        formWithErrors => {
-          val userAnswers = request.userAnswers
-          withTaxYear(userAnswers) { taxYearString =>
+        formWithErrors =>
+          withTaxYear(request.userAnswers) { taxYearString =>
             Future.successful(
               BadRequest(
                 canWeContactByPhone(
@@ -203,8 +192,7 @@ class UpdateIncomeDetailsController @Inject() (
                 )
               )
             )
-          }
-        },
+          },
         form => {
           val mandatoryData = Map(
             UpdatePreviousYearsIncomeTelephoneQuestionPage -> form.yesNoChoice
@@ -218,8 +206,7 @@ class UpdateIncomeDetailsController @Inject() (
             case _                                  => mandatoryData ++ Map(UpdatePreviousYearsIncomeTelephoneNumberPage -> "")
           }
 
-          val userAnswers    = request.userAnswers
-          val updatedAnswers = dataForCache.foldLeft(userAnswers) { case (answers, (key, value)) =>
+          val updatedAnswers = dataForCache.foldLeft(request.userAnswers) { case (answers, (key, value)) =>
             answers.setOrException(key, value)
           }
 
@@ -236,11 +223,10 @@ class UpdateIncomeDetailsController @Inject() (
   def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val userAnswers               = request.userAnswers
-
-    val taxYearOpt           = userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage)
-    val incomeOpt            = userAnswers.get(UpdatePreviousYearsIncomePage)
-    val telephoneQuestionOpt = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
-    val telephoneNumberOpt   = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
+    val taxYearOpt                = userAnswers.get(UpdatePreviousYearsIncomeTaxYearPage)
+    val incomeOpt                 = userAnswers.get(UpdatePreviousYearsIncomePage)
+    val telephoneQuestionOpt      = userAnswers.get(UpdatePreviousYearsIncomeTelephoneQuestionPage)
+    val telephoneNumberOpt        = userAnswers.get(UpdatePreviousYearsIncomeTelephoneNumberPage)
 
     Future
       .successful(
