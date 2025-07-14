@@ -44,7 +44,7 @@ import views.html.IncomeSourceSummaryView
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
+class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
   private val firstPayment: Payment  = Payment(LocalDate.now.minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   private val secondPayment: Payment = Payment(LocalDate.now.minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
@@ -98,7 +98,6 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
     inject[IncomeSourceSummaryView],
     mockJourneyCacheRepository,
     mockRtiService,
-    mockApiBackendChoice,
     inject[ErrorPagesHandler]
   )
 
@@ -115,7 +114,6 @@ class IncomeSourceSummaryControllerNewSpec extends BaseSpec {
     Mockito.reset(mockApiBackendChoice)
     Mockito.reset(mockRtiService)
     Mockito.reset(mockEploymentService)
-    when(mockApiBackendChoice.isNewApiBackendEnabled(any())).thenReturn(true)
   }
 
   private val employmentId = 1
