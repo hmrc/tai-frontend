@@ -51,15 +51,14 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     )
   )
 
-  val auditService: AuditService               = mock[AuditService]
-  val employmentService: EmploymentService     = mock[EmploymentService]
-  val taxAccountService: TaxAccountService     = mock[TaxAccountService]
-  val mockTrackingService: TrackingService     = mock[TrackingService]
-  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+  val auditService: AuditService           = mock[AuditService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val mockTrackingService: TrackingService = mock[TrackingService]
 
   def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
     taxAccountService,
-    mockEmploymentService,
+    employmentService,
     auditService,
     mockAuthJourney,
     appConfig,
@@ -75,10 +74,10 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers("testSessionId", nino.nino))
-    Mockito.reset(auditService)
+    Mockito.reset(auditService, employmentService)
 
     when(employmentService.employmentsOnly(any(), any())(any()))
-      .thenReturn(EitherT.right(Seq(employment)))
+      .thenReturn(EitherT.right(Future.successful(Seq(employment))))
 
     when(taxAccountService.newNonTaxCodeIncomes(any(), any())(any()))
       .thenReturn(EitherT.rightT(None))
@@ -109,9 +108,6 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         )
       )
 
-      when(employmentService.employmentsOnly(any(), any())(any()))
-        .thenReturn(EitherT.right(Future.successful(Seq(employment))))
-
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(Right(Nil)))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -122,6 +118,16 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
       val expectedTitle =
         s"${messagesApi("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeBreak)}"
       doc.title() must include(expectedTitle)
+    }
+
+    "after recovering from a 404 from tax account service" in {
+
+      when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
+
+      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe OK
+
     }
 
     "raise an audit event" in {
@@ -156,7 +162,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-      "a downstream unauthenticated error has occurred in one of the TaiResponse responding service methods" in {
+      "a downstream unauthorised exception has occurred in the tax account service" in {
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("Unauthorised", UNAUTHORIZED)))
 
@@ -164,27 +170,10 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-      "a downstream error has occurred in the tax account service (which does not reply with TaiResponse type)" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          EitherT.rightT(taxAccountSummary)
-        )
-
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "a downstream unauthorised exception has occurred in the tax account service" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          EitherT.rightT(taxAccountSummary)
-        )
-
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Left("Failed")))
+        when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.leftT(UpstreamErrorResponse("Unauthorised", UNAUTHORIZED)))
+
         when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(nonTaxCodeIncome)
         )
@@ -197,27 +186,6 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-      "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
-
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
-
-      }
-
-      "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
-
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
-      }
-
       "a downstream error has occurred in one of the TaiResponse responding service methods due to not being authorised" in {
 
         when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -225,16 +193,6 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "there is a TaiNotFoundResponse because there is no tax account information found" in {
-
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
       }
     }
 
