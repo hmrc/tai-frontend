@@ -26,9 +26,9 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
-import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeIncomeComponentType, TaxedIncome, UpdateTaxCodeIncomeRequest}
+import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, UpdateTaxCodeIncomeRequest}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
@@ -63,18 +63,6 @@ class TaxAccountConnector @Inject() (
     s"$serviceUrl/tai/$nino/tax-account/snapshots/${year.year}/incomes/tax-code-incomes/$id/estimated-pay"
 
   def totalTaxUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/total-tax"
-
-  def incomeSources(
-    nino: Nino,
-    year: TaxYear,
-    incomeType: TaxCodeIncomeComponentType,
-    status: TaxCodeIncomeSourceStatus
-  )(implicit hc: HeaderCarrier): Future[Seq[TaxedIncome]] =
-    httpHandler
-      .getFromApiV2(
-        incomeSourceUrl(nino = nino.nino, year = year, incomeType = incomeType.toString, status = status.toString)
-      )
-      .map(json => (json \ "data").as[Seq[TaxedIncome]])
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
