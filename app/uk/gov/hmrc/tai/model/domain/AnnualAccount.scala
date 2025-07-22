@@ -31,7 +31,7 @@ case class AnnualAccount(
 
   lazy val latestPayment: Option[Payment] =
     if (payments.isEmpty) None
-    else payments.sortBy(x => x.date).reverse.headOption
+    else payments.sortBy(_.date).reverse.headOption
 
   lazy val isIrregularPayment: Boolean = latestPayment.exists { latestPayment =>
     latestPayment.payFrequency == Irregular || latestPayment.payFrequency == Annually ||
