@@ -29,7 +29,9 @@ case class AnnualAccount(
 
   lazy val totalIncomeYearToDate: BigDecimal = maxPayment(payments.max.amountYearToDate)
 
-  lazy val latestPayment: Option[Payment] = if (payments.isEmpty) None else Some(payments.max)
+  lazy val latestPayment: Option[Payment] =
+    if (payments.isEmpty) None
+    else payments.sortBy(x => x.date).reverse.headOption
 
   lazy val isIrregularPayment: Boolean = latestPayment.exists { latestPayment =>
     latestPayment.payFrequency == Irregular || latestPayment.payFrequency == Annually ||
@@ -44,4 +46,5 @@ case class AnnualAccount(
 object AnnualAccount {
   implicit val annualAccountOrdering: Ordering[AnnualAccount] = Ordering.by(_.taxYear.year)
   implicit val annualAccountFormat: Format[AnnualAccount]     = Json.format[AnnualAccount]
+
 }
