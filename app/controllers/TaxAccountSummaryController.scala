@@ -19,7 +19,7 @@ package controllers
 import cats.data.EitherT
 import controllers.auth.{AuthJourney, DataRequest}
 import play.api.Logging
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -27,7 +27,6 @@ import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome, TaxAccountSummary, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.ApiBackendChoice
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import views.html.IncomeTaxSummaryView
@@ -39,7 +38,6 @@ import scala.util.control.NonFatal
 @Singleton
 class TaxAccountSummaryController @Inject() (
   taxAccountService: TaxAccountService,
-  taxAccountSummaryService: TaxAccountSummaryService,
   employmentService: EmploymentService,
   auditService: AuditService,
   authenticate: AuthJourney,
@@ -47,7 +45,6 @@ class TaxAccountSummaryController @Inject() (
   mcc: MessagesControllerComponents,
   incomeTaxSummary: IncomeTaxSummaryView,
   trackingService: TrackingService,
-  apiBackendChoice: ApiBackendChoice,
   implicit val
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
@@ -92,17 +89,6 @@ class TaxAccountSummaryController @Inject() (
     )
 
   def onPageLoad: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    (if (apiBackendChoice.isNewApiBackendEnabled) {
-       onPageLoadNew
-     } else {
-       onPageLoadOld
-     }).recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError(e.getMessage)
-    }
-  }
-
-  def onPageLoadNew(implicit request: DataRequest[AnyContent]): Future[Result] = {
-    logger.info("new Api has been used")
     val nino = request.taiUser.nino
 
     auditService
@@ -153,27 +139,5 @@ class TaxAccountSummaryController @Inject() (
       )
       Ok(incomeTaxSummary(vm, appConfig))
     }).leftMap(error => errorPagesHandler.internalServerError(error.message)).merge
-  }
-
-  def onPageLoadOld(implicit request: DataRequest[AnyContent]): Future[Result] = {
-    val nino     = request.taiUser.nino
-    val messages = request2Messages
-
-    auditService
-      .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
-
-    (for {
-      taxAccountSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
-      vm                <- EitherT[Future, UpstreamErrorResponse, TaxAccountSummaryViewModel](
-                             taxAccountSummaryService.taxAccountSummaryViewModel(nino, taxAccountSummary).map(Right(_))
-                           )
-    } yield Ok(incomeTaxSummary(vm, appConfig))).fold(
-      {
-        case error if error.statusCode == NOT_FOUND =>
-          Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-        case _                                      => InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
-      },
-      identity
-    )
   }
 }
