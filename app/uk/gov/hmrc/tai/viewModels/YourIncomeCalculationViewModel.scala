@@ -54,6 +54,7 @@ object YourIncomeCalculationViewModel {
   def apply(
     taxCodeIncome: Option[TaxCodeIncome],
     employment: Employment,
+    iabd: IabdDetails,
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
@@ -68,6 +69,7 @@ object YourIncomeCalculationViewModel {
         employment,
         pensionOrEmpMessage(isPension),
         income,
+        iabd,
         latestPayment.map(_.paymentFrequency),
         latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
         latestPayment.map(_.date)
@@ -131,6 +133,7 @@ object YourIncomeCalculationViewModel {
     employment: Employment,
     pensionOrEmployment: String,
     taxCodeIncome: TaxCodeIncome,
+    iabd: IabdDetails,
     paymentFrequency: Option[PaymentFrequency],
     amountYearToDate: BigDecimal,
     paymentDate: Option[LocalDate]
@@ -142,8 +145,8 @@ object YourIncomeCalculationViewModel {
     )
 
     lazy val manualIncomeMessages: (Option[String], Option[String]) = {
-      val msg: Option[String] = manualUpdateIncomeCalculationMessage(taxCodeIncome)
-      (msg, msg.flatMap(_ => manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome)))
+      val msg: Option[String] = manualUpdateIncomeCalculationMessage(iabd)
+      (msg, msg.flatMap(_ => manualUpdateIncomeCalculationEstimateMessage(iabd)))
     }
 
     lazy val sameMessages = (
@@ -236,11 +239,11 @@ object CeasedIncomeMessages {
 
 object ManualUpdateIncomeMessages {
   def manualUpdateIncomeCalculationMessage(
-    taxCodeIncome: TaxCodeIncome
+    iabd: IabdDetails
   )(implicit messages: Messages): Option[String] = {
 
     def iadbManualMessages(messageKey: String) =
-      (taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
+      (iabd.receiptDate, iabd.captureDate) match {
         case (Some(notificationDate), _) if messageKey == "internet" =>
           messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate))
         case (Some(notificationDate), Some(actionDate))              =>
@@ -253,20 +256,26 @@ object ManualUpdateIncomeMessages {
           messages(s"tai.income.calculation.manual.update.$messageKey.withoutDate")
       }
 
-    taxCodeIncome.iabdUpdateSource collect {
+    iabd.source collect {
       case AgentContact                  => messages("tai.income.calculation.agent")
       case ManualTelephone               => iadbManualMessages("phone")
       case OtherForm | InformationLetter => iadbManualMessages("informationLetter")
-      case Letter | Email | Internet     => iadbManualMessages(taxCodeIncome.iabdUpdateSource.get.toString.toLowerCase)
+      case Letter | Email | Internet     => iadbManualMessages(iabd.source.get.toString.toLowerCase)
     }
   }
 
   def manualUpdateIncomeCalculationEstimateMessage(
-    taxCodeIncome: TaxCodeIncome
+    iabds: IabdDetails
   )(implicit messages: Messages): Option[String] =
-    taxCodeIncome.iabdUpdateSource match {
-      case Some(AgentContact) => Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
-      case _                  => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
+    iabds.source match {
+      case Some(AgentContact) =>
+        Some(
+          messages("tai.income.calculation.agent.estimate", iabds.grossAmount)
+        ) // TODO: is iabds.grossAmount the same as amount from taxCodeIncome?
+      case _                  =>
+        Some(
+          messages("tai.income.calculation.rti.manual.update.estimate", iabds.grossAmount)
+        ) // TODO: is iabds.grossAmount the same as amount from taxCodeIncome?
     }
 }
 
