@@ -24,7 +24,6 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import java.time.LocalDate
 
 case class IabdDetails(
-  nino: Option[Nino],
   employmentSequenceNumber: Option[Int],
   source: Option[IabdUpdateSource], // iabdUpdateSource source.flatMap(code => IabdUpdateSource.fromCode(code)
   `type`: Option[Int],
@@ -37,8 +36,7 @@ object IabdDetails {
   private val dateReads: Reads[LocalDate] = localDateReads("yyyy-MM-dd")
 
   implicit val readsIabds: Reads[IabdDetails] = (
-    (JsPath \ "nino").readNullable[Nino] and
-      (JsPath \ "employmentSequenceNumber").readNullable[Int] and
+    (JsPath \ "employmentSequenceNumber").readNullable[Int] and
       (JsPath \ "source").readNullable[IabdUpdateSource] and
       (JsPath \ "type").readNullable[Int] and
       (JsPath \ "receiptDate").readNullable[LocalDate](dateReads) and

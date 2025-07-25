@@ -35,6 +35,6 @@ class IabdService @Inject() (
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[IabdDetails]] =
     iabdConnector.getIabds(nino, taxYear).map { response =>
-      response.json.as[Seq[IabdDetails]]
+      (response.json \ "data").as[Seq[IabdDetails]]
     }
 }

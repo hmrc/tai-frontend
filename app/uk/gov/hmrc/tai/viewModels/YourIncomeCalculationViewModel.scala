@@ -267,15 +267,16 @@ object ManualUpdateIncomeMessages {
   def manualUpdateIncomeCalculationEstimateMessage(
     iabds: IabdDetails
   )(implicit messages: Messages): Option[String] =
-    iabds.source match {
-      case Some(AgentContact) =>
+    (iabds.source, iabds.grossAmount) match {
+      case (Some(AgentContact), Some(grossAmount)) =>
         Some(
-          messages("tai.income.calculation.agent.estimate", iabds.grossAmount)
-        ) // TODO: is iabds.grossAmount the same as amount from taxCodeIncome?
-      case _                  =>
+          messages("tai.income.calculation.agent.estimate", grossAmount)
+        )
+      case (_, Some(grossAmount))                  =>
         Some(
-          messages("tai.income.calculation.rti.manual.update.estimate", iabds.grossAmount)
-        ) // TODO: is iabds.grossAmount the same as amount from taxCodeIncome?
+          messages("tai.income.calculation.rti.manual.update.estimate", grossAmount)
+        )
+      case _                                       => None
     }
 }
 
