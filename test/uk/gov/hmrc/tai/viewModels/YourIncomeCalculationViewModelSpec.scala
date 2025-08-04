@@ -643,7 +643,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return messages for Manual telephone" when {
       "updateNotificationDate and updateActionDate is available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -664,7 +663,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateNotificationDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -679,7 +677,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -694,7 +691,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate and updateNotificationDate are not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -711,7 +707,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return messages for letter" when {
       "updateNotificationDate and updateActionDate is available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -732,7 +727,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateNotificationDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -747,7 +741,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -762,7 +755,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate and updateNotificationDate are not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -779,7 +771,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return messages for Email" when {
       "updateNotificationDate and updateActionDate is available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -800,7 +791,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateNotificationDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -815,7 +805,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -830,7 +819,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate and updateNotificationDate are not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(ManualTelephone),
           None,
@@ -847,7 +835,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return messages for AgentContact" when {
       "1" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(AgentContact),
           None,
@@ -865,7 +852,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return messages for OtherForm" when {
       "updateNotificationDate and updateActionDate is available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(OtherForm),
           None,
@@ -886,7 +872,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateNotificationDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(OtherForm),
           None,
@@ -901,7 +886,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(OtherForm),
           None,
@@ -916,7 +900,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate and updateNotificationDate are not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(OtherForm),
           None,
@@ -933,7 +916,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     "return messages for InformationLetter" when {
       "updateNotificationDate and updateActionDate is available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(InformationLetter),
           None,
@@ -954,7 +936,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateNotificationDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(InformationLetter),
           None,
@@ -969,7 +950,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate is not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(InformationLetter),
           None,
@@ -984,7 +964,6 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
       "updateActionDate and updateNotificationDate are not available" in {
         val iabdDetails = IabdDetails(
-          Some(nino),
           Some(2),
           Some(InformationLetter),
           None,
