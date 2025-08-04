@@ -158,15 +158,27 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
   "Your Income Calculation"   must {
     "return rti details page" when {
       "rti details are present" in {
+        val empId = 1
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = empId))))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
-          EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(
+              IabdDetails(
+                Some(empId),
+                None,
+                None,
+                None,
+                None
+              )
+            )
+          )
         )
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))

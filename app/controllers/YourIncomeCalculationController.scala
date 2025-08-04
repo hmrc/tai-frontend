@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.auth.*
+import play.api.Logging
 import play.api.mvc.*
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, TaxAccountService}
@@ -37,7 +38,8 @@ class YourIncomeCalculationController @Inject() (
   yourIncomeCalculation: YourIncomeCalculationView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
@@ -69,7 +71,11 @@ class YourIncomeCalculationController @Inject() (
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
-      case _                                                            => errorPagesHandler.internalServerError("Error while fetching RTI details")
+      case (taxCodeIncomes, employment, maybeIadbdDetail)               =>
+        logger.error(
+          s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetsils: $maybeIadbdDetail)"
+        )
+        errorPagesHandler.internalServerError("Error while fetching RTI details")
     }
   }
 
