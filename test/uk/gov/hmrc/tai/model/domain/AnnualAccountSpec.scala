@@ -41,8 +41,12 @@ class AnnualAccountSpec extends PlaySpec {
 
   "latestPayment" must {
     "return the latest payment" when {
-      "there are multiple payments" in {
-        val annualAccount = AnnualAccount(7, TaxYear(2017), Available, List(payment1, payment2), Nil)
+      "there are multiple payments in incorrect order" in {
+        val payment3 = payment1.copy(date = payment1.date.minusWeeks(2))
+        val payment4 = payment1.copy(date = payment1.date.minusWeeks(4))
+
+        val annualAccount =
+          AnnualAccount(7, TaxYear(2017), Available, List(payment3, payment2, payment1, payment4), Nil)
 
         annualAccount.latestPayment mustBe Some(payment2)
       }

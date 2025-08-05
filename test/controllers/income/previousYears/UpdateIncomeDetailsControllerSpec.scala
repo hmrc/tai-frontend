@@ -19,21 +19,21 @@ package controllers.income.previousYears
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.{reset, verify, when}
 import pages.TrackSuccessfulJourneyConstantsUpdatePreviousYearPage
-import pages.income._
+import pages.income.*
 import play.api.i18n.Messages
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, UpdateHistoricIncomeChoiceConstants}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
-import views.html.incomes.previousYears._
+import views.html.incomes.previousYears.*
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -160,6 +160,25 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.previousYears.details.title"))
       }
+      "the request has NO previous Tax Year" in {
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomePage, "123")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(
+          result
+        ).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+      }
     }
   }
 
@@ -226,6 +245,34 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         status(result) mustBe BAD_REQUEST
       }
     }
+    "return redirect to tax account summary page" when {
+      "the form submission is invalid but missing previous tax year" in {
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomePage, "123")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        val employmentDetailsFormData = ("employmentDetails", "")
+
+        val result = SUT.submitDetails()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(employmentDetailsFormData)
+        )
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(
+          result
+        ).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
+      }
+    }
   }
 
   "telephoneNumber" must {
@@ -249,6 +296,27 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+    "redirect to tax account summary page" when {
+      "valid details have been passed but previous tax year missing" in {
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneNumberPage, "12345678")
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(
+          result
+        ).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
   }
@@ -388,6 +456,33 @@ class UpdateIncomeDetailsControllerSpec extends BaseSpec {
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
 
+    }
+
+    "redirect to tax account summary page" when {
+      "the previous tax year is missing" in {
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(UpdatePreviousYearsIncomeTelephoneQuestionPage, FormValuesConstants.YesValue)
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.submitTelephoneNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(
+              FormValuesConstants.YesNoChoice    -> FormValuesConstants.YesValue,
+              FormValuesConstants.YesNoTextEntry -> ""
+            )
+        )
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(
+          result
+        ).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      }
     }
   }
 

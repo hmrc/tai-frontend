@@ -44,8 +44,6 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
 
   lazy val taxAccountUrl        = s"/tai/$ninoAsString/tax-account/${currentTaxYear.year}/income/tax-code-incomes"
   lazy val codingComponentsUrl  = s"/tai/$nino/tax-account/${currentTaxYear.year}/tax-components"
-  lazy val incomeSourceUrl      =
-    s"/tai/$nino/tax-account/year/${currentTaxYear.year}/income/${EmploymentIncome.toString}/status/${Live.toString}"
   lazy val taxAccountSummaryUrl = s"/tai/$nino/tax-account/${currentTaxYear.year}/summary"
   lazy val nonTaxCodeIncomeUrl  = s"/tai/$nino/tax-account/${currentTaxYear.year}/income"
   lazy val totalTaxUrl          = s"/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"
@@ -303,70 +301,6 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
         )
 
         taxAccountConnector.taxCodeIncomes(nino, currentTaxYear).futureValue mustBe a[Left[_, Seq[TaxCodeIncome]]]
-      }
-    }
-  }
-
-  "incomeSources" should {
-    "fetch the tax codes" when {
-      "provided with valid nino" in {
-
-        server.stubFor(
-          get(incomeSourceUrl)
-            .willReturn(
-              aResponse.withBody(incomeSourceJson.toString())
-            )
-        )
-
-        val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
-        result mustBe Seq(incomeSource)
-      }
-    }
-
-    "fetch empty seq" when {
-      "provided with nino that is not found" in {
-
-        server.stubFor(
-          get(incomeSourceUrl)
-            .willReturn(
-              aResponse.withBody(incomeSourceEmpty.toString())
-            )
-        )
-
-        val result = taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live).futureValue
-        result mustBe Seq.empty[TaxedIncome]
-      }
-    }
-
-    "return a failure" when {
-      "tai sends an invalid json" in {
-
-        server.stubFor(
-          get(incomeSourceUrl)
-            .willReturn(
-              aResponse.withBody(corruptJsonResponse.toString())
-            )
-        )
-
-        assertThrows[JsResultException] {
-          Await.result(taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5.seconds)
-        }
-      }
-    }
-
-    "return an UnauthorisedException" when {
-      "the http response is Unauthorized" in {
-
-        server.stubFor(
-          get(incomeSourceUrl)
-            .willReturn(
-              unauthorized()
-            )
-        )
-
-        assertThrows[UnauthorizedException] {
-          Await.result(taxAccountConnector.incomeSources(nino, currentTaxYear, EmploymentIncome, Live), 5.seconds)
-        }
       }
     }
   }
