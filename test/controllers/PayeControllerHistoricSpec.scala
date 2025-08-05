@@ -298,13 +298,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe NOT_FOUND
+        status(result) mustBe INTERNAL_SERVER_ERROR
         verify(employmentService, times(1)).employments(any(), any())(any())
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Page not found - 404")
-        doc         must haveHeadingWithText(Messages("tai.errorMessage.heading.nps"))
-        doc         must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1.nps"))
-        doc         must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message2.nps"))
       }
 
       "employment service call results in a NotFoundException from RTI" in {
@@ -315,12 +310,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe NOT_FOUND
+        status(result) mustBe INTERNAL_SERVER_ERROR
         verify(employmentService, times(1)).employments(any(), any())(any())
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Page not found - 404")
-        doc         must haveHeadingWithText(Messages("tai.errorMessage.heading"))
-        doc         must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
       }
 
       "employment service call results in a bad request" in {
@@ -331,11 +322,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Bad request - 400")
-        doc         must haveHeadingWithText(Messages("tai.errorMessage.heading"))
-        doc         must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "employment service call results in a internal server error" in {
@@ -347,10 +334,6 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include("Sorry, there is a problem with the service")
-        doc         must haveHeadingWithText(Messages("tai.technical.error.heading"))
-        doc         must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
 
       "employment service call results in an exception" in {

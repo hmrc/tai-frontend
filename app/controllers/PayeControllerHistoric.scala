@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarnView}
+import scala.util.control.NonFatal
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -78,22 +79,10 @@ class PayeControllerHistoric @Inject() (
         }
       }
     }
-  } recoverWith hodStatusRedirect
+  }.recover { case NonFatal(error) =>
+    errorPagesHandler.internalServerError(error.getMessage)
+  }
 
   private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
     employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
-
-  private def hodStatusRedirect(implicit
-    request: AuthenticatedRequest[AnyContent]
-  ): PartialFunction[Throwable, Future[Result]] = {
-
-    implicit val rl: errorPagesHandler.RecoveryLocation = classOf[WhatDoYouWantToDoController]
-    val nino                                            = request.taiUser.nino.toString()
-
-    errorPagesHandler.npsEmploymentAbsentResult(nino) orElse
-      errorPagesHandler.rtiEmploymentAbsentResult(nino) orElse
-      errorPagesHandler.hodBadRequestResult(nino) orElse
-      errorPagesHandler.hodInternalErrorResult(nino) orElse
-      errorPagesHandler.hodAnyErrorResult(nino)
-  }
 }

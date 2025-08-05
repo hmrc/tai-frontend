@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.model.domain
 
 import play.api.libs.json.Reads.localDateReads
 import play.api.libs.json.{JsPath, Reads}
-import uk.gov.hmrc.domain.Nino
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 
 import java.time.LocalDate
