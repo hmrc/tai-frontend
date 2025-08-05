@@ -96,14 +96,14 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     }
 
     "show income calculation and estimation message" when {
-      "tax code income is present and frequency is irregular" ignore {
+      "tax code income is present and frequency is irregular" in {
         val model = incomeCalculationViewModel()
 
         model.incomeCalculationMessage mustBe ""
         model.incomeCalculationEstimateMessage mustBe Some(Messages("tai.income.calculation.rti.irregular.emp", 1111))
       }
 
-      "tax code income is present and frequency is monthly" ignore {
+      "tax code income is present and frequency is monthly" in {
         val model = incomeCalculationViewModel(payments = Seq(firstPayment))
 
         model.incomeCalculationMessage mustBe Messages(
@@ -1062,7 +1062,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
 
   "incomeExplanationMessage" must {
     "return messages" when {
-      "getCeasedMsg returns both messages" ignore {
+      "getCeasedMsg returns both messages" in {
         val employment    = Employment(
           "employment",
           Live,
@@ -1090,7 +1090,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         )
         val iabdDetails   = IabdDetails(
           Some(2),
-          Some(ManualTelephone),
+          None,
           None,
           Some(LocalDate.now.minusWeeks(4)), // updateNotificationDate
           Some(LocalDate.now), // updateActionDate
@@ -1113,7 +1113,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         ))
       }
 
-      "getCeasedMsg returns first message" ignore {
+      "getCeasedMsg returns first message" in {
         val employment    = Employment(
           "employment",
           Live,
@@ -1141,7 +1141,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         )
         val iabdDetails   = IabdDetails(
           Some(2),
-          Some(ManualTelephone),
+          None,
           None,
           Some(LocalDate.now.minusWeeks(4)), // updateNotificationDate
           Some(LocalDate.now), // updateActionDate
@@ -1203,7 +1203,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
       }
 
-      "getSameMsg returns the first message" ignore {
+      "getSameMsg returns the first message" in {
         val employment    =
           Employment(
             "employment",
@@ -1232,7 +1232,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         )
         val iabdDetails   = IabdDetails(
           Some(2),
-          Some(OtherForm),
+          None,
           None,
           None, // updateNotificationDate
           None, // updateActionDate
@@ -1251,7 +1251,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           ), None)
       }
 
-      "getPayFreqMsg returns both messages" ignore {
+      "getPayFreqMsg returns both messages" in {
         val employment    = Employment(
           "employment",
           Live,
@@ -1279,7 +1279,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         )
         val iabdDetails   = IabdDetails(
           Some(2),
-          Some(ManualTelephone),
+          None,
           None,
           Some(LocalDate.now.minusWeeks(4)), // updateNotificationDate
           Some(LocalDate.now), // updateActionDate
@@ -1301,7 +1301,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
           Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1111, 0).quantity)))
       }
 
-      "getPayFreqMsg returns the first message" ignore {
+      "getPayFreqMsg returns the first message" in {
         val employment    = Employment(
           "employment",
           Live,
@@ -1329,7 +1329,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         )
         val iabdDetails   = IabdDetails(
           Some(2),
-          Some(ManualTelephone),
+          None,
           None,
           Some(LocalDate.now.minusWeeks(4)), // updateNotificationDate
           Some(LocalDate.now), // updateActionDate
@@ -1352,7 +1352,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     }
 
     "returns default messages" when {
-      "none of the conditions are matched" ignore {
+      "none of the conditions are matched" in {
         val employment    = Employment(
           "employment",
           Live,
@@ -1380,7 +1380,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
         )
         val iabdDetails   = IabdDetails(
           Some(2),
-          Some(ManualTelephone),
+          None,
           None,
           Some(LocalDate.now.minusWeeks(4)), // updateNotificationDate
           Some(LocalDate.now), // updateActionDate
@@ -1447,7 +1447,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     }
     val iabdDetails   = IabdDetails(
       Some(2),
-      Some(ManualTelephone),
+      None,
       None,
       Some(LocalDate.now.minusWeeks(4)), // updateNotificationDate
       Some(LocalDate.now), // updateActionDate
