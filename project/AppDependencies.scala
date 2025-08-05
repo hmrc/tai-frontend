@@ -3,8 +3,8 @@ import sbt.*
 
 private object AppDependencies {
   private val playVersion = "play-30"
-  private val scaWrapperVersion = "3.0.0"
-  private val mongoFeatureToggleVersion = "2.1.0"
+  private val scaWrapperVersion = "3.1.0"
+  private val mongoFeatureToggleVersion = "2.2.0"
 
   val compile: Seq[ModuleID] = Seq(
     filters,
