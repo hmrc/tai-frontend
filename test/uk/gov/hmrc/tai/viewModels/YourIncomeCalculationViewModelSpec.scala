@@ -1453,7 +1453,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
       Some(LocalDate.now), // updateActionDate
       None // amount
     )
-    YourIncomeCalculationViewModel(taxCodeIncome, employment, iabdDetails, paymentDetails, "test user")
+    YourIncomeCalculationViewModel(taxCodeIncome, employment, Some(iabdDetails), paymentDetails, "test user")
   }
 
 }
