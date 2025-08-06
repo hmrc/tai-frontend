@@ -54,7 +54,7 @@ object YourIncomeCalculationViewModel {
   def apply(
     taxCodeIncome: Option[TaxCodeIncome],
     employment: Employment,
-    iabd: IabdDetails,
+    maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
@@ -63,18 +63,22 @@ object YourIncomeCalculationViewModel {
     val isPension     = taxCodeIncome.exists(_.componentType == PensionIncome)
     val status        = employment.employmentStatus
 
-    val (incomeCalculationMessage, incomeCalculationEstimateMessage) = taxCodeIncome map { income =>
-      incomeExplanationMessage(
-        employment.employmentStatus,
-        employment,
-        pensionOrEmpMessage(isPension),
-        income,
-        iabd,
-        latestPayment.map(_.paymentFrequency),
-        latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
-        latestPayment.map(_.date)
-      )
-    } getOrElse (None, None)
+    val (incomeCalculationMessage, incomeCalculationEstimateMessage) = maybeIabd.fold((None, None)) { iabd =>
+      taxCodeIncome
+        .map { income =>
+          incomeExplanationMessage(
+            employment.employmentStatus,
+            employment,
+            pensionOrEmpMessage(isPension),
+            income,
+            iabd,
+            latestPayment.map(_.paymentFrequency),
+            latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
+            latestPayment.map(_.date)
+          )
+        }
+        .getOrElse((None, None))
+    }
 
     YourIncomeCalculationViewModel(
       employment.sequenceNumber,

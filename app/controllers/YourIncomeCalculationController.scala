@@ -59,21 +59,21 @@ class YourIncomeCalculationController @Inject() (
       iabdDetails          <- iabdDetailsFuture
       maybeIadbdDetail      = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
     } yield (taxCodeIncomeDetails, employmentDetails, maybeIadbdDetail) match {
-      case (Right(taxCodeIncomes), Some(employment), Right(Some(iabd))) =>
+      case (Right(taxCodeIncomes), Some(employment), Right(maybeIabd)) =>
         val paymentDetails = paymentsService.filterDuplicates(employment)
 
         val model                     = YourIncomeCalculationViewModel(
           taxCodeIncomes.find(_.employmentId.contains(empId)),
           employment,
-          iabd,
+          maybeIabd,
           paymentDetails,
           request.fullName
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
-      case (taxCodeIncomes, employment, maybeIadbdDetail)               =>
+      case (taxCodeIncomes, employment, maybeIadbdDetail)              =>
         logger.error(
-          s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetsils: $maybeIadbdDetail)"
+          s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetsils: ${maybeIadbdDetail.isLeft})"
         )
         errorPagesHandler.internalServerError("Error while fetching RTI details")
     }
