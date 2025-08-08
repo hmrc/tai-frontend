@@ -86,10 +86,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "277L",
       "TestName",
       OtherBasisOfOperation,
-      Live,
-      None,
-      Some(LocalDate.of(2015, 11, 26)),
-      Some(LocalDate.of(2015, 11, 26))
+      Live
     )
   )
   val taxCodeNotChanged                  = false

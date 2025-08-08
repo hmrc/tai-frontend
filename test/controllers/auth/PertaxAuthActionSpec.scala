@@ -45,12 +45,12 @@ class PertaxAuthActionSpec extends BaseSpec {
 
   lazy val mockPertaxConnector: PertaxConnector                = mock[PertaxConnector]
   lazy val mockAuthConnector: AuthConnector                    = mock[AuthConnector]
-  private lazy val mockURLService                              = mock[URLService]
   override lazy val mockFeatureFlagService: FeatureFlagService = mock[FeatureFlagService]
+  private val testAppConfig: ApplicationConfig                 = mock[ApplicationConfig]
 
   private val internalServerErrorView: InternalServerErrorView = inject[InternalServerErrorView]
   private val mainTemplateView: MainTemplate                   = inject[MainTemplate]
-  private val testAppConfig: ApplicationConfig                 = mock[ApplicationConfig]
+  private val urlService                                       = inject[URLService]
 
   val testAction: PertaxAuthActionImpl = new PertaxAuthActionImpl(
     mockAuthConnector,
@@ -59,7 +59,7 @@ class PertaxAuthActionSpec extends BaseSpec {
     mainTemplateView,
     mcc,
     testAppConfig,
-    mockURLService
+    urlService
   )
 
   class FakeController @Inject() (defaultActionBuilder: DefaultActionBuilder) extends InjectedController {
@@ -88,7 +88,6 @@ class PertaxAuthActionSpec extends BaseSpec {
     when(testAppConfig.taiHomePageUrl).thenReturn("/home")
     when(testAppConfig.taiRootUri).thenReturn("/taiRoot")
     when(testAppConfig.basGatewayFrontendSignInUrl).thenReturn("/signin")
-    when(mockURLService.localFriendlyUrl(any(), any())).thenReturn("/localfriendlyurl")
     super.beforeEach()
   }
 
@@ -125,7 +124,7 @@ class PertaxAuthActionSpec extends BaseSpec {
             )
           )
 
-        val result = fakeController.onPageLoad()(FakeRequest())
+        val result = fakeController.onPageLoad()(FakeRequest(method = "GET", path = "/localfriendlyurl"))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some("redirectLocation/?redirectUrl=%2Flocalfriendlyurl")

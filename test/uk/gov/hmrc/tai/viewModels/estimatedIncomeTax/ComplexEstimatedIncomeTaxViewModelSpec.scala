@@ -24,8 +24,6 @@ import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import utils.BaseSpec
 
-import java.time.LocalDate
-
 class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
 
   "ComplexEstimatedIncomeTaxViewModel" must {
@@ -80,10 +78,7 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
       "1150L",
       "TestName",
       OtherBasisOfOperation,
-      Live,
-      None,
-      Some(LocalDate.of(2015, 11, 26)),
-      Some(LocalDate.of(2015, 11, 26))
+      Live
     )
   )
 

@@ -25,8 +25,6 @@ import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import utils.BaseSpec
 
-import java.time.LocalDate
-
 class EstimatedIncomeTaxServiceSpec extends BaseSpec {
 
   "hasNonCodedIncome" must {
@@ -697,10 +695,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
       "1150L",
       "TestName",
       OtherBasisOfOperation,
-      Live,
-      None,
-      Some(LocalDate.of(2015, 11, 26)),
-      Some(LocalDate.of(2015, 11, 26))
+      Live
     )
   )
 
@@ -713,10 +708,7 @@ class EstimatedIncomeTaxServiceSpec extends BaseSpec {
       "SK723",
       "TestName",
       OtherBasisOfOperation,
-      Live,
-      None,
-      Some(LocalDate.of(2015, 11, 26)),
-      Some(LocalDate.of(2015, 11, 26))
+      Live
     )
   )
 

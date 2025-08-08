@@ -624,6 +624,22 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           }
         }"""
 
+  private val iabdDetails =
+    """
+      |{
+      |  "data": {
+      |    "iabdDetails": [{
+      |      "employmentSequenceNumber": 1,
+      |      "source": "ManualTelephone"
+      |    },
+      |    {
+      |      "employmentSequenceNumber": 2,
+      |      "source": "ManualTelephone"
+      |    }]
+      |  }
+      |}
+      |""".stripMargin
+
   val startYear          = 2023
   val numberOfYears: Int = Random.between(2, 10)
 
@@ -820,12 +836,22 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           .willReturn(ok(s"""{"data": ${Json.toJson(totalTax).toString()}}"""))
       )
 
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/iabds/years/$year"))
+          .willReturn(ok(iabdDetails))
+      )
+
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/tax-components"))
+          .willReturn(ok("""{"data":[]}"""))
+      )
     }
 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/employments/1"))
         .willReturn(ok(oneEmployment))
     )
+
     case class stubValuesData(journeyName: String, keyName: String, valueReturned: String)
 
     val nameValueUrls = List(
