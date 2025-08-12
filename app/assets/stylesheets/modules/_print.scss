@@ -59,8 +59,8 @@
   .print-banner {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     visibility: visible;
-    border-bottom: 3px solid #b1b4b6;
     margin-bottom: 30px;
     padding-bottom: 10px;
 
@@ -68,6 +68,15 @@
         width: 180px;
         aspect-ratio: auto 30 / 8;
         height: 48px;
+    }
+
+    .hmrc-banner,
+    .hmrc-organisation-logo {
+        padding: 0;
+    }
+
+    .hmrc-organisation-logo {
+        padding-left: 5px;
     }
   }
 
