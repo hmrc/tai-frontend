@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,16 @@ package controllers.employments
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.addEmployment._
+import pages.AddPayeRefPage
+import pages.addEmployment.*
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
-import play.api.mvc._
+import play.api.mvc.*
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
-import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
+import uk.gov.hmrc.tai.forms.employments.*
+import uk.gov.hmrc.tai.forms.{PayeRefForm, YesNoTextEntryForm}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
@@ -36,7 +37,7 @@ import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.NewCachePayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
-import views.html.employments._
+import views.html.employments.*
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
@@ -58,6 +59,7 @@ class AddEmploymentController @Inject() (
   canWeContactByPhone: CanWeContactByPhoneView,
   confirmationView: ConfirmationView,
   addIncomeCheckYourAnswers: AddIncomeCheckYourAnswersView,
+  payeRefFormView: PayeRefFormView,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
@@ -73,7 +75,7 @@ class AddEmploymentController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("add.missing.employment"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
+      controllers.employments.routes.AddEmploymentController.addPayeReference().url,
       controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
       controllers.employments.routes.AddEmploymentController.cancel().url
     )
@@ -250,8 +252,42 @@ class AddEmploymentController @Inject() (
                              .getOrElse(Messages("tai.addEmployment.employmentPayrollNumber.notKnown"))
                          )
                      )
-            } yield Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber())
+            } yield Redirect(controllers.employments.routes.AddEmploymentController.addPayeReference())
         )
+  }
+
+  def addPayeReference(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+
+    request.userAnswers.get(AddEmploymentNamePage) match {
+      case Some(companyName) =>
+        val existing: String = request.userAnswers.get(AddPayeRefPage).getOrElse("")
+
+        val form = PayeRefForm.form.fill(existing)
+        Ok(payeRefFormView(form, companyName, "employment"))
+      case None              =>
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    }
+  }
+
+  def submitPayeReference(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+    implicit val user: AuthedUser = request.taiUser
+
+    request.userAnswers.get(AddEmploymentNamePage) match {
+      case Some(companyName) =>
+        PayeRefForm.form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(payeRefFormView(formWithErrors, companyName, "employment"))),
+            value => {
+              val updatedAnswers = request.userAnswers.setOrException(AddPayeRefPage, value)
+              for {
+                _ <- journeyCacheRepository.set(updatedAnswers)
+              } yield Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber())
+            }
+          )
+      case None              => Future.successful(error5xxInBadRequest())
+    }
   }
 
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
@@ -321,16 +357,25 @@ class AddEmploymentController @Inject() (
       request.userAnswers.get(AddEmploymentNamePage),
       request.userAnswers.get(AddEmploymentStartDatePage),
       request.userAnswers.get(AddEmploymentPayrollNumberPage),
+      request.userAnswers.get(AddPayeRefPage),
       request.userAnswers.get(AddEmploymentTelephoneQuestionPage),
       request.userAnswers.get(AddEmploymentTelephoneNumberPage)
     ) match {
-      case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
+      case (
+            Some(name),
+            Some(startDate),
+            Some(payrollNumber),
+            Some(payeRef),
+            Some(telephoneQuestion),
+            telephoneNumber
+          ) =>
         val model =
           IncomeCheckYourAnswersViewModel(
             Messages("add.missing.employment"),
             name,
             startDate.toString,
             payrollNumber,
+            payeRef,
             telephoneQuestion,
             telephoneNumber,
             controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
@@ -350,14 +395,23 @@ class AddEmploymentController @Inject() (
       request.userAnswers.get(AddEmploymentNamePage),
       request.userAnswers.get(AddEmploymentStartDatePage),
       request.userAnswers.get(AddEmploymentPayrollNumberPage),
+      request.userAnswers.get(AddPayeRefPage),
       request.userAnswers.get(AddEmploymentTelephoneQuestionPage),
       request.userAnswers.get(AddEmploymentTelephoneNumberPage)
     ) match {
-      case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
+      case (
+            Some(name),
+            Some(startDate),
+            Some(payrollNumber),
+            Some(payeRef),
+            Some(telephoneQuestion),
+            telephoneNumber
+          ) =>
         val model = AddEmployment(
           name,
           startDate,
           payrollNumber,
+          payeRef,
           telephoneQuestion,
           telephoneNumber
         )
@@ -372,7 +426,7 @@ class AddEmploymentController @Inject() (
             journeyCacheRepository.set(updatedUserAnswers)
           }
         } yield Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
-      case _                                                                                            => Future.successful(error5xxInBadRequest())
+      case _ => Future.successful(error5xxInBadRequest())
     }
   }
 

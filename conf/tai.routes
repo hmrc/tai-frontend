@@ -276,3 +276,10 @@ GET         /update-income/next-year/income/:empId/no-change                    
 GET         /update-income/next-year/income/:empId/confirmed                           controllers.income.UpdateIncomeNextYearController.handleConfirm(empId: Int)
 GET         /update-income/next-year/income/:empId/confirm                             controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
 GET         /update-income/next-year/income/:empId/success                             controllers.income.UpdateIncomeNextYearController.success(empId: Int)
+
+GET         /before-you-start/:journeyType                                             controllers.BeforeYouStartController.onPageLoad(journeyType: String)
+
+GET         /add-employment/employer-paye-reference                                    controllers.employments.AddEmploymentController.addPayeReference()
+POST        /add-employment/employer-paye-reference                                    controllers.employments.AddEmploymentController.submitPayeReference()
+GET         /add-pension/employer-paye-reference                                       controllers.pensions.AddPensionProviderController.addPayeReference()
+POST        /add-pension/employer-paye-reference                                       controllers.pensions.AddPensionProviderController.submitPayeReference()

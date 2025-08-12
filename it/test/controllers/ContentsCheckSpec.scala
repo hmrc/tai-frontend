@@ -729,6 +729,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(UpdatePensionProviderDetailsPage, "some random info")
     .setOrException(UpdatePensionProviderPhoneQuestionPage, "Yes")
     .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
+    .setOrException(AddPayeRefPage, "120/AB12345")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -937,6 +938,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             |"employmentFirstPayReceived":"2022-08-10",
             |"employmentPayrollNumberKnown":"No",
             |"employmentPayrollNumber":"I do not know",
+            |"payeReference":"120/AB12345",
             |"employmentTelephoneContactAllowed":"No",
             |"employmentTelephoneNumber":""}""".stripMargin
         )
@@ -953,6 +955,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             |"pensionFirstPayment":"2022-08-10",
             |"pensionProviderPayrollChoice":"No",
             |"pensionProviderPayrollNumber":"I do not know",
+            |"payeReference":"120/AB12345",
             |"pensionProviderTelephoneContactAllowed":"No",
             |"pensionProviderTelephoneNumber":""}""".stripMargin
         )
