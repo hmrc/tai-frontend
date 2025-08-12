@@ -164,8 +164,8 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
   private val template = inject[IncomeTaxSummaryView]
 
-  val employerId: Int = 9876543
-  val taxCode: String = "1150L"
+  val employerId: Int                               = 9876543
+  val taxCode: String                               = "1150L"
   val taxCodeDescription1: DescriptionListViewModel =
     DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
 
@@ -180,7 +180,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     )
   )
 
-  override def view: Html = template(vm, appConfig)
+  override def view: Html                                     = template(vm, appConfig)
   protected implicit val dataRequest: DataRequest[AnyContent] = DataRequest(
     FakeRequest(),
     taiUser = authedUser,
