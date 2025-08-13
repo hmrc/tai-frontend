@@ -242,15 +242,27 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
     "display a 'something missing' section" which {
       "contains a heading" in {
-        doc must haveElementAtPathWithText("h2", messages("tai.incomeTaxSummary.addMissingIncome.section.heading"))
+        doc must haveElementAtPathWithText("h2", messages("tai.taxFreeAmount.missing.additionsOrDeductions.heading"))
       }
-      "includes a link to add a missing allowance or addition" in {
+      "contains the correct description text" in {
+        doc must haveElementAtPathWithText(
+          "p",
+          messages("tai.taxFreeAmount.missing.additionsOrDeductions.paragraph")
+        )
+      }
+      "includes a link to add a missing allowances and tax relief" in {
         doc must haveLinkWithUrlWithID("addMissingAddition", appConfig.taxFreeAllowanceLinkUrl)
       }
       "includes a link to add a missing company benefit" in {
         doc must haveLinkWithUrlWithID("addMissingDeduction", appConfig.companyBenefitsLinkUrl)
       }
-      "includes a link to add a missing income" in {
+      "includes a link to add a missing investment income" in {
+        doc must haveLinkWithUrlWithID("addMissingInvestment", appConfig.investmentIncomeLinkUrl)
+      }
+      "includes a link to add a missing personal pension payments" in {
+        doc must haveLinkWithUrlWithID("addMissingPersonalPensionPayment", appConfig.personalPensionPaymentLinkUrl)
+      }
+      "includes a link to add missing other income" in {
         doc must haveLinkWithUrlWithID("addMissingIncome", appConfig.otherIncomeLinkUrl)
       }
     }

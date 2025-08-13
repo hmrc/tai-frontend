@@ -75,36 +75,42 @@
                     @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems)
 
             </div>
-
-                    <h2 class = "govuk-heading-m no-print hide-for-print">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
-
-                    <ul class="govuk-list govuk-list--bullet govuk-list--spaced hide-for-print">
-                        <li>
-                            @link(
-                                id=Some("addMissingAddition"),
-                                url=appConfig.taxFreeAllowanceLinkUrl,
-                                copy=Messages("tai.taxFreeAmount.missing.section.addition"))
-                        </li>
-                        <li>
-                            @link(
-                                id=Some("addMissingDeduction"),
-                                url=appConfig.companyBenefitsLinkUrl,
-                                copy=Messages("add.missing.company.benefit"))
-                        </li>
-                        <li>
-                            @link(
-                                id=Some("addMissingInvestment"),
-                                url=appConfig.investmentIncomeLinkUrl,
-                                copy=Messages("tai.taxFreeAmount.missing.section.investment"))
-                        </li>
-                        <li>
-                            @link(
-                                id=Some("addMissingIncome"),
-                                url=appConfig.otherIncomeLinkUrl,
-                                copy=Messages("tai.taxFreeAmount.missing.section.income"))
-                        </li>
-                    </ul>
-
+            <div class="govuk-!-margin-top-2">
+                <h2 class = "govuk-heading-m no-print hide-for-print">@Messages("tai.taxFreeAmount.missing.additionsOrDeductions.heading")</h2>
+                <p class="govuk-body govuk-body-m">@Messages("tai.taxFreeAmount.missing.additionsOrDeductions.paragraph")</p>
+                <ul class="govuk-list govuk-list--spaced hide-for-print">
+                    <li>
+                        @link(
+                            id=Some("addMissingAddition"),
+                            url=appConfig.taxFreeAllowanceLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.additionsOrDeductions.allowanceAndTaxRelief"))
+                    </li>
+                    <li>
+                        @link(
+                            id=Some("addMissingDeduction"),
+                            url=appConfig.companyBenefitsLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.additionsOrDeductions.companyBenefits"))
+                    </li>
+                    <li>
+                        @link(
+                            id=Some("addMissingInvestment"),
+                            url=appConfig.investmentIncomeLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.additionsOrDeductions.investmentIncome"))
+                    </li>
+                    <li>
+                        @link(
+                        id=Some("addMissingPersonalPensionPayment"),
+                        url=appConfig.personalPensionPaymentLinkUrl,
+                        copy=Messages("tai.taxFreeAmount.missing.additionsOrDeductions.personalPensionPayments"))
+                    </li>
+                    <li>
+                        @link(
+                            id=Some("addMissingIncome"),
+                            url=appConfig.otherIncomeLinkUrl,
+                            copy=Messages("tai.taxFreeAmount.missing.additionsOrDeductions.otherIncome"))
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <div class="govuk-grid-column-one-third">

@@ -1136,9 +1136,15 @@ tai.taxCollected.byPAYE.title=Treth sy’n cael ei chasglu drwy’ch cod treth
 tai.taxFree.total=Cyfanswm
 tai.taxFreeAmount.detailsection.heading=Sut mae’ch swm rhydd o dreth yn cael ei gyfrifo
 tai.taxFreeAmount.heading.pt1=Eich swm rhydd o dreth ar gyfer
-tai.taxFreeAmount.missing.section.addition=Ychwanegu lwfans neu ryddhad treth sydd ar goll
-tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall sydd ar goll
-tai.taxFreeAmount.missing.section.investment=Ychwanegu incwm sydd ar goll o fuddsoddiad
+
+tai.taxFreeAmount.missing.additionsOrDeductions.heading=Ychwanegwch ychwanegiadau neu ddidyniadau sydd ar goll
+tai.taxFreeAmount.missing.additionsOrDeductions.paragraph=Ychwanegwch unrhyw beth sydd ar goll a all newid faint o dreth rydych yn ei thalu.
+tai.taxFreeAmount.missing.additionsOrDeductions.allowanceAndTaxRelief=Lwfansau a rhyddhad treth, gan gynnwys Lwfans Person Dall, treuliau cyflogaeth neu Rodd Cymorth
+tai.taxFreeAmount.missing.additionsOrDeductions.companyBenefits=Buddiannau cwmni
+tai.taxFreeAmount.missing.additionsOrDeductions.investmentIncome=Incwm o fuddsoddiadau
+tai.taxFreeAmount.missing.additionsOrDeductions.personalPensionPayments=Taliadau pensiwn personol
+tai.taxFreeAmount.missing.additionsOrDeductions.otherIncome=Incwm arall
+
 tai.taxFreeAmount.summarysection.bullet1=yn uwch os ydych yn gymwys ar gyfer rhai lwfansau neu ryddhad treth
 tai.taxFreeAmount.summarysection.bullet2=wedi gostwng i gasglu treth sy’n ddyledus ar gyfer buddiannau cwmni neu incwm o ffynonellau eraill
 tai.taxFreeAmount.summarysection.heading=Eich swm blynyddol sy’n rhydd o dreth yw
