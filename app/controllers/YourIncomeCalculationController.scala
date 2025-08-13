@@ -57,7 +57,7 @@ class YourIncomeCalculationController @Inject() (
       taxCodeIncomeDetails <- taxCodeIncomesFuture
       employmentDetails    <- employmentFuture
       iabdDetails          <- iabdDetailsFuture
-      maybeIabdDetail      = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
+      maybeIabdDetail       = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
     } yield (taxCodeIncomeDetails, employmentDetails, maybeIabdDetail) match {
       case (Right(taxCodeIncomes), Some(employment), Right(maybeIabd)) =>
         val paymentDetails = paymentsService.filterDuplicates(employment)
@@ -71,7 +71,7 @@ class YourIncomeCalculationController @Inject() (
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
-      case (taxCodeIncomes, employment, maybeIabdDetail)              =>
+      case (taxCodeIncomes, employment, maybeIabdDetail)               =>
         logger.error(
           s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetsils: ${maybeIabdDetail.isLeft})"
         )
