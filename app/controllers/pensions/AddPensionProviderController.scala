@@ -257,7 +257,7 @@ class AddPensionProviderController @Inject() (
       case Some(companyName) =>
         val existing = request.userAnswers.get(AddPayeRefPage).getOrElse("")
 
-        val form = PayeRefForm.form.fill(existing)
+        val form = PayeRefForm.form(companyName).fill(existing)
         Ok(payeRefFormView(form, companyName, "pension"))
       case None              =>
         Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
@@ -269,7 +269,8 @@ class AddPensionProviderController @Inject() (
 
     request.userAnswers.get(AddPensionProviderNamePage) match {
       case Some(companyName) =>
-        PayeRefForm.form
+        PayeRefForm
+          .form(companyName)
           .bindFromRequest()
           .fold(
             formWithErrors => Future.successful(BadRequest(payeRefFormView(formWithErrors, companyName, "pension"))),

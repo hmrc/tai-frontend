@@ -30,15 +30,15 @@ class PayeRefFormSpec extends BaseSpec with OptionValues {
     "return the form with errors" when {
 
       "the payeReference field is empty" in {
-        val form = PayeRefForm.form.bind(Map("payeReference" -> ""))
+        val form = PayeRefForm.form("company").bind(Map("payeReference" -> ""))
         form.hasErrors mustBe true
-        form.errors.head.message mustBe "tai.payeRefForm.required"
+        form.errors.head.message mustBe messages("tai.payeRefForm.required", "company")
       }
 
       "the payeReference field is only whitespace" in {
-        val form = PayeRefForm.form.bind(Map("payeReference" -> "   "))
+        val form = PayeRefForm.form("company").bind(Map("payeReference" -> "   "))
         form.hasErrors mustBe true
-        form.errors.head.message mustBe "tai.payeRefForm.required"
+        form.errors.head.message mustBe messages("tai.payeRefForm.required", "company")
       }
 
       "the payeReference field does not match NNN/XXXXXXXXXX format" in {
@@ -54,10 +54,10 @@ class PayeRefFormSpec extends BaseSpec with OptionValues {
         )
 
         invalids.foreach { v =>
-          val form = PayeRefForm.form.bind(Map("payeReference" -> v))
+          val form = PayeRefForm.form("company").bind(Map("payeReference" -> v))
           withClue(s"Value '$v' should be invalid") {
             form.hasErrors mustBe true
-            form.errors.head.message mustBe "tai.payeRefForm.format"
+            form.errors.head.message mustBe messages("tai.payeRefForm.format", "company")
           }
         }
       }
@@ -74,7 +74,7 @@ class PayeRefFormSpec extends BaseSpec with OptionValues {
         )
 
         valids.foreach { v =>
-          val form = PayeRefForm.form.bind(Map("payeReference" -> v))
+          val form = PayeRefForm.form("company").bind(Map("payeReference" -> v))
           withClue(s"Value '$v' should be valid") {
             form.hasErrors mustBe false
             form.value.value mustBe v

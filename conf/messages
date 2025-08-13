@@ -1772,5 +1772,7 @@ beforeYouStart.pension.list.pensionNumber = pension number
 
 tai.payeRefForm.title = What is {0}’s employer PAYE reference?
 tai.payeRefForm.hint = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB456.
-tai.payeRefForm.required = Enter an employer PAYE reference
-tai.payeRefForm.format = Enter a valid employer PAYE reference, like 123/AB456
+tai.payeRefForm.hint2 = It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
+tai.payeRefForm.hint3 = It will be on your payslip or tax forms.
+tai.payeRefForm.required = Enter {0}’s employer PAYE reference
+tai.payeRefForm.format = Enter {0}’s employer PAYE reference in the correct format

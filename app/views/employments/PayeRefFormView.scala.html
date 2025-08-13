@@ -77,8 +77,20 @@
                         classes = "govuk-label--xl",
                         content = Text(messages("tai.payeRefForm.title", companyName))
                     ),
-                    hint = Some(Hint(content = Text(messages("tai.payeRefForm.hint")))),
-                    errorMessage = payeRefForm.error("payeReference").map(err => ErrorMessage(content = Text(messages(err.message))))
+                    hint = Some(
+                        Hint(
+                            content = HtmlContent(
+                                s"""
+                                |${messages("tai.payeRefForm.hint")}
+                                |${messages("tai.payeRefForm.hint2")}
+                                |${messages("tai.payeRefForm.hint3")}
+                                |""".stripMargin
+                            )
+                        )
+                    ),
+                    errorMessage = payeRefForm.error("payeReference").map { err =>
+                        ErrorMessage(content = Text(err.message))
+                    }
                 ))
 
                 @govukButton(Button(
