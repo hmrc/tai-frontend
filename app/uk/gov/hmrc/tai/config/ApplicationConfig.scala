@@ -51,6 +51,8 @@ class ApplicationConfig @Inject() (
     s"$dfsFrontendHost/digital-forms/form/tell-us-about-other-income/draft/guide"
   lazy val investmentIncomeLinkUrl: String            =
     s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-investment-income/"
+  lazy val personalPensionPaymentLinkUrl: String      =
+    s"$dfsFrontendHost/submissions/new-form/claim-personal-pension-tax-relief"
   lazy val taxFreeAllowanceLinkUrl: String            =
     s"$dfsFrontendHost/submissions/new-form/tell-hmrc-about-your-tax-free-allowance"
 
