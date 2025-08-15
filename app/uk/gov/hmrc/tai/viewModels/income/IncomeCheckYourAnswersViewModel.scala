@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ object IncomeCheckYourAnswersViewModel {
     incomeSourceName: String,
     incomeSourceStart: String,
     incomeSourceRefNo: String,
+    payeRef: String,
     contactableByPhone: String,
     phoneNumber: Option[String],
     backLinkUrl: String,
@@ -63,6 +64,11 @@ object IncomeCheckYourAnswersViewModel {
           Messages("tai.addEmployment.cya.q3"),
           incomeSourceRefNo,
           controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
+        ),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.income.details.ERN"),
+          payeRef,
+          controllers.employments.routes.AddEmploymentController.addPayeReference().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addEmployment.cya.q4"),

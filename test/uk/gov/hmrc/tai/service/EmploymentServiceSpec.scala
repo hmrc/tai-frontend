@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,49 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EmploymentIncome, EndEmployment, IncorrectIncome}
+import uk.gov.hmrc.tai.model.domain.*
 import utils.BaseSpec
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class EmploymentServiceSpec extends BaseSpec {
+
+  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
+
+  private val employment        = Employment(
+    "company name",
+    Live,
+    Some("123"),
+    Some(LocalDate.parse("2016-05-26")),
+    Some(LocalDate.parse("2016-05-26")),
+    Nil,
+    "",
+    "",
+    2,
+    None,
+    false,
+    false,
+    EmploymentIncome
+  )
+  private val employmentDetails = List(employment)
+  private val employments       = employmentDetails.head :: employmentDetails.head :: Nil
+
+  private def createSUT = new EmploymentServiceTest
+
+  val employmentsConnector: EmploymentsConnector = mock[EmploymentsConnector]
+
+  private class EmploymentServiceTest
+      extends EmploymentService(
+        employmentsConnector
+      )
 
   "Employment Service" must {
     "return employments" in {
@@ -168,6 +197,7 @@ class EmploymentServiceSpec extends BaseSpec {
         employerName = "testEmployment",
         payrollNumber = "12345",
         startDate = LocalDate.of(2017, 6, 6),
+        payeRef = "123/AB456",
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789")
       )
@@ -186,6 +216,7 @@ class EmploymentServiceSpec extends BaseSpec {
           employerName = "testEmployment",
           payrollNumber = "12345",
           startDate = LocalDate.of(2017, 6, 6),
+          payeRef = "123/AB456",
           telephoneContactAllowed = "Yes",
           telephoneNumber = Some("123456789")
         )
@@ -226,34 +257,4 @@ class EmploymentServiceSpec extends BaseSpec {
       }
     }
   }
-
-  private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
-
-  private val employment        = Employment(
-    "company name",
-    Live,
-    Some("123"),
-    Some(LocalDate.parse("2016-05-26")),
-    Some(LocalDate.parse("2016-05-26")),
-    Nil,
-    "",
-    "",
-    2,
-    None,
-    false,
-    false,
-    EmploymentIncome
-  )
-  private val employmentDetails = List(employment)
-  private val employments       = employmentDetails.head :: employmentDetails.head :: Nil
-
-  private def createSUT = new EmploymentServiceTest
-
-  val employmentsConnector = mock[EmploymentsConnector]
-
-  private class EmploymentServiceTest
-      extends EmploymentService(
-        employmentsConnector
-      )
-
 }

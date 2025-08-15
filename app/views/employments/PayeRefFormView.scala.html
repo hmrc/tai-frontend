@@ -1,0 +1,103 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.cancelLink
+@import uk.gov.hmrc.govukfrontend.views.html.components.*
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
+
+@this(
+        main: MainTemplate,
+        formWithCSRF: FormWithCSRF,
+        govukInput: GovukInput,
+        govukButton: GovukButton,
+        govukErrorSummary: GovukErrorSummary
+)
+
+@(payeRefForm: Form[String], companyName: String, journey: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
+
+@main(
+    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+    title = Messages("tai.payeRefForm.title", companyName),
+    authedUser = Some(user),
+    formForErrorSummary = Some(payeRefForm),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
+    backLinkUrl =
+        if(journey == "pension") {
+            Some(controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url)
+        } else {
+            Some(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url)
+        },
+) {
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if(payeRefForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary(
+                    errorList = payeRefForm.errors.asTextErrorLinks,
+                    title = Text(messages("tai.income.error.form.summary"))
+                ))
+            }
+
+            <h2 class="govuk-caption-xl hmrc-caption-xl">
+                <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>
+                @if(journey == "pension") {
+                    @messages("add.missing.pension")
+                } else {
+                    @messages("add.missing.employment")
+                }
+            </h2>
+
+            @formWithCSRF(action =
+                if(journey == "pension") {
+                    controllers.pensions.routes.AddPensionProviderController.submitPayeReference()
+                } else {
+                    controllers.employments.routes.AddEmploymentController.submitPayeReference()
+                }
+            ) {
+
+                @govukInput(Input(
+                    id = "payeReference",
+                    name = "payeReference",
+                    value = payeRefForm("payeReference").value,
+                    label = Label(
+                        isPageHeading = true,
+                        classes = "govuk-label--xl",
+                        content = Text(messages("tai.payeRefForm.title", companyName))
+                    ),
+                    hint = Some(
+                        Hint(
+                            content = HtmlContent(
+                                s"""
+                                |${messages("tai.payeRefForm.hint")}
+                                |${messages("tai.payeRefForm.hint2")}
+                                |${messages("tai.payeRefForm.hint3")}
+                                |""".stripMargin
+                            )
+                        )
+                    ),
+                    errorMessage = payeRefForm.error("payeReference").map { err =>
+                        ErrorMessage(content = Text(err.message))
+                    }
+                ))
+
+                @govukButton(Button(
+                    content = Text(messages("tai.continue")),
+                    id = Some("submitButton")
+                ))
+            }
+        </div>
+    </div>
+}

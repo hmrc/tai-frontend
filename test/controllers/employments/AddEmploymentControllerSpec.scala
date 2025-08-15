@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,30 @@ package controllers.employments
 import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages.addEmployment._
+import pages.AddPayeRefPage
+import pages.addEmployment.*
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants._
+import uk.gov.hmrc.tai.util.constants.AddEmploymentPayrollNumberConstants.*
 import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, FormValuesConstants}
 import utils.{FakeAuthJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
-import views.html.employments._
+import views.html.employments.*
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -78,6 +79,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     inject[CanWeContactByPhoneView],
     inject[ConfirmationView],
     inject[AddIncomeCheckYourAnswersView],
+    inject[PayeRefFormView],
     inject[ErrorPagesHandler]
   )
 
@@ -193,7 +195,6 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         }
       }
     }
-
   }
 
   "submit start date" must {
@@ -508,7 +509,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
 
-    "redirect to add telephone number page" when {
+    "redirect to add PAYE reference page" when {
       "the form is valid and user knows their payroll number" in {
         val sut       = createSUT()
         val payrollNo = "1234"
@@ -526,7 +527,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addPayeReference().url
 
         verify(mockRepository, times(1)).set(any())
       }
@@ -548,13 +549,13 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addPayeReference().url
 
         verify(mockRepository, times(1)).set(any())
       }
     }
 
-    "redirect to add telephone number page" when {
+    "redirect to add PAYE reference page" when {
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT()
 
@@ -569,7 +570,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe SEE_OTHER
         redirectLocation(
           result
-        ).get mustBe controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+        ).get mustBe controllers.employments.routes.AddEmploymentController.addPayeReference().url
       }
     }
 
@@ -586,6 +587,121 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"))
+      }
+    }
+  }
+
+  "add PAYE reference" must {
+    "show the PAYE reference page with empty field when no previous value" in {
+      val request            = fakeGetRequest
+      val updatedUserAnswers =
+        userAnswers.copy(data = userAnswers.data ++ Json.obj(AddEmploymentNamePage.toString -> "Acme Ltd"))
+      val application        = applicationBuilder(updatedUserAnswers).build()
+      running(application) {
+        val sut    = createSUT(Some(updatedUserAnswers))
+        val result = sut.addPayeReference()(request)
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.payeRefForm.title", "Acme Ltd"))
+        doc.select("#payeReference").`val`() mustBe ""
+      }
+    }
+
+    "show the PAYE reference page pre-populated when a value exists" in {
+      val request            = fakeGetRequest
+      val updatedUserAnswers =
+        userAnswers.copy(data =
+          userAnswers.data ++ Json.obj(
+            AddEmploymentNamePage.toString -> "Acme Ltd",
+            AddPayeRefPage.toString        -> "123/AB456"
+          )
+        )
+      val application        = applicationBuilder(updatedUserAnswers).build()
+      running(application) {
+        val sut    = createSUT(Some(updatedUserAnswers))
+        val result = sut.addPayeReference()(request)
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.payeRefForm.title", "Acme Ltd"))
+        doc.select("#payeReference").`val`() mustBe "123/AB456"
+      }
+    }
+
+    "redirect to tax summary when employer name is missing" in {
+      val request            = fakeGetRequest
+      val updatedUserAnswers =
+        userAnswers.copy(data = Json.obj())
+      val application        = applicationBuilder(updatedUserAnswers).build()
+      running(application) {
+        val sut    = createSUT(Some(updatedUserAnswers))
+        val result = sut.addPayeReference()(request)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      }
+    }
+  }
+
+  "submit PAYE reference" must {
+    "persist and redirect to telephone number page on valid input" in {
+      val sut = createSUT()
+
+      when(mockRepository.set(any())).thenReturn(Future.successful(true))
+
+      val result =
+        sut.submitPayeReference()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payeReference" -> "123/AB456")
+        )
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.employments.routes.AddEmploymentController
+        .addTelephoneNumber()
+        .url
+      verify(mockRepository, times(1)).set(any())
+    }
+
+    "show BAD_REQUEST on empty input" in {
+      val sut = createSUT()
+
+      val result =
+        sut.submitPayeReference()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payeReference" -> "")
+        )
+
+      status(result) mustBe BAD_REQUEST
+    }
+
+    "show BAD_REQUEST on invalid format" in {
+      val sut = createSUT()
+
+      val result =
+        sut.submitPayeReference()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payeReference" -> "ABC/123")
+        )
+
+      status(result) mustBe BAD_REQUEST
+    }
+
+    "show BAD_REQUEST when employer name missing from cache" in {
+      val updatedUserAnswers =
+        userAnswers.copy(data = Json.obj())
+      val application        = applicationBuilder(updatedUserAnswers).build()
+      running(application) {
+        val sut = createSUT(Some(updatedUserAnswers))
+        val res = sut.submitPayeReference()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody("payeReference" -> "123/AB456")
+        )
+        status(res) mustBe BAD_REQUEST
       }
     }
   }
@@ -745,6 +861,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentNamePage.toString              -> "TEST-employer",
               AddEmploymentStartDatePage.toString         -> LocalDate.of(2017, 6, 15),
               AddEmploymentPayrollNumberPage.toString     -> "emp-ref-1234",
+              AddPayeRefPage.toString                     -> "123/AB456",
               AddEmploymentTelephoneQuestionPage.toString -> "Yes",
               AddEmploymentTelephoneNumberPage.toString   -> "should be displayed"
             )
@@ -772,9 +889,16 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
   "submit your answers" must {
     "invoke the back end 'addEmployment' service and redirect to the confirmation page" when {
-      "the request has an authorised session amd a telephone number has been provided" in {
+      "the request has an authorised session and a telephone number has been provided" in {
         val expectedModel =
-          AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "Yes", Some("123456789"))
+          AddEmployment(
+            "empName",
+            LocalDate.parse("2017-04-04"),
+            "I do not know",
+            "123/AB456",
+            "Yes",
+            Some("123456789")
+          )
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
@@ -789,6 +913,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentNamePage.toString              -> expectedModel.employerName,
               AddEmploymentStartDatePage.toString         -> expectedModel.startDate,
               AddEmploymentPayrollNumberPage.toString     -> expectedModel.payrollNumber,
+              AddPayeRefPage.toString                     -> "123/AB456",
               AddEmploymentTelephoneQuestionPage.toString -> expectedModel.telephoneContactAllowed,
               AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
             )
@@ -801,8 +926,9 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         }
       }
 
-      "the request has an authorised session amd no telephone number was provided" in {
-        val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
+      "the request has an authorised session and no telephone number was provided" in {
+        val expectedModel =
+          AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "123/AB456", "No", None)
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any()))
           .thenReturn(Future.successful("envelope-123"))
@@ -817,6 +943,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
               AddEmploymentNamePage.toString              -> expectedModel.employerName,
               AddEmploymentStartDatePage.toString         -> expectedModel.startDate,
               AddEmploymentPayrollNumberPage.toString     -> expectedModel.payrollNumber,
+              AddPayeRefPage.toString                     -> "123/AB456",
               AddEmploymentTelephoneQuestionPage.toString -> expectedModel.telephoneContactAllowed,
               AddEmploymentTelephoneNumberPage.toString   -> expectedModel.telephoneNumber
             )
@@ -831,7 +958,8 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "show a bad request page" when {
       "a value is missing from the needed userAnswers" in {
-        val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
+        val expectedModel =
+          AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "123/AB456", "No", None)
 
         val request = fakeGetRequest
 
