@@ -19,8 +19,6 @@ package uk.gov.hmrc.tai.model.domain.income
 import play.api.libs.json._
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
 
-import java.time.LocalDate
-
 sealed trait BasisOfOperation
 
 case object Week1Month1BasisOfOperation extends BasisOfOperation
@@ -42,39 +40,6 @@ object BasisOfOperation {
   }
 }
 
-sealed trait IabdUpdateSource
-
-case object ManualTelephone extends IabdUpdateSource
-
-case object Letter extends IabdUpdateSource
-
-case object Email extends IabdUpdateSource
-
-case object AgentContact extends IabdUpdateSource
-
-case object OtherForm extends IabdUpdateSource
-
-case object Internet extends IabdUpdateSource
-
-case object InformationLetter extends IabdUpdateSource
-
-object IabdUpdateSource extends IabdUpdateSource {
-  implicit val formatIabdUpdateSource: Format[IabdUpdateSource] = new Format[IabdUpdateSource] {
-    override def reads(json: JsValue): JsSuccess[IabdUpdateSource] = json.as[String] match {
-      case "ManualTelephone"   => JsSuccess(ManualTelephone)
-      case "Letter"            => JsSuccess(Letter)
-      case "Email"             => JsSuccess(Email)
-      case "AgentContact"      => JsSuccess(AgentContact)
-      case "OtherForm"         => JsSuccess(OtherForm)
-      case "Internet"          => JsSuccess(Internet)
-      case "InformationLetter" => JsSuccess(InformationLetter)
-      case _                   => throw new RuntimeException("Invalid Iabd Update Source")
-    }
-
-    override def writes(iabdUpdateSource: IabdUpdateSource) = JsString(iabdUpdateSource.toString)
-  }
-}
-
 case class TaxCodeIncome(
   componentType: TaxComponentType,
   employmentId: Option[Int],
@@ -84,10 +49,7 @@ case class TaxCodeIncome(
   name: String,
   basisOperation: BasisOfOperation,
   // This is not the live employment status but the batched job employment status
-  status: TaxCodeIncomeSourceStatus,
-  iabdUpdateSource: Option[IabdUpdateSource] = None,
-  updateNotificationDate: Option[LocalDate] = None,
-  updateActionDate: Option[LocalDate] = None
+  status: TaxCodeIncomeSourceStatus
 )
 
 object TaxCodeIncome {

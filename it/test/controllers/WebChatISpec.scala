@@ -64,7 +64,8 @@ class WebChatISpec extends IntegrationSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("loadRequiredElements")))
-    when(mockWebChatClient.loadHMRCChatSkinElement(any())(any())).thenReturn(Some(Html("loadHMRCChatSkinElement")))
+    when(mockWebChatClient.loadHMRCChatSkinElement(any(), any())(any()))
+      .thenReturn(Some(Html("loadHMRCChatSkinElement")))
     server.stubFor(
       get(urlEqualTo(fandfDelegationUrl))
         .willReturn(notFound())

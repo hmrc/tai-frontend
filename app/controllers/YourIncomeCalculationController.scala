@@ -16,13 +16,13 @@
 
 package controllers
 
-import controllers.auth._
-import play.api.mvc._
+import controllers.auth.*
+import play.api.Logging
+import play.api.mvc.*
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, PaymentsService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
-//import views.html.print.HistoricIncomePrintView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class YourIncomeCalculationController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
+  iabdService: IabdService,
   paymentsService: PaymentsService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
@@ -37,7 +38,8 @@ class YourIncomeCalculationController @Inject() (
   yourIncomeCalculation: YourIncomeCalculationView,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
-    extends TaiBaseController(mcc) {
+    extends TaiBaseController(mcc)
+    with Logging {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     implicit request =>
@@ -49,23 +51,31 @@ class YourIncomeCalculationController @Inject() (
 
     lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
     lazy val employmentFuture     = employmentService.employment(nino, empId)
+    lazy val iabdDetailsFuture    = iabdService.getIabds(nino, TaxYear()).value
 
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
       employmentDetails    <- employmentFuture
-    } yield (taxCodeIncomeDetails, employmentDetails) match {
-      case (Right(taxCodeIncomes), Some(employment)) =>
+      iabdDetails          <- iabdDetailsFuture
+      maybeIabdDetail       = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
+    } yield (taxCodeIncomeDetails, employmentDetails, maybeIabdDetail) match {
+      case (Right(taxCodeIncomes), Some(employment), Right(maybeIabd)) =>
         val paymentDetails = paymentsService.filterDuplicates(employment)
 
         val model                     = YourIncomeCalculationViewModel(
           taxCodeIncomes.find(_.employmentId.contains(empId)),
           employment,
+          maybeIabd,
           paymentDetails,
           request.fullName
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
-      case _                                         => errorPagesHandler.internalServerError("Error while fetching RTI details")
+      case (taxCodeIncomes, employment, maybeIabdDetail)               =>
+        logger.error(
+          s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetsils: ${maybeIabdDetail.isLeft})"
+        )
+        errorPagesHandler.internalServerError("Error while fetching RTI details")
     }
   }
 
