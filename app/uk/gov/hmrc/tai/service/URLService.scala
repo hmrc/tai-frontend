@@ -18,6 +18,11 @@ package uk.gov.hmrc.tai.service
 
 import play.api.{Environment, Mode}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+import uk.gov.hmrc.play.bootstrap.binders.{AbsoluteWithHostnameFromAllowlist, OnlyRelative, RedirectUrl}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
+import java.net.URLEncoder
+import play.api.Logging
 
 import java.net.URI
 import javax.inject.Inject
@@ -25,8 +30,22 @@ import javax.inject.Inject
 class URLService @Inject() (
   appConfig: ApplicationConfig,
   env: Environment
-) {
-  def localFriendlyUrl(url: String, hostAndPort: String): String = {
+) extends Logging {
+  def safeEncodedUrl(url: String, hostAndPort: String): String =
+    RedirectUrl(url).getEither(
+      OnlyRelative | AbsoluteWithHostnameFromAllowlist("localhost")
+    ) match {
+      case Right(safeRedirectUrl) => URLEncoder.encode(safeRedirectUrl.url, "UTF-8")
+      case Left(error)            =>
+        val ex = new IllegalArgumentException(error)
+        logger.error(ex.getMessage, ex)
+        URLEncoder.encode(
+          s"$hostAndPort${controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()}",
+          "UTF-8"
+        )
+    }
+
+  def localFriendlyEncodedUrl(url: String, hostAndPort: String): String = {
     val isLocalEnv =
       if (env.mode.equals(Mode.Test)) {
         false
@@ -37,9 +56,9 @@ class URLService @Inject() (
     val uri = new URI(url)
 
     if (!uri.isAbsolute && isLocalEnv) {
-      s"http://$hostAndPort$url"
+      safeEncodedUrl(s"http://$hostAndPort$url", hostAndPort)
     } else {
-      url
+      safeEncodedUrl(url, hostAndPort)
     }
   }
 }
