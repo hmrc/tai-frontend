@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 @import controllers.auth.DataRequest
 @import includes.{link, ptaHeader}
+@import uk.gov.hmrc.govukfrontend.views.html.components
+@import uk.gov.hmrc.govukfrontend.views.html.components.{implicits, *}
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.{IFormInProgressBannerViewModel, TaxAccountSummaryViewModel, TaxCodeViewModel}
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(main: MainTemplate, incomeTaxSummaryIncomeSourceDetail: IncomeTaxSummaryIncomeSourceDetail, govukInsetText: GovukInsetText)
 
@@ -151,14 +152,14 @@
                     <p class="govuk-body">
                     @link(
                         id=Some("addEmploymentLink"),
-                        url=controllers.employments.routes.AddEmploymentController.addEmploymentName().url,
+                        url=controllers.routes.BeforeYouStartController.onPageLoad("employment").url,
                         copy=messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")
                     )
                     </p>
                     <p class="govuk-body">
                     @link(
                         id=Some("addPensionLink"),
-                        url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url,
+                        url=controllers.routes.BeforeYouStartController.onPageLoad("pension").url,
                         copy=messages("add.missing.pension")
                     )
                     </p>

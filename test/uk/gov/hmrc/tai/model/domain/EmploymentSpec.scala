@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,16 @@
 package uk.gov.hmrc.tai.model.domain
 
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 
 import java.time.LocalDate
 
 class EmploymentSpec extends PlaySpec {
+
+  val annualAccount1: AnnualAccount = AnnualAccount(7, TaxYear(2016), Available, Nil, Nil)
+  val annualAccount2: AnnualAccount = AnnualAccount(7, TaxYear(2017), Available, Nil, Nil)
 
   "latestAnnualAccount" must {
     "return the latest annual account" when {
@@ -38,14 +42,14 @@ class EmploymentSpec extends PlaySpec {
           "",
           1,
           None,
-          false,
-          false,
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false,
           EmploymentIncome
         )
 
         employment.latestAnnualAccount mustBe Some(annualAccount2)
-
       }
+
       "there is only one annual account" in {
         val employment =
           Employment(
@@ -59,14 +63,15 @@ class EmploymentSpec extends PlaySpec {
             "",
             1,
             None,
-            false,
-            false,
+            hasPayrolledBenefit = false,
+            receivingOccupationalPension = false,
             EmploymentIncome
           )
 
         employment.latestAnnualAccount mustBe Some(annualAccount1)
       }
     }
+
     "return none" when {
       "there are no annual accounts" in {
         val employment =
@@ -77,7 +82,41 @@ class EmploymentSpec extends PlaySpec {
     }
   }
 
-  val annualAccount1 = AnnualAccount(7, TaxYear(2016), Available, Nil, Nil)
-  val annualAccount2 = AnnualAccount(7, TaxYear(2017), Available, Nil, Nil)
+  "AddEmployment JSON" must {
+    "include payeRef when writing" in {
+      val model = AddEmployment(
+        employerName = "ACME Ltd",
+        startDate = LocalDate.of(2024, 1, 2),
+        payrollNumber = "PR-123",
+        payeRef = "123/AB456",
+        telephoneContactAllowed = "Yes",
+        telephoneNumber = Some("0123456789")
+      )
 
+      val json = Json.toJson(model)
+
+      (json \ "employerName").as[String] mustBe "ACME Ltd"
+      (json \ "startDate").isDefined mustBe true
+      (json \ "payrollNumber").as[String] mustBe "PR-123"
+      (json \ "payeRef").as[String] mustBe "123/AB456"
+      (json \ "telephoneContactAllowed").as[String] mustBe "Yes"
+      (json \ "telephoneNumber").asOpt[String] mustBe Some("0123456789")
+    }
+
+    "round-trip (write then read) with payeRef" in {
+      val original = AddEmployment(
+        employerName = "Beta Corp",
+        startDate = LocalDate.of(2023, 12, 31),
+        payrollNumber = "9999",
+        payeRef = "321/ZZ999",
+        telephoneContactAllowed = "No",
+        telephoneNumber = None
+      )
+
+      val json   = Json.toJson(original)
+      val parsed = json.as[AddEmployment]
+
+      parsed mustBe original
+    }
+  }
 }

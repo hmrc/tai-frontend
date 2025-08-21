@@ -1758,3 +1758,27 @@ betaBanner.linkText=feedback
 label.your_account=Your account
 
 taxFreeAmountSummaryComparison.viewUnderpayments=View underpayments
+
+# Generic
+beforeYouStart.title = Before you start
+beforeYouStart.intro = You should get all of your information together before you start. You will fill this form in online and you cannot save your progress.
+beforeYouStart.list.intro = You’ll need your:
+
+# Employment list
+beforeYouStart.list.employerName = employer name
+beforeYouStart.list.startDate = start date
+beforeYouStart.list.payrollNumber = payroll number
+beforeYouStart.list.payeReference = employer PAYE reference
+beforeYouStart.list.phoneNumber = phone number
+
+# Pension list
+beforeYouStart.pension.list.providerName = provider name
+beforeYouStart.pension.list.firstPayment = first payment date
+beforeYouStart.pension.list.pensionNumber = pension number
+
+tai.payeRefForm.title = What is {0}’s employer PAYE reference?
+tai.payeRefForm.hint = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB456.
+tai.payeRefForm.hint2 = It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
+tai.payeRefForm.hint3 = It will be on your payslip or tax forms.
+tai.payeRefForm.required = Enter {0}’s employer PAYE reference
+tai.payeRefForm.format = Enter {0}’s employer PAYE reference in the correct format
