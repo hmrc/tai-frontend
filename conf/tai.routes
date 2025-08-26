@@ -127,7 +127,7 @@ GET         /update-income/load/:empId                                          
 GET         /update-income/warning/:empId                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(empId: Int)
 POST        /update-income/warning/:empId                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning(empId: Int)
 GET         /update-income/check-your-answers/:empId                                   controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.checkYourAnswersPage(empId: Int)
-GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult()
+GET         /update-income/confirm-estimated-pay/:empId                                controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult(empId: Int)
 
 GET         /update-income/start/:empId                                                controllers.income.estimatedPay.update.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId: Int)
 GET         /update-income/estimated-pay/:empId                                        controllers.income.estimatedPay.update.IncomeUpdateEstimatedPayController.estimatedPayPage(empId: Int)

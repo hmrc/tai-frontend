@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,17 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 
 import java.time.LocalDate
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfig: ApplicationConfig)(implicit
+@Singleton
+final class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfig: ApplicationConfig)(implicit
   ec: ExecutionContext
 ) {
 
   val serviceUrl: String = applicationConfig.taiServiceUrl
+
+  private val startDateCutoff: LocalDate = applicationConfig.startEmploymentDateFilteredBefore
 
   def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
 
@@ -43,32 +46,44 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
   private def employmentsOnlyUrl(nino: Nino, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments-only/years/${taxYear.year}"
 
+  private def endEmploymentServiceUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/employments/$id/end-date"
+
+  def addEmploymentServiceUrl(nino: Nino): String =
+    s"$serviceUrl/tai/$nino/employments"
+
+  def employmentServiceUrl(nino: Nino, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+
+  private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
+    s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
+
+  private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
+    s"$serviceUrl/tai/$nino/employments/$id/reason"
+
   private def filterDate(dateOption: Option[LocalDate]): Option[LocalDate] =
-    dateOption.filter(_.isAfter(applicationConfig.startEmploymentDateFilteredBefore))
+    dateOption.filter(_.isAfter(startDateCutoff))
+
+  private def sanitize(e: Employment): Employment =
+    e.copy(startDate = filterDate(e.startDate))
+
+  private def sanitizeAll(es: Seq[Employment]): Seq[Employment] =
+    es.iterator.map(sanitize).toSeq
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)) map { json =>
-      (json \ "data" \ "employments").as[Seq[Employment]].map { employment =>
-        employment.copy(startDate = filterDate(employment.startDate))
-      }
+    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)).map { json =>
+      sanitizeAll((json \ "data" \ "employments").as[Seq[Employment]])
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
-      (json \ "data").as[Seq[Employment]].map { employment =>
-        employment.copy(startDate = filterDate(employment.startDate))
-      }
+      sanitizeAll((json \ "data").as[Seq[Employment]])
     }
 
   def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler
-      .getFromApiV2(employmentOnlyUrl(nino, id, taxYear))
-      .map(json =>
-        // todo asOpt is too forgiving
-        (json \ "data").asOpt[Employment].map { employment =>
-          employment.copy(startDate = filterDate(employment.startDate))
-        }
-      )
+    httpHandler.getFromApiV2(employmentOnlyUrl(nino, id, taxYear)).map { json =>
+      (json \ "data").asOpt[Employment].map(sanitize)
+    }
 
   def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
@@ -81,27 +96,20 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
           .execute[Either[UpstreamErrorResponse, HttpResponse]]
       )
       .map { httpResponse =>
-        (httpResponse.json \ "data" \ "employments").as[Seq[Employment]].map { employment =>
-          employment.copy(startDate = filterDate(employment.startDate))
-        }
+        sanitizeAll((httpResponse.json \ "data" \ "employments").as[Seq[Employment]])
       }
   }
 
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler
-      .getFromApiV2(employmentUrl(nino, id))
-      .map(json =>
-        (json \ "data").asOpt[Employment].map { employment =>
-          employment.copy(startDate = filterDate(employment.startDate))
-        }
-      )
+    httpHandler.getFromApiV2(employmentUrl(nino, id)).map { json =>
+      (json \ "data").asOpt[Employment].map(sanitize)
+    }
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
-    httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).map { response =>
-      if ((response.json \ "data").validate[String].isSuccess) {
-        (response.json \ "data").as[String]
-      } else {
-        throw new RuntimeException("Invalid json")
+    httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).flatMap { response =>
+      (response.json \ "data").validate[String].asEither match {
+        case Right(envId) => Future.successful(envId)
+        case Left(_)      => Future.failed(new RuntimeException("Invalid json"))
       }
     }
 
@@ -117,16 +125,4 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
       response =>
         (response.json \ "data").asOpt[String]
     }
-
-  private def endEmploymentServiceUrl(nino: Nino, id: Int): String = s"$serviceUrl/tai/$nino/employments/$id/end-date"
-
-  def addEmploymentServiceUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/employments"
-
-  def employmentServiceUrl(nino: Nino, year: TaxYear): String = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
-
-  private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
-    s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
-
-  private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
-    s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

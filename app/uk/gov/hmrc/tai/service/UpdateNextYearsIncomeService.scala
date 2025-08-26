@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class UpdateNextYearsIncomeService @Inject() (
   journeyCacheRepository: JourneyCacheRepository,
@@ -44,23 +45,21 @@ class UpdateNextYearsIncomeService @Inject() (
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
     for {
-      taxCodeIncomeResult <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
-      employmentOpt       <- employmentService.employment(nino, employmentId)
+      tciResult     <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
+      employmentOpt <- employmentService.employment(nino, employmentId)
     } yield employmentOpt match {
-      case Some(employment) =>
-        val currentValue = taxCodeIncomeResult match {
+      case Some(emp) =>
+        val currentEstimatedIncome: Option[Int] = tciResult match {
           case Right(Some(tci)) => Some(tci.amount.toInt)
           case _                => None
         }
-
         UpdateNextYearsIncomeCacheModel(
-          employmentName = employment.name,
+          employmentName = emp.name,
           employmentId = employmentId,
-          isPension = employment.receivingOccupationalPension,
-          currentValue = currentValue
+          isPension = emp.receivingOccupationalPension,
+          currentValue = currentEstimatedIncome
         )
-
-      case None =>
+      case None      =>
         throw new RuntimeException(
           "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
         )
@@ -69,26 +68,24 @@ class UpdateNextYearsIncomeService @Inject() (
   def get(employmentId: Int, nino: Nino, userAnswers: UserAnswers)(implicit
     hc: HeaderCarrier
   ): Future[UpdateNextYearsIncomeCacheModel] =
-    journeyCacheRepository.get(userAnswers.sessionId, userAnswers.nino).flatMap(_ => setup(employmentId, nino))
+    journeyCacheRepository
+      .keepAlive(userAnswers.sessionId, userAnswers.nino)
+      .flatMap(_ => setup(employmentId, nino))
 
   def setNewAmount(newValue: String, employmentId: Int, userAnswers: UserAnswers): Future[Map[String, String]] = {
-    val value          = convertCurrencyToInt(Some(newValue)).toString
-    val amountKey      = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
-    val updatedAnswers = userAnswers.setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), value)
-
-    journeyCacheRepository.set(updatedAnswers).map { _ =>
-      Map(amountKey -> value)
-    }
+    val normalizedAmount = convertCurrencyToInt(Some(newValue)).toString
+    val amountKey        = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
+    val updatedAnswers   = userAnswers.setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), normalizedAmount)
+    journeyCacheRepository.set(updatedAnswers).map(_ => Map(amountKey -> normalizedAmount))
   }
 
   def getNewAmount(employmentId: Int, userAnswers: UserAnswers): Future[Either[String, Int]] = {
     val key = UpdateNextYearsIncomeNewAmountPage(employmentId).toString
-
     Future.successful {
       userAnswers
         .get(UpdateNextYearsIncomeNewAmountPage(employmentId))
-        .map(value => Right(value.toInt))
-        .getOrElse(Left(s"Value for $key not found"))
+        .flatMap(s => Try(s.toInt).toOption)
+        .toRight(s"Value for $key not found")
     }
   }
 
@@ -97,18 +94,15 @@ class UpdateNextYearsIncomeService @Inject() (
     ec: ExecutionContext
   ): Future[Done] =
     for {
-      _         <- get(employmentId, nino, userAnswers)
-      newAmount <- getNewAmount(employmentId, userAnswers).flatMap {
-                     case Right(amount) => Future.successful(amount)
-                     case Left(error)   => Future.failed(new Exception(error))
-                   }
-      _         <- {
-        val updatedUserAnswers = userAnswers
-          .setOrException(UpdateNextYearsIncomeSuccessPage, true)
-          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
-
-        journeyCacheRepository.set(updatedUserAnswers)
-      }
-      _         <- taxAccountService.updateEstimatedIncome(nino, newAmount, TaxYear().next, employmentId)
+      _               <- get(employmentId, nino, userAnswers)
+      newEstimatedPay <- getNewAmount(employmentId, userAnswers).flatMap {
+                           case Right(amount) => Future.successful(amount)
+                           case Left(error)   => Future.failed(new Exception(error))
+                         }
+      _               <- taxAccountService.updateEstimatedIncome(nino, newEstimatedPay, TaxYear().next, employmentId)
+      updatedUserState = userAnswers
+                           .setOrException(UpdateNextYearsIncomeSuccessPage, true)
+                           .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
+      _               <- journeyCacheRepository.set(updatedUserState)
     } yield Done
 }

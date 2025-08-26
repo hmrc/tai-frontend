@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,33 +18,29 @@
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
 @(employmentName: String, employmentId: Int, isPension: Boolean)(
-    implicit request: Request[_],
-    messages: Messages,
-    user: controllers.auth.AuthedUser
+        implicit request: Request[_],
+        messages: Messages,
+        user: controllers.auth.AuthedUser
 )
-
 
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
-    form = None,
-    heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>)
-){
+    form         = None,
+    heading      = messages("tai.updateIncome.CYPlus1.start.heading", employmentName)
+) {
+    <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
 
-    <div>
-        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
+    @if(isPension) {
+        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employmentName)</p>
+    } else {
+        <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph2", employmentName)</p>
+    }
 
-        @if(isPension) {
-            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employmentName)</p>
-        } else {
-            <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph2", employmentName)</p>
-        }
-
-        @includes.link(
-            copy=messages("tai.income.details.updateTaxableIncome.update"),
-            url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
-            id = Some("CYPlus1StartButton"),
-            linkClasses=Seq("govuk-button"),
-            isButton=true
-        )
-    </div>
+    @includes.link(
+        copy        = messages("tai.income.details.updateTaxableIncome.update"),
+        url         = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
+        id          = Some("CYPlus1StartButton"),
+        linkClasses = Seq("govuk-button"),
+        isButton    = true
+    )
 }

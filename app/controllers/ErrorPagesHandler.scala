@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,21 @@ import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import views.html.includes.link
 import views.html.{ErrorNoPrimary, ErrorTemplateNoauth}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(implicit
-  val ec: ExecutionContext
+@Singleton
+final class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, errorNoPrimary: ErrorNoPrimary)(
+  implicit val ec: ExecutionContext
 ) extends Logging {
   type RecoveryLocation = Class[_]
+
+  private def containsIgnoreCase(s: String, token: String): Boolean =
+    Option(s).exists(_.toLowerCase.contains(token))
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
     errorTemplateNoauth(
@@ -63,7 +66,9 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
       List.empty
     )
 
-  def error4xxFromNps(pageTitle: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
+  private def error4xxFromNps(
+    pageTitle: String
+  )(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
     errorTemplateNoauth(
       pageTitle,
       messages("tai.errorMessage.heading.nps"),
@@ -84,7 +89,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages,
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Future[Result]] = {
-    case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
+    case e: NotFoundException if containsIgnoreCase(e.getMessage, TaiConstants.NpsAppStatusMsg) =>
       logger.warn(s"<Not found response received from NPS> - for nino $nino @${rl.getName}")
       Future.successful(NotFound(error4xxFromNps(messages("global.error.pageNotFound404.title"))))
   }
@@ -133,36 +138,34 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages,
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Option[Result]] = {
-    case NonFatal(e) if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) =>
-      prevYearEmployments match {
-        case Nil =>
-          logger.warn(
-            s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
-          )
-          Some(BadRequest(errorNoPrimary()))
-        case _   =>
-          logger.info(
-            s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
-          )
-          None
+    case NonFatal(e) if containsIgnoreCase(e.getMessage, TaiConstants.NpsTaxAccountCYDataAbsentMsg) =>
+      if (prevYearEmployments.isEmpty) {
+        logger.warn(
+          s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
+        )
+        Some(BadRequest(errorNoPrimary()))
+      } else {
+        logger.info(
+          s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
+        )
+        None
       }
   }
 
   def npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments: Seq[Employment], nino: String)(implicit
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Option[Result]] = {
-    case NonFatal(e) if e.getMessage.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) =>
-      prevYearEmployments match {
-        case Nil =>
-          logger.warn(
-            s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
-          )
-          Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-        case _   =>
-          logger.warn(
-            s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
-          )
-          None
+    case NonFatal(e) if containsIgnoreCase(e.getMessage, TaiConstants.NpsTaxAccountDataAbsentMsg) =>
+      if (prevYearEmployments.isEmpty) {
+        logger.warn(
+          s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
+        )
+        Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+      } else {
+        logger.warn(
+          s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
+        )
+        None
       }
   }
 
@@ -171,7 +174,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages,
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Option[Result]] = {
-    case NonFatal(e) if e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) =>
+    case NonFatal(e) if containsIgnoreCase(e.getMessage, TaiConstants.NpsNoEmploymentsRecorded) =>
       logger.warn(s"<No data returned from nps employments> - for nino $nino @${rl.getName}")
       Some(BadRequest(errorNoPrimary()))
   }
@@ -181,18 +184,17 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages,
     rl: RecoveryLocation
   ): PartialFunction[Throwable, Option[Result]] = {
-    case NonFatal(e) if e.getMessage.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-      prevYearEmployments match {
-        case Nil =>
-          logger.warn(
-            s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
-          )
-          Some(BadRequest(errorNoPrimary()))
-        case _   =>
-          logger.info(
-            s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
-          )
-          None
+    case NonFatal(e) if containsIgnoreCase(e.getMessage, TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+      if (prevYearEmployments.isEmpty) {
+        logger.warn(
+          s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino $nino @${rl.getName}"
+        )
+        Some(BadRequest(errorNoPrimary()))
+      } else {
+        logger.info(
+          s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino $nino @${rl.getName}"
+        )
+        None
       }
   }
 
@@ -210,7 +212,7 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth, err
     messages: Messages
   ): Result = {
     logger.warn(logMessage)
-    ex.map(x => logger.error(x.getMessage, x))
+    ex.toList.foreach(x => logger.error(x.getMessage, x))
     InternalServerError(error5xx(messages("tai.technical.error.message")))
   }
 }
