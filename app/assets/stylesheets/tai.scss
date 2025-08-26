@@ -80,3 +80,11 @@ header + .hmrc-user-research-banner {
   white-space: nowrap;
   width: 28%;
 }
+
+@media (min-width: 40.0625em) {
+  #companyBenefitList .govuk-summary-list__actions {
+    width: auto;
+    text-align: right;
+    padding-left: 10px;
+  }
+}

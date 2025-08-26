@@ -21,8 +21,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 
-import java.time.LocalDate
-
 trait CodingComponentFormatters {
 
   val taxComponentTypeReads: Reads[TaxComponentType] = new Reads[TaxComponentType] {
@@ -157,17 +155,14 @@ trait CodingComponentFormatters {
 
   val taxCodeIncomeSourceReads: Reads[TaxCodeIncome] = new Reads[TaxCodeIncome] {
     override def reads(json: JsValue): JsResult[TaxCodeIncome] = {
-      val componentType          = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
-      val employmentId           = (json \ "employmentId").asOpt[Int]
-      val amount                 = (json \ "amount").as[BigDecimal]
-      val description            = (json \ "description").as[String]
-      val taxCode                = (json \ "taxCode").as[String]
-      val name                   = (json \ "name").as[String]
-      val basisOperation         = (json \ "basisOperation").as[BasisOfOperation]
-      val status                 = (json \ "status").as[TaxCodeIncomeSourceStatus]
-      val iabdUpdateSource       = (json \ "iabdUpdateSource").asOpt[IabdUpdateSource]
-      val updateNotificationDate = (json \ "updateNotificationDate").asOpt[LocalDate]
-      val updateActionDate       = (json \ "updateActionDate").asOpt[LocalDate]
+      val componentType  = (json \ "componentType").as[TaxComponentType](taxComponentTypeReads)
+      val employmentId   = (json \ "employmentId").asOpt[Int]
+      val amount         = (json \ "amount").as[BigDecimal]
+      val description    = (json \ "description").as[String]
+      val taxCode        = (json \ "taxCode").as[String]
+      val name           = (json \ "name").as[String]
+      val basisOperation = (json \ "basisOperation").as[BasisOfOperation]
+      val status         = (json \ "status").as[TaxCodeIncomeSourceStatus]
 
       JsSuccess(
         TaxCodeIncome(
@@ -178,10 +173,7 @@ trait CodingComponentFormatters {
           taxCode,
           name,
           basisOperation,
-          status,
-          iabdUpdateSource,
-          updateNotificationDate,
-          updateActionDate
+          status
         )
       )
     }

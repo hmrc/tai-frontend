@@ -18,13 +18,13 @@ package controllers.auth
 
 import com.google.inject.ImplementedBy
 import play.api.Logging
-import play.api.mvc._
-import uk.gov.hmrc.auth.core._
+import play.api.mvc.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import uk.gov.hmrc.tai.connectors.FandFConnector
+import uk.gov.hmrc.sca.utils.Keys.getTrustedHelperFromRequest
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,8 +37,7 @@ trait AuthRetrievals
 @Singleton
 class AuthRetrievalsImpl @Inject() (
   override val authConnector: AuthConnector,
-  mcc: MessagesControllerComponents,
-  fandFConnector: FandFConnector
+  mcc: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends AuthRetrievals
     with AuthorisedFunctions
@@ -51,33 +50,28 @@ class AuthRetrievalsImpl @Inject() (
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    fandFConnector
-      .getTrustedHelper()
-      .recoverWith { e =>
-        logger.error(s"Trusted helper retrieval failed", e)
-        Future.successful(None)
-      }
-      .flatMap { helper =>
-        authorised().retrieve(Retrievals.nino and Retrievals.saUtr) { case optNino ~ saUtr =>
-          helper match {
-            case Some(helper) =>
-              val user = AuthedUser.apply(
-                nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
-                trustedHelper = helper,
-                saUtr = saUtr
-              )
-              block(InternalAuthenticatedRequest(request, user))
+    val helper = getTrustedHelperFromRequest(request)
 
-            case _ =>
-              val user = AuthedUser.apply(
-                nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
-                utr = saUtr,
-                trustedHelper = None
-              )
-              block(InternalAuthenticatedRequest(request, user))
-          }
-        }
+    authorised().retrieve(Retrievals.nino and Retrievals.saUtr) { case optNino ~ saUtr =>
+      helper match {
+        case Some(helper) =>
+          val user = AuthedUser.apply(
+            nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+            trustedHelper = helper,
+            saUtr = saUtr
+          )
+          block(InternalAuthenticatedRequest(request, user))
+
+        case _ =>
+          val user = AuthedUser.apply(
+            nino = uk.gov.hmrc.domain.Nino(optNino.getOrElse("")),
+            utr = saUtr,
+            trustedHelper = None
+          )
+          block(InternalAuthenticatedRequest(request, user))
       }
+    }
+
   }
 
   override def parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
