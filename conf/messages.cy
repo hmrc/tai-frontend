@@ -81,6 +81,7 @@ gift.aid.tax.relief=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwy
 gift.aid.tax.relief.brd.charge=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi, ac yn arbed £{1} o Dreth Incwm. Mae hyn yn cynnwys didyniad ar y gwahaniaeth yn y gyfradd sylfaenol o £{2}.
 gift.aid.tax.relief.brd.reduction=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi, ac yn arbed £{1} o Dreth Incwm. Mae hyn yn cynnwys ychwanegiad ar y gwahaniaeth yn y gyfradd sylfaenol o £{2}.
 
+label.HMRC= Cyllid a Thollau EF
 label.closed_sundays_and_bank_holidays=Ar gau ddydd Sul a gwyliau’r banc.
 label.find_out_about_call_charges=Gwybodaeth am gostau galwadau
 label.how_to_contact_us=Dulliau eraill o gysylltu â ni
@@ -635,8 +636,9 @@ tai.incomeTaxBand=Haen Treth Incwm
 
 tai.incomeTax.history.title=Hanes Treth Incwm TWE
 tai.incomeTax.history.details.summary=Manylion TWE ar gyfer {0}
-tai.incomeTax.history.details.address=Cyfeiriad
-tai.incomeTax.history.details.nationalInsurance=Yswiriant Gwladol
+tai.incomeTax.history.details.confirmation.text=Cadarnhad gan CThEF o hanes cyflogaeth {0} a phensiynau preifat o’r 5 mlynedd diwethaf.
+tai.incomeTax.history.details.address=Cyfeiriad:
+tai.incomeTax.history.details.nationalInsuranceNumber=Rhif Yswiriant Gwladol:
 tai.incomeTax.history.table.link= Bwrw golwg dros grynodeb o flwyddyn dreth {0} 
 tai.incomeTax.history.pageTitle=Hanes treth incwm
 
@@ -901,6 +903,7 @@ tai.label.month=Mis
 tai.label.no=Na
 tai.label.paye=Incwm trethadwy
 tai.label.print=Argraffu’r dudalen hon
+tai.label.print-or-download=Argraffu neu lawrlwytho’r dudalen hon
 tai.label.year=Blwyddyn
 tai.label.yes=Iawn
 tai.link.income_tax.url=https://www.gov.uk/treth-incwm
