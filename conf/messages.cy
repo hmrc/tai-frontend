@@ -1760,4 +1760,27 @@ betaBanner.linkText=adborth
 
 label.your_account=Eich Cyfrif
 
+# Generic
+beforeYouStart.title = Cyn i chi ddechrau
+beforeYouStart.intro = Dylech gasglu’ch holl wybodaeth at ei gilydd cyn i chi ddechrau. Byddwch yn llenwi’r ffurflen hon ar-lein, ac ni fydd modd i chi gadw’ch cynnydd.
+beforeYouStart.list.intro = Bydd angen y canlynol arnoch:
+
+# Employment list
+beforeYouStart.list.employerName = enw’r cyflogwr
+beforeYouStart.list.startDate = y dyddiad dechrau
+beforeYouStart.list.payrollNumber = rhif cyflogres
+beforeYouStart.list.payeReference = cyfeirnod TWE y cyflogwr
+beforeYouStart.list.phoneNumber = rhif ffôn
+
+# Pension list
+beforeYouStart.pension.list.providerName = enw’r darparwr
+beforeYouStart.pension.list.firstPayment = dyddiad y taliad cyntaf
+beforeYouStart.pension.list.pensionNumber = rhif pensiwn
+
+tai.payeRefForm.title = Beth yw cyfeirnod TWE y cyflogwr ar gyfer {0}?
+tai.payeRefForm.hint = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB456.
+tai.payeRefForm.hint2 = Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’.
+tai.payeRefForm.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurflenni treth.
+tai.payeRefForm.required = Nodwch gyfeirnod TWE y cyflogwr {0}
+tai.payeRefForm.format = Nodwch gyfeirnod TWE y cyflogwr {0} yn y fformat cywir
 

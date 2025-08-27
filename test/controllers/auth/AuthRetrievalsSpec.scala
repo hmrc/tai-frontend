@@ -33,23 +33,24 @@
 package controllers.auth
 
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
-import play.api.test.Helpers._
+import org.mockito.Mockito.when
+import play.api.mvc.*
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import uk.gov.hmrc.auth.core.{Nino => _, _}
+import uk.gov.hmrc.auth.core.{Nino as _, *}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.FandFConnector
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
+import uk.gov.hmrc.sca.utils.Keys
 import utils.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthRetrievalsSpec extends BaseSpec {
-  private val mockFandFConnector = mock[FandFConnector]
-  val cc: ControllerComponents   = stubControllerComponents()
+  val cc: ControllerComponents = stubControllerComponents()
 
   abstract class Harness(AuthRetrievals: AuthRetrievals) extends AbstractController(cc) {
 
@@ -67,11 +68,11 @@ class AuthRetrievalsSpec extends BaseSpec {
       val mocked = mock[AuthConnector]
       when(mocked.authorise[A](any(), any())(any(), any())).thenReturn(Future.successful(a))
 
-      fromAction(new AuthRetrievalsImpl(mocked, mcc, mockFandFConnector))
+      fromAction(new AuthRetrievalsImpl(mocked, mcc))
     }
 
     def failure(ex: Throwable): Harness =
-      fromAction(new AuthRetrievalsImpl(new FakeFailingAuthConnector(ex), mcc, mockFandFConnector))
+      fromAction(new AuthRetrievalsImpl(new FakeFailingAuthConnector(ex), mcc))
   }
 
   class FakeFailingAuthConnector(exceptionToReturn: Throwable) extends AuthConnector {
@@ -87,11 +88,8 @@ class AuthRetrievalsSpec extends BaseSpec {
     def ~[B](b: B) = new ~(a, b)
   }
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     super.beforeEach()
-    reset(mockFandFConnector)
-    when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(None))
-  }
   "Auth Action" when {
     "is not logged in" must {
       "throw an exception" in {
@@ -123,29 +121,31 @@ class AuthRetrievalsSpec extends BaseSpec {
       "trusted helper data is returned" in {
         val nino          = new Generator().nextNino
         val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
-        when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.successful(Some(trustedHelper)))
 
         val controller =
           Harness.successful(baseRetrieval)
-        val result     = controller.onPageLoad()(fakeRequest)
+
+        val fakeRequestWithTrustedHelper: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+          .addAttr(
+            Keys.wrapperDataKey,
+            WrapperDataResponse(
+              Nil,
+              PtaMinMenuConfig("", ""),
+              Nil,
+              Nil,
+              Some(0),
+              Some(trustedHelper)
+            )
+          )
+          .asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
+          .withSession(SessionKeys.sessionId -> "foo")
+          .asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
+
+        val result = controller.onPageLoad()(fakeRequestWithTrustedHelper)
 
         val expectedTaiUser =
           AuthedUser(nino, Some("000111222"), Some(trustedHelper))
 
-        contentAsString(result) mustBe expectedTaiUser.toString
-      }
-
-      "trusted helper retrieval returns an exception" in {
-        val nino          = new Generator().nextNino
-        val baseRetrieval = Some(nino.nino) ~ saUtr
-        when(mockFandFConnector.getTrustedHelper()(any())).thenReturn(Future.failed(new RuntimeException("error")))
-
-        val controller =
-          Harness.successful(baseRetrieval)
-        val result     = controller.onPageLoad()(fakeRequest)
-
-        val expectedTaiUser =
-          AuthedUser(nino, Some("000111222"), None)
         contentAsString(result) mustBe expectedTaiUser.toString
       }
 
