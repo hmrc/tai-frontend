@@ -22,6 +22,10 @@
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
+@import java.time.ZonedDateTime
+@import java.time.format.DateTimeFormatter
+@import java.time.ZoneId
+@import uk.gov.hmrc.tai.util.constants.TaiConstants.LondonEuropeTimezone
 
 @this(main: MainTemplate)
 
@@ -36,6 +40,13 @@ messages: Messages)
     printBanner(preHeadingText = request.fullName)
 }
 
+@printDate = @{
+    ZonedDateTime.now(ZoneId.of(LondonEuropeTimezone)).format(DateTimeFormatter.ofPattern("dd/MM/yyyy, HH:mm:ss"))
+}
+
+@printUrl = @{
+    s"https://${request.host}${controllers.routes.IncomeTaxHistoryController.onPageLoad().url}"
+}
 
 
 @main(
@@ -46,6 +57,12 @@ messages: Messages)
     backLinkContent = Some(Messages("your.paye.income.tax.overview")),
     pagePrintable = true
 ){
+
+    <hr class="print-metadata only-visible-on-print">
+    <p class="govuk-body print-metadata govuk-!-margin-bottom-0 only-visible-on-print">@Messages("tai.label.printed-on") <span id="print-date">@printDate</span></p>
+    <p class="govuk-body print-metadata govuk-!-margin-bottom-8 only-visible-on-print">
+        @Messages("tai.label.page.url") <span id="print-url">@printUrl</span>
+    </p>
 
     @printHeader
 
