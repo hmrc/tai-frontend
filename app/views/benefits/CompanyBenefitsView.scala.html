@@ -68,7 +68,7 @@
 </div>
 
 <div class="govuk-grid-row">
-    <div id="companyBenefitsSection" class="govuk-!-padding-left-3">
+    <div id="companyBenefitsSection" class="govuk-grid-column-two-thirds">
         @if(model.benefits.size > 0) {
         <dl class="govuk-summary-list" id="companyBenefitList">
             @for((benefit, idx) <- model.benefits zip (LazyList.from(1))) {
@@ -76,7 +76,7 @@
                 <dt id="companyBenefitTerm@idx" class="govuk-summary-list__key">
                     @benefit.name
                 </dt>
-                <dd id="companyBenefitDescription@idx" class="govuk-summary-list__value govuk-!-text-align-right">
+                <dd id="companyBenefitDescription@idx" class="govuk-summary-list__value">
                     @pounds(benefit.amount)
                 </dd>
                 <dd class="govuk-summary-list__actions" id="companyBenefitChangeLinkDescription@idx">

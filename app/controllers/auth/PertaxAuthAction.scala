@@ -23,7 +23,6 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, ConfidenceLevel}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -60,7 +59,7 @@ class PertaxAuthActionImpl @Inject() (
     implicit val implicitRequest: Request[A] = request
     implicit val hc: HeaderCarrier           = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    def continueUrl: String = urlService.localFriendlyUrl(request.uri, request.host)
+    def continueUrl: String = urlService.localFriendlyEncodedUrl(request.uri, request.host)
 
     pertaxConnector
       .pertaxPostAuthorise()
@@ -73,7 +72,7 @@ class PertaxAuthActionImpl @Inject() (
         case Right(PertaxResponse("ACCESS_GRANTED", _, _, _))                                =>
           Future.successful(None)
         case Right(PertaxResponse("NO_HMRC_PT_ENROLMENT", _, _, Some(redirect)))             =>
-          Future.successful(Some(Redirect(s"$redirect/?redirectUrl=${SafeRedirectUrl(continueUrl).encodedUrl}")))
+          Future.successful(Some(Redirect(s"$redirect/?redirectUrl=$continueUrl")))
         case Right(PertaxResponse("CONFIDENCE_LEVEL_UPLIFT_REQUIRED", _, _, Some(redirect))) =>
           Future.successful(Some(upliftJourney(redirect, request)))
         case Right(PertaxResponse("CREDENTIAL_STRENGTH_UPLIFT_REQUIRED", _, _, Some(_)))     =>

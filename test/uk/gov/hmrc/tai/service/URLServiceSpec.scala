@@ -38,25 +38,31 @@ class URLServiceSpec extends BaseSpec {
   "localFriendlyUrl" should {
     "return the original url if it is in the test environment" in {
       val service = new URLService(mockApplicationConfig, testEnv)
-      service.localFriendlyUrl("A", "B") mustBe "A"
+      service.localFriendlyEncodedUrl("/A?a=b&c=d", "B") mustBe "%2FA%3Fa%3Db%26c%3Dd"
     }
 
     "return url string with localhost and port if is in development (local/ jenkins) environment" in {
       val service = new URLService(mockApplicationConfig, devEnv)
       when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Dev"))
-      service.localFriendlyUrl("A", "B") mustBe "http://BA"
+      service.localFriendlyEncodedUrl("/A?a=b&c=d", "localhost") mustBe "http%3A%2F%2Flocalhost%2FA%3Fa%3Db%26c%3Dd"
     }
 
     "return the original url if is in production environment" in {
       val service = new URLService(mockApplicationConfig, devEnv)
       when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Prod"))
-      service.localFriendlyUrl("A", "B") mustBe "A"
+      service.localFriendlyEncodedUrl("/A?a=b&c=d", "B") mustBe "%2FA%3Fa%3Db%26c%3Dd"
     }
 
     "if url is absolute then return the original url regardless of environment" in {
       val service = new URLService(mockApplicationConfig, devEnv)
       when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Prod"))
-      service.localFriendlyUrl("http://A", "B") mustBe "http://A"
+      service.localFriendlyEncodedUrl("http://localhost?&=", "B") mustBe "http%3A%2F%2Flocalhost%3F%26%3D"
+    }
+
+    "if url is not an accepted url regardless of environment" in {
+      val service = new URLService(mockApplicationConfig, devEnv)
+      when(mockApplicationConfig.getOptional[String](any())(any())).thenReturn(Option("Prod"))
+      service.localFriendlyEncodedUrl("http://A?a=b&c=d", "B") mustBe "B%2Fcheck-income-tax%2Fwhat-do-you-want-to-do"
     }
 
   }

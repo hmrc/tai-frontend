@@ -624,6 +624,22 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           }
         }"""
 
+  private val iabdDetails =
+    """
+      |{
+      |  "data": {
+      |    "iabdDetails": [{
+      |      "employmentSequenceNumber": 1,
+      |      "source": "ManualTelephone"
+      |    },
+      |    {
+      |      "employmentSequenceNumber": 2,
+      |      "source": "ManualTelephone"
+      |    }]
+      |  }
+      |}
+      |""".stripMargin
+
   val startYear          = 2023
   val numberOfYears: Int = Random.between(2, 10)
 
@@ -729,6 +745,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     .setOrException(UpdatePensionProviderDetailsPage, "some random info")
     .setOrException(UpdatePensionProviderPhoneQuestionPage, "Yes")
     .setOrException(UpdatePensionProviderPhoneNumberPage, "123456789")
+    .setOrException(AddPayeRefPage, "120/AB12345")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -820,12 +837,22 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           .willReturn(ok(s"""{"data": ${Json.toJson(totalTax).toString()}}"""))
       )
 
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/iabds/years/$year"))
+          .willReturn(ok(iabdDetails))
+      )
+
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/tax-components"))
+          .willReturn(ok("""{"data":[]}"""))
+      )
     }
 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/employments/1"))
         .willReturn(ok(oneEmployment))
     )
+
     case class stubValuesData(journeyName: String, keyName: String, valueReturned: String)
 
     val nameValueUrls = List(
@@ -937,6 +964,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             |"employmentFirstPayReceived":"2022-08-10",
             |"employmentPayrollNumberKnown":"No",
             |"employmentPayrollNumber":"I do not know",
+            |"payeReference":"120/AB12345",
             |"employmentTelephoneContactAllowed":"No",
             |"employmentTelephoneNumber":""}""".stripMargin
         )
@@ -953,6 +981,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
             |"pensionFirstPayment":"2022-08-10",
             |"pensionProviderPayrollChoice":"No",
             |"pensionProviderPayrollNumber":"I do not know",
+            |"payeReference":"120/AB12345",
             |"pensionProviderTelephoneContactAllowed":"No",
             |"pensionProviderTelephoneNumber":""}""".stripMargin
         )
