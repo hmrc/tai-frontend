@@ -80,8 +80,7 @@
     }
   }
 
-  .display-for-print,
-  .display-for-print:any-link {
+  .display-for-print {
     display: inline !important;
     visibility: visible !important;
     text-decoration: none;
@@ -98,7 +97,6 @@
   footer,
   .hmrc-user-research-banner,
   .cbanner-govuk-cookie-banner,
-  a[href]:not(.card-link, .display-for-print),
   .hide-for-print,
   .beta-banner,
   .report-error,
@@ -109,6 +107,8 @@
   .service-info,
   .govuk-back-link,
   .govuk-summary-card + p:has(.govuk-link),
+  .hmrc-report-technical-issue,
+  .print-this,
    #iForms {
     display: none;
     visibility: hidden;
