@@ -31,9 +31,9 @@ class EstimatedPayViewSpec extends TaiViewSpec {
   private val estimatedPay = inject[EstimatedPayView]
   override def view: Html  = estimatedPay(createViewModel())
 
-  val employer = IncomeSource(id = 1, name = "Employer")
+  val employer: IncomeSource = IncomeSource(id = 1, name = "Employer")
 
-  def createViewModel(employmentStartDate: Option[LocalDate] = None) = {
+  def createViewModel(employmentStartDate: Option[LocalDate] = None): EstimatedPayViewModel = {
 
     val grossAnnualPay = Some(BigDecimal(20000))
     val netAnnualPay   = Some(BigDecimal(20000))
@@ -102,7 +102,7 @@ class EstimatedPayViewSpec extends TaiViewSpec {
     "confirm and send" in {
       doc must haveLinkElement(
         "confirmAndSend",
-        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult(1).url,
         messages("tai.estimatedPay.checkTaxEstimate")
       )
     }
