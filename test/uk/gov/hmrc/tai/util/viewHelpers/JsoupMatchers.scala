@@ -280,6 +280,8 @@ trait JsoupMatchers {
     new CssSelectorWithTextMatcher(expectedText, "div.govuk-details__text")
   def haveDetailsWithTextNew(expectedText: String)                       =
     new CssSelectorWithTextMatcher(expectedText, "details.govuk-details.hide-for-print")
+  def haveInsetHeadingWithText(expectedText: String)                     =
+    new CssSelectorWithTextMatcher(expectedText, "div.govuk-inset-text h2")
 
   def haveFormWithSubmitUrl(url: String)                                                                     = new CssSelectorWithAttributeValueMatcher("action", url, "form[method=POST]")
   def haveDescriptionListWithId(id: String)                                                                  = new CssSelectorWithAttributeValueMatcher("id", id, "dl")

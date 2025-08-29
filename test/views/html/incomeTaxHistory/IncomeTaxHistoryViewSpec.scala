@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,30 +132,39 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       doc must haveBackLink
     }
 
-    "display a details card" in {
-      doc must haveSummaryWithText(messages("tai.incomeTax.history.details.summary", person.name))
-      doc must haveDetailsWithText(
-        messages("tai.incomeTax.history.details.address") +
-          s" ${person.address.line1.get} ${person.address.line2.get} ${person.address.line3.get} ${person.address.postcode.get} " +
-          messages("tai.incomeTax.history.details.nationalInsurance") +
-          s" ${person.nino.formatted}"
-      )
+    "display a details inset text card" in {
+      doc must haveInsetHeadingWithText(messages("tai.incomeTax.history.details.summary", person.name))
+
+      val insetText = doc.select("div.govuk-inset-text").text()
+      insetText must include(messages("tai.incomeTax.history.details.address"))
+      insetText must include(person.address.line1.get)
+      insetText must include(person.address.line2.get)
+      insetText must include(person.address.line3.get)
+      insetText must include(person.address.postcode.get)
+      insetText must include(messages("tai.incomeTax.history.details.nationalInsuranceNumber"))
+      insetText must include(person.nino.formatted)
+
       doc must haveDivItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
 
-    "display a details card when some of the fields are empty" in {
+    "display a details inset text card when some of the fields are empty" in {
       val doc = Jsoup.parse(viewWithPartialAddress.toString())
-      doc must haveSummaryWithText(messages("tai.incomeTax.history.details.summary", person.name))
-      doc must haveDetailsWithText(
-        messages("tai.incomeTax.history.details.address") +
-          s" ${person.address.line1.get} ${person.address.postcode.get} " +
-          messages("tai.incomeTax.history.details.nationalInsurance") +
-          s" ${person.nino.formatted}"
-      )
+      doc must haveInsetHeadingWithText(messages("tai.incomeTax.history.details.summary", person.name))
+
+      val insetText = doc.select("div.govuk-inset-text").text()
+      insetText must include(messages("tai.incomeTax.history.details.address"))
+      insetText must include(person.address.line1.get)
+      insetText must include(person.address.postcode.get)
+      insetText must include(messages("tai.incomeTax.history.details.nationalInsuranceNumber"))
+      insetText must include(person.nino.formatted)
+
+      insetText mustNot include(person.address.line2.get)
+      insetText mustNot include(person.address.line3.get)
+
       doc must haveDivItemWithText("End date " + messages("tai.incomeTax.history.endDate.notApplicable"))
     }
 
-    "display a details card with no address" when {
+    "display a details inset text card with no address" when {
       "the user does not have a registered address" in {
         val doc = Jsoup.parse(viewWithNoAddress.toString())
         doc mustNot haveSpanWithText(messages("tai.incomeTax.history.details.address"))
