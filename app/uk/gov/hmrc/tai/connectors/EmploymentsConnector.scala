@@ -17,9 +17,9 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.EitherT
-import cats.implicits._
+import cats.implicits.*
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -30,7 +30,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-final class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfig: ApplicationConfig)(implicit
+class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfig: ApplicationConfig)(implicit
   ec: ExecutionContext
 ) {
 

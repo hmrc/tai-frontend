@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import org.mockito.ArgumentMatchers.{any, eq as meq}
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{reset, verify, when}
 import play.api.libs.json.{JsResultException, JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.tai.model.TaxYear
@@ -32,7 +32,7 @@ import scala.language.postfixOps
 
 class EmploymentsConnectorSpec extends BaseSpec {
 
-  val anEmploymentObject: Employment = Employment(
+  private val anEmploymentObject: Employment = Employment(
     "company name",
     Live,
     Some("123"),
@@ -50,13 +50,16 @@ class EmploymentsConnectorSpec extends BaseSpec {
 
   private val oneEmploymentDetails = List(anEmploymentObject)
 
-  private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(
-    taxDistrictNumber = "1234",
-    payeNumber = "4321",
-    sequenceNumber = 3,
-    receivingOccupationalPension = true,
-    employmentType = PensionIncome
-  ) :: Nil
+  private val twoEmploymentsDetails =
+    oneEmploymentDetails.head ::
+      oneEmploymentDetails.head.copy(
+        taxDistrictNumber = "1234",
+        payeNumber = "4321",
+        sequenceNumber = 3,
+        receivingOccupationalPension = true,
+        employmentType = PensionIncome
+      ) ::
+      Nil
 
   private val oneCeasedEmploymentDetails = List(
     Employment(
@@ -76,165 +79,164 @@ class EmploymentsConnectorSpec extends BaseSpec {
     )
   )
 
-  private val twoCeasedEmploymentsDetails = oneCeasedEmploymentDetails.head :: oneCeasedEmploymentDetails.head.copy(
-    taxDistrictNumber = "1234",
-    payeNumber = "4321",
-    sequenceNumber = 3,
-    receivingOccupationalPension = true,
-    employmentType = PensionIncome
-  ) :: Nil
+  private val twoCeasedEmploymentsDetails =
+    oneCeasedEmploymentDetails.head ::
+      oneCeasedEmploymentDetails.head.copy(
+        taxDistrictNumber = "1234",
+        payeNumber = "4321",
+        sequenceNumber = 3,
+        receivingOccupationalPension = true,
+        employmentType = PensionIncome
+      ) ::
+      Nil
 
-  private val zeroEmployments =
-    """|{
-       |   "data":{
-       |      "employments":[
-       |
-       |      ]
-       |   }
-       |}""".stripMargin
-
-  private val zeroCeasedEmployments =
-    """|{
-       |   "data":[
-       |
-       |      ]
-       |
-       |}""".stripMargin
-
-  private val anEmployment =
+  private val zeroEmploymentsJson =
     """{
-          "data" : {
-            "name": "company name",
-            "employmentStatus" : "Live",
-            "payrollNumber": "123",
-            "startDate": "2016-05-26",
-            "endDate": "2016-06-26",
-            "annualAccounts": [],
-            "taxDistrictNumber": "123",
-            "payeNumber": "321",
-            "sequenceNumber": 2,
-            "isPrimary": true,
-            "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false,
-            "employmentType": "EmploymentIncome"
-          }
-        }"""
+      |  "data": { "employments": [] }
+      |}""".stripMargin
 
-  private val oneEmployment =
+  private val zeroCeasedEmploymentsJson =
     """{
-          "data" : {
-            "employments": [
-          {
-            "name": "company name",
-            "employmentStatus" : "Live",
-            "payrollNumber": "123",
-            "startDate": "2016-05-26",
-            "endDate": "2016-06-26",
-            "annualAccounts": [],
-            "taxDistrictNumber": "123",
-            "payeNumber": "321",
-            "sequenceNumber": 2,
-            "isPrimary": true,
-            "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false,
-            "employmentType": "EmploymentIncome"
-          }]}
-        }"""
+      |  "data": []
+      |}""".stripMargin
 
-  private val twoEmployments =
+  private val anEmploymentJson =
     """{
-      |       "data" : {
-      |           "employments": [
-      |         {
-      |            "name": "company name",
-      |            "employmentStatus" : "Live",
-      |            "payrollNumber": "123",
-      |            "startDate": "2016-05-26",
-      |            "endDate": "2016-06-26",
-      |            "annualAccounts": [],
-      |            "taxDistrictNumber": "123",
-      |            "payeNumber": "321",
-      |            "sequenceNumber": 2,
-      |            "isPrimary": true,
-      |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : false,
-      |            "employmentType": "EmploymentIncome"
-      |          },
-      |          {
-      |            "name": "company name",
-      |            "employmentStatus" : "Live",
-      |            "payrollNumber": "123",
-      |            "startDate": "2016-05-26",
-      |            "endDate": "2016-06-26",
-      |            "annualAccounts": [],
-      |            "taxDistrictNumber": "1234",
-      |            "payeNumber": "4321",
-      |            "sequenceNumber": 3,
-      |            "isPrimary": true,
-      |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : true,
-      |            "employmentType": "PensionIncome"
-      |          }]}
-        }""".stripMargin
+      |  "data" : {
+      |    "name": "company name",
+      |    "employmentStatus" : "Live",
+      |    "payrollNumber": "123",
+      |    "startDate": "2016-05-26",
+      |    "endDate": "2016-06-26",
+      |    "annualAccounts": [],
+      |    "taxDistrictNumber": "123",
+      |    "payeNumber": "321",
+      |    "sequenceNumber": 2,
+      |    "isPrimary": true,
+      |    "hasPayrolledBenefit" : false,
+      |    "receivingOccupationalPension": false,
+      |    "employmentType": "EmploymentIncome"
+      |  }
+      |}""".stripMargin
 
-  private val oneCeasedEmployment =
+  private val oneEmploymentJson =
     """{
-          "data" : [{
-            "name": "company name",
-            "employmentStatus" : "Ceased",
-            "payrollNumber": "123",
-            "startDate": "2016-05-26",
-            "endDate": "2016-06-26",
-            "annualAccounts": [],
-            "taxDistrictNumber": "123",
-            "payeNumber": "321",
-            "sequenceNumber": 2,
-            "isPrimary": true,
-            "hasPayrolledBenefit" : false,
-            "receivingOccupationalPension": false,
-            "employmentType": "EmploymentIncome"
-          }]
-        }"""
+      |  "data" : {
+      |    "employments": [
+      |      {
+      |        "name": "company name",
+      |        "employmentStatus" : "Live",
+      |        "payrollNumber": "123",
+      |        "startDate": "2016-05-26",
+      |        "endDate": "2016-06-26",
+      |        "annualAccounts": [],
+      |        "taxDistrictNumber": "123",
+      |        "payeNumber": "321",
+      |        "sequenceNumber": 2,
+      |        "isPrimary": true,
+      |        "hasPayrolledBenefit" : false,
+      |        "receivingOccupationalPension": false,
+      |        "employmentType": "EmploymentIncome"
+      |      }
+      |    ]
+      |  }
+      |}""".stripMargin
 
-  private val twoCeasedEmployments =
+  private val twoEmploymentsJson =
     """{
-      |       "data" : [{
-      |            "name": "company name",
-      |            "employmentStatus" : "Ceased",
-      |            "payrollNumber": "123",
-      |            "startDate": "2016-05-26",
-      |            "endDate": "2016-06-26",
-      |            "annualAccounts": [],
-      |            "taxDistrictNumber": "123",
-      |            "payeNumber": "321",
-      |            "sequenceNumber": 2,
-      |            "isPrimary": true,
-      |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : false,
-      |            "employmentType": "EmploymentIncome"
-      |          },
-      |          {
-      |            "name": "company name",
-      |            "employmentStatus" : "Ceased",
-      |            "payrollNumber": "123",
-      |            "startDate": "2016-05-26",
-      |            "endDate": "2016-06-26",
-      |            "annualAccounts": [],
-      |            "taxDistrictNumber": "1234",
-      |            "payeNumber": "4321",
-      |            "sequenceNumber": 3,
-      |            "isPrimary": true,
-      |            "hasPayrolledBenefit" : false,
-      |            "receivingOccupationalPension" : true,
-      |            "employmentType": "PensionIncome"
-      |          }]
-        }""".stripMargin
+      |  "data" : {
+      |    "employments": [
+      |      {
+      |        "name": "company name",
+      |        "employmentStatus" : "Live",
+      |        "payrollNumber": "123",
+      |        "startDate": "2016-05-26",
+      |        "endDate": "2016-06-26",
+      |        "annualAccounts": [],
+      |        "taxDistrictNumber": "123",
+      |        "payeNumber": "321",
+      |        "sequenceNumber": 2,
+      |        "isPrimary": true,
+      |        "hasPayrolledBenefit" : false,
+      |        "receivingOccupationalPension" : false,
+      |        "employmentType": "EmploymentIncome"
+      |      },
+      |      {
+      |        "name": "company name",
+      |        "employmentStatus" : "Live",
+      |        "payrollNumber": "123",
+      |        "startDate": "2016-05-26",
+      |        "endDate": "2016-06-26",
+      |        "annualAccounts": [],
+      |        "taxDistrictNumber": "1234",
+      |        "payeNumber": "4321",
+      |        "sequenceNumber": 3,
+      |        "isPrimary": true,
+      |        "hasPayrolledBenefit" : false,
+      |        "receivingOccupationalPension" : true,
+      |        "employmentType": "PensionIncome"
+      |      }
+      |    ]
+      |  }
+      |}""".stripMargin
+
+  private val oneCeasedEmploymentJson =
+    """{
+      |  "data" : [{
+      |    "name": "company name",
+      |    "employmentStatus" : "Ceased",
+      |    "payrollNumber": "123",
+      |    "startDate": "2016-05-26",
+      |    "endDate": "2016-06-26",
+      |    "annualAccounts": [],
+      |    "taxDistrictNumber": "123",
+      |    "payeNumber": "321",
+      |    "sequenceNumber": 2,
+      |    "isPrimary": true,
+      |    "hasPayrolledBenefit" : false,
+      |    "receivingOccupationalPension": false,
+      |    "employmentType": "EmploymentIncome"
+      |  }]
+      |}""".stripMargin
+
+  private val twoCeasedEmploymentsJson =
+    """{
+      |  "data" : [{
+      |    "name": "company name",
+      |    "employmentStatus" : "Ceased",
+      |    "payrollNumber": "123",
+      |    "startDate": "2016-05-26",
+      |    "endDate": "2016-06-26",
+      |    "annualAccounts": [],
+      |    "taxDistrictNumber": "123",
+      |    "payeNumber": "321",
+      |    "sequenceNumber": 2,
+      |    "isPrimary": true,
+      |    "hasPayrolledBenefit" : false,
+      |    "receivingOccupationalPension" : false,
+      |    "employmentType": "EmploymentIncome"
+      |  },{
+      |    "name": "company name",
+      |    "employmentStatus" : "Ceased",
+      |    "payrollNumber": "123",
+      |    "startDate": "2016-05-26",
+      |    "endDate": "2016-06-26",
+      |    "annualAccounts": [],
+      |    "taxDistrictNumber": "1234",
+      |    "payeNumber": "4321",
+      |    "sequenceNumber": 3,
+      |    "isPrimary": true,
+      |    "hasPayrolledBenefit" : false,
+      |    "receivingOccupationalPension" : true,
+      |    "employmentType": "PensionIncome"
+      |  }]
+      |}""".stripMargin
 
   private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-  val httpHandler: HttpHandler = mock[HttpHandler]
+  private val httpHandler: HttpHandler = mock[HttpHandler]
 
-  def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, appConfig) {
+  private def sut(servUrl: String = ""): EmploymentsConnector = new EmploymentsConnector(httpHandler, appConfig) {
     override val serviceUrl: String = servUrl
   }
 
@@ -244,293 +246,167 @@ class EmploymentsConnectorSpec extends BaseSpec {
   }
 
   "EmploymentsConnector employments" must {
-    "return a blank the service url" when {
-      "no service url is provided" in {
-        sut().serviceUrl mustBe ""
-      }
+
+    "expose the configured serviceUrl (overridden in test)" in {
+      sut("test/service").serviceUrl mustBe "test/service"
+      sut().serviceUrl mustBe ""
     }
 
-    "return a valid service url" when {
-      "a service url is provided" in {
-        val url = "test/serviceurl/"
-        sut(url).serviceUrl mustBe url
-      }
+    "build the employments URL" in {
+      sut("svc").employmentServiceUrl(nino, year) mustBe s"svc/tai/$nino/employments/years/${year.year}"
+      sut().employmentServiceUrl(nino, year) mustBe s"/tai/$nino/employments/years/${year.year}"
     }
 
-    "return the URL of the employments API" when {
-      "a nino is provided" in {
-        sut("test/service")
-          .employmentServiceUrl(nino, year) mustBe s"test/service/tai/$nino/employments/years/${year.year}"
-      }
+    "GET employments with/without serviceUrl and return parsed list" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(oneEmploymentJson)))
+
+      Await.result(sut().employments(nino, year), 5.seconds)
+      verify(httpHandler).getFromApiV2(
+        meq(s"/tai/$nino/employments/years/${year.year}"),
+        any[Option[DurationInt]]
+      )(any(), any())
+
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(twoEmploymentsJson)))
+
+      val result = Await.result(sut("svc").employments(nino, year), 5.seconds)
+      result mustBe twoEmploymentsDetails
+      verify(httpHandler).getFromApiV2(
+        meq(s"/tai/$nino/employments/years/${year.year}"),
+        any[Option[DurationInt]]
+      )(any(), any())
     }
 
-    "return the URL of the employments API without service URL" when {
-      "no serviceUrl is given" in {
-        sut().employmentServiceUrl(nino, year) mustBe s"/tai/$nino/employments/years/${year.year}"
-      }
+    "filter startDate older than the configured cutoff" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(oneEmploymentJson.replace("2016-05-26", "1945-05-26"))))
+
+      val result = Await.result(sut().employments(nino, year), 5.seconds)
+      result mustBe oneEmploymentDetails.map(_.copy(startDate = None))
     }
 
-    "call the employments API with a URL containing a service URL" when {
-      "the service URL is supplied" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(oneEmployment)))
+    "return Nil when API returns an empty list" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(zeroEmploymentsJson)))
 
-        val responseFuture = sut("test/service").employments(nino, year)
-
-        Await.result(responseFuture, 5 seconds)
-        verify(httpHandler)
-          .getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"), any())(any(), any())
-      }
-    }
-
-    "call the employments API with a URL containing a service URL" when {
-
-      "the service URL is not supplied" in {
-
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(oneEmployment)))
-
-        val responseFuture = sut().employments(nino, year)
-
-        Await.result(responseFuture, 5 seconds)
-
-        verify(httpHandler).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"), any())(any(), any())
-      }
-    }
-
-    "return employments from the employments API" when {
-
-      "api provides one employments" in {
-
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(oneEmployment)))
-
-        val responseFuture = sut().employments(nino, year)
-
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe oneEmploymentDetails
-
-        verify(httpHandler).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"), any())(any(), any())
-      }
-
-      "api provides multiple employments" in {
-
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(twoEmployments)))
-
-        val responseFuture = sut("test/service").employments(nino, year)
-
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe twoEmploymentsDetails
-
-        verify(httpHandler)
-          .getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"), any())(any(), any())
-      }
-
-      "startDate older than 1950 are filtered out" in {
-
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(oneEmployment.replace("2016-05-26", "1945-05-26"))))
-
-        val responseFuture = sut().employments(nino, year)
-
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe oneEmploymentDetails.map(_.copy(startDate = None))
-
-        verify(httpHandler).getFromApiV2(meq(s"/tai/$nino/employments/years/${year.year}"), any())(any(), any())
-      }
-    }
-
-    "return nil when api returns zero employments" in {
-
-      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Json.parse(zeroEmployments)))
-
-      val responseFuture = sut("test/service").employments(nino, year)
-
-      val result = Await.result(responseFuture, 5 seconds)
-
+      val result = Await.result(sut("svc").employments(nino, year), 5.seconds)
       result mustBe Nil
-
-      verify(httpHandler)
-        .getFromApiV2(meq(s"test/service/tai/$nino/employments/years/${year.year}"), any())(any(), any())
     }
 
-    "throw an exception" when {
-      "invalid json has returned by api" in {
+    "fail with JsResultException on invalid JSON" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse("""{"bogus":"value"}""")))
 
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
-
-        val result = sut("test/service").employments(nino, year)
-
-        whenReady(result.failed) { e =>
-          e mustBe a[JsResultException]
-        }
-      }
+      val f = sut("svc").employments(nino, year)
+      whenReady(f.failed)(e => e mustBe a[JsResultException])
     }
-
   }
 
   "EmploymentsConnector ceasedEmployments" must {
 
-    "return employments from the employments API" when {
+    "parse one/multiple ceased employments" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(oneCeasedEmploymentJson)))
 
-      "api provides one employments" in {
+      val r1 = Await.result(sut("svc").ceasedEmployments(nino, year), 5.seconds)
+      r1 mustBe oneCeasedEmploymentDetails
 
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(oneCeasedEmployment)))
+      verify(httpHandler).getFromApiV2(
+        meq(s"svc/tai/$nino/employments/year/${year.year}/status/ceased"),
+        any[Option[DurationInt]]
+      )(any(), any())
 
-        val responseFuture = sut("test/service").ceasedEmployments(nino, year)
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(twoCeasedEmploymentsJson)))
 
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe oneCeasedEmploymentDetails
-
-        verify(httpHandler)
-          .getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"), any())(
-            any(),
-            any()
-          )
-      }
-
-      "api provides multiple employments" in {
-
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(twoCeasedEmployments)))
-
-        val responseFuture = sut("test/service").ceasedEmployments(nino, year)
-
-        val result = Await.result(responseFuture, 5 seconds)
-
-        result mustBe twoCeasedEmploymentsDetails
-
-        verify(httpHandler)
-          .getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"), any())(
-            any(),
-            any()
-          )
-      }
+      val r2 = Await.result(sut("svc").ceasedEmployments(nino, year), 5.seconds)
+      r2 mustBe twoCeasedEmploymentsDetails
     }
 
-    "startDate older than 1950 are filtered out" in {
-      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Json.parse(oneCeasedEmployment.replace("2016-05-26", "1950-01-01"))))
+    "filter startDate older than the cutoff" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(oneCeasedEmploymentJson.replace("2016-05-26", "1950-01-01"))))
 
-      val responseFuture = sut("test/service").ceasedEmployments(nino, year)
-
-      val result = Await.result(responseFuture, 5 seconds)
-
-      result mustBe oneCeasedEmploymentDetails.map(_.copy(startDate = None))
-
-      verify(httpHandler)
-        .getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"), any())(
-          any(),
-          any()
-        )
+      val r = Await.result(sut("svc").ceasedEmployments(nino, year), 5.seconds)
+      r mustBe oneCeasedEmploymentDetails.map(_.copy(startDate = None))
     }
 
-    "return nil when api returns zero employments" in {
+    "return Nil on empty payload" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(zeroCeasedEmploymentsJson)))
 
-      when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Json.parse(zeroCeasedEmployments)))
-
-      val responseFuture = sut("test/service").ceasedEmployments(nino, year)
-
-      val result = Await.result(responseFuture, 5 seconds)
-
-      result mustBe Nil
-
-      verify(httpHandler)
-        .getFromApiV2(meq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"), any())(any(), any())
+      val r = Await.result(sut("svc").ceasedEmployments(nino, year), 5.seconds)
+      r mustBe Nil
     }
 
-    "throw an exception" when {
-      "invalid json has returned by api" in {
+    "fail with JsResultException on invalid JSON" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse("""{"nope":true}""")))
 
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
-
-        val result = sut("test/service").ceasedEmployments(nino, year)
-        whenReady(result.failed) { e =>
-          e mustBe a[JsResultException]
-        }
-      }
+      val f = sut("svc").ceasedEmployments(nino, year)
+      whenReady(f.failed)(e => e mustBe a[JsResultException])
     }
   }
 
   "EmploymentsConnector employment" must {
 
-    "return service url" in {
+    "build employment URL" in {
       sut("test").employmentUrl(nino, "123") mustBe s"test/tai/$nino/employments/123"
     }
 
-    "return an employment from current year" when {
-      "valid id has been passed" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(anEmployment)))
+    "return an employment by id and filter old startDate" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(anEmploymentJson)))
 
-        val result = Await.result(sut().employment(nino, "123"), 5.seconds)
+      val r1 = Await.result(sut().employment(nino, "123"), 5.seconds)
+      r1 mustBe Some(anEmploymentObject)
 
-        result mustBe Some(anEmploymentObject)
-        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
-      }
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(anEmploymentJson.replace("2016-05-26", "1945-05-26"))))
 
-      "startDate older than 1950 are filtered out" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26"))))
-
-        val result = Await.result(sut().employment(nino, "123"), 5.seconds)
-
-        result mustBe Some(anEmploymentObject.copy(startDate = None))
-        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
-      }
+      val r2 = Await.result(sut().employment(nino, "123"), 5.seconds)
+      r2 mustBe Some(anEmploymentObject.copy(startDate = None))
     }
 
-    "return none" when {
-      "invalid json returned by an api" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(zeroEmployments)))
+    "return None on empty/shape mismatch" in {
+      when(httpHandler.getFromApiV2(any[String], any[Option[DurationInt]])(any(), any()))
+        .thenReturn(Future.successful(Json.parse(zeroEmploymentsJson)))
 
-        Await.result(sut().employment(nino, "123"), 5.seconds) mustBe None
-      }
+      Await.result(sut().employment(nino, "123"), 5.seconds) mustBe None
     }
   }
 
   "EmploymentsConnector endEmployment" must {
-    "return an envelope" when {
-      "we send a PUT request to backend" in {
-        val json = Json.obj("data" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
-        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
+    "return envelope id when backend returns data string" in {
+      val json = Json.obj("data" -> JsString("123-456-789"))
+      when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, json, Map.empty)))
 
-        val result = Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
+      val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
+      val r                 = Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
 
-        result mustBe "123-456-789"
-      }
+      r mustBe "123-456-789"
     }
 
-    "return an exception" when {
-      "json is invalid" in {
-        val json              = Json.obj("test" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
-        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
+    "fail with RuntimeException('Invalid json') when data missing" in {
+      val json = Json.obj("test" -> JsString("123-456-789"))
+      when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, json, Map.empty)))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
+      val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
-        ex.getMessage mustBe "Invalid json"
-      }
+      val thrown = the[RuntimeException] thrownBy Await.result(
+        sut().endEmployment(nino, 1, endEmploymentData),
+        5.seconds
+      )
+      thrown.getMessage mustBe "Invalid json"
     }
   }
 
   "EmploymentsConnector addEmployment" must {
-    "return an envelope id on a successful invocation" in {
+    "return envelope id on success" in {
       val addEmployment = AddEmployment(
         employerName = "testEmployment",
         payrollNumber = "12345",
@@ -541,30 +417,25 @@ class EmploymentsConnectorSpec extends BaseSpec {
       )
       val json          = Json.obj("data" -> JsString("123-456-789"))
       when(
-        httpHandler
-          .postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment), any())(any(), any(), any())
+        httpHandler.postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment), any())(any(), any(), any())
       )
-        .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
+        .thenReturn(Future.successful(HttpResponse(200, json, Map.empty)))
 
-      val result = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
-
-      result mustBe Some("123-456-789")
+      val r = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
+      r mustBe Some("123-456-789")
     }
   }
 
   "EmploymentsConnector incorrectEmployment" must {
-    "return an envelope id on a successful invocation" in {
-      val model =
-        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+    "return envelope id on success" in {
+      val model = IncorrectIncome("TEST", "Yes", Some("123456789"))
       val json  = Json.obj("data" -> JsString("123-456-789"))
-      when(
-        httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model), any())(any(), any(), any())
-      )
-        .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
-      val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
+      when(httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model), any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, json, Map.empty)))
 
-      result mustBe Some("123-456-789")
+      val r = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
+      r mustBe Some("123-456-789")
     }
   }
 }

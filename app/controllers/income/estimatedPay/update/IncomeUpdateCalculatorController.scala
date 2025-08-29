@@ -202,7 +202,7 @@ class IncomeUpdateCalculatorController @Inject() (
       val nino                      = user.nino
       val ua: UserAnswers           = request.userAnswers
 
-      ua.get(UpdateIncomeConfirmedNewAmountPage(empId)) match {
+      ua.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmountStr) =>
           incomeService
             .employmentAmount(nino, empId)
