@@ -36,7 +36,7 @@ class BeforeYouStartControllerSpec extends BaseSpec {
   "BeforeYouStartController.onPageLoad" must {
 
     "render the employment page" in {
-      val result = sut.onPageLoad("employment")(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
 
@@ -44,24 +44,6 @@ class BeforeYouStartControllerSpec extends BaseSpec {
       doc.title()                            must include(messages("beforeYouStart.title"))
       doc.select("h2.hmrc-caption-l").text() must include(messages("add.missing.employment"))
       doc.select("h1.govuk-heading-l").text() mustBe messages("beforeYouStart.title")
-    }
-
-    "render the pension page" in {
-      val result = sut.onPageLoad("pension")(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      status(result) mustBe OK
-
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title()                            must include(messages("beforeYouStart.title"))
-      doc.select("h2.hmrc-caption-l").text() must include(messages("add.missing.pension"))
-      doc.select("h1.govuk-heading-l").text() mustBe messages("beforeYouStart.title")
-    }
-
-    "return NotFound for an invalid journey type" in {
-      val result = sut.onPageLoad("not-a-journey")(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      status(result) mustBe NOT_FOUND
-      contentAsString(result) must include("Invalid journey type")
     }
   }
 }

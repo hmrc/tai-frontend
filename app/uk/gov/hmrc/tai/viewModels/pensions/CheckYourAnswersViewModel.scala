@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.pensions
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil as Dates
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 import java.time.LocalDate
@@ -38,7 +38,6 @@ object CheckYourAnswersViewModel {
     pensionProviderName: String,
     pensionStartDate: String,
     pensionRefNo: String,
-    payeRef: String,
     contactableByPhone: String,
     phoneNumber: Option[String]
   )(implicit messages: Messages): CheckYourAnswersViewModel = {
@@ -60,11 +59,6 @@ object CheckYourAnswersViewModel {
           Messages("tai.addPensionProvider.cya.q3"),
           pensionRefNo,
           controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
-        ),
-        CheckYourAnswersConfirmationLine(
-          Messages("tai.income.details.ERN"),
-          payeRef,
-          controllers.pensions.routes.AddPensionProviderController.addPayeReference().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q4"),
