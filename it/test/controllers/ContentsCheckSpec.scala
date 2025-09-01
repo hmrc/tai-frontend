@@ -384,7 +384,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "update-next-income-start"                                         =>
         ExpectedData(
-          "Update your estimated income from <span class=\"carry-over\">company name</span> for next tax year - Check your Income Tax - GOV.UK",
+          "Update your estimated income from company name for next tax year - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
       case "update-next-income-edit"                                          =>
@@ -765,6 +765,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
     when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheRepository.keepAlive(any(), any()))
+      .thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))
