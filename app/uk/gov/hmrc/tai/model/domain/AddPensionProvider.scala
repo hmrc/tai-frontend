@@ -25,7 +25,6 @@ case class AddPensionProvider(
   pensionProviderName: String,
   startDate: LocalDate,
   pensionNumber: String,
-  payeRef: String,
   telephoneContactAllowed: String,
   telephoneNumber: Option[String]
 )

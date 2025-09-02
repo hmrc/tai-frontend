@@ -1767,11 +1767,6 @@ beforeYouStart.list.payrollNumber = rhif cyflogres
 beforeYouStart.list.payeReference = cyfeirnod TWE y cyflogwr
 beforeYouStart.list.phoneNumber = rhif ffôn
 
-# Pension list
-beforeYouStart.pension.list.providerName = enw’r darparwr
-beforeYouStart.pension.list.firstPayment = dyddiad y taliad cyntaf
-beforeYouStart.pension.list.pensionNumber = rhif pensiwn
-
 tai.payeRefForm.title = Beth yw cyfeirnod TWE y cyflogwr ar gyfer {0}?
 tai.payeRefForm.hint = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB456.
 tai.payeRefForm.hint2 = Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’.
