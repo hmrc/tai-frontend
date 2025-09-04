@@ -20,16 +20,17 @@
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
 
+
 @(employmentName: String, value: Option[Int])(
-        implicit request: Request[_],
-        messages: Messages,
-        user: controllers.auth.AuthedUser
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser
 )
 
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
-    form         = None,
-    heading      = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRange(1))
+    form = None,
+    heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRange(1))
 ) {
     <p class="govuk-body">
         @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
@@ -39,12 +40,6 @@
     </p>
 
     <div class="govuk-details__text govuk-!-margin-bottom-5">
-        <p class="govuk-body">
-        @messages(
-            "tai.updateEmployment.incomeSame.description",
-            employmentName,
-            TaxYearRangeUtil.futureTaxYearRange(1)
-        )
-        </p>
+        <p class="govuk-body">@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRange(1))</p>
     </div>
 }

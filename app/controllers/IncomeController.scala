@@ -17,21 +17,21 @@
 package controllers
 
 import cats.data.EitherT
-import cats.implicits.*
+import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser, DataRequest}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
-import pages.income.*
+import pages.income._
 import play.api.Logging
 import play.api.data.Form
-import play.api.mvc.*
+import play.api.mvc._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
-import uk.gov.hmrc.tai.service.*
-import uk.gov.hmrc.tai.util.*
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import views.html.incomes.*
+import views.html.incomes._
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -67,7 +67,6 @@ class IncomeController @Inject() (
   def regularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino                      = user.nino
-
     (for {
       employmentAmount  <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
       latestPayment     <- EitherT.right[String](incomeService.latestPayment(nino, empId))
@@ -204,7 +203,7 @@ class IncomeController @Inject() (
             .flatMap {
               case Some(employment) =>
                 val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
-                val vm               = ConfirmAmountEnteredViewModel(
+                val vm = ConfirmAmountEnteredViewModel(
                   empName = employment.name,
                   currentAmount = employmentAmount.oldAmount,
                   estIncome = newAmount.toInt,
@@ -212,7 +211,7 @@ class IncomeController @Inject() (
                   empId = empId
                 )
                 Future.successful(Ok(confirmAmountEntered(vm)))
-              case None             =>
+              case None =>
                 Future.successful(
                   errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
                 )
@@ -237,7 +236,7 @@ class IncomeController @Inject() (
   def updateEstimatedIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino                      = user.nino
+      val nino = user.nino
 
       request.userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmountRaw) =>
@@ -281,6 +280,7 @@ class IncomeController @Inject() (
         val updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
         journeyCacheRepository.set(updatedUserAnswers)
       }
+
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -325,6 +325,7 @@ class IncomeController @Inject() (
   ): Future[Result] = {
     val newAmount      = FormHelper.convertCurrencyToInt(income.newAmount).toString
     val updatedAnswers = request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount)
+
     journeyCacheRepository.set(updatedAnswers).map(_ => Redirect(confirmationCallback))
   }
 
@@ -385,15 +386,18 @@ class IncomeController @Inject() (
             .map {
               case Some(employment) =>
                 val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
-                val vm               = ConfirmAmountEnteredViewModel(
+
+                val vm = ConfirmAmountEnteredViewModel(
                   empName = employment.name,
                   currentAmount = employmentAmount.oldAmount,
                   estIncome = newAmount.toInt,
                   backUrl = "#",
                   empId = empId
                 )
+
                 Ok(confirmAmountEntered(vm))
-              case None             =>
+
+              case None =>
                 throw new RuntimeException("Error while reading employment and tax code details")
             }
             .recover { case NonFatal(e) =>

@@ -17,11 +17,11 @@
 package controllers.income.estimatedPay.update
 
 import cats.data.OptionT
-import cats.implicits.*
+import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.income.*
-import play.api.mvc.*
+import pages.income._
+import play.api.mvc._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
@@ -69,7 +69,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
                 appConfig
               )
             )
-          case None      =>
+          case None =>
             Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
         }
         .recover { case NonFatal(e) =>

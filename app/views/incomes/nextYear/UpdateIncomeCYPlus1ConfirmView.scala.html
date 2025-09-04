@@ -21,36 +21,36 @@
 @import views.html.incomes.nextYear.UpdateIncomeCYPlus1Template
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
-
-@(viewModel: ConfirmAmountEnteredViewModel)(
-        implicit request: Request[_],
-        messages: Messages,
-        user: controllers.auth.AuthedUser
+@(viewModel: ConfirmAmountEnteredViewModel
+)(implicit request: Request[_],
+  messages: Messages,
+  user: controllers.auth.AuthedUser
 )
+
 
 @updateIncomeCYPlus1Template(
     employerName = viewModel.employerName,
-    form         = None,
-    heading      = messages("tai.incomes.confirm.save.heading", viewModel.yearRange)
-) {
+    form = None,
+    heading = messages("tai.incomes.confirm.save.heading", viewModel.yearRange)
+){
 
     <p class="govuk-body">
         @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
         <span class="govuk-!-font-size-36 govuk-!-font-weight-bold">
-        @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
+            @MonetaryUtil.withPoundPrefix(viewModel.estimatedIncome)
         </span>
     </p>
-
     <div class="govuk-details__text">
         <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p1")</p>
         <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.confirm.details.p2")</p>
     </div>
 
     <p class="govuk-body govuk-!-margin-top-5">
-    @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
+        @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
     </p>
 
-    <a id="confirmAndSend"  class="govuk-button" role="button" href="@viewModel.onConfirm" data-prevent-double-click="true">
+
+    <a id="confirmAndSend" class="govuk-button" role="button" href="@viewModel.onConfirm">
         @messages("tai.confirmAndSend")
     </a>
 }

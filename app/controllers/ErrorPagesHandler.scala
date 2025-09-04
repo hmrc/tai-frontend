@@ -19,17 +19,17 @@ package controllers
 import cats.data.NonEmptyList
 import play.api.Logging
 import play.api.i18n.Messages
-import play.api.mvc.Results.*
+import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import play.twirl.api.HtmlFormat
-import views.html.ErrorTemplateNoauth
 import views.html.includes.link
+import views.html.ErrorTemplateNoauth
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth)(implicit
-  val ec: ExecutionContext
+                                                                             val ec: ExecutionContext
 ) extends Logging {
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
@@ -58,8 +58,8 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth)(imp
     )
 
   def internalServerError(logMessage: String, ex: Option[Throwable] = None)(implicit
-    request: Request[_],
-    messages: Messages
+                                                                            request: Request[_],
+                                                                            messages: Messages
   ): Result = {
     logger.warn(logMessage)
     ex.foreach(x => logger.error(x.getMessage, x))
@@ -67,8 +67,8 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth)(imp
   }
 
   def internalServerError(logMessage: String, ex: NonEmptyList[Throwable])(implicit
-    request: Request[_],
-    messages: Messages
+                                                                           request: Request[_],
+                                                                           messages: Messages
   ): Result = {
     logger.warn(logMessage)
     ex.map(x => logger.error(x.getMessage, x))

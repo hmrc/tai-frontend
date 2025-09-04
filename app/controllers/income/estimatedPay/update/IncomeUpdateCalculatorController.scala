@@ -16,11 +16,11 @@
 
 package controllers.income.estimatedPay.update
 
-import cats.implicits.*
+import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
-import pages.income.*
+import pages.income._
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -28,9 +28,9 @@ import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.*
-import uk.gov.hmrc.tai.util.constants.*
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.*
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.constants._
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import views.html.incomes.DuplicateSubmissionWarningView
 import views.html.incomes.estimatedPayment.update.CheckYourAnswersView
 

@@ -24,36 +24,36 @@
 @header() = @{
     ptaHeader(
         mainHeadingText = messages("tai.checkYourAnswers.heading"),
-        preHeadingText  = messages("tai.incomes.edit.preHeading", viewModel.employer.name)
+        preHeadingText = messages("tai.incomes.edit.preHeading", viewModel.employer.name)
     )
 }
 
 @mainTemplate(
-    title            = messages("tai.checkYourAnswers.title"),
-    authedUser       = Some(user),
-    backLinkContent  = Some(messages("tai.back-link.upper")),
-    backLinkId       = "back-link-custom-url",
-    backLinkUrl      = Some(viewModel.backUrl)
-) {
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+    title = messages("tai.checkYourAnswers.title"),
+    authedUser = Some(user),
+    backLinkContent = Some(Messages("tai.back-link.upper")),
+    backLinkId = "back-link-custom-url",
+    backLinkUrl = Some(viewModel.backUrl)
+){
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-            @header()
+    @header()
 
-            @includes.checkYourAnswers(
-                title = None,
-                longQuestions = true,
-                confirmationLines = viewModel.journeyConfirmationLines
-            )
+    @includes.checkYourAnswers(
+        title = None,
+        longQuestions = true,
+        confirmationLines = viewModel.journeyConfirmationLines
+    )
 
-            @includes.link(
-                id = Some("estimatedPayLink"),
-                url = income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
-                copy = messages("tai.WhatDoYouWantToDo.submit"),
-                linkClasses = Seq("govuk-button")
-            )
+    @includes.link(
+        id = Some("estimatedPayLink"),
+        url = income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
+        copy = messages("tai.WhatDoYouWantToDo.submit"),
+        linkClasses = Seq("govuk-button")
+    )
 
-            @cancelLink(controllers.routes.IncomeController.cancel(viewModel.employer.id))
-        </div>
+    @cancelLink(controllers.routes.IncomeController.cancel(viewModel.employer.id))
     </div>
+</div>
 }

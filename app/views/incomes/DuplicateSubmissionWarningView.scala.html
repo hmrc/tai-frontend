@@ -28,6 +28,7 @@
 
 @(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionEstimatedPay, empId: Int)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages)
 
+
 @header() = @{
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
@@ -41,7 +42,9 @@
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
-) {
+
+    ) {
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
@@ -50,7 +53,6 @@
             }
 
             @header()
-
             @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitDuplicateSubmissionWarning(empId)) {
 
                 <div class="govuk-form-group">
@@ -60,8 +62,7 @@
                         <p class="govuk-body">@messages("tai.incomes.warning.text3")</p>
                     </div>
 
-                    @govukRadios(
-                        Radios(
+                    @govukRadios(Radios(
                             fieldset = Some(Fieldset(
                                 legend = Some(Legend(
                                     content = Text(messages("tai.employment.warning.legend")),

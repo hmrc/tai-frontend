@@ -18,15 +18,16 @@
 
 @this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template)
 @(employmentName: String, employmentId: Int, isPension: Boolean)(
-        implicit request: Request[_],
-        messages: Messages,
-        user: controllers.auth.AuthedUser
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.AuthedUser
 )
+
 
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
-    form         = None,
-    heading      = messages("tai.updateIncome.CYPlus1.start.heading", employmentName)
+    form = None,
+    heading = messages("tai.updateIncome.CYPlus1.start.heading", <span class="carry-over">{employmentName}</span>)
 ) {
     <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
 
@@ -37,10 +38,10 @@
     }
 
     @includes.link(
-        copy        = messages("tai.income.details.updateTaxableIncome.update"),
-        url         = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
-        id          = Some("CYPlus1StartButton"),
-        linkClasses = Seq("govuk-button"),
-        isButton    = true
+        copy=messages("tai.income.details.updateTaxableIncome.update"),
+        url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
+        id = Some("CYPlus1StartButton"),
+        linkClasses=Seq("govuk-button"),
+        isButton=true
     )
 }
