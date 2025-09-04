@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,13 @@
     )
 
     @includes.link(
-        id=Some("estimatedPayLink"),
-        url=income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
-        copy=messages("tai.WhatDoYouWantToDo.submit"),
-        linkClasses=Seq("govuk-button")
+        id = Some("estimatedPayLink"),
+        url = income.estimatedPay.update.routes.IncomeUpdateEstimatedPayController.estimatedPayPage(viewModel.employer.id).url,
+        copy = messages("tai.WhatDoYouWantToDo.submit"),
+        linkClasses = Seq("govuk-button")
     )
 
-    @cancelLink(Call("GET",controllers.routes.IncomeController.cancel(viewModel.employer.id).url))
+    @cancelLink(controllers.routes.IncomeController.cancel(viewModel.employer.id))
     </div>
 </div>
 }

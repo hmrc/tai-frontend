@@ -16,16 +16,19 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
+import cats.instances.future._
 import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain._
 import utils.BaseSpec
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.duration.*
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -157,7 +160,7 @@ class EmploymentServiceSpec extends BaseSpec {
 
         when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val data = Await.result(sut.employment(nino, 8), 5 seconds)
+        val data = Await.result(sut.employment(nino, 8), 5.seconds)
 
         data mustBe Some(employment)
       }
@@ -168,10 +171,36 @@ class EmploymentServiceSpec extends BaseSpec {
 
         when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val data = Await.result(sut.employment(nino, 8), 5 seconds)
+        val data = Await.result(sut.employment(nino, 8), 5.seconds)
 
         data mustBe None
       }
+    }
+  }
+
+  "employmentOnly" must {
+    "return an employment for the given tax year" in {
+      val sut = createSUT
+
+      when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment)))
+
+      val data = Await.result(sut.employmentOnly(nino, 2, year), 5.seconds)
+
+      data mustBe Some(employment)
+    }
+  }
+
+  "employmentsOnly" must {
+    "return employments for the given tax year" in {
+      val sut = createSUT
+
+      when(employmentsConnector.employmentsOnly(any(), any())(any()))
+        .thenReturn(EitherT.rightT(List(employment)))
+
+      val data = Await.result(sut.employmentsOnly(nino, year).value, 5.seconds)
+
+      data mustBe Right(List(employment))
     }
   }
 

@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 @import includes.compareValueInputNew
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import views.html.incomes.nextYear.UpdateIncomeCYPlus1Template
 
 
-@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template, form: FormWithCSRF, govukInput : GovukInput)
+@this(updateIncomeCYPlus1Template: UpdateIncomeCYPlus1Template, form: FormWithCSRF, govukInput : GovukInput, govukButton: GovukButton)
 
 @(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Option[Int], incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.AuthedUser
 )
-
 
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
@@ -36,10 +36,10 @@
 ) {
 
     @if(!isPension) {
-        <div>
+        <div class="govuk-!-margin-bottom-6">
             <p class="govuk-body">@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))</p>
         </div>
-        <div class="govuk-details__text">
+        <div class="govuk-inset-text">
             <h2 class="govuk-heading-s">@messages("tai.incomes.edit.what.should.you.include")</h2>
             <p class="govuk-body">@messages("tai.incomes.edit.what.should.you.include.payments")</p>
             <h2 class="govuk-heading-s">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
@@ -47,14 +47,13 @@
         </div>
     }
 
-    <div>
-        <br/>
-        <h2 class="govuk-heading-m" >@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
+    <div class="govuk-!-margin-top-6">
+        <h2 class="govuk-heading-m">@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
         <p class="govuk-body">@messages("tai.updateIncome.CYPlus1.edit.wholePounds")</p>
     </div>
 
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)) {
-        <div class="form-field-group @if(incomeForm.hasErrors) {govuk-form-group govuk-form-group--error}">
+        <div class="govuk-form-group @if(incomeForm.errors(incomeForm("income").name).nonEmpty){govuk-form-group--error}">
             @incomeForm.errors(incomeForm("income").name).map { error =>
                 <span class="govuk-error-message" id="incomeFieldError">@messages(error.message)</span>
             }
@@ -76,7 +75,12 @@
             }
         </div>
 
-        <button class="govuk-button" type="submit" id="CYPlus1EditButton">@messages("tai.continue")</button>
+        @govukButton(
+            Button(
+                id                  = Some("CYPlus1EditButton"),
+                content             = Text(messages("tai.continue")),
+                preventDoubleClick  = Some(true)
+            )
+        )
     }
 }
-

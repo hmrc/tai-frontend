@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     )
       .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
 
-    when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(None))
+    when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
 
     when(
       taxAccountService.updateEstimatedIncome(
@@ -98,9 +98,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         meq(TaxYear().next),
         meq(employmentId)
       )(any())
-    ).thenReturn(
-      Future.successful(Done)
-    )
+    ).thenReturn(Future.successful(Done))
 
     when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
   }
@@ -112,11 +110,9 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
 
   "get" must {
     "return the cache model" when {
-      "an taxCodeIncome and Employment is returned" in {
+      "a taxCodeIncome and Employment are returned" in {
         val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(
-          Future.successful(Some(userAnswers))
-        )
+        when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
 
         when(employmentService.employment(meq(nino), meq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
@@ -138,112 +134,17 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       }
     }
 
-    "throw a runtime exception" when {
-
-      "return cache model with None currentValue when taxCodeIncomeForEmployment returns Right(None)" in {
-        val userAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
-
-        when(employmentService.employment(meq(nino), meq(employmentId))(any()))
-          .thenReturn(Future.successful(Some(employment(employmentName))))
-
-        when(
-          taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
-        )
-          .thenReturn(Future.successful(Right(None)))
-
-        val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
-
-        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
-          employmentName,
-          employmentId,
-          isPension = false,
-          currentValue = None
-        )
-      }
-
-      "could not retrieve a Employment" in {
-        val userAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
-
-        when(employmentService.employment(meq(nino), meq(employmentId))(any()))
-          .thenReturn(Future.successful(None))
-
-        when(
-          taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
-        )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
-
-        val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
-
-        whenReady(result.failed) { e =>
-          e mustBe a[RuntimeException]
-          e.getMessage must include(
-            "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
-          )
-        }
-      }
-    }
-
-    "setup the cache" when {
-      "journey values do not exist in the cache" in {
-        when(employmentService.employment(meq(nino), meq(employmentId))(any()))
-          .thenReturn(Future.successful(Some(employment(employmentName))))
-
-        when(
-          taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
-        )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
-
-        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(None))
-
-        val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
-
-        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
-          employmentName,
-          employmentId,
-          isPension,
-          Some(employmentAmount)
-        )
-      }
-
-      "user selects a different employer" in {
-        val newEmploymentId = 2
-
-        when(employmentService.employment(meq(nino), meq(newEmploymentId))(any()))
-          .thenReturn(Future.successful(Some(employment(employmentName))))
-
-        when(
-          taxAccountService
-            .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(newEmploymentId))(any())
-        )
-          .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
-
-        val userAnswers = UserAnswers(sessionId, randomNino().nino)
-        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
-
-        val result = updateNextYearsIncomeService.get(newEmploymentId, nino, userAnswers)
-
-        result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
-          employmentName,
-          newEmploymentId,
-          isPension,
-          Some(employmentAmount)
-        )
-      }
-    }
-
-    "return cache model with None currentValue when TaxCodeIncome is missing" in {
+    "return cache model with None currentValue when taxCodeIncomeForEmployment returns Right(None)" in {
       val userAnswers = UserAnswers(sessionId, randomNino().nino)
-      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
+      when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
 
       when(employmentService.employment(meq(nino), meq(employmentId))(any()))
         .thenReturn(Future.successful(Some(employment(employmentName))))
 
-      when(taxAccountService.taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any()))
+      when(
+        taxAccountService
+          .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
+      )
         .thenReturn(Future.successful(Right(None)))
 
       val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
@@ -255,11 +156,81 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         currentValue = None
       )
     }
+
+    "throw a runtime exception when Employment cannot be retrieved" in {
+      val userAnswers = UserAnswers(sessionId, randomNino().nino)
+      when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
+
+      when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+        .thenReturn(Future.successful(None))
+
+      when(
+        taxAccountService
+          .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
+      )
+        .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+
+      val result = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
+
+      whenReady(result.failed) { e =>
+        e mustBe a[RuntimeException]
+        e.getMessage must include(
+          "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
+        )
+      }
+    }
+
+    "setup the cache when journey values do not exist" in {
+      when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+        .thenReturn(Future.successful(Some(employment(employmentName))))
+
+      when(
+        taxAccountService
+          .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(employmentId))(any())
+      )
+        .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, employmentId, employmentAmount)))))
+
+      when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
+
+      val userAnswers = UserAnswers(sessionId, randomNino().nino)
+      val result      = updateNextYearsIncomeService.get(employmentId, nino, userAnswers)
+
+      result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
+        employmentName,
+        employmentId,
+        isPension,
+        Some(employmentAmount)
+      )
+    }
+
+    "setup the cache when the user selects a different employer" in {
+      val newEmploymentId = 2
+
+      when(employmentService.employment(meq(nino), meq(newEmploymentId))(any()))
+        .thenReturn(Future.successful(Some(employment(employmentName))))
+
+      when(
+        taxAccountService
+          .taxCodeIncomeForEmployment(meq(nino), meq(TaxYear().next), meq(newEmploymentId))(any())
+      )
+        .thenReturn(Future.successful(Right(Some(taxCodeIncome(employmentName, newEmploymentId, employmentAmount)))))
+
+      when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
+
+      val userAnswers = UserAnswers(sessionId, randomNino().nino)
+      val result      = updateNextYearsIncomeService.get(newEmploymentId, nino, userAnswers)
+
+      result.futureValue mustBe UpdateNextYearsIncomeCacheModel(
+        employmentName,
+        newEmploymentId,
+        isPension,
+        Some(employmentAmount)
+      )
+    }
   }
 
   "setNewAmount" must {
     "cache the amount with the employment ID key" in {
-
       val key      = s"${UpdateNextYearsIncomeConstants.NewAmount}"
       val amount   = convertCurrencyToInt(Some(employmentAmount.toString)).toString
       val expected = Map(key -> amount)
@@ -267,30 +238,22 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), amount)
 
-      when(mockJourneyCacheRepository.get(any(), any()))
-        .thenReturn(Future.successful(Some(mockUserAnswers)))
-
       when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
       val result: Future[Map[String, String]] =
-        updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, userAnswers)
+        updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, mockUserAnswers)
 
       result.futureValue mustBe expected
-
       verify(mockJourneyCacheRepository).set(any())
     }
   }
 
   "submit" must {
     "post the values from cache to the tax account" in new SubmitSetup {
-
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
         .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
         .setOrException(UpdateNextYearsIncomeSuccessPage, true)
-
-      when(mockJourneyCacheRepository.get(any(), any()))
-        .thenReturn(Future.successful(Some(mockUserAnswers)))
 
       when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
@@ -310,22 +273,15 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
 
     "cache as a successful journey" in new SubmitSetup {
-
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
         .setOrException(UpdateNextYearsIncomeNewAmountPage(employmentId), employmentAmount.toString)
         .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
         .setOrException(UpdateNextYearsIncomeSuccessPage, true)
         .setOrException(UpdateIncomeNewAmountPage, employmentAmount.toString)
 
-      when(mockJourneyCacheRepository.get(any(), any()))
-        .thenReturn(Future.successful(Some(mockUserAnswers)))
-
-      val service = new UpdateNextYearsIncomeServiceTest
-
-      val result: Future[Done] = service.submit(employmentId, nino, mockUserAnswers)
+      val result: Future[Done] = updateNextYearsIncomeService.submit(employmentId, nino, mockUserAnswers)
 
       result.futureValue mustBe Done
-
       verify(mockJourneyCacheRepository, times(1)).set(any[UserAnswers])
     }
 
@@ -334,12 +290,8 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       val errorMessage = s"Value for $key not found"
 
       val mockUserAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
-      when(mockJourneyCacheRepository.get(any(), any()))
-        .thenReturn(Future.successful(Some(mockUserAnswers)))
 
-      val service = new UpdateNextYearsIncomeServiceTest
-
-      whenReady(service.submit(employmentId, nino, mockUserAnswers).failed) { err =>
+      whenReady(updateNextYearsIncomeService.submit(employmentId, nino, mockUserAnswers).failed) { err =>
         err.getMessage mustBe errorMessage
       }
     }
@@ -364,7 +316,6 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         UserAnswers(sessionId, randomNino().nino)
           .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
           .setOrException(UpdateNextYearsIncomeSuccessPage, true)
-      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
 
       service.isEstimatedPayJourneyComplete(userAnswers).futureValue mustBe true
     }
@@ -372,28 +323,27 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     "be false when a journey is incomplete" in {
       val service          = new UpdateNextYearsIncomeServiceTest
       val emptyUserAnswers = UserAnswers(sessionId, randomNino().nino)
-      when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(emptyUserAnswers)))
 
       service.isEstimatedPayJourneyComplete(emptyUserAnswers).futureValue mustBe false
     }
+  }
 
-    "isEstimatedPayJourneyCompleteForEmployer" must {
-      "return true when success flag for employment is set" in {
-        val answers = UserAnswers(sessionId, randomNino().nino)
-          .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
+  "isEstimatedPayJourneyCompleteForEmployer" must {
+    "return true when success flag for employment is set" in {
+      val answers = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateNextYearsIncomeSuccessPageForEmployment(employmentId), true)
 
-        updateNextYearsIncomeService
-          .isEstimatedPayJourneyCompleteForEmployer(employmentId, answers)
-          .futureValue mustBe true
-      }
+      updateNextYearsIncomeService
+        .isEstimatedPayJourneyCompleteForEmployer(employmentId, answers)
+        .futureValue mustBe true
+    }
 
-      "return false when no flag is set for employment" in {
-        val answers = UserAnswers(sessionId, randomNino().nino)
+    "return false when no flag is set for employment" in {
+      val answers = UserAnswers(sessionId, randomNino().nino)
 
-        updateNextYearsIncomeService
-          .isEstimatedPayJourneyCompleteForEmployer(employmentId, answers)
-          .futureValue mustBe false
-      }
+      updateNextYearsIncomeService
+        .isEstimatedPayJourneyCompleteForEmployer(employmentId, answers)
+        .futureValue mustBe false
     }
   }
 }

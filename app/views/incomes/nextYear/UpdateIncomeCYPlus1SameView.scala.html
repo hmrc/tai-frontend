@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,17 +31,15 @@
     employerName = employmentName,
     form = None,
     heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRange(1))
-){
-    <div>
-        <p class="govuk-body">
-            @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
-            <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                @withPoundPrefix(MoneyPounds(value.get, 0))
-            </span>
-        </p>
+) {
+    <p class="govuk-body">
+        @messages("tai.updateIncome.CYPlus1.confirm.paragraph")
+        <span class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
+            @withPoundPrefix(MoneyPounds(value.get, 0))
+        </span>
+    </p>
 
-        <div class="govuk-details__text govuk-!-margin-bottom-5">
-            <p class="govuk-body ">@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRange(1))</p>
-        </div>
+    <div class="govuk-details__text govuk-!-margin-bottom-5">
+        <p class="govuk-body">@messages("tai.updateEmployment.incomeSame.description", employmentName, TaxYearRangeUtil.futureTaxYearRange(1))</p>
     </div>
 }
