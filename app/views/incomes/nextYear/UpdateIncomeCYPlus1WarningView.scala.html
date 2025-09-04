@@ -36,22 +36,13 @@
     backLinkContent = Some(messages("tai.back-link.upper")),
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
 ) {
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
             @if(duplicateSubmissionWarningForm.errors.nonEmpty) {
-                @govukErrorSummary(
-                    ErrorSummary(
-                        errorList = duplicateSubmissionWarningForm.errors.asTextErrorLinks,
-                        title     = Text(messages("tai.income.error.form.summary"))
-                    )
-                )
+                @govukErrorSummary(ErrorSummary(errorList = duplicateSubmissionWarningForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            <h2 class="govuk-caption-xl hmrc-caption-xl">
-                <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>
-                @messages("tai.incomes.warning.preHeading")
-            </h2>
+            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.incomes.warning.preHeading")</h2>
             <h1 class="govuk-heading-xl break-word">@viewModel.heading</h1>
 
             <p class="govuk-body">@viewModel.paragraphOne</p>
@@ -59,36 +50,36 @@
             <p class="govuk-inset-text">@messages("tai.incomes.warning.text3")</p>
 
             @form(action = controllers.income.routes.UpdateIncomeNextYearController.submitDuplicateWarning(empId)) {
-                @govukRadios(
-                    Radios(
+                @govukRadios(Radios(
                         fieldset = Some(
                             Fieldset(
                                 legend = Some(
                                     Legend(
-                                        content       = Text(viewModel.heading),
-                                        classes       = "govuk-visually-hidden",
-                                        isPageHeading = false
-                                    )
+                                        content = Text(viewModel.heading),
+                                        classes = "govuk-visually-hidden",
+                                        isPageHeading = false)
                                 )
                             )
                         ),
-                        idPrefix     = Some(FormValuesConstants.YesNoChoice),
-                        name         = FormValuesConstants.YesNoChoice,
-                        errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
+                    errorMessage = duplicateSubmissionWarningForm.errors.asTextErrorMessages.headOption,
+                    idPrefix = Some(FormValuesConstants.YesNoChoice),
+                        name = FormValuesConstants.YesNoChoice,
                         items = Seq(
                             RadioItem(
                                 content = Text(viewModel.optionOne),
-                                value   = Some(FormValuesConstants.YesValue)
+                                value = Some(FormValuesConstants.YesValue),
+                                checked = duplicateSubmissionWarningForm.data.get(FormValuesConstants.YesNoChoice).contains(FormValuesConstants.YesValue)
                             ),
                             RadioItem(
                                 content = Text(viewModel.optionTwo),
-                                value   = Some(FormValuesConstants.NoValue)
+                                value = Some(FormValuesConstants.NoValue),
+                                checked = duplicateSubmissionWarningForm.data.get(FormValuesConstants.YesNoChoice).contains(FormValuesConstants.NoValue)
                             )
                         )
-                    ).withFormField(duplicateSubmissionWarningForm(FormValuesConstants.YesNoChoice))
-                )
+                    ).withFormField(duplicateSubmissionWarningForm(FormValuesConstants.YesNoChoice)))
 
                 @submit(buttonMessageKey = Some(messages("tai.submit")))
+
             }
         </div>
     </div>

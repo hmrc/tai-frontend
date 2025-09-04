@@ -18,15 +18,14 @@ package controllers.income
 
 import builders.RequestBuilder
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
-import org.apache.pekko.Done
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq as meq}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
-import pages.income.UpdateNextYearsIncomeNewAmountPage
 import play.api.data.FormBinding.Implicits.formBinding
+import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.*
+import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -37,14 +36,16 @@ import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionCYPlus1EmploymentViewModel
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import utils.BaseSpec
 import views.html.incomes.SameEstimatedPayView
-import views.html.incomes.nextYear.*
+import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 import scala.util.Random
+import org.apache.pekko.Done
 
 class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
@@ -88,25 +89,28 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   }
 
   "onPageLoad" must {
-    "redirect to duplicateWarning when journey already completed" in {
-      val controller = createTestIncomeController()
+    "redirect to the duplicateSubmissionWarning url" when {
+      "an income update has already been performed" in {
 
-      when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(any(), any()))
-        .thenReturn(Future.successful(true))
+        val testController = createTestIncomeController()
 
-      val result = controller.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(any(), any()))
+          .thenReturn(Future.successful(true))
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.duplicateWarning(employmentID).url)
+        val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.duplicateWarning(employmentID).url)
+      }
     }
 
-    "redirect to start when journey not completed" in {
-      val controller = createTestIncomeController()
+    "redirect to the estimatedPayLanding url" in {
+      val testController = createTestIncomeController()
 
       when(updateNextYearsIncomeService.isEstimatedPayJourneyCompleteForEmployer(any(), any()))
         .thenReturn(Future.successful(false))
 
-      val result = controller.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = testController.onPageLoad(employmentID)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.start(employmentID).url)
@@ -114,15 +118,16 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   }
 
   "duplicateWarning" must {
-    "render employment duplicateSubmissionWarning view when new amount exists" in {
-      val controller = createTestIncomeController()
+    "show employment duplicateSubmissionWarning view" in {
+      val testController = createTestIncomeController()
 
       val vm      = DuplicateSubmissionCYPlus1EmploymentViewModel(employerName, newEstPay)
       val request = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
-      val result = controller.duplicateWarning(employmentID)(request)
+      val result = testController.duplicateWarning(employmentID)(request)
 
       status(result) mustBe OK
+
       result rendersTheSameViewAs updateIncomeCYPlus1WarningView(
         DuplicateSubmissionWarningForm.createForm,
         vm,
@@ -130,54 +135,62 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       )(request, authedUser, messages)
     }
 
-    "redirect to comparison page when no new amount available" in {
-      val controller = createTestIncomeController()
+    "redirect to the landing page if there is no new amount entered" in {
+      val testController = createTestIncomeController()
 
-      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
-        .thenReturn(Future.successful(Left("error")))
+      when(
+        updateNextYearsIncomeService.getNewAmount(any(), any())
+      ).thenReturn(
+        Future.successful(Left("error"))
+      )
 
-      val result = controller.duplicateWarning(employmentID)(fakeRequest)
-
+      val result = testController.duplicateWarning(employmentID)(fakeRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
   }
 
   "submitDuplicateWarning" must {
-    "redirect to start when Yes selected" in {
-      val controller = createTestIncomeController()
+    "redirect to the start url when yes is selected" in {
+      val testController = createTestIncomeController()
 
-      val result = controller.submitDuplicateWarning(employmentID)(
+      val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
           .buildFakeRequestWithAuth("POST")
           .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.YesValue)
       )
 
       status(result) mustBe SEE_OTHER
+
       redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.start(employmentID).url)
     }
 
-    "redirect to comparison page when No selected" in {
-      val controller = createTestIncomeController()
+    "redirect to the IncomeTaxComparison page url when no is selected" in {
+      val testController = createTestIncomeController()
 
-      val result = controller.submitDuplicateWarning(employmentID)(
+      val result = testController.submitDuplicateWarning(employmentID)(
         RequestBuilder
           .buildFakeRequestWithAuth("POST")
           .withFormUrlEncodedBody(FormValuesConstants.YesNoChoice -> FormValuesConstants.NoValue)
       )
 
       status(result) mustBe SEE_OTHER
+
       redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
     }
 
-    "redirect to comparison page when no new amount available" in {
-      val controller = createTestIncomeController()
+    "redirect to the landing page if there is no new amount entered" in {
+      val testController = createTestIncomeController()
 
-      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
-        .thenReturn(Future.successful(Left("error")))
+      when(
+        updateNextYearsIncomeService.getNewAmount(any(), any())
+      ).thenReturn(
+        Future.successful(Left("error"))
+      )
 
-      val result = controller.submitDuplicateWarning(employmentID)(
-        RequestBuilder.buildFakeRequestWithAuth("POST")
+      val result = testController.submitDuplicateWarning(employmentID)(
+        RequestBuilder
+          .buildFakeRequestWithAuth("POST")
       )
 
       status(result) mustBe SEE_OTHER
@@ -186,108 +199,353 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   }
 
   "start" must {
-    "return OK with start view" in {
-      val controller = createTestIncomeController()
+    "return OK with the start view" when {
+      "employment data is available for the nino" in {
 
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.start(employmentID)(request)
+        val testController = createTestIncomeController()
 
-      status(result) mustBe OK
-      result rendersTheSameViewAs updateIncomeCYPlus1StartView(employerName, employmentID, isPension)(
-        request,
-        messages,
-        authedUser
-      )
+        val request: FakeRequest[AnyContentAsEmpty.type] =
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+        val result: Future[Result] = testController.start(employmentID)(request)
+
+        status(result) mustBe OK
+        result rendersTheSameViewAs updateIncomeCYPlus1StartView(employerName, employmentID, isPension)(
+          request,
+          messages,
+          authedUser
+        )
+      }
     }
 
-    "return NOT_FOUND when CY+1 disabled" in {
-      val controller = createTestIncomeController(isCyPlusOneEnabled = false)
+    "return NOT_FOUND" when {
+      "CY Plus 1 is disabled" in {
+        val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.start(employmentID)(request)
+        val request: FakeRequest[AnyContentAsEmpty.type] =
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
-      status(result) mustBe NOT_FOUND
+        val result: Future[Result] = testController.start(employmentID)(request)
+
+        status(result) mustBe NOT_FOUND
+      }
     }
   }
 
   "edit" must {
-    "return OK with edit view" in {
-      val controller = createTestIncomeController()
+    "return OK with the edit view" when {
+      "employment data is available for the nino" in {
 
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                                = controller.edit(employmentID)(request)
+        val testController = createTestIncomeController()
 
-      status(result) mustBe OK
-      result rendersTheSameViewAs updateIncomeCYPlus1EditView(
-        employerName,
-        employmentID,
-        isPension,
-        Some(currentEstPay),
-        AmountComparatorForm.createForm()
-      )
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+        val result: Future[Result] = testController.edit(employmentID)(request)
+
+        status(result) mustBe OK
+        result rendersTheSameViewAs updateIncomeCYPlus1EditView(
+          employerName,
+          employmentID,
+          isPension,
+          Some(currentEstPay),
+          AmountComparatorForm.createForm()
+        )
+      }
     }
 
-    "return NOT_FOUND when CY+1 disabled" in {
-      val controller = createTestIncomeController(isCyPlusOneEnabled = false)
+    "return NOT_FOUND" when {
+      "CY Plus 1 is disabled" in {
+        val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.edit(employmentID)(request)
+        val request: FakeRequest[AnyContentAsEmpty.type] =
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
-      status(result) mustBe NOT_FOUND
+        val result: Future[Result] = testController.edit(employmentID)(request)
+
+        status(result) mustBe NOT_FOUND
+      }
     }
   }
 
   "update" must {
-    "redirect to confirm when valid input differs from current estimated income" in {
-      val controller = createTestIncomeController()
-      val newEstPay  = "999"
+    "redirect to the confirm page" when {
+      "valid input is passed that is different from the current estimated income" in {
+        val testController = createTestIncomeController()
+        val newEstPay      = "999"
 
-      val expected = Map(UpdateNextYearsIncomeNewAmountPage(employmentID).toString -> newEstPay)
-      when(updateNextYearsIncomeService.setNewAmount(meq(newEstPay), meq(employmentID), any()))
-        .thenReturn(Future.successful(expected))
+        when(updateNextYearsIncomeService.setNewAmount(meq(newEstPay), meq(employmentID), any()))
+          .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.NewAmount -> newEstPay)))
 
-      val result = controller.update(employmentID)(
-        RequestBuilder
-          .buildFakeRequestWithOnlySession(POST)
-          .withFormUrlEncodedBody("income" -> newEstPay)
-      )
+        val result = testController.update(employmentID)(
+          RequestBuilder
+            .buildFakeRequestWithOnlySession(POST)
+            .withFormUrlEncodedBody("income" -> newEstPay)
+        )
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.confirm(employmentID).url)
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.confirm(employmentID).url)
+      }
+
+      "redirect to the no change page" when {
+        "valid input is passed that matches the current estimated income" in {
+          val testController = createTestIncomeController()
+          val newEstPay      = "1234"
+          val result         = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay)
+          )
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
+        }
+
+        "valid input is passed and no current amount has been cached" in {
+          val testController = createTestIncomeController()
+          val newEstPay      = "1234"
+
+          when(
+            updateNextYearsIncomeService.getNewAmount(any(), any())
+          ).thenReturn(
+            Future.successful(Left("no amount entered"))
+          )
+
+          val result = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay)
+          )
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
+        }
+
+        "valid input is passed and the new amount is the same as the current cached amount" in {
+          val testController = createTestIncomeController()
+          val newEstPay      = "999"
+
+          when(
+            updateNextYearsIncomeService.getNewAmount(any(), any())
+          ).thenReturn(
+            Future.successful(Right(newEstPay.toInt))
+          )
+
+          val result = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay)
+          )
+
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.updateEmployment.incomeSame.title", ""))
+        }
+      }
     }
 
-    "redirect to same when valid input equals current estimated income" in {
-      val controller = createTestIncomeController()
-      val newEstPay  = "1234"
+    "respond with a BAD_REQUEST" when {
+      "no input is passed" in {
+        val testController = createTestIncomeController()
+        val newEstPay      = ""
 
-      val result = controller.update(employmentID)(
-        RequestBuilder
-          .buildFakeRequestWithOnlySession(POST)
-          .withFormUrlEncodedBody("income" -> newEstPay)
-      )
+        implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
+        val result: Future[Result] = testController.update(employmentID)(request)
+
+        status(result) mustBe BAD_REQUEST
+
+        result rendersTheSameViewAs updateIncomeCYPlus1EditView(
+          employerName,
+          employmentID,
+          isPension,
+          Some(currentEstPay),
+          AmountComparatorForm
+            .createForm()
+            .bindFromRequest()
+        )(request, messages, authedUser)
+      }
     }
 
-    "redirect to same when no cached new amount exists" in {
-      val controller = createTestIncomeController()
-      val newEstPay  = "1234"
+    "return NOT_FOUND" when {
+      "CY Plus 1 is disabled" in {
+        val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
-        .thenReturn(Future.successful(Left("no amount entered")))
+        val request: FakeRequest[AnyContentAsEmpty.type] =
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
-      val result = controller.update(employmentID)(
-        RequestBuilder
-          .buildFakeRequestWithOnlySession(POST)
-          .withFormUrlEncodedBody("income" -> newEstPay)
-      )
+        val result: Future[Result] = testController.update(employmentID)(request)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url)
+        status(result) mustBe NOT_FOUND
+      }
     }
 
-    "render sameEstimatedPay when new amount matches cached new amount" in {
+    "same" must {
+      "return OK with the same view" when {
+        "the estimated pay is retrieved successfully" in {
+
+          val testController = createTestIncomeController()
+
+          val request: FakeRequest[AnyContentAsEmpty.type] =
+            RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+          val result: Future[Result] = testController.same(employmentID)(request)
+
+          status(result) mustBe OK
+          result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, Some(currentEstPay))(
+            request,
+            messages,
+            authedUser
+          )
+        }
+      }
+
+      "return NOT_FOUND" when {
+        "CY Plus 1 is disabled" in {
+          val testController = createTestIncomeController(isCyPlusOneEnabled = false)
+
+          val request: FakeRequest[AnyContentAsEmpty.type] =
+            RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+          val result: Future[Result] = testController.same(employmentID)(request)
+
+          status(result) mustBe NOT_FOUND
+        }
+      }
+    }
+
+    "success" must {
+      "return OK with the success view" when {
+        "the estimated pay has been successfully submitted" in {
+
+          val testController = createTestIncomeController()
+
+          val request: FakeRequest[AnyContentAsEmpty.type] =
+            RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+          val result: Future[Result] = testController.success(employmentID)(request)
+
+          status(result) mustBe OK
+          result rendersTheSameViewAs updateIncomeCYPlus1SuccessView(employerName, isPension)(
+            request,
+            messages,
+            authedUser
+          )
+        }
+      }
+
+      "return NOT_FOUND" when {
+        "CY Plus 1 is disabled" in {
+          val testController = createTestIncomeController(isCyPlusOneEnabled = false)
+
+          val request: FakeRequest[AnyContentAsEmpty.type] =
+            RequestBuilder.buildFakeRequestWithOnlySession("GET")
+
+          val result: Future[Result] = testController.success(employmentID)(request)
+
+          status(result) mustBe NOT_FOUND
+        }
+      }
+    }
+  }
+
+  "confirm" must {
+    "for valid user" must {
+      "that has entered an estimated amount" must {
+        "respond with and ok and the view" in {
+          val request    = RequestBuilder.buildFakeGetRequestWithAuth()
+          val controller = createTestIncomeController()
+
+          val newAmount     = newEstPay
+          val currentAmount = 1
+
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, Some(1))
+          when(
+            updateNextYearsIncomeService.get(meq(employmentID), meq(nino), any[UserAnswers])(any())
+          ).thenReturn(
+            Future.successful(serviceResponse)
+          )
+
+          val vm           = ConfirmAmountEnteredViewModel(
+            employmentID,
+            employerName,
+            Some(currentAmount),
+            newAmount,
+            NextYearPay,
+            "#"
+          )
+          val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
+            request,
+            messages,
+            authedUser
+          )
+
+          val result = controller.confirm(employmentID)(request)
+
+          status(result) mustBe OK
+
+          result rendersTheSameViewAs expectedView
+        }
+      }
+
+      "that did not enter an estimated amount" must {
+        "redirect to the start of the journey" in {
+          val request    = RequestBuilder.buildFakeGetRequestWithAuth()
+          val controller = createTestIncomeController()
+
+          when(
+            updateNextYearsIncomeService.getNewAmount(any(), any())
+          ).thenReturn(
+            Future.successful(Left("error"))
+          )
+
+          val result = controller.confirm(employmentID)(request)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
+        }
+      }
+    }
+  }
+
+  "handleConfirm" must {
+    "for valid user" must {
+      "for successful submit, redirect user to success page" in {
+        val request    = RequestBuilder.buildFakeGetRequestWithAuth()
+        val controller = createTestIncomeController()
+
+        when(
+          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
+        ).thenReturn(
+          Future.successful(Done)
+        )
+
+        val result = controller.handleConfirm(employmentID)(request)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.success(employmentID).url)
+      }
+
+      "for unsuccessful submit, return an Internal Server error Response" in {
+        val request    = RequestBuilder.buildFakeGetRequestWithAuth()
+        val controller = createTestIncomeController()
+
+        when(
+          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
+        ).thenReturn(
+          Future.failed(new Exception("Error"))
+        )
+
+        val result = controller.handleConfirm(employmentID)(request)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "update" should {
+    "render sameEstimatedPay view with correct model when new amount matches cached new amount" in {
       val controller = createTestIncomeController()
       val newEstPay  = "999"
 
@@ -305,164 +563,15 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
       body must include("999")
       body must include(employerName)
     }
-
-    "return BAD_REQUEST when no input provided" in {
-      val controller = createTestIncomeController()
-      val newEstPay  = ""
-
-      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
-
-      val result: Future[Result] = controller.update(employmentID)(request)
-
-      status(result) mustBe BAD_REQUEST
-      result rendersTheSameViewAs updateIncomeCYPlus1EditView(
-        employerName,
-        employmentID,
-        isPension,
-        Some(currentEstPay),
-        AmountComparatorForm.createForm().bindFromRequest()
-      )(request, messages, authedUser)
-    }
-
-    "return NOT_FOUND when CY+1 disabled" in {
-      val controller = createTestIncomeController(isCyPlusOneEnabled = false)
-
-      val request: FakeRequest[AnyContentAsEmpty.type] =
-        RequestBuilder.buildFakeRequestWithOnlySession("GET")
-
-      val result: Future[Result] = controller.update(employmentID)(request)
-
-      status(result) mustBe NOT_FOUND
-    }
-  }
-
-  "same" must {
-    "return OK with same view" in {
-      val controller = createTestIncomeController()
-
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.same(employmentID)(request)
-
-      status(result) mustBe OK
-      result rendersTheSameViewAs updateIncomeCYPlus1SameView(employerName, Some(currentEstPay))(
-        request,
-        messages,
-        authedUser
-      )
-    }
-
-    "return NOT_FOUND when CY+1 disabled" in {
-      val controller = createTestIncomeController(isCyPlusOneEnabled = false)
-
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.same(employmentID)(request)
-
-      status(result) mustBe NOT_FOUND
-    }
-  }
-
-  "success" must {
-    "return OK with success view" in {
-      val controller = createTestIncomeController()
-
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.success(employmentID)(request)
-
-      status(result) mustBe OK
-      result rendersTheSameViewAs updateIncomeCYPlus1SuccessView(employerName, isPension)(
-        request,
-        messages,
-        authedUser
-      )
-    }
-
-    "return NOT_FOUND when CY+1 disabled" in {
-      val controller = createTestIncomeController(isCyPlusOneEnabled = false)
-
-      val request: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
-      val result: Future[Result]                       = controller.success(employmentID)(request)
-
-      status(result) mustBe NOT_FOUND
-    }
-  }
-
-  "confirm" must {
-    "render confirm view when user has entered a new amount" in {
-      val request    = RequestBuilder.buildFakeGetRequestWithAuth()
-      val controller = createTestIncomeController()
-
-      val newAmount     = newEstPay
-      val currentAmount = 1
-
-      val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension = false, Some(1))
-      when(updateNextYearsIncomeService.get(meq(employmentID), meq(nino), any[UserAnswers])(any()))
-        .thenReturn(Future.successful(serviceResponse))
-
-      val vm           = ConfirmAmountEnteredViewModel(
-        employmentID,
-        employerName,
-        Some(currentAmount),
-        newAmount,
-        NextYearPay,
-        "#"
-      )
-      val expectedView = updateIncomeCYPlus1ConfirmView(vm)(request, messages, authedUser)
-
-      val result = controller.confirm(employmentID)(request)
-
-      status(result) mustBe OK
-      result rendersTheSameViewAs expectedView
-    }
-
-    "redirect to comparison page when no new amount available" in {
-      val request    = RequestBuilder.buildFakeGetRequestWithAuth()
-      val controller = createTestIncomeController()
-
-      when(updateNextYearsIncomeService.getNewAmount(any(), any()))
-        .thenReturn(Future.successful(Left("error")))
-
-      val result = controller.confirm(employmentID)(request)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url)
-    }
-  }
-
-  "handleConfirm" must {
-    "redirect to success on successful submit" in {
-      val request    = RequestBuilder.buildFakeGetRequestWithAuth()
-      val controller = createTestIncomeController()
-
-      when(updateNextYearsIncomeService.submit(any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(Done))
-
-      val result = controller.handleConfirm(employmentID)(request)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.success(employmentID).url)
-    }
-
-    "return INTERNAL_SERVER_ERROR on submission failure" in {
-      val request    = RequestBuilder.buildFakeGetRequestWithAuth()
-      val controller = createTestIncomeController()
-
-      when(updateNextYearsIncomeService.submit(any(), any(), any())(any(), any()))
-        .thenReturn(Future.failed(new Exception("Error")))
-
-      val result = controller.handleConfirm(employmentID)(request)
-
-      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
   }
 
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController =
     new TestUpdateIncomeNextYearController() {
       val model: UpdateNextYearsIncomeCacheModel =
-        UpdateNextYearsIncomeCacheModel(employerName, employmentID, isPension, Some(currentEstPay))
+        UpdateNextYearsIncomeCacheModel("employer name", employmentID, isPension, Some(currentEstPay))
 
-      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle)))
-        .thenReturn(Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled)))
+      when(mockFeatureFlagService.get(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
+        Future.successful(FeatureFlag(CyPlusOneToggle, isEnabled = isCyPlusOneEnabled))
 
       when(updateNextYearsIncomeService.get(meq(employmentID), any(), any[UserAnswers])(any()))
         .thenReturn(Future.successful(model))

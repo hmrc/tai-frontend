@@ -53,19 +53,19 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   val defaultEmployment: Employment =
     Employment(
-      name = "company",
-      employmentStatus = Live,
-      payrollNumber = Some("123"),
-      startDate = Some(LocalDate.parse("2016-05-26")),
-      endDate = None,
-      annualAccounts = Nil,
-      taxDistrictNumber = "",
-      payeNumber = "",
-      sequenceNumber = empId,
-      cessationPay = None,
+      "company",
+      Live,
+      Some("123"),
+      Some(LocalDate.parse("2016-05-26")),
+      None,
+      Nil,
+      "",
+      "",
+      empId,
+      None,
       hasPayrolledBenefit = false,
       receivingOccupationalPension = false,
-      employmentType = EmploymentIncome
+      EmploymentIncome
     )
 
   class SUT
@@ -84,65 +84,62 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockIncomeService, mockEmploymentService, mockJourneyCacheRepository)
+    reset(mockJourneyCacheRepository, mockIncomeService, mockEmploymentService)
   }
 
   "estimatedPayLandingPage" must {
 
-    def call(): Future[Result] =
+    val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+
+    def estimatedPayLandingPage(): Future[Result] =
       new SUT().estimatedPayLandingPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
-    "display the estimatedPayLandingPage view when employment is found" in {
-      val ua = UserAnswers(sessionId, randomNino().nino)
-      setup(ua)
-
+    "display the estimatedPayLandingPage view" in {
+      setup(mockUserAnswers)
       when(mockEmploymentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(defaultEmployment)))
+        .thenReturn(
+          Future.successful(Some(defaultEmployment.copy(name = employer.name, receivingOccupationalPension = false)))
+        )
 
-      val result = call()
+      val result = estimatedPayLandingPage()
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(messages("tai.incomes.landing.title"))
     }
 
-    "redirect to /income-details when employment not found" in {
-      val ua = UserAnswers(sessionId, randomNino().nino)
-      setup(ua)
-
+    "return to /income-details when employment not found" in {
+      setup(mockUserAnswers)
       when(mockEmploymentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
 
-      val result = call()
+      val result = estimatedPayLandingPage()
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(
-        controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url
-      )
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url)
     }
   }
 
   "estimatedPayPage" must {
-
-    "display estimatedPay page when grossAnnualPay > payYearToDate" in {
+    "display estimatedPay page when payYearToDate is less than gross annual pay" in {
       val payment = Some(Payment(LocalDate.now, 50, 1, 1, 1, 1, 1, Monthly))
       val ua      = UserAnswers(sessionId, randomNino().nino)
-        .setOrException(UpdateIncomeBonusPaymentsPage, "")
+        .setOrException(UpdateIncomeIdPage, employer.id)
+        .setOrException(UpdateIncomeNamePage, employer.name)
+
+      val controller = createSUT
       setup(ua)
 
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
       when(mockEmploymentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(defaultEmployment)))
-
+        .thenReturn(Future.successful(Some(defaultEmployment.copy(name = employer.name))))
+      when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
       when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(EmploymentAmount("", "", empId, Some(1))))
-      when(mockIncomeService.latestPayment(any(), any())(any(), any()))
-        .thenReturn(Future.successful(payment))
+        .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
       when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
         .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
 
-      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-      val result = new SUT().estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = controller.estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
@@ -151,23 +148,24 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       )
     }
 
-    "display estimatedPay page when payYearToDate is None and grossAnnualPay is present" in {
+    "display estimatedPay page when payYearToDate is None" in {
       val ua = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeIdPage, employer.id)
+        .setOrException(UpdateIncomeNamePage, employer.name)
+
+      val controller = createSUT
       setup(ua)
 
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
       when(mockEmploymentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(defaultEmployment)))
-
+        .thenReturn(Future.successful(Some(defaultEmployment.copy(name = employer.name))))
       when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(EmploymentAmount("", "", empId, Some(1))))
-      when(mockIncomeService.latestPayment(any(), any())(any(), any()))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
+      when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
       when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
         .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
 
-      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-      val result = new SUT().estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = controller.estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
@@ -175,69 +173,81 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
     }
 
     "show incorrectTaxableIncome when grossAnnualPay is None" in {
-      val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
-      val ua      = UserAnswers(sessionId, randomNino().nino)
+      val ua = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeIdPage, employer.id)
+        .setOrException(UpdateIncomeNamePage, employer.name)
         .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "150")
+
+      val controller = createSUT
       setup(ua)
 
-      when(mockEmploymentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(defaultEmployment)))
+      val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
 
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+      when(mockEmploymentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(defaultEmployment.copy(name = employer.name))))
       when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(EmploymentAmount("", "", empId, Some(1))))
-      when(mockIncomeService.latestPayment(any(), any())(any(), any()))
-        .thenReturn(Future.successful(payment))
+        .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
+      when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
       when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
         .thenReturn(Future.successful(CalculatedPay(None, Some(BigDecimal(100)))))
 
-      val result = new SUT().estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = controller.estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
     }
 
-    "show incorrectTaxableIncome when grossAnnualPay <= payYearToDate" in {
-      val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
-      val ua      = UserAnswers(sessionId, randomNino().nino)
+    "display incorrectTaxableIncome page when payYearToDate is greater than gross annual pay" in {
+      val ua = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeIdPage, employer.id)
+        .setOrException(UpdateIncomeNamePage, employer.name)
+
+      val controller = createSUT
       setup(ua)
 
-      when(mockEmploymentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(defaultEmployment)))
+      val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
 
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+      when(mockEmploymentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(defaultEmployment.copy(name = employer.name))))
       when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(EmploymentAmount("", "", empId, Some(1))))
-      when(mockIncomeService.latestPayment(any(), any())(any(), any()))
-        .thenReturn(Future.successful(payment))
+        .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
+      when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
       when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
-        .thenReturn(
-          Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(80))))
-        )
+        .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
 
-      val result = new SUT().estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = controller.estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
     }
 
-    "redirect to sameEstimatedPayInCache when confirmed amount in cache equals calculated gross" in {
+    "redirect to sameEstimatedPay page when confirmed amount equals calculated gross" in {
       val payment = Some(Payment(LocalDate.now, 200, 50, 25, 100, 50, 25, Monthly))
       val ua      = UserAnswers(sessionId, randomNino().nino)
+        .setOrException(UpdateIncomeIdPage, employer.id)
+        .setOrException(UpdateIncomeNamePage, employer.name)
+        .setOrException(UpdateIncomeGrossAnnualPayPage, "100")
+        .setOrException(UpdateIncomeNewAmountPage, "123")
+        .setOrException(UpdateIncomeBonusPaymentsPage, "")
         .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), "150")
+
+      val controller = createSUT
       setup(ua)
 
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
       when(mockEmploymentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(defaultEmployment)))
-
+        .thenReturn(Future.successful(Some(defaultEmployment.copy(name = employer.name))))
       when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(EmploymentAmount("", "", empId, Some(1))))
-      when(mockIncomeService.latestPayment(any(), any())(any(), any()))
-        .thenReturn(Future.successful(payment))
+        .thenReturn(Future.successful(EmploymentAmount("", "", 1, Some(1))))
+      when(mockIncomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(payment))
       when(mockIncomeService.calculateEstimatedPay(any(), any())(any()))
         .thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(150)), Some(BigDecimal(100)))))
 
-      val result = new SUT().estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = controller.estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
@@ -245,19 +255,17 @@ class IncomeUpdateEstimatedPayControllerSpec extends BaseSpec {
       )
     }
 
-    "redirect to /tax-account-summary when employment not found" in {
-      val ua = UserAnswers(sessionId, randomNino().nino)
-      setup(ua)
+    "redirect to /income-summary page when employment not found" in {
+      val controller = createSUT
+      setup(UserAnswers(sessionId, randomNino().nino))
 
       when(mockEmploymentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
 
-      val result = new SUT().estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
+      val result = controller.estimatedPayPage(empId)(RequestBuilder.buildFakeGetRequestWithAuth())
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(
-        controllers.routes.TaxAccountSummaryController.onPageLoad().url
-      )
+      redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
 }

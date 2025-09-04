@@ -29,7 +29,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth)(implicit
-                                                                             val ec: ExecutionContext
+  val ec: ExecutionContext
 ) extends Logging {
 
   def error4xxPageWithLink(pageTitle: String)(implicit request: Request[_], messages: Messages): HtmlFormat.Appendable =
@@ -58,8 +58,8 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth)(imp
     )
 
   def internalServerError(logMessage: String, ex: Option[Throwable] = None)(implicit
-                                                                            request: Request[_],
-                                                                            messages: Messages
+    request: Request[_],
+    messages: Messages
   ): Result = {
     logger.warn(logMessage)
     ex.foreach(x => logger.error(x.getMessage, x))
@@ -67,8 +67,8 @@ class ErrorPagesHandler @Inject() (errorTemplateNoauth: ErrorTemplateNoauth)(imp
   }
 
   def internalServerError(logMessage: String, ex: NonEmptyList[Throwable])(implicit
-                                                                           request: Request[_],
-                                                                           messages: Messages
+    request: Request[_],
+    messages: Messages
   ): Result = {
     logger.warn(logMessage)
     ex.map(x => logger.error(x.getMessage, x))

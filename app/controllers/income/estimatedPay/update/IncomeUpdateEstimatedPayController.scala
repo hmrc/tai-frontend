@@ -69,7 +69,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
                 appConfig
               )
             )
-          case None =>
+          case None      =>
             Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
         }
         .recover { case NonFatal(e) =>

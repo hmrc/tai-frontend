@@ -17,17 +17,18 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
+import cats.instances.future._
 import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.Live
+import uk.gov.hmrc.tai.model.domain._
 import utils.BaseSpec
 
 import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.duration.*
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -35,7 +36,7 @@ class EmploymentServiceSpec extends BaseSpec {
 
   private val year: TaxYear = TaxYear(LocalDateTime.now().getYear)
 
-  private val employment = Employment(
+  private val employment        = Employment(
     "company name",
     Live,
     Some("123"),
@@ -46,29 +47,27 @@ class EmploymentServiceSpec extends BaseSpec {
     "",
     2,
     None,
-    hasPayrolledBenefit = false,
-    receivingOccupationalPension = false,
+    false,
+    false,
     EmploymentIncome
   )
-
   private val employmentDetails = List(employment)
   private val employments       = employmentDetails.head :: employmentDetails.head :: Nil
 
   private def createSUT = new EmploymentServiceTest
 
-  private val employmentsConnector: EmploymentsConnector = mock[EmploymentsConnector]
+  val employmentsConnector: EmploymentsConnector = mock[EmploymentsConnector]
 
   private class EmploymentServiceTest
       extends EmploymentService(
         employmentsConnector
       )
 
-  "Employment Service employments" must {
+  "Employment Service" must {
     "return employments" in {
       val sut = createSUT
 
-      when(employmentsConnector.employments(any(), any())(any()))
-        .thenReturn(Future.successful(employments))
+      when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
 
       val data = Await.result(sut.employments(nino, year), 5.seconds)
 
@@ -76,12 +75,11 @@ class EmploymentServiceSpec extends BaseSpec {
     }
   }
 
-  "Employment Service ceasedEmployments" must {
+  "CeasedEmployments Service" must {
     "return employments" in {
       val sut = createSUT
 
-      when(employmentsConnector.ceasedEmployments(any(), any())(any()))
-        .thenReturn(Future.successful(employments))
+      when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(employments))
 
       val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
 
@@ -89,98 +87,99 @@ class EmploymentServiceSpec extends BaseSpec {
     }
   }
 
-  "Employment Service employmentNames" must {
-    "return a map of employment id and employment name (single record)" in {
-      val sut = createSUT
+  "Employment Names" must {
+    "return a map of employment id and employment name" when {
+      "connector returns one employment" in {
+        val sut = createSUT
 
-      when(employmentsConnector.employments(any(), any())(any()))
-        .thenReturn(Future.successful(employmentDetails))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employmentDetails))
 
-      val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
+        val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
-      employmentNames mustBe Map(2 -> "company name")
-    }
+        employmentNames mustBe Map(2 -> "company name")
+      }
 
-    "return a map of employment id and employment name (multiple records)" in {
-      val sut = createSUT
+      "connector returns multiple employment" in {
+        val sut = createSUT
 
-      val employment1 = Employment(
-        "company name 1",
-        Live,
-        Some("123"),
-        Some(LocalDate.parse("2016-05-26")),
-        Some(LocalDate.parse("2016-05-26")),
-        Nil,
-        "",
-        "",
-        1,
-        None,
-        false,
-        false,
-        EmploymentIncome
-      )
-      val employment2 = Employment(
-        "company name 2",
-        Live,
-        Some("123"),
-        Some(LocalDate.parse("2016-05-26")),
-        Some(LocalDate.parse("2016-05-26")),
-        Nil,
-        "",
-        "",
-        2,
-        None,
-        false,
-        false,
-        EmploymentIncome
-      )
+        val employment1 = Employment(
+          "company name 1",
+          Live,
+          Some("123"),
+          Some(LocalDate.parse("2016-05-26")),
+          Some(LocalDate.parse("2016-05-26")),
+          Nil,
+          "",
+          "",
+          1,
+          None,
+          false,
+          false,
+          EmploymentIncome
+        )
+        val employment2 = Employment(
+          "company name 2",
+          Live,
+          Some("123"),
+          Some(LocalDate.parse("2016-05-26")),
+          Some(LocalDate.parse("2016-05-26")),
+          Nil,
+          "",
+          "",
+          2,
+          None,
+          false,
+          false,
+          EmploymentIncome
+        )
 
-      when(employmentsConnector.employments(any(), any())(any()))
-        .thenReturn(Future.successful(List(employment1, employment2)))
+        when(employmentsConnector.employments(any(), any())(any()))
+          .thenReturn(Future.successful(List(employment1, employment2)))
 
-      val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
+        val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
-      employmentNames mustBe Map(1 -> "company name 1", 2 -> "company name 2")
-    }
+        employmentNames mustBe Map(1 -> "company name 1", 2 -> "company name 2")
+      }
 
-    "return an empty map when there are no employments" in {
-      val sut = createSUT
+      "connector does not return any employment" in {
+        val sut = createSUT
 
-      when(employmentsConnector.employments(any(), any())(any()))
-        .thenReturn(Future.successful(Seq.empty))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
-      val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
+        val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
-      data mustBe Map.empty
-    }
-  }
-
-  "Employment Service employment" must {
-    "return an employment when the connector finds one" in {
-      val sut = createSUT
-
-      when(employmentsConnector.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(employment)))
-
-      val data = Await.result(sut.employment(nino, 8), 5.seconds)
-
-      data mustBe Some(employment)
-    }
-
-    "return None when the connector finds nothing" in {
-      val sut = createSUT
-
-      when(employmentsConnector.employment(any(), any())(any()))
-        .thenReturn(Future.successful(None))
-
-      val data = Await.result(sut.employment(nino, 8), 5.seconds)
-
-      data mustBe None
+        data mustBe Map()
+      }
     }
   }
 
-  "Employment Service employmentOnly" must {
-    "return an employment when the connector finds one" in {
+  "employment" must {
+    "return an employment" when {
+      "the connector returns one" in {
+        val sut = createSUT
+
+        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+
+        val data = Await.result(sut.employment(nino, 8), 5.seconds)
+
+        data mustBe Some(employment)
+      }
+    }
+    "return none" when {
+      "the connector does not return an employment" in {
+        val sut = createSUT
+
+        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(None))
+
+        val data = Await.result(sut.employment(nino, 8), 5.seconds)
+
+        data mustBe None
+      }
+    }
+  }
+
+  "employmentOnly" must {
+    "return an employment for the given tax year" in {
       val sut = createSUT
 
       when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
@@ -190,50 +189,26 @@ class EmploymentServiceSpec extends BaseSpec {
 
       data mustBe Some(employment)
     }
-
-    "return None when the connector finds nothing" in {
-      val sut = createSUT
-
-      when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
-        .thenReturn(Future.successful(None))
-
-      val data = Await.result(sut.employmentOnly(nino, 2, year), 5.seconds)
-
-      data mustBe None
-    }
   }
 
-  "Employment Service employmentsOnly" must {
-    "return Right(employments) on success" in {
+  "employmentsOnly" must {
+    "return employments for the given tax year" in {
       val sut = createSUT
 
       when(employmentsConnector.employmentsOnly(any(), any())(any()))
-        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
+        .thenReturn(EitherT.rightT(List(employment)))
 
-      val either = Await.result(sut.employmentsOnly(nino, year).value, 5.seconds)
+      val data = Await.result(sut.employmentsOnly(nino, year).value, 5.seconds)
 
-      either mustBe Right(employments)
-    }
-
-    "return Left(error) on failure" in {
-      val sut   = createSUT
-      val error = UpstreamErrorResponse("boom", 500)
-
-      when(employmentsConnector.employmentsOnly(any(), any())(any()))
-        .thenReturn(EitherT.leftT[Future, Seq[Employment]](error))
-
-      val either = Await.result(sut.employmentsOnly(nino, year).value, 5.seconds)
-
-      either mustBe Left(error)
+      data mustBe Right(List(employment))
     }
   }
 
-  "Employment Service endEmployment" must {
+  "end employment" must {
     "return envelope id" in {
       val sut = createSUT
 
-      when(employmentsConnector.endEmployment(any(), any(), any())(any()))
-        .thenReturn(Future.successful("123-456-789"))
+      when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
       val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
 
@@ -243,7 +218,7 @@ class EmploymentServiceSpec extends BaseSpec {
     }
   }
 
-  "Employment Service addEmployment" must {
+  "add employment" must {
     "return an envelope id" in {
       val sut = createSUT
 
@@ -255,7 +230,6 @@ class EmploymentServiceSpec extends BaseSpec {
         telephoneContactAllowed = "Yes",
         telephoneNumber = Some("123456789")
       )
-
       when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
@@ -263,33 +237,33 @@ class EmploymentServiceSpec extends BaseSpec {
 
       envId mustBe "123-456-789"
     }
+    "generate a runtime exception" when {
+      "no envelope id was returned from the connector layer" in {
+        val sut = createSUT
 
-    "throw when connector returns no envelope id" in {
-      val sut = createSUT
+        val model = AddEmployment(
+          employerName = "testEmployment",
+          payrollNumber = "12345",
+          startDate = LocalDate.of(2017, 6, 6),
+          payeRef = "123/AB456",
+          telephoneContactAllowed = "Yes",
+          telephoneNumber = Some("123456789")
+        )
+        when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
+          .thenReturn(Future.successful(None))
 
-      val model = AddEmployment(
-        employerName = "testEmployment",
-        payrollNumber = "12345",
-        startDate = LocalDate.of(2017, 6, 6),
-        payeRef = "123/AB456",
-        telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789")
-      )
-
-      when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
-        .thenReturn(Future.successful(None))
-
-      val rte = the[RuntimeException] thrownBy Await.result(sut.addEmployment(nino, model), 5.seconds)
-      rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
+        val rte = the[RuntimeException] thrownBy Await.result(sut.addEmployment(nino, model), 5.seconds)
+        rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
+      }
     }
   }
 
-  "Employment Service incorrectEmployment" must {
+  "incorrect employment" must {
     "return an envelope id" in {
       val sut = createSUT
 
-      val model = IncorrectIncome("TEST", "Yes", Some("123456789"))
-
+      val model =
+        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
@@ -298,16 +272,18 @@ class EmploymentServiceSpec extends BaseSpec {
       envId mustBe "123-456-789"
     }
 
-    "throw when connector returns no envelope id" in {
-      val sut = createSUT
+    "generate a runtime exception" when {
+      "no envelope id was returned from the connector layer" in {
+        val sut = createSUT
 
-      val model = IncorrectIncome("TEST", "Yes", Some("123456789"))
+        val model =
+          IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+        when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
+          .thenReturn(Future.successful(None))
 
-      when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
-        .thenReturn(Future.successful(None))
-
-      val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
-      rte.getMessage mustBe s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
+        val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
+        rte.getMessage mustBe s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
+      }
     }
   }
 }

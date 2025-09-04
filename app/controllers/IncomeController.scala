@@ -203,7 +203,7 @@ class IncomeController @Inject() (
             .flatMap {
               case Some(employment) =>
                 val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
-                val vm = ConfirmAmountEnteredViewModel(
+                val vm               = ConfirmAmountEnteredViewModel(
                   empName = employment.name,
                   currentAmount = employmentAmount.oldAmount,
                   estIncome = newAmount.toInt,
@@ -211,7 +211,7 @@ class IncomeController @Inject() (
                   empId = empId
                 )
                 Future.successful(Ok(confirmAmountEntered(vm)))
-              case None =>
+              case None             =>
                 Future.successful(
                   errorPagesHandler.internalServerError("Exception while reading employment and tax code details")
                 )
@@ -236,7 +236,7 @@ class IncomeController @Inject() (
   def updateEstimatedIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val nino = user.nino
+      val nino                      = user.nino
 
       request.userAnswers.get(UpdateIncomeNewAmountPage) match {
         case Some(newAmountRaw) =>
