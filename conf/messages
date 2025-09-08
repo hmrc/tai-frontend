@@ -1782,3 +1782,6 @@ tai.payeRefForm.hint2 = It may be called ‘Employer PAYE reference’ or ‘PAY
 tai.payeRefForm.hint3 = It will be on your payslip or tax forms.
 tai.payeRefForm.required = Enter {0}’s employer PAYE reference
 tai.payeRefForm.format = Enter {0}’s employer PAYE reference in the correct format
+
+tai.idNotFound.title = Page not found
+tai.idNotFound.linkText = Go to your PAYE Income Tax overview

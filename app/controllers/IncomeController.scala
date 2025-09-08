@@ -54,6 +54,7 @@ class IncomeController @Inject() (
   editIncome: EditIncomeView,
   sameEstimatedPay: SameEstimatedPayView,
   journeyCacheRepository: JourneyCacheRepository,
+  empIdCheck: EmpIdCheck,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
@@ -68,25 +69,30 @@ class IncomeController @Inject() (
   def regularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino                      = user.nino
-    (for {
-      employmentAmount  <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
-      latestPayment     <- EitherT.right[String](incomeService.latestPayment(nino, empId))
-      updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
-      _                 <- EitherT.right[String](journeyCacheRepository.set(updatedUserAnswers))
-    } yield {
-      val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
-      Ok(
-        editIncome(
-          EditIncomeForm.create(employmentAmount, None),
-          hasMultipleIncomes = false,
-          employmentAmount.employmentId,
-          amountYearToDate.toString
-        )
-      )
-    }).fold(errorPagesHandler.internalServerError(_, None), identity)
-      .recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage)
-      }
+
+    empIdCheck.checkValidId(empId).flatMap {
+      case Some(result) => Future.successful(result)
+      case _            =>
+        (for {
+          employmentAmount  <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
+          latestPayment     <- EitherT.right[String](incomeService.latestPayment(nino, empId))
+          updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
+          _                 <- EitherT.right[String](journeyCacheRepository.set(updatedUserAnswers))
+        } yield {
+          val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
+          Ok(
+            editIncome(
+              EditIncomeForm.create(employmentAmount, None),
+              hasMultipleIncomes = false,
+              employmentAmount.employmentId,
+              amountYearToDate.toString
+            )
+          )
+        }).fold(errorPagesHandler.internalServerError(_, None), identity)
+          .recover { case NonFatal(e) =>
+            errorPagesHandler.internalServerError(e.getMessage)
+          }
+    }
   }
 
   def sameEstimatedPayInCache(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
