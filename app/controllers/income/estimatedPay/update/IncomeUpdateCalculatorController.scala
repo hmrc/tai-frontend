@@ -93,9 +93,6 @@ class IncomeUpdateCalculatorController @Inject() (
           case _ =>
             errorPagesHandler.internalServerError("Mandatory values missing")
         }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
     }
 
   def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
@@ -132,9 +129,6 @@ class IncomeUpdateCalculatorController @Inject() (
                 Future.successful(errorPagesHandler.internalServerError("Unexpected form state"))
             }
         )
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
   }
 
   // scalastyle:off method.length
@@ -189,9 +183,6 @@ class IncomeUpdateCalculatorController @Inject() (
 
             case None =>
               Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-          }
-          .recover { case NonFatal(e) =>
-            errorPagesHandler.internalServerError(e.getMessage)
           }
       }
   }

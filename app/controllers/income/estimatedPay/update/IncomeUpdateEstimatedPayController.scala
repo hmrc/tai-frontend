@@ -36,7 +36,6 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
-import scala.util.control.NonFatal
 
 class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthJourney,
@@ -71,9 +70,6 @@ class IncomeUpdateEstimatedPayController @Inject() (
             )
           case None      =>
             Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
-        }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
         }
     }
 
@@ -166,9 +162,6 @@ class IncomeUpdateEstimatedPayController @Inject() (
 
           case None =>
             Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-        }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
         }
     }
 }

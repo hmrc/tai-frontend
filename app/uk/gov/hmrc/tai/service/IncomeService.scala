@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.service
 
 import cats.implicits._
-import pages.income.{UpdateIncomePayToDatePage, UpdatedIncomeDatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -95,15 +94,5 @@ class IncomeService @Inject() (
     editableIncomes(taxCodeIncomes) match {
       case Seq(singleIncome) => singleIncome.employmentId
       case _                 => None
-    }
-
-  def cachePaymentForRegularIncome(latestPayment: Option[Payment], userAnswers: UserAnswers): UserAnswers =
-    latestPayment match {
-      case Some(payment) =>
-        userAnswers
-          .setOrException(UpdateIncomePayToDatePage, payment.amountYearToDate.toString)
-          .setOrException(UpdatedIncomeDatePage, payment.date.toString)
-      case None          =>
-        userAnswers.setOrException(UpdateIncomePayToDatePage, "0")
     }
 }

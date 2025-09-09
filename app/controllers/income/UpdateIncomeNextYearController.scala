@@ -40,7 +40,6 @@ import views.html.incomes.nextYear._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class UpdateIncomeNextYearController @Inject() (
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
@@ -69,7 +68,6 @@ class UpdateIncomeNextYearController @Inject() (
           case true  => Redirect(routes.UpdateIncomeNextYearController.duplicateWarning(employmentId))
           case false => Redirect(routes.UpdateIncomeNextYearController.start(employmentId))
         }
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 
@@ -126,7 +124,6 @@ class UpdateIncomeNextYearController @Inject() (
                   Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
               }
           )
-          .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
       }
   }
 
@@ -136,7 +133,6 @@ class UpdateIncomeNextYearController @Inject() (
       updateNextYearsIncomeService
         .get(employmentId, user.nino, request.userAnswers)
         .map(model => Ok(updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension)))
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 
@@ -156,7 +152,6 @@ class UpdateIncomeNextYearController @Inject() (
             )
           )
         }
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 
@@ -166,7 +161,6 @@ class UpdateIncomeNextYearController @Inject() (
       updateNextYearsIncomeService
         .get(employmentId, user.nino, request.userAnswers)
         .map(model => Ok(updateIncomeCYPlus1Same(model.employmentName, model.currentValue)))
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 
@@ -176,7 +170,6 @@ class UpdateIncomeNextYearController @Inject() (
       updateNextYearsIncomeService
         .get(employmentId, user.nino, request.userAnswers)
         .map(model => Ok(updateIncomeCYPlus1Success(model.employmentName, model.isPension)))
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 
@@ -206,7 +199,6 @@ class UpdateIncomeNextYearController @Inject() (
             logger.warn("Could not obtain new amount in confirm: " + error)
             Future.successful(Redirect(controllers.routes.IncomeTaxComparisonController.onPageLoad()))
         }
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 
@@ -226,7 +218,6 @@ class UpdateIncomeNextYearController @Inject() (
             )
           }
         }
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
 
   def update(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -281,7 +272,6 @@ class UpdateIncomeNextYearController @Inject() (
                 }
             )
         }
-        .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
     }
   }
 

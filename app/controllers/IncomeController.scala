@@ -37,7 +37,6 @@ import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
-import scala.util.{Failure, Success, Try}
 
 @Singleton
 class IncomeController @Inject() (
@@ -68,10 +67,8 @@ class IncomeController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val nino                      = user.nino
     (for {
-      employmentAmount  <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
-      latestPayment     <- EitherT.right[String](incomeService.latestPayment(nino, empId))
-      updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
-      _                 <- EitherT.right[String](journeyCacheRepository.set(updatedUserAnswers))
+      employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
+      latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -111,9 +108,6 @@ class IncomeController @Inject() (
             logger.warn(s"Mandatory value missing for empId: $empId")
             errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers")
         }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
   }
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -151,44 +145,32 @@ class IncomeController @Inject() (
     authenticate.authWithDataRetrieval.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
       val nino                      = user.nino
-      val ua                        = request.userAnswers
 
-      val payToDateOpt = ua.get(UpdateIncomePayToDatePage)
-      val dateStrOpt   = ua.get(UpdatedIncomeDatePage)
-
-      if (payToDateOpt.isEmpty) {
-        Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-      } else {
-        employmentService
-          .employment(nino, empId)
-          .flatMap {
-            case Some(emp) =>
-              val date: Option[LocalDate] = Try(dateStrOpt.map(LocalDate.parse)) match {
-                case Success(optDate) => optDate
-                case Failure(e)       =>
-                  logger.warn(s"Unable to parse UpdatedIncomeDatePage: $e"); None
-              }
-
-              val payToDateValue = payToDateOpt.getOrElse("0")
-
+      employmentService
+        .employment(nino, empId)
+        .flatMap {
+          case Some(emp) =>
+            incomeService.latestPayment(nino, empId).flatMap { paymentOpt =>
+              val payToDateValue: BigDecimal = paymentOpt.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+              val date: Option[LocalDate]    = paymentOpt.map(_.date)
+              if (paymentOpt.isEmpty) logger.info(s"No latest payment for empId $empId, defaulting YTD to 0")
               EditIncomeForm
-                .bind(emp.name, BigDecimal(payToDateValue), date)
+                .bind(emp.name, payToDateValue, date)
                 .fold(
                   (formWithErrors: Form[EditIncomeForm]) =>
                     Future.successful(
-                      BadRequest(editIncome(formWithErrors, hasMultipleIncomes = false, empId, payToDateValue))
+                      BadRequest(
+                        editIncome(formWithErrors, hasMultipleIncomes = false, empId, payToDateValue.toString)
+                      )
                     ),
                   (income: EditIncomeForm) =>
                     pickRedirectLocation(income, routes.IncomeController.confirmRegularIncome(empId), empId)
                 )
+            }
 
-            case None =>
-              Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-          }
-          .recover { case NonFatal(e) =>
-            errorPagesHandler.internalServerError(e.getMessage)
-          }
-      }
+          case None =>
+            Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+        }
     }
 
   def confirmRegularIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
@@ -252,15 +234,13 @@ class IncomeController @Inject() (
             if (isPension) Ok(editPensionSuccess(empName, empId)) else Ok(editSuccess(empName, empId))
           }
 
-          (for {
+          for {
             _      <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
             _      <- taxAccountService.updateEstimatedIncome(nino, newAmountInt, TaxYear(), empId)
             empOpt <- employmentService.employment(nino, empId)
           } yield empOpt match {
             case Some(emp) => respondWithSuccess(emp.name, emp.receivingOccupationalPension)
             case None      => errorPagesHandler.internalServerError("Employment not found")
-          }).recover { case NonFatal(e) =>
-            errorPagesHandler.internalServerError(e.getMessage, Some(e))
           }
 
         case None =>
@@ -276,11 +256,6 @@ class IncomeController @Inject() (
     (for {
       employmentAmount <- incomeService.employmentAmount(nino, empId)
       latestPayment    <- incomeService.latestPayment(nino, empId)
-      _                <- {
-        val updatedUserAnswers = incomeService.cachePaymentForRegularIncome(latestPayment, request.userAnswers)
-        journeyCacheRepository.set(updatedUserAnswers)
-      }
-
     } yield {
       val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
       Ok(
@@ -332,46 +307,34 @@ class IncomeController @Inject() (
   def editPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val nino                      = user.nino
-    val ua                        = request.userAnswers
 
-    val payToDateOpt = ua.get(UpdateIncomePayToDatePage)
-    val dateStrOpt   = ua.get(UpdatedIncomeDatePage)
-
-    if (payToDateOpt.isEmpty) {
-      logger.warn(s"Mandatory value missing from UserAnswers for empId: $empId (UpdateIncomePayToDatePage)")
-      Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-    } else {
-      employmentService
-        .employment(nino, empId)
-        .flatMap {
-          case Some(emp) =>
-            val parsedDate: Option[LocalDate] = scala.util.Try(dateStrOpt.map(LocalDate.parse)) match {
-              case scala.util.Success(opt) => opt
-              case scala.util.Failure(e)   => logger.warn(s"Unable to parse UpdatedIncomeDatePage: $e"); None
-            }
-            val payToDateValue                = payToDateOpt.getOrElse("0")
+    employmentService
+      .employment(nino, empId)
+      .flatMap {
+        case Some(emp) =>
+          incomeService.latestPayment(nino, empId).flatMap { paymentOpt =>
+            val payToDateValue: BigDecimal    = paymentOpt.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+            val parsedDate: Option[LocalDate] = paymentOpt.map(_.date)
+            if (paymentOpt.isEmpty) logger.info(s"No latest payment for (pension) empId $empId, defaulting YTD to 0")
 
             EditIncomeForm
-              .bind(emp.name, BigDecimal(payToDateValue), parsedDate)
+              .bind(emp.name, payToDateValue, parsedDate)
               .fold(
                 formWithErrors =>
                   Future.successful(
                     BadRequest(
-                      editPension(formWithErrors, hasMultipleIncomes = false, empId, payToDateValue)
+                      editPension(formWithErrors, hasMultipleIncomes = false, empId, payToDateValue.toString)
                     )
                   ),
                 (income: EditIncomeForm) =>
                   pickRedirectLocation(income, routes.IncomeController.confirmPensionIncome(empId), empId)
               )
+          }
 
-          case None =>
-            logger.warn(s"Employment not found for empId: $empId")
-            Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-        }
-        .recover { case NonFatal(e) =>
-          errorPagesHandler.internalServerError(e.getMessage)
-        }
-    }
+        case None =>
+          logger.warn(s"Employment not found for empId: $empId")
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      }
   }
 
   def confirmPensionIncome(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
