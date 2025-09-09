@@ -12,11 +12,11 @@
   background-image: url(../images/printer-icon-hmrc-1.svg);
   background-position: bottom left;
   background-repeat: no-repeat;
-  background-size: 16px;
+  background-size: 20px;
   margin: 1em 0;
 
   &__link {
-      color: #000 !important;
+      color: #1d70b8 !important;
       padding-left: 25px;
       text-underline-offset: .2em;
       font-family: "GDS Transport", arial, sans-serif;
@@ -25,6 +25,13 @@
         text-decoration-thickness: max(3px);
       }
   }
+
+  @media (min-width: 40.0625em) {
+      p {
+        font-size: 1.1875rem;
+        line-height: 1.3157894737;
+      }
+    }
 }
 
 @media print {
@@ -80,8 +87,7 @@
     }
   }
 
-  .display-for-print,
-  .display-for-print:any-link {
+  .display-for-print {
     display: inline !important;
     visibility: visible !important;
     text-decoration: none;
@@ -98,7 +104,6 @@
   footer,
   .hmrc-user-research-banner,
   .cbanner-govuk-cookie-banner,
-  a[href]:not(.card-link, .display-for-print),
   .hide-for-print,
   .beta-banner,
   .report-error,
@@ -109,6 +114,8 @@
   .service-info,
   .govuk-back-link,
   .govuk-summary-card + p:has(.govuk-link),
+  .hmrc-report-technical-issue,
+  .print-this,
    #iForms {
     display: none;
     visibility: hidden;
@@ -142,4 +149,26 @@
   details.govuk-details.only-visible-on-print > summary {
     color: #000;
   }
+
+  .only-visible-on-print.govuk-body {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  hr.print-metadata {
+    border: 0;
+    border-top: 1px solid #7fabd1;
+    height: 0;
+    margin: 0;
+  }
+
+  p.print-metadata {
+    font-size: 0.7rem;
+  }
+
+  .print-metadata {
+    display: block !important;
+    visibility: visible !important;
+  }
+
 }

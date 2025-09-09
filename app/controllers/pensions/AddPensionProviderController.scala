@@ -16,17 +16,16 @@
 
 package controllers.pensions
 
+import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
-import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.AddPayeRefPage
 import pages.addPensionProvider.*
 import play.api.i18n.Messages
-import play.api.mvc.*
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
-import uk.gov.hmrc.tai.forms.{PayeRefForm, YesNoTextEntryForm}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
@@ -35,7 +34,6 @@ import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
 import views.html.CanWeContactByPhoneView
-import views.html.employments.PayeRefFormView
 import views.html.pensions.*
 
 import java.time.LocalDate
@@ -56,18 +54,16 @@ class AddPensionProviderController @Inject() (
   addPensionReceivedFirstPayView: AddPensionReceivedFirstPayView,
   addPensionNameView: AddPensionNameView,
   addPensionStartDateView: AddPensionStartDateView,
-  payeRefFormView: PayeRefFormView,
-  journeyCacheRepository: JourneyCacheRepository,
-  errorPagesHandler: ErrorPagesHandler
+  journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
     with EmptyCacheRedirect {
 
-  private def contactPhonePensionProvider(implicit messages: Messages) =
+  private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
       messages("add.missing.pension"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.pensions.routes.AddPensionProviderController.addPayeReference().url,
+      controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url,
       controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber().url,
       controllers.pensions.routes.AddPensionProviderController.cancel().url
     )
@@ -246,47 +242,9 @@ class AddPensionProviderController @Inject() (
                        form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response"))
                      )
                  )
-          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addPayeReference())
+          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber())
       )
   }
-
-  def addPayeReference(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    request.userAnswers.get(AddPensionProviderNamePage) match {
-      case Some(companyName) =>
-        val existing = request.userAnswers.get(AddPayeRefPage).getOrElse("")
-
-        val form = PayeRefForm.form(companyName).fill(existing)
-        Ok(payeRefFormView(form, companyName, "pension"))
-      case None              =>
-        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-    }
-  }
-
-  def submitPayeReference(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-
-    request.userAnswers.get(AddPensionProviderNamePage) match {
-      case Some(companyName) =>
-        PayeRefForm
-          .form(companyName)
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(payeRefFormView(formWithErrors, companyName, "pension"))),
-            value => {
-              val updatedAnswers = request.userAnswers.setOrException(AddPayeRefPage, value)
-              for {
-                _ <- journeyCacheRepository.set(updatedAnswers)
-              } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber())
-            }
-          )
-      case None              => Future.successful(error5xxInBadRequest())
-    }
-  }
-
-  private def error5xxInBadRequest()(implicit request: Request[_]) =
-    BadRequest(errorPagesHandler.error5xx(Messages("global.error.InternalServerError500.message")))
 
   def addTelephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     val telephoneQuestion = request.userAnswers.get(AddPensionProviderTelephoneQuestionPage)
@@ -345,22 +303,13 @@ class AddPensionProviderController @Inject() (
       uA.get(AddPensionProviderNamePage),
       uA.get(AddPensionProviderStartDatePage),
       uA.get(AddPensionProviderPayrollNumberPage),
-      uA.get(AddPayeRefPage),
       uA.get(AddPensionProviderTelephoneQuestionPage),
       uA.get(AddPensionProviderTelephoneNumberPage)
     ) match {
-      case (
-            Some(name),
-            Some(startDate),
-            Some(payrollNumber),
-            Some(payeRef),
-            Some(telephoneQuestion),
-            telephoneNumber
-          ) =>
-        val model =
-          CheckYourAnswersViewModel(name, startDate, payrollNumber, payeRef, telephoneQuestion, telephoneNumber)
+      case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
+        val model = CheckYourAnswersViewModel(name, startDate, payrollNumber, telephoneQuestion, telephoneNumber)
         Ok(addPensionCheckYourAnswersView(model))
-      case _ => Redirect(taxAccountSummaryRedirect)
+      case _                                                                                            => Redirect(taxAccountSummaryRedirect)
     }
   }
 
@@ -371,23 +320,14 @@ class AddPensionProviderController @Inject() (
       uA.get(AddPensionProviderNamePage),
       uA.get(AddPensionProviderStartDatePage),
       uA.get(AddPensionProviderPayrollNumberPage),
-      uA.get(AddPayeRefPage),
       uA.get(AddPensionProviderTelephoneQuestionPage),
       uA.get(AddPensionProviderTelephoneNumberPage)
     ) match {
-      case (
-            Some(name),
-            Some(startDate),
-            Some(payrollNumber),
-            Some(payeRef),
-            Some(telephoneQuestion),
-            telephoneNumber
-          ) =>
+      case (Some(name), Some(startDate), Some(payrollNumber), Some(telephoneQuestion), telephoneNumber) =>
         val model = AddPensionProvider(
           name,
           LocalDate.parse(startDate),
           payrollNumber,
-          payeRef,
           telephoneQuestion,
           telephoneNumber
         )

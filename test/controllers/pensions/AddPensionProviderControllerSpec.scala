@@ -64,9 +64,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         inject[AddPensionReceivedFirstPayView],
         inject[AddPensionNameView],
         inject[AddPensionStartDateView],
-        inject[views.html.employments.PayeRefFormView],
-        mockRepository,
-        inject[controllers.ErrorPagesHandler]
+        mockRepository
       ) {}
 
   val userAnswers: UserAnswers = UserAnswers(
@@ -103,9 +101,9 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
   "addPensionProviderName" must {
     "show the pensionProvider name form page" when {
       "the request has an authorised session and previous value exists in cache" in {
-        val expectectedName = "testPensionName123"
-        val sut             =
-          createSUT(Some(userAnswers.copy(data = Json.obj(AddPensionProviderNamePage.toString -> expectectedName))))
+        val expectedName = "testPensionName123"
+        val sut          =
+          createSUT(Some(userAnswers.copy(data = Json.obj(AddPensionProviderNamePage.toString -> expectedName))))
 
         val result = sut.addPensionProviderName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -113,7 +111,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title()  must include(Messages("tai.addPensionProvider.addNameForm.title"))
-        doc.toString must include(expectectedName)
+        doc.toString must include(expectedName)
       }
     }
   }
@@ -440,6 +438,17 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
           ),
           5 seconds
         )
+
+//        verify(mockRepository, times(1)).set(
+//          meq(
+//            userAnswers.copy(data =
+//              Json.obj(
+//                AddPensionProviderNamePage.toString      -> "TEST-Employer",
+//                AddPensionProviderStartDatePage.toString -> "2017-02-01"
+//              )
+//            )
+//          )
+//        )
       }
     }
   }
@@ -577,11 +586,12 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       }
     }
 
-    "redirect to add PAYE reference page" when {
+    "redirect to add telephone number page" when {
       "the form is valid and user knows their pension number" in {
         val sut       = createSUT(Some(userAnswers))
         val payrollNo = "1234"
-        when(mockRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockRepository.set(any()))
+          .thenReturn(Future.successful(true))
 
         val result = sut.submitPensionNumber()(
           RequestBuilder
@@ -592,27 +602,9 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
             )
         )
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe
-          controllers.pensions.routes.AddPensionProviderController.addPayeReference().url
-      }
-    }
-
-    "redirect to add PAYE reference page" when {
-      "the form is valid and user doesn't know its pension number" in {
-        val sut = createSUT(Some(userAnswers))
-        when(mockRepository.set(any())).thenReturn(Future.successful(true))
-
-        val result = sut.submitPensionNumber()(
-          RequestBuilder
-            .buildFakeRequestWithAuth("POST")
-            .withFormUrlEncodedBody(
-              PayrollNumberChoice -> FormValuesConstants.NoValue,
-              PayrollNumberEntry  -> ""
-            )
-        )
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe
-          controllers.pensions.routes.AddPensionProviderController.addPayeReference().url
+        redirectLocation(
+          result
+        ).get mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
       }
     }
 
@@ -630,6 +622,38 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
           ),
           5 seconds
         )
+
+//        verify(mockRepository, times(1)).set(
+//          meq(
+//            userAnswers.copy(
+//              data = Json.obj(
+//                AddPensionProviderNamePage.toString                -> "TEST-Employer",
+//                AddPensionProviderPayrollNumberChoicePage.toString -> FormValuesConstants.NoValue,
+//                AddPensionProviderPayrollNumberPage.toString       -> "I do not know"
+//              )
+//            )
+//          )
+//        )
+      }
+    }
+
+    "redirect to add telephone number page" when {
+      "the form is valid and user doesn't know its pension number" in {
+        val sut = createSUT(Some(userAnswers))
+
+        when(mockRepository.set(any()))
+          .thenReturn(Future.successful(true))
+
+        val result = sut.submitPensionNumber()(
+          RequestBuilder
+            .buildFakeRequestWithAuth("POST")
+            .withFormUrlEncodedBody(PayrollNumberChoice -> FormValuesConstants.NoValue, PayrollNumberEntry -> "")
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(
+          result
+        ).get mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
       }
     }
 
@@ -864,7 +888,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         val pensionName           = "a pension provider"
         val pensionDate           = "2017-06-09"
         val pensionPayrollNumber  = "pension-ref-1234"
-        val payeRef               = "123/AB456"
         val telephoneQuestionPage = "Yes"
         val telephoneNumberPage   = "123456789"
 
@@ -875,7 +898,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
                 AddPensionProviderNamePage.toString              -> pensionName,
                 AddPensionProviderStartDatePage.toString         -> pensionDate,
                 AddPensionProviderPayrollNumberPage.toString     -> pensionPayrollNumber,
-                pages.AddPayeRefPage.toString                    -> payeRef,
                 AddPensionProviderTelephoneQuestionPage.toString -> telephoneQuestionPage,
                 AddPensionProviderTelephoneNumberPage.toString   -> telephoneNumberPage
               )
@@ -885,9 +907,20 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
 
         val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        val doc    = Jsoup.parse(contentAsString(result))
+
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.checkYourAnswers.title"))
       }
+    }
+
+    "redirect to the tax summary page if a value is missing from the cache " in {
+
+      val sut = createSUT(Some(userAnswers))
+
+      val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+
     }
   }
 
@@ -896,18 +929,15 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       val pensionName           = "a pension provider"
       val pensionDate           = "2017-06-09"
       val pensionPayrollNumber  = "pension-ref-1234"
-      val payeRef               = "123/AB456"
       val telephoneQuestionPage = "Yes"
       val telephoneNumberPage   = "123456789"
-
-      val sut = createSUT(
+      val sut                   = createSUT(
         Some(
           userAnswers.copy(data =
             Json.obj(
               AddPensionProviderNamePage.toString              -> pensionName,
               AddPensionProviderStartDatePage.toString         -> pensionDate,
               AddPensionProviderPayrollNumberPage.toString     -> pensionPayrollNumber,
-              pages.AddPayeRefPage.toString                    -> payeRef,
               AddPensionProviderTelephoneQuestionPage.toString -> telephoneQuestionPage,
               AddPensionProviderTelephoneNumberPage.toString   -> telephoneNumberPage
             )
@@ -919,7 +949,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         pensionName,
         LocalDate.parse(pensionDate),
         pensionPayrollNumber,
-        payeRef,
         telephoneQuestionPage,
         Some(telephoneNumberPage)
       )
@@ -928,11 +957,9 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
         .thenReturn(Future.successful("envelope-123"))
       when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
-
       val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe
-        controllers.pensions.routes.AddPensionProviderController.confirmation().url
+      redirectLocation(result).get mustBe controllers.pensions.routes.AddPensionProviderController.confirmation().url
     }
   }
 
@@ -955,116 +982,6 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       val result = createSUT(Some(userAnswers)).cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-    }
-  }
-
-  "add PAYE reference" must {
-    "show the PAYE reference page with empty field when no previous value" in {
-      val request            = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val updatedUserAnswers =
-        userAnswers.copy(data = userAnswers.data ++ Json.obj(AddPensionProviderNamePage.toString -> "Acme Pensions"))
-      val sut                = createSUT(Some(updatedUserAnswers))
-
-      val result = sut.addPayeReference()(request)
-      status(result) mustBe OK
-      val doc    = Jsoup.parse(contentAsString(result))
-      doc.select("#payeReference").`val`() mustBe ""
-    }
-
-    "show the PAYE reference page pre-populated when a value exists" in {
-      val request            = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val updatedUserAnswers =
-        userAnswers.copy(data =
-          userAnswers.data ++ Json.obj(
-            AddPensionProviderNamePage.toString -> "Acme Pensions",
-            pages.AddPayeRefPage.toString       -> "123/AB456"
-          )
-        )
-      val sut                = createSUT(Some(updatedUserAnswers))
-
-      val result = sut.addPayeReference()(request)
-      status(result) mustBe OK
-      val doc    = Jsoup.parse(contentAsString(result))
-      doc.select("#payeReference").`val`() mustBe "123/AB456"
-    }
-
-    "redirect to tax summary when provider name is missing" in {
-      val request            = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val updatedUserAnswers = userAnswers.copy(data = Json.obj())
-      val sut                = createSUT(Some(updatedUserAnswers))
-
-      val result = sut.addPayeReference()(request)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
-    }
-  }
-
-  "submit PAYE reference" must {
-    "persist and redirect to telephone number page on valid input" in {
-      val sut = createSUT(
-        Some(
-          userAnswers.copy(
-            data = userAnswers.data ++ Json.obj(AddPensionProviderNamePage.toString -> "Acme Pensions")
-          )
-        )
-      )
-      when(mockRepository.set(any())).thenReturn(Future.successful(true))
-
-      val result = sut.submitPayeReference()(
-        RequestBuilder
-          .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody("payeReference" -> "123/AB456")
-      )
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe
-        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
-      verify(mockRepository, times(1)).set(any())
-    }
-
-    "show BAD_REQUEST on empty input" in {
-      val sut = createSUT(
-        Some(
-          userAnswers.copy(
-            data = userAnswers.data ++ Json.obj(AddPensionProviderNamePage.toString -> "Acme Pensions")
-          )
-        )
-      )
-
-      val result = sut.submitPayeReference()(
-        RequestBuilder
-          .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody("payeReference" -> "")
-      )
-      status(result) mustBe BAD_REQUEST
-    }
-
-    "show BAD_REQUEST on invalid format" in {
-      val sut = createSUT(
-        Some(
-          userAnswers.copy(
-            data = userAnswers.data ++ Json.obj(AddPensionProviderNamePage.toString -> "Acme Pensions")
-          )
-        )
-      )
-
-      val result = sut.submitPayeReference()(
-        RequestBuilder
-          .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody("payeReference" -> "ABC/123")
-      )
-      status(result) mustBe BAD_REQUEST
-    }
-
-    "show BAD_REQUEST when provider name missing from cache" in {
-      val sut = createSUT(Some(userAnswers.copy(data = Json.obj())))
-
-      val result = sut.submitPayeReference()(
-        RequestBuilder
-          .buildFakeRequestWithAuth("POST")
-          .withFormUrlEncodedBody("payeReference" -> "123/AB456")
-      )
-      status(result) mustBe BAD_REQUEST
     }
   }
 

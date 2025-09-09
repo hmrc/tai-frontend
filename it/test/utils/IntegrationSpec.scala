@@ -116,8 +116,9 @@ trait IntegrationSpec
         |    "webchatPages": [
         |        {
         |            "pattern": "^/check-income-tax/.*",
-        |            "skinElement": "skinElement",
-        |            "isEnabled": true
+        |            "skinElement": "HMRC_Anchored_1",
+        |            "isEnabled": true,
+        |            "chatType": "loadWebChatContainer"
         |        }
         |    ]
         |}

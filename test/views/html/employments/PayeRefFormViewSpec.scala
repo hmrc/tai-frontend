@@ -26,10 +26,10 @@ class PayeRefFormViewSpec extends TaiViewSpec {
   private val template    = inject[PayeRefFormView]
   private val companyName = "Some Company Ltd"
 
-  private def viewFor(form: Form[String], journey: String): Html =
-    template(form, companyName, journey)
+  private def viewFor(form: Form[String]): Html =
+    template(form, companyName)
 
-  override def view: Html = viewFor(PayeRefForm.form(companyName), "employment")
+  override def view: Html = viewFor(PayeRefForm.form(companyName))
 
   "PayeRefFormView (employment journey)" must {
 
@@ -81,38 +81,14 @@ class PayeRefFormViewSpec extends TaiViewSpec {
     "display an error summary and inline error for a blank value" in {
       val interpolated = messages("tai.payeRefForm.required", companyName)
       val errorForm    = PayeRefForm.form(companyName).withError("payeReference", interpolated)
-      val d            = doc(viewFor(errorForm, "employment"))
+      val d            = doc(viewFor(errorForm))
       d.select(".govuk-error-message").text must include(interpolated)
     }
 
     "preserve a previously entered value" in {
       val filled = PayeRefForm.form(companyName).bind(Map("payeReference" -> "123/ABC123"))
-      val d      = doc(viewFor(filled, "employment"))
+      val d      = doc(viewFor(filled))
       d.getElementById("payeReference").attr("value") mustBe "123/ABC123"
-    }
-  }
-
-  "PayeRefFormView (pension journey)" must {
-
-    "display the correct pre-heading (pension)" in {
-      val d = doc(viewFor(PayeRefForm.form(companyName), "pension"))
-      d must haveElementAtPathWithText(
-        ".govuk-caption-xl",
-        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.pension")
-      )
-    }
-
-    "post to the pension submit PAYE ref route" in {
-      val d = doc(viewFor(PayeRefForm.form(companyName), "pension"))
-      d.select("form").attr("action") mustBe controllers.pensions.routes.AddPensionProviderController
-        .submitPayeReference()
-        .url
-    }
-
-    "have the pension back link" in {
-      val d = doc(viewFor(PayeRefForm.form(companyName), "pension"))
-      d.select("a[class=govuk-back-link]").attr("href") mustBe
-        controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
     }
   }
 }

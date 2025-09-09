@@ -26,7 +26,7 @@
         govukErrorSummary: GovukErrorSummary
 )
 
-@(payeRefForm: Form[String], companyName: String, journey: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
+@(payeRefForm: Form[String], companyName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
@@ -35,12 +35,7 @@
     formForErrorSummary = Some(payeRefForm),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     backLinkId = "back-link-custom-url",
-    backLinkUrl =
-        if(journey == "pension") {
-            Some(controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url)
-        } else {
-            Some(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url)
-        },
+    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url),
 ) {
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -53,19 +48,10 @@
 
             <h2 class="govuk-caption-xl hmrc-caption-xl">
                 <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>
-                @if(journey == "pension") {
-                    @messages("add.missing.pension")
-                } else {
-                    @messages("add.missing.employment")
-                }
+                @messages("add.missing.employment")
             </h2>
 
-            @formWithCSRF(action =
-                if(journey == "pension") {
-                    controllers.pensions.routes.AddPensionProviderController.submitPayeReference()
-                } else {
-                    controllers.employments.routes.AddEmploymentController.submitPayeReference()
-                }
+            @formWithCSRF(action = controllers.employments.routes.AddEmploymentController.submitPayeReference()
             ) {
 
                 @govukInput(Input(

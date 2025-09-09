@@ -264,7 +264,7 @@ class AddEmploymentController @Inject() (
         val existing: String = request.userAnswers.get(AddPayeRefPage).getOrElse("")
 
         val form = PayeRefForm.form(companyName).fill(existing)
-        Ok(payeRefFormView(form, companyName, "employment"))
+        Ok(payeRefFormView(form, companyName))
       case None              =>
         Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
@@ -279,7 +279,7 @@ class AddEmploymentController @Inject() (
           .form(companyName)
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(payeRefFormView(formWithErrors, companyName, "employment"))),
+            formWithErrors => Future.successful(BadRequest(payeRefFormView(formWithErrors, companyName))),
             value => {
               val updatedAnswers = request.userAnswers.setOrException(AddPayeRefPage, value)
               for {
