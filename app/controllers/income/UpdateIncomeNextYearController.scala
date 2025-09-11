@@ -40,6 +40,7 @@ import views.html.incomes.nextYear._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class UpdateIncomeNextYearController @Inject() (
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
@@ -205,19 +206,18 @@ class UpdateIncomeNextYearController @Inject() (
   def handleConfirm(employmentId: Int): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      featureFlagService
-        .get(CyPlusOneToggle)
-        .flatMap { toggle =>
-          if (toggle.isEnabled) {
-            updateNextYearsIncomeService
-              .submit(employmentId, user.nino, request.userAnswers)
-              .map(_ => Redirect(routes.UpdateIncomeNextYearController.success(employmentId)))
-          } else {
-            Future.successful(
-              NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
-            )
-          }
+      featureFlagService.get(CyPlusOneToggle).flatMap { toggle =>
+        if (toggle.isEnabled) {
+          updateNextYearsIncomeService
+            .submit(employmentId, user.nino, request.userAnswers)
+            .map(_ => Redirect(routes.UpdateIncomeNextYearController.success(employmentId)))
+            .recover { case NonFatal(e) => errorPagesHandler.internalServerError(e.getMessage) }
+        } else {
+          Future.successful(
+            NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
+          )
         }
+      }
     }
 
   def update(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>

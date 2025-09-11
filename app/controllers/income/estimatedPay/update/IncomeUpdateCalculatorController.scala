@@ -201,7 +201,7 @@ class IncomeUpdateCalculatorController @Inject() (
               val newEstimatedPay = BigDecimal(newAmountStr).intValue
               employmentAmount.oldAmount match {
                 case Some(currentEstimatedPay) if newEstimatedPay == currentEstimatedPay =>
-                  Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+                  Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay(empId))
                 case _                                                                   =>
                   Redirect(controllers.routes.IncomeController.updateEstimatedIncome(empId))
               }

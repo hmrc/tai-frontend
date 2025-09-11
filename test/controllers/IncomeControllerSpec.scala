@@ -31,7 +31,7 @@ import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.model.{EmploymentAmount, UserAnswers}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
@@ -54,7 +54,9 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(baseUserAnswers)
-    reset(incomeService, mockJourneyCacheRepository, employmentService)
+    reset(incomeService, employmentService, taxAccountService, mockJourneyCacheRepository)
+    when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
   }
 
   val payToDate                           = "100"
@@ -77,6 +79,13 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       receivingOccupationalPension = false,
       EmploymentIncome
     )
+
+  private def empNamed(
+    name: String = employerName,
+    seq: Int = employerId,
+    pension: Boolean = false
+  ): Employment =
+    employmentWithAccounts(Nil).copy(sequenceNumber = seq, name = name, receivingOccupationalPension = pension)
 
   def paymentOnDate(date: LocalDate): Payment =
     Payment(
@@ -163,17 +172,28 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val payment        = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
-        when(incomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(Some(payment)))
-
-        val updatedUserAnswers = baseUserAnswers.setOrException(UpdateIncomePayToDatePage, "0")
-        when(incomeService.cachePaymentForRegularIncome(any(), any())).thenReturn(updatedUserAnswers)
-        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(payment)))
 
         val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
+        verify(mockJourneyCacheRepository, never()).set(any[UserAnswers])
+      }
+    }
+
+    "return Internal Server Error" when {
+      "employmentAmount fails" in {
+        val testController = createTestIncomeController()
+        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+          .thenReturn(Future.failed(new RuntimeException("failed")))
+        when(incomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
+
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }
@@ -183,58 +203,22 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "valid input is passed" in {
         val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-        setup(userAnswers)
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(seq = employerId, name = employerName))))
 
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
-
-        val result =
-          testController.editRegularIncome(empId = emp.sequenceNumber)(
-            RequestBuilder
-              .buildFakeRequestWithAuth("POST")
-          )
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController
-          .confirmRegularIncome(empId = emp.sequenceNumber)
-          .url
-
-        verify(mockJourneyCacheRepository, times(1)).set(any())
-      }
-    }
-
-    "handle exception" when {
-      "an invalid UpdateIncomeConstants.DateKey is present " in {
-        val testController = createTestIncomeController()
-
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdatedIncomeDatePage, "May 2020")
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+        val latest = paymentOnDate(LocalDate.of(2017, 2, 1)).copy(amountYearToDate = BigDecimal(payToDate))
+        when(incomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(Some(latest)))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData       = Json.toJson(editIncomeForm)
 
         val result =
-          testController.editRegularIncome(empId = emp.sequenceNumber)(
+          testController.editRegularIncome(empId = employerId)(
             RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)
           )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController
-          .confirmRegularIncome(empId = emp.sequenceNumber)
-          .url
-
-        verify(mockJourneyCacheRepository, times(1)).set(any())
+        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome(employerId).url
       }
     }
 
@@ -242,21 +226,17 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "new input is the same as the cached input" in {
         val testController = createTestIncomeController()
 
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(seq = employerId, name = employerName))))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(paymentOnDate(LocalDate.now()).copy(amountYearToDate = BigDecimal(100)))))
+
         val sameAmount = "200"
+        val ua         = baseUserAnswers.setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), sameAmount)
+        setup(ua)
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
         val formData       = Json.toJson(editIncomeForm)
-
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdatedIncomeDatePage, LocalDate.of(2017, 2, 1).toString)
-          .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), sameAmount)
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName, sequenceNumber = employerId)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
 
         val result =
           testController.editRegularIncome(empId = employerId)(
@@ -267,21 +247,15 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         redirectLocation(result) mustBe Some(
           controllers.routes.IncomeController.sameEstimatedPayInCache(employerId).url
         )
-
-        verify(mockJourneyCacheRepository, never).set(any())
       }
 
       "new amount is the same as the current amount" in {
         val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, "1")
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = "employer name", sequenceNumber = employerId)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(seq = employerId, name = "employer name"))))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(paymentOnDate(LocalDate.now()).copy(amountYearToDate = BigDecimal(100)))))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData       = Json.toJson(editIncomeForm)
@@ -292,16 +266,15 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
           )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
-
-        verify(mockJourneyCacheRepository, never).set(any())
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay(employerId).url)
       }
     }
 
     "redirect to /income-details" when {
-      "cache is empty" in {
-
+      "employment not found" in {
         val testController = createTestIncomeController()
+
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData       = Json.toJson(editIncomeForm)
@@ -315,26 +288,19 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         redirectLocation(result) mustBe Some(
           controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
         )
-
       }
     }
 
     "return Bad request" when {
       "an input error occurs" in {
-        val invalidNewAmount = ""
-        val testController   = createTestIncomeController()
+        val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdatedIncomeDatePage, LocalDate.of(2017, 2, 1).toString)
-        setup(userAnswers)
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(seq = employerId, name = employerName))))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(paymentOnDate(LocalDate.now()))))
 
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName, sequenceNumber = employerId)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
-
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(""))
         val formData       = Json.toJson(editIncomeForm)
 
         val result =
@@ -345,9 +311,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.body().toString must include(Messages("error.tai.updateDataEmployment.blankValue"))
-
       }
-
     }
   }
 
@@ -358,15 +322,14 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       val userAnswers = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, "100")
       setup(userAnswers)
 
-      val employment = employmentWithAccounts(List())
-
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed(seq = employerId))))
 
       val result = testController.confirmRegularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
     }
 
-    "redirect when employment is not found" in {
+    "return Internal Server Error when employment is not found" in {
       val testController = createTestIncomeController()
       val userAnswers    = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, "100")
       setup(userAnswers)
@@ -379,81 +342,64 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   }
 
   "updateEstimatedIncome" must {
-    "return OK" when {
-      "income from employment is successfully updated" in {
-        val testController = createTestIncomeController()
+    "return OK showing employment success view when non-pension" in {
+      val testController = createTestIncomeController()
 
-        val employerName = "Employer"
+      val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val expected    = testController.renderSuccess(employerName, employerId)(fakeRequest)
 
-        val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val userAnswers = baseUserAnswers
+        .setOrException(UpdateIncomeNewAmountPage, "100,000")
+      setup(userAnswers)
 
-        val expected = testController.renderSuccess(employerName, employerId)(fakeRequest)
+      when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed(name = employerName, seq = employerId))))
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomeNewAmountPage, "100,000")
-          .setOrException(UpdateIncomeIdPage, employerId)
-        setup(userAnswers)
+      val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
 
-        when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName, receivingOccupationalPension = false)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
-
-        val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
-
-        status(result) mustBe OK
-
-        contentAsString(result) must equal(expected.toString)
-      }
-
-      "income from pension is successfully updated" in {
-        val testController = createTestIncomeController()
-
-        val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
-
-        val expected = testController.renderPensionSuccess(employerName, employerId)(fakeRequest)
-
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomeNewAmountPage, "100,000")
-          .setOrException(UpdateIncomeIdPage, employerId)
-        setup(userAnswers)
-
-        when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName, receivingOccupationalPension = true)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
-
-        val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
-
-        status(result) mustBe OK
-
-        contentAsString(result) must equal(expected.toString)
-      }
+      status(result) mustBe OK
+      contentAsString(result) must equal(expected.toString)
     }
 
-    "return Internal Server Error" when {
-      "update is failed" in {
-        val testController = createTestIncomeController()
-        val userAnswers    = baseUserAnswers
-          .setOrException(UpdateIncomeNewAmountPage, "100,000")
-          .setOrException(UpdateIncomeIdPage, employerId)
-        setup(userAnswers)
+    "return OK showing pension success view when pension" in {
+      val testController = createTestIncomeController()
 
-        when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
-        when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
-          .thenReturn(Future.failed(new Exception("Failed")))
+      val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val expected    = testController.renderPensionSuccess(employerName, employerId)(fakeRequest)
 
-        val result = testController.updateEstimatedIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("POST"))
+      val userAnswers = baseUserAnswers
+        .setOrException(UpdateIncomeNewAmountPage, "100,000")
+      setup(userAnswers)
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
+      when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+      when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+      when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed(name = employerName, seq = employerId, pension = true))))
+
+      val result = testController.updateEstimatedIncome(employerId)(fakeRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) must equal(expected.toString)
+    }
+
+    "return Internal Server Error when update fails" in {
+      val testController = createTestIncomeController()
+      val userAnswers    = baseUserAnswers
+        .setOrException(UpdateIncomeNewAmountPage, "100,000")
+      setup(userAnswers)
+
+      when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+      when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
+        .thenReturn(Future.failed(new Exception("Failed")))
+
+      assertThrows[Exception] {
+        await(testController.updateEstimatedIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("POST")))
       }
     }
 
@@ -464,30 +410,27 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
       val userAnswers = baseUserAnswers
         .setOrException(UpdateIncomeNewAmountPage, "100,000")
-        .setOrException(UpdateIncomeIdPage, employerId)
       setup(userAnswers)
 
       when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
       when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
-      val emp = employmentWithAccounts(Nil).copy(name = employerName, receivingOccupationalPension = false)
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed())))
 
       Await.result(testController.updateEstimatedIncome(employerId)(fakeRequest), 5.seconds)
 
       verify(mockJourneyCacheRepository, times(1)).clear(any(), any())
     }
 
-    "Redirect to /Income-details" when {
-      "cache is empty" in {
-        val testController = createTestIncomeController()
+    "Redirect to /Income-details when new amount missing" in {
+      val testController = createTestIncomeController()
 
-        val result =
-          testController.updateEstimatedIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result =
+        testController.updateEstimatedIncome(empId = employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
-      }
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
     }
 
     "correctly parse formatted currency values" in {
@@ -495,15 +438,14 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
       val userAnswers = baseUserAnswers
         .setOrException(UpdateIncomeNewAmountPage, "1,000")
-        .setOrException(UpdateIncomeIdPage, employerId)
       setup(userAnswers)
 
       when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
       when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
       when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
-      val emp = employmentWithAccounts(Nil).copy(name = "Employer", receivingOccupationalPension = false)
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed())))
 
       val result = testController.updateEstimatedIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("POST"))
       status(result) mustBe OK
@@ -513,29 +455,43 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   "sameEstimatedPayInCache" must {
     "gracefully handle missing confirmed amount" in {
       val testController = createTestIncomeController()
-      val userAnswers    = baseUserAnswers
-        .setOrException(UpdateIncomeIdPage, 1)
-      setup(userAnswers)
+      setup(baseUserAnswers)
 
-      val emp = employmentWithAccounts(Nil).copy(name = "Employer")
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed())))
 
       val result = testController.sameEstimatedPayInCache(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
+
+    "contain the employer name and confirmed pay when present" in {
+      val testController = createTestIncomeController()
+
+      val ua = baseUserAnswers
+        .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "987")
+      setup(ua)
+
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed(name = "Employer Name", seq = employerId))))
+
+      val result = testController.sameEstimatedPayInCache(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe OK
+
+      val doc  = Jsoup.parse(contentAsString(result))
+      val body = doc.body().toString
+      body must include("Employer Name")
+      body must include("987")
+    }
   }
 
-  "pension" must {
-    "return OK with regular income view" when {
+  "pensionIncome" must {
+    "return OK with pension income view" when {
       "valid inputs are passed" in {
-        val testController     = createTestIncomeController()
-        val payment            = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val testController = createTestIncomeController()
+        val payment        = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(employmentAmount))
         when(incomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(Some(payment)))
-        val updatedUserAnswers = baseUserAnswers.setOrException(UpdateIncomePayToDatePage, "0")
-        when(incomeService.cachePaymentForRegularIncome(any(), any())).thenReturn(updatedUserAnswers)
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
         val result = testController.pensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -543,17 +499,18 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeBreak))
+        verify(mockJourneyCacheRepository, never()).set(any[UserAnswers])
       }
     }
 
     "return Internal Server Error" when {
-      "employment amount call fails" in {
+      "employmentAmount fails" in {
         val testController = createTestIncomeController()
         when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
           .thenReturn(Future.failed(new RuntimeException("failed")))
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+        when(incomeService.latestPayment(any(), any())(any(), any())).thenReturn(Future.successful(None))
 
-        val result = testController.pensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.pensionIncome(56)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -561,47 +518,14 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   }
 
   "editPensionIncome" must {
-    "redirect to confirm regular income page" when {
+    "redirect to confirm pension income page" when {
       "valid input is passed" in {
         val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdateIncomeIdPage, employerId)
-          .setOrException(UpdatedIncomeDatePage, LocalDate.of(2017, 2, 1).toString)
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
-
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("201"))
-        val formData       = Json.toJson(editIncomeForm)
-
-        val result =
-          testController.editPensionIncome(employerId)(
-            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)
-          )
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmPensionIncome(employerId).url
-      }
-    }
-
-    "handle exception" when {
-      "an invalid UpdateIncomeConstants.DateKey is present in pension income" in {
-        val testController = createTestIncomeController()
-        val userAnswers    = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdateIncomeIdPage, employerId)
-          .setOrException(UpdatedIncomeDatePage, "May 2020")
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(name = employerName, seq = employerId, pension = true))))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(paymentOnDate(LocalDate.of(2017, 2, 1)).copy(amountYearToDate = 201))))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("201"))
         val formData       = Json.toJson(editIncomeForm)
@@ -620,16 +544,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "new amount is blank" in {
         val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdateIncomeIdPage, employerId)
-          .setOrException(UpdatedIncomeDatePage, LocalDate.of(2017, 2, 1).toString)
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(name = employerName, seq = employerId, pension = true))))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(paymentOnDate(LocalDate.now()))))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(""))
         val formData       = Json.toJson(editIncomeForm)
@@ -647,58 +565,53 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
       "new input is the same as the cached input" in {
         val testController = createTestIncomeController()
 
-        val sameAmount = "987"
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(seq = employerId, name = employerName))))
+        val sameAmount = "200"
+        when(incomeService.latestPayment(any(), any())(any(), any())).thenReturn(
+          Future.successful(Some(paymentOnDate(LocalDate.now()).copy(amountYearToDate = BigDecimal(sameAmount))))
+        )
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, payToDate)
-          .setOrException(UpdateIncomeIdPage, employerId)
-          .setOrException(UpdatedIncomeDatePage, LocalDate.of(2017, 2, 1).toString)
-          .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), sameAmount)
-        setup(userAnswers)
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+        val ua = baseUserAnswers.setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), sameAmount)
+        setup(ua)
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
         val formData       = Json.toJson(editIncomeForm)
-
-        val result =
-          testController.editPensionIncome(employerId)(
+        val result         =
+          testController.editRegularIncome(employerId)(
             RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)
           )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController.sameEstimatedPayInCache(employerId).url
+        redirectLocation(result) mustBe Some(
+          controllers.routes.IncomeController.sameEstimatedPayInCache(employerId).url
+        )
       }
 
       "new amount is the same as the current amount" in {
         val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomePayToDatePage, "1")
-          .setOrException(UpdateIncomeIdPage, 2)
-        setup(userAnswers)
-
-        val emp = employmentWithAccounts(Nil).copy(name = "employer name")
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+        when(employmentService.employment(any(), any())(any()))
+          .thenReturn(Future.successful(Some(empNamed(seq = employerId, name = "employer name"))))
+        when(incomeService.latestPayment(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(paymentOnDate(LocalDate.now()).copy(amountYearToDate = BigDecimal(100)))))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData       = Json.toJson(editIncomeForm)
-
-        val result =
-          testController.editPensionIncome(employerId)(
-            RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)
-          )
+        val result         = testController.editRegularIncome(employerId)(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)
+        )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay(employerId).url)
       }
     }
+
     "redirect to /income-details" when {
-      "nothing is present in the cache" in {
+      "employment not found" in {
         val testController = createTestIncomeController()
+
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = Some(212))
         val formData       = Json.toJson(editIncomeForm)
@@ -717,178 +630,136 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   }
 
   "confirmPensionIncome" must {
-    "return OK" when {
-      "valid values are present in cache" in {
-        val testController = createTestIncomeController()
-        val payment        = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount  = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment     = employmentWithAccounts(List(annualAccount))
+    "return OK when valid values are present in cache and employment exists" in {
+      val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, cachedUpdateIncomeNewAmount)
-        setup(userAnswers)
+      val userAnswers = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, cachedUpdateIncomeNewAmount)
+      setup(userAnswers)
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed(seq = employerId, pension = true))))
 
-        val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe OK
-      }
+      status(result) mustBe OK
     }
 
-    "return Internal Server Error" when {
-      "employment doesn't exist" in {
-        val testController = createTestIncomeController()
-        val userAnswers    = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, cachedUpdateIncomeNewAmount)
-        setup(userAnswers)
+    "return Internal Server Error when employment doesn't exist" in {
+      val testController = createTestIncomeController()
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      val userAnswers = baseUserAnswers.setOrException(UpdateIncomeNewAmountPage, cachedUpdateIncomeNewAmount)
+      setup(userAnswers)
 
-        val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
+      val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
     }
-    "return SEE_OTHER" when {
-      "nothing is present in the cache" in {
 
-        val testController = createTestIncomeController()
+    "return SEE_OTHER when nothing present in cache" in {
+      val testController = createTestIncomeController()
 
-        val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = testController.confirmPensionIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
-        )
-      }
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        controllers.routes.IncomeSourceSummaryController.onPageLoad(employerId).url
+      )
     }
   }
 
   "viewIncomeForEdit" must {
-    "redirect user" when {
-      "employment is live and is not occupational pension" in {
-        val testController = createTestIncomeController()
+    "redirect user when employment is live and not occupational pension" in {
+      val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers.setOrException(UpdateIncomeIdPage, 1)
-        setup(userAnswers)
+      val userAnswers = baseUserAnswers.setOrException(UpdateIncomeIdPage, 1)
+      setup(userAnswers)
 
-        val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, Some(11), None, None, None, None)
+      val employmentAmount =
+        EmploymentAmount("employment", "(Current employer)", 1, Some(11), None, None, None, None)
 
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(employmentAmount))
+      when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(employmentAmount))
 
-        val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.IncomeController.regularIncome(employerId).url
-      }
-
-      "employment is not live and is not occupational pension" in {
-        val testController = createTestIncomeController()
-
-        val userAnswers = baseUserAnswers.setOrException(UpdateIncomeIdPage, 1)
-        setup(userAnswers)
-
-        val employmentAmount =
-          EmploymentAmount("employment", "(Current employer)", 1, Some(11), None, None, None, None, isLive = false)
-
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(employmentAmount))
-
-        val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad().url
-      }
-
-      "employment is not live and is occupational pension" in {
-        val testController = createTestIncomeController()
-
-        val userAnswers = baseUserAnswers.setOrException(UpdateIncomeIdPage, 1)
-        setup(userAnswers)
-
-        val employmentAmount =
-          EmploymentAmount(
-            "employment",
-            "(Current employer)",
-            1,
-            Some(11),
-            None,
-            None,
-            None,
-            None,
-            isLive = false,
-            isOccupationalPension = true
-          )
-
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(employmentAmount))
-
-        val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.IncomeController.pensionIncome(employerId).url
-      }
+      val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.IncomeController.regularIncome(employerId).url
     }
 
-    "sameEstimatedPay page" should {
-      "contain the employer name and current pay " in {
-        val testController = createTestIncomeController()
+    "redirect user when employment is not live and not occupational pension" in {
+      val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomeIdPage, 1)
-          .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "987")
-        setup(userAnswers)
+      val userAnswers = baseUserAnswers.setOrException(UpdateIncomeIdPage, 1)
+      setup(userAnswers)
 
-        val emp = employmentWithAccounts(Nil).copy(name = "Employer Name")
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+      val employmentAmount =
+        EmploymentAmount("employment", "(Current employer)", 1, Some(11), None, None, None, None, isLive = false)
 
-        val result = testController.sameEstimatedPayInCache(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
+      when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(employmentAmount))
 
-        val doc  = Jsoup.parse(contentAsString(result))
-        val body = doc.body().toString
-        body must include("Employer Name")
-        body must include("987")
-      }
-
-      "fail if there are no mandatory values " in {
-        val testController = createTestIncomeController()
-
-        val emp = employmentWithAccounts(Nil).copy(name = "Employer Name")
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
-
-        val result = testController.sameEstimatedPayInCache(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
+      val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad().url
     }
 
-    "sameAnnualEstimatedPay" must {
-      "show the same annual estimated pay page" in {
-        val testController = createTestIncomeController()
+    "redirect user when employment is occupational pension" in {
+      val testController = createTestIncomeController()
 
-        val userAnswers = baseUserAnswers
-          .setOrException(UpdateIncomeIdPage, 1)
-        setup(userAnswers)
+      val userAnswers = baseUserAnswers.setOrException(UpdateIncomeIdPage, 1)
+      setup(userAnswers)
 
-        when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(employmentAmount))
+      val employmentAmount =
+        EmploymentAmount(
+          "employment",
+          "(Current employer)",
+          1,
+          Some(11),
+          None,
+          None,
+          None,
+          None,
+          isLive = false,
+          isOccupationalPension = true
+        )
 
-        val emp = employmentWithAccounts(Nil).copy(name = employerName)
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(emp)))
+      when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(employmentAmount))
 
-        val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.IncomeController.pensionIncome(employerId).url
+    }
+  }
 
-        status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messagesApi("tai.updateEmployment.incomeSame.title", ""))
-      }
+  "sameAnnualEstimatedPay" must {
+    "show the same annual estimated pay page" in {
+      val testController = createTestIncomeController()
 
-      "return Internal Server Error when mandatory values missing from cache" in {
-        val testController = createTestIncomeController()
+      when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(employmentAmount))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(Some(empNamed(name = employerName, seq = employerId))))
 
-        val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = testController.sameAnnualEstimatedPay(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(messagesApi("tai.updateEmployment.incomeSame.title", ""))
     }
 
+    "return Internal Server Error when employment not found" in {
+      val testController = createTestIncomeController()
+
+      when(incomeService.employmentAmount(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(employmentAmount))
+      when(employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+
+      val result = testController.sameAnnualEstimatedPay(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
   }
 }

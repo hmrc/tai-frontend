@@ -110,36 +110,31 @@ class IncomeController @Inject() (
         }
   }
 
-  def sameAnnualEstimatedPay(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val nino = request.taiUser.nino
+  def sameAnnualEstimatedPay(employmentId: Int): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      val nino = request.taiUser.nino
 
-    request.userAnswers.get(UpdateIncomeIdPage) match {
-      case Some(id) =>
-        incomeService
-          .employmentAmount(nino, id)
-          .flatMap { income =>
-            employmentService.employment(nino, id).map {
-              case Some(emp) =>
-                val model = SameEstimatedPayViewModel(
-                  emp.name,
-                  id,
-                  income.oldAmount,
-                  income.isOccupationalPension,
-                  routes.IncomeSourceSummaryController.onPageLoad(id).url
-                )
-                Ok(sameEstimatedPay(model))
-              case None      =>
-                errorPagesHandler.internalServerError("Employment not found")
-            }
+      incomeService
+        .employmentAmount(nino, employmentId)
+        .flatMap { income =>
+          employmentService.employment(nino, employmentId).map {
+            case Some(emp) =>
+              val model = SameEstimatedPayViewModel(
+                employerName = emp.name,
+                employerId = employmentId,
+                amount = income.oldAmount,
+                isPension = income.isOccupationalPension,
+                returnLinkUrl = routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+              )
+              Ok(sameEstimatedPay(model))
+            case None      =>
+              errorPagesHandler.internalServerError("Employment not found")
           }
-          .recover { case NonFatal(e) =>
-            errorPagesHandler.internalServerError(e.getMessage)
-          }
-
-      case None =>
-        Future.successful(errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers"))
+        }
+        .recover { case NonFatal(e) =>
+          errorPagesHandler.internalServerError(e.getMessage)
+        }
     }
-  }
 
   def editRegularIncome(empId: Int): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
@@ -279,7 +274,7 @@ class IncomeController @Inject() (
     if (isCachedIncomeTheSame(request.userAnswers, income.newAmount, empId)) {
       Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache(empId)))
     } else if (isIncomeTheSame(income)) {
-      Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay()))
+      Future.successful(Redirect(routes.IncomeController.sameAnnualEstimatedPay(empId)))
     } else {
       cacheAndRedirect(income, confirmationCallback)
     }
@@ -313,8 +308,12 @@ class IncomeController @Inject() (
       .flatMap {
         case Some(emp) =>
           incomeService.latestPayment(nino, empId).flatMap { paymentOpt =>
+
             val payToDateValue: BigDecimal    = paymentOpt.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+            print("sandeep1 payToDateValue:" + payToDateValue)
             val parsedDate: Option[LocalDate] = paymentOpt.map(_.date)
+            print("sandeep1 parsedDate:" + parsedDate)
+            print("sandeep1 emp.name:" + emp.name)
             if (paymentOpt.isEmpty) logger.info(s"No latest payment for (pension) empId $empId, defaulting YTD to 0")
 
             EditIncomeForm

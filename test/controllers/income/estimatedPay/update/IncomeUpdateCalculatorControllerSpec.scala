@@ -361,7 +361,7 @@ class IncomeUpdateCalculatorControllerSpec
           .handleCalculationResult(RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay(employerId).url)
       }
     }
 

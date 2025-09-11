@@ -531,11 +531,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val request    = RequestBuilder.buildFakeGetRequestWithAuth()
         val controller = createTestIncomeController()
 
-        when(
-          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
-        ).thenReturn(
-          Future.failed(new Exception("Error"))
-        )
+        when(updateNextYearsIncomeService.submit(any(), any(), any())(any(), any()))
+          .thenReturn(Future.failed(new Exception("Error")))
 
         val result = controller.handleConfirm(employmentID)(request)
 

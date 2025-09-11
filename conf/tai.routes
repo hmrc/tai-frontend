@@ -175,7 +175,7 @@ POST        /update-income/edit-pension/:empId                                  
 
 GET         /update-income/income/:empId/check-save                                    controllers.IncomeController.confirmRegularIncome(empId: Int)
 GET         /update-income/income/same-estimated-pay/:empId                            controllers.IncomeController.sameEstimatedPayInCache(empId: Int)
-GET         /update-income/income/same-annual-estimated-pay                            controllers.IncomeController.sameAnnualEstimatedPay()
+GET         /update-income/income/same-annual-estimated-pay/:empId                     controllers.IncomeController.sameAnnualEstimatedPay(empId: Int)
 
 GET         /update-income/pension/check-save/:empId                                   controllers.IncomeController.confirmPensionIncome(empId: Int)
 

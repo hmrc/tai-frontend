@@ -35,7 +35,6 @@ import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, Incorr
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthJourney,
@@ -106,14 +105,12 @@ class IncomeUpdateEstimatedPayController @Inject() (
             val payYtd: BigDecimal                   = latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
             val latestPaymentDate: Option[LocalDate] = latestPayment.map(_.date)
 
-            val confirmedNewAmountStr                                                                        = ua.get(UpdateIncomeConfirmedNewAmountPage(empId))
-            def isConfirmedAmountSameAs(grossOpt: Option[BigDecimal], cachedStrOpt: Option[String]): Boolean =
-              (grossOpt, cachedStrOpt) match {
-                case (Some(g), Some(s)) => Try(BigDecimal(FormHelper.stripNumber(s))).toOption.contains(g)
-                case _                  => false
-              }
+            val confirmedNewAmountStr = ua.get(UpdateIncomeConfirmedNewAmountPage(empId))
 
-            if (isConfirmedAmountSameAs(calculatedPay.grossAnnualPay, confirmedNewAmountStr)) {
+            def isSameAsConfirmed(grossOpt: Option[BigDecimal], confirmedStr: Option[String]): Boolean =
+              FormHelper.areEqual(confirmedStr, grossOpt.map(_.toString))
+
+            if (isSameAsConfirmed(calculatedPay.grossAnnualPay, confirmedNewAmountStr)) {
               Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(empId)))
             } else {
               calculatedPay.grossAnnualPay match {
