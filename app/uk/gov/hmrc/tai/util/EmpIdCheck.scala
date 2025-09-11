@@ -38,16 +38,16 @@ class EmpIdCheck @Inject (
 
   override def messagesApi: MessagesApi = mcc.messagesApi
 
-  def checkValidId(empId: Int, taxYear: TaxYear = TaxYear())(implicit
+  def checkValidId(action: Future[Result], empId: Int, taxYear: TaxYear = TaxYear())(implicit
     request: DataRequest[_]
-  ): Future[Option[Result]] = {
+  ): Future[Result] = {
     implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     employmentsService
       .employments(request.taiUser.nino, taxYear)
-      .flatMap(employments => Future.successful(employments.exists(_.sequenceNumber == empId)))
-      .map {
-        case false => Some(NotFound(idNotFound()))
-        case true  => None
+      .map(employments => employments.exists(_.sequenceNumber == empId))
+      .flatMap {
+        case false => Future.successful(NotFound(idNotFound()))
+        case true  => action
       }
   }
 }
