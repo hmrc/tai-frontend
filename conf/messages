@@ -82,7 +82,7 @@ gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year wh
 gift.aid.tax.relief.brd.charge=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}. This includes a basic rate difference deduction of £{2}.
 gift.aid.tax.relief.brd.reduction=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}. This includes a basic rate divergence addition of £{2}.
 
-
+label.HMRC= HM Revenue & Customs
 label.closed_sundays_and_bank_holidays=Closed Sundays and bank holidays.
 label.find_out_about_call_charges=Find out about call charges
 label.how_to_contact_us=Other ways to contact us
@@ -638,8 +638,9 @@ tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated
 
 tai.incomeTax.history.title=PAYE Income Tax history
 tai.incomeTax.history.details.summary=PAYE details for {0}
-tai.incomeTax.history.details.address=Address
-tai.incomeTax.history.details.nationalInsurance=National Insurance
+tai.incomeTax.history.details.confirmation.text=Confirmation from HMRC of {0}''s employment history and private pensions from the last 5 years.
+tai.incomeTax.history.details.address=Address:
+tai.incomeTax.history.details.nationalInsuranceNumber=National Insurance number:
 tai.incomeTax.history.table.link=View {0} tax year summary
 tai.incomeTax.history.pageTitle = Income tax history
 
@@ -909,6 +910,9 @@ tai.label.month=Month
 tai.label.no=No
 tai.label.paye=Taxable Income
 tai.label.print=Print this page
+tai.label.print-or-download=Print or download this page
+tai.label.printed-on=Printed on:
+tai.label.page.url=Page URL:
 tai.label.year=Year
 tai.label.yes=Yes
 tai.link.income_tax.url=https://www.gov.uk/income-tax
@@ -1770,11 +1774,6 @@ beforeYouStart.list.startDate = start date
 beforeYouStart.list.payrollNumber = payroll number
 beforeYouStart.list.payeReference = employer PAYE reference
 beforeYouStart.list.phoneNumber = phone number
-
-# Pension list
-beforeYouStart.pension.list.providerName = provider name
-beforeYouStart.pension.list.firstPayment = first payment date
-beforeYouStart.pension.list.pensionNumber = pension number
 
 tai.payeRefForm.title = What is {0}’s employer PAYE reference?
 tai.payeRefForm.hint = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB456.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,23 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.mockito.ArgumentMatchers.{any, eq as meq}
+import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.when
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
 import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.concurrent.duration.*
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class PensionProviderServiceSpec extends BaseSpec {
 
-  private def createSUT = new PensionProviderServiceTest
-
-  val pensionProviderConnector: PensionProviderConnector = mock[PensionProviderConnector]
-
-  private class PensionProviderServiceTest
-      extends PensionProviderService(
-        pensionProviderConnector
-      )
-
   "add pension provider" must {
     "return an envelope id" in {
       val sut   = createSUT
-      val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "123/AB456", "Yes", Some("123456789"))
+      val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
       when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
@@ -53,7 +44,7 @@ class PensionProviderServiceSpec extends BaseSpec {
     "generate a runtime exception" when {
       "no envelope id was returned from the connector layer" in {
         val sut   = createSUT
-        val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "123/AB456", "Yes", Some("123456789"))
+        val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "Yes", Some("123456789"))
         when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
           .thenReturn(Future.successful(None))
 
@@ -95,4 +86,13 @@ class PensionProviderServiceSpec extends BaseSpec {
       }
     }
   }
+
+  private def createSUT = new PensionProviderServiceTest
+
+  val pensionProviderConnector = mock[PensionProviderConnector]
+
+  private class PensionProviderServiceTest
+      extends PensionProviderService(
+        pensionProviderConnector
+      )
 }
