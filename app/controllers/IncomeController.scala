@@ -310,10 +310,7 @@ class IncomeController @Inject() (
           incomeService.latestPayment(nino, empId).flatMap { paymentOpt =>
 
             val payToDateValue: BigDecimal    = paymentOpt.map(_.amountYearToDate).getOrElse(BigDecimal(0))
-            print("sandeep1 payToDateValue:" + payToDateValue)
             val parsedDate: Option[LocalDate] = paymentOpt.map(_.date)
-            print("sandeep1 parsedDate:" + parsedDate)
-            print("sandeep1 emp.name:" + emp.name)
             if (paymentOpt.isEmpty) logger.info(s"No latest payment for (pension) empId $empId, defaulting YTD to 0")
 
             EditIncomeForm
