@@ -117,7 +117,8 @@ trait IntegrationSpec
         |        {
         |            "pattern": "^/check-income-tax/.*",
         |            "skinElement": "skinElement",
-        |            "isEnabled": true
+        |            "isEnabled": true,
+        |            "chatType": "loadHMRCChatSkinElement"
         |        }
         |    ]
         |}
