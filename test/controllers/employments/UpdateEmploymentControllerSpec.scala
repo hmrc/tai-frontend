@@ -82,7 +82,8 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     inject[UpdateEmploymentCheckYourAnswersView],
     inject[ConfirmationView],
     inject[ErrorPagesHandler],
-    mockRepository
+    mockRepository,
+    mockEmpIdCheck
   )
 
   override def beforeEach(): Unit = {

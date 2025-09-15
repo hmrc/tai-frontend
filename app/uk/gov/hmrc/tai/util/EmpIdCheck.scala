@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.util
 
 import com.google.inject.Inject
+import controllers.ErrorPagesHandler
 import controllers.auth.DataRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{MessagesControllerComponents, Result, Results}
@@ -27,11 +28,13 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import views.html.IdNotFound
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class EmpIdCheck @Inject (
   employmentsService: EmploymentService,
   idNotFound: IdNotFound,
-  mcc: MessagesControllerComponents
+  mcc: MessagesControllerComponents,
+  errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends Results
     with I18nSupport {
@@ -50,6 +53,8 @@ class EmpIdCheck @Inject (
         } else {
           Some(NotFound(idNotFound()))
         }
-      }
+      } recover { case NonFatal(e) =>
+      Some(errorPagesHandler.internalServerError("EmpIdCheck exception", Some(e)))
+    }
   }
 }

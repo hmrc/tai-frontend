@@ -16,11 +16,16 @@
 
 package uk.gov.hmrc.tai.util
 
+import controllers.ErrorPagesHandler
 import org.mockito.Mockito.reset
 import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.concurrent.PatienceConfiguration.Timeout
+import org.scalatest.time.{Seconds, Span}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND}
 import play.api.mvc.{AnyContent, Result}
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment, EmploymentIncome, TemporarilyUnavailable}
@@ -34,10 +39,10 @@ import scala.concurrent.Future
 
 class EmpIdCheckSpec extends BaseSpec {
 
-  val mockEmploymentService = mock[EmploymentService]
-  val idNotFoundView        = inject[IdNotFound]
+  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+  val idNotFoundView: IdNotFound               = inject[IdNotFound]
 
-  val empIdCheck = EmpIdCheck(mockEmploymentService, idNotFoundView, mcc)
+  val empIdCheck = EmpIdCheck(mockEmploymentService, idNotFoundView, mcc, inject[ErrorPagesHandler])
 
   val employment = Employment(
     "employer1",
@@ -75,14 +80,25 @@ class EmpIdCheckSpec extends BaseSpec {
   "checkValidId" must {
     "be a NotFound with idNotFoundView" when {
       "the empId does not match one for the list of employments" in {
-        val result = empIdCheck.checkValidId(2)
-        result.futureValue.get mustBe Future.successful(None)
+        val result = empIdCheck.checkValidId(2).futureValue(Timeout(Span(5, Seconds)))
+
+        status(Future.successful(result.get)) mustBe NOT_FOUND
+        contentAsString(Future.successful(result.get)) mustBe idNotFoundView.apply().toString
       }
     }
     "proceed with initial request" when {
       "the empId matches one for the list of employments" in {
         val result = empIdCheck.checkValidId(employment.sequenceNumber).futureValue
         result mustBe None
+      }
+    }
+    "be an error page" when {
+      "the call to employments fails" in {
+        when(mockEmploymentService.employments(any(), any())(any())).thenReturn(Future.failed(Throwable("error")))
+
+        val result = empIdCheck.checkValidId(employment.sequenceNumber).futureValue(Timeout(Span(5, Seconds)))
+
+        status(Future.successful(result.get)) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

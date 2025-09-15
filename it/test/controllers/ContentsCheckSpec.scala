@@ -19,20 +19,20 @@ package controllers
 import cats.data.EitherT
 import cats.instances.future.*
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
-import pages.addEmployment._
-import pages.addPensionProvider._
-import pages.benefits._
-import pages.endEmployment._
-import pages.income._
-import pages.updateEmployment._
-import pages.updatePensionProvider._
+import pages.*
+import pages.addEmployment.*
+import pages.addPensionProvider.*
+import pages.benefits.*
+import pages.endEmployment.*
+import pages.income.*
+import pages.updateEmployment.*
+import pages.updatePensionProvider.*
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK, SEE_OTHER}
@@ -48,8 +48,8 @@ import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.{Live, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
@@ -572,14 +572,32 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       |}
       |""".stripMargin
 
-  val person: Person              = Person(
+  val person: Person = Person(
     generatedNino,
     "Firstname",
     "Surname",
     isDeceased = false,
     Address("", "", "", "", "")
   )
-  val employments: JsObject       = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
+
+  val employment: Employment =
+    Employment(
+      "employment1",
+      Live,
+      None,
+      Some(LocalDate.now),
+      None,
+      Nil,
+      "",
+      "",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false,
+      EmploymentIncome
+    )
+
+  val employments: JsObject       = Json.obj("data" -> Json.obj("employments" -> Json.toJson(Seq(employment))))
   val taxAccountSummary: JsObject = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
 
   val taxBand: TaxBand                 = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)

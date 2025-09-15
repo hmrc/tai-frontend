@@ -104,7 +104,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     mcc,
     inject[CompanyBenefitsView],
     mockJourneyCacheRepository,
-    inject[ErrorPagesHandler]
+    inject[ErrorPagesHandler],
+    mockEmpIdCheck
   ) {
     when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
