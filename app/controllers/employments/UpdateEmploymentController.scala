@@ -18,7 +18,7 @@ package controllers.employments
 
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.updateEmployment.*
+import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository

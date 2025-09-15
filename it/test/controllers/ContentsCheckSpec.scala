@@ -17,22 +17,22 @@
 package controllers
 
 import cats.data.EitherT
-import cats.instances.future.*
+import cats.instances.future._
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
-import pages.*
-import pages.addEmployment.*
-import pages.addPensionProvider.*
-import pages.benefits.*
-import pages.endEmployment.*
-import pages.income.*
-import pages.updateEmployment.*
-import pages.updatePensionProvider.*
+import pages._
+import pages.addEmployment._
+import pages.addPensionProvider._
+import pages.benefits._
+import pages.endEmployment._
+import pages.income._
+import pages.updateEmployment._
+import pages.updatePensionProvider._
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.http.Status.{LOCKED, OK, SEE_OTHER}
@@ -48,7 +48,7 @@ import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
-import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, TaxYear, UserAnswers}
