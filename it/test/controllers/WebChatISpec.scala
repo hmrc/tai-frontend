@@ -64,8 +64,8 @@ class WebChatISpec extends IntegrationSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockWebChatClient.loadRequiredElements()(any())).thenReturn(Some(Html("loadRequiredElements")))
-    when(mockWebChatClient.loadHMRCChatSkinElement(any(), any())(any()))
-      .thenReturn(Some(Html("loadHMRCChatSkinElement")))
+    when(mockWebChatClient.loadWebChatContainer(any())(any()))
+      .thenReturn(Some(Html("loadWebChatContainer")))
     server.stubFor(
       get(urlEqualTo(fandfDelegationUrl))
         .willReturn(notFound())
@@ -119,7 +119,7 @@ class WebChatISpec extends IntegrationSpec {
 
       val result = route(app, request).get
       contentAsString(result) must include("loadRequiredElements")
-      contentAsString(result) must include("loadHMRCChatSkinElement")
+      contentAsString(result) must include("loadWebChatContainer")
     }
   }
 
@@ -161,7 +161,7 @@ class WebChatISpec extends IntegrationSpec {
 
       val result = route(app, request).get
       contentAsString(result) must include("loadRequiredElements")
-      contentAsString(result) must include("loadHMRCChatSkinElement")
+      contentAsString(result) must include("loadWebChatContainer")
     }
   }
 }
