@@ -33,10 +33,9 @@ import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.*
-import uk.gov.hmrc.tai.util.{EmpIdCheck, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import utils.BaseSpec
-import views.html.IdNotFound
 import views.html.incomes.*
 
 import java.time.LocalDate
@@ -50,8 +49,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   val personService: PersonService                       = mock[PersonService]
   val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
-  val empIdCheck: EmpIdCheck                             =
-    EmpIdCheck(employmentService, inject[IdNotFound], mcc)
 
   val baseUserAnswers: UserAnswers = UserAnswers("testSessionId", nino.nino)
 
@@ -63,7 +60,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     super.beforeEach()
     setup(baseUserAnswers)
     reset(incomeService, mockJourneyCacheRepository)
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
   }
 
   val payToDate                           = "100"
@@ -134,7 +130,7 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         inject[EditIncomeView],
         inject[SameEstimatedPayView],
         mockJourneyCacheRepository,
-        empIdCheck,
+        mockEmpIdCheck,
         inject[ErrorPagesHandler]
       ) {
 

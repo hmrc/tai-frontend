@@ -19,6 +19,7 @@ import builders.{RequestBuilder, UserBuilder}
 import controllers.auth.*
 import controllers.{FakeAuthRetrievals, FakeTaiPlayApplication}
 import org.jsoup.nodes.Element
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -34,6 +35,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.UserAnswers
+import uk.gov.hmrc.tai.util.EmpIdCheck
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -59,6 +61,7 @@ trait BaseSpec
   implicit lazy val messages: Messages         = messagesApi.preferred(Seq(lang))
 
   protected lazy val mockAuthJourney: AuthJourney = mock[AuthJourney]
+  val mockEmpIdCheck: EmpIdCheck                  = mock[EmpIdCheck]
 
   val nino: Nino = FakeAuthRetrievals.nino
 
@@ -126,6 +129,7 @@ trait BaseSpec
       }
     )
 
+    when(mockEmpIdCheck.checkValidId(any(), any())(any())).thenReturn(Future.successful(None))
   }
 
   def setup(ua: UserAnswers): OngoingStubbing[ActionBuilder[DataRequest, AnyContent]] =

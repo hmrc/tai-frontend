@@ -97,6 +97,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     inject[IncomeSourceSummaryView],
     mockJourneyCacheRepository,
     mockRtiService,
+    mockEmpIdCheck,
     inject[ErrorPagesHandler]
   )
 

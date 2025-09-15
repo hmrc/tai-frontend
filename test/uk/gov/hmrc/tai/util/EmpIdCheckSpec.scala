@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.util
 
+import org.mockito.Mockito.reset
 import controllers.auth.{AuthedUser, DataRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.mvc.{AnyContent, Result}
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.income.Live
@@ -27,8 +27,6 @@ import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment, EmploymentIncome
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.IdNotFound
-import play.api.mvc.Results.Ok
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
@@ -68,24 +66,23 @@ class EmpIdCheckSpec extends BaseSpec {
     userAnswers = UserAnswers("", "")
   )
 
-  def block: Future[Result] = Future.successful(Ok("expected result"))
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockEmploymentService)
+    when(mockEmploymentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+  }
 
   "checkValidId" must {
     "be a NotFound with idNotFoundView" when {
       "the empId does not match one for the list of employments" in {
-        when(mockEmploymentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-
-        val result = empIdCheck.checkValidId(block, 3)
-        status(result) mustBe NOT_FOUND
+        val result = empIdCheck.checkValidId(2)
+        result.futureValue.get mustBe Future.successful(None)
       }
     }
     "proceed with initial request" when {
       "the empId matches one for the list of employments" in {
-        when(mockEmploymentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-
-        val result = empIdCheck.checkValidId(block, employment.sequenceNumber)
-        status(result) mustBe OK
-        contentAsString(result) mustBe "expected result"
+        val result = empIdCheck.checkValidId(employment.sequenceNumber).futureValue
+        result mustBe None
       }
     }
   }
