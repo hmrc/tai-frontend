@@ -24,6 +24,7 @@ import org.mockito.Mockito.*
 import pages.income.*
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
+import play.api.mvc.Results.NotFound
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import play.twirl.api.HtmlFormat
@@ -236,6 +237,23 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
           testController.regularIncome(employment.sequenceNumber)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "go to a NotFound page and not call typical downstream services" when {
+      "the empId does not match the on provided" in {
+        val testController = createTestIncomeController()
+
+        when(mockEmpIdCheck.checkValidId(any(), any())(any())).thenReturn(Future.successful(Some(NotFound("No match"))))
+
+        val result =
+          testController.regularIncome(employment.sequenceNumber)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe NOT_FOUND
+
+        verify(employmentService, times(0)).employment(any(), any())(any())
+        verify(taxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
+        verify(incomeService, times(0)).employmentAmount(any(), any())(any(), any(), any())
+
       }
     }
   }
