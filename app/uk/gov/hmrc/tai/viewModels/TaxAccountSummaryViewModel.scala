@@ -35,7 +35,6 @@ case class TaxAccountSummaryViewModel(
   displayIyaBanner: Boolean,
   isAnyFormInProgress: TimeToProcess,
   otherIncomeSources: Seq[IncomeSourceViewModel],
-  rtiAvailable: Boolean,
   totalEstimatedIncome: Option[String]
 )
 
@@ -56,9 +55,9 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
     val employmentViewModels =
-      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
 
-    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
       val currentYear = TaxYear()
@@ -92,7 +91,6 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
-      rtiAvailable = incomesSources.isRtiAvailable,
       totalEstimatedIncome = Some(totalEstimatedIncome)
     )
   }
@@ -112,9 +110,9 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedTax, 0)))
 
     val employmentViewModels =
-      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
 
-    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome(_))
+    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
       val currentYear = TaxYear()
@@ -146,7 +144,6 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
       displayIyaBanner = taxAccountSummary.fold(BigDecimal(0))(_.totalInYearAdjustmentIntoCY) > 0,
       isAnyFormInProgress = isAnyFormInProgress,
       otherIncomeSources = nonTaxCodeIncome.fold(Seq.empty[IncomeSourceViewModel])(IncomeSourceViewModel(_)),
-      rtiAvailable = incomesSources.isRtiAvailable,
       totalEstimatedIncome = totalEstimatedIncome
     )
   }

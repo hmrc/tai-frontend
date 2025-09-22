@@ -17,8 +17,8 @@
 @import controllers.auth.DataRequest
 @import includes.{link, ptaHeader}
 @import uk.gov.hmrc.govukfrontend.views.html.components
-@import uk.gov.hmrc.govukfrontend.views.html.components.{implicits, *}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
+@import uk.gov.hmrc.govukfrontend.views.html.components.{implicits, *}
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.{IFormInProgressBannerViewModel, TaxAccountSummaryViewModel, TaxCodeViewModel}
 
@@ -97,11 +97,7 @@
             @if(viewModel.ceasedEmployments.nonEmpty){
                 <div id="endedIncomeSection" class="section">
                     <h2 id="endedIncomeHeading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2">@messages("tai.incomeTaxSummary.ceased.section.heading", viewModel.lastTaxYearEnd)</h2>
-                    @if(viewModel.rtiAvailable) {
                         @incomeTaxSummaryIncomeSourceDetail(viewModel.ceasedEmployments, "income", messages("tai.incomeTaxSummary.ceasedIncomeAmount.prefix"))
-                    } else {
-                        <p class="govuk-body panel-indent panel-indent--info">@messages("tai.rti.down.ceasedEmployments")</p>
-                    }
                 </div>
             }
 
