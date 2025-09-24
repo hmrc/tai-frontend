@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
+import uk.gov.hmrc.tai.util.EmpIdCheck
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 
@@ -44,6 +45,7 @@ class IncomeSourceSummaryController @Inject() (
   incomeSourceSummary: IncomeSourceSummaryView,
   journeyCacheRepository: JourneyCacheRepository,
   rtiService: RtiService,
+  empIdCheck: EmpIdCheck,
   implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
@@ -68,40 +70,44 @@ class IncomeSourceSummaryController @Inject() (
       .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
       .getOrElse(false)
 
-    (
-      employmentService.employmentOnly(nino, empId, TaxYear()),
-      taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      rtiService.getPaymentsForYear(nino, TaxYear()).value,
-      Future.successful(hasJourneyCompleted),
-      cacheUpdatedIncomeAmountFuture
-    ).mapN {
-      case (
-            Some(employment),
-            taxCodeIncomes,
-            payments,
-            estimatedPayCompletion,
-            cacheUpdatedIncomeAmount
-          ) =>
-        val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
-          empId = empId,
-          displayName = request.fullName,
-          taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
-          employment = employment,
-          payments = payments.toOption.flatMap(_.find(_.sequenceNumber == employment.sequenceNumber)),
-          estimatedPayJourneyCompleted = estimatedPayCompletion,
-          rtiAvailable = isRTIAvailable(payments),
-          cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
-        )
+    empIdCheck.checkValidId(empId).flatMap {
+      case Some(result) => Future.successful(result)
+      case _            =>
+        (
+          employmentService.employmentOnly(nino, empId, TaxYear()),
+          taxAccountService.taxCodeIncomes(nino, TaxYear()),
+          rtiService.getPaymentsForYear(nino, TaxYear()).value,
+          Future.successful(hasJourneyCompleted),
+          cacheUpdatedIncomeAmountFuture
+        ).mapN {
+          case (
+                Some(employment),
+                taxCodeIncomes,
+                payments,
+                estimatedPayCompletion,
+                cacheUpdatedIncomeAmount
+              ) =>
+            val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
+              empId = empId,
+              displayName = request.fullName,
+              taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
+              employment = employment,
+              payments = payments.toOption.flatMap(_.find(_.sequenceNumber == employment.sequenceNumber)),
+              estimatedPayJourneyCompleted = estimatedPayCompletion,
+              rtiAvailable = isRTIAvailable(payments),
+              cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
+            )
 
-        if (!incomeDetailsViewModel.isUpdateInProgress) {
-          val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
-          journeyCacheRepository.set(updatedUserAnswers)
+            if (!incomeDetailsViewModel.isUpdateInProgress) {
+              val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
+              journeyCacheRepository.set(updatedUserAnswers)
+            }
+
+            Ok(incomeSourceSummary(incomeDetailsViewModel))
+          case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
+        } recover { case NonFatal(e) =>
+          errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
         }
-
-        Ok(incomeSourceSummary(incomeDetailsViewModel))
-      case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
-    } recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
     }
   }
 }

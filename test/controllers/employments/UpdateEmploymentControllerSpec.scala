@@ -24,6 +24,7 @@ import org.mockito.Mockito.{reset, times, verify, when}
 import pages.updateEmployment._
 import play.api.i18n.Messages
 import play.api.libs.json.Json
+import play.api.mvc.Results.NotFound
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -82,12 +83,13 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     inject[UpdateEmploymentCheckYourAnswersView],
     inject[ConfirmationView],
     inject[ErrorPagesHandler],
-    mockRepository
+    mockRepository,
+    mockEmpIdCheck
   )
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(personService, mockRepository)
+    reset(personService, mockRepository, employmentService)
     when(mockRepository.set(any)).thenReturn(Future.successful(true))
     when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
     when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
@@ -178,6 +180,19 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
         )
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "load a not found page from empIdCheck" when {
+      "the empId doesn't match the provided one" in {
+        when(mockEmpIdCheck.checkValidId(any(), any())(any()))
+          .thenReturn(Future.successful(Some(NotFound("EmpId not found"))))
+
+        val result = controller(None).updateEmploymentDetails(1)(
+          RequestBuilder.buildFakeRequestWithAuth("GET")
+        )
+
+        status(result) mustBe NOT_FOUND
+        verify(employmentService, times(0)).employment(any(), any())(any())
       }
     }
   }
