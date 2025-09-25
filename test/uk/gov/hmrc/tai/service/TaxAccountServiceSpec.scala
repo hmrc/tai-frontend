@@ -19,30 +19,132 @@ package uk.gov.hmrc.tai.service
 import cats.data.EitherT
 import cats.instances.future.*
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.*
+import uk.gov.hmrc.tai.model.domain.tax.*
 import utils.BaseSpec
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class TaxAccountServiceSpec extends BaseSpec {
 
+  val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333.23, 444.44, 111.11)
+
+  private val taxCodeIncome1             =
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    taxCodeIncome1,
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodes: Seq[String] = Seq("SD0", "1150L")
+
+  private val nonTaxCodeIncome = NonTaxCodeIncome(
+    Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")),
+    Seq(OtherNonTaxCodeIncome(Profit, None, 100, "Profit"))
+  )
+
+  private def createSut = new SUT
+
+  val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
+  val iabdService: IabdService                 = mock[IabdService] // NEW
+
+  private class SUT
+      extends TaxAccountService(
+        taxAccountConnector,
+        iabdService
+      )
+
   "taxCodeIncomes" must {
-    "return seq of tax codes" in {
+    "return seq of tax codes when no IABD overrides are available" in {
       val testService = createSut
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
+        .thenReturn(EitherT.rightT(Seq.empty))
 
       val result = testService.taxCodeIncomes(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe Right(taxCodeIncomes)
+    }
+
+    "apply IABD 027 overrides when present" in {
+      val testService = createSut
+      val base        = taxCodeIncomes
+      when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(base)))
+
+      val iabd = Seq(
+        IabdDetails(
+          employmentSequenceNumber = Some(1),
+          source = None,
+          `type` = None,
+          receiptDate = None,
+          captureDate = None,
+          grossAmount = Some(BigDecimal(99999))
+        )
+      )
+      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
+        .thenReturn(EitherT.rightT(iabd))
+
+      val result = Await.result(testService.taxCodeIncomes(nino, TaxYear()), 5.seconds).toOption.get
+
+      result.find(_.employmentId.contains(1)).get.amount mustBe BigDecimal(99999)
+      result.find(_.employmentId.contains(2)).get.amount mustBe base.find(_.employmentId.contains(2)).get.amount
+    }
+
+    "return base values when IABD call fails" in {
+      val testService = createSut
+      when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("boom", 500)))
+
+      val result = Await.result(testService.taxCodeIncomes(nino, TaxYear()), 5.seconds)
+      result mustBe Right(taxCodeIncomes)
+    }
+  }
+
+  "newTaxCodeIncomes" must {
+    "apply IABD 027 overrides when present" in {
+      val testService = createSut
+      val base        = taxCodeIncomes
+      when(taxAccountConnector.newTaxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.rightT(base))
+      val iabd        = Seq(
+        IabdDetails(Some(1), None, None, None, None, Some(BigDecimal(22222)))
+      )
+      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
+        .thenReturn(EitherT.rightT(iabd))
+
+      val result = Await.result(testService.newTaxCodeIncomes(nino, TaxYear()).value, 5.seconds).toOption.get
+      result.find(_.employmentId.contains(1)).get.amount mustBe BigDecimal(22222)
+      result.find(_.employmentId.contains(2)).get.amount mustBe base.find(_.employmentId.contains(2)).get.amount
+    }
+
+    "return base values when IABD call fails" in {
+      val testService = createSut
+      when(taxAccountConnector.newTaxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.rightT(taxCodeIncomes))
+      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("err", 500)))
+
+      val result = Await.result(testService.newTaxCodeIncomes(nino, TaxYear()).value, 5.seconds)
+      result mustBe Right(taxCodeIncomes)
+    }
+
+    "return empty seq when connector returns NOT_FOUND" in {
+      val testService = createSut
+      when(taxAccountConnector.newTaxCodeIncomes(any(), any())(any()))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("nf", 404)))
+      val result      = Await.result(testService.newTaxCodeIncomes(nino, TaxYear()).value, 5.seconds)
+      result mustBe Right(Seq.empty)
     }
   }
 
@@ -207,30 +309,4 @@ class TaxAccountServiceSpec extends BaseSpec {
       }
     }
   }
-
-  val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333.23, 444.44, 111.11)
-
-  private val taxCodeIncome1             =
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
-  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
-    taxCodeIncome1,
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodes: Seq[String] = Seq("SD0", "1150L")
-
-  private val nonTaxCodeIncome = NonTaxCodeIncome(
-    Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")),
-    Seq(OtherNonTaxCodeIncome(Profit, None, 100, "Profit"))
-  )
-
-  private def createSut = new SUT
-
-  val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
-
-  private class SUT
-      extends TaxAccountService(
-        taxAccountConnector
-      )
-
 }

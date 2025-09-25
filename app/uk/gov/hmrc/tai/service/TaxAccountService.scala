@@ -27,25 +27,83 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.IabdDetails
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(implicit ec: ExecutionContext) {
+import play.api.Logger
+
+class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector, iabdService: IabdService)(implicit
+  ec: ExecutionContext
+) {
+
+  private val logger                  = Logger(this.getClass)
+  private val IabdTypeNewEstimatedPay = "New Estimated Pay (027)"
+
+  private def applyIabd027Overrides(
+    base: Seq[TaxCodeIncome],
+    iabd: Seq[IabdDetails]
+  ): Seq[TaxCodeIncome] = {
+
+    val uniqueAmounts: Seq[BigDecimal] =
+      iabd.collect { case IabdDetails(_, _, _, _, _, Some(amount)) => amount }.distinct
+
+    uniqueAmounts match {
+      case Seq(single) =>
+        base.map(_.copy(amount = single))
+
+      case _ =>
+        base
+    }
+  }
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): Future[Either[String, Seq[TaxCodeIncome]]] =
-    taxAccountConnector.taxCodeIncomes(nino, year)
+    taxAccountConnector.taxCodeIncomes(nino, year).flatMap {
+      case Left(err)   => Future.successful(Left(err))
+      case Right(base) =>
+        iabdService
+          .getIabds(nino, year, Some(IabdTypeNewEstimatedPay))
+          .value
+          .map {
+            case Right(details) => Right(applyIabd027Overrides(base, details))
+            case Left(e)        =>
+              logger.warn(s"IABD 027 fetch failed (taxCodeIncomes): ${e.statusCode} ${e.message}")
+              Right(base)
+          }
+          .recover { case t: Throwable =>
+            logger.warn(s"IABD 027 fetch threw (taxCodeIncomes): ${t.getMessage}", t)
+            Right(base)
+          }
+    }
 
   def newTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[TaxCodeIncome]] =
-    taxAccountConnector.newTaxCodeIncomes(nino, year).transform {
-      case Right(taxCodeIncomes)                        => Right(taxCodeIncomes)
-      case Left(error) if error.statusCode == NOT_FOUND => Right(Seq.empty)
-      case Left(error)                                  => Left(error)
-    }
+    taxAccountConnector
+      .newTaxCodeIncomes(nino, year)
+      .transform {
+        case Right(taxCodeIncomes)                        => Right(taxCodeIncomes)
+        case Left(error) if error.statusCode == NOT_FOUND => Right(Seq.empty)
+        case Left(error)                                  => Left(error)
+      }
+      .semiflatMap { base =>
+        iabdService
+          .getIabds(nino, year, Some(IabdTypeNewEstimatedPay))
+          .value
+          .map {
+            case Right(details) => applyIabd027Overrides(base, details)
+            case Left(e)        =>
+              logger.warn(s"IABD 027 fetch failed (newTaxCodeIncomes): ${e.statusCode} ${e.message}")
+              base
+          }
+          .recover { case t: Throwable =>
+            logger.warn(s"IABD 027 fetch threw (newTaxCodeIncomes): ${t.getMessage}", t)
+            base
+          }
+      }
 
   def taxCodeIncomeForEmployment(nino: Nino, year: TaxYear, employmentId: Int)(implicit
     hc: HeaderCarrier
