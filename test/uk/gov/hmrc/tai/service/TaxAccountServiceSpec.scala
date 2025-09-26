@@ -54,7 +54,7 @@ class TaxAccountServiceSpec extends BaseSpec {
   private def createSut = new SUT
 
   val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
-  val iabdService: IabdService                 = mock[IabdService] // NEW
+  val iabdService: IabdService                 = mock[IabdService]
 
   private class SUT
       extends TaxAccountService(

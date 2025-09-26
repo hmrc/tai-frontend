@@ -45,17 +45,18 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector, iab
     base: Seq[TaxCodeIncome],
     iabd: Seq[IabdDetails]
   ): Seq[TaxCodeIncome] = {
+    val overrides: Map[Int, BigDecimal] =
+      iabd.collect { case IabdDetails(Some(empId), _, _, _, _, Some(amount)) =>
+        empId -> amount
+      }.toMap
 
-    val uniqueAmounts: Seq[BigDecimal] =
-      iabd.collect { case IabdDetails(_, _, _, _, _, Some(amount)) => amount }.distinct
-
-    uniqueAmounts match {
-      case Seq(single) =>
-        base.map(_.copy(amount = single))
-
-      case _ =>
-        base
-    }
+    if (overrides.isEmpty) base
+    else
+      base.map { tci =>
+        overrides
+          .get(tci.employmentId.getOrElse(-1))
+          .fold(tci)(newAnnual => tci.copy(amount = newAnnual))
+      }
   }
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
