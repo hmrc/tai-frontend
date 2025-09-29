@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,26 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.apache.pekko.Done
 import cats.data.EitherT
 import cats.implicits._
+import org.apache.pekko.Done
+import play.api.Logging
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{IabdDetails, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.IabdDetails
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-import play.api.Logger
-
 class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector, iabdService: IabdService)(implicit
   ec: ExecutionContext
-) {
+) extends Logging {
 
-  private val logger                  = Logger(this.getClass)
   private val IabdTypeNewEstimatedPay = "New Estimated Pay (027)"
 
   private def applyIabd027Overrides(
