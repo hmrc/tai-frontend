@@ -20,25 +20,26 @@ import builders.RequestBuilder
 import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import pages.income._
+import org.mockito.Mockito.*
+import pages.income.*
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Json
+import play.api.mvc.Results.NotFound
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.twirl.api.HtmlFormat
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.model.{EmploymentAmount, UserAnswers}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
-import views.html.incomes._
+import views.html.incomes.*
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
 class IncomeControllerSpec extends BaseSpec with I18nSupport {
@@ -56,7 +57,6 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     setup(baseUserAnswers)
     reset(incomeService, employmentService, taxAccountService, mockJourneyCacheRepository)
     when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
-
   }
 
   val payToDate                           = "100"
@@ -81,10 +81,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     )
 
   private def empNamed(
-    name: String = employerName,
-    seq: Int = employerId,
-    pension: Boolean = false
-  ): Employment =
+                        name: String = employerName,
+                        seq: Int = employerId,
+                        pension: Boolean = false
+                      ): Employment =
     employmentWithAccounts(Nil).copy(sequenceNumber = seq, name = name, receivingOccupationalPension = pension)
 
   def paymentOnDate(date: LocalDate): Payment =
@@ -121,21 +121,22 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   private val editPensionSuccessView = inject[EditPensionSuccessView]
 
   private class TestIncomeController
-      extends IncomeController(
-        taxAccountService,
-        employmentService,
-        incomeService,
-        mockAuthJourney,
-        mcc,
-        inject[ConfirmAmountEnteredView],
-        editSuccessView,
-        inject[EditPensionView],
-        editPensionSuccessView,
-        inject[EditIncomeView],
-        inject[SameEstimatedPayView],
-        mockJourneyCacheRepository,
-        inject[ErrorPagesHandler]
-      ) {
+    extends IncomeController(
+      taxAccountService,
+      employmentService,
+      incomeService,
+      mockAuthJourney,
+      mcc,
+      inject[ConfirmAmountEnteredView],
+      editSuccessView,
+      inject[EditPensionView],
+      editPensionSuccessView,
+      inject[EditIncomeView],
+      inject[SameEstimatedPayView],
+      mockJourneyCacheRepository,
+      mockEmpIdCheck,
+      inject[ErrorPagesHandler]
+    ) {
 
     def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
       implicit request: FakeRequest[_] =>
@@ -194,6 +195,23 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
         val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "go to a NotFound page and not call typical downstream services" when {
+      "the empId does not match the one provided" in {
+        val testController = createTestIncomeController()
+
+        when(mockEmpIdCheck.checkValidId(any(), any())(any()))
+          .thenReturn(Future.successful(Some(NotFound("No match"))))
+
+        val result = testController.regularIncome(employerId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe NOT_FOUND
+
+        verify(employmentService, times(0)).employment(any(), any())(any())
+        verify(taxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
+        verify(incomeService, times(0)).employmentAmount(any(), any())(any(), any(), any())
       }
     }
   }

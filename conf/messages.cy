@@ -1779,3 +1779,5 @@ tai.payeRefForm.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurflenni treth
 tai.payeRefForm.required = Nodwch gyfeirnod TWE y cyflogwr {0}
 tai.payeRefForm.format = Nodwch gyfeirnod TWE y cyflogwr {0} yn y fformat cywir
 
+tai.idNotFound.title = Heb ddod o hyd i’r dudalen
+tai.idNotFound.linkText = Ewch i’r trosolwg o’ch Treth Incwm TWE

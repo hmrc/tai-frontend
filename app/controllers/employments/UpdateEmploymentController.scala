@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.EmploymentService
-import uk.gov.hmrc.tai.util.Referral
+import uk.gov.hmrc.tai.util.{EmpIdCheck, Referral}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -52,7 +52,8 @@ class UpdateEmploymentController @Inject() (
   updateEmploymentCheckYourAnswersView: UpdateEmploymentCheckYourAnswersView,
   confirmationView: ConfirmationView,
   errorPagesHandler: ErrorPagesHandler,
-  journeyCacheRepository: JourneyCacheRepository
+  journeyCacheRepository: JourneyCacheRepository,
+  empIdCheck: EmpIdCheck
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
     with Referral
@@ -76,33 +77,38 @@ class UpdateEmploymentController @Inject() (
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      (for {
-        employment   <- employmentService.employment(user.nino, empId)
-        futureResult <- employment match {
-                          case Some(emp) =>
-                            for {
-                              _ <- journeyCacheRepository
-                                     .set(
-                                       request.userAnswers
-                                         .setOrException(UpdateEmploymentIdPage, empId)
-                                         .setOrException(UpdateEmploymentNamePage, emp.name)
-                                     )
-                            } yield Ok(
-                              whatDoYouWantToTellUs(
-                                EmploymentViewModel(emp.name, empId),
-                                UpdateEmploymentDetailsForm.form.fill(
-                                  request.userAnswers.get(UpdateEmploymentDetailsPage).getOrElse("")
-                                )
-                              )
-                            )
 
-                          case _ =>
-                            Future.successful(
-                              errorPagesHandler.internalServerError("Error during employment details retrieval")
-                            )
-                        }
-      } yield futureResult).recover { case NonFatal(exception) =>
-        errorPagesHandler.internalServerError(exception.getMessage)
+      empIdCheck.checkValidId(empId).flatMap {
+        case Some(result) => Future.successful(result)
+        case _            =>
+          (for {
+            employment   <- employmentService.employment(user.nino, empId)
+            futureResult <- employment match {
+                              case Some(emp) =>
+                                for {
+                                  _ <- journeyCacheRepository
+                                         .set(
+                                           request.userAnswers
+                                             .setOrException(UpdateEmploymentIdPage, empId)
+                                             .setOrException(UpdateEmploymentNamePage, emp.name)
+                                         )
+                                } yield Ok(
+                                  whatDoYouWantToTellUs(
+                                    EmploymentViewModel(emp.name, empId),
+                                    UpdateEmploymentDetailsForm.form.fill(
+                                      request.userAnswers.get(UpdateEmploymentDetailsPage).getOrElse("")
+                                    )
+                                  )
+                                )
+
+                              case _ =>
+                                Future.successful(
+                                  errorPagesHandler.internalServerError("Error during employment details retrieval")
+                                )
+                            }
+          } yield futureResult).recover { case NonFatal(exception) =>
+            errorPagesHandler.internalServerError(exception.getMessage)
+          }
       }
 
   }

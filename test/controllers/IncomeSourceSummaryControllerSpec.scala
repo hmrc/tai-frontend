@@ -27,6 +27,7 @@ import org.scalatest.AppendedClues.convertToClueful
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
+import play.api.mvc.Results.NotFound
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -97,6 +98,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     inject[IncomeSourceSummaryView],
     mockJourneyCacheRepository,
     mockRtiService,
+    mockEmpIdCheck,
     inject[ErrorPagesHandler]
   )
 
@@ -112,6 +114,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     Mockito.reset(mockJourneyCacheRepository)
     Mockito.reset(mockRtiService)
     Mockito.reset(mockEploymentService)
+    Mockito.reset(taxAccountService)
   }
 
   private val employmentId = 1
@@ -440,6 +443,24 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
         verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
+      }
+    }
+    "must not call standard backend calls" when {
+      "the empId is not found in the empIdCheck" in {
+        when(mockEmpIdCheck.checkValidId(any(), any())(any()))
+          .thenReturn(Future.successful(Some(NotFound("empId not found"))))
+
+        val updatedUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
+
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe NOT_FOUND
+
+        verify(mockJourneyCacheRepository, times(0)).set(updatedUserAnswersCaptor.capture())
+        verify(mockEploymentService, times(0)).employmentOnly(any(), any(), any())(any())
+        verify(mockRtiService, times(0)).getPaymentsForYear(any(), any())(any())
+        verify(taxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
       }
     }
   }
