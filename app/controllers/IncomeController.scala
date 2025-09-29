@@ -40,22 +40,22 @@ import scala.util.control.NonFatal
 
 @Singleton
 class IncomeController @Inject() (
-                                   taxAccountService: TaxAccountService,
-                                   employmentService: EmploymentService,
-                                   incomeService: IncomeService,
-                                   authenticate: AuthJourney,
-                                   mcc: MessagesControllerComponents,
-                                   confirmAmountEntered: ConfirmAmountEnteredView,
-                                   editSuccess: EditSuccessView,
-                                   editPension: EditPensionView,
-                                   editPensionSuccess: EditPensionSuccessView,
-                                   editIncome: EditIncomeView,
-                                   sameEstimatedPay: SameEstimatedPayView,
-                                   journeyCacheRepository: JourneyCacheRepository,
-                                   empIdCheck: EmpIdCheck,
-                                   implicit val errorPagesHandler: ErrorPagesHandler
-                                 )(implicit ec: ExecutionContext)
-  extends TaiBaseController(mcc)
+  taxAccountService: TaxAccountService,
+  employmentService: EmploymentService,
+  incomeService: IncomeService,
+  authenticate: AuthJourney,
+  mcc: MessagesControllerComponents,
+  confirmAmountEntered: ConfirmAmountEnteredView,
+  editSuccess: EditSuccessView,
+  editPension: EditPensionView,
+  editPensionSuccess: EditPensionSuccessView,
+  editIncome: EditIncomeView,
+  sameEstimatedPay: SameEstimatedPayView,
+  journeyCacheRepository: JourneyCacheRepository,
+  empIdCheck: EmpIdCheck,
+  implicit val errorPagesHandler: ErrorPagesHandler
+)(implicit ec: ExecutionContext)
+    extends TaiBaseController(mcc)
     with Logging {
 
   def cancel(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -70,7 +70,7 @@ class IncomeController @Inject() (
 
     empIdCheck.checkValidId(empId).flatMap {
       case Some(result) => Future.successful(result)
-      case _ =>
+      case _            =>
         (for {
           employmentAmount <- EitherT.right[String](incomeService.employmentAmount(nino, empId))
           latestPayment    <- EitherT.right[String](incomeService.latestPayment(nino, empId))
@@ -100,7 +100,7 @@ class IncomeController @Inject() (
 
       empIdCheck.checkValidId(empId).flatMap {
         case Some(result) => Future.successful(result)
-        case _ =>
+        case _            =>
           employmentService
             .employment(nino, empId)
             .map {
@@ -113,7 +113,7 @@ class IncomeController @Inject() (
                   routes.IncomeSourceSummaryController.onPageLoad(empId).url
                 )
                 Ok(sameEstimatedPay(model))
-              case _ =>
+              case _                                            =>
                 logger.warn(s"Mandatory value missing for empId: $empId")
                 errorPagesHandler.internalServerError("Mandatory values missing from UserAnswers")
             }
@@ -126,7 +126,7 @@ class IncomeController @Inject() (
 
       empIdCheck.checkValidId(employmentId).flatMap {
         case Some(result) => Future.successful(result)
-        case _ =>
+        case _            =>
           incomeService
             .employmentAmount(nino, employmentId)
             .flatMap { income =>
@@ -140,7 +140,7 @@ class IncomeController @Inject() (
                     returnLinkUrl = routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
                   )
                   Ok(sameEstimatedPay(model))
-                case None =>
+                case None      =>
                   errorPagesHandler.internalServerError("Employment not found")
               }
             }
@@ -157,7 +157,7 @@ class IncomeController @Inject() (
 
       empIdCheck.checkValidId(empId).flatMap {
         case Some(result) => Future.successful(result)
-        case _ =>
+        case _            =>
           employmentService
             .employment(nino, empId)
             .flatMap {
@@ -193,7 +193,7 @@ class IncomeController @Inject() (
 
       empIdCheck.checkValidId(empId).flatMap {
         case Some(result) => Future.successful(result)
-        case _ =>
+        case _            =>
           request.userAnswers.get(UpdateIncomeNewAmountPage) match {
             case Some(newAmount) =>
               employmentService
@@ -221,7 +221,7 @@ class IncomeController @Inject() (
                       journeyCacheRepository
                         .clear(request.userAnswers.sessionId, request.userAnswers.nino)
                         .map(_ => Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-                    case None =>
+                    case None    =>
                       Future.successful(errorPagesHandler.internalServerError(e.getMessage))
                   }
                 }
@@ -240,7 +240,7 @@ class IncomeController @Inject() (
 
       empIdCheck.checkValidId(empId).flatMap {
         case Some(result) => Future.successful(result)
-        case _ =>
+        case _            =>
           request.userAnswers.get(UpdateIncomeNewAmountPage) match {
             case Some(newAmountRaw) =>
               val newAmountInt = FormHelper.stripNumber(newAmountRaw).toInt
@@ -277,7 +277,7 @@ class IncomeController @Inject() (
 
     empIdCheck.checkValidId(empId).flatMap {
       case Some(result) => Future.successful(result)
-      case _ =>
+      case _            =>
         (for {
           employmentAmount <- incomeService.employmentAmount(nino, empId)
           latestPayment    <- incomeService.latestPayment(nino, empId)
@@ -298,10 +298,10 @@ class IncomeController @Inject() (
   }
 
   private def pickRedirectLocation(
-                                    income: EditIncomeForm,
-                                    confirmationCallback: Call,
-                                    empId: Int
-                                  )(implicit request: DataRequest[AnyContent]): Future[Result] =
+    income: EditIncomeForm,
+    confirmationCallback: Call,
+    empId: Int
+  )(implicit request: DataRequest[AnyContent]): Future[Result] =
     if (isCachedIncomeTheSame(request.userAnswers, income.newAmount, empId)) {
       Future.successful(Redirect(routes.IncomeController.sameEstimatedPayInCache(empId)))
     } else if (isIncomeTheSame(income)) {
@@ -322,7 +322,7 @@ class IncomeController @Inject() (
     }
 
   private def cacheAndRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit
-                                                                                   request: DataRequest[AnyContent]
+    request: DataRequest[AnyContent]
   ): Future[Result] = {
     val newAmount      = FormHelper.convertCurrencyToInt(income.newAmount).toString
     val updatedAnswers = request.userAnswers.setOrException(UpdateIncomeNewAmountPage, newAmount)
