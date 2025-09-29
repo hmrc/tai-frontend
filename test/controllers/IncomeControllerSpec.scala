@@ -81,10 +81,10 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
     )
 
   private def empNamed(
-                        name: String = employerName,
-                        seq: Int = employerId,
-                        pension: Boolean = false
-                      ): Employment =
+    name: String = employerName,
+    seq: Int = employerId,
+    pension: Boolean = false
+  ): Employment =
     employmentWithAccounts(Nil).copy(sequenceNumber = seq, name = name, receivingOccupationalPension = pension)
 
   def paymentOnDate(date: LocalDate): Payment =
@@ -121,22 +121,22 @@ class IncomeControllerSpec extends BaseSpec with I18nSupport {
   private val editPensionSuccessView = inject[EditPensionSuccessView]
 
   private class TestIncomeController
-    extends IncomeController(
-      taxAccountService,
-      employmentService,
-      incomeService,
-      mockAuthJourney,
-      mcc,
-      inject[ConfirmAmountEnteredView],
-      editSuccessView,
-      inject[EditPensionView],
-      editPensionSuccessView,
-      inject[EditIncomeView],
-      inject[SameEstimatedPayView],
-      mockJourneyCacheRepository,
-      mockEmpIdCheck,
-      inject[ErrorPagesHandler]
-    ) {
+      extends IncomeController(
+        taxAccountService,
+        employmentService,
+        incomeService,
+        mockAuthJourney,
+        mcc,
+        inject[ConfirmAmountEnteredView],
+        editSuccessView,
+        inject[EditPensionView],
+        editPensionSuccessView,
+        inject[EditIncomeView],
+        inject[SameEstimatedPayView],
+        mockJourneyCacheRepository,
+        mockEmpIdCheck,
+        inject[ErrorPagesHandler]
+      ) {
 
     def renderSuccess(employerName: String, employerId: Int): FakeRequest[_] => HtmlFormat.Appendable = {
       implicit request: FakeRequest[_] =>
