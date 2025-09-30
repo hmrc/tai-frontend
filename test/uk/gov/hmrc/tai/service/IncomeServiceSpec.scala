@@ -18,11 +18,10 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import pages.income.{UpdateIncomePayToDatePage, UpdatedIncomeDatePage}
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 import utils.BaseSpec
 
@@ -52,7 +51,8 @@ class IncomeServiceSpec extends BaseSpec {
       receivingOccupationalPension = false,
       EmploymentIncome
     )
-  def paymentOnDate(date: LocalDate): Payment                           =
+
+  def paymentOnDate(date: LocalDate): Payment =
     Payment(
       date = date,
       amountYearToDate = 2000,
@@ -409,29 +409,6 @@ class IncomeServiceSpec extends BaseSpec {
         )
 
         sut.singularIncomeId(taxCodeIncomes) mustBe None
-      }
-    }
-  }
-
-  "cachePaymentForRegularIncome" must {
-    "update UserAnswers correctly" when {
-      "payment is None" in {
-        val sut         = createSUT
-        val userAnswers = UserAnswers("testSessionId", nino.nino)
-
-        val updatedAnswers = sut.cachePaymentForRegularIncome(None, userAnswers)
-        updatedAnswers.get(UpdateIncomePayToDatePage) mustBe Some("0")
-        updatedAnswers.get(UpdatedIncomeDatePage) mustBe None
-      }
-
-      "payment has value" in {
-        val sut         = createSUT
-        val userAnswers = UserAnswers("testSessionId", nino.nino)
-        val payment     = paymentOnDate(LocalDate.of(2017, 9, 6))
-
-        val updatedAnswers = sut.cachePaymentForRegularIncome(Some(payment), userAnswers)
-        updatedAnswers.get(UpdateIncomePayToDatePage) mustBe Some("2000")
-        updatedAnswers.get(UpdatedIncomeDatePage) mustBe Some(payment.date.toString)
       }
     }
   }

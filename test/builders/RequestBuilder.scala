@@ -16,6 +16,7 @@
 
 package builders
 
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
 
@@ -114,7 +115,7 @@ object RequestBuilder {
       .withFormUrlEncodedBody(formArgs: _*)
       .withSession(SessionKeys.authToken -> "Bearer 1")
 
-  def buildFakeGetRequestWithAuth() =
+  def buildFakeGetRequestWithAuth(): FakeRequest[AnyContentAsFormUrlEncoded] =
     buildFakeRequestWithAuth("GET").withSession(SessionKeys.authToken -> "Bearer 1")
 
 }

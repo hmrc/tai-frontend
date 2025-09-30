@@ -783,6 +783,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
     when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheRepository.keepAlive(any(), any()))
+      .thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))
