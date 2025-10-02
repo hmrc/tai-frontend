@@ -142,7 +142,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     displayIyaBanner = false,
     isAnyFormInProgress = ThreeWeeks,
     otherIncomeSources = Seq(otherIncomeSourceViewModel),
-    rtiAvailable = true,
     totalEstimatedIncome = Some("0")
   )
 
@@ -158,7 +157,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     displayIyaBanner = false,
     isAnyFormInProgress = ThreeWeeks,
     otherIncomeSources = Seq(otherIncomeSourceViewModel),
-    rtiAvailable = true,
     totalEstimatedIncome = Some("0")
   )
 
@@ -218,7 +216,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         displayIyaBanner = false,
         NoTimeToProcess,
         Seq(otherIncomeSourceViewModel),
-        rtiAvailable = true,
         Some("0")
       )
 
@@ -295,7 +292,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           displayIyaBanner = true,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          rtiAvailable = true,
           Some("0")
         )
 
@@ -342,7 +338,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           displayIyaBanner = false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          rtiAvailable = true,
           Some("0")
         )
         val docWithMultipleEmployments = doc(template(vm, appConfig))
@@ -394,7 +389,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           displayIyaBanner = false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          rtiAvailable = true,
           Some("0")
         )
         val docWithMultiplePensionIncomes = doc(template(vm, appConfig))
@@ -414,11 +408,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   }
 
   "employments that have ended section" must {
-
-    "display the rti is down message when rti is not available" in {
-      val view = template(vm.copy(rtiAvailable = false), appConfig)
-      doc(view) must haveParagraphWithText(messages("tai.rti.down.ceasedEmployments"))
-    }
 
     "display the correct number of ended employment detail sections" when {
 
@@ -444,7 +433,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
           displayIyaBanner = false,
           ThreeWeeks,
           Seq(otherIncomeSourceViewModel),
-          rtiAvailable = true,
           Some("0")
         )
         val docWithMultipleEndedIncomes = doc(template(vm, appConfig))
@@ -497,7 +485,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         displayIyaBanner = false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        rtiAvailable = true,
         Some("0")
       )
 
@@ -530,7 +517,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         displayIyaBanner = false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        rtiAvailable = true,
         Some("0")
       )
 
@@ -553,7 +539,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         displayIyaBanner = false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        rtiAvailable = true,
         Some("0")
       )
 
@@ -589,7 +574,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
         displayIyaBanner = false,
         ThreeWeeks,
         Seq(otherIncomeSourceViewModel),
-        rtiAvailable = true,
         Some("0")
       )
 
