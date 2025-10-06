@@ -348,7 +348,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
           .confirmIncomeIrregularHours(1, RequestBuilder.buildFakeGetRequestWithAuth())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay(1).url)
       }
     }
 

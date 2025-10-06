@@ -17,7 +17,7 @@
 package controllers
 
 import cats.data.EitherT
-import cats.instances.future.*
+import cats.instances.future._
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.jsoup.Jsoup
@@ -49,7 +49,7 @@ import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
+import uk.gov.hmrc.tai.model.domain.income.{Live, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.model.{CalculatedPay, TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants.Monthly
@@ -572,14 +572,32 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       |}
       |""".stripMargin
 
-  val person: Person              = Person(
+  val person: Person = Person(
     generatedNino,
     "Firstname",
     "Surname",
     isDeceased = false,
     Address("", "", "", "", "")
   )
-  val employments: JsObject       = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
+
+  val employment: Employment =
+    Employment(
+      "employment1",
+      Live,
+      None,
+      Some(LocalDate.now),
+      None,
+      Nil,
+      "",
+      "",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false,
+      EmploymentIncome
+    )
+
+  val employments: JsObject       = Json.obj("data" -> Json.obj("employments" -> Json.toJson(Seq(employment))))
   val taxAccountSummary: JsObject = Json.obj("data" -> Json.toJson(TaxAccountSummary(0, 0, 0, 0, 0)))
 
   val taxBand: TaxBand                 = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
@@ -765,6 +783,8 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
     when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
     when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
+    when(mockJourneyCacheRepository.keepAlive(any(), any()))
+      .thenReturn(Future.successful(true))
 
     server.stubFor(
       get(urlEqualTo(s"/citizen-details/$generatedNino/designatory-details"))

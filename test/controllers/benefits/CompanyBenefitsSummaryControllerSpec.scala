@@ -20,10 +20,11 @@ import builders.RequestBuilder
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, times, verify, when}
 import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
+import play.api.mvc.Results.NotFound
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
@@ -104,7 +105,8 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
     mcc,
     inject[CompanyBenefitsView],
     mockJourneyCacheRepository,
-    inject[ErrorPagesHandler]
+    inject[ErrorPagesHandler],
+    mockEmpIdCheck
   ) {
     when(mockJourneyCacheRepository.get(any(), any()))
       .thenReturn(Future.successful(Some(UserAnswers(sessionId, randomNino().nino))))
@@ -115,7 +117,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(baseUserAnswers)
-    reset(benefitsService, mockJourneyCacheRepository)
+    reset(benefitsService, mockJourneyCacheRepository, taxAccountService, employmentService)
   }
 
   "onPageLoad" must {
@@ -239,6 +241,19 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
         doc.title() must include(
           Messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
+      }
+    }
+    "load a not found page from empIdCheck" when {
+      "the empId doesn't match the provided one" in {
+        when(mockEmpIdCheck.checkValidId(any(), any())(any()))
+          .thenReturn(Future.successful(Some(NotFound("EmpId not found"))))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe NOT_FOUND
+        verify(taxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
+        verify(employmentService, times(0)).employment(any(), any())(any())
+        verify(benefitsService, times(0)).benefits(any(), any())(any())
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,6 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
     hc: HeaderCarrier
   ): Future[Map[Int, String]] =
     for {
-      employments <- employments(nino, year)
-    } yield employments.map(employment => employment.sequenceNumber -> employment.name).toMap
-
+      records <- employments(nino, year)
+    } yield records.iterator.map(e => e.sequenceNumber -> e.name).toMap
 }

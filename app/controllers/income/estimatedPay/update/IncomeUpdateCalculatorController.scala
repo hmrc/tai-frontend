@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import pages.income._
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -46,199 +45,174 @@ class IncomeUpdateCalculatorController @Inject() (
   mcc: MessagesControllerComponents,
   duplicateSubmissionWarning: DuplicateSubmissionWarningView,
   checkYourAnswers: CheckYourAnswersView,
-  journeyCacheRepository: JourneyCacheRepository,
   errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
   val logger: Logger = Logger(this.getClass)
 
-  def onPageLoad(id: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    val hasJourneyCompleted: Boolean = request.userAnswers
-      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(id))
-      .getOrElse(false)
+  def onPageLoad(employmentId: Int): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      val nino                 = request.taiUser.nino
+      val showDuplicateWarning =
+        request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId)).getOrElse(false)
 
-    (
-      Future.successful(hasJourneyCompleted),
-      employmentService.employment(request.taiUser.nino, id).flatMap(cacheEmploymentDetails(id, request.userAnswers))
-    ).mapN {
-      case (true, _) =>
-        Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(id))
-      case _         =>
-        Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(id))
-    }.recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError(e.getMessage)
-    }
-  }
-
-  private def cacheEmploymentDetails(
-    id: Int,
-    userAnswers: UserAnswers
-  )(maybeEmployment: Option[Employment]): Future[UserAnswers] =
-    maybeEmployment match {
-      case Some(employment) =>
-        val incomeType         = incomeTypeIdentifier(employment.receivingOccupationalPension)
-        val updatedUserAnswers = userAnswers
-          .setOrException(UpdateIncomeNamePage, employment.name)
-          .setOrException(UpdateIncomeIdPage, id)
-          .setOrException(UpdateIncomeTypePage, incomeType)
-
-        journeyCacheRepository.set(updatedUserAnswers).map(_ => updatedUserAnswers)
-
-      case _ =>
-        Future.failed(new RuntimeException("Not able to find employment"))
-    }
-
-  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval {
-    implicit request =>
-      implicit val user: AuthedUser = request.taiUser
-      val userAnswers               = request.userAnswers
-
-      val incomeNameOpt              = userAnswers.get(UpdateIncomeNamePage)
-      val incomeIdOpt                = userAnswers.get(UpdateIncomeIdPage)
-      val previouslyUpdatedAmountOpt = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
-      val incomeTypeOpt              = userAnswers.get(UpdateIncomeTypePage)
-
-      (incomeNameOpt, incomeIdOpt, previouslyUpdatedAmountOpt, incomeTypeOpt) match {
-        case (Some(incomeName), Some(incomeId), Some(previouslyUpdatedAmount), Some(incomeType)) =>
-          val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-            DuplicateSubmissionPensionViewModel(incomeName, previouslyUpdatedAmount.toInt)
-          } else {
-            DuplicateSubmissionEmploymentViewModel(incomeName, previouslyUpdatedAmount.toInt)
-          }
-          Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, incomeId))
-        case _                                                                                   =>
-          errorPagesHandler.internalServerError("Mandatory values missing")
+      (
+        Future.successful(showDuplicateWarning),
+        employmentService.employment(nino, employmentId)
+      ).mapN {
+        case (_, None)        =>
+          errorPagesHandler.internalServerError("Not able to find employment")
+        case (true, Some(_))  =>
+          Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(employmentId))
+        case (false, Some(_)) =>
+          Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(employmentId))
+      }.recover { case NonFatal(e) =>
+        errorPagesHandler.internalServerError(e.getMessage)
       }
-  }
+    }
+
+  def duplicateSubmissionWarningPage(empId: Int): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino                      = user.nino
+      val ua                        = request.userAnswers
+      val confirmedAmountOpt        = ua.get(UpdateIncomeConfirmedNewAmountPage(empId)).map(_.toInt)
+
+      (employmentService.employment(nino, empId), Future.successful(confirmedAmountOpt))
+        .mapN {
+          case (Some(emp), Some(confirmedAmount)) =>
+            val vm = if (emp.receivingOccupationalPension) {
+              DuplicateSubmissionPensionViewModel(emp.name, confirmedAmount)
+            } else {
+              DuplicateSubmissionEmploymentViewModel(emp.name, confirmedAmount)
+            }
+
+            Ok(duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, vm, empId))
+
+          case _ =>
+            errorPagesHandler.internalServerError("Mandatory values missing")
+        }
+    }
 
   def submitDuplicateSubmissionWarning(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers               = request.userAnswers
-      val incomeNameOpt             = userAnswers.get(UpdateIncomeNamePage)
-      val newAmountOpt              = userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId))
-      val incomeTypeOpt             = userAnswers.get(UpdateIncomeTypePage)
+      val nino                      = user.nino
+      val ua                        = request.userAnswers
+      val confirmedAmountOpt        = ua.get(UpdateIncomeConfirmedNewAmountPage(empId)).map(_.toInt)
 
-      (incomeNameOpt, newAmountOpt, incomeTypeOpt) match {
-        case (Some(incomeName), Some(newAmount), Some(incomeType)) =>
-          DuplicateSubmissionWarningForm.createForm
-            .bindFromRequest()
-            .fold(
-              formWithErrors => {
-                val vm = if (incomeType == TaiConstants.IncomeTypePension) {
-                  DuplicateSubmissionPensionViewModel(incomeName, newAmount.toInt)
+      DuplicateSubmissionWarningForm.createForm
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            (employmentService.employment(nino, empId), Future.successful(confirmedAmountOpt)).mapN {
+              case (Some(emp), Some(confirmedAmount)) =>
+                val vm = if (emp.receivingOccupationalPension) {
+                  DuplicateSubmissionPensionViewModel(emp.name, confirmedAmount)
                 } else {
-                  DuplicateSubmissionEmploymentViewModel(incomeName, newAmount.toInt)
+                  DuplicateSubmissionEmploymentViewModel(emp.name, confirmedAmount)
                 }
-                Future.successful(BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId)))
-              },
-              success =>
-                success.yesNoChoice match {
-                  case Some(FormValuesConstants.YesValue) =>
-                    Future
-                      .successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId)))
-                  case Some(FormValuesConstants.NoValue)  =>
-                    Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-                }
-            )
-        case _                                                     => Future.successful(errorPagesHandler.internalServerError("Mandatory values missing"))
-      }
+
+                BadRequest(duplicateSubmissionWarning(formWithErrors, vm, empId))
+
+              case _ =>
+                errorPagesHandler.internalServerError("Mandatory values missing")
+            },
+          success =>
+            success.yesNoChoice match {
+              case Some(FormValuesConstants.YesValue) =>
+                Future.successful(Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(empId)))
+              case Some(FormValuesConstants.NoValue)  =>
+                Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+              case _                                  =>
+                Future.successful(errorPagesHandler.internalServerError("Unexpected form state"))
+            }
+        )
   }
 
   // scalastyle:off method.length
   def checkYourAnswersPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      val userAnswers               = request.userAnswers
+      val nino                      = user.nino
+      val ua                        = request.userAnswers
 
-      val mandatoryJourneyValues = Seq(
-        userAnswers.get(UpdateIncomeNamePage),
-        userAnswers.get(UpdateIncomePayPeriodPage),
-        userAnswers.get(UpdateIncomeTotalSalaryPage),
-        userAnswers.get(UpdateIncomePayslipDeductionsPage),
-        userAnswers.get(UpdateIncomeBonusPaymentsPage),
-        userAnswers.get(UpdateIncomeIdPage)
-      )
-      val optionalSeq            = Seq(
-        userAnswers.get(UpdateIncomeTaxablePayPage),
-        userAnswers.get(UpdateIncomeBonusOvertimeAmountPage),
-        userAnswers.get(UpdateIncomeOtherInDaysPage)
-      )
+      val payPeriodOpt            = ua.get(UpdateIncomePayPeriodPage)
+      val totalSalaryAmountOpt    = ua.get(UpdateIncomeTotalSalaryPage)
+      val hasPayslipDeductionsOpt = ua.get(UpdateIncomePayslipDeductionsPage)
+      val hasBonusPaymentsOpt     = ua.get(UpdateIncomeBonusPaymentsPage)
 
-      (mandatoryJourneyValues, optionalSeq) match {
-        case (mandatory, _) if mandatory.forall(_.isDefined) =>
-          val employer             = IncomeSource(id = mandatory(5).get.toString.toInt, name = mandatory.head.get.toString)
-          val payPeriodFrequency   = mandatory(1).get
-          val totalSalaryAmount    = mandatory(2).get
-          val hasPayslipDeductions = mandatory(3).get
-          val hasBonusPayments     = mandatory(4).get
+      val taxablePayOpt         = ua.get(UpdateIncomeTaxablePayPage)
+      val bonusPaymentAmountOpt = ua.get(UpdateIncomeBonusOvertimeAmountPage)
+      val payPeriodInDaysOpt    = ua.get(UpdateIncomeOtherInDaysPage)
 
-          val taxablePay         = optionalSeq.head
-          val bonusPaymentAmount = optionalSeq(1)
-          val payPeriodInDays    = optionalSeq(2)
+      val mandatoryDefined =
+        Seq(payPeriodOpt, totalSalaryAmountOpt, hasPayslipDeductionsOpt, hasBonusPaymentsOpt).forall(_.isDefined)
 
-          val backUrl = bonusPaymentAmount match {
+      if (!mandatoryDefined) {
+        Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      } else {
+        employmentService
+          .employment(nino, empId)
+          .map {
+            case Some(emp) =>
+              val employer = IncomeSource(id = empId, name = emp.name)
+
+              val backUrl =
+                if (bonusPaymentAmountOpt.isEmpty)
+                  controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
+                else
+                  controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController
+                    .bonusOvertimeAmountPage()
+                    .url
+
+              val viewModel = CheckYourAnswersViewModel(
+                payPeriodOpt.get.toString,
+                payPeriodInDaysOpt,
+                totalSalaryAmountOpt.get.toString,
+                hasPayslipDeductionsOpt.get.toString,
+                taxablePayOpt,
+                hasBonusPaymentsOpt.get.toString,
+                bonusPaymentAmountOpt,
+                employer,
+                backUrl
+              )
+
+              Ok(checkYourAnswers(viewModel))
+
             case None =>
-              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
-            case _    =>
-              controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url
+              Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
           }
-
-          val viewModel = CheckYourAnswersViewModel(
-            payPeriodFrequency.toString,
-            payPeriodInDays,
-            totalSalaryAmount.toString,
-            hasPayslipDeductions.toString,
-            taxablePay,
-            hasBonusPayments.toString,
-            bonusPaymentAmount,
-            employer,
-            backUrl
-          )
-
-          Future.successful(Ok(checkYourAnswers(viewModel)))
-        case _                                               => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       }
   }
 
-  def handleCalculationResult: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino                      = user.nino
-    val userAnswers: UserAnswers  = request.userAnswers
+  def handleCalculationResult(empId: Int): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino                      = user.nino
+      val ua: UserAnswers           = request.userAnswers
 
-    val netAmountOpt      = userAnswers.get(UpdateIncomeNewAmountPage)
-    val employmentNameOpt = userAnswers.get(UpdateIncomeNamePage)
-    val idStrOpt          = userAnswers.get(UpdateIncomeIdPage)
-
-    (netAmountOpt, employmentNameOpt, idStrOpt) match {
-      case (Some(netAmount), Some(_), Some(idStr)) =>
-        val id = idStr.toString.toInt
-        incomeService
-          .employmentAmount(nino, id)
-          .map { income =>
-            val convertedNetAmount = BigDecimal(netAmount).intValue
-
-            income.oldAmount match {
-              case Some(oldAmount) if convertedNetAmount == oldAmount =>
-                Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
-              case _                                                  =>
-                Redirect(controllers.routes.IncomeController.updateEstimatedIncome(id))
+      ua.get(UpdateIncomeNewAmountPage) match {
+        case Some(newAmountStr) =>
+          incomeService
+            .employmentAmount(nino, empId)
+            .map { employmentAmount =>
+              val newEstimatedPay = BigDecimal(newAmountStr).intValue
+              employmentAmount.oldAmount match {
+                case Some(currentEstimatedPay) if newEstimatedPay == currentEstimatedPay =>
+                  Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay(empId))
+                case _                                                                   =>
+                  Redirect(controllers.routes.IncomeController.updateEstimatedIncome(empId))
+              }
             }
-          }
-          .recover { case NonFatal(e) =>
-            errorPagesHandler.internalServerError(e.getMessage)
-          }
+            .recover { case NonFatal(e) =>
+              errorPagesHandler.internalServerError(e.getMessage)
+            }
 
-      case _ =>
-        Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url))
+        case _ =>
+          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
+      }
     }
-  }
 
-  private def incomeTypeIdentifier(isPension: Boolean): String =
-    if (isPension) {
-      TaiConstants.IncomeTypePension
-    } else {
-      TaiConstants.IncomeTypeEmployment
-    }
 }

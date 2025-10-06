@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.*
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @this(main: MainTemplate, govukPanel: GovukPanel, govukButton: GovukButton)
@@ -28,9 +28,9 @@
 @main(
     title = messages("tai.updateIncome.CYPlus1.success.title", TaxYearRangeUtil.futureTaxYearRange(1)),
     authedUser = Some(user),
-    pageTitle = Some(Messages("tai.service.navTitle")),
+    pageTitle = Some(messages("tai.service.navTitle")),
     backLinkContent = None
-){
+) {
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             @govukPanel(Panel(
@@ -48,9 +48,9 @@
             </p>
 
             @govukButton(Button(
-                href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url.toString),
+                href = Some(controllers.routes.IncomeTaxComparisonController.onPageLoad().url),
                 content = Text(messages("return.to.your.income.tax.summary")),
-                id=Some("submitButton")))
+                id = Some("submitButton")))
         </div>
     </div>
 }

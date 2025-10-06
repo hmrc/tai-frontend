@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,19 @@
 
 package controllers.income.estimatedPay.update
 
-import cats.data._
+import cats.data.OptionT
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.income._
-import play.api.libs.json.{JsNumber, JsObject, JsString, Json}
 import play.api.mvc._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
-import uk.gov.hmrc.tai.service.IncomeService
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount}
+import uk.gov.hmrc.tai.service.{EmploymentService, IncomeService}
 import uk.gov.hmrc.tai.util.FormHelper
-import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import views.html.incomes.{EstimatedPayLandingPageView, EstimatedPayView, IncorrectTaxableIncomeView}
 
@@ -40,6 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeUpdateEstimatedPayController @Inject() (
   authenticate: AuthJourney,
   incomeService: IncomeService,
+  employmentService: EmploymentService,
   appConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   estimatedPayLandingPage: EstimatedPayLandingPageView,
@@ -50,95 +50,115 @@ class IncomeUpdateEstimatedPayController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def estimatedPayLandingPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
-    implicit request =>
+  def estimatedPayLandingPage(empId: Int): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
       implicit val user: AuthedUser = request.taiUser
+      val nino                      = user.nino
 
-      (
-        request.userAnswers.get(UpdateIncomeNamePage),
-        request.userAnswers.get(UpdateIncomeTypePage)
-      ).tupled match {
-        case Some((incomeName, incomeType)) =>
-          Future.successful {
+      employmentService
+        .employment(nino, empId)
+        .map {
+          case Some(emp) =>
             Ok(
               estimatedPayLandingPage(
-                incomeName,
+                emp.name,
                 empId,
-                incomeType == TaiConstants.IncomeTypePension,
+                emp.receivingOccupationalPension,
                 appConfig
               )
             )
-          }
-
-        case None =>
-          Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
-      }
-  }
-
-  private def isCachedAmountSameAsEnteredAmount(
-    cache: Map[String, String],
-    newAmount: Option[BigDecimal],
-    empId: Int
-  ): Boolean =
-    FormHelper
-      .areEqual(cache.get(s"${UpdateIncomeConstants.ConfirmedNewAmountKey}-$empId"), newAmount map (_.toString()))
-
-  def estimatedPayPage(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
-    implicit val user: AuthedUser = request.taiUser
-    val nino                      = user.nino
-
-    val employerFuture = IncomeSource.create(journeyCacheRepository, request.userAnswers)
-
-    val result = for {
-      incomeSource  <- OptionT(employerFuture.map(_.toOption))
-      income        <- OptionT.liftF(incomeService.employmentAmount(nino, incomeSource.id))
-      cache         <- {
-        val cacheMap = request.userAnswers.data.fields.collect {
-          case (key, JsString(value)) => key -> value
-          case (key, JsNumber(value)) => key -> value.toString
-        }.toMap
-        OptionT.liftF(Future.successful(cacheMap))
-      }
-      calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cache, income.startDate))
-      payment       <- OptionT.liftF(incomeService.latestPayment(nino, incomeSource.id))
-    } yield {
-      val payYearToDate: BigDecimal      = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
-      val paymentDate: Option[LocalDate] = payment.map(_.date)
-
-      calculatedPay.grossAnnualPay match {
-        case newAmount if isCachedAmountSameAsEnteredAmount(cache, newAmount, empId) =>
-          Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(empId)))
-        case Some(newAmount) if newAmount > payYearToDate                            =>
-          val cacheMap = Map(
-            UpdateIncomeGrossAnnualPayPage.toString -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-            UpdateIncomeNewAmountPage.toString      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
-          )
-
-          val isBonusPayment = cacheMap.getOrElse(UpdateIncomeBonusPaymentsPage, "") == "Yes"
-          val updatedAnswers =
-            request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(cacheMap).as[JsObject])
-
-          journeyCacheRepository.set(updatedAnswers) map { _ =>
-            val viewModel = EstimatedPayViewModel(
-              calculatedPay.grossAnnualPay,
-              calculatedPay.netAnnualPay,
-              isBonusPayment,
-              calculatedPay.annualAmount,
-              calculatedPay.startDate,
-              incomeSource
-            )
-            Ok(estimatedPay(viewModel))
-          }
-        case _                                                                       =>
-          Future.successful(
-            Ok(incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(LocalDate.now), incomeSource.id, empId))
-          )
-      }
+          case None      =>
+            Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+        }
     }
-    result.value.flatMap(_.sequence).map {
-      case Some(result) => result
-      case None         => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
-    }
-  }
 
+  def estimatedPayPage(empId: Int): Action[AnyContent] =
+    authenticate.authWithDataRetrieval.async { implicit request =>
+      implicit val user: AuthedUser = request.taiUser
+      val nino                      = user.nino
+      val ua                        = request.userAnswers
+
+      val prep: OptionT[
+        Future,
+        (
+          uk.gov.hmrc.tai.model.domain.Employment,
+          EmploymentAmount,
+          Map[String, String],
+          CalculatedPay,
+          Option[uk.gov.hmrc.tai.model.domain.Payment]
+        )
+      ] =
+        for {
+          emp           <- OptionT(employmentService.employment(nino, empId))
+          incomeAmount  <- OptionT.liftF(incomeService.employmentAmount(nino, empId))
+          cacheMap       = ua.data.fields.collect {
+                             case (k, v: play.api.libs.json.JsString) => k -> v.value
+                             case (k, v: play.api.libs.json.JsNumber) => k -> v.value.toString
+                           }.toMap
+          calculatedPay <- OptionT.liftF(incomeService.calculateEstimatedPay(cacheMap, incomeAmount.startDate))
+          latestPayment <- OptionT.liftF(incomeService.latestPayment(nino, empId))
+        } yield (emp, incomeAmount, cacheMap, calculatedPay, latestPayment)
+
+      prep.value
+        .flatMap {
+          case Some((emp, _incomeAmount, cacheMap, calculatedPay, latestPayment)) =>
+            val payYtd: BigDecimal                   = latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+            val latestPaymentDate: Option[LocalDate] = latestPayment.map(_.date)
+
+            val confirmedNewAmountStr = ua.get(UpdateIncomeConfirmedNewAmountPage(empId))
+
+            def isSameAsConfirmed(grossOpt: Option[BigDecimal], confirmedStr: Option[String]): Boolean =
+              FormHelper.areEqual(confirmedStr, grossOpt.map(_.toString))
+
+            if (isSameAsConfirmed(calculatedPay.grossAnnualPay, confirmedNewAmountStr)) {
+              Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache(empId)))
+            } else {
+              calculatedPay.grossAnnualPay match {
+                case Some(gross) if gross > payYtd =>
+                  val cacheToWrite = Map(
+                    UpdateIncomeGrossAnnualPayPage.toString -> calculatedPay.grossAnnualPay
+                      .map(_.toString)
+                      .getOrElse(""),
+                    UpdateIncomeNewAmountPage.toString      -> calculatedPay.netAnnualPay.map(_.toString).getOrElse("")
+                  )
+
+                  val updatedAnswers =
+                    ua.copy(data =
+                      ua.data ++ play.api.libs.json.Json.toJson(cacheToWrite).as[play.api.libs.json.JsObject]
+                    )
+
+                  val isBonusPayment =
+                    cacheMap.getOrElse(UpdateIncomeBonusPaymentsPage, "") == FormValuesConstants.YesValue
+
+                  val viewModel = EstimatedPayViewModel(
+                    calculatedPay.grossAnnualPay,
+                    calculatedPay.netAnnualPay,
+                    isBonusPayment,
+                    calculatedPay.annualAmount,
+                    calculatedPay.startDate,
+                    IncomeSource(id = empId, name = emp.name)
+                  )
+
+                  journeyCacheRepository
+                    .set(updatedAnswers)
+                    .map(_ => Ok(estimatedPay(viewModel)))
+
+                case _ =>
+                  Future.successful(
+                    Ok(
+                      incorrectTaxableIncome(
+                        payYtd,
+                        latestPaymentDate.getOrElse(LocalDate.now),
+                        empId,
+                        empId
+                      )
+                    )
+                  )
+              }
+            }
+
+          case None =>
+            Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+        }
+    }
 }

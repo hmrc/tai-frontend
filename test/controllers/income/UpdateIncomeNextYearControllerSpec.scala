@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +18,25 @@ package controllers.income
 
 import builders.RequestBuilder
 import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
-import org.apache.pekko.Done
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.{reset, when}
-import pages.income.UpdateNextYearsIncomeNewAmountPage
 import play.api.data.FormBinding.Implicits.formBinding
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
+import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.DuplicateSubmissionCYPlus1EmploymentViewModel
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, NextYearPay}
 import utils.BaseSpec
@@ -47,6 +45,7 @@ import views.html.incomes.nextYear._
 
 import scala.concurrent.Future
 import scala.util.Random
+import org.apache.pekko.Done
 
 class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTestHelper {
 
@@ -82,12 +81,11 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
   def randomNino(): Nino = new Generator(new Random()).nextNino
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
-  val mockJourneyCacheRepository: JourneyCacheRepository         = mock[JourneyCacheRepository]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers(sessionId, randomNino().nino))
-    reset(mockJourneyCacheRepository, updateNextYearsIncomeService, mockFeatureFlagService)
+    reset(updateNextYearsIncomeService, mockFeatureFlagService)
   }
 
   "onPageLoad" must {
@@ -276,12 +274,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val testController = createTestIncomeController()
         val newEstPay      = "999"
 
-        val expectedResult = Map(UpdateNextYearsIncomeNewAmountPage(employmentID).toString -> newEstPay)
-
         when(updateNextYearsIncomeService.setNewAmount(meq(newEstPay), meq(employmentID), any()))
-          .thenReturn(Future.successful(expectedResult))
-
-        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+          .thenReturn(Future.successful(Map(UpdateNextYearsIncomeConstants.NewAmount -> newEstPay)))
 
         val result = testController.update(employmentID)(
           RequestBuilder
@@ -336,8 +330,6 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
           ).thenReturn(
             Future.successful(Right(newEstPay.toInt))
           )
-
-          when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
 
           val result = testController.update(employmentID)(
             RequestBuilder
@@ -539,11 +531,8 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
         val request    = RequestBuilder.buildFakeGetRequestWithAuth()
         val controller = createTestIncomeController()
 
-        when(
-          updateNextYearsIncomeService.submit(any(), any(), any())(any(), any())
-        ).thenReturn(
-          Future.failed(new Exception("Error"))
-        )
+        when(updateNextYearsIncomeService.submit(any(), any(), any())(any(), any()))
+          .thenReturn(Future.failed(new Exception("Error")))
 
         val result = controller.handleConfirm(employmentID)(request)
 

@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.util.EmpIdCheck
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitsSummaryViewModel
 import views.html.benefits.CompanyBenefitsView
 
@@ -41,7 +42,8 @@ class CompanyBenefitsSummaryController @Inject() (
   mcc: MessagesControllerComponents,
   companyBenefits: CompanyBenefitsView,
   journeyCacheRepository: JourneyCacheRepository,
-  errorPagesHandler: ErrorPagesHandler
+  errorPagesHandler: ErrorPagesHandler,
+  empIdCheck: EmpIdCheck
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
@@ -52,49 +54,54 @@ class CompanyBenefitsSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt)
 
-    val incomeDetailsResult = for {
-      taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      employment               <- employmentService.employment(nino, empId)
-      benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
-      cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
-    } yield (taxCodeIncomes, employment, benefitsDetails, cacheUpdatedIncomeAmount)
+    empIdCheck.checkValidId(empId).flatMap {
+      case Some(result) => Future.successful(result)
+      case _            =>
+        val incomeDetailsResult = for {
+          taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+          employment               <- employmentService.employment(nino, empId)
+          benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
+          cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
+        } yield (taxCodeIncomes, employment, benefitsDetails, cacheUpdatedIncomeAmount)
 
-    incomeDetailsResult
-      .flatMap {
-        case (
-              taxCodeIncomes,
-              Some(employment),
-              benefitsDetails,
-              cacheUpdatedIncomeAmount
-            ) =>
-          val companyBenefitsSummaryViewModel = CompanyBenefitsSummaryViewModel(
-            employment.name,
-            request.fullName,
-            empId,
-            applicationConfig,
-            benefitsDetails
-          )
+        incomeDetailsResult
+          .flatMap {
+            case (
+                  taxCodeIncomes,
+                  Some(employment),
+                  benefitsDetails,
+                  cacheUpdatedIncomeAmount
+                ) =>
+              val companyBenefitsSummaryViewModel = CompanyBenefitsSummaryViewModel(
+                employment.name,
+                request.fullName,
+                empId,
+                applicationConfig,
+                benefitsDetails
+              )
 
-          val taxCodeIncomeSource = taxCodeIncomes
-            .fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)))
-          val isUpdateInProgress  = cacheUpdatedIncomeAmount match {
-            case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.map(_.amount.toInt).getOrElse(0)
-            case None                    => false
+              val taxCodeIncomeSource = taxCodeIncomes
+                .fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)))
+              val isUpdateInProgress  = cacheUpdatedIncomeAmount match {
+                case Some(cacheUpdateAMount) =>
+                  cacheUpdateAMount != taxCodeIncomeSource.map(_.amount.toInt).getOrElse(0)
+                case None                    => false
+              }
+
+              val result = if (!isUpdateInProgress) {
+                journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
+              } else {
+                Future.successful((): Unit)
+              }
+              result.map(_ => Ok(companyBenefits(companyBenefitsSummaryViewModel)))
+
+            case _ =>
+              Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
           }
-
-          val result = if (!isUpdateInProgress) {
-            journeyCacheRepository.clear(request.userAnswers.sessionId, nino.nino).map(_ => (): Unit)
-          } else {
-            Future.successful((): Unit)
+          .recover { case NonFatal(e) =>
+            errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
           }
-          result.map(_ => Ok(companyBenefits(companyBenefitsSummaryViewModel)))
-
-        case _ =>
-          Future.successful(errorPagesHandler.internalServerError("Error while fetching company benefits details"))
-      }
-      .recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError("CompanyBenefitsSummaryController exception", Some(e))
-      }
+    }
   }
 
 }

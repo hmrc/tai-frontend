@@ -1686,7 +1686,6 @@ tai.unauthorised.message = Bydd yn rhaid i chi fewngofnodi eto. Os oeddech yn di
 tai.unauthorised.button-text = Mewngofnodi
 
 tai.rti.down=Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i fwrw golwg dros yr incwm a ddaeth i law hyd yn hyn.
-tai.rti.down.ceasedEmployments = Ni allwn ddangos yr wybodaeth hon ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen i weld y cyflogaethau sydd wedi dod i ben.
 
 tai.rti.down.updateEmployment=Ni allwch ddiweddaru na dileu’r cyflogwr hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
 tai.rti.down.updatePension=Ni allwch ddiweddaru na dileu’r pensiwn hwn ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen.
@@ -1779,3 +1778,5 @@ tai.payeRefForm.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurflenni treth
 tai.payeRefForm.required = Nodwch gyfeirnod TWE y cyflogwr {0}
 tai.payeRefForm.format = Nodwch gyfeirnod TWE y cyflogwr {0} yn y fformat cywir
 
+tai.idNotFound.title = Heb ddod o hyd i’r dudalen
+tai.idNotFound.linkText = Ewch i’r trosolwg o’ch Treth Incwm TWE
