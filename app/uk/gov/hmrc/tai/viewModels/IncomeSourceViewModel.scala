@@ -76,14 +76,19 @@ object IncomeSourceViewModel extends ViewModelHelper {
     )
   }
 
-  def createFromTaxedIncome(taxedIncome: TaxedIncome)(implicit messages: Messages): IncomeSourceViewModel = {
+  def createFromTaxedIncome(taxedIncome: TaxedIncome)(implicit messages: Messages): IncomeSourceViewModel =
+    createFromTaxedIncome(taxedIncome, overrideAmount = None)
+
+  def createFromTaxedIncome(taxedIncome: TaxedIncome, overrideAmount: Option[BigDecimal])(implicit
+    messages: Messages
+  ): IncomeSourceViewModel = {
     val endDate: Option[String] = taxedIncome.employment.endDate.map(Dates.formatDate(_))
 
     def getLinkLabel(messageKey: String): String =
       taxedIncome.employment.employmentType match {
         case EmploymentIncome if taxedIncome.employment.employmentStatus == Live =>
           messages(s"tai.incomeTaxSummary.$messageKey.link")
-        case EmploymentIncome if taxedIncome.employment.employmentStatus != Live =>
+        case EmploymentIncome                                                    =>
           messages("tai.incomeTaxSummary.employment.link")
         case PensionIncome                                                       => messages("tai.incomeTaxSummary.pension.link")
         case _                                                                   => messages("tai.incomeTaxSummary.income.link")
@@ -114,9 +119,12 @@ object IncomeSourceViewModel extends ViewModelHelper {
           .url
       }
 
+    val amountOpt: Option[BigDecimal] =
+      overrideAmount.orElse(taxedIncome.taxCodeIncome.map(_.amount))
+
     IncomeSourceViewModel(
       name = taxedIncome.employment.name,
-      amount = taxedIncome.taxCodeIncome.map(account => withPoundPrefixAndSign(MoneyPounds(account.amount, 0))),
+      amount = amountOpt.map(a => withPoundPrefixAndSign(MoneyPounds(a, 0))),
       taxCode = taxedIncome.taxCodeIncome.map(_.taxCode),
       displayTaxCode =
         taxedIncome.employment.employmentStatus == Live || taxedIncome.employment.employmentStatus == Ceased,
@@ -136,7 +144,14 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
   def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit
     messages: Messages
-  ): IncomeSourceViewModel = {
+  ): IncomeSourceViewModel =
+    apply(taxCodeIncome, employment, overrideAmount = None)
+
+  def apply(
+    taxCodeIncome: TaxCodeIncome,
+    employment: Employment,
+    overrideAmount: Option[BigDecimal]
+  )(implicit messages: Messages): IncomeSourceViewModel = {
 
     val endDate: Option[String] = employment.endDate.map(Dates.formatDate(_))
 
@@ -158,9 +173,11 @@ object IncomeSourceViewModel extends ViewModelHelper {
         controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
       }
 
+    val effectiveAmount = overrideAmount.getOrElse(taxCodeIncome.amount)
+
     IncomeSourceViewModel(
       name = employment.name,
-      amount = Some(withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))),
+      amount = Some(withPoundPrefixAndSign(MoneyPounds(effectiveAmount, 0))),
       taxCode = Some(taxCodeIncome.taxCode),
       displayTaxCode = employment.employmentStatus == Live,
       taxDistrictNumber = employment.taxDistrictNumber,

@@ -103,7 +103,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
     payments: Option[AnnualAccount],
     empId: Int = 1
   ): IncomeSourceSummaryViewModel =
-    IncomeSourceSummaryViewModel.applyNew(
+    IncomeSourceSummaryViewModel.apply(
       empId = empId,
       displayName = "User Name",
       taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
@@ -216,7 +216,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payments: Option[AnnualAccount],
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel.applyNew(
+          IncomeSourceSummaryViewModel.apply(
             empId = empId,
             displayName = "User Name",
             taxCodeIncomeSources
@@ -267,7 +267,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payments: Option[AnnualAccount],
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel.applyNew(
+          IncomeSourceSummaryViewModel.apply(
             empId = empId,
             displayName = "User Name",
             taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
@@ -314,7 +314,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payments: Option[AnnualAccount],
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel.applyNew(
+          IncomeSourceSummaryViewModel.apply(
             empId = empId,
             displayName = "User Name",
             taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
@@ -357,7 +357,7 @@ class IncomeSourceSummaryViewModelNewSpec extends BaseSpec {
           payments: Option[AnnualAccount],
           empId: Int = 1
         ): IncomeSourceSummaryViewModel =
-          IncomeSourceSummaryViewModel.applyNew(
+          IncomeSourceSummaryViewModel.apply(
             empId = empId,
             displayName = "User Name",
             taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),

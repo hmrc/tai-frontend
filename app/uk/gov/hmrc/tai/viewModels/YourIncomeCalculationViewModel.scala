@@ -57,28 +57,54 @@ object YourIncomeCalculationViewModel {
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String
+  )(implicit messages: Messages): YourIncomeCalculationViewModel =
+    apply(
+      taxCodeIncome = taxCodeIncome,
+      employment = employment,
+      maybeIabd = maybeIabd,
+      paymentDetails = paymentDetails,
+      username = username,
+      estimatedPayOverrides = Map.empty[Int, BigDecimal]
+    )
+
+  def apply(
+    taxCodeIncome: Option[TaxCodeIncome],
+    employment: Employment,
+    maybeIabd: Option[IabdDetails],
+    paymentDetails: Seq[PaymentDetailsViewModel],
+    username: String,
+    estimatedPayOverrides: Map[Int, BigDecimal]
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
     val latestPayment = latestPaymentDetails(employment)
     val isPension     = taxCodeIncome.exists(_.componentType == PensionIncome)
     val status        = employment.employmentStatus
 
-    val (incomeCalculationMessage, incomeCalculationEstimateMessage) = maybeIabd.fold((None, None)) { iabd =>
-      taxCodeIncome
-        .map { income =>
-          incomeExplanationMessage(
-            employment.employmentStatus,
-            employment,
-            pensionOrEmpMessage(isPension),
-            income,
-            iabd,
-            latestPayment.map(_.paymentFrequency),
-            latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
-            latestPayment.map(_.date)
-          )
-        }
-        .getOrElse((None, None))
-    }
+    val effectiveTaxCodeIncome: Option[TaxCodeIncome] =
+      taxCodeIncome.map { income =>
+        estimatedPayOverrides
+          .get(employment.sequenceNumber)
+          .map(amt => income.copy(amount = amt))
+          .getOrElse(income)
+      }
+
+    val (incomeCalculationMessage, incomeCalculationEstimateMessage) =
+      maybeIabd.fold((None, None)) { iabd =>
+        effectiveTaxCodeIncome
+          .map { income =>
+            incomeExplanationMessage(
+              employment.employmentStatus,
+              employment,
+              pensionOrEmpMessage(isPension),
+              income, // <- uses overridden amount if present
+              iabd,
+              latestPayment.map(_.paymentFrequency),
+              latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
+              latestPayment.map(_.date)
+            )
+          }
+          .getOrElse((None, None))
+      }
 
     YourIncomeCalculationViewModel(
       employment.sequenceNumber,

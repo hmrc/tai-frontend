@@ -43,7 +43,7 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
-  def applyNew(
+  def apply(
     empId: Int,
     displayName: String,
     optTaxCodeIncome: Option[TaxCodeIncome], // Tax account API response
@@ -51,16 +51,19 @@ object IncomeSourceSummaryViewModel {
     payments: Option[AnnualAccount],
     estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
-    cacheUpdatedIncomeAmount: Option[Int]
+    cacheUpdatedIncomeAmount: Option[Int],
+    estimatedPayOverrides: Map[Int, BigDecimal]
   ): IncomeSourceSummaryViewModel = {
-    val estimatedPayAmount = optTaxCodeIncome.map(_.amount)
-    val taxCode            = optTaxCodeIncome.map(_.taxCode)
+
+    val taxAccountEstimated = optTaxCodeIncome.map(_.amount)
+    val estimatedPayAmount  = estimatedPayOverrides.get(empId).orElse(taxAccountEstimated)
+    val taxCode             = optTaxCodeIncome.map(_.taxCode)
 
     val amountYearToDate = payments.flatMap(_.latestPayment).map(_.amountYearToDate)
 
-    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => cacheUpdateAMount != estimatedPayAmount.map(_.toInt).getOrElse(0)
-      case None                    => false
+    val isUpdateInProgress = cacheUpdatedIncomeAmount.exists { cached =>
+      val currentDisplayed = estimatedPayAmount.map(_.toInt).getOrElse(0)
+      cached != currentDisplayed
     }
 
     IncomeSourceSummaryViewModel(
@@ -79,46 +82,4 @@ object IncomeSourceSummaryViewModel {
       isUpdateInProgress = isUpdateInProgress
     )
   }
-
-  def applyOld(
-    empId: Int,
-    displayName: String,
-    taxCodeIncomeSources: Seq[TaxCodeIncome],
-    employment: Employment,
-    estimatedPayJourneyCompleted: Boolean,
-    rtiAvailable: Boolean,
-    cacheUpdatedIncomeAmount: Option[Int]
-  ): IncomeSourceSummaryViewModel = {
-
-    val amountYearToDate = for {
-      latestAnnualAccount <- employment.latestAnnualAccount
-      latestPayment       <- latestAnnualAccount.latestPayment
-    } yield latestPayment.amountYearToDate
-
-    val taxCodeIncomeSource = taxCodeIncomeSources
-      .find(_.employmentId.contains(empId))
-      .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
-
-    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
-      case None                    => false
-    }
-
-    IncomeSourceSummaryViewModel(
-      empId,
-      displayName,
-      taxCodeIncomeSource.name,
-      Some(taxCodeIncomeSource.amount),
-      amountYearToDate.getOrElse(0),
-      Some(taxCodeIncomeSource.taxCode),
-      employment.payrollNumber.getOrElse(""),
-      taxCodeIncomeSource.componentType == PensionIncome,
-      estimatedPayJourneyCompleted,
-      rtiAvailable,
-      employment.taxDistrictNumber,
-      employment.payeNumber,
-      isUpdateInProgress
-    )
-  }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: NonTaxCodeIncome,
     incomesSources: IncomeSources,
-    nonMatchingCeasedEmployments: Seq[Employment]
+    nonMatchingCeasedEmployments: Seq[Employment],
+    estimatedPayOverrides: Map[Int, BigDecimal]
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
@@ -55,29 +56,34 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
     val employmentViewModels =
-      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
+      incomesSources.liveEmploymentIncomeSources.map { ti =>
+        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
+        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+      }
 
-    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
+    val pensionsViewModels =
+      incomesSources.livePensionIncomeSources.map { ti =>
+        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
+        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+      }
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
       val currentYear = TaxYear()
-      // Default to true as if there is no endDate it's potentially ceased
-      employment.endDate.fold(true) { endDate =>
-        !(endDate isBefore currentYear.start)
-      }
+      employment.endDate.fold(true)(endDate => !(endDate isBefore currentYear.start))
     }
 
-    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.collect {
-      case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
-        IncomeSourceViewModel.createFromTaxedIncome(ti)
-    } ++ nonMatchingCeasedEmployments.collect {
-      case employment if employmentCeasedThisYear(employment) =>
-        IncomeSourceViewModel.createFromEmployment(employment)
-    }
+    val ceasedEmploymentViewModels =
+      incomesSources.ceasedEmploymentIncomeSources.collect {
+        case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
+          val overrideAmt = estimatedPayOverrides.get(employment.sequenceNumber)
+          IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+      } ++ nonMatchingCeasedEmployments.collect {
+        case employment if employmentCeasedThisYear(employment) =>
+          IncomeSourceViewModel.createFromEmployment(employment)
+      }
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
-
-    val totalEstimatedIncome = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
+    val totalEstimatedIncome   = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
 
     TaxAccountSummaryViewModel(
       header = header,
@@ -99,38 +105,44 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     taxAccountSummary: Option[TaxAccountSummary],
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: Option[NonTaxCodeIncome],
-    incomesSources: IncomeSources
+    incomesSources: IncomeSources,
+    estimatedPayOverrides: Map[Int, BigDecimal]
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
     val title  = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
 
-    val taxFreeAmount            = taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.taxFreeAmount, 0)))
+    val taxFreeAmount            = taxAccountSummary.map(a => withPoundPrefixAndSign(MoneyPounds(a.taxFreeAmount, 0)))
     val estimatedIncomeTaxAmount =
-      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedTax, 0)))
+      taxAccountSummary.map(a => withPoundPrefixAndSign(MoneyPounds(a.totalEstimatedTax, 0)))
 
     val employmentViewModels =
-      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
+      incomesSources.liveEmploymentIncomeSources.map { ti =>
+        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
+        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt) // UPDATED
+      }
 
-    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
+    val pensionsViewModels =
+      incomesSources.livePensionIncomeSources.map { ti =>
+        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
+        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt) // UPDATED
+      }
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
       val currentYear = TaxYear()
-      // Default to true as if there is no endDate it's potentially ceased
-      employment.endDate.fold(true) { endDate =>
-        !(endDate isBefore currentYear.start)
-      }
+      employment.endDate.fold(true)(endDate => !(endDate isBefore currentYear.start))
     }
 
-    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.collect {
-      case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
-        IncomeSourceViewModel.createFromTaxedIncome(ti)
-    }
+    val ceasedEmploymentViewModels =
+      incomesSources.ceasedEmploymentIncomeSources.collect {
+        case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
+          val overrideAmt = estimatedPayOverrides.get(employment.sequenceNumber)
+          IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+      }
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
-
-    val totalEstimatedIncome =
-      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedIncome, 0)))
+    val totalEstimatedIncome   =
+      taxAccountSummary.map(a => withPoundPrefixAndSign(MoneyPounds(a.totalEstimatedIncome, 0)))
 
     TaxAccountSummaryViewModel(
       header = header,
