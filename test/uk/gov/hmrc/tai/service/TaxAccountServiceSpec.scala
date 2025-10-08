@@ -19,17 +19,17 @@ package uk.gov.hmrc.tai.service
 import cats.data.EitherT
 import cats.instances.future.*
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as meq}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.*
-import uk.gov.hmrc.tai.model.domain.income.*
-import uk.gov.hmrc.tai.model.domain.tax.*
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.tax._
 import utils.BaseSpec
 
-import scala.concurrent.duration.*
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -63,88 +63,13 @@ class TaxAccountServiceSpec extends BaseSpec {
       )
 
   "taxCodeIncomes" must {
-    "return seq of tax codes when no IABD overrides are available" in {
+    "return seq of tax codes" in {
       val testService = createSut
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
-        .thenReturn(EitherT.rightT(Seq.empty))
 
       val result = testService.taxCodeIncomes(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe Right(taxCodeIncomes)
-    }
-
-    "apply IABD 027 overrides when present" in {
-      val testService = createSut
-      val base        = taxCodeIncomes
-      when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(base)))
-
-      val iabd = Seq(
-        IabdDetails(
-          employmentSequenceNumber = Some(1),
-          source = None,
-          `type` = None,
-          receiptDate = None,
-          captureDate = None,
-          grossAmount = Some(BigDecimal(99999))
-        )
-      )
-      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
-        .thenReturn(EitherT.rightT(iabd))
-
-      val result = Await.result(testService.taxCodeIncomes(nino, TaxYear()), 5.seconds).toOption.get
-
-      result.find(_.employmentId.contains(1)).get.amount mustBe BigDecimal(99999)
-      result.find(_.employmentId.contains(2)).get.amount mustBe base.find(_.employmentId.contains(2)).get.amount
-    }
-
-    "return base values when IABD call fails" in {
-      val testService = createSut
-      when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(Right(taxCodeIncomes)))
-      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
-        .thenReturn(EitherT.leftT(UpstreamErrorResponse("boom", 500)))
-
-      val result = Await.result(testService.taxCodeIncomes(nino, TaxYear()), 5.seconds)
-      result mustBe Right(taxCodeIncomes)
-    }
-  }
-
-  "newTaxCodeIncomes" must {
-    "apply IABD 027 overrides when present" in {
-      val testService = createSut
-      val base        = taxCodeIncomes
-      when(taxAccountConnector.newTaxCodeIncomes(any(), any())(any()))
-        .thenReturn(EitherT.rightT(base))
-      val iabd        = Seq(
-        IabdDetails(Some(1), None, None, None, None, Some(BigDecimal(22222)))
-      )
-      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
-        .thenReturn(EitherT.rightT(iabd))
-
-      val result = Await.result(testService.newTaxCodeIncomes(nino, TaxYear()).value, 5.seconds).toOption.get
-      result.find(_.employmentId.contains(1)).get.amount mustBe BigDecimal(22222)
-      result.find(_.employmentId.contains(2)).get.amount mustBe base.find(_.employmentId.contains(2)).get.amount
-    }
-
-    "return base values when IABD call fails" in {
-      val testService = createSut
-      when(taxAccountConnector.newTaxCodeIncomes(any(), any())(any()))
-        .thenReturn(EitherT.rightT(taxCodeIncomes))
-      when(iabdService.getIabds(any(), any(), meq(Some("New Estimated Pay (027)")))(any()))
-        .thenReturn(EitherT.leftT(UpstreamErrorResponse("err", 500)))
-
-      val result = Await.result(testService.newTaxCodeIncomes(nino, TaxYear()).value, 5.seconds)
-      result mustBe Right(taxCodeIncomes)
-    }
-
-    "return empty seq when connector returns NOT_FOUND" in {
-      val testService = createSut
-      when(taxAccountConnector.newTaxCodeIncomes(any(), any())(any()))
-        .thenReturn(EitherT.leftT(UpstreamErrorResponse("nf", 404)))
-      val result      = Await.result(testService.newTaxCodeIncomes(nino, TaxYear()).value, 5.seconds)
-      result mustBe Right(Seq.empty)
     }
   }
 
@@ -155,8 +80,7 @@ class TaxAccountServiceSpec extends BaseSpec {
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
-
+      val result   = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
       val expected = Right(Some(taxCodeIncome1))
 
       Await.result(result, 5 seconds) mustBe expected
@@ -169,7 +93,6 @@ class TaxAccountServiceSpec extends BaseSpec {
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
-
       Await.result(result, 5 seconds) mustBe Right(Option.empty[TaxCodeIncome])
     }
 
@@ -180,7 +103,6 @@ class TaxAccountServiceSpec extends BaseSpec {
         .thenReturn(Future.successful(Left("error")))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
-
       Await.result(result, 5 seconds) mustBe Left("error")
     }
   }
@@ -307,6 +229,35 @@ class TaxAccountServiceSpec extends BaseSpec {
         val result = sut.scottishBandRates(nino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
+    }
+  }
+
+  "iabdEstimatedPayOverrides" must {
+
+    "return a map of employment sequence numbers to override amounts when IABD returns data" in {
+      val sut = createSut
+
+      val iabds: Seq[IabdDetails] = Seq(
+        IabdDetails(Some(2), None, None, None, None, Some(BigDecimal(3333))),
+        IabdDetails(None, None, None, None, None, Some(BigDecimal(9999))),
+        IabdDetails(Some(3), None, None, None, None, None)
+      )
+
+      when(iabdService.getIabds(any(), any(), any())(any()))
+        .thenReturn(EitherT.rightT(iabds))
+
+      val result = Await.result(sut.iabdEstimatedPayOverrides(nino, TaxYear()), 5.seconds)
+      result mustBe Map(2 -> BigDecimal(3333))
+    }
+
+    "return empty map when IABD returns an error" in {
+      val sut = createSut
+
+      when(iabdService.getIabds(any(), any(), any())(any()))
+        .thenReturn(EitherT.leftT(UpstreamErrorResponse("boom", 500)))
+
+      val result = Await.result(sut.iabdEstimatedPayOverrides(nino, TaxYear()), 5.seconds)
+      result mustBe Map.empty
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import utils.BaseSpec
@@ -80,9 +78,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
   )
 
-  private val benefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
-
-  private val benefitsService: BenefitsService                   = mock[BenefitsService]
   private val mockEploymentService: EmploymentService            = mock[EmploymentService]
   private val taxAccountService: TaxAccountService               = mock[TaxAccountService]
   private val mockJourneyCacheRepository: JourneyCacheRepository = mock[JourneyCacheRepository]
@@ -115,6 +110,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     Mockito.reset(mockRtiService)
     Mockito.reset(mockEploymentService)
     Mockito.reset(taxAccountService)
+
+    when(taxAccountService.iabdEstimatedPayOverrides(any(), any())(any()))
+      .thenReturn(Future.successful(Map.empty[Int, BigDecimal]))
   }
 
   private val employmentId = 1
@@ -132,7 +130,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(mockEploymentService.employmentOnly(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockRtiService.getPaymentsForYear(any(), any())(any())).thenReturn(rtiResponse())
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -182,7 +179,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
               )
             )
           )
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         val rtiResponseOrError = annualAccount.fold(
           status => EitherT.leftT[Future, Seq[AnnualAccount]](UpstreamErrorResponse(s"status $status", status)),
           accounts => rtiResponse(accounts)
@@ -337,7 +333,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
             Seq(annualAccount.copy(sequenceNumber = employment.sequenceNumber))
           )
         )
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "1111")
@@ -381,7 +376,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
             Seq(annualAccount.copy(sequenceNumber = employmentId))
           )
         )
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), "3333")
@@ -419,7 +413,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
             Seq(annualAccount.copy(sequenceNumber = employment.sequenceNumber))
           )
         )
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         val userAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(pensionId), "3333")
           .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
@@ -461,7 +454,30 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         verify(mockEploymentService, times(0)).employmentOnly(any(), any(), any())(any())
         verify(mockRtiService, times(0)).getPaymentsForYear(any(), any())(any())
         verify(taxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
+        verify(taxAccountService, times(0)).iabdEstimatedPayOverrides(any(), any())(any())
+
       }
     }
+  }
+
+  "apply IABD override when present for the empId" in {
+    val ua = baseUserAnswers.setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
+    setup(ua)
+
+    when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+      .thenReturn(Future.successful(Right(taxCodeIncomes)))
+    when(mockEploymentService.employmentOnly(any(), any(), any())(any()))
+      .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+    when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+      .thenReturn(rtiResponse(Seq(annualAccount.copy(sequenceNumber = employmentId))))
+
+    when(taxAccountService.iabdEstimatedPayOverrides(any(), any())(any()))
+      .thenReturn(Future.successful(Map(employmentId -> BigDecimal(9999))))
+
+    val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+    status(result) mustBe OK
+    val doc = Jsoup.parse(contentAsString(result))
+    Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
   }
 }
