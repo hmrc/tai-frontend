@@ -227,7 +227,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           "£1,111"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
-          .map(_.text()) mustBe None withClue "html id incomeReceivedToDate"
+          .map(_.text()) mustBe Some(
+          "Your income received to date is unavailable. Try again later"
+        ) withClue "html id incomeReceivedToDate"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -244,7 +246,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           "£1,111"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
-          .map(_.text()) mustBe None withClue "html id incomeReceivedToDate"
+          .map(_.text()) mustBe Some(
+          "Your income received to date is unavailable. Try again later"
+        ) withClue "html id incomeReceivedToDate"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -260,7 +264,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           "£1,111"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
-          .map(_.text()) mustBe None withClue "html id incomeReceivedToDate"
+          .map(_.text()) mustBe Some(
+          "Your income received to date is unavailable. Try again later"
+        ) withClue "html id incomeReceivedToDate"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -276,7 +282,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           "£1,111"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
-          .map(_.text()) mustBe None withClue "html id incomeReceivedToDate"
+          .map(_.text()) mustBe Some(
+          "Your income received to date is unavailable. Try again later"
+        ) withClue "html id incomeReceivedToDate"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -301,10 +309,14 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe None withClue "html id estimatedIncome"
+        Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
+          "Your estimated taxable income is missing. Add your estimated taxable income."
+        ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
           .map(_.text()) mustBe Some("£400") withClue "html id incomeReceivedToDate"
-        Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("") withClue "html id taxCode"
+        Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some(
+          "Your tax code is unavailable. Try again later"
+        ) withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
         verify(mockEploymentService, times(1)).employmentOnly(any(), any(), any())(any())
