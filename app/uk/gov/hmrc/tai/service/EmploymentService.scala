@@ -29,13 +29,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit ec: ExecutionContext) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.employments(nino, year)
+    employmentsConnector.employmentsOnly(nino, year).value.map {
+      case Right(employments) => employments
+      case Left(_)            => Seq.empty[Employment]
+    }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentsConnector.ceasedEmployments(nino, year)
 
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    employmentsConnector.employment(nino, id.toString)
+    employmentsConnector.employmentOnly(nino, id, TaxYear())
 
   def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     employmentsConnector.employmentOnly(nino, id, taxYear)
