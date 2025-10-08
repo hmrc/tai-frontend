@@ -96,7 +96,7 @@ object YourIncomeCalculationViewModel {
               employment.employmentStatus,
               employment,
               pensionOrEmpMessage(isPension),
-              income, // <- uses overridden amount if present
+              income,
               iabd,
               latestPayment.map(_.paymentFrequency),
               latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),

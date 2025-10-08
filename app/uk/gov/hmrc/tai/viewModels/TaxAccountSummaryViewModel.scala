@@ -119,13 +119,13 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     val employmentViewModels =
       incomesSources.liveEmploymentIncomeSources.map { ti =>
         val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
-        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt) // UPDATED
+        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
       }
 
     val pensionsViewModels =
       incomesSources.livePensionIncomeSources.map { ti =>
         val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
-        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt) // UPDATED
+        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
       }
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
