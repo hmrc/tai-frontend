@@ -139,12 +139,6 @@
                                         copy=messages("tai.income.details.estimateUnavailable.linkText"))}
                                 """)
                     ))
-                    <p class="govuk-inset-text govuk-!-font-size-16">
-                        @messages("tai.income.details.estimateUnavailable") @link(
-                        id=Some("updateIncome"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
-                        copy=messages("tai.income.details.estimateUnavailable.linkText"))
-                    </p>
                 }
                 case (false, true) => {
                     <p class="govuk-inset-text govuk-!-font-size-16">
@@ -190,7 +184,6 @@
                         id = Some("incomeReceivedToDate"),
                         content = HtmlContent(messages("tai.income.details.incomeReceivedToDateUnavailable"))
                     ))
-                    <span>@messages("tai.rti.down")</span>
                 }
 
         </div>
@@ -201,19 +194,19 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             <h2 class="govuk-heading-m">@messages("tai.taxCode")</h2>
-            @if(model.taxCode.isDefined){
-            <span id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.taxCode</span>
-            <p>
-                @link(
-                    id=Some("understandTaxCode"),
-                    url=routes.YourTaxCodeController.taxCode(model.empId).url,
-                    copy=messages("tai.income.details.taxCode.linkText"))
-            </p>
-            } else {
+            @if(model.taxCode.isEmpty){
                 @govukInsetText(InsetText(
                     id = Some("taxCode"),
                     content = HtmlContent(s"""<p>${messages("tai.income.details.taxCodeUnavailable")}</p>""")
                 ))
+            } else {
+            <span id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.taxCode</span>
+            <p>
+                @link(
+                id=Some("understandTaxCode"),
+                url=routes.YourTaxCodeController.taxCode(model.empId).url,
+                copy=messages("tai.income.details.taxCode.linkText"))
+            </p>
             }
         </div>
 
