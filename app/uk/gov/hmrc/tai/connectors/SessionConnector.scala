@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -28,8 +29,8 @@ class SessionConnector @Inject() (httpHandler: HttpHandler, servicesConfig: Serv
 
   val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val url = s"$serviceUrl/tai/session-cache"
+  def invalidateCache(nino: Nino)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val url = s"$serviceUrl/tai/$nino/session-cache"
     httpHandler.deleteFromApi(url)
   }
 }

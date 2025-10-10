@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.tai.connectors.SessionConnector
 
@@ -24,7 +25,7 @@ import scala.concurrent.Future
 
 class SessionService @Inject() (sessionConnector: SessionConnector) {
 
-  def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    sessionConnector.invalidateCache()
+  def invalidateCache(nino: Nino)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    sessionConnector.invalidateCache(nino)
 
 }

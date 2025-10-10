@@ -37,15 +37,15 @@ class SessionConnectorSpec extends BaseSpec {
   "Session Connector" must {
     "return Http response" when {
       "cache is invalidated" in {
-        val result = Await.result(sut.invalidateCache(), 5.seconds)
+        val result = Await.result(sut.invalidateCache(nino), 5.seconds)
 
         result.status mustBe 200
       }
     }
 
     "call the proper url to invalidate the cache" in {
-      Await.result(sut.invalidateCache(), 5.seconds)
-      verify(httpHandler, times(1)).deleteFromApi(meq("localhost/tai/session-cache"), any())(any(), any())
+      Await.result(sut.invalidateCache(nino), 5.seconds)
+      verify(httpHandler, times(1)).deleteFromApi(meq(s"localhost/tai/$nino/session-cache"), any())(any(), any())
     }
   }
 

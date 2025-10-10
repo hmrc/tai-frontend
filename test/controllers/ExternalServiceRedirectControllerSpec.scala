@@ -56,13 +56,13 @@ class ExternalServiceRedirectControllerSpec extends BaseSpec {
 
         when(auditService.sendAuditEventAndGetRedirectUri(any(), meq("Test"))(any(), any()))
           .thenReturn(Future.successful(redirectUri))
-        when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
+        when(sessionService.invalidateCache(any())(any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
 
         val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe redirectUri
-        verify(sessionService, times(1)).invalidateCache()(any())
+        verify(sessionService, times(1)).invalidateCache(any())(any())
       }
     }
 
