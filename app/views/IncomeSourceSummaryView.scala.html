@@ -167,9 +167,8 @@
 
         <div class="govuk-grid-column-one-half">
             <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.incomeReceivedToDate")</h2>
-
+            <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                 @if(model.rtiAvailable) {
-                        <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                         <span id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(model.incomeReceivedToDate)</span>
 
                          <p>
