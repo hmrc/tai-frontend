@@ -19,9 +19,10 @@
 @import uk.gov.hmrc.tai.util.Money.pounds
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components.*
 
 
-@this(main: MainTemplate)
+@this(main: MainTemplate, govukInsetText: GovukInsetText)
 
 @(model: IncomeSourceSummaryViewModel)(implicit request: DataRequest[_], messages: Messages)
 
@@ -130,12 +131,14 @@
 
             @(model.estimatedTaxableIncome.isEmpty, model.isUpdateInProgress) match {
                 case (true, _) => {
-                    <p class="govuk-inset-text govuk-!-font-size-16">
-                        @messages("tai.income.details.estimateUnavailable") @link(
-                        id=Some("updateIncome"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
-                        copy=messages("tai.income.details.estimateUnavailable.linkText"))
-                    </p>
+                    @govukInsetText(InsetText(
+                        id = Some("estimatedIncome"),
+                        content = HtmlContent(s"""${messages("tai.income.details.estimateUnavailable")} ${link(
+                                        id=Some("updateIncome"),
+                                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
+                                        copy=messages("tai.income.details.estimateUnavailable.linkText"))}
+                                """)
+                    ))
                 }
                 case (false, true) => {
                     <p class="govuk-inset-text govuk-!-font-size-16">
@@ -164,9 +167,8 @@
 
         <div class="govuk-grid-column-one-half">
             <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.incomeReceivedToDate")</h2>
-
+            <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                 @if(model.rtiAvailable) {
-                        <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                         <span id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(model.incomeReceivedToDate)</span>
 
                          <p>
@@ -177,7 +179,10 @@
                                  linkClasses=Seq("carry-over"))
                         </p>
                 } else {
-                    <span>@messages("tai.rti.down")</span>
+                    @govukInsetText(InsetText(
+                        id = Some("incomeReceivedToDate"),
+                        content = HtmlContent(messages("tai.income.details.incomeReceivedToDateUnavailable"))
+                    ))
                 }
 
         </div>
@@ -188,13 +193,20 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             <h2 class="govuk-heading-m">@messages("tai.taxCode")</h2>
+            @if(model.taxCode.isEmpty){
+                @govukInsetText(InsetText(
+                    id = Some("taxCode"),
+                    content = HtmlContent(s"""<p>${messages("tai.income.details.taxCodeUnavailable")}</p>""")
+                ))
+            } else {
             <span id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.taxCode</span>
             <p>
                 @link(
-                    id=Some("understandTaxCode"),
-                    url=routes.YourTaxCodeController.taxCode(model.empId).url,
-                    copy=messages("tai.income.details.taxCode.linkText"))
+                id=Some("understandTaxCode"),
+                url=routes.YourTaxCodeController.taxCode(model.empId).url,
+                copy=messages("tai.income.details.taxCode.linkText"))
             </p>
+            }
         </div>
 
         <div class="govuk-grid-column-one-half">
