@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ class IabdService @Inject() (
   iabdConnector: IabdConnector
 )(implicit ec: ExecutionContext) {
 
-  def getIabds(nino: Nino, taxYear: TaxYear)(implicit
+  def getIabds(nino: Nino, taxYear: TaxYear, iabdType: Option[String] = None)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[IabdDetails]] =
-    iabdConnector.getIabds(nino, taxYear).map { response =>
+    iabdConnector.getIabds(nino, taxYear, iabdType).map { response =>
       (response.json \ "data" \ "iabdDetails").as[Seq[IabdDetails]]
     }
 }

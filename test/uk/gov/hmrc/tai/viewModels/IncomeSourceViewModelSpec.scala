@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -314,6 +314,20 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       actual.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController
         .yourIncomeCalculationPage(taxedIncome.employment.sequenceNumber)
         .url
+    }
+
+    "use overrideAmount when provided (createFromTaxedIncome)" in {
+      val taxedIncome = TaxedIncome(Some(liveEmployment1.copy(amount = 1111)), empEmployment1)
+      val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome, overrideAmount = Some(BigDecimal(5555)))
+      actual.amount mustBe Some("£5,555")
+    }
+  }
+
+  "apply with overrideAmount" must {
+    "use the overrideAmount instead of taxCodeIncome.amount" in {
+      val tcIncome = taxCodeIncome.copy(amount = 1111)
+      val actual   = IncomeSourceViewModel(tcIncome, employment, overrideAmount = Some(BigDecimal(2222)))
+      actual.amount mustBe Some("£2,222")
     }
   }
 }

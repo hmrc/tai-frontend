@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,47 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.apache.pekko.Done
 import cats.data.EitherT
 import cats.implicits._
+import org.apache.pekko.Done
+import play.api.Logging
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{IabdDetails, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(implicit ec: ExecutionContext) {
+class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector, iabdService: IabdService)(implicit
+  ec: ExecutionContext
+) extends Logging {
+
+  private val IabdTypeNewEstimatedPay = "New Estimated Pay (027)"
+
+  def iabdEstimatedPayOverrides(nino: Nino, year: TaxYear)(implicit
+    hc: HeaderCarrier
+  ): Future[Map[Int, BigDecimal]] =
+    iabdService
+      .getIabds(nino, year, Some(IabdTypeNewEstimatedPay))
+      .value
+      .map {
+        case Right(details) =>
+          details.collect { case IabdDetails(Some(empId), _, _, _, _, Some(amount)) =>
+            empId -> amount
+          }.toMap
+        case Left(e)        =>
+          logger.warn(s"IABD 027 fetch failed: ${e.statusCode} ${e.message}")
+          Map.empty[Int, BigDecimal]
+      }
+      .recover { case t =>
+        logger.warn(s"IABD 027 fetch threw: ${t.getMessage}", t)
+        Map.empty[Int, BigDecimal]
+      }
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
