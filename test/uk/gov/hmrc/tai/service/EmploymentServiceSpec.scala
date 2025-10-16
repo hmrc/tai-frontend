@@ -67,7 +67,8 @@ class EmploymentServiceSpec extends BaseSpec {
     "return employments" in {
       val sut = createSUT
 
-      when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+      when(employmentsConnector.employmentsOnly(any(), any())(any()))
+        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
 
       val data = Await.result(sut.employments(nino, year), 5.seconds)
 
@@ -92,7 +93,8 @@ class EmploymentServiceSpec extends BaseSpec {
       "connector returns one employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employmentDetails))
+        when(employmentsConnector.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employmentDetails))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -133,8 +135,8 @@ class EmploymentServiceSpec extends BaseSpec {
           EmploymentIncome
         )
 
-        when(employmentsConnector.employments(any(), any())(any()))
-          .thenReturn(Future.successful(List(employment1, employment2)))
+        when(employmentsConnector.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](List(employment1, employment2)))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -144,7 +146,8 @@ class EmploymentServiceSpec extends BaseSpec {
       "connector does not return any employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+        when(employmentsConnector.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty))
 
         val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -158,7 +161,8 @@ class EmploymentServiceSpec extends BaseSpec {
       "the connector returns one" in {
         val sut = createSUT
 
-        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment)))
 
         val data = Await.result(sut.employment(nino, 8), 5.seconds)
 
@@ -169,7 +173,7 @@ class EmploymentServiceSpec extends BaseSpec {
       "the connector does not return an employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentsConnector.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val data = Await.result(sut.employment(nino, 8), 5.seconds)
 

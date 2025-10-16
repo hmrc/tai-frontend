@@ -38,8 +38,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   private val startDateCutoff: LocalDate = applicationConfig.startEmploymentDateFilteredBefore
 
-  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
-
   private def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employment-only/$id/years/${taxYear.year}"
 
@@ -51,9 +49,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   def addEmploymentServiceUrl(nino: Nino): String =
     s"$serviceUrl/tai/$nino/employments"
-
-  def employmentServiceUrl(nino: Nino, year: TaxYear): String =
-    s"$serviceUrl/tai/$nino/employments/years/${year.year}"
 
   private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
@@ -69,11 +64,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   private def sanitizeAll(es: Seq[Employment]): Seq[Employment] =
     es.iterator.map(sanitize).toSeq
-
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)).map { json =>
-      sanitizeAll((json \ "data" \ "employments").as[Seq[Employment]])
-    }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
@@ -99,11 +89,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
         sanitizeAll((httpResponse.json \ "data" \ "employments").as[Seq[Employment]])
       }
   }
-
-  def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler.getFromApiV2(employmentUrl(nino, id)).map { json =>
-      (json \ "data").asOpt[Employment].map(sanitize)
-    }
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).flatMap { response =>
