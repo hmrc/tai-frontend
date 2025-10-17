@@ -118,16 +118,16 @@
         }
     } else {
         @if(model.isPension) {
-            <span>@messages("tai.rti.down.updatePension")</span>
+            <p class="govuk-body govuk-!-padding-bottom-5">@messages("tai.rti.down.updatePension")</p>
         } else {
-            <span>@messages("tai.rti.down.updateEmployment")</span>
+            <p class="govuk-body govuk-!-padding-bottom-5">@messages("tai.rti.down.updateEmployment")</p>
         }
     }
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-                <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.estimatedTaxableIncome")</h2>
-                <p class="govuk-body break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
+                <h2 class="govuk-heading-m">@messages("tai.income.details.estimatedTaxableIncome")</h2>
+                <p class="govuk-body govuk-!-margin-bottom-4">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
 
             @(model.estimatedTaxableIncome.isEmpty, model.isUpdateInProgress) match {
                 case (true, _) => {
@@ -153,7 +153,7 @@
                 }
                 case (false, false) => {
                     @for(estimatedIncome <- model.estimatedTaxableIncome) {
-                        <span id="estimatedIncome" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(estimatedIncome)</span>
+                        <p id="estimatedIncome" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(estimatedIncome)</p>
                     }
                     <p>
                         @link(
@@ -166,10 +166,10 @@
         </div>
 
         <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.incomeReceivedToDate")</h2>
-            <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
+            <h2 class="govuk-heading-m">@messages("tai.income.details.incomeReceivedToDate")</h2>
+            <p class="govuk-body govuk-!-margin-bottom-4">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                 @if(model.rtiAvailable) {
-                        <span id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(model.incomeReceivedToDate)</span>
+                        <p  id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(model.incomeReceivedToDate)</p>
 
                          <p>
                              @link(
@@ -188,18 +188,16 @@
         </div>
     </div>
 
-    <div class="govuk-!-padding-bottom-7"></div>
-
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             <h2 class="govuk-heading-m">@messages("tai.taxCode")</h2>
             @if(model.taxCode.isEmpty){
                 @govukInsetText(InsetText(
                     id = Some("taxCode"),
-                    content = HtmlContent(s"""<p>${messages("tai.income.details.taxCodeUnavailable")}</p>""")
+                    content = HtmlContent(s"""<p class="govuk-body govuk-!-margin-bottom-4">${messages("tai.income.details.taxCodeUnavailable")}</p>""")
                 ))
             } else {
-            <span id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.taxCode</span>
+            <p id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@model.taxCode</p>
             <p>
                 @link(
                 id=Some("understandTaxCode"),
@@ -210,23 +208,19 @@
         </div>
 
         <div class="govuk-grid-column-one-half">
-            <h3 class="govuk-heading-m">@messages("tai.income.details.ERN")</h3>
-            <p id="empPayeRef" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                @{model.taxDistrictNumber}/@{model.payeNumber}
-            </p>
+            <h2 class="govuk-heading-m">@messages("tai.income.details.ERN")</h2>
+            <p id="empPayeRef" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@{model.taxDistrictNumber}/@{model.payeNumber}</p>
         </div>
     </div>
-
-    <div class="govuk-!-padding-bottom-7"></div>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             @if(model.isPension){
             <h2 class="govuk-heading-m">@messages("tai.pensionNumber")</h2>
-            <p id="pensionNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.pensionOrPayrollNumber</p>
+            <p id="pensionNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@model.pensionOrPayrollNumber</p>
             } else {
             <h2 class="govuk-heading-m">@messages("tai.payRollNumber")</h2>
-            <p id="payRollNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.pensionOrPayrollNumber</p>
+            <p id="payRollNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@model.pensionOrPayrollNumber</p>
             }
         </div>
     </div>
