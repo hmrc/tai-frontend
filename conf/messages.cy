@@ -1773,12 +1773,25 @@ beforeYouStart.list.payrollNumber = rhif cyflogres
 beforeYouStart.list.payeReference = cyfeirnod TWE y cyflogwr
 beforeYouStart.list.phoneNumber = rhif ffôn
 
-tai.payeRefForm.title = Beth yw cyfeirnod TWE y cyflogwr ar gyfer {0}?
-tai.payeRefForm.hint = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB456.
+# Pension list
+beforeYouStart.pension.list.providerName = enw darparwr eich pensiwn
+beforeYouStart.pension.list.firstPaymentDate = eich dyddiad talu cyntaf
+beforeYouStart.pension.list.pensionNumber = rhif eich pensiwn
+beforeYouStart.pension.list.providerPayeReference = cyfeirnod TWE darparwr pensiwn
+
+tai.payeRefForm.employment.title = Beth yw cyfeirnod TWE y cyflogwr ar gyfer {0}?
+tai.payeRefForm.pension.title = Beth yw cyfeirnod TWE {0}?
+tai.payeRefForm.employment.hint = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod cyflogwr gan y swyddfa dreth, megis 123/AB456.
+tai.payeRefForm.pension.hint = Rhif swyddfa dreth 3 digid yw hwn, wedi’i ddilyn gan flaenslaes a chyfeirnod swyddfa dreth y darparwr, er enghraifft 123/AB456.
 tai.payeRefForm.hint2 = Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyflogwr’ neu fel ‘Cyfeirnod TWE’.
-tai.payeRefForm.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurflenni treth.
+tai.payeRefForm.employment.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurflenni treth.
+tai.payeRefForm.pension.hint3 = Cysylltwch â darparwr eich pensiwn i gael ei gyfeirnod TWE.
 tai.payeRefForm.required = Nodwch gyfeirnod TWE y cyflogwr {0}
 tai.payeRefForm.format = Nodwch gyfeirnod TWE y cyflogwr {0} yn y fformat cywir
+tai.payeRefForm.pension.required = Enter {0}’s PAYE reference
+tai.payeRefForm.pension.format = Enter {0}’s PAYE reference in the correct format
+
+tai.addPensionProvider.cya.payeRef = Cyfeirnod TWE
 
 tai.idNotFound.title = Heb ddod o hyd i’r dudalen
 tai.idNotFound.linkText = Ewch i’r trosolwg o’ch Treth Incwm TWE

@@ -26,64 +26,81 @@
         govukErrorSummary: GovukErrorSummary
 )
 
-@(payeRefForm: Form[String], companyName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
+@(payeRefForm: Form[String], companyName: String, journey: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
-@main(
-    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    title = Messages("tai.payeRefForm.title", companyName),
-    authedUser = Some(user),
-    formForErrorSummary = Some(payeRefForm),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
-    backLinkUrl = Some(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url),
-) {
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            @if(payeRefForm.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummary(
-                    errorList = payeRefForm.errors.asTextErrorLinks,
-                    title = Text(messages("tai.income.error.form.summary"))
-                ))
-            }
+@defining(if (journey == "pension") "tai.payeRefForm.pension.title" else "tai.payeRefForm.employment.title") { titleKey =>
+    @defining(if (journey == "pension") "tai.payeRefForm.pension.hint3" else "tai.payeRefForm.employment.hint3") { hint3Key =>
+        @defining(if (journey == "pension") "tai.payeRefForm.pension.hint" else "tai.payeRefForm.employment.hint") { hint1Key =>
+            @defining(if (journey == "pension") "add.missing.pension" else "add.missing.employment") { preHeadingKey =>
 
-            <h2 class="govuk-caption-xl hmrc-caption-xl">
-                <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>
-                @messages("add.missing.employment")
-            </h2>
+                @main(
+                    pageTitle = Some(Messages("tai.currentYearSummary.heading")),
+                    title = messages(titleKey, companyName),
+                    authedUser = Some(user),
+                    formForErrorSummary = Some(payeRefForm),
+                    backLinkContent = Some(Messages("tai.back-link.upper")),
+                    backLinkId = "back-link-custom-url",
+                    backLinkUrl =
+                        if (journey == "pension") {
+                            Some(controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url)
+                        } else {
+                            Some(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url)
+                        },
+                ) {
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-two-thirds">
+                            @if(payeRefForm.errors.nonEmpty) {
+                                @govukErrorSummary(ErrorSummary(
+                                    errorList = payeRefForm.errors.asTextErrorLinks,
+                                    title = Text(messages("tai.income.error.form.summary"))
+                                ))
+                            }
 
-            @formWithCSRF(action = controllers.employments.routes.AddEmploymentController.submitPayeReference()
-            ) {
+                            <h2 class="govuk-caption-xl hmrc-caption-xl">
+                                <span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>
+                                @messages(preHeadingKey)
+                            </h2>
 
-                @govukInput(Input(
-                    id = "payeReference",
-                    name = "payeReference",
-                    value = payeRefForm("payeReference").value,
-                    label = Label(
-                        isPageHeading = true,
-                        classes = "govuk-label--xl",
-                        content = Text(messages("tai.payeRefForm.title", companyName))
-                    ),
-                    hint = Some(
-                        Hint(
-                            content = HtmlContent(
-                                s"""
-                                |${messages("tai.payeRefForm.hint")}
-                                |${messages("tai.payeRefForm.hint2")}
-                                |${messages("tai.payeRefForm.hint3")}
-                                |""".stripMargin
-                            )
-                        )
-                    ),
-                    errorMessage = payeRefForm.error("payeReference").map { err =>
-                        ErrorMessage(content = Text(err.message))
-                    }
-                ))
+                            @formWithCSRF(
+                                action =
+                                    if (journey == "pension") {
+                                        controllers.pensions.routes.AddPensionProviderController.submitPayeReference()
+                                    } else {
+                                        controllers.employments.routes.AddEmploymentController.submitPayeReference()
+                                    }
+                            ) {
 
-                @govukButton(Button(
-                    content = Text(messages("tai.continue")),
-                    id = Some("submitButton")
-                ))
-            }
-        </div>
-    </div>
-}
+                                @govukInput(Input(
+                                    id = "payeReference",
+                                    name = "payeReference",
+                                    value = payeRefForm("payeReference").value,
+                                    label = Label(
+                                        isPageHeading = true,
+                                        classes = "govuk-label--xl",
+                                        content = Text(messages(titleKey, companyName))
+                                    ),
+                                    hint = Some(
+                                        Hint(
+                                            content = HtmlContent(
+                                                s"""
+                  |${messages(hint1Key)}
+                  |${messages("tai.payeRefForm.hint2")}
+                  |${messages(hint3Key)}
+                  |""".stripMargin
+                                            )
+                                        )
+                                    ),
+                                    errorMessage = payeRefForm.error("payeReference").map { err =>
+                                        ErrorMessage(content = Text(err.message))
+                                    }
+                                ))
+
+                                @govukButton(Button(
+                                    content = Text(messages("tai.continue")),
+                                    id = Some("submitButton")
+                                ))
+                            }
+                        </div>
+                    </div>
+                }
+            }}}}

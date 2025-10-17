@@ -28,9 +28,14 @@ class BeforeYouStartController @Inject() (
   view: BeforeYouStart
 ) extends TaiBaseController(cc) {
 
-  def onPageLoad(): Action[AnyContent] =
+  def onPageLoad(journeyType: String): Action[AnyContent] =
     authenticate.authWithValidatePerson { implicit request =>
       implicit val user: AuthedUser = request.taiUser
-      Ok(view())
+      journeyType match {
+        case "employment" | "pension" =>
+          Ok(view(journeyType))
+        case _                        =>
+          NotFound("Invalid journey type")
+      }
     }
 }

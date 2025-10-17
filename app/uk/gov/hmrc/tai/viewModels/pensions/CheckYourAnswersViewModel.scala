@@ -38,6 +38,7 @@ object CheckYourAnswersViewModel {
     pensionProviderName: String,
     pensionStartDate: String,
     pensionRefNo: String,
+    payeRef: String,
     contactableByPhone: String,
     phoneNumber: Option[String]
   )(implicit messages: Messages): CheckYourAnswersViewModel = {
@@ -59,6 +60,11 @@ object CheckYourAnswersViewModel {
           Messages("tai.addPensionProvider.cya.q3"),
           pensionRefNo,
           controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
+        ),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.addPensionProvider.cya.payeRef"),
+          payeRef,
+          controllers.pensions.routes.AddPensionProviderController.addPayeReference().url
         ),
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q4"),

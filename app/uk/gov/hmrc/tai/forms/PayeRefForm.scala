@@ -23,19 +23,27 @@ import play.api.i18n.Messages
 
 object PayeRefForm {
 
-  def form(companyName: String)(implicit messages: Messages): Form[String] = Form(
-    single(
-      "payeReference" -> text.verifying(payeRefCheck(companyName))
+  def form(companyName: String, journey: String)(implicit messages: Messages): Form[String] =
+    Form(
+      single(
+        "payeReference" -> text.verifying(payeRefCheck(companyName, journey))
+      )
     )
-  )
 
-  def payeRefCheck(companyName: String)(implicit messages: Messages): Constraint[String] =
+  def payeRefCheck(companyName: String, journey: String)(implicit messages: Messages): Constraint[String] =
     Constraint("constraints.payeRefCheck") { value =>
       val regex = """\d{3}/[A-Za-z0-9]{1,10}""".r
+
+      val (requiredKey, formatKey) =
+        if (journey == "pension")
+          ("tai.payeRefForm.pension.required", "tai.payeRefForm.pension.format")
+        else
+          ("tai.payeRefForm.employment.required", "tai.payeRefForm.employment.format")
+
       value.trim match {
-        case str if str.isEmpty        => Invalid(messages("tai.payeRefForm.required", companyName))
+        case str if str.isEmpty        => Invalid(messages(requiredKey, companyName))
         case str if regex.matches(str) => Valid
-        case _                         => Invalid(messages("tai.payeRefForm.format", companyName))
+        case _                         => Invalid(messages(formatKey, companyName))
       }
     }
 }
