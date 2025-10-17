@@ -101,14 +101,14 @@
 <div class="govuk-grid-column-two-thirds govuk-body">
     @if(model.rtiAvailable) {
         @if(model.isPension) {
-            <p>
+            <p class="govuk-body govuk-!-padding-bottom-5">
             @link(
                 id = Some("updatePension"),
                 url = controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
                 copy = messages("tai.pension.income.details.updateLinkText", model.empOrPensionName))
             </p>
         } else {
-            <p>
+            <p class="govuk-body govuk-!-padding-bottom-5">
             @link(
                 id = Some("updateEmployer"),
                 url = controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
@@ -118,16 +118,16 @@
         }
     } else {
         @if(model.isPension) {
-            <span>@messages("tai.rti.down.updatePension")</span>
+            <p class="govuk-body govuk-!-padding-bottom-5">@messages("tai.rti.down.updatePension")</p>
         } else {
-            <span>@messages("tai.rti.down.updateEmployment")</span>
+            <p class="govuk-body govuk-!-padding-bottom-5">@messages("tai.rti.down.updateEmployment")</p>
         }
     }
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-                <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.estimatedTaxableIncome")</h2>
-                <p class="govuk-body break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
+                <h2 class="govuk-heading-m">@messages("tai.income.details.estimatedTaxableIncome")</h2>
+                <p class="govuk-body govuk-!-margin-bottom-4">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
 
             @(model.estimatedTaxableIncome.isEmpty, model.isUpdateInProgress) match {
                 case (true, _) => {
@@ -144,7 +144,7 @@
                     <p class="govuk-inset-text govuk-!-font-size-16">
                         @messages("tai.income.details.updateInProgress")
                     </p>
-                    <p>
+                    <p class="govuk-body govuk-!-padding-bottom-4">
                         @link(
                         id=Some("updateIncome"),
                         url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
@@ -153,9 +153,9 @@
                 }
                 case (false, false) => {
                     @for(estimatedIncome <- model.estimatedTaxableIncome) {
-                        <span id="estimatedIncome" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(estimatedIncome)</span>
+                        <p id="estimatedIncome" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(estimatedIncome)</p>
                     }
-                    <p>
+                    <p class="govuk-body govuk-!-padding-bottom-4">
                         @link(
                         id=Some("updateIncome"),
                         url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
@@ -166,12 +166,12 @@
         </div>
 
         <div class="govuk-grid-column-one-half">
-            <h2 class="govuk-heading-m govuk-!-margin-0">@messages("tai.income.details.incomeReceivedToDate")</h2>
-            <p class="govuk-body break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
+            <h2 class="govuk-heading-m">@messages("tai.income.details.incomeReceivedToDate")</h2>
+            <p class="govuk-body govuk-!-margin-bottom-4">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                 @if(model.rtiAvailable) {
-                        <span id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@pounds(model.incomeReceivedToDate)</span>
+                        <p  id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(model.incomeReceivedToDate)</p>
 
-                         <p>
+                         <p class="govuk-body govuk-!-padding-bottom-4">
                              @link(
                                 id=Some("viewIncomeReceivedToDate"),
                                 url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
@@ -181,14 +181,13 @@
                 } else {
                     @govukInsetText(InsetText(
                         id = Some("incomeReceivedToDate"),
-                        content = HtmlContent(messages("tai.income.details.incomeReceivedToDateUnavailable"))
+                        content = HtmlContent(messages("tai.income.details.incomeReceivedToDateUnavailable")),
+                        classes = "govuk-!-margin-bottom-4"
                     ))
                 }
 
         </div>
     </div>
-
-    <div class="govuk-!-padding-bottom-7"></div>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
@@ -196,11 +195,12 @@
             @if(model.taxCode.isEmpty){
                 @govukInsetText(InsetText(
                     id = Some("taxCode"),
-                    content = HtmlContent(s"""<p>${messages("tai.income.details.taxCodeUnavailable")}</p>""")
-                ))
+                    content = HtmlContent(messages("tai.income.details.taxCodeUnavailable")),
+                    classes = "govuk-!-margin-bottom-4"
+            ))
             } else {
-            <span id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.taxCode</span>
-            <p>
+            <p id="taxCode" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@model.taxCode</p>
+            <p class="govuk-body govuk-!-padding-bottom-4">
                 @link(
                 id=Some("understandTaxCode"),
                 url=routes.YourTaxCodeController.taxCode(model.empId).url,
@@ -210,23 +210,19 @@
         </div>
 
         <div class="govuk-grid-column-one-half">
-            <h3 class="govuk-heading-m">@messages("tai.income.details.ERN")</h3>
-            <p id="empPayeRef" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">
-                @{model.taxDistrictNumber}/@{model.payeNumber}
-            </p>
+            <h2 class="govuk-heading-m">@messages("tai.income.details.ERN")</h2>
+            <p id="empPayeRef" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@{model.taxDistrictNumber}/@{model.payeNumber}</p>
         </div>
     </div>
-
-    <div class="govuk-!-padding-bottom-7"></div>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             @if(model.isPension){
             <h2 class="govuk-heading-m">@messages("tai.pensionNumber")</h2>
-            <p id="pensionNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.pensionOrPayrollNumber</p>
+            <p id="pensionNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@model.pensionOrPayrollNumber</p>
             } else {
             <h2 class="govuk-heading-m">@messages("tai.payRollNumber")</h2>
-            <p id="payRollNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold">@model.pensionOrPayrollNumber</p>
+            <p id="payRollNumber" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@model.pensionOrPayrollNumber</p>
             }
         </div>
     </div>
