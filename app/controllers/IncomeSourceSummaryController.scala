@@ -78,32 +78,37 @@ class IncomeSourceSummaryController @Inject() (
           taxAccountService.taxCodeIncomes(nino, TaxYear()),
           rtiService.getPaymentsForYear(nino, TaxYear()).value,
           Future.successful(hasJourneyCompleted),
-          cacheUpdatedIncomeAmountFuture
+          cacheUpdatedIncomeAmountFuture,
+          taxAccountService.iabdEstimatedPayOverrides(nino, TaxYear())
         ).mapN {
           case (
                 Some(employment),
                 taxCodeIncomes,
                 payments,
                 estimatedPayCompletion,
-                cacheUpdatedIncomeAmount
+                cacheUpdatedIncomeAmount,
+                iabdOverrides
               ) =>
-            val incomeDetailsViewModel = IncomeSourceSummaryViewModel.applyNew(
+            val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
               displayName = request.fullName,
-              taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
+              optTaxCodeIncome =
+                taxCodeIncomes.fold(_ => None, _.find(_.employmentId.contains(employment.sequenceNumber))),
               employment = employment,
               payments = payments.toOption.flatMap(_.find(_.sequenceNumber == employment.sequenceNumber)),
               estimatedPayJourneyCompleted = estimatedPayCompletion,
               rtiAvailable = isRTIAvailable(payments),
-              cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
+              cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
+              estimatedPayOverrides = iabdOverrides
             )
 
-            if (!incomeDetailsViewModel.isUpdateInProgress) {
+            if (!vm.isUpdateInProgress) {
               val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
               journeyCacheRepository.set(updatedUserAnswers)
             }
 
-            Ok(incomeSourceSummary(incomeDetailsViewModel))
+            Ok(incomeSourceSummary(vm))
+
           case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
         } recover { case NonFatal(e) =>
           errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))

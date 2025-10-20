@@ -17,7 +17,7 @@ private object AppDependencies {
   val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"   %% s"mongo-feature-toggles-client-test-$playVersion"  % mongoFeatureToggleVersion,
     "uk.gov.hmrc"   %% s"sca-wrapper-test-$playVersion"                   % scaWrapperVersion,
-    "org.jsoup"     % "jsoup"                                             % "1.21.1",
+    "org.jsoup"     % "jsoup"                                             % "1.21.2",
     "org.scalatestplus" %% "scalacheck-1-18"                              % "3.2.19.0"
   ).map(_ % "test")
 
