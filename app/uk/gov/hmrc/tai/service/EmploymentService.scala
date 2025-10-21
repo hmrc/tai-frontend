@@ -36,9 +36,9 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector, r
       employments <- employmentsConnector.employmentsOnly(nino, year).value
     } yield (payments, employments) match {
       case (Right(pay), Right(emp)) =>
-        emp.map { re =>
-          val matchingPayments = pay.filter(_.sequenceNumber == re.sequenceNumber)
-          re.copy(annualAccounts = re.annualAccounts ++ matchingPayments)
+        emp.map { employment =>
+          val matchingPayments = pay.filter(_.sequenceNumber == employment.sequenceNumber)
+          employment.copy(annualAccounts = employment.annualAccounts ++ matchingPayments)
         }
       case (_, Right(emps))         => emps
       case (_, Left(error))         => Seq.empty[Employment]
