@@ -188,15 +188,21 @@ class EmploymentServiceSpec extends BaseSpec {
 
   "employment" must {
     "return an employment" when {
-      "the connector returns one" in {
+      "the connector returns one with payments from RTI matching the given employment number" in {
         val sut = createSUT
+
+        val annualAccount  = AnnualAccount(2, TaxYear(2016), Available, Nil, Nil)
+        val annualAccount2 = annualAccount.copy(taxYear = TaxYear(2017))
+        val annualAccount3 = annualAccount.copy(sequenceNumber = 7)
 
         when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
+        when(rtiConnector.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount, annualAccount2, annualAccount3)))
 
         val data = Await.result(sut.employment(nino, 8), 5.seconds)
 
-        data mustBe Some(employment)
+        data mustBe Some(employment.copy(annualAccounts = Seq(annualAccount, annualAccount2)))
       }
     }
     "return none" when {

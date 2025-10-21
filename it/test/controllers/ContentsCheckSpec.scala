@@ -842,6 +842,11 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/tax-components"))
           .willReturn(ok("""{"data":[]}"""))
       )
+
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/rti-payments/years/$year"))
+          .willReturn(ok("""{"data": []}"""))
+      )
     }
 
     case class stubValuesData(journeyName: String, keyName: String, valueReturned: String)

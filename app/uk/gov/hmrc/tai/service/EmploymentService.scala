@@ -48,7 +48,15 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector, r
     employmentsConnector.ceasedEmployments(nino, year)
 
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    employmentsConnector.employmentOnly(nino, id, TaxYear())
+    employmentsConnector.employmentOnly(nino, id, TaxYear()).flatMap {
+      case Some(employment) =>
+        rtiConnector.getPaymentsForYear(nino, TaxYear()).value.map {
+          case Right(payments) =>
+            Some(employment.copy(annualAccounts = payments.filter(_.sequenceNumber == employment.sequenceNumber)))
+          case Left(error)     => None
+        }
+      case None             => Future.successful(None)
+    }
 
   def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     employmentsConnector.employmentOnly(nino, id, taxYear)
