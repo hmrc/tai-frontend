@@ -53,7 +53,7 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector, r
         rtiConnector.getPaymentsForYear(nino, TaxYear()).value.map {
           case Right(payments) =>
             Some(employment.copy(annualAccounts = payments.filter(_.sequenceNumber == employment.sequenceNumber)))
-          case Left(error)     => None
+          case Left(error)     => Some(employment)
         }
       case None             => Future.successful(None)
     }

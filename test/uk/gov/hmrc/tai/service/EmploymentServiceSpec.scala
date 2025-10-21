@@ -104,6 +104,19 @@ class EmploymentServiceSpec extends BaseSpec {
 
       data mustBe employments
     }
+
+    "return employments with no payments rti call callus" in {
+      val sut = createSUT
+
+      when(employmentsConnector.employmentsOnly(any(), any())(any()))
+        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
+      when(rtiConnector.getPaymentsForYear(any(), any())(any()))
+        .thenReturn(EitherT.leftT[Future, Seq[AnnualAccount]](UpstreamErrorResponse.Upstream5xxResponse))
+
+      val data = Await.result(sut.employments(nino, year), 5.seconds)
+
+      data mustBe employments
+    }
   }
 
   "CeasedEmployments Service" must {
@@ -203,6 +216,18 @@ class EmploymentServiceSpec extends BaseSpec {
         val data = Await.result(sut.employment(nino, 8), 5.seconds)
 
         data mustBe Some(employment.copy(annualAccounts = Seq(annualAccount, annualAccount2)))
+      }
+      "the connector returns one with no annualAccounts when RTI call fails" in {
+        val sut = createSUT
+
+        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment)))
+        when(rtiConnector.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.leftT[Future, Seq[AnnualAccount]](UpstreamErrorResponse.Upstream5xxResponse))
+
+        val data = Await.result(sut.employment(nino, 8), 5.seconds)
+
+        data mustBe Some(employment)
       }
     }
     "return none" when {
