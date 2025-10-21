@@ -19,19 +19,29 @@ package uk.gov.hmrc.tai.service
 import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.tai.connectors.EmploymentsConnector
+import uk.gov.hmrc.tai.connectors.{EmploymentsConnector, RtiConnector}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit ec: ExecutionContext) {
+class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector, rtiConnector: RtiConnector)(implicit
+  ec: ExecutionContext
+) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.employmentsOnly(nino, year).value.map {
-      case Right(employments) => employments
-      case Left(_)            => Seq.empty[Employment]
+    for {
+      payments    <- rtiConnector.getPaymentsForYear(nino, year).value
+      employments <- employmentsConnector.employmentsOnly(nino, year).value
+    } yield (payments, employments) match {
+      case (Right(pay), Right(emp)) =>
+        emp.map { re =>
+          val matchingPayments = pay.filter(_.sequenceNumber == re.sequenceNumber)
+          re.copy(annualAccounts = re.annualAccounts ++ matchingPayments)
+        }
+      case (_, Right(emps))         => emps
+      case (_, Left(error))         => Seq.empty[Employment]
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
