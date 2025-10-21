@@ -24,13 +24,15 @@ import views.html.BeforeYouStart
 
 class BeforeYouStartControllerSpec extends BaseSpec {
 
-  private val view = inject[BeforeYouStart]
+  private val view              = inject[BeforeYouStart]
+  private val errorPagesHandler = inject[ErrorPagesHandler]
 
   private def sut =
     new BeforeYouStartController(
       mockAuthJourney,
       mcc,
-      view
+      view,
+      errorPagesHandler
     )
 
   "BeforeYouStartController.onPageLoad" must {
@@ -57,9 +59,13 @@ class BeforeYouStartControllerSpec extends BaseSpec {
       doc.select("h1.govuk-heading-l").text() mustBe messages("beforeYouStart.title")
     }
 
-    "return NOT_FOUND for invalid journey type" in {
+    "return NOT_FOUND and render the 404 error page for an invalid journey type" in {
       val result = sut.onPageLoad("nope")(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
       status(result) mustBe NOT_FOUND
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(messages("global.error.pageNotFound404.title"))
     }
   }
 }

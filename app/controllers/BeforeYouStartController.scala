@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.auth.{AuthJourney, AuthedUser}
+import play.api.i18n.Messages
 import play.api.mvc.*
 import views.html.BeforeYouStart
 
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class BeforeYouStartController @Inject() (
   authenticate: AuthJourney,
   cc: MessagesControllerComponents,
-  view: BeforeYouStart
+  view: BeforeYouStart,
+  implicit val errorPagesHandler: ErrorPagesHandler
 ) extends TaiBaseController(cc) {
 
   def onPageLoad(journeyType: String): Action[AnyContent] =
@@ -35,7 +37,7 @@ class BeforeYouStartController @Inject() (
         case "employment" | "pension" =>
           Ok(view(journeyType))
         case _                        =>
-          NotFound("Invalid journey type")
+          NotFound(errorPagesHandler.error4xxPageWithLink(Messages("global.error.pageNotFound404.title")))
       }
     }
 }

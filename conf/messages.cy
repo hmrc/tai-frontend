@@ -1788,8 +1788,8 @@ tai.payeRefForm.employment.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurf
 tai.payeRefForm.pension.hint3 = Cysylltwch â darparwr eich pensiwn i gael ei gyfeirnod TWE.
 tai.payeRefForm.required = Nodwch gyfeirnod TWE y cyflogwr {0}
 tai.payeRefForm.format = Nodwch gyfeirnod TWE y cyflogwr {0} yn y fformat cywir
-tai.payeRefForm.pension.required = Enter {0}’s PAYE reference
-tai.payeRefForm.pension.format = Enter {0}’s PAYE reference in the correct format
+tai.payeRefForm.pension.required = Nodwch gyfeirnod TWE {0}
+tai.payeRefForm.pension.format = Nodwch gyfeirnod TWE {0} yn y fformat cywir
 
 tai.addPensionProvider.cya.payeRef = Cyfeirnod TWE
 
