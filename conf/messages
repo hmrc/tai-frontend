@@ -1791,8 +1791,8 @@ tai.payeRefForm.employment.hint3 = It will be on your payslip or tax forms.
 tai.payeRefForm.pension.hint3 = Contact your pension provider for their PAYE reference.
 tai.payeRefForm.required = Enter {0}’s employer PAYE reference
 tai.payeRefForm.format = Enter {0}’s employer PAYE reference in the correct format
-tai.payeRefForm.pension.required = Enter {0}’s PAYE reference
-tai.payeRefForm.pension.format = Enter {0}’s PAYE reference in the correct format
+tai.payeRefForm.pension.required = Enter {0}’s pension provider's PAYE reference
+tai.payeRefForm.pension.format = Enter {0}’s pension provider's PAYE reference in the correct format
 
 tai.addPensionProvider.cya.payeRef = PAYE reference
 
