@@ -25,8 +25,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
-import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment, Payment, PensionIncome}
+import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.MoneyPounds
 import uk.gov.hmrc.tai.util.ViewModelHelper._
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
@@ -42,7 +42,8 @@ class IncomeTaxHistoryController @Inject() (
   incomeTaxHistoryView: IncomeTaxHistoryView,
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
-  employmentService: EmploymentService
+  employmentService: EmploymentService,
+  rtiService: RtiService
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
     with Logging {
@@ -56,6 +57,7 @@ class IncomeTaxHistoryController @Inject() (
           None
         }
       employmentDetails         <- employmentService.employments(nino, taxYear)
+      accounts                  <- rtiService.getPaymentsForYear(nino, taxYear).value
     } yield {
       val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
       val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { (employment: Employment) =>
@@ -65,8 +67,13 @@ class IncomeTaxHistoryController @Inject() (
           taxCode     <- incomes.headOption
         } yield taxCode
 
-        val maybeLastPayment = fetchLastPayment(employment, taxYear)
-        val isPension        = maybeTaxCode.exists(_.componentType == PensionIncome)
+        val maybeLastPayment: Option[Payment] =
+          accounts match {
+            case Right(account) => fetchLastPayment(employment, account)
+            case _              => None
+          }
+
+        val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
 
         IncomeTaxHistoryViewModel(
           employerName = employment.name,
@@ -88,8 +95,8 @@ class IncomeTaxHistoryController @Inject() (
     }
 
   // This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
-  private def fetchLastPayment(employment: Employment, taxYear: TaxYear) =
-    employment.annualAccounts.find(_.taxYear.year == taxYear.year).flatMap(_.payments.lastOption)
+  private def fetchLastPayment(employment: Employment, accounts: Seq[AnnualAccount]) =
+    accounts.find(_.sequenceNumber == employment.sequenceNumber).flatMap(_.payments.lastOption)
 
   def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino     = request.taiUser.nino

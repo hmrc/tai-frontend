@@ -16,22 +16,10 @@
 
 package uk.gov.hmrc.tai.model
 
-import uk.gov.hmrc.tai.model.domain.{TaxedIncome, TemporarilyUnavailable}
+import uk.gov.hmrc.tai.model.domain.TaxedIncome
 
 final case class IncomeSources(
   livePensionIncomeSources: Seq[TaxedIncome],
   liveEmploymentIncomeSources: Seq[TaxedIncome],
   ceasedEmploymentIncomeSources: Seq[TaxedIncome]
-) {
-
-  def isRtiAvailable: Boolean = {
-    def isAvailable(taxedIncome: Seq[TaxedIncome]): Boolean =
-      taxedIncome
-        .flatMap(_.employment.annualAccounts.filter(_.realTimeStatus == TemporarilyUnavailable))
-        .isEmpty
-
-    isAvailable(liveEmploymentIncomeSources) && isAvailable(livePensionIncomeSources) && isAvailable(
-      ceasedEmploymentIncomeSources
-    )
-  }
-}
+)

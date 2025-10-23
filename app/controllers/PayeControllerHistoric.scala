@@ -16,17 +16,17 @@
 
 package controllers
 
-import cats.implicits._
+import cats.implicits.*
 import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Employment, TemporarilyUnavailable}
-import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
+import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import views.html.paye.{HistoricPayAsYouEarnView, RtiDisabledHistoricPayAsYouEarnView}
-import scala.util.control.NonFatal
 
+import scala.util.control.NonFatal
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +34,7 @@ class PayeControllerHistoric @Inject() (
   val config: ApplicationConfig,
   taxCodeChangeService: TaxCodeChangeService,
   employmentService: EmploymentService,
+  rtiService: RtiService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   RtiDisabledHistoricPayAsYouEarnView: RtiDisabledHistoricPayAsYouEarnView,
@@ -60,29 +61,38 @@ class PayeControllerHistoric @Inject() (
     } else {
       (
         employmentService.employments(nino, taxYear),
-        taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
-      ).mapN { case (employments, hasTaxCodeRecordsInYearPerEmployment) =>
-        if (isRtiUnavailable(employments)) {
+        taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear),
+        rtiService.getPaymentsForYear(nino, taxYear).value
+      ).mapN {
+        case (employments, hasTaxCodeRecordsInYearPerEmployment, Right(accounts)) =>
+          if (isRtiUnavailable(accounts)) {
+            Ok(
+              RtiDisabledHistoricPayAsYouEarnView(
+                HistoricPayAsYouEarnViewModel(taxYear, employments, accounts, hasTaxCodeRecordsInYearPerEmployment),
+                config
+              )
+            )
+          } else {
+            Ok(
+              historicPayAsYouEarnView(
+                HistoricPayAsYouEarnViewModel(taxYear, employments, accounts, hasTaxCodeRecordsInYearPerEmployment),
+                config
+              )
+            )
+          }
+        case (employments, hasTaxCodeRecordsInYearPerEmployment, Left(_))         =>
           Ok(
             RtiDisabledHistoricPayAsYouEarnView(
-              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
+              HistoricPayAsYouEarnViewModel(taxYear, employments, Seq.empty, hasTaxCodeRecordsInYearPerEmployment),
               config
             )
           )
-        } else {
-          Ok(
-            historicPayAsYouEarnView(
-              HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment),
-              config
-            )
-          )
-        }
       }
     }
   }.recover { case NonFatal(error) =>
     errorPagesHandler.internalServerError(error.getMessage)
   }
 
-  private def isRtiUnavailable(employments: Seq[Employment]): Boolean =
-    employments.headOption.exists(_.annualAccounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable))
+  private def isRtiUnavailable(accounts: Seq[AnnualAccount]): Boolean =
+    accounts.headOption.exists(_.realTimeStatus == TemporarilyUnavailable)
 }

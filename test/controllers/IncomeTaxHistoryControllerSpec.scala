@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -27,7 +28,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.model.domain.AnnualAccount
+import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.{BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
@@ -40,10 +42,14 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   val totalInvocations: Int                            = numberOfPreviousYearsToShowIncomeTaxHistory + 1
   val employmentService: EmploymentService             = mock[EmploymentService]
   val taxAccountService: TaxAccountService             = mock[TaxAccountService]
-
-  override def beforeEach(): Unit = {
+  val rtiService: RtiService                           = mock[RtiService]
+  override def beforeEach(): Unit                      = {
     super.beforeEach()
-    reset(taxAccountService, employmentService)
+    reset(taxAccountService, employmentService, rtiService)
+    when(rtiService.getPaymentsForYear(any(), any())(any()))
+      .thenReturn(
+        EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil)))
+      )
   }
 
   class TestController
@@ -53,7 +59,8 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         inject[IncomeTaxHistoryView],
         mcc,
         taxAccountService,
-        employmentService
+        employmentService,
+        rtiService
       )
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")

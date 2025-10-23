@@ -45,7 +45,6 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       payrollNumber = None,
       startDate = Some(TaxYear().start),
       endDate = None,
-      annualAccounts = Seq.empty,
       taxDistrictNumber = "123",
       payeNumber = "321",
       sequenceNumber = 1,
@@ -80,7 +79,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
 
   class SubmitSetup {
-    when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+    when(employmentService.employmentOnly(meq(nino), meq(employmentId), any())(any()))
       .thenReturn(Future.successful(Some(employment(employmentName))))
 
     when(
@@ -114,7 +113,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
         val userAnswers: UserAnswers = UserAnswers(sessionId, randomNino().nino)
         when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
 
-        when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+        when(employmentService.employmentOnly(meq(nino), meq(employmentId), any())(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(
@@ -138,7 +137,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       val userAnswers = UserAnswers(sessionId, randomNino().nino)
       when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
 
-      when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+      when(employmentService.employmentOnly(meq(nino), meq(employmentId), any())(any()))
         .thenReturn(Future.successful(Some(employment(employmentName))))
 
       when(
@@ -161,7 +160,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
       val userAnswers = UserAnswers(sessionId, randomNino().nino)
       when(mockJourneyCacheRepository.keepAlive(any(), any())).thenReturn(Future.successful(true))
 
-      when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+      when(employmentService.employmentOnly(meq(nino), meq(employmentId), any())(any()))
         .thenReturn(Future.successful(None))
 
       when(
@@ -181,7 +180,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     }
 
     "setup the cache when journey values do not exist" in {
-      when(employmentService.employment(meq(nino), meq(employmentId))(any()))
+      when(employmentService.employmentOnly(meq(nino), meq(employmentId), any())(any()))
         .thenReturn(Future.successful(Some(employment(employmentName))))
 
       when(
@@ -206,7 +205,7 @@ class UpdateNextYearsIncomeServiceSpec extends BaseSpec with FakeTaiPlayApplicat
     "setup the cache when the user selects a different employer" in {
       val newEmploymentId = 2
 
-      when(employmentService.employment(meq(nino), meq(newEmploymentId))(any()))
+      when(employmentService.employmentOnly(meq(nino), meq(newEmploymentId), any())(any()))
         .thenReturn(Future.successful(Some(employment(employmentName))))
 
       when(

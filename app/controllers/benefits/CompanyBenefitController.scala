@@ -72,7 +72,7 @@ class CompanyBenefitController @Inject() (
     implicit val user: AuthedUser = request.taiUser
 
     (for {
-      employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
+      employment <- employmentService.employmentOnly(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
       decision   <- getDecision(request.userAnswers)
     } yield employment match {
       case Some(employment) =>

@@ -71,24 +71,27 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       "requested employment has end of tax year update details" in {
         val date                     = LocalDate.parse("2017-06-09")
         val sampleEndOfTaxYearUpdate = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, -10.0)))
-        val sampleAnnualAccount      = AnnualAccount(7, previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
-        val sampleEmployment         = Employment(
+        val sampleAnnualAccount      = AnnualAccount(1, previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
+
+        val sampleEmployment = Employment(
           "emp1",
           Live,
           None,
           Some(LocalDate.of(2017, 6, 10)),
           None,
-          Seq(sampleAnnualAccount),
           "taxNumber",
           "payeNumber",
-          1,
+          2,
           None,
           false,
           false,
           EmploymentIncome
         )
 
-        sut(employments = List(sampleEmployment)).endOfTaxYearUpdateMessages mustBe Seq(
+        sut(
+          employments = List(sampleEmployment),
+          accounts = Seq(sampleAnnualAccount)
+        ).endOfTaxYearUpdateMessages mustBe Seq(
           Messages(
             "tai.income.calculation.eyu.single.nationalInsurance",
             date.format(DateTimeFormatter.ofPattern(EyuDateFormat)),
@@ -107,24 +110,6 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
 
       "given an annual account" in {
         HistoricIncomeCalculationViewModel.fetchRealTimeStatus(Some(sampleAnnualAccount)) mustBe Available
-      }
-    }
-  }
-
-  "fetchEmploymentAndAnnualAccount" should {
-    "return matching annual account and employment" when {
-      "matching employment sequence number is provided and employment has no annual account" in {
-        val (sutEmployment, sutAnnualAccount) =
-          HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount(sampleEmployments, previousYear, 1)
-        sutEmployment mustBe Some(sampleEmployment1)
-        sutAnnualAccount mustBe None
-      }
-
-      "matching employment sequence number is provided with annual account" in {
-        val (sutEmployment, sutAnnualAccount) =
-          HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount(sampleEmployments, previousYear, 2)
-        sutEmployment mustBe Some(sampleEmployment2)
-        sutAnnualAccount mustBe Some(sampleAnnualAccount)
       }
     }
   }
@@ -319,7 +304,7 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
     payFrequency = Monthly
   )
 
-  val sampleAnnualAccount = AnnualAccount(7, previousYear, Available, List(samplePayment), Nil)
+  val sampleAnnualAccount = AnnualAccount(2, previousYear, Available, List(samplePayment), Nil)
 
   val sampleEmployment1 =
     Employment(
@@ -328,7 +313,6 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2017, 6, 9)),
       None,
-      Nil,
       "taxNumber",
       "payeNumber",
       1,
@@ -343,7 +327,6 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
     None,
     Some(LocalDate.of(2017, 6, 10)),
     None,
-    Seq(sampleAnnualAccount),
     "taxNumber",
     "payeNumber",
     2,
@@ -354,7 +337,12 @@ class HistoricIncomeCalculationViewModelSpec extends BaseSpec {
   )
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
-  def sut(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: TaxYear = previousYear) =
-    HistoricIncomeCalculationViewModel(employments, employmentId, taxYear)
+  def sut(
+    employments: Seq[Employment] = sampleEmployments,
+    employmentId: Int = 1,
+    taxYear: TaxYear = previousYear,
+    accounts: Seq[AnnualAccount] = Seq(sampleAnnualAccount)
+  ) =
+    HistoricIncomeCalculationViewModel(employments, accounts, employmentId, taxYear)
 
 }
