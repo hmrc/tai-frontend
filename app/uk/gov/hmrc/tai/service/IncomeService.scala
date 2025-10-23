@@ -62,7 +62,6 @@ class IncomeService @Inject() (
       .value
       .map {
         case Right(payments) =>
-          println("aaaaaa")
           payments.filter(_.sequenceNumber == id).maxOption.flatMap(_.latestPayment)
         case _               => None
       }
