@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeService @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
+  rtiService: RtiService,
   taiConnector: TaiConnector
 ) {
 
@@ -44,7 +45,7 @@ class IncomeService @Inject() (
   ): Future[EmploymentAmount] =
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employment(nino, id)
+      employmentService.employmentOnly(nino, id)
     ) mapN {
       case (taxCodeIncomes, Some(employment)) =>
         val oldAmountInTaxCodeIncome = taxCodeIncomes.toOption.flatMap(_.find(_.employmentId.contains(id)))
@@ -56,9 +57,15 @@ class IncomeService @Inject() (
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[Payment]] =
-    employmentService
-      .employment(nino, id)
-      .map(_.flatMap(_.latestAnnualAccount.flatMap(_.latestPayment))) // TODO Use the ATI getPaymentsForYear
+    rtiService
+      .getPaymentsForYear(nino, TaxYear())
+      .value
+      .map {
+        case Right(payments) =>
+          println("aaaaaa")
+          payments.filter(_.sequenceNumber == id).maxOption.flatMap(_.latestPayment)
+        case _               => None
+      }
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit
     hc: HeaderCarrier

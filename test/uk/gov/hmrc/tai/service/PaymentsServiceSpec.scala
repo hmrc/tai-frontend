@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.service
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
 
 import java.time.LocalDate
@@ -33,47 +32,17 @@ class PaymentsServiceSpec extends PlaySpec {
   val taxAmount               = 4567
   val nationalInsuranceAmount = 789
 
-  def createEmployment(payments: Seq[Payment]): Employment = {
-    val annualAccounts = Seq(AnnualAccount(7, uk.gov.hmrc.tai.model.TaxYear(), Available, payments, Nil))
-    Employment(
-      "test employment",
-      Live,
-      Some("EMPLOYER1"),
-      Some(testDate),
-      None,
-      annualAccounts,
-      "",
-      "",
-      2,
-      None,
-      false,
-      false,
-      EmploymentIncome
-    )
-  }
+  def createAccounts(payments: Seq[Payment]): Seq[AnnualAccount] = Seq(
+    AnnualAccount(7, uk.gov.hmrc.tai.model.TaxYear(), Available, payments, Nil)
+  )
 
   "filterDuplicates" should {
 
     "convert empty annualAccounts to an empty PaymentDetailsViewModel" in {
 
       val emptyAnnualAccounts = Seq.empty[AnnualAccount]
-      val employment          = Employment(
-        "test employment",
-        Live,
-        Some("EMPLOYER1"),
-        Some(testDate),
-        None,
-        emptyAnnualAccounts,
-        "",
-        "",
-        2,
-        None,
-        false,
-        false,
-        EmploymentIncome
-      )
 
-      paymentsService.filterDuplicates(employment) mustBe Seq.empty[PaymentDetailsViewModel]
+      paymentsService.filterDuplicates(emptyAnnualAccounts) mustBe Seq.empty[PaymentDetailsViewModel]
     }
 
     "convert Employment to a list of PaymentDetailsViewModel" in {
@@ -81,13 +50,11 @@ class PaymentsServiceSpec extends PlaySpec {
         Payment(testDate, 123, 456, 7890, taxableIncome, taxAmount, nationalInsuranceAmount, Weekly, Some(false))
       )
 
-      val employment = createEmployment(payments)
-
       val expectedPaymentDetails = Seq(
         PaymentDetailsViewModel(testDate, taxableIncome, taxAmount, nationalInsuranceAmount)
       )
 
-      paymentsService.filterDuplicates(employment) mustBe expectedPaymentDetails
+      paymentsService.filterDuplicates(createAccounts(payments)) mustBe expectedPaymentDetails
     }
 
     "remove duplicate payment, returning an empty PaymentDetailsViewModel" in {
@@ -95,9 +62,7 @@ class PaymentsServiceSpec extends PlaySpec {
         Payment(testDate, 123, 456, 7890, taxableIncome, taxAmount, nationalInsuranceAmount, Weekly, Some(true))
       )
 
-      val employment = createEmployment(payments)
-
-      paymentsService.filterDuplicates(employment) mustBe Seq.empty[PaymentDetailsViewModel]
+      paymentsService.filterDuplicates(createAccounts(payments)) mustBe Seq.empty[PaymentDetailsViewModel]
     }
 
     "remove duplicate payments, keeping the non duplicate payments as PaymentDetailsViewModels" in {
@@ -106,13 +71,11 @@ class PaymentsServiceSpec extends PlaySpec {
         Payment(testDate, 123, 456, 7890, taxableIncome, taxAmount, nationalInsuranceAmount, Weekly, None)
       )
 
-      val employment = createEmployment(payments)
-
       val expectedPaymentDetails = Seq(
         PaymentDetailsViewModel(testDate, taxableIncome, taxAmount, nationalInsuranceAmount)
       )
 
-      paymentsService.filterDuplicates(employment) mustBe expectedPaymentDetails
+      paymentsService.filterDuplicates(createAccounts(payments)) mustBe expectedPaymentDetails
     }
   }
 }

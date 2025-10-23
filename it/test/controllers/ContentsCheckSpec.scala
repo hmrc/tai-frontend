@@ -587,7 +587,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       None,
       Some(LocalDate.now),
       None,
-      Nil,
       "",
       "",
       1,

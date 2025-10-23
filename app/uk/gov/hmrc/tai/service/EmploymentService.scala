@@ -19,46 +19,29 @@ package uk.gov.hmrc.tai.service
 import cats.data.EitherT
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.tai.connectors.{EmploymentsConnector, RtiConnector}
+import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector, rtiConnector: RtiConnector)(implicit
+class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit
   ec: ExecutionContext
 ) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    for {
-      payments    <- rtiConnector.getPaymentsForYear(nino, year).value
-      employments <- employmentsConnector.employmentsOnly(nino, year).value
-    } yield (payments, employments) match {
-      case (Right(pay), Right(emp)) =>
-        emp.map { employment =>
-          val matchingPayments = pay.filter(_.sequenceNumber == employment.sequenceNumber)
-          employment.copy(annualAccounts = employment.annualAccounts ++ matchingPayments)
-        }
-      case (_, Right(emps))         => emps
-      case (_, Left(error))         => Seq.empty[Employment]
+    employmentsConnector.employmentsOnly(nino, year).value.map {
+      case Right(emps) => emps
+      case Left(_)     => Seq.empty
     }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentsConnector.ceasedEmployments(nino, year)
 
-  def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    employmentsConnector.employmentOnly(nino, id, TaxYear()).flatMap {
-      case Some(employment) =>
-        rtiConnector.getPaymentsForYear(nino, TaxYear()).value.map {
-          case Right(payments) =>
-            Some(employment.copy(annualAccounts = payments.filter(_.sequenceNumber == employment.sequenceNumber)))
-          case _               => Some(employment)
-        }
-      case None             => Future.successful(None)
-    }
-
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear = TaxYear())(implicit
+    hc: HeaderCarrier
+  ): Future[Option[Employment]] =
     employmentsConnector.employmentOnly(nino, id, taxYear)
 
   def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit

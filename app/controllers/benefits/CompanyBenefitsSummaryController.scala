@@ -59,7 +59,7 @@ class CompanyBenefitsSummaryController @Inject() (
       case _            =>
         val incomeDetailsResult = for {
           taxCodeIncomes           <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-          employment               <- employmentService.employment(nino, empId)
+          employment               <- employmentService.employmentOnly(nino, empId)
           benefitsDetails          <- benefitsService.benefits(nino, TaxYear().year)
           cacheUpdatedIncomeAmount <- Future.successful(cacheUpdatedIncomeAmountFuture)
         } yield (taxCodeIncomes, employment, benefitsDetails, cacheUpdatedIncomeAmount)

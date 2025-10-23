@@ -65,7 +65,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     payrollNumber = Some("EMPLOYER-1122"),
     startDate = Some(LocalDate.now()),
     endDate = None,
-    annualAccounts = Seq(annualAccount),
     taxDistrictNumber = "DD",
     payeNumber = "001",
     sequenceNumber = 2,

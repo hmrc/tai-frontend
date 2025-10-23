@@ -102,7 +102,7 @@ class IncomeController @Inject() (
           val confirmedNewAmountOpt = request.userAnswers.get(UpdateIncomeConfirmedNewAmountPage(empId)).map(_.toInt)
 
           employmentService
-            .employment(nino, empId)
+            .employmentOnly(nino, empId)
             .map {
               case Some(emp) if confirmedNewAmountOpt.isDefined =>
                 val model = SameEstimatedPayViewModel(
@@ -127,7 +127,7 @@ class IncomeController @Inject() (
       incomeService
         .employmentAmount(nino, employmentId)
         .flatMap { income =>
-          employmentService.employment(nino, employmentId).map {
+          employmentService.employmentOnly(nino, employmentId).map {
             case Some(emp) =>
               val model = uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel(
                 employerName = emp.name,
@@ -155,7 +155,7 @@ class IncomeController @Inject() (
         case Some(result) => Future.successful(result)
         case _            =>
           employmentService
-            .employment(nino, empId)
+            .employmentOnly(nino, empId)
             .flatMap {
               case Some(emp) =>
                 incomeService.latestPayment(nino, empId).flatMap { paymentOpt =>
@@ -194,7 +194,7 @@ class IncomeController @Inject() (
           request.userAnswers.get(UpdateIncomeNewAmountPage) match {
             case Some(newAmount) =>
               employmentService
-                .employment(nino, empId)
+                .employmentOnly(nino, empId)
                 .flatMap {
                   case Some(employment) =>
                     val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)
@@ -254,7 +254,7 @@ class IncomeController @Inject() (
               for {
                 _      <- journeyCacheRepository.clear(request.userAnswers.sessionId, request.userAnswers.nino)
                 _      <- taxAccountService.updateEstimatedIncome(nino, newAmountInt, TaxYear(), empId)
-                empOpt <- employmentService.employment(nino, empId)
+                empOpt <- employmentService.employmentOnly(nino, empId)
               } yield empOpt match {
                 case Some(emp) => respondWithSuccess(emp.name, emp.receivingOccupationalPension)
                 case None      => errorPagesHandler.internalServerError("Employment not found")
@@ -334,7 +334,7 @@ class IncomeController @Inject() (
       case Some(result) => Future.successful(result)
       case _            =>
         employmentService
-          .employment(nino, empId)
+          .employmentOnly(nino, empId)
           .flatMap {
             case Some(emp) =>
               incomeService.latestPayment(nino, empId).flatMap { paymentOpt =>
@@ -375,7 +375,7 @@ class IncomeController @Inject() (
           request.userAnswers.get(UpdateIncomeNewAmountPage) match {
             case Some(newAmount) =>
               employmentService
-                .employment(nino, empId)
+                .employmentOnly(nino, empId)
                 .map {
                   case Some(employment) =>
                     val employmentAmount = EmploymentAmount(taxCodeIncome = None, employment = employment)

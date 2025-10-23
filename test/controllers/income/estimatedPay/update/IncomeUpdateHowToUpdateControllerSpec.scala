@@ -54,7 +54,6 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
       Some("123"),
       Some(LocalDate.parse("2016-05-26")),
       None,
-      Nil,
       "",
       "",
       1,
@@ -94,7 +93,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
     setup(UserAnswers(sessionId, randomNino().nino))
     reset(mockJourneyCacheRepository)
 
-    when(employmentService.employment(any(), any())(any()))
+    when(employmentService.employmentOnly(any(), any(), any())(any()))
       .thenReturn(Future.successful(Some(defaultEmployment)))
 
     when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))

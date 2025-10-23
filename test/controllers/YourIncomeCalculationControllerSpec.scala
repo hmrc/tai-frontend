@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, PersonService, RtiService, TaxAccountService}
 import utils.BaseSpec
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
 
@@ -54,7 +54,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     Some("EMPLOYER1"),
     Some(LocalDate.now()),
     None,
-    Seq(annualAccount),
     "",
     "",
     2,
@@ -71,7 +70,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 6, 9)),
       None,
-      Seq(AnnualAccount(7, TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       1,
@@ -86,7 +84,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 7, 9)),
       None,
-      Seq(AnnualAccount(7, TaxYear().prev, Available, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       2,
@@ -104,7 +101,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 6, 9)),
       None,
-      Seq(AnnualAccount(7, TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       1,
@@ -119,7 +115,6 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.of(2016, 7, 9)),
       None,
-      Seq(AnnualAccount(7, TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
       "taxNumber",
       "payeNumber",
       2,
@@ -139,6 +134,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
   val employmentService: EmploymentService = mock[EmploymentService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val mockIabdService: IabdService         = mock[IabdService]
+  val mockRtiService: RtiService           = mock[RtiService]
 
   lazy val paymentsService: PaymentsService = inject[PaymentsService]
 
@@ -148,6 +144,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       employmentService,
       mockIabdService,
       paymentsService,
+      mockRtiService,
       mockAuthJourney,
       mcc,
       inject[HistoricIncomeCalculationView],
@@ -162,7 +159,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employmentOnly(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = empId))))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](
@@ -178,6 +175,11 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
           )
         )
 
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
+
         val result = sut.yourIncomeCalculationPage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -191,10 +193,14 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -204,10 +210,15 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details are not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employmentOnly(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment)))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -216,10 +227,15 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details for passed employment is not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employmentOnly(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment)))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -234,6 +250,13 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
+
+        val annualAccount = AnnualAccount(1, TaxYear().prev, Available, Nil, Nil)
+
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -254,6 +277,14 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
+        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(
+              Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](
+                Left(UpstreamErrorResponse.apply("RTI failed", SERVICE_UNAVAILABLE))
+              )
+            )
+          )
 
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))

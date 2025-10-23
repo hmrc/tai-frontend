@@ -21,7 +21,7 @@ import cats.instances.future.*
 import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.tai.connectors.{EmploymentsConnector, RtiConnector}
+import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.*
@@ -42,7 +42,6 @@ class EmploymentServiceSpec extends BaseSpec {
     Some("123"),
     Some(LocalDate.parse("2016-05-26")),
     Some(LocalDate.parse("2016-05-26")),
-    Nil,
     "",
     "",
     2,
@@ -54,68 +53,27 @@ class EmploymentServiceSpec extends BaseSpec {
   private val employmentDetails = List(employment)
   private val employments       = employmentDetails.head :: employmentDetails.head :: Nil
 
-  private def createSUT = new EmploymentServiceTest
-
   val employmentsConnector: EmploymentsConnector = mock[EmploymentsConnector]
-  val rtiConnector: RtiConnector                 = mock[RtiConnector]
 
-  private class EmploymentServiceTest
-      extends EmploymentService(
-        employmentsConnector,
-        rtiConnector
-      )
+  private def createSUT = new EmploymentService(employmentsConnector)
 
   "Employment Service" must {
-    "return employments with payments when sequence number matches" in {
+    "return employments" in {
       val sut = createSUT
 
       val employment2 = employment.copy(sequenceNumber = 1)
       val employment3 = employment.copy(sequenceNumber = 3)
 
-      val annualAccount  = AnnualAccount(1, TaxYear(2016), Available, Nil, Nil)
-      val annualAccount2 = annualAccount.copy(sequenceNumber = 2)
-      val annualAccount3 = annualAccount.copy(taxYear = TaxYear(2017))
-
       when(employmentsConnector.employmentsOnly(any(), any())(any()))
         .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment, employment2, employment3)))
-      when(rtiConnector.getPaymentsForYear(any(), any())(any()))
-        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount, annualAccount2, annualAccount3)))
 
       val data = Await.result(sut.employments(nino, year), 5.seconds)
 
       data mustBe Seq(
-        employment.copy(annualAccounts = Seq(annualAccount2)),
-        employment2.copy(annualAccounts = Seq(annualAccount, annualAccount3)),
+        employment,
+        employment2,
         employment3
       )
-    }
-
-    "return employments with no payments when no matching sequence number" in {
-      val sut = createSUT
-
-      val annualAccount = AnnualAccount(1, TaxYear(2016), Available, Nil, Nil)
-
-      when(employmentsConnector.employmentsOnly(any(), any())(any()))
-        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
-      when(rtiConnector.getPaymentsForYear(any(), any())(any()))
-        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
-
-      val data = Await.result(sut.employments(nino, year), 5.seconds)
-
-      data mustBe employments
-    }
-
-    "return employments with no payments rti call callus" in {
-      val sut = createSUT
-
-      when(employmentsConnector.employmentsOnly(any(), any())(any()))
-        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
-      when(rtiConnector.getPaymentsForYear(any(), any())(any()))
-        .thenReturn(EitherT.leftT[Future, Seq[AnnualAccount]](UpstreamErrorResponse.Upstream5xxResponse))
-
-      val data = Await.result(sut.employments(nino, year), 5.seconds)
-
-      data mustBe employments
     }
   }
 
@@ -153,7 +111,6 @@ class EmploymentServiceSpec extends BaseSpec {
           Some("123"),
           Some(LocalDate.parse("2016-05-26")),
           Some(LocalDate.parse("2016-05-26")),
-          Nil,
           "",
           "",
           1,
@@ -168,7 +125,6 @@ class EmploymentServiceSpec extends BaseSpec {
           Some("123"),
           Some(LocalDate.parse("2016-05-26")),
           Some(LocalDate.parse("2016-05-26")),
-          Nil,
           "",
           "",
           2,
@@ -199,62 +155,6 @@ class EmploymentServiceSpec extends BaseSpec {
     }
   }
 
-  "employment" must {
-    "return an employment" when {
-      "the connector returns one with payments from RTI matching the given employment number" in {
-        val sut = createSUT
-
-        val annualAccount  = AnnualAccount(2, TaxYear(2016), Available, Nil, Nil)
-        val annualAccount2 = annualAccount.copy(taxYear = TaxYear(2017))
-        val annualAccount3 = annualAccount.copy(sequenceNumber = 7)
-
-        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
-        when(rtiConnector.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount, annualAccount2, annualAccount3)))
-
-        val data = Await.result(sut.employment(nino, 8), 5.seconds)
-
-        data mustBe Some(employment.copy(annualAccounts = Seq(annualAccount, annualAccount2)))
-      }
-      "the connector returns one with no payments from RTI when nothing returned" in {
-        val sut = createSUT
-
-        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
-        when(rtiConnector.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty[AnnualAccount]))
-
-        val data = Await.result(sut.employment(nino, 8), 5.seconds)
-
-        data mustBe Some(employment)
-      }
-      "the connector returns one with no annualAccounts when RTI call fails" in {
-        val sut = createSUT
-
-        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Some(employment)))
-        when(rtiConnector.getPaymentsForYear(any(), any())(any()))
-          .thenReturn(EitherT.leftT[Future, Seq[AnnualAccount]](UpstreamErrorResponse.Upstream5xxResponse))
-
-        val data = Await.result(sut.employment(nino, 8), 5.seconds)
-
-        data mustBe Some(employment)
-      }
-    }
-    "return none" when {
-      "the connector does not return an employment" in {
-        val sut = createSUT
-
-        when(employmentsConnector.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
-
-        val data = Await.result(sut.employment(nino, 8), 5.seconds)
-
-        data mustBe None
-      }
-    }
-  }
-
   "employmentOnly" must {
     "return an employment for the given tax year" in {
       val sut = createSUT
@@ -265,6 +165,18 @@ class EmploymentServiceSpec extends BaseSpec {
       val data = Await.result(sut.employmentOnly(nino, 2, year), 5.seconds)
 
       data mustBe Some(employment)
+    }
+    "return none" when {
+      "the connector does not return an employment" in {
+        val sut = createSUT
+
+        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
+          .thenReturn(Future.successful(None))
+
+        val data = Await.result(sut.employmentOnly(nino, 8), 5.seconds)
+
+        data mustBe None
+      }
     }
   }
 

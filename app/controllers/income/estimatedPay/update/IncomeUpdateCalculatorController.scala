@@ -59,7 +59,7 @@ class IncomeUpdateCalculatorController @Inject() (
 
       (
         Future.successful(showDuplicateWarning),
-        employmentService.employment(nino, employmentId)
+        employmentService.employmentOnly(nino, employmentId)
       ).mapN {
         case (_, None)        =>
           errorPagesHandler.internalServerError("Not able to find employment")
@@ -79,7 +79,7 @@ class IncomeUpdateCalculatorController @Inject() (
       val ua                        = request.userAnswers
       val confirmedAmountOpt        = ua.get(UpdateIncomeConfirmedNewAmountPage(empId)).map(_.toInt)
 
-      (employmentService.employment(nino, empId), Future.successful(confirmedAmountOpt))
+      (employmentService.employmentOnly(nino, empId), Future.successful(confirmedAmountOpt))
         .mapN {
           case (Some(emp), Some(confirmedAmount)) =>
             val vm = if (emp.receivingOccupationalPension) {
@@ -106,7 +106,7 @@ class IncomeUpdateCalculatorController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            (employmentService.employment(nino, empId), Future.successful(confirmedAmountOpt)).mapN {
+            (employmentService.employmentOnly(nino, empId), Future.successful(confirmedAmountOpt)).mapN {
               case (Some(emp), Some(confirmedAmount)) =>
                 val vm = if (emp.receivingOccupationalPension) {
                   DuplicateSubmissionPensionViewModel(emp.name, confirmedAmount)
@@ -154,7 +154,7 @@ class IncomeUpdateCalculatorController @Inject() (
         Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId)))
       } else {
         employmentService
-          .employment(nino, empId)
+          .employmentOnly(nino, empId)
           .map {
             case Some(emp) =>
               val employer = IncomeSource(id = empId, name = emp.name)

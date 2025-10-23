@@ -16,29 +16,29 @@
 
 package controllers.employments
 
-import controllers._
+import controllers.*
 import controllers.auth.{AuthJourney, AuthedUser, DataRequest}
-import pages.endEmployment._
-import pages._
+import pages.endEmployment.*
+import pages.*
 import pages.updateEmployment.UpdateEndEmploymentPage
 import play.api.Logging
 import play.api.i18n.Messages
-import play.api.mvc._
+import play.api.mvc.*
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
-import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
+import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, EndEmployment}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, RtiService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import views.html.CanWeContactByPhoneView
-import views.html.employments._
+import views.html.employments.*
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
@@ -48,6 +48,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EndEmploymentController @Inject() (
   auditService: AuditService,
   employmentService: EmploymentService,
+  rtiService: RtiService,
   val auditConnector: AuditConnector,
   mcc: MessagesControllerComponents,
   errorPagesHandler: ErrorPagesHandler,
@@ -93,7 +94,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employment(request.taiUser.nino, empId)
+            .employmentOnly(request.taiUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -144,7 +145,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employment(user.nino, empId)
+            .employmentOnly(user.nino, empId)
             .flatMap(
               _.fold(
                 Future.successful(error5xxInBadRequest())
@@ -172,7 +173,13 @@ class EndEmploymentController @Inject() (
                           )
                         )
                       case _                                  =>
-                        hasIrregularPayment(employment, user.nino.nino)
+                        rtiService.getPaymentsForYear(user.nino, TaxYear()).value.flatMap {
+                          case Right(accounts) => hasIrregularPayment(accounts, user.nino.nino)
+                          case _               =>
+                            Future.successful(
+                              Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+                            )
+                        }
                     }
                   )
               )
@@ -180,14 +187,13 @@ class EndEmploymentController @Inject() (
         )
     }
 
-  private def hasIrregularPayment(employment: Employment, nino: String)(implicit
+  private def hasIrregularPayment(annualAccounts: Seq[AnnualAccount], nino: String)(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] = {
     val today                                = LocalDate.now
-    val latestPaymentDate: Option[LocalDate] = for {
-      latestAnnualAccount <- employment.latestAnnualAccount
-      latestPayment       <- latestAnnualAccount.latestPayment
-    } yield latestPayment.date
+    val latestAnnualAccount                  = annualAccounts.maxOption
+    val latestPaymentDate: Option[LocalDate] =
+      latestAnnualAccount.flatMap(account => account.latestPayment.fold(None)(payment => Some(payment.date)))
 
     latestPaymentDate.map { latestPaymentDate =>
       for {
@@ -203,7 +209,7 @@ class EndEmploymentController @Inject() (
             )
           Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
         } else {
-          if (employment.latestAnnualAccount.exists(_.isIrregularPayment)) {
+          if (latestAnnualAccount.exists(_.isIrregularPayment)) {
             auditService
               .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino))
             Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())
@@ -222,7 +228,7 @@ class EndEmploymentController @Inject() (
       (request.userAnswers.get(EndEmploymentIdPage), request.userAnswers.get(EndEmploymentLatestPaymentPage)) match {
         case (Some(empId), Some(latestPayment)) =>
           employmentService
-            .employment(user.nino, empId)
+            .employmentOnly(user.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -253,7 +259,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         ) { empId =>
           employmentService
-            .employment(request.taiUser.nino, empId)
+            .employmentOnly(request.taiUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -279,7 +285,7 @@ class EndEmploymentController @Inject() (
             .fold(
               formWithErrors =>
                 employmentService
-                  .employment(request.taiUser.nino, empId)
+                  .employmentOnly(request.taiUser.nino, empId)
                   .map(
                     _.fold(
                       error5xxInBadRequest()
@@ -318,7 +324,7 @@ class EndEmploymentController @Inject() (
       (request.userAnswers.get(EndEmploymentIdPage), request.userAnswers.get(EndEmploymentEndDatePage)) match {
         case (Some(empId), endDate) =>
           employmentService
-            .employment(authUser.nino, empId)
+            .employmentOnly(authUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -345,7 +351,7 @@ class EndEmploymentController @Inject() (
       val nino                      = user.nino
 
       employmentService
-        .employment(nino, employmentId)
+        .employmentOnly(nino, employmentId)
         .flatMap(
           _.fold(
             Future.successful(error5xxInBadRequest())
@@ -495,7 +501,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employment(authUser.nino, empId)
+            .employmentOnly(authUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -521,7 +527,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employment(authUser.nino, empId)
+            .employmentOnly(authUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
