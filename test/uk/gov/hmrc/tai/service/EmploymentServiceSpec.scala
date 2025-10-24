@@ -23,8 +23,8 @@ import org.mockito.Mockito.when
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.Live
 import utils.BaseSpec
 
 import java.time.{LocalDate, LocalDateTime}
@@ -70,18 +70,6 @@ class EmploymentServiceSpec extends BaseSpec {
       when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(employments))
 
       val data = Await.result(sut.employments(nino, year), 5.seconds)
-
-      data mustBe employments
-    }
-  }
-
-  "CeasedEmployments Service" must {
-    "return employments" in {
-      val sut = createSUT
-
-      when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(employments))
-
-      val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
 
       data mustBe employments
     }
