@@ -26,8 +26,8 @@ class BeforeYouStartViewSpec extends TaiViewSpec {
 
   private val template = inject[BeforeYouStart]
 
-  private def render(): Html =
-    template()(implicitly, messages, authedUser)
+  private def render(): Html        = template("employment")(implicitly, messages, authedUser)
+  private def renderPension(): Html = template("pension")(implicitly, messages, authedUser)
 
   override def view: Html = render()
 
@@ -67,6 +67,46 @@ class BeforeYouStartViewSpec extends TaiViewSpec {
       val form = doc.select("form")
       form.attr("method").toUpperCase mustBe "GET"
       form.attr("action") mustBe controllers.employments.routes.AddEmploymentController.addEmploymentName().url
+      doc.select("#continueButton").text() mustBe messages("tai.continue")
+    }
+  }
+
+  "BeforeYouStartView (pension journey)" must {
+
+    "render the correct title and headings" in {
+      val doc = Jsoup.parse(contentAsString(renderPension()))
+      doc.title()                            must include(messages("beforeYouStart.title"))
+      doc.select("h2.hmrc-caption-l").text() must include(messages("add.missing.pension"))
+      doc.select("h1.govuk-heading-l").text() mustBe messages("beforeYouStart.title")
+    }
+
+    "show the intro paragraphs" in {
+      val doc = Jsoup.parse(contentAsString(renderPension()))
+      doc.text() must include(messages("beforeYouStart.intro"))
+      doc.text() must include(messages("beforeYouStart.list.intro"))
+    }
+
+    "display the pension bullet list items" in {
+      val doc  = Jsoup.parse(contentAsString(renderPension()))
+      val text = doc.select("ul.govuk-list--bullet").text()
+      text must include(messages("beforeYouStart.pension.list.providerName"))
+      text must include(messages("beforeYouStart.pension.list.firstPaymentDate"))
+      text must include(messages("beforeYouStart.pension.list.pensionNumber"))
+      text must include(messages("beforeYouStart.pension.list.providerPayeReference"))
+      text must include(messages("beforeYouStart.list.phoneNumber"))
+    }
+
+    "have a back link to the tax account summary" in {
+      val doc  = Jsoup.parse(contentAsString(renderPension()))
+      val back = doc.select("a[class=govuk-back-link]")
+      back.attr("href") mustBe routes.TaxAccountSummaryController.onPageLoad().url
+    }
+
+    "have a continue button that goes to add pension provider name" in {
+      val doc  = Jsoup.parse(contentAsString(renderPension()))
+      val form = doc.select("form")
+      form.attr("method").toUpperCase mustBe "GET"
+      form.attr("action") mustBe controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url
       doc.select("#continueButton").text() mustBe messages("tai.continue")
     }
   }

@@ -24,19 +24,21 @@ import views.html.BeforeYouStart
 
 class BeforeYouStartControllerSpec extends BaseSpec {
 
-  private val view = inject[BeforeYouStart]
+  private val view              = inject[BeforeYouStart]
+  private val errorPagesHandler = inject[ErrorPagesHandler]
 
   private def sut =
     new BeforeYouStartController(
       mockAuthJourney,
       mcc,
-      view
+      view,
+      errorPagesHandler
     )
 
   "BeforeYouStartController.onPageLoad" must {
 
     "render the employment page" in {
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.onPageLoad("employment")(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
 
@@ -44,6 +46,26 @@ class BeforeYouStartControllerSpec extends BaseSpec {
       doc.title()                            must include(messages("beforeYouStart.title"))
       doc.select("h2.hmrc-caption-l").text() must include(messages("add.missing.employment"))
       doc.select("h1.govuk-heading-l").text() mustBe messages("beforeYouStart.title")
+    }
+
+    "render the pension page" in {
+      val result = sut.onPageLoad("pension")(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title()                            must include(messages("beforeYouStart.title"))
+      doc.select("h2.hmrc-caption-l").text() must include(messages("add.missing.pension"))
+      doc.select("h1.govuk-heading-l").text() mustBe messages("beforeYouStart.title")
+    }
+
+    "return NOT_FOUND and render the 404 error page for an invalid journey type" in {
+      val result = sut.onPageLoad("nope")(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe NOT_FOUND
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(messages("global.error.pageNotFound404.title"))
     }
   }
 }

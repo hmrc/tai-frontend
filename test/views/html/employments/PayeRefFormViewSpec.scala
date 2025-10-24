@@ -26,14 +26,14 @@ class PayeRefFormViewSpec extends TaiViewSpec {
   private val template    = inject[PayeRefFormView]
   private val companyName = "Some Company Ltd"
 
-  private def viewFor(form: Form[String]): Html =
-    template(form, companyName)
+  private def viewFor(form: Form[String], journey: String): Html =
+    template(form, companyName, journey)
 
-  override def view: Html = viewFor(PayeRefForm.form(companyName))
+  override def view: Html = viewFor(PayeRefForm.form(companyName, "employment"), "employment")
 
   "PayeRefFormView (employment journey)" must {
 
-    behave like pageWithTitle(messages("tai.payeRefForm.title", companyName))
+    behave like pageWithTitle(messages("tai.payeRefForm.employment.title", companyName))
     behave like pageWithBackLink()
 
     "display the correct pre-heading (employment)" in {
@@ -46,18 +46,18 @@ class PayeRefFormViewSpec extends TaiViewSpec {
     "show the page heading label including the company name" in {
       doc must haveElementAtPathWithText(
         ".govuk-label--xl",
-        messages("tai.payeRefForm.title", companyName)
+        messages("tai.payeRefForm.employment.title", companyName)
       )
     }
 
     "render the PAYE reference input with hint" in {
       val expectedHint = Seq(
-        messages("tai.payeRefForm.hint"),
+        messages("tai.payeRefForm.employment.hint"),
         messages("tai.payeRefForm.hint2"),
-        messages("tai.payeRefForm.hint3")
+        messages("tai.payeRefForm.employment.hint3")
       ).mkString(" ")
 
-      doc must haveInputLabelWithText("payeReference", messages("tai.payeRefForm.title", companyName))
+      doc must haveInputLabelWithText("payeReference", messages("tai.payeRefForm.employment.title", companyName))
       doc must haveHintWithText("payeReference-hint", expectedHint)
     }
 
@@ -80,15 +80,39 @@ class PayeRefFormViewSpec extends TaiViewSpec {
 
     "display an error summary and inline error for a blank value" in {
       val interpolated = messages("tai.payeRefForm.required", companyName)
-      val errorForm    = PayeRefForm.form(companyName).withError("payeReference", interpolated)
-      val d            = doc(viewFor(errorForm))
+      val errorForm    = PayeRefForm.form(companyName, "employment").withError("payeReference", interpolated)
+      val d            = doc(viewFor(errorForm, "employment"))
       d.select(".govuk-error-message").text must include(interpolated)
     }
 
     "preserve a previously entered value" in {
-      val filled = PayeRefForm.form(companyName).bind(Map("payeReference" -> "123/ABC123"))
-      val d      = doc(viewFor(filled))
+      val filled = PayeRefForm.form(companyName, "employment").bind(Map("payeReference" -> "123/ABC123"))
+      val d      = doc(viewFor(filled, "employment"))
       d.getElementById("payeReference").attr("value") mustBe "123/ABC123"
+    }
+  }
+
+  "PayeRefFormView (pension journey)" must {
+
+    "display the correct pre-heading (pension)" in {
+      val d = doc(viewFor(PayeRefForm.form(companyName, "pension"), "pension"))
+      d must haveElementAtPathWithText(
+        ".govuk-caption-xl",
+        messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.pension")
+      )
+    }
+
+    "post to the pension submit PAYE ref route" in {
+      val d = doc(viewFor(PayeRefForm.form(companyName, "pension"), "pension"))
+      d.select("form").attr("action") mustBe controllers.pensions.routes.AddPensionProviderController
+        .submitPayeReference()
+        .url
+    }
+
+    "have the pension back link" in {
+      val d = doc(viewFor(PayeRefForm.form(companyName, "pension"), "pension"))
+      d.select("a[class=govuk-back-link]").attr("href") mustBe
+        controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
     }
   }
 }

@@ -20,7 +20,7 @@
 
 @this(main: MainTemplate, govukButton: GovukButton)
 
-@()(
+@(journeyType: String)(
         implicit request: Request[_],
         messages: Messages,
         user: controllers.auth.AuthedUser
@@ -39,7 +39,7 @@
         <div class="govuk-grid-column-two-thirds">
 
             <h2 class="govuk-caption-l hmrc-caption-l">
-            @messages("add.missing.employment")
+            @messages(if (journeyType == "pension") "add.missing.pension" else "add.missing.employment")
             </h2>
 
             <h1 class="govuk-heading-l">@messages("beforeYouStart.title")</h1>
@@ -48,16 +48,28 @@
             <p class="govuk-body">@messages("beforeYouStart.list.intro")</p>
 
             <ul class="govuk-list govuk-list--bullet">
-
+            @if(journeyType == "pension") {
+                <li>@messages("beforeYouStart.pension.list.providerName")</li>
+                <li>@messages("beforeYouStart.pension.list.firstPaymentDate")</li>
+                <li>@messages("beforeYouStart.pension.list.pensionNumber")</li>
+                <li>@messages("beforeYouStart.pension.list.providerPayeReference")</li>
+                <li>@messages("beforeYouStart.list.phoneNumber")</li>
+            } else {
                 <li>@messages("beforeYouStart.list.employerName")</li>
                 <li>@messages("beforeYouStart.list.startDate")</li>
                 <li>@messages("beforeYouStart.list.payrollNumber")</li>
                 <li>@messages("beforeYouStart.list.payeReference")</li>
                 <li>@messages("beforeYouStart.list.phoneNumber")</li>
+            }
             </ul>
 
             <div class="govuk-!-margin-top-6">
-                <form method="GET" action="@controllers.employments.routes.AddEmploymentController.addEmploymentName().url">
+                <form method="GET" action="@{
+                    if (journeyType == "pension")
+                        controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url
+                    else
+                        controllers.employments.routes.AddEmploymentController.addEmploymentName().url
+                }">
                 @govukButton(Button(content = Text(messages("tai.continue")), id = Some("continueButton")))
                 </form>
             </div>

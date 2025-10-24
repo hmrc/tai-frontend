@@ -148,14 +148,14 @@
                     <p class="govuk-body">
                     @link(
                         id=Some("addEmploymentLink"),
-                        url=controllers.routes.BeforeYouStartController.onPageLoad().url,
+                        url=controllers.routes.BeforeYouStartController.onPageLoad("employment").url,
                         copy=messages("tai.incomeTaxSummary.addMissingIncome.section.employerLink")
                     )
                     </p>
                     <p class="govuk-body">
                     @link(
                         id=Some("addPensionLink"),
-                        url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url,
+                        url=controllers.routes.BeforeYouStartController.onPageLoad("pension").url,
                         copy=messages("add.missing.pension")
                     )
                     </p>
