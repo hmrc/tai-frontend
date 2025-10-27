@@ -36,7 +36,7 @@ class CheckYourAnswersViewModelSpec extends BaseSpec {
       val res = sut.journeyConfirmationLines
       res.size mustBe 5
 
-      res(0) mustBe CheckYourAnswersConfirmationLine(
+      res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addPensionProvider.cya.q1"),
         "pension provider",
         controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url
@@ -121,20 +121,6 @@ class CheckYourAnswersViewModelSpec extends BaseSpec {
       sut.backLinkUrl mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
       sut.submissionUrl mustBe controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url
       sut.cancelUrl mustBe controllers.pensions.routes.AddPensionProviderController.cancel().url
-    }
-
-    "generate a view model with cya title and explanatory text" in {
-      val sut = CheckYourAnswersViewModel(
-        "pension provider",
-        "2017-06-13",
-        "ref-123",
-        "123/AB456",
-        "Yes",
-        Some("123456789")
-      )
-
-      sut.title mustBe Messages("tai.addPensionProvider.cya.title")
-      sut.postConfirmationText mustBe Messages("tai.checkYourAnswers.confirmText")
     }
   }
 }

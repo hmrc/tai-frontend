@@ -196,7 +196,6 @@ tai.addPensionProvider.cya.q1=Provider name
 tai.addPensionProvider.cya.q2=First payment date
 tai.addPensionProvider.cya.q3=Pension number
 tai.addPensionProvider.cya.q4=Can we contact you by phone
-tai.addPensionProvider.cya.title=I want to add as a pension provider
 
 tai.addPensionProvider.date.enterDate=Enter the date you got your first pension payment from {0}
 tai.addPensionProvider.date.enterDay=The date you got your first pension payment must include a day

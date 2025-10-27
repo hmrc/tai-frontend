@@ -192,7 +192,6 @@ tai.addPensionProvider.cya.q1=Enw’r darparwr
 tai.addPensionProvider.cya.q2=Dyddiad talu cyntaf
 tai.addPensionProvider.cya.q3=Rhif pensiwn
 tai.addPensionProvider.cya.q4=A allwn gysylltu â chi dros y ffôn?
-tai.addPensionProvider.cya.title=Rwyf am ychwanegu fel darparwr pensiwn
 tai.addPensionProvider.date.enterDate=Nodwch y dyddiad y cawsoch eich taliad pensiwn cyntaf gan {0}
 tai.addPensionProvider.date.enterDay=Mae’n rhaid i’r dyddiad y cawsoch eich taliad pensiwn cyntaf gynnwys diwrnod
 tai.addPensionProvider.date.enterMonth=Mae’n rhaid i’r dyddiad y cawsoch eich taliad pensiwn cyntaf gynnwys mis
