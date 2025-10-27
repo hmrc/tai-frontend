@@ -384,7 +384,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         Await.result(
           sut.sixWeeksError()(
             RequestBuilder
-              .buildFakeRequestWithAuth("POST")
+              .buildFakeRequestWithAuth("GET")
               .withFormUrlEncodedBody(
                 AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.NoValue
               )
@@ -603,7 +603,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payeRefForm.title", "Acme Ltd"))
+        doc.title() must include(Messages("tai.payeRefForm.employment.title", "Acme Ltd"))
         doc.select("#payeReference").`val`() mustBe ""
       }
     }
@@ -624,7 +624,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payeRefForm.title", "Acme Ltd"))
+        doc.title() must include(Messages("tai.payeRefForm.employment.title", "Acme Ltd"))
         doc.select("#payeReference").`val`() mustBe "123/AB456"
       }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,6 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText("confirmation text")
     }
 
-    "display a cya title" in {
-      doc must haveH2HeadingWithText("cya title")
-    }
-
     "display confirmation lines within the summary information, with corresponding change links" in {
       doc must haveCheckYourAnswersSummaryLineNew(1, "q1")
       doc must haveCheckYourAnswersSummaryLineChangeLink(1, "q1/url?edit=true")
@@ -71,7 +67,7 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
     }
   }
 
-  val lines = Seq(
+  val lines: Seq[CheckYourAnswersConfirmationLine] = Seq(
     CheckYourAnswersConfirmationLine("q1", "a1", "q1/url"),
     CheckYourAnswersConfirmationLine("q2", "a2", "q2/url"),
     CheckYourAnswersConfirmationLine("q3", "a3", "q3/url"),
@@ -82,7 +78,6 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
   val viewModel: CheckYourAnswersViewModel = CheckYourAnswersViewModel(
     preHeading,
     "fake/backlink/url",
-    "cya title",
     lines,
     "confirmation text",
     "/fake/submission/url",
