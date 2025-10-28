@@ -26,9 +26,9 @@ import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND}
 import play.api.mvc.{AnyContent, Result}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
-import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
+import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.Live
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment, EmploymentIncome, TemporarilyUnavailable}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.IdNotFound
@@ -50,7 +50,6 @@ class EmpIdCheckSpec extends BaseSpec {
     None,
     Some(LocalDate.of(2016, 6, 9)),
     None,
-    Seq(AnnualAccount(7, TaxYear().prev, TemporarilyUnavailable, Nil, Nil)),
     "taxNumber",
     "payeNumber",
     1,

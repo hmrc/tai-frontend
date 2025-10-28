@@ -35,10 +35,11 @@ case class HistoricIncomeCalculationViewModel(
 
 object HistoricIncomeCalculationViewModel {
 
-  def apply(employments: Seq[Employment], employmentId: Int, taxYear: TaxYear)(implicit
+  def apply(employments: Seq[Employment], accounts: Seq[AnnualAccount], employmentId: Int, taxYear: TaxYear)(implicit
     messages: Messages
   ): HistoricIncomeCalculationViewModel = {
-    val (employment, annualAccount)            = fetchEmploymentAndAnnualAccount(employments, taxYear, employmentId)
+    val employment                             = employments.find(_.sequenceNumber == employmentId)
+    val annualAccount                          = accounts.find(_.sequenceNumber == employmentId)
     val realTimeStatus                         = fetchRealTimeStatus(annualAccount)
     val (payments, endOfTaxYearUpdateMessages) = annualAccount match {
       case Some(annualAccnt) => (annualAccnt.payments, createEndOfYearTaxUpdateMessages(annualAccnt))
@@ -60,17 +61,6 @@ object HistoricIncomeCalculationViewModel {
       case Some(annualAccnt) => annualAccnt.realTimeStatus
       case _                 => TemporarilyUnavailable
     }
-
-  def fetchEmploymentAndAnnualAccount(
-    employments: Seq[Employment],
-    taxYear: TaxYear,
-    employmentId: Int
-  ): (Option[Employment], Option[AnnualAccount]) = {
-    val employment                           = employments.find(_.sequenceNumber == employmentId)
-    val annualAccount: Option[AnnualAccount] =
-      employment.flatMap(emp => emp.annualAccounts.find(_.taxYear.year == taxYear.year))
-    (employment, annualAccount)
-  }
 
   def createEndOfYearTaxUpdateMessages(annualAccount: AnnualAccount)(implicit messages: Messages): Seq[String] = {
     val lessOrMore    = (amount: BigDecimal) => amount.abs.toString + (if (amount > 0) " more" else " less")

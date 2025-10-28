@@ -188,58 +188,60 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
   }
 
   "createFromEmployment" must {
-    val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
+    val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment, Seq(annualAccount))
     "return a viewmodel" which {
       "has the name field coming from employment model" in {
-        val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
+        val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment, Seq(annualAccount))
         sut.name mustBe ceasedEmployment.name
       }
       "has the amount field as the latest payment 'amountYearToDate' value" in {
-        val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
+        val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment, Seq(annualAccount))
         sut.amount mustBe Some("£123")
       }
       "does not display any message" when {
         "the latest annual account is absent" in {
-          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment.copy(annualAccounts = Nil))
+          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment, Nil)
           sut.amount mustBe Some("")
         }
         "the latest payment is None" in {
           val sut =
             IncomeSourceViewModel.createFromEmployment(
-              ceasedEmployment.copy(annualAccounts = Seq(annualAccount.copy(payments = Nil)))
+              ceasedEmployment,
+              Seq(annualAccount.copy(payments = Nil))
             )
           sut.amount mustBe Some("")
         }
       }
       "has an empty taxCode field, and a 'false' value corresponding boolean set to instruct non display" in {
-        val sut = IncomeSourceViewModel.createFromEmployment(employment)
+        val sut = IncomeSourceViewModel.createFromEmployment(employment, Nil)
         sut.taxCode mustBe Some("")
         sut.displayTaxCode mustBe false
       }
       "has a payrollNumber field and the corresponding boolean set to instruct display" when {
         "employment model has payrollNo" in {
-          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
+          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment, Seq(annualAccount))
           sut.payrollNumber mustBe "123ABC"
           sut.displayPayrollNumber mustBe true
         }
       }
       "has no payrollNumber field and the corresponding boolean set to instruct non display" when {
         "employment model has payrollNo" in {
-          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment.copy(payrollNumber = None))
+          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment.copy(payrollNumber = None), Nil)
           sut.payrollNumber mustBe ""
           sut.displayPayrollNumber mustBe false
         }
       }
       "has the endDate field as empty and the corresponding boolean set to instruct non display" when {
         "employment model doesn't have endDate" in {
-          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment.copy(endDate = None))
+          val sut =
+            IncomeSourceViewModel.createFromEmployment(ceasedEmployment.copy(endDate = None), Seq(annualAccount))
           sut.endDate mustBe ""
           sut.displayEndDate mustBe false
         }
       }
       "has a formatted endDate field and the corresponding boolean set to instruct display" when {
         "employment model has  endDate" in {
-          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment)
+          val sut = IncomeSourceViewModel.createFromEmployment(ceasedEmployment, Seq(annualAccount))
           sut.endDate mustBe s"21 April ${TaxYear().next.year}"
           sut.displayEndDate mustBe true
         }

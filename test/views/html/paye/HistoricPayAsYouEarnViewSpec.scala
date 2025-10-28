@@ -38,7 +38,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   def view: Html =
     historicPayAsYouEarn(
-      HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, showTaxCodeDescriptionLink = true),
+      HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, showTaxCodeDescriptionLink = true),
       appConfig
     )
 

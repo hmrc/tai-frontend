@@ -43,6 +43,7 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
+
   def applyNew(
     empId: Int,
     displayName: String,
@@ -79,46 +80,4 @@ object IncomeSourceSummaryViewModel {
       isUpdateInProgress = isUpdateInProgress
     )
   }
-
-  def applyOld(
-    empId: Int,
-    displayName: String,
-    taxCodeIncomeSources: Seq[TaxCodeIncome],
-    employment: Employment,
-    estimatedPayJourneyCompleted: Boolean,
-    rtiAvailable: Boolean,
-    cacheUpdatedIncomeAmount: Option[Int]
-  ): IncomeSourceSummaryViewModel = {
-
-    val amountYearToDate = for {
-      latestAnnualAccount <- employment.latestAnnualAccount
-      latestPayment       <- latestAnnualAccount.latestPayment
-    } yield latestPayment.amountYearToDate
-
-    val taxCodeIncomeSource = taxCodeIncomeSources
-      .find(_.employmentId.contains(empId))
-      .getOrElse(throw new RuntimeException(s"Income details not found for employment id $empId"))
-
-    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => cacheUpdateAMount != taxCodeIncomeSource.amount.toInt
-      case None                    => false
-    }
-
-    IncomeSourceSummaryViewModel(
-      empId,
-      displayName,
-      taxCodeIncomeSource.name,
-      Some(taxCodeIncomeSource.amount),
-      amountYearToDate.getOrElse(0),
-      Some(taxCodeIncomeSource.taxCode),
-      employment.payrollNumber.getOrElse(""),
-      taxCodeIncomeSource.componentType == PensionIncome,
-      estimatedPayJourneyCompleted,
-      rtiAvailable,
-      employment.taxDistrictNumber,
-      employment.payeNumber,
-      isUpdateInProgress
-    )
-  }
-
 }

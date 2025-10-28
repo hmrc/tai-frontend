@@ -16,17 +16,19 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.*
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
-import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.journeyCache.*
 import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
 class IncomeServiceSpec extends BaseSpec {
@@ -35,14 +37,13 @@ class IncomeServiceSpec extends BaseSpec {
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
-  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
+  val employment: Employment =
     Employment(
       "employment",
       Live,
       Some("ABC123"),
       Some(LocalDate.of(2000, 5, 20)),
       None,
-      accounts,
       "",
       "",
       1,
@@ -70,11 +71,13 @@ class IncomeServiceSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taiConnector: TaiConnector           = mock[TaiConnector]
+  val rtiService: RtiService               = mock[RtiService]
 
   class SUT
       extends IncomeService(
         taxAccountService,
         employmentService,
+        rtiService,
         taiConnector
       )
 
@@ -85,10 +88,14 @@ class IncomeServiceSpec extends BaseSpec {
 
         val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment    = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employmentOnly(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment)))
+        when(rtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         val result = Await.result(sut.employmentAmount(nino, 1), 5.seconds)
 
@@ -113,7 +120,7 @@ class IncomeServiceSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment"
@@ -127,19 +134,22 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment    = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        val annualAccount = AnnualAccount(1, TaxYear(), Available, List(payment), Nil)
+        when(rtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
       }
     }
 
     "return none" when {
-      "employment details are not found" in {
+      "rti details are not found" in {
         val sut = createSUT
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(rtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }
@@ -148,8 +158,10 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val annualAccount = AnnualAccount(7, TaxYear(), Available, Seq.empty[Payment], Nil)
-        val employment    = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(rtiService.getPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }

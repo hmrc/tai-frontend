@@ -182,7 +182,6 @@ class CompanyCarServiceSpec extends BaseSpec {
       None,
       Some(LocalDate.parse("2016-06-09")),
       None,
-      Nil,
       "",
       "",
       1,

@@ -78,7 +78,6 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     Some("123"),
     Some(LocalDate.parse("2016-05-26")),
     Some(LocalDate.parse("2016-05-26")),
-    Nil,
     "",
     "",
     2,
