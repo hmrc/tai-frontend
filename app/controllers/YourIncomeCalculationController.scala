@@ -63,12 +63,13 @@ class YourIncomeCalculationController @Inject() (
       maybeIabdDetail       = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
     } yield (taxCodeIncomeDetails, employmentDetails, annualAccounts, maybeIabdDetail) match {
       case (Right(taxCodeIncomes), Some(employment), Right(accounts), Right(maybeIabd)) =>
-        val paymentDetails = paymentsService.filterDuplicates(accounts)
+        val employmentAccounts = accounts.filter(_.sequenceNumber == employment.sequenceNumber)
+        val paymentDetails     = paymentsService.filterDuplicates(employmentAccounts)
 
         val model                     = YourIncomeCalculationViewModel(
           taxCodeIncomes.find(_.employmentId.contains(empId)),
           employment,
-          accounts,
+          employmentAccounts,
           maybeIabd,
           paymentDetails,
           request.fullName

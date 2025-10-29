@@ -174,7 +174,11 @@ class EndEmploymentController @Inject() (
                         )
                       case _                                  =>
                         rtiService.getPaymentsForYear(user.nino, TaxYear()).value.flatMap {
-                          case Right(accounts) => hasIrregularPayment(accounts, user.nino.nino)
+                          case Right(accounts) =>
+                            hasIrregularPayment(
+                              accounts.filter(_.sequenceNumber == employment.sequenceNumber),
+                              user.nino.nino
+                            )
                           case _               =>
                             Future.successful(
                               Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
