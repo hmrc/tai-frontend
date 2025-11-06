@@ -24,7 +24,7 @@ import org.mockito.invocation.InvocationOnMock
 import play.api.Application
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsResultException, JsString, Json}
+import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -55,14 +55,6 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
   )
 
   private val oneEmploymentDetails = List(anEmploymentObject)
-
-  private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(
-    taxDistrictNumber = "1234",
-    payeNumber = "4321",
-    sequenceNumber = 3,
-    receivingOccupationalPension = true,
-    employmentType = PensionIncome
-  ) :: Nil
 
   private val zeroEmployments =
     """|{
@@ -157,7 +149,6 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
     .configure("microservice.services.tai.port" -> server.port())
     .build()
 
-
   def sut(servUrl: String = ""): EmploymentsConnector =
     new EmploymentsConnector(httpHandler, appConfig) {
       override val serviceUrl: String = servUrl
@@ -169,235 +160,70 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
     when(httpHandler.httpClient).thenReturn(httpClientV2)
     when(httpHandler.read(any[Future[Either[UpstreamErrorResponse, HttpResponse]]]())(any[ExecutionContext]))
       .thenAnswer((invocation: InvocationOnMock) => EitherT(invocation.getArgument(0)))
-    
-  "EmploymentsConnector employmentOnly" must {
 
-    "return an employment for a given tax year" when {
-      "valid id has been passed" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(anEmployment)))
+    "EmploymentsConnector employmentOnly" must {
 
-        val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+      "return an employment for a given tax year" when {
+        "valid id has been passed" in {
+          when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+            .thenReturn(Future.successful(Json.parse(anEmployment)))
 
-        result mustBe Some(anEmploymentObject)
-        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+
+          result mustBe Some(anEmploymentObject)
+          verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+        }
+
+        "startDate older than 1950 are filtered out" in {
+          when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+            .thenReturn(Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26"))))
+
+          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+
+          result mustBe Some(anEmploymentObject.copy(startDate = None))
+          verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+        }
       }
 
-      "startDate older than 1950 are filtered out" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26"))))
+      "return none" when {
+        "invalid json returned by api" in {
+          when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+            .thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
-        val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
-
-        result mustBe Some(anEmploymentObject.copy(startDate = None))
-        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
-      }
-    }
-
-    "return none" when {
-      "invalid json returned by api" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(zeroEmployments)))
-
-        Await.result(sut().employmentOnly(nino, 123, year), 5.seconds) mustBe None
-      }
-    }
-  }
-
-  "EmploymentsConnector employmentsOnly" must {
-
-    "return employments from the employments-only API" when {
-      "api provides one employment" in {
-        server.stubFor(
-          get(s"/tai/$nino/employments-only/years/${year.year}")
-            .willReturn(aResponse().withStatus(OK).withBody(oneEmployment))
-        )
-
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-
-        result mustBe Right(oneEmploymentDetails)
+          Await.result(sut().employmentOnly(nino, 123, year), 5.seconds) mustBe None
+        }
       }
     }
 
-    "return multiple employments" when {
-      "api provides more than one employment" in {
-        server.stubFor(
-          get(s"/tai/$nino/employments-only/years/${year.year}")
-            .willReturn(aResponse().withStatus(OK).withBody(twoEmployments))
-        )
+    "EmploymentsConnector employmentsOnly" must {
 
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-        result.isRight mustBe true
-        result.toOption.get.size mustBe 2
-      }
-    }
-
-    "filter out start dates older than 1950" in {
-      val outdatedEmployment = oneEmployment.replace("2016-05-26", "1945-05-26")
-      server.stubFor(
-        get(s"/tai/$nino/employments-only/years/${year.year}")
-          .willReturn(aResponse().withStatus(OK).withBody(outdatedEmployment))
-      )
-
-      val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-      result.isRight mustBe true
-      result.toOption.get.head.startDate mustBe None
-    }
-
-    "return empty list" when {
-      "api returns zero employments" in {
-        server.stubFor(
-          get(s"/tai/$nino/employments-only/years/${year.year}")
-            .willReturn(aResponse().withStatus(OK).withBody(zeroEmployments))
-        )
-
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-        result mustBe Right(Nil)
-      }
-    }
-
-    "return Left(error) when API call fails" in {
-      server.stubFor(
-        get(s"/tai/$nino/employments-only/years/${year.year}")
-          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
-      )
-
-      val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-      result.isLeft mustBe true
-    }
-  }
-
-  "EmploymentsConnector endEmployment" must {
-    "return an envelope" when {
-      "we send a PUT request to backend" in {
-        val json = Json.obj("data" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
-
-        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
-
-        val result = Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
-
-        result mustBe "123-456-789"
-      }
-    }
-
-    "return an exception" when {
-      "json is invalid" in {
-        val json              = Json.obj("test" -> JsString("123-456-789"))
-        when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
-          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
-        val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
-
-        ex.getMessage mustBe "Invalid json"
-      }
-    }
-  }
-
-  "EmploymentsConnector addEmployment" must {
-    "return an envelope id on a successful invocation" in {
-      val addEmployment = AddEmployment(
-        employerName = "testEmployment",
-        payrollNumber = "12345",
-        startDate = LocalDate.of(2017, 6, 6),
-        payeRef = "123/AB456",
-        telephoneContactAllowed = "Yes",
-        telephoneNumber = Some("123456789")
-      )
-      val json          = Json.obj("data" -> JsString("123-456-789"))
-      when(
-        httpHandler.postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment), any())(any(), any(), any())
-      )
-        .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
-
-      val result = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
-
-      result mustBe Some("123-456-789")
-    }
-  }
-
-  "EmploymentsConnector incorrectEmployment" must {
-    "return an envelope id on a successful invocation" in {
-      val model =
-        IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      val json  = Json.obj("data" -> JsString("123-456-789"))
-      when(httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
-
-      val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
-
-      result mustBe Some("123-456-789")
-    }
-  }
-
-  "EmploymentsConnector employmentOnly" must {
-
-    "return an employment from current year" when {
-      "valid id has been passed" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(anEmployment)))
-
-        val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
-
-        result mustBe Some(anEmploymentObject)
-        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
-      }
-
-      "startDate older than 1950 are filtered out" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(
-            Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26")))
+      "return employments from the employments-only API" when {
+        "api provides one employment" in {
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(oneEmployment))
           )
 
-        val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
 
-        result mustBe Some(anEmploymentObject.copy(startDate = None))
-        verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+          result mustBe Right(oneEmploymentDetails)
+        }
       }
-    }
 
-    "return none" when {
-      "invalid json returned by api" in {
-        when(httpHandler.getFromApiV2(any(), any())(any(), any()))
-          .thenReturn(Future.successful(Json.parse(zeroEmployments)))
+      "return multiple employments" when {
+        "api provides more than one employment" in {
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(twoEmployments))
+          )
 
-        Await.result(sut().employmentOnly(nino, 123, year), 5.seconds) mustBe None
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          result.isRight mustBe true
+          result.toOption.get.size mustBe 2
+        }
       }
-    }
-  }
 
-  "EmploymentsConnector employmentsOnly" must {
-
-    "return employments from the employments-only API" when {
-      "api provides one employment" in {
-        server.stubFor(
-          get(s"/tai/$nino/employments-only/years/${year.year}")
-            .willReturn(aResponse().withStatus(OK).withBody(oneEmployment))
-        )
-
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-
-        result mustBe Right(oneEmploymentDetails)
-      }
-    }
-
-    "return multiple employments" when {
-      "api provides more than one employment" in {
-        server.stubFor(
-          get(s"/tai/$nino/employments-only/years/${year.year}")
-            .willReturn(aResponse().withStatus(OK).withBody(twoEmployments))
-        )
-
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-        result.isRight mustBe true
-        result.toOption.get.size mustBe 2
-      }
-    }
-
-    "filter out employments" when {
-      "startDate older than 1950" in {
+      "filter out start dates older than 1950" in {
         val outdatedEmployment = oneEmployment.replace("2016-05-26", "1945-05-26")
         server.stubFor(
           get(s"/tai/$nino/employments-only/years/${year.year}")
@@ -408,28 +234,196 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
         result.isRight mustBe true
         result.toOption.get.head.startDate mustBe None
       }
-    }
 
-    "return empty list" when {
-      "api returns zero employments" in {
+      "return empty list" when {
+        "api returns zero employments" in {
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(zeroEmployments))
+          )
+
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          result mustBe Right(Nil)
+        }
+      }
+
+      "return Left(error) when API call fails" in {
         server.stubFor(
           get(s"/tai/$nino/employments-only/years/${year.year}")
-            .willReturn(aResponse().withStatus(OK).withBody(zeroEmployments))
+            .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
         )
 
         val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-        result mustBe Right(Nil)
+        result.isLeft mustBe true
       }
     }
 
-    "return Left(error) when API call fails" in {
-      server.stubFor(
-        get(s"/tai/$nino/employments-only/years/${year.year}")
-          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
-      )
+    "EmploymentsConnector endEmployment" must {
+      "return an envelope" when {
+        "we send a PUT request to backend" in {
+          val json = Json.obj("data" -> JsString("123-456-789"))
+          when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
+            .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
 
-      val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
-      result.isLeft mustBe true
+          val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
+
+          val result = Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
+
+          result mustBe "123-456-789"
+        }
+      }
+
+      "return an exception" when {
+        "json is invalid" in {
+          val json              = Json.obj("test" -> JsString("123-456-789"))
+          when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
+            .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
+          val endEmploymentData = EndEmployment(LocalDate.of(2017, 10, 15), "YES", Some("EXT-TEST"))
+
+          val ex =
+            the[RuntimeException] thrownBy Await.result(sut().endEmployment(nino, 1, endEmploymentData), 5.seconds)
+
+          ex.getMessage mustBe "Invalid json"
+        }
+      }
+    }
+
+    "EmploymentsConnector addEmployment" must {
+      "return an envelope id on a successful invocation" in {
+        val addEmployment = AddEmployment(
+          employerName = "testEmployment",
+          payrollNumber = "12345",
+          startDate = LocalDate.of(2017, 6, 6),
+          payeRef = "123/AB456",
+          telephoneContactAllowed = "Yes",
+          telephoneNumber = Some("123456789")
+        )
+        val json          = Json.obj("data" -> JsString("123-456-789"))
+        when(
+          httpHandler
+            .postToApi(meq(sut().addEmploymentServiceUrl(nino)), meq(addEmployment), any())(any(), any(), any())
+        )
+          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
+
+        val result = Await.result(sut().addEmployment(nino, addEmployment), 5.seconds)
+
+        result mustBe Some("123-456-789")
+      }
+    }
+
+    "EmploymentsConnector incorrectEmployment" must {
+      "return an envelope id on a successful invocation" in {
+        val model =
+          IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+        val json  = Json.obj("data" -> JsString("123-456-789"))
+        when(httpHandler.postToApi(meq(s"/tai/$nino/employments/1/reason"), meq(model), any())(any(), any(), any()))
+          .thenReturn(Future.successful(HttpResponse(200, json, Map[String, Seq[String]]())))
+
+        val result = Await.result(sut().incorrectEmployment(nino, 1, model), 5.seconds)
+
+        result mustBe Some("123-456-789")
+      }
+    }
+
+    "EmploymentsConnector employmentOnly" must {
+
+      "return an employment from current year" when {
+        "valid id has been passed" in {
+          when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+            .thenReturn(Future.successful(Json.parse(anEmployment)))
+
+          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+
+          result mustBe Some(anEmploymentObject)
+          verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+        }
+
+        "startDate older than 1950 are filtered out" in {
+          when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+            .thenReturn(
+              Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26")))
+            )
+
+          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+
+          result mustBe Some(anEmploymentObject.copy(startDate = None))
+          verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
+        }
+      }
+
+      "return none" when {
+        "invalid json returned by api" in {
+          when(httpHandler.getFromApiV2(any(), any())(any(), any()))
+            .thenReturn(Future.successful(Json.parse(zeroEmployments)))
+
+          Await.result(sut().employmentOnly(nino, 123, year), 5.seconds) mustBe None
+        }
+      }
+    }
+
+    "EmploymentsConnector employmentsOnly" must {
+
+      "return employments from the employments-only API" when {
+        "api provides one employment" in {
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(oneEmployment))
+          )
+
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+
+          result mustBe Right(oneEmploymentDetails)
+        }
+      }
+
+      "return multiple employments" when {
+        "api provides more than one employment" in {
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(twoEmployments))
+          )
+
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          result.isRight mustBe true
+          result.toOption.get.size mustBe 2
+        }
+      }
+
+      "filter out employments" when {
+        "startDate older than 1950" in {
+          val outdatedEmployment = oneEmployment.replace("2016-05-26", "1945-05-26")
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(outdatedEmployment))
+          )
+
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          result.isRight mustBe true
+          result.toOption.get.head.startDate mustBe None
+        }
+      }
+
+      "return empty list" when {
+        "api returns zero employments" in {
+          server.stubFor(
+            get(s"/tai/$nino/employments-only/years/${year.year}")
+              .willReturn(aResponse().withStatus(OK).withBody(zeroEmployments))
+          )
+
+          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          result mustBe Right(Nil)
+        }
+      }
+
+      "return Left(error) when API call fails" in {
+        server.stubFor(
+          get(s"/tai/$nino/employments-only/years/${year.year}")
+            .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
+        )
+
+        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+        result.isLeft mustBe true
+      }
     }
   }
 }

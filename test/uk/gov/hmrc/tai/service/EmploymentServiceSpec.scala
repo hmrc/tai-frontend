@@ -51,7 +51,6 @@ class EmploymentServiceSpec extends BaseSpec {
     EmploymentIncome
   )
   private val employmentDetails = List(employment)
-  private val employments       = employmentDetails.head :: employmentDetails.head :: Nil
 
   val employmentsConnector: EmploymentsConnector = mock[EmploymentsConnector]
 

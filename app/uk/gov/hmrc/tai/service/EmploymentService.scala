@@ -28,7 +28,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit ec: ExecutionContext) {
 
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear = TaxYear())(implicit
+    hc: HeaderCarrier
+  ): Future[Option[Employment]] =
     employmentsConnector.employmentOnly(nino, id, taxYear)
 
   def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
