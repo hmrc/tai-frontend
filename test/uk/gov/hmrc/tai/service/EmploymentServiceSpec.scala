@@ -57,18 +57,6 @@ class EmploymentServiceSpec extends BaseSpec {
 
   private def createSUT = new EmploymentService(employmentsConnector)
 
-  "CeasedEmployments Service" must {
-    "return employments" in {
-      val sut = createSUT
-
-      when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(employments))
-
-      val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
-
-      data mustBe employments
-    }
-  }
-
   "Employment Names" must {
     "return a map of employment id and employment name" when {
       "connector returns one employment" in {

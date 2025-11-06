@@ -1103,11 +1103,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
 
     server.stubFor(
-      get(s"/tai/$generatedNino/employments/year/$startTaxYear/status/ceased")
-        .willReturn(ok("""{"data": []}"""))
-    )
-
-    server.stubFor(
       get(s"/tai/$generatedNino/tax-account/year/$startTaxYear/income/EmploymentIncome/status/Live")
         .willReturn(ok("""{"data": []}"""))
     )

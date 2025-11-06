@@ -50,9 +50,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
   def addEmploymentServiceUrl(nino: Nino): String =
     s"$serviceUrl/tai/$nino/employments"
 
-  private def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear): String =
-    s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
-
   private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
     s"$serviceUrl/tai/$nino/employments/$id/reason"
 
@@ -64,11 +61,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   private def sanitizeAll(es: Seq[Employment]): Seq[Employment] =
     es.iterator.map(sanitize).toSeq
-
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(ceasedEmploymentServiceUrl(nino, year)).map { json =>
-      sanitizeAll((json \ "data").as[Seq[Employment]])
-    }
 
   def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler.getFromApiV2(employmentOnlyUrl(nino, id, taxYear)).map { json =>

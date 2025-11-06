@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HttpResponse
@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
 class PensionProviderConnectorSpec extends BaseSpec {
@@ -34,7 +34,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
   "PensionProviderConnector addPensionProvider" must {
     "return an envelope id on a successful invocation" in {
       val addPensionProvider =
-        AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "Yes", Some("123456789"))
+        AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "123/AB456", "Yes", Some("123456789"))
       val json               = Json.obj("data" -> JsString("123-456-789"))
       when(
         httpHandler

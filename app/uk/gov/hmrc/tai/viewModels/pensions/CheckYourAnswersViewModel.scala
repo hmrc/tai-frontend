@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.time.LocalDate
 case class CheckYourAnswersViewModel(
   preHeading: String,
   backLinkUrl: String,
-  title: String,
   journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
   postConfirmationText: String,
   submissionUrl: String,
@@ -38,6 +37,7 @@ object CheckYourAnswersViewModel {
     pensionProviderName: String,
     pensionStartDate: String,
     pensionRefNo: String,
+    payeRef: String,
     contactableByPhone: String,
     phoneNumber: Option[String]
   )(implicit messages: Messages): CheckYourAnswersViewModel = {
@@ -61,6 +61,11 @@ object CheckYourAnswersViewModel {
           controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
         ),
         CheckYourAnswersConfirmationLine(
+          Messages("tai.addPensionProvider.cya.payeRef"),
+          payeRef,
+          controllers.pensions.routes.AddPensionProviderController.addPayeReference().url
+        ),
+        CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q4"),
           contactableByPhone,
           controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
@@ -82,7 +87,6 @@ object CheckYourAnswersViewModel {
     CheckYourAnswersViewModel(
       Messages("add.missing.pension"),
       controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url,
-      Messages("tai.addPensionProvider.cya.title"),
       journeyConfirmationLines,
       postConfirmationText,
       controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url,

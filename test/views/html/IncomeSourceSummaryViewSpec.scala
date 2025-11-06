@@ -218,7 +218,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is employment" in {
         doc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         doc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
-        doc must haveSpanWithText("£" + model.estimatedTaxableIncome.get)
+        doc must haveParagraphWithText("£" + model.estimatedTaxableIncome.get)
         doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         doc must haveLinkWithUrlWithID(
           "updateIncome",
@@ -230,7 +230,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is pension" in {
         pensionDoc must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         pensionDoc must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
-        pensionDoc must haveSpanWithText("£" + pensionModel.estimatedTaxableIncome.get)
+        pensionDoc must haveParagraphWithText("£" + pensionModel.estimatedTaxableIncome.get)
         pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.full"))
         pensionDoc must haveLinkWithUrlWithID(
           "updateIncome",
@@ -245,7 +245,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is employment" in {
         docWithNoEstimatedIncome must haveHeadingH2WithText(messages("tai.income.details.estimatedTaxableIncome"))
         docWithNoEstimatedIncome must haveParagraphWithText(messages("tai.income.details.estimatedTaxableIncome.desc"))
-        docWithNoEstimatedIncome must haveParagraphWithText(
+        docWithNoEstimatedIncome must haveElementWithIdAndText(
+          "estimatedIncome",
           "Your estimated taxable income is missing. Add your estimated taxable income."
         )
         docWithNoEstimatedIncome must haveLinkWithText("Add your estimated taxable income.")
@@ -254,7 +255,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url
         )
         docWithNoEstimatedIncome mustNot haveParagraphWithText(messages("tai.income.details.updateInProgress"))
-        docWithNoEstimatedIncome mustNot haveSpanWithText("£")
+        docWithNoEstimatedIncome mustNot haveParagraphWithText("£")
       }
     }
 
@@ -267,7 +268,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
             model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")
           )
         )
-        doc must haveSpanWithText("£" + model.incomeReceivedToDate)
+        doc must haveParagraphWithText("£" + model.incomeReceivedToDate)
         doc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url
@@ -282,7 +283,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
             model.htmlNonBroken(model.startOfCurrentYear).replaceAll("\u00A0", " ")
           )
         )
-        pensionDoc must haveSpanWithText("£" + pensionModel.incomeReceivedToDate)
+        pensionDoc must haveParagraphWithText("£" + pensionModel.incomeReceivedToDate)
         pensionDoc must haveLinkWithUrlWithID(
           "viewIncomeReceivedToDate",
           controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(pensionModel.empId).url
@@ -306,8 +307,11 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         )
 
         val doc = Jsoup.parse(template(model).toString())
-        doc must haveSpanWithText(messages("tai.rti.down"))
-        doc must haveSpanWithText(messages("tai.rti.down.updateEmployment"))
+        doc must haveElementWithIdAndText(
+          "incomeReceivedToDate",
+          "Your income received to date is unavailable. Try again later"
+        )
+        doc must haveParagraphWithText(messages("tai.rti.down.updateEmployment"))
       }
 
       "rti is unavailable display rti down messages for pensions" in {
@@ -327,14 +331,17 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         )
 
         val doc = Jsoup.parse(template(model).toString())
-        doc must haveSpanWithText(messages("tai.rti.down"))
-        doc must haveSpanWithText(messages("tai.rti.down.updatePension"))
+        doc must haveElementWithIdAndText(
+          "incomeReceivedToDate",
+          "Your income received to date is unavailable. Try again later"
+        )
+        doc must haveParagraphWithText(messages("tai.rti.down.updatePension"))
       }
     }
 
     "display tax code" in {
       doc must haveHeadingH2WithText(messages("tai.taxCode"))
-      doc must haveSpanWithText(model.taxCode.get)
+      doc must haveParagraphWithText(model.taxCode.get)
       doc must haveLinkWithUrlWithID("understandTaxCode", routes.YourTaxCodeController.taxCode(model.empId).url)
     }
 
@@ -346,14 +353,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
       "display ERN number" when {
         "income source is employment" in {
-          doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
+          doc must haveHeadingH2WithText(messages("tai.income.details.ERN"))
           doc must haveParagraphWithText(s"${model.taxDistrictNumber}/${model.payeNumber}")
         }
       }
 
       "display ERN number" when {
         "income source is pension" in {
-          doc must haveHeadingH3WithText(messages("tai.income.details.ERN"))
+          doc must haveHeadingH2WithText(messages("tai.income.details.ERN"))
           doc must haveParagraphWithText(s"${model.taxDistrictNumber}/${model.payeNumber}")
         }
       }
