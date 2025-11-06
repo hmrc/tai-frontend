@@ -29,13 +29,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit
   ec: ExecutionContext
 ) {
-
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.employmentsOnly(nino, year).value.map {
-      case Right(emps) => emps
-      case Left(_)     => Seq.empty
-    }
-
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
     employmentsConnector.ceasedEmployments(nino, year)
 
@@ -75,7 +68,9 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): Future[Map[Int, String]] =
-    for {
-      records <- employments(nino, year)
-    } yield records.iterator.map(e => e.sequenceNumber -> e.name).toMap
+    employmentsOnly(nino, year).value.map {
+      case Right(employments) => employments.iterator.map(e => e.sequenceNumber -> e.name).toMap
+      case Left(error)        =>
+        throw new RuntimeException(s"No employment names found, error occurred with message ${error.message}")
+    }
 }

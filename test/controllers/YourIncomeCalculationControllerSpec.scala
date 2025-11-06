@@ -246,7 +246,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "show historic data" when {
       "historic data has been passed" in {
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
@@ -272,8 +273,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "throw internal server error" when {
       "RTI throws service unavailable" in {
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentForRtiUnavailable))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )

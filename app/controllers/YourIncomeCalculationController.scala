@@ -104,10 +104,10 @@ class YourIncomeCalculationController @Inject() (
         val nino = request.taiUser.nino
 
         for {
-          employments    <- employmentService.employments(nino, year)
+          employments    <- employmentService.employmentsOnly(nino, year).value
           annualAccounts <- rtiService.getPaymentsForYear(nino, year).value
         } yield (employments, annualAccounts) match {
-          case (_, Right(accounts)) =>
+          case (Right(employments), Right(accounts)) =>
             val historicIncomeCalculationViewModel =
               HistoricIncomeCalculationViewModel(employments, accounts, empId, year)
 
@@ -118,7 +118,11 @@ class YourIncomeCalculationController @Inject() (
                 )
               case _                          => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
-          case (_, Left(error))     =>
+          case (Left(error), _)                      =>
+            errorPagesHandler.internalServerError(
+              s"Employments call call failed with message ${error.message}"
+            )
+          case (_, Left(error))                      =>
             errorPagesHandler.internalServerError(
               s"RTI payment call failed with message ${error.message}"
             )

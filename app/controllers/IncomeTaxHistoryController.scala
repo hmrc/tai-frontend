@@ -16,25 +16,25 @@
 
 package controllers
 
-import cats.implicits._
-import controllers.auth.AuthJourney
+import cats.data.EitherT
+import cats.implicits.*
+import controllers.auth.{AuthJourney, AuthenticatedRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.Logging
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.MoneyPounds
-import uk.gov.hmrc.tai.util.ViewModelHelper._
+import uk.gov.hmrc.tai.util.ViewModelHelper.*
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.{IncomeTaxHistoryViewModel, IncomeTaxYear}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class IncomeTaxHistoryController @Inject() (
   val config: ApplicationConfig,
@@ -49,51 +49,53 @@ class IncomeTaxHistoryController @Inject() (
     with Logging {
 
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
+    request: AuthenticatedRequest[AnyContent],
     hc: HeaderCarrier
-  ): Future[IncomeTaxYear] =
-    for {
+  ): EitherT[Future, UpstreamErrorResponse, IncomeTaxYear] =
+    EitherT(for {
       maybeTaxCodeIncomeDetails <-
         taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
           None
         }
-      employmentDetails         <- employmentService.employments(nino, taxYear)
+      employmentDetails         <- employmentService.employmentsOnly(nino, taxYear).value
       accounts                  <- rtiService.getPaymentsForYear(nino, taxYear).value
-    } yield {
-      val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
-      val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { (employment: Employment) =>
-        val maybeTaxCode: Option[TaxCodeIncome] = for {
-          taxCodesMap <- maybeTaxCodesMap
-          incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
-          taxCode     <- incomes.headOption
-        } yield taxCode
+    } yield (maybeTaxCodeIncomeDetails, employmentDetails, accounts) match {
+      case (_, Right(employmentDetails), _) =>
+        val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
+        val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { (employment: Employment) =>
+          val maybeTaxCode: Option[TaxCodeIncome] = for {
+            taxCodesMap <- maybeTaxCodesMap
+            incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
+            taxCode     <- incomes.headOption
+          } yield taxCode
 
-        val maybeLastPayment: Option[Payment] =
-          accounts match {
-            case Right(account) => fetchLastPayment(employment, account)
-            case _              => None
-          }
+          val maybeLastPayment: Option[Payment] =
+            accounts match {
+              case Right(account) => fetchLastPayment(employment, account)
+              case _              => None
+            }
 
-        val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
+          val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
 
-        IncomeTaxHistoryViewModel(
-          employerName = employment.name,
-          isPension = isPension,
-          ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
-          payrollNumber = employment.payrollNumber,
-          startDate = employment.startDate,
-          maybeEndDate = employment.endDate,
-          maybeTaxableIncome = maybeLastPayment.map { payment =>
-            withPoundPrefix(MoneyPounds(payment.amountYearToDate))
-          },
-          maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
-            withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
-          },
-          maybeTaxCode = maybeTaxCode.map(_.taxCode)
-        )
-      }.toList
-      IncomeTaxYear(taxYear, incomeTaxHistory)
-    }
-
+          IncomeTaxHistoryViewModel(
+            employerName = employment.name,
+            isPension = isPension,
+            ern = s"${employment.taxDistrictNumber}/${employment.payeNumber}",
+            payrollNumber = employment.payrollNumber,
+            startDate = employment.startDate,
+            maybeEndDate = employment.endDate,
+            maybeTaxableIncome = maybeLastPayment.map { payment =>
+              withPoundPrefix(MoneyPounds(payment.amountYearToDate))
+            },
+            maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
+              withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
+            },
+            maybeTaxCode = maybeTaxCode.map(_.taxCode)
+          )
+        }.toList
+        Right(IncomeTaxYear(taxYear, incomeTaxHistory))
+      case (_, Left(error), _)              => Left(error)
+    })
   // This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
   private def fetchLastPayment(employment: Employment, accounts: Seq[AnnualAccount]) =
     accounts.find(_.sequenceNumber == employment.sequenceNumber).flatMap(_.payments.lastOption)
@@ -106,9 +108,12 @@ class IncomeTaxHistoryController @Inject() (
 
     taxYears
       .traverse(taxYear =>
-        getIncomeTaxYear(nino, taxYear).recover { case NonFatal(e) =>
-          logger.error(e.getMessage, e)
-          IncomeTaxYear(taxYear, Nil)
+        getIncomeTaxYear(nino, taxYear).value.map {
+          case Right(taxCodeIncome) =>
+            taxCodeIncome
+          case Left(e)              =>
+            logger.error(e.getMessage, e)
+            IncomeTaxYear(taxYear, Nil)
         }
       )
       .map { taxCodeIncome =>

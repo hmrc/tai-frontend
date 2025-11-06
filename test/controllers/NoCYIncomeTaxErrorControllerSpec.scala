@@ -17,13 +17,14 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.test.Helpers._
-import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
@@ -32,7 +33,7 @@ import utils.BaseSpec
 import views.html.NoCYIncomeTaxErrorView
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -71,9 +72,12 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
     employmentDataFailure match {
       case None            =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
       case Some(throwable) =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
+        when(employmentService.employmentsOnly(any(), any())(any())).thenReturn(
+          EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Server Error", INTERNAL_SERVER_ERROR))
+        )
     }
 
   }
@@ -96,7 +100,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
     "call employment service to fetch sequence of employments" in {
       val sut = createSUT()
       Await.result(sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(employmentService).employments(any(), any())(any())
+      verify(employmentService).employmentsOnly(any(), any())(any())
     }
 
     "display the page" when {
@@ -105,7 +109,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService).employments(any(), any())(any())
+        verify(employmentService).employmentsOnly(any(), any())(any())
         status(result) mustBe OK
       }
 
@@ -114,7 +118,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService).employments(any(), any())(any())
+        verify(employmentService).employmentsOnly(any(), any())(any())
         status(result) mustBe OK
       }
     }

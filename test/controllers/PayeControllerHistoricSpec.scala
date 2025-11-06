@@ -26,7 +26,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.*
@@ -61,7 +61,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
         inject[ErrorPagesHandler]
       ) {
 
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+    when(employmentService.employmentsOnly(any(), any())(any()))
+      .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
     when(rtiService.getPaymentsForYear(any(), any())(any()))
@@ -195,8 +196,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       val testController = createTestController()
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-      when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmployment))
+      when(employmentService.employmentsOnly(any(), any())(any()))
+        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
 
       when(rtiService.getPaymentsForYear(any(), any())(any()))
         .thenReturn(
@@ -217,8 +218,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
     "display the last year paye page successfully when RTI is down" in {
 
       val testController = createTestController()
-      when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmploymentForRtiUnavailable))
+      when(employmentService.employmentsOnly(any(), any())(any()))
+        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentForRtiUnavailable))
       when(rtiService.getPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(
@@ -262,8 +263,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       val testController = createTestController()
 
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-      when(employmentService.employments(any(), any())(any()))
-        .thenReturn(Future.successful(sampleEmploymentWithSameDatFpsSubmissions))
+      when(employmentService.employmentsOnly(any(), any())(any()))
+        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentWithSameDatFpsSubmissions))
       when(rtiService.getPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(
@@ -286,32 +287,32 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       "employment service call results in a NotFoundException from NPS" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Not found", NOT_FOUND)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
-        verify(employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employmentsOnly(any(), any())(any())
       }
 
       "employment service call results in a NotFoundException from RTI" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new NotFoundException("not found")))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Not found", NOT_FOUND)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
-        verify(employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employmentsOnly(any(), any())(any())
       }
 
       "employment service call results in a bad request" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new BadRequestException("Bad request")))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Bad Request", BAD_REQUEST)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -321,8 +322,10 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       "employment service call results in a internal server error" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new InternalServerException("Internal server error")))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(
+            EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Server Error", INTERNAL_SERVER_ERROR))
+          )
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -332,8 +335,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       "employment service call results in an exception" in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.failed(new HttpException("error", 502)))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Bad Gateway", BAD_GATEWAY)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -347,8 +350,8 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       "payePage call when employee sequence is empty " in {
 
         val testController = createTestController()
-        when(employmentService.employments(any(), any())(any()))
-          .thenReturn(Future.successful(sampleEmptyEmployment))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmptyEmployment))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

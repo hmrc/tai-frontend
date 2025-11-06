@@ -28,7 +28,6 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import views.html.IdNotFound
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 class EmpIdCheck @Inject (
   employmentsService: EmploymentService,
@@ -46,15 +45,16 @@ class EmpIdCheck @Inject (
   ): Future[Option[Result]] = {
     implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     employmentsService
-      .employments(request.taiUser.nino, taxYear)
-      .map { employments =>
-        if (employments.exists(_.sequenceNumber == empId)) {
-          None
-        } else {
-          Some(NotFound(idNotFound()))
-        }
-      } recover { case NonFatal(e) =>
-      Some(errorPagesHandler.internalServerError("EmpIdCheck exception", Some(e)))
-    }
+      .employmentsOnly(request.taiUser.nino, taxYear)
+      .value
+      .map {
+        case Right(employments) =>
+          if (employments.exists(_.sequenceNumber == empId)) {
+            None
+          } else {
+            Some(NotFound(idNotFound()))
+          }
+        case Left(e)            => Some(errorPagesHandler.internalServerError("EmpIdCheck exception", Some(e)))
+      }
   }
 }

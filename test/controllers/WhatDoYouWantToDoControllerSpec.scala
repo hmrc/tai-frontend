@@ -70,7 +70,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         inject[ErrorPagesHandler]
       ) {
 
-    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
+    when(employmentService.employmentsOnly(any(), any())(any())).thenReturn(EitherT.rightT(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -344,7 +344,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
-          verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear()))(any())
+          verify(employmentService, times(2)).employmentsOnly(any(), meq(TaxYear()))(any())
           verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev))(any())
           // previous years are not called because CY-1 has some data
           verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev))(any())
@@ -379,7 +379,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
-          verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear()))(any())
+          verify(employmentService, times(2)).employmentsOnly(any(), meq(TaxYear()))(any())
           verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev))(any())
           verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev.prev))(any())
           verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any())

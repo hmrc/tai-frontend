@@ -57,26 +57,6 @@ class EmploymentServiceSpec extends BaseSpec {
 
   private def createSUT = new EmploymentService(employmentsConnector)
 
-  "Employment Service" must {
-    "return employments" in {
-      val sut = createSUT
-
-      val employment2 = employment.copy(sequenceNumber = 1)
-      val employment3 = employment.copy(sequenceNumber = 3)
-
-      when(employmentsConnector.employmentsOnly(any(), any())(any()))
-        .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment, employment2, employment3)))
-
-      val data = Await.result(sut.employments(nino, year), 5.seconds)
-
-      data mustBe Seq(
-        employment,
-        employment2,
-        employment3
-      )
-    }
-  }
-
   "CeasedEmployments Service" must {
     "return employments" in {
       val sut = createSUT

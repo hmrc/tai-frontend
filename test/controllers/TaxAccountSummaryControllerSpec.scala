@@ -180,7 +180,8 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           EitherT.rightT(taxAccountSummary)
         )
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+        when(employmentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR

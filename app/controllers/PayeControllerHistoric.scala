@@ -60,11 +60,11 @@ class PayeControllerHistoric @Inject() (
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
       (
-        employmentService.employments(nino, taxYear),
+        employmentService.employmentsOnly(nino, taxYear).value,
         taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear),
         rtiService.getPaymentsForYear(nino, taxYear).value
       ).mapN {
-        case (employments, hasTaxCodeRecordsInYearPerEmployment, Right(accounts)) =>
+        case (Right(employments), hasTaxCodeRecordsInYearPerEmployment, Right(accounts)) =>
           if (isRtiUnavailable(accounts)) {
             Ok(
               RtiDisabledHistoricPayAsYouEarnView(
@@ -80,13 +80,14 @@ class PayeControllerHistoric @Inject() (
               )
             )
           }
-        case (employments, hasTaxCodeRecordsInYearPerEmployment, Left(_))         =>
+        case (Right(employments), hasTaxCodeRecordsInYearPerEmployment, Left(_))         =>
           Ok(
             RtiDisabledHistoricPayAsYouEarnView(
               HistoricPayAsYouEarnViewModel(taxYear, employments, Seq.empty, hasTaxCodeRecordsInYearPerEmployment),
               config
             )
           )
+        case (Left(error), _, _)                                                         => errorPagesHandler.internalServerError(error.getMessage)
       }
     }
   }.recover { case NonFatal(error) =>

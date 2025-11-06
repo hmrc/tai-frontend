@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.util
 
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.mockito.Mockito.reset
 import controllers.auth.{AuthedUser, DataRequest}
@@ -33,6 +34,7 @@ import uk.gov.hmrc.tai.service.EmploymentService
 import utils.BaseSpec
 import views.html.IdNotFound
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -73,7 +75,8 @@ class EmpIdCheckSpec extends BaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockEmploymentService)
-    when(mockEmploymentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+    when(mockEmploymentService.employmentsOnly(any(), any())(any()))
+      .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment)))
   }
 
   "checkValidId" must {
@@ -93,7 +96,10 @@ class EmpIdCheckSpec extends BaseSpec {
     }
     "be an error page" when {
       "the call to employments fails" in {
-        when(mockEmploymentService.employments(any(), any())(any())).thenReturn(Future.failed(Throwable("error")))
+        when(mockEmploymentService.employmentsOnly(any(), any())(any()))
+          .thenReturn(
+            EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Call failed", INTERNAL_SERVER_ERROR))
+          )
 
         val result = empIdCheck.checkValidId(employment.sequenceNumber).futureValue(Timeout(Span(5, Seconds)))
 

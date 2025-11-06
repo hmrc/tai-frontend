@@ -179,14 +179,16 @@ class WhatDoYouWantToDoController @Inject() (
     taxAccountService.newTaxCodeIncomes(nino, TaxYear()).transform {
       case Left(error)         => Right(Future.successful(Failure(error.message)))
       case Right(noOfTaxCodes) =>
-        Right(employmentService.employments(nino, TaxYear()).flatMap { employments =>
-          auditService
-            .sendUserEntryAuditEvent(
-              nino,
-              request.headers.get("Referer").getOrElse("NA"),
-              employments,
-              noOfTaxCodes
-            )
+        Right(employmentService.employmentsOnly(nino, TaxYear()).value.flatMap {
+          case Right(employments) =>
+            auditService
+              .sendUserEntryAuditEvent(
+                nino,
+                request.headers.get("Referer").getOrElse("NA"),
+                employments,
+                noOfTaxCodes
+              )
+          case Left(error)        => Future.successful(Failure(error.message))
         })
     }
 
