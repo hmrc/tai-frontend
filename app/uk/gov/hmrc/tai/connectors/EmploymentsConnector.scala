@@ -62,13 +62,13 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
   private def sanitizeAll(es: Seq[Employment]): Seq[Employment] =
     es.iterator.map(sanitize).toSeq
 
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+  def employment(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler.getFromApiV2(employmentOnlyUrl(nino, id, taxYear)).map { json =>
       (json \ "data").asOpt[Employment].map(sanitize)
     }
 
-  def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
-    hc: HeaderCarrier
+  def employments(nino: Nino, taxYear: TaxYear)(implicit
+                                                hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] = {
     val url = employmentsOnlyUrl(nino, taxYear)
     httpHandler

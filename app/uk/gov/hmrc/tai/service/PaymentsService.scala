@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Payment}
+import uk.gov.hmrc.tai.model.domain.AnnualAccount
 import uk.gov.hmrc.tai.viewModels.PaymentDetailsViewModel
 
 import javax.inject.Inject
 
 class PaymentsService @Inject() () {
-  def filterDuplicates(accounts: Seq[AnnualAccount]): Seq[PaymentDetailsViewModel] = {
-    val payments: Seq[Payment]                  = accounts.maxOption.fold(Nil)(_.payments)
-    val paymentsWithoutDuplicates: Seq[Payment] = payments.filterNot(_.duplicate.getOrElse(false))
-
-    paymentsWithoutDuplicates.map(PaymentDetailsViewModel(_))
-  }
+  def filterDuplicates(maybeAccount: Option[AnnualAccount]): Seq[PaymentDetailsViewModel] =
+    maybeAccount.fold(Seq.empty) { account =>
+      account.payments.filterNot(_.duplicate.getOrElse(false)).map(PaymentDetailsViewModel(_))
+    }
 }

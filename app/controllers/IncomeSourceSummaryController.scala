@@ -23,14 +23,13 @@ import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.EmpIdCheck
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
+import uk.gov.hmrc.tai.model.domain.Available
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,15 +49,6 @@ class IncomeSourceSummaryController @Inject() (
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  private def isRTIAvailable(payments: Either[UpstreamErrorResponse, Seq[AnnualAccount]]): Boolean =
-    payments.fold(
-      _ => false,
-      seqAA => {
-        val latestAnnualAccount: Option[AnnualAccount] = if (seqAA.isEmpty) None else Some(seqAA.max)
-        latestAnnualAccount.exists(_.realTimeStatus != TemporarilyUnavailable)
-      }
-    )
-
   def onPageLoad(empId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
 
     val nino = request.taiUser.nino
@@ -76,7 +66,7 @@ class IncomeSourceSummaryController @Inject() (
         (
           employmentService.employmentOnly(nino, empId, TaxYear()),
           taxAccountService.taxCodeIncomes(nino, TaxYear()),
-          rtiService.getPaymentsForYear(nino, TaxYear()).value,
+          rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value,
           Future.successful(hasJourneyCompleted),
           cacheUpdatedIncomeAmountFuture
         ).mapN {
@@ -92,9 +82,13 @@ class IncomeSourceSummaryController @Inject() (
               displayName = request.fullName,
               taxCodeIncomes.fold(_ => None, _.find(_.employmentId.fold(false)(_ == employment.sequenceNumber))),
               employment = employment,
-              payments = payments.toOption.flatMap(_.find(_.sequenceNumber == employment.sequenceNumber)),
+              payments = payments.toOption.flatten,
               estimatedPayJourneyCompleted = estimatedPayCompletion,
-              rtiAvailable = isRTIAvailable(payments),
+              // TODO: handle a failure vs no payment present
+              // The way the rti availability is implemented using a stub Annual account is not compatible with None type
+              // So when no annual account found for an employment, assuming rti is down.
+              // The service also does not handle the case when there is no payments but assume the rti api not been available.
+              rtiAvailable = payments.fold(_ => false, _.fold(false)(_.realTimeStatus == Available)),
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount
             )
 

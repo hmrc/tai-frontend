@@ -48,6 +48,15 @@ class IncomeTaxHistoryController @Inject() (
     extends TaiBaseController(mcc)
     with Logging {
 
+  private def lastPaymentForEmployment(accounts: Either[UpstreamErrorResponse, Seq[AnnualAccount]], empId: Int) =
+    accounts.fold(
+      _ => None,
+      accountSeq =>
+        accountSeq
+          .find(_.sequenceNumber == empId)
+          .flatMap(_.latestPayment)
+    )
+
   def getIncomeTaxYear(nino: Nino, taxYear: TaxYear)(implicit
     request: AuthenticatedRequest[AnyContent],
     hc: HeaderCarrier
@@ -58,7 +67,7 @@ class IncomeTaxHistoryController @Inject() (
           None
         }
       employmentDetails         <- employmentService.employmentsOnly(nino, taxYear).value
-      accounts                  <- rtiService.getPaymentsForYear(nino, taxYear).value
+      accounts                  <- rtiService.getAllPaymentsForYear(nino, taxYear).value
     } yield (maybeTaxCodeIncomeDetails, employmentDetails, accounts) match {
       case (_, Right(employmentDetails), _) =>
         val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
@@ -69,11 +78,9 @@ class IncomeTaxHistoryController @Inject() (
             taxCode     <- incomes.headOption
           } yield taxCode
 
-          val maybeLastPayment: Option[Payment] =
-            accounts match {
-              case Right(account) => fetchLastPayment(employment, account)
-              case _              => None
-            }
+          // TODO: handle a failure vs no payment
+          // a failure is treated as no payment instead of marking the value as temporary not available
+          val maybeLastPayment: Option[Payment] = lastPaymentForEmployment(accounts, employment.sequenceNumber)
 
           val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
 
@@ -96,9 +103,6 @@ class IncomeTaxHistoryController @Inject() (
         Right(IncomeTaxYear(taxYear, incomeTaxHistory))
       case (_, Left(error), _)              => Left(error)
     })
-  // This method follows the pattern set at HistoricIncomeCalculationViewModel.fetchEmploymentAndAnnualAccount
-  private def fetchLastPayment(employment: Employment, accounts: Seq[AnnualAccount]) =
-    accounts.find(_.sequenceNumber == employment.sequenceNumber).flatMap(_.payments.lastOption)
 
   def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino     = request.taiUser.nino

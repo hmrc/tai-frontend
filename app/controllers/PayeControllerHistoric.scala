@@ -62,7 +62,7 @@ class PayeControllerHistoric @Inject() (
       (
         employmentService.employmentsOnly(nino, taxYear).value,
         taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear),
-        rtiService.getPaymentsForYear(nino, taxYear).value
+        rtiService.getAllPaymentsForYear(nino, taxYear).value
       ).mapN {
         case (Right(employments), hasTaxCodeRecordsInYearPerEmployment, Right(accounts)) =>
           if (isRtiUnavailable(accounts)) {

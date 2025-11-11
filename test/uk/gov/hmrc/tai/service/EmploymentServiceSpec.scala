@@ -61,7 +61,7 @@ class EmploymentServiceSpec extends BaseSpec {
       "connector returns one employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employmentsOnly(any(), any())(any()))
+        when(employmentsConnector.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employmentDetails))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
@@ -101,7 +101,7 @@ class EmploymentServiceSpec extends BaseSpec {
           EmploymentIncome
         )
 
-        when(employmentsConnector.employmentsOnly(any(), any())(any()))
+        when(employmentsConnector.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](List(employment1, employment2)))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
@@ -112,7 +112,7 @@ class EmploymentServiceSpec extends BaseSpec {
       "connector does not return any employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employmentsOnly(any(), any())(any()))
+        when(employmentsConnector.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty))
 
         val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
@@ -126,7 +126,7 @@ class EmploymentServiceSpec extends BaseSpec {
     "return an employment for the given tax year" in {
       val sut = createSUT
 
-      when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
+      when(employmentsConnector.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment)))
 
       val data = Await.result(sut.employmentOnly(nino, 2, year), 5.seconds)
@@ -137,7 +137,7 @@ class EmploymentServiceSpec extends BaseSpec {
       "the connector does not return an employment" in {
         val sut = createSUT
 
-        when(employmentsConnector.employmentOnly(any(), any(), any())(any()))
+        when(employmentsConnector.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(None))
 
         val data = Await.result(sut.employmentOnly(nino, 8), 5.seconds)
@@ -151,7 +151,7 @@ class EmploymentServiceSpec extends BaseSpec {
     "return employments for the given tax year" in {
       val sut = createSUT
 
-      when(employmentsConnector.employmentsOnly(any(), any())(any()))
+      when(employmentsConnector.employments(any(), any())(any()))
         .thenReturn(EitherT.rightT(List(employment)))
 
       val data = Await.result(sut.employmentsOnly(nino, year).value, 5.seconds)

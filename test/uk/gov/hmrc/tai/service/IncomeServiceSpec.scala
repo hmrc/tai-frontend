@@ -92,7 +92,7 @@ class IncomeServiceSpec extends BaseSpec {
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
         when(employmentService.employmentOnly(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
-        when(rtiService.getPaymentsForYear(any(), any())(any()))
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -135,7 +135,7 @@ class IncomeServiceSpec extends BaseSpec {
 
         val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(1, TaxYear(), Available, List(payment), Nil)
-        when(rtiService.getPaymentsForYear(any(), any())(any()))
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -148,7 +148,7 @@ class IncomeServiceSpec extends BaseSpec {
       "rti details are not found" in {
         val sut = createSUT
 
-        when(rtiService.getPaymentsForYear(any(), any())(any()))
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
@@ -158,7 +158,7 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val annualAccount = AnnualAccount(7, TaxYear(), Available, Seq.empty[Payment], Nil)
-        when(rtiService.getPaymentsForYear(any(), any())(any()))
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )

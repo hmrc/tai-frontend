@@ -168,7 +168,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
           when(httpHandler.getFromApiV2(any(), any())(any(), any()))
             .thenReturn(Future.successful(Json.parse(anEmployment)))
 
-          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+          val result = Await.result(sut().employment(nino, 123, year), 5.seconds)
 
           result mustBe Some(anEmploymentObject)
           verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
@@ -178,7 +178,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
           when(httpHandler.getFromApiV2(any(), any())(any(), any()))
             .thenReturn(Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26"))))
 
-          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+          val result = Await.result(sut().employment(nino, 123, year), 5.seconds)
 
           result mustBe Some(anEmploymentObject.copy(startDate = None))
           verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
@@ -190,7 +190,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
           when(httpHandler.getFromApiV2(any(), any())(any(), any()))
             .thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
-          Await.result(sut().employmentOnly(nino, 123, year), 5.seconds) mustBe None
+          Await.result(sut().employment(nino, 123, year), 5.seconds) mustBe None
         }
       }
     }
@@ -204,7 +204,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(oneEmployment))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
 
           result mustBe Right(oneEmploymentDetails)
         }
@@ -217,7 +217,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(twoEmployments))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
           result.isRight mustBe true
           result.toOption.get.size mustBe 2
         }
@@ -230,7 +230,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
             .willReturn(aResponse().withStatus(OK).withBody(outdatedEmployment))
         )
 
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+        val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
         result.isRight mustBe true
         result.toOption.get.head.startDate mustBe None
       }
@@ -242,7 +242,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(zeroEmployments))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
           result mustBe Right(Nil)
         }
       }
@@ -253,7 +253,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
             .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
         )
 
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+        val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
         result.isLeft mustBe true
       }
     }
@@ -332,7 +332,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
           when(httpHandler.getFromApiV2(any(), any())(any(), any()))
             .thenReturn(Future.successful(Json.parse(anEmployment)))
 
-          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+          val result = Await.result(sut().employment(nino, 123, year), 5.seconds)
 
           result mustBe Some(anEmploymentObject)
           verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
@@ -344,7 +344,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               Future.successful(Json.parse(anEmployment.replace("2016-05-26", "1945-05-26")))
             )
 
-          val result = Await.result(sut().employmentOnly(nino, 123, year), 5.seconds)
+          val result = Await.result(sut().employment(nino, 123, year), 5.seconds)
 
           result mustBe Some(anEmploymentObject.copy(startDate = None))
           verify(httpHandler, times(1)).getFromApiV2(any(), any())(any(), any())
@@ -356,7 +356,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
           when(httpHandler.getFromApiV2(any(), any())(any(), any()))
             .thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
-          Await.result(sut().employmentOnly(nino, 123, year), 5.seconds) mustBe None
+          Await.result(sut().employment(nino, 123, year), 5.seconds) mustBe None
         }
       }
     }
@@ -370,7 +370,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(oneEmployment))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
 
           result mustBe Right(oneEmploymentDetails)
         }
@@ -383,7 +383,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(twoEmployments))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
           result.isRight mustBe true
           result.toOption.get.size mustBe 2
         }
@@ -397,7 +397,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(outdatedEmployment))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
           result.isRight mustBe true
           result.toOption.get.head.startDate mustBe None
         }
@@ -410,7 +410,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
               .willReturn(aResponse().withStatus(OK).withBody(zeroEmployments))
           )
 
-          val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+          val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
           result mustBe Right(Nil)
         }
       }
@@ -421,7 +421,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
             .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
         )
 
-        val result = Await.result(sut(appConfig.taiServiceUrl).employmentsOnly(nino, year).value, 5.seconds)
+        val result = Await.result(sut(appConfig.taiServiceUrl).employments(nino, year).value, 5.seconds)
         result.isLeft mustBe true
       }
     }

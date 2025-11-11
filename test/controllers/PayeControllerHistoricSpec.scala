@@ -65,7 +65,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
       .thenReturn(Future.successful(showTaxCodeDescriptionLink))
-    when(rtiService.getPaymentsForYear(any(), any())(any()))
+    when(rtiService.getAllPaymentsForYear(any(), any())(any()))
       .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
   }
 
@@ -199,7 +199,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       when(employmentService.employmentsOnly(any(), any())(any()))
         .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
 
-      when(rtiService.getPaymentsForYear(any(), any())(any()))
+      when(rtiService.getAllPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(
             Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](
@@ -220,7 +220,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       val testController = createTestController()
       when(employmentService.employmentsOnly(any(), any())(any()))
         .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentForRtiUnavailable))
-      when(rtiService.getPaymentsForYear(any(), any())(any()))
+      when(rtiService.getAllPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(
             Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](
@@ -265,7 +265,7 @@ class PayeControllerHistoricSpec extends BaseSpec with JsoupMatchers with Contro
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
       when(employmentService.employmentsOnly(any(), any())(any()))
         .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentWithSameDatFpsSubmissions))
-      when(rtiService.getPaymentsForYear(any(), any())(any()))
+      when(rtiService.getAllPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(
             Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](

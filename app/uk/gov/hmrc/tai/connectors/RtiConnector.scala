@@ -38,7 +38,7 @@ class RtiConnector @Inject() (
 
   def rtiPaymentsUrl(nino: Nino, taxYear: TaxYear): String = s"$serviceUrl/tai/$nino/rti-payments/years/${taxYear.year}"
 
-  def getPaymentsForYear(nino: Nino, year: TaxYear)(implicit
+  def getPaymentsAllPaymentsForYear(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] =
     httpClientResponse

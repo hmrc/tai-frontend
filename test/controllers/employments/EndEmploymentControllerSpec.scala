@@ -119,7 +119,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           )
         )
       )
-    when(rtiService.getPaymentsForYear(any(), any())(any()))
+    when(rtiService.getAllPaymentsForYear(any(), any())(any()))
       .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq()))))
     when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
       .thenReturn(Future.successful(Success))
@@ -207,7 +207,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
 
       when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-      when(rtiService.getPaymentsForYear(any(), any())(any()))
+      when(rtiService.getAllPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
         )
@@ -235,7 +235,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val annualAccount = AnnualAccount(8, TaxYear(), Available, List(payment), Nil)
 
       when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-      when(rtiService.getPaymentsForYear(any(), any())(any()))
+      when(rtiService.getAllPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
         )
@@ -260,7 +260,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val annualAccount = AnnualAccount(8, TaxYear(), Available, List(payment), Nil)
 
       when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-      when(rtiService.getPaymentsForYear(any(), any())(any()))
+      when(rtiService.getAllPaymentsForYear(any(), any())(any()))
         .thenReturn(
           EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
         )

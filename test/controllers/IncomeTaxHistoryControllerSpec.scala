@@ -48,7 +48,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   override def beforeEach(): Unit                      = {
     super.beforeEach()
     reset(taxAccountService, employmentService, rtiService)
-    when(rtiService.getPaymentsForYear(any(), any())(any()))
+    when(rtiService.getAllPaymentsForYear(any(), any())(any()))
       .thenReturn(
         EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil)))
       )

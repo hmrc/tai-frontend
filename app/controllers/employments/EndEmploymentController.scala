@@ -173,10 +173,10 @@ class EndEmploymentController @Inject() (
                           )
                         )
                       case _                                  =>
-                        rtiService.getPaymentsForYear(user.nino, TaxYear()).value.flatMap {
+                        rtiService.getPaymentsForEmploymentAndYear(user.nino, TaxYear(), empId).value.flatMap {
                           case Right(accounts) =>
                             hasIrregularPayment(
-                              accounts.filter(_.sequenceNumber == employment.sequenceNumber),
+                              accounts,
                               user.nino.nino
                             )
                           case _               =>
@@ -191,13 +191,12 @@ class EndEmploymentController @Inject() (
         )
     }
 
-  private def hasIrregularPayment(annualAccounts: Seq[AnnualAccount], nino: String)(implicit
+  private def hasIrregularPayment(annualAccount: Option[AnnualAccount], nino: String)(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] = {
     val today                                = LocalDate.now
-    val latestAnnualAccount                  = annualAccounts.maxOption
     val latestPaymentDate: Option[LocalDate] =
-      latestAnnualAccount.flatMap(account => account.latestPayment.fold(None)(payment => Some(payment.date)))
+      annualAccount.flatMap(account => account.latestPayment.fold(None)(payment => Some(payment.date)))
 
     latestPaymentDate.map { latestPaymentDate =>
       for {
@@ -213,7 +212,7 @@ class EndEmploymentController @Inject() (
             )
           Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
         } else {
-          if (latestAnnualAccount.exists(_.isIrregularPayment)) {
+          if (annualAccount.exists(_.isIrregularPayment)) {
             auditService
               .createAndSendAuditEvent(AuditConstants.EndEmploymentIrregularPayment, Map("nino" -> nino))
             Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError())

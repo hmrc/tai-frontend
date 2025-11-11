@@ -25,7 +25,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 case class HistoricIncomeCalculationViewModel(
-  employerName: Option[String],
+  employerName: String,
   employmentId: Int,
   payments: Seq[Payment],
   endOfTaxYearUpdateMessages: Seq[String],
@@ -35,11 +35,9 @@ case class HistoricIncomeCalculationViewModel(
 
 object HistoricIncomeCalculationViewModel {
 
-  def apply(employments: Seq[Employment], accounts: Seq[AnnualAccount], employmentId: Int, taxYear: TaxYear)(implicit
+  def apply(employment: Employment, annualAccount: Option[AnnualAccount], taxYear: TaxYear)(implicit
     messages: Messages
   ): HistoricIncomeCalculationViewModel = {
-    val employment                             = employments.find(_.sequenceNumber == employmentId)
-    val annualAccount                          = accounts.find(_.sequenceNumber == employmentId)
     val realTimeStatus                         = fetchRealTimeStatus(annualAccount)
     val (payments, endOfTaxYearUpdateMessages) = annualAccount match {
       case Some(annualAccnt) => (annualAccnt.payments, createEndOfYearTaxUpdateMessages(annualAccnt))
@@ -47,9 +45,9 @@ object HistoricIncomeCalculationViewModel {
     }
 
     HistoricIncomeCalculationViewModel(
-      employment.map(_.name),
-      employmentId,
-      payments,
+      employment.name,
+      employment.sequenceNumber,
+      payments, // payments are assumed to be in order
       endOfTaxYearUpdateMessages,
       realTimeStatus,
       taxYear

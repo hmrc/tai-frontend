@@ -175,7 +175,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
           )
         )
 
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -197,7 +197,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -215,7 +215,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -232,7 +232,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -254,7 +254,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         val annualAccount = AnnualAccount(1, TaxYear().prev, Available, Nil, Nil)
 
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
           )
@@ -278,7 +278,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
-        when(mockRtiService.getPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
             EitherT(
               Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](

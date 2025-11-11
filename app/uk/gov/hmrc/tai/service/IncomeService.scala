@@ -53,18 +53,13 @@ class IncomeService @Inject() (
       case _                                  => throw new RuntimeException("Exception while reading employment")
     }
 
-  def latestPayment(nino: Nino, id: Int)(implicit
+  def latestPayment(nino: Nino, empId: Int)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[Payment]] =
     rtiService
-      .getPaymentsForYear(nino, TaxYear())
-      .value
-      .map {
-        case Right(payments) =>
-          payments.filter(_.sequenceNumber == id).maxOption.flatMap(_.latestPayment)
-        case _               => None
-      }
+      .getPaymentsForEmploymentAndYear(nino, TaxYear(), empId)
+      .fold(_ => None, _.flatMap(_.latestPayment))
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit
     hc: HeaderCarrier

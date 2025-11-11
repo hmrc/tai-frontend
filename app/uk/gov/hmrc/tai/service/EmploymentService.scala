@@ -31,12 +31,12 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
   def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear = TaxYear())(implicit
     hc: HeaderCarrier
   ): Future[Option[Employment]] =
-    employmentsConnector.employmentOnly(nino, id, taxYear)
+    employmentsConnector.employment(nino, id, taxYear)
 
   def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
-    employmentsConnector.employmentsOnly(nino, taxYear)
+    employmentsConnector.employments(nino, taxYear)
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.endEmployment(nino, id, endEmploymentData)

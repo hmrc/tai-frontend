@@ -28,7 +28,7 @@
 
 @header() = @{
     ptaHeader(
-        mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
+        mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName),
         preHeadingText = messages("tai.yourIncome.preHeading"),
         maybeUserName = Some(request.fullName)
     )
@@ -115,12 +115,12 @@
                                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
                                     <p class="govuk-body">
                                         @messages("tai.income.calculation.eyu.summary.single",
-                                        historicIncomeCalculationViewModel.employerName.getOrElse("")) </p>
+                                        historicIncomeCalculationViewModel.employerName) </p>
                                     <p class="govuk-body">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.head</p>
                                 }
                                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
                                     <p class="govuk-body">@messages("tai.income.calculation.eyu.summary.multi",
-                                        historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
+                                        historicIncomeCalculationViewModel.employerName)</p>
                                     <ul id="eyu-multi-messages-bullets" class="govuk-list govuk-list--bullet">
                                         @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
                                             <li>@eyuMessage</li>

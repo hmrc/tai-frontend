@@ -17,24 +17,41 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
-import play.api.http.Status.NOT_FOUND
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.RtiConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RtiService @Inject() (rtiConnector: RtiConnector)(implicit ec: ExecutionContext) {
+class RtiService @Inject() (rtiConnector: RtiConnector)(implicit ec: ExecutionContext) extends Logging {
 
-  def getPaymentsForYear(nino: Nino, year: TaxYear)(implicit
+  def getAllPaymentsForYear(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] =
-    rtiConnector.getPaymentsForYear(nino, year).transform {
-      case Right(payments) if payments.isEmpty => Left(UpstreamErrorResponse("No payments found", NOT_FOUND))
-      case other                               => other
+    rtiConnector.getPaymentsAllPaymentsForYear(nino, year)
+
+  def getPaymentsForEmploymentAndYear(nino: Nino, year: TaxYear, empId: Int)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, UpstreamErrorResponse, Option[AnnualAccount]] =
+    rtiConnector.getPaymentsAllPaymentsForYear(nino, year).transform {
+      case Right(payments) =>
+        val paymentsForEmployment = payments.filter(_.sequenceNumber == empId)
+        if (paymentsForEmployment.isEmpty) {
+          Right(None)
+        } else {
+          if (paymentsForEmployment.length > 1) {
+            val ex = new RuntimeException(
+              s"There is more than one annual account for nino: $nino, year: ${year.year} and employment id: $empId"
+            )
+            logger.error(ex.getMessage, ex)
+          }
+          Right(paymentsForEmployment.headOption)
+        }
+      case Left(error)     => Left(error)
     }
 
 }
