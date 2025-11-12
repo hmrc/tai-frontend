@@ -56,7 +56,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
       val nino                      = user.nino
 
       employmentService
-        .employmentOnly(nino, empId)
+        .employment(nino, empId)
         .map {
           case Some(emp) =>
             Ok(
@@ -89,7 +89,7 @@ class IncomeUpdateEstimatedPayController @Inject() (
         )
       ] =
         for {
-          emp           <- OptionT(employmentService.employmentOnly(nino, empId))
+          emp           <- OptionT(employmentService.employment(nino, empId))
           incomeAmount  <- OptionT.liftF(incomeService.employmentAmount(nino, empId))
           cacheMap       = ua.data.fields.collect {
                              case (k, v: play.api.libs.json.JsString) => k -> v.value

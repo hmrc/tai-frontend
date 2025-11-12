@@ -82,7 +82,7 @@ class UpdateEmploymentController @Inject() (
         case Some(result) => Future.successful(result)
         case _            =>
           (for {
-            employment   <- employmentService.employmentOnly(user.nino, empId)
+            employment   <- employmentService.employment(user.nino, empId)
             futureResult <- employment match {
                               case Some(emp) =>
                                 for {

@@ -45,7 +45,7 @@ class IncomeService @Inject() (
   ): Future[EmploymentAmount] =
     (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
-      employmentService.employmentOnly(nino, id)
+      employmentService.employment(nino, id)
     ) mapN {
       case (taxCodeIncomes, Some(employment)) =>
         val oldAmountInTaxCodeIncome = taxCodeIncomes.toOption.flatMap(_.find(_.employmentId.contains(id)))

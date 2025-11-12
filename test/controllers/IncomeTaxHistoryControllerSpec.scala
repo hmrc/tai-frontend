@@ -82,7 +82,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
             Right(Seq(taxCodeIncome))
           )
 
-          when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+          when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(empEmployment1, empEmployment2)
             )
@@ -95,7 +95,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
-        verify(employmentService, times(totalInvocations)).employmentsOnly(any(), any())(any())
+        verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
         verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
 
       }
@@ -106,7 +106,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome))
           )
-          when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+          when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(pensionEmployment3, pensionEmployment4)
             )
@@ -120,14 +120,14 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
 
         verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
-        verify(employmentService, times(totalInvocations)).employmentsOnly(any(), any())(any())
+        verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
 
       }
 
       "tax code is empty if the tax account can't be found" in {
         for (_ <- taxYears) {
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left("not found"))
-          when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+          when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(pensionEmployment3, pensionEmployment4)
             )
@@ -146,7 +146,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(
             new Exception("exception")
           )
-          when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+          when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(pensionEmployment3, pensionEmployment4)
             )
@@ -166,7 +166,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
     "return an empty tax code if there isn't one" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
-      when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+      when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
 
       val controller = new TestController
@@ -180,7 +180,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
     "return an empty tax code if the taxAccountService fails to retrieve" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
-      when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+      when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
 
       val controller = new TestController
@@ -198,7 +198,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         for (_ <- taxYears) {
 
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
-          when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+          when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .leftT[Future, Seq[Employment]](
               UpstreamErrorResponse("", 500, 500, Map.empty)
             )
@@ -215,7 +215,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         verify(taxAccountService, times(totalInvocations))
           .taxCodeIncomes(any(), any())(any())
         verify(employmentService, times(totalInvocations))
-          .employmentsOnly(any(), any())(any())
+          .employments(any(), any())(any())
 
       }
     }
@@ -224,7 +224,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
         Right(Seq(taxCodeIncome))
       )
-      when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+      when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
 
       val controller = new TestController
@@ -240,7 +240,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
         Right(Seq(taxCodeIncome))
       )
-      when(employmentService.employmentsOnly(any(), any())(any())) thenReturn EitherT
+      when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
 
       val controller = new TestController

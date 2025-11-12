@@ -96,7 +96,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
     when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Right(None: Option[TaxCodeIncome])))
-    when(employmentService.employmentOnly(any(), any(), any())(any()))
+    when(employmentService.employment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Some(employment)))
   }
 
@@ -109,7 +109,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
       when(incomeService.latestPayment(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(Payment(LocalDate.now().minusDays(1), 0, 0, 0, 0, 0, 0, Monthly))))
 
-      when(employmentService.employmentOnly(any(), any(), any())(any()))
+      when(employmentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment.copy(name = "Employer Ltd"))))
 
       when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
@@ -143,7 +143,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     }
 
     "respond with INTERNAL_SERVER_ERROR when employmentOnly returns None" in {
-      when(employmentService.employmentOnly(any(), any(), any())(any()))
+      when(employmentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
 
       val result = createSUT.editIncomeIrregularHours(1)(RequestBuilder.buildFakeGetRequestWithAuth())
@@ -151,7 +151,7 @@ class IncomeUpdateIrregularHoursControllerSpec extends BaseSpec {
     }
 
     "respond with OK when taxCodeIncome returns Left (fallback to no amount)" in {
-      when(employmentService.employmentOnly(any(), any(), any())(any()))
+      when(employmentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment.copy(name = "Employer Ltd"))))
 
       when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))

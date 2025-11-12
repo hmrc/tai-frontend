@@ -52,7 +52,7 @@ class YourIncomeCalculationController @Inject() (
     val nino = request.taiUser.nino
 
     lazy val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    lazy val employmentFuture     = employmentService.employmentOnly(nino, empId)
+    lazy val employmentFuture     = employmentService.employment(nino, empId)
     lazy val iabdDetailsFuture    = iabdService.getIabds(nino, TaxYear()).value
 
     for {
@@ -104,7 +104,7 @@ class YourIncomeCalculationController @Inject() (
         val nino = request.taiUser.nino
 
         for {
-          employment    <- employmentService.employmentOnly(nino, empId, year)
+          employment    <- employmentService.employment(nino, empId, year)
           annualAccount <- rtiService.getPaymentsForEmploymentAndYear(nino, year, empId).value
         } yield (employment, annualAccount) match {
           case (Some(employment), Right(annualAccount)) =>

@@ -129,7 +129,7 @@ class EmploymentServiceSpec extends BaseSpec {
       when(employmentsConnector.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment)))
 
-      val data = Await.result(sut.employmentOnly(nino, 2, year), 5.seconds)
+      val data = Await.result(sut.employment(nino, 2, year), 5.seconds)
 
       data mustBe Some(employment)
     }
@@ -140,7 +140,7 @@ class EmploymentServiceSpec extends BaseSpec {
         when(employmentsConnector.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(None))
 
-        val data = Await.result(sut.employmentOnly(nino, 8), 5.seconds)
+        val data = Await.result(sut.employment(nino, 8), 5.seconds)
 
         data mustBe None
       }
@@ -154,7 +154,7 @@ class EmploymentServiceSpec extends BaseSpec {
       when(employmentsConnector.employments(any(), any())(any()))
         .thenReturn(EitherT.rightT(List(employment)))
 
-      val data = Await.result(sut.employmentsOnly(nino, year).value, 5.seconds)
+      val data = Await.result(sut.employments(nino, year).value, 5.seconds)
 
       data mustBe Right(List(employment))
     }

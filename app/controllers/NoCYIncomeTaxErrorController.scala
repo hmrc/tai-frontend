@@ -49,7 +49,7 @@ class NoCYIncomeTaxErrorController @Inject() (
   }
 
   private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentService.employmentsOnly(nino, TaxYear().prev).value.map {
+    employmentService.employments(nino, TaxYear().prev).value.map {
       case Right(employments) => employments
       case _                  => Nil
     }

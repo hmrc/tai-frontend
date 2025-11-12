@@ -93,7 +93,7 @@ class IncomeUpdateHowToUpdateControllerSpec extends BaseSpec with ScalaFutures {
     setup(UserAnswers(sessionId, randomNino().nino))
     reset(mockJourneyCacheRepository)
 
-    when(employmentService.employmentOnly(any(), any(), any())(any()))
+    when(employmentService.employment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Some(defaultEmployment)))
 
     when(mockIncomeService.employmentAmount(any(), any())(any(), any(), any()))

@@ -91,7 +91,7 @@ class IncomeServiceSpec extends BaseSpec {
         val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(
@@ -121,7 +121,7 @@ class IncomeServiceSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment"

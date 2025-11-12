@@ -46,7 +46,7 @@ class UpdateNextYearsIncomeService @Inject() (
   ): Future[UpdateNextYearsIncomeCacheModel] =
     for {
       tciResult     <- taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
-      employmentOpt <- employmentService.employmentOnly(nino, employmentId)
+      employmentOpt <- employmentService.employment(nino, employmentId)
     } yield employmentOpt match {
       case Some(emp) =>
         val currentEstimatedIncome: Option[Int] = tciResult match {

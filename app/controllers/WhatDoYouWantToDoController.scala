@@ -71,7 +71,7 @@ class WhatDoYouWantToDoController @Inject() (
           Future.successful(Right[UpstreamErrorResponse, Boolean](true))
         case _           =>
           employmentService
-            .employmentsOnly(nino, year)
+            .employments(nino, year)
             .transform {
               case Right(_)                                     => Right(true)
               case Left(error) if error.statusCode == NOT_FOUND => Right(false)
@@ -179,7 +179,7 @@ class WhatDoYouWantToDoController @Inject() (
     taxAccountService.newTaxCodeIncomes(nino, TaxYear()).transform {
       case Left(error)         => Right(Future.successful(Failure(error.message)))
       case Right(noOfTaxCodes) =>
-        Right(employmentService.employmentsOnly(nino, TaxYear()).value.flatMap {
+        Right(employmentService.employments(nino, TaxYear()).value.flatMap {
           case Right(employments) =>
             auditService
               .sendUserEntryAuditEvent(

@@ -60,7 +60,7 @@ class PayeControllerHistoric @Inject() (
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
       (
-        employmentService.employmentsOnly(nino, taxYear).value,
+        employmentService.employments(nino, taxYear).value,
         taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear),
         rtiService.getAllPaymentsForYear(nino, taxYear).value
       ).mapN {

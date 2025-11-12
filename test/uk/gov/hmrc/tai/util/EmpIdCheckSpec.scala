@@ -75,7 +75,7 @@ class EmpIdCheckSpec extends BaseSpec {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockEmploymentService)
-    when(mockEmploymentService.employmentsOnly(any(), any())(any()))
+    when(mockEmploymentService.employments(any(), any())(any()))
       .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment)))
   }
 
@@ -96,7 +96,7 @@ class EmpIdCheckSpec extends BaseSpec {
     }
     "be an error page" when {
       "the call to employments fails" in {
-        when(mockEmploymentService.employmentsOnly(any(), any())(any()))
+        when(mockEmploymentService.employments(any(), any())(any()))
           .thenReturn(
             EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Call failed", INTERNAL_SERVER_ERROR))
           )

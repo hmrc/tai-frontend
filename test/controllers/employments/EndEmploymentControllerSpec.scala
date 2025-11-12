@@ -98,7 +98,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     reset(mockFeatureFlagService)
     reset(mockEmploymentService)
     reset(mockRtiService)
-    when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+    when(mockEmploymentService.employment(any(), any(), any())(any()))
       .thenReturn(
         Future.successful(
           Some(
@@ -170,7 +170,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the call to retrieve employment data fails" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request     = fakeGetRequest
       val application = applicationBuilder(userAnswers = userAnswers).build()
@@ -206,7 +206,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val payment       = paymentOnDate(LocalDate.now().minusWeeks(6).minusDays(1))
       val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
 
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment)))
       when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
         .thenReturn(
@@ -235,7 +235,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val payment       = paymentOnDate(LocalDate.now().minusWeeks(6))
       val annualAccount = AnnualAccount(8, TaxYear(), Available, List(payment), Nil)
 
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment)))
       when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
         .thenReturn(
@@ -261,7 +261,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       val payment       = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
       val annualAccount = AnnualAccount(8, TaxYear(), Available, List(payment), Nil)
 
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment)))
       when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
         .thenReturn(
@@ -303,7 +303,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the employer id is missing from the cache" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request          = FakeRequest("POST", "")
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
@@ -315,7 +315,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request     = FakeRequest("POST", "")
         .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
@@ -361,7 +361,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
         userAnswers.copy(data =
@@ -398,7 +398,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
@@ -496,7 +496,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
         userAnswers.copy(data =
@@ -581,7 +581,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
@@ -820,7 +820,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not and there are form errors" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val request     = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> "")
       val application = applicationBuilder(userAnswers).build()
@@ -933,7 +933,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
@@ -980,7 +980,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
-      when(mockEmploymentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {

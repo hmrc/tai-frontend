@@ -95,7 +95,7 @@ class TaxAccountSummaryController @Inject() (
       .createAndSendAuditEvent(AuditConstants.TaxAccountSummaryUserEntersSummaryPage, Map("nino" -> nino.toString()))
 
     (for {
-      employments               <- employmentService.employmentsOnly(nino, TaxYear())
+      employments               <- employmentService.employments(nino, TaxYear())
       nonTaxCodeIncomes         <- taxAccountService.newNonTaxCodeIncomes(nino, TaxYear())
       employmentsFromTaxAccount <- optionalTaxCodeIncomes(nino, TaxYear())
       taxAccountSummary         <- optionalTaxAccountSummary(nino, TaxYear())

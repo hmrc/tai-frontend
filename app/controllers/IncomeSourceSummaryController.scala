@@ -64,7 +64,7 @@ class IncomeSourceSummaryController @Inject() (
       case Some(result) => Future.successful(result)
       case _            =>
         (
-          employmentService.employmentOnly(nino, empId, TaxYear()),
+          employmentService.employment(nino, empId, TaxYear()),
           taxAccountService.taxCodeIncomes(nino, TaxYear()),
           rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value,
           Future.successful(hasJourneyCompleted),

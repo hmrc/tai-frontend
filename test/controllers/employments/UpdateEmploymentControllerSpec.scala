@@ -97,7 +97,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
   "employmentDetailsUpdate" must {
     "show the 'What Do You Want To Tell Us' Page" when {
       "the request has an authorised session" in {
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         val userAnswersUpdated =
           userAnswers.copy(data =
@@ -120,7 +120,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
     "retrieve the employer name from the cache" when {
       "the request has an authorised session" in {
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         val userAnswersUpdated =
           userAnswers.copy(data =
@@ -141,7 +141,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
     }
     "retrieve the employment update details from the cache" when {
       "the request has an authorised session" in {
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         val userAnswersUpdated =
           userAnswers.copy(data =
@@ -169,7 +169,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
 
     "throw exception" when {
       "employment not found" in {
-        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
         val userAnswersUpdated =
           userAnswers.copy(data =
             userAnswers.data ++ Json
@@ -194,7 +194,7 @@ class UpdateEmploymentControllerSpec extends BaseSpec {
         )
 
         status(result) mustBe NOT_FOUND
-        verify(employmentService, times(0)).employmentOnly(any(), any(), any())(any())
+        verify(employmentService, times(0)).employment(any(), any(), any())(any())
       }
     }
   }

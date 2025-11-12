@@ -134,7 +134,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
@@ -164,7 +164,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
@@ -193,7 +193,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -211,7 +211,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -229,7 +229,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(mockJourneyCacheRepository.get(any(), any()))
@@ -255,7 +255,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         status(result) mustBe NOT_FOUND
         verify(taxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
-        verify(employmentService, times(0)).employmentOnly(any(), any(), any())(any())
+        verify(employmentService, times(0)).employment(any(), any(), any())(any())
         verify(benefitsService, times(0)).benefits(any(), any())(any())
       }
     }

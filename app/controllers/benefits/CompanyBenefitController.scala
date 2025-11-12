@@ -61,7 +61,7 @@ class CompanyBenefitController @Inject() (
   def decision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    employmentService.employmentOnly(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get).flatMap {
+    employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get).flatMap {
       case Some(employment) =>
         val userAnswersDecision =
           request.userAnswers.get(EndCompanyBenefitsTypePage).flatMap(_ => request.userAnswers.get(BenefitDecisionPage))

@@ -74,7 +74,7 @@ class IncomeUpdateHowToUpdateController @Inject() (
     implicit val user: AuthedUser = request.taiUser
     val nino                      = user.nino
 
-    employmentService.employmentOnly(nino, id).flatMap {
+    employmentService.employment(nino, id).flatMap {
       case Some(employment) =>
         val incomeToEditFuture           = incomeService.employmentAmount(nino, id)
         val cacheEmploymentDetailsFuture =

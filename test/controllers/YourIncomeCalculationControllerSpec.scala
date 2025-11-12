@@ -159,7 +159,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = empId))))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](
@@ -193,7 +193,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
@@ -210,7 +210,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details are not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
@@ -227,7 +227,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
       "tax code details for passed employment is not present" in {
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Error")))
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
@@ -246,7 +246,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "show historic data" when {
       "historic data has been passed" in {
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
@@ -273,7 +273,7 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
     "throw internal server error" when {
       "RTI throws return realTimeStatus unavailable within stubbed account" in {
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentForRtiUnavailable))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)

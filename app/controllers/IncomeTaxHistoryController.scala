@@ -66,7 +66,7 @@ class IncomeTaxHistoryController @Inject() (
         taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
           None
         }
-      employmentDetails         <- employmentService.employmentsOnly(nino, taxYear).value
+      employmentDetails         <- employmentService.employments(nino, taxYear).value
       accounts                  <- rtiService.getAllPaymentsForYear(nino, taxYear).value
     } yield (maybeTaxCodeIncomeDetails, employmentDetails, accounts) match {
       case (_, Right(employmentDetails), _) =>

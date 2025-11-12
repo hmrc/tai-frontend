@@ -72,10 +72,10 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
     employmentDataFailure match {
       case None            =>
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
       case Some(throwable) =>
-        when(employmentService.employmentsOnly(any(), any())(any())).thenReturn(
+        when(employmentService.employments(any(), any())(any())).thenReturn(
           EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Server Error", INTERNAL_SERVER_ERROR))
         )
     }
@@ -100,7 +100,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
     "call employment service to fetch sequence of employments" in {
       val sut = createSUT()
       Await.result(sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(employmentService).employmentsOnly(any(), any())(any())
+      verify(employmentService).employments(any(), any())(any())
     }
 
     "display the page" when {
@@ -109,7 +109,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService).employmentsOnly(any(), any())(any())
+        verify(employmentService).employments(any(), any())(any())
         status(result) mustBe OK
       }
 
@@ -118,7 +118,7 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(employmentService).employmentsOnly(any(), any())(any())
+        verify(employmentService).employments(any(), any())(any())
         status(result) mustBe OK
       }
     }

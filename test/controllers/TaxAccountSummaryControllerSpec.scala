@@ -76,7 +76,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     setup(UserAnswers("testSessionId", nino.nino))
     Mockito.reset(auditService, employmentService)
 
-    when(employmentService.employmentsOnly(any(), any())(any()))
+    when(employmentService.employments(any(), any())(any()))
       .thenReturn(EitherT.right(Future.successful(Seq(employment))))
 
     when(taxAccountService.newNonTaxCodeIncomes(any(), any())(any()))
@@ -180,7 +180,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           EitherT.rightT(taxAccountSummary)
         )
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))

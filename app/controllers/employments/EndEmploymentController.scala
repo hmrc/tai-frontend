@@ -94,7 +94,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employmentOnly(request.taiUser.nino, empId)
+            .employment(request.taiUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -145,7 +145,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employmentOnly(user.nino, empId)
+            .employment(user.nino, empId)
             .flatMap(
               _.fold(
                 Future.successful(error5xxInBadRequest())
@@ -231,7 +231,7 @@ class EndEmploymentController @Inject() (
       (request.userAnswers.get(EndEmploymentIdPage), request.userAnswers.get(EndEmploymentLatestPaymentPage)) match {
         case (Some(empId), Some(latestPayment)) =>
           employmentService
-            .employmentOnly(user.nino, empId)
+            .employment(user.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -262,7 +262,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         ) { empId =>
           employmentService
-            .employmentOnly(request.taiUser.nino, empId)
+            .employment(request.taiUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -288,7 +288,7 @@ class EndEmploymentController @Inject() (
             .fold(
               formWithErrors =>
                 employmentService
-                  .employmentOnly(request.taiUser.nino, empId)
+                  .employment(request.taiUser.nino, empId)
                   .map(
                     _.fold(
                       error5xxInBadRequest()
@@ -327,7 +327,7 @@ class EndEmploymentController @Inject() (
       (request.userAnswers.get(EndEmploymentIdPage), request.userAnswers.get(EndEmploymentEndDatePage)) match {
         case (Some(empId), endDate) =>
           employmentService
-            .employmentOnly(authUser.nino, empId)
+            .employment(authUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -354,7 +354,7 @@ class EndEmploymentController @Inject() (
       val nino                      = user.nino
 
       employmentService
-        .employmentOnly(nino, employmentId)
+        .employment(nino, employmentId)
         .flatMap(
           _.fold(
             Future.successful(error5xxInBadRequest())
@@ -504,7 +504,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employmentOnly(authUser.nino, empId)
+            .employment(authUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()
@@ -530,7 +530,7 @@ class EndEmploymentController @Inject() (
           Future.successful(error5xxInBadRequest())
         )(empId =>
           employmentService
-            .employmentOnly(authUser.nino, empId)
+            .employment(authUser.nino, empId)
             .map(
               _.fold(
                 error5xxInBadRequest()

@@ -45,7 +45,7 @@ class EmpIdCheck @Inject (
   ): Future[Option[Result]] = {
     implicit val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     employmentsService
-      .employmentsOnly(request.taiUser.nino, taxYear)
+      .employments(request.taiUser.nino, taxYear)
       .value
       .map {
         case Right(employments) =>

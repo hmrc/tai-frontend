@@ -28,12 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit ec: ExecutionContext) {
 
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear = TaxYear())(implicit
+  def employment(nino: Nino, id: Int, taxYear: TaxYear = TaxYear())(implicit
     hc: HeaderCarrier
   ): Future[Option[Employment]] =
     employmentsConnector.employment(nino, id, taxYear)
 
-  def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
+  def employments(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
     employmentsConnector.employments(nino, taxYear)
@@ -64,7 +64,7 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): Future[Map[Int, String]] =
-    employmentsOnly(nino, year).value.map {
+    employments(nino, year).value.map {
       case Right(employments) => employments.iterator.map(e => e.sequenceNumber -> e.name).toMap
       case Left(error)        =>
         throw new RuntimeException(s"No employment names found, error occurred with message ${error.message}")

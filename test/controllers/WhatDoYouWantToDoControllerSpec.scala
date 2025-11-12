@@ -70,7 +70,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         inject[ErrorPagesHandler]
       ) {
 
-    when(employmentService.employmentsOnly(any(), any())(any())).thenReturn(EitherT.rightT(fakeEmploymentData))
+    when(employmentService.employments(any(), any())(any())).thenReturn(EitherT.rightT(fakeEmploymentData))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(AuditResult.Success))
     when(taxAccountService.taxAccountSummary(any(), any())(any()))
@@ -160,7 +160,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
         val controller = createTestController()
 
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
@@ -182,7 +182,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "there has not been a tax code change" in {
         val testController = createTestController()
 
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
@@ -204,7 +204,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "there has been a tax code change and cyPlusOne is enabled and jrs claim data does not exist" in {
         val testController = createTestController()
 
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
@@ -231,7 +231,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
         val testController = createTestController()
 
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = false))
@@ -259,7 +259,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "there has been a tax code change and cyPlusOne is enabled" in {
         val testController = createTestController()
 
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
@@ -287,7 +287,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
       "an internal server error from TaxCodeIncomes is returned from any HOD call" in {
         val testController = createTestController()
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
@@ -307,7 +307,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "employments hod call has returned a not found for current year, " +
         "and no previous year employment data is present" in {
           val testController = createTestController()
-          when(employmentService.employmentsOnly(any(), any())(any()))
+          when(employmentService.employments(any(), any())(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
           when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
             .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
@@ -327,30 +327,30 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
           when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
             .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear()))(any()))
+          when(employmentService.employments(any(), meq(TaxYear()))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
             .thenReturn(EitherT.rightT(fakeEmploymentData))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev))(any()))
             .thenReturn(EitherT.rightT(fakeEmploymentData))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev.prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev.prev.prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
           when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
             .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
-          verify(employmentService, times(2)).employmentsOnly(any(), meq(TaxYear()))(any())
-          verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(2)).employments(any(), meq(TaxYear()))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
           // previous years are not called because CY-1 has some data
-          verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev))(any())
-          verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any())
-          verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev))(any())
-          verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any())
+          verify(employmentService, times(0)).employments(any(), meq(TaxYear().prev.prev))(any())
+          verify(employmentService, times(0)).employments(any(), meq(TaxYear().prev.prev.prev))(any())
+          verify(employmentService, times(0)).employments(any(), meq(TaxYear().prev.prev.prev.prev))(any())
+          verify(employmentService, times(0)).employments(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any())
           val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("your.paye.income.tax.overview"))
         }
@@ -362,29 +362,29 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
           when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
             .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear()))(any()))
+          when(employmentService.employments(any(), meq(TaxYear()))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev.prev))(any()))
             .thenReturn(EitherT.rightT(fakeEmploymentData))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev.prev.prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
-          when(employmentService.employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any()))
+          when(employmentService.employments(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any()))
             .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
           when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
             .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
 
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
-          verify(employmentService, times(2)).employmentsOnly(any(), meq(TaxYear()))(any())
-          verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev))(any())
-          verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev.prev))(any())
-          verify(employmentService, times(1)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev))(any())
-          verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev))(any())
-          verify(employmentService, times(0)).employmentsOnly(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any())
+          verify(employmentService, times(2)).employments(any(), meq(TaxYear()))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev.prev))(any())
+          verify(employmentService, times(1)).employments(any(), meq(TaxYear().prev.prev.prev))(any())
+          verify(employmentService, times(0)).employments(any(), meq(TaxYear().prev.prev.prev.prev))(any())
+          verify(employmentService, times(0)).employments(any(), meq(TaxYear().prev.prev.prev.prev.prev))(any())
           val doc    = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("your.paye.income.tax.overview"))
         }
@@ -392,7 +392,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
       "cy plus one data is available and cy plus one is enabled" in {
         val testController = createTestController()
 
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
@@ -419,7 +419,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
 
         when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = true))
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
@@ -444,7 +444,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
         val testController = createTestController()
         when(mockFeatureFlagService.getAsEitherT(org.mockito.ArgumentMatchers.eq(CyPlusOneToggle))) thenReturn
           EitherT.rightT(FeatureFlag(CyPlusOneToggle, isEnabled = false))
-        when(employmentService.employmentsOnly(any(), any())(any()))
+        when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
@@ -469,7 +469,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
     "landed to the page and get TaiSuccessResponseWithPayload" in {
       val testController = createTestController()
 
-      when(employmentService.employmentsOnly(any(), any())(any()))
+      when(employmentService.employments(any(), any())(any()))
         .thenReturn(EitherT.rightT(fakeEmploymentData))
       when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
         .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
@@ -486,7 +486,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
 
-      when(employmentService.employmentsOnly(any(), any())(any()))
+      when(employmentService.employments(any(), any())(any()))
         .thenReturn(EitherT.rightT(fakeEmploymentData))
       when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
         .thenReturn(EitherT.rightT(taxCodeIncomes))
@@ -504,7 +504,7 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
     "landed to the page and get not found from taxCodeIncomes" in {
       val testController = createTestController()
 
-      when(employmentService.employmentsOnly(any(), any())(any()))
+      when(employmentService.employments(any(), any())(any()))
         .thenReturn(EitherT.rightT(fakeEmploymentData))
       when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
         .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))

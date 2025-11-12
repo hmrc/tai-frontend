@@ -139,7 +139,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
 
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -148,7 +148,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
-        verify(employmentService, times(1)).employmentOnly(any(), any(), any())(any())
+        verify(employmentService, times(1)).employment(any(), any(), any())(any())
       }
 
       "prepopulate the decision selection" in {
@@ -169,7 +169,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         setup(mockUserAnswers)
 
         when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
-        when(employmentService.employmentOnly(any(), any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
 
         val expectedForm: Form[Option[String]] =
@@ -184,7 +184,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         result rendersTheSameViewAs updateOrRemoveCompanyBenefitDecisionView(expectedViewModel)
 
         verify(mockJourneyCacheRepository).set(any())
-        verify(employmentService, times(2)).employmentOnly(any(), any(), any())(any())
+        verify(employmentService, times(2)).employment(any(), any(), any())(any())
 
       }
     }
@@ -204,7 +204,7 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
         when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
         when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
-        when(employmentService.employmentOnly(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

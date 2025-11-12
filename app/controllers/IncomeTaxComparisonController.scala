@@ -63,7 +63,7 @@ class IncomeTaxComparisonController @Inject() (
       EitherT(taxAccountService.taxCodeIncomes(nino, nextTaxYear)).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
       codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
       codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
-      employmentService.employmentsOnly(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+      employmentService.employments(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
       updateNextYearsIncomeService.isEstimatedPayJourneyComplete(request.userAnswers).attemptTNel
     ).parMapN(computeModel(currentTaxYear, nextTaxYear))
       .fold(
