@@ -55,13 +55,9 @@
                             <p id="previous-year-summary-message" class="govuk-body">
                                 @messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</p>
                             @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
-                                @historicIncomeCalculationViewModel.employerName.map { name =>
-                                    <p id="eyu-message-previous" class="govuk-body">@messages("tai.income.calculation.eyu.previous", name)</p>
-                                }
+                                <p id="eyu-message-previous" class="govuk-body">@messages("tai.income.calculation.eyu.previous", historicIncomeCalculationViewModel.employerName)</p>
                             } else {
-                                @historicIncomeCalculationViewModel.employerName.map { name =>
-                                    <p class="govuk-body">@messages("tai.income.calculation.previous", name)</p>
-                                }
+                                <p class="govuk-body">@messages("tai.income.calculation.previous", historicIncomeCalculationViewModel.employerName)</p>
                             }
                         </div>
                         <div>

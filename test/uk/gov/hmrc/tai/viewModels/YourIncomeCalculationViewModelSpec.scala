@@ -1430,7 +1430,7 @@ class YourIncomeCalculationViewModelSpec extends BaseSpec {
     YourIncomeCalculationViewModel(
       taxCodeIncome,
       employment,
-      Seq(annualAccount),
+      Some(annualAccount),
       Some(iabdDetails),
       paymentDetails,
       "test user"

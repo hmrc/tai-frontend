@@ -20,6 +20,7 @@ import controllers.auth.*
 import play.api.Logging
 import play.api.mvc.*
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Available
 import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
@@ -110,12 +111,12 @@ class YourIncomeCalculationController @Inject() (
             val historicIncomeCalculationViewModel =
               HistoricIncomeCalculationViewModel(employment, annualAccount, year)
 
-            historicIncomeCalculationViewModel.realTimeStatus.toString match {
-              case ("TemporarilyUnavailable") =>
-                errorPagesHandler.internalServerError(
-                  "Employment contains stub annual account data found meaning payment information can't be displayed"
-                )
-              case _                          => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            if (historicIncomeCalculationViewModel.realTimeStatus != Available) {
+              errorPagesHandler.internalServerError(
+                "Employment contains stub annual account data found meaning payment information can't be displayed"
+              )
+            } else {
+              Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
             }
           case (None, _)                                =>
             errorPagesHandler.internalServerError(

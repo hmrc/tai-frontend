@@ -32,7 +32,7 @@ class PaymentsServiceSpec extends PlaySpec {
   val taxAmount               = 4567
   val nationalInsuranceAmount = 789
 
-  def createAccounts(payments: Seq[Payment]): Seq[AnnualAccount] = Seq(
+  def createAccounts(payments: Seq[Payment]): Option[AnnualAccount] = Some(
     AnnualAccount(7, uk.gov.hmrc.tai.model.TaxYear(), Available, payments, Nil)
   )
 
@@ -40,7 +40,7 @@ class PaymentsServiceSpec extends PlaySpec {
 
     "convert empty annualAccounts to an empty PaymentDetailsViewModel" in {
 
-      val emptyAnnualAccounts = Seq.empty[AnnualAccount]
+      val emptyAnnualAccounts: Option[AnnualAccount] = None
 
       paymentsService.filterDuplicates(emptyAnnualAccounts) mustBe Seq.empty[PaymentDetailsViewModel]
     }

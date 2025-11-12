@@ -175,9 +175,9 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
           )
         )
 
-        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
           .thenReturn(
-            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+            EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount))
           )
 
         val result = sut.yourIncomeCalculationPage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -272,17 +272,17 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
     }
 
     "throw internal server error" when {
-      "RTI throws service unavailable" in {
+      "RTI throws return realTimeStatus unavailable within stubbed account" in {
         when(employmentService.employmentsOnly(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmploymentForRtiUnavailable))
         when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
         )
-        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
           .thenReturn(
-            EitherT(
-              Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](
-                Left(UpstreamErrorResponse.apply("RTI failed", SERVICE_UNAVAILABLE))
+            EitherT.rightT[Future, UpstreamErrorResponse](
+              Some(
+                annualAccount.copy(realTimeStatus = Unavailable)
               )
             )
           )

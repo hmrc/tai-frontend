@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.service
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model.domain.*
@@ -135,9 +136,9 @@ class IncomeServiceSpec extends BaseSpec {
 
         val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(1, TaxYear(), Available, List(payment), Nil)
-        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
+        when(rtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
           .thenReturn(
-            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+            EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount))
           )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
@@ -148,19 +149,19 @@ class IncomeServiceSpec extends BaseSpec {
       "rti details are not found" in {
         val sut = createSUT
 
-        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
-          .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
+        when(rtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](None)
+        )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }
 
-      "payments details are not present" in {
+      "rti returns not found" in {
         val sut = createSUT
 
-        val annualAccount = AnnualAccount(7, TaxYear(), Available, Seq.empty[Payment], Nil)
-        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
+        when(rtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
           .thenReturn(
-            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+            EitherT.leftT[Future, Option[AnnualAccount]](UpstreamErrorResponse("not found", NOT_FOUND))
           )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None

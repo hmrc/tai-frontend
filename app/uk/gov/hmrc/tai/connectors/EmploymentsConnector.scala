@@ -38,10 +38,10 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   private val startDateCutoff: LocalDate = applicationConfig.startEmploymentDateFilteredBefore
 
-  private def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
+  private def employmentUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employment-only/$id/years/${taxYear.year}"
 
-  private def employmentsOnlyUrl(nino: Nino, taxYear: TaxYear): String =
+  private def employmentsUrl(nino: Nino, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments-only/years/${taxYear.year}"
 
   private def endEmploymentServiceUrl(nino: Nino, id: Int): String =
@@ -63,14 +63,14 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
     es.iterator.map(sanitize).toSeq
 
   def employment(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler.getFromApiV2(employmentOnlyUrl(nino, id, taxYear)).map { json =>
+    httpHandler.getFromApiV2(employmentUrl(nino, id, taxYear)).map { json =>
       (json \ "data").asOpt[Employment].map(sanitize)
     }
 
   def employments(nino: Nino, taxYear: TaxYear)(implicit
-                                                hc: HeaderCarrier
+    hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] = {
-    val url = employmentsOnlyUrl(nino, taxYear)
+    val url = employmentsUrl(nino, taxYear)
     httpHandler
       .read(
         httpHandler.httpClient
