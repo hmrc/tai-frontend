@@ -82,7 +82,7 @@ class RtiConnectorSpec extends BaseSpec with WireMockHelper {
           )
       )
 
-      val result = Await.result(sut.getPaymentsAllPaymentsForYear(nino, year).value, Duration.Inf)
+      val result = Await.result(sut.getAllPaymentsForYear(nino, year).value, Duration.Inf)
       result mustBe Right(Seq(annualAccount))
     }
 
@@ -92,7 +92,7 @@ class RtiConnectorSpec extends BaseSpec with WireMockHelper {
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR).withBody("internal server error"))
       )
 
-      val result = Await.result(sut.getPaymentsAllPaymentsForYear(nino, year).value, Duration.Inf)
+      val result = Await.result(sut.getAllPaymentsForYear(nino, year).value, Duration.Inf)
       result.isLeft mustBe true
     }
   }

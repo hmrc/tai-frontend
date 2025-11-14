@@ -32,12 +32,12 @@ class RtiService @Inject() (rtiConnector: RtiConnector)(implicit ec: ExecutionCo
   def getAllPaymentsForYear(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] =
-    rtiConnector.getPaymentsAllPaymentsForYear(nino, year)
+    rtiConnector.getAllPaymentsForYear(nino, year)
 
   def getPaymentsForEmploymentAndYear(nino: Nino, year: TaxYear, empId: Int)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Option[AnnualAccount]] =
-    rtiConnector.getPaymentsAllPaymentsForYear(nino, year).transform {
+    rtiConnector.getAllPaymentsForYear(nino, year).transform {
       case Right(payments) =>
         val paymentsForEmployment = payments.filter(_.sequenceNumber == empId)
         if (paymentsForEmployment.isEmpty) {

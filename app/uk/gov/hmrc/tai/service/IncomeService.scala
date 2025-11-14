@@ -22,8 +22,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.income.{Ceased, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
@@ -86,14 +85,4 @@ class IncomeService @Inject() (
     taiConnector.calculateEstimatedPay(payDetails)
   }
 
-  def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] =
-    taxCodeIncomes.filter(income =>
-      (income.componentType == EmploymentIncome || income.componentType == PensionIncome) && income.status != Ceased
-    )
-
-  def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] =
-    editableIncomes(taxCodeIncomes) match {
-      case Seq(singleIncome) => singleIncome.employmentId
-      case _                 => None
-    }
 }

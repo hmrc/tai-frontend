@@ -36,9 +36,10 @@ class RtiConnector @Inject() (
 
   val serviceUrl: String = applicationConfig.taiServiceUrl
 
-  def rtiPaymentsUrl(nino: Nino, taxYear: TaxYear): String = s"$serviceUrl/tai/$nino/rti-payments/years/${taxYear.year}"
+  private def rtiPaymentsUrl(nino: Nino, taxYear: TaxYear): String =
+    s"$serviceUrl/tai/$nino/rti-payments/years/${taxYear.year}"
 
-  def getPaymentsAllPaymentsForYear(nino: Nino, year: TaxYear)(implicit
+  def getAllPaymentsForYear(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] =
     httpClientResponse
