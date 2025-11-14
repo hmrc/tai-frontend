@@ -19,12 +19,11 @@ package controllers.benefits
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
 import pages.BenefitDecisionPage
-import pages.benefits._
+import pages.benefits.*
 import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.constants.{TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
@@ -59,50 +58,45 @@ class CompanyBenefitController @Inject() (
       } yield Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
     }
 
-  private def getDecision(userAnswers: UserAnswers): Future[Option[String]] = {
-    val benefitType: Option[String] = userAnswers.get(EndCompanyBenefitsTypePage)
-
-    benefitType match {
-      case Some(_) => Future.successful(userAnswers.get(BenefitDecisionPage))
-      case None    => Future.successful(None)
-    }
-  }
-
   def decision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    (for {
-      employment <- employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get)
-      decision   <- getDecision(request.userAnswers)
-    } yield employment match {
+    employmentService.employment(user.nino, request.userAnswers.get(EndCompanyBenefitsIdPage).get).flatMap {
       case Some(employment) =>
-        val referer = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
-          case Some(value) =>
-            value
-          case None        =>
-            request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-        }
-        val form    =
-          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(decision)
-
-        val viewModel = CompanyBenefitDecisionViewModel(
+        val userAnswersDecision =
+          request.userAnswers.get(EndCompanyBenefitsTypePage).flatMap(_ => request.userAnswers.get(BenefitDecisionPage))
+        val form                =
+          UpdateOrRemoveCompanyBenefitDecisionForm.form.fill(userAnswersDecision)
+        val viewModel           = CompanyBenefitDecisionViewModel(
           request.userAnswers.get(EndCompanyBenefitsTypePage).get,
           employment.name,
           form,
           employment.sequenceNumber
         )
+        val referer             = request.userAnswers.get(EndCompanyBenefitsRefererPage) match {
+          case Some(value) =>
+            value
+          case None        =>
+            request.headers
+              .get("Referer")
+              .getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+        }
 
-        for {
-          _ <- journeyCacheRepository.set(
-                 request.userAnswers
-                   .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
-                   .setOrException(EndCompanyBenefitsNamePage, viewModel.benefitName)
-                   .setOrException(EndCompanyBenefitsRefererPage, referer)
-               )
-        } yield Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
+        journeyCacheRepository
+          .set(
+            request.userAnswers
+              .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+              .setOrException(EndCompanyBenefitsNamePage, viewModel.benefitName)
+              .setOrException(EndCompanyBenefitsRefererPage, referer)
+          )
+          .map { _ =>
+            Ok(updateOrRemoveCompanyBenefitDecision(viewModel))
+          }
 
-      case None => throw new RuntimeException("No employment found")
-    }).flatten recover { case NonFatal(e) =>
+      case None =>
+        val ex = new IllegalArgumentException("Invalid employment id")
+        Future.successful(errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(ex)))
+    } recover { case NonFatal(e) =>
       errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))
     }
   }

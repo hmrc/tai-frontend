@@ -44,13 +44,15 @@ case class IncomeSourceViewModel(
 
 object IncomeSourceViewModel extends ViewModelHelper {
 
-  def createFromEmployment(employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
-    val amountNumeric: BigDecimal = (
-      for {
-        latestAccount <- employment.latestAnnualAccount
-        latestPayment <- latestAccount.latestPayment
-      } yield latestPayment.amountYearToDate
-    ).getOrElse(0)
+  def createFromEmployment(employment: Employment, annualAccount: Seq[AnnualAccount])(implicit
+    messages: Messages
+  ): IncomeSourceViewModel = {
+    val amountNumeric: BigDecimal =
+      annualAccount
+        .filter(_.sequenceNumber == employment.sequenceNumber)
+        .maxOption
+        .flatMap(_.latestPayment)
+        .fold(BigDecimal(0))(_.amountYearToDate)
 
     val amountString = if (amountNumeric != BigDecimal(0)) withPoundPrefixAndSign(MoneyPounds(amountNumeric, 0)) else ""
 

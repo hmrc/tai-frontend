@@ -61,7 +61,6 @@ class IncomeUpdateCalculatorControllerSpec
       Some("123"),
       Some(LocalDate.parse("2016-05-26")),
       None,
-      Nil,
       "",
       "",
       employerId,
@@ -98,7 +97,7 @@ class IncomeUpdateCalculatorControllerSpec
           .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employerId), hasJourneyCompleted)
         setup(mockUserAnswers)
 
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(returnedEmployment))
 
         def onPageLoad(id: Int = employerId): Future[Result] =
@@ -156,7 +155,7 @@ class IncomeUpdateCalculatorControllerSpec
           .setOrException(UpdateIncomeConfirmedNewAmountPage(employerId), "123456")
         setup(mockUserAnswers)
 
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(defaultEmployment)))
 
         def duplicateSubmissionWarning(): Future[Result] =
@@ -188,7 +187,7 @@ class IncomeUpdateCalculatorControllerSpec
         setup(mockUserAnswers)
 
         private val emp: Employment = defaultEmployment.copy(receivingOccupationalPension = isPension)
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(emp)))
 
         def submitDuplicateSubmissionWarning(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =
@@ -277,7 +276,7 @@ class IncomeUpdateCalculatorControllerSpec
           .setOrException(UpdateIncomeOtherInDaysPage, payPeriodInDays)
         setup(mockUserAnswers)
 
-        when(employmentService.employment(any(), any())(any()))
+        when(employmentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(defaultEmployment.copy(name = employerName))))
 
         def checkYourAnswersPage(request: FakeRequest[AnyContentAsFormUrlEncoded]): Future[Result] =

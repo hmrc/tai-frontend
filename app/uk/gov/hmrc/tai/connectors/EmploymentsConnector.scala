@@ -38,12 +38,10 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   private val startDateCutoff: LocalDate = applicationConfig.startEmploymentDateFilteredBefore
 
-  def employmentUrl(nino: Nino, id: String): String = s"$serviceUrl/tai/$nino/employments/$id"
-
-  private def employmentOnlyUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
+  private def employmentUrl(nino: Nino, id: Int, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employment-only/$id/years/${taxYear.year}"
 
-  private def employmentsOnlyUrl(nino: Nino, taxYear: TaxYear): String =
+  private def employmentsUrl(nino: Nino, taxYear: TaxYear): String =
     s"$serviceUrl/tai/$nino/employments-only/years/${taxYear.year}"
 
   private def endEmploymentServiceUrl(nino: Nino, id: Int): String =
@@ -51,9 +49,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
 
   def addEmploymentServiceUrl(nino: Nino): String =
     s"$serviceUrl/tai/$nino/employments"
-
-  def employmentServiceUrl(nino: Nino, year: TaxYear): String =
-    s"$serviceUrl/tai/$nino/employments/years/${year.year}"
 
   private def incorrectEmploymentServiceUrl(nino: Nino, id: Int): String =
     s"$serviceUrl/tai/$nino/employments/$id/reason"
@@ -67,20 +62,15 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
   private def sanitizeAll(es: Seq[Employment]): Seq[Employment] =
     es.iterator.map(sanitize).toSeq
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    httpHandler.getFromApiV2(employmentServiceUrl(nino, year)).map { json =>
-      sanitizeAll((json \ "data" \ "employments").as[Seq[Employment]])
-    }
-
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler.getFromApiV2(employmentOnlyUrl(nino, id, taxYear)).map { json =>
+  def employment(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
+    httpHandler.getFromApiV2(employmentUrl(nino, id, taxYear)).map { json =>
       (json \ "data").asOpt[Employment].map(sanitize)
     }
 
-  def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
+  def employments(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] = {
-    val url = employmentsOnlyUrl(nino, taxYear)
+    val url = employmentsUrl(nino, taxYear)
     httpHandler
       .read(
         httpHandler.httpClient
@@ -91,11 +81,6 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
         sanitizeAll((httpResponse.json \ "data" \ "employments").as[Seq[Employment]])
       }
   }
-
-  def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    httpHandler.getFromApiV2(employmentUrl(nino, id)).map { json =>
-      (json \ "data").asOpt[Employment].map(sanitize)
-    }
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).flatMap { response =>

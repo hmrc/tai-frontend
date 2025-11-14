@@ -10,7 +10,7 @@ ThisBuild / majorVersion := 3
 ThisBuild / scalaVersion := "3.3.6"
 ThisBuild / scalafmtOnCompile := true
 
-lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
+lazy val plugins: Seq[Plugins]         = Seq(play.sbt.PlayScala, SbtWeb)
 lazy val playSettings: Seq[Setting[?]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.domain._",
@@ -22,7 +22,16 @@ lazy val playSettings: Seq[Setting[?]] = Seq(
 
 lazy val scoverageSettings = {
   val scoverageExcludePatterns =
-    List("<empty>", "Reverse.*", "dev.Routes.*", "tai.Routes.*", "prod.*", "testOnlyDoNotUseInAppConf.*", "config.*", "testOnly.*")
+    List(
+      "<empty>",
+      "Reverse.*",
+      "dev.Routes.*",
+      "tai.Routes.*",
+      "prod.*",
+      "testOnlyDoNotUseInAppConf.*",
+      "config.*",
+      "testOnly.*"
+    )
 
   Seq(
     ScoverageKeys.coverageExcludedPackages := scoverageExcludePatterns.mkString("", ";", ""),

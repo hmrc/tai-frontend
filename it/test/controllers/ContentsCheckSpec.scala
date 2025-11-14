@@ -587,7 +587,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       None,
       Some(LocalDate.now),
       None,
-      Nil,
       "",
       "",
       1,
@@ -807,10 +806,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     )
 
     for (year <- startTaxYear - 5 to startTaxYear + 1) {
-      server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/employments/years/$year"))
-          .willReturn(ok(Json.toJson(employments).toString))
-      )
 
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/employments-only/years/$year"))
@@ -819,27 +814,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/employment-only/1/years/$year"))
-          .willReturn(
-            ok(
-              """{
-                |  "data": {
-                |    "name": "Test Employer",
-                |    "employmentStatus": "Live",
-                |    "payrollNumber": "12345",
-                |    "startDate": "2022-01-01",
-                |    "endDate": null,
-                |    "annualAccounts": [],
-                |    "taxDistrictNumber": "123",
-                |    "payeNumber": "321",
-                |    "sequenceNumber": 1,
-                |    "cessationPay": null,
-                |    "hasPayrolledBenefit": false,
-                |    "receivingOccupationalPension": false,
-                |    "employmentType": "EmploymentIncome"
-                |  }
-                |}""".stripMargin
-            )
-          )
+          .willReturn(ok(oneEmployment))
       )
 
       server.stubFor(
@@ -866,12 +841,12 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         get(urlEqualTo(s"/tai/$generatedNino/tax-account/$year/tax-components"))
           .willReturn(ok("""{"data":[]}"""))
       )
-    }
 
-    server.stubFor(
-      get(urlEqualTo(s"/tai/$generatedNino/employments/1"))
-        .willReturn(ok(oneEmployment))
-    )
+      server.stubFor(
+        get(urlEqualTo(s"/tai/$generatedNino/rti-payments/years/$year"))
+          .willReturn(ok("""{"data": []}"""))
+      )
+    }
 
     case class stubValuesData(journeyName: String, keyName: String, valueReturned: String)
 

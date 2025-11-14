@@ -28,7 +28,7 @@
 
 @header() = @{
     ptaHeader(
-        mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
+        mainHeadingText = messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName),
         preHeadingText = messages("tai.yourIncome.preHeading"),
         maybeUserName = Some(request.fullName)
     )
@@ -55,13 +55,9 @@
                             <p id="previous-year-summary-message" class="govuk-body">
                                 @messages("tai.income.calculation.summary.previous",Dates.formatDate(historicIncomeCalculationViewModel.payments.head.date),Dates.formatDate(historicIncomeCalculationViewModel.payments.last.date))</p>
                             @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
-                                @historicIncomeCalculationViewModel.employerName.map { name =>
-                                    <p id="eyu-message-previous" class="govuk-body">@messages("tai.income.calculation.eyu.previous", name)</p>
-                                }
+                                <p id="eyu-message-previous" class="govuk-body">@messages("tai.income.calculation.eyu.previous", historicIncomeCalculationViewModel.employerName)</p>
                             } else {
-                                @historicIncomeCalculationViewModel.employerName.map { name =>
-                                    <p class="govuk-body">@messages("tai.income.calculation.previous", name)</p>
-                                }
+                                <p class="govuk-body">@messages("tai.income.calculation.previous", historicIncomeCalculationViewModel.employerName)</p>
                             }
                         </div>
                         <div>
@@ -115,12 +111,12 @@
                                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
                                     <p class="govuk-body">
                                         @messages("tai.income.calculation.eyu.summary.single",
-                                        historicIncomeCalculationViewModel.employerName.getOrElse("")) </p>
+                                        historicIncomeCalculationViewModel.employerName) </p>
                                     <p class="govuk-body">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.head</p>
                                 }
                                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
                                     <p class="govuk-body">@messages("tai.income.calculation.eyu.summary.multi",
-                                        historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
+                                        historicIncomeCalculationViewModel.employerName)</p>
                                     <ul id="eyu-multi-messages-bullets" class="govuk-list govuk-list--bullet">
                                         @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
                                             <li>@eyuMessage</li>

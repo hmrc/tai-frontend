@@ -79,7 +79,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
 
       (
         incomeService.latestPayment(nino, employmentId),
-        employmentService.employmentOnly(nino, employmentId, TaxYear()).map(_.map(_.name)),
+        employmentService.employment(nino, employmentId, TaxYear()).map(_.map(_.name)),
         taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId).map {
           case Right(tci) => tci.map(_.amount)
           case Left(_)    => None
