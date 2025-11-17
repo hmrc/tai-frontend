@@ -20,7 +20,8 @@ import controllers.auth.*
 import play.api.Logging
 import play.api.mvc.*
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, TaxAccountService}
+import uk.gov.hmrc.tai.model.domain.Available
+import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, PaymentsService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 import views.html.incomes.{HistoricIncomeCalculationView, YourIncomeCalculationView}
 
@@ -32,6 +33,7 @@ class YourIncomeCalculationController @Inject() (
   employmentService: EmploymentService,
   iabdService: IabdService,
   paymentsService: PaymentsService,
+  rtiService: RtiService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   historicIncomeCalculation: HistoricIncomeCalculationView,
@@ -56,26 +58,40 @@ class YourIncomeCalculationController @Inject() (
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
       employmentDetails    <- employmentFuture
+      accountForEmployment <-
+        rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value
       iabdDetails          <- iabdDetailsFuture
       maybeIabdDetail       = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
-    } yield (taxCodeIncomeDetails, employmentDetails, maybeIabdDetail) match {
-      case (Right(taxCodeIncomes), Some(employment), Right(maybeIabd)) =>
-        val paymentDetails = paymentsService.filterDuplicates(employment)
+    } yield (taxCodeIncomeDetails, employmentDetails, accountForEmployment, maybeIabdDetail) match {
+      case (Right(taxCodeIncomes), Some(employment), Right(account), Right(maybeIabd)) =>
+        val paymentDetails = paymentsService.filterDuplicates(account)
 
         val model                     = YourIncomeCalculationViewModel(
           taxCodeIncomes.find(_.employmentId.contains(empId)),
           employment,
+          account,
           maybeIabd,
           paymentDetails,
           request.fullName
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
-      case (taxCodeIncomes, employment, maybeIabdDetail)               =>
-        logger.error(
-          s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetsils: ${maybeIabdDetail.isLeft})"
+      case (Right(taxCodeIncomes), Some(employment), Left(accounts), Right(maybeIabd)) =>
+        val model                     = YourIncomeCalculationViewModel(
+          taxCodeIncomes.find(_.employmentId.contains(empId)),
+          employment,
+          None,
+          maybeIabd,
+          Seq.empty,
+          request.fullName
         )
-        errorPagesHandler.internalServerError("Error while fetching RTI details")
+        implicit val user: AuthedUser = request.taiUser
+        Ok(yourIncomeCalculation(model))
+      case (taxCodeIncomes, employment, accounts, maybeIabdDetail)                     =>
+        logger.error(
+          s"yourIncomeCalculationPage: Unable to retrieve tax code incomes, employment or IABD details for empId: $empId (taxCodeIncomes: ${taxCodeIncomes.isLeft}, employment: ${employment.isEmpty}, iabdDetails: ${maybeIabdDetail.isLeft})"
+        )
+        errorPagesHandler.internalServerError("Error while fetching account details")
     }
   }
 
@@ -87,18 +103,30 @@ class YourIncomeCalculationController @Inject() (
       if (year <= TaxYear().prev) {
         val nino = request.taiUser.nino
 
-        employmentService.employments(nino, year) map { employments =>
-          val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employments, empId, year)
+        for {
+          employment    <- employmentService.employment(nino, empId, year)
+          annualAccount <- rtiService.getPaymentsForEmploymentAndYear(nino, year, empId).value
+        } yield (employment, annualAccount) match {
+          case (Some(employment), Right(annualAccount)) =>
+            val historicIncomeCalculationViewModel =
+              HistoricIncomeCalculationViewModel(employment, annualAccount, year)
 
-          historicIncomeCalculationViewModel.realTimeStatus.toString match {
-            case ("TemporarilyUnavailable") =>
+            if (historicIncomeCalculationViewModel.realTimeStatus != Available) {
               errorPagesHandler.internalServerError(
                 "Employment contains stub annual account data found meaning payment information can't be displayed"
               )
-            case _                          => Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
-          }
+            } else {
+              Ok(historicIncomeCalculation(historicIncomeCalculationViewModel))
+            }
+          case (None, _)                                =>
+            errorPagesHandler.internalServerError(
+              s"No employment found for id: $empId"
+            )
+          case (_, Left(error))                         =>
+            errorPagesHandler.internalServerError(
+              s"RTI payment call failed with message ${error.message}"
+            )
         }
-
       } else {
         Future.successful(
           errorPagesHandler.internalServerError(s"yourIncomeCalculationHistoricYears: Doesn't support year $year")

@@ -36,9 +36,10 @@ object HistoricPayAsYouEarnViewModel {
   def apply(
     taxYear: TaxYear,
     employments: Seq[Employment],
+    accounts: Seq[AnnualAccount],
     showTaxCodeDescriptionLink: Boolean
   ): HistoricPayAsYouEarnViewModel = {
-    val incomeSources: Seq[EmploymentViewModel]                                             = filterIncomeSources(taxYear, employments) sortBy (_.id)
+    val incomeSources: Seq[EmploymentViewModel]                                             = filterIncomeSources(employments, accounts) sortBy (_.id)
     val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) =
       incomeSources.partition(_.isPension)
 
@@ -51,10 +52,13 @@ object HistoricPayAsYouEarnViewModel {
     )
   }
 
-  private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] =
+  private def filterIncomeSources(
+    employments: Seq[Employment],
+    accounts: Seq[AnnualAccount]
+  ): Seq[EmploymentViewModel] =
     for {
       employment <- employments
-      account    <- employment.annualAccounts.find(_.taxYear.year == taxYear.year)
+      account    <- accounts.find(_.sequenceNumber == employment.sequenceNumber)
     } yield EmploymentViewModel(
       employment.name,
       if (account.payments.isEmpty) 0 else account.payments.last.amountYearToDate,

@@ -221,7 +221,7 @@ class HistoricIncomeCalculationViewSpec extends TaiViewSpec {
     year: TaxYear
   ) =
     HistoricIncomeCalculationViewModel(
-      employerName = Some("Foo"),
+      employerName = "Foo",
       employmentId = 1,
       payments = payments,
       endOfTaxYearUpdateMessages = eyuMessage,

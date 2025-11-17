@@ -49,7 +49,6 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.now),
       None,
-      Nil,
       "",
       "",
       1,
@@ -66,7 +65,6 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.now),
       None,
-      Nil,
       "",
       "",
       2,
@@ -83,7 +81,6 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.now),
       None,
-      Nil,
       "",
       "",
       3,
@@ -100,7 +97,6 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       None,
       Some(LocalDate.now),
       None,
-      Nil,
       "",
       "",
       4,
@@ -172,7 +168,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
       .thenReturn(Future.successful(Seq.empty[CodingComponent]))
     when(employmentService.employments(any(), meq(TaxYear()))(any()))
-      .thenReturn(Future.successful(Seq(employment)))
+      .thenReturn(EitherT.rightT(Seq(employment)))
     when(updateNextYearsIncomeService.isEstimatedPayJourneyComplete(any())).thenReturn(Future.successful(false))
   }
 
@@ -228,7 +224,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOneMultiple)))
       when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2)))
+        .thenReturn(EitherT.rightT(Seq(employment, employment2)))
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
@@ -247,7 +243,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOneMultiple)))
       when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
+        .thenReturn(EitherT.rightT(Seq(employment, employment2, pension, pension2)))
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
@@ -264,7 +260,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesCYPlusOne2)))
       when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2)))
+        .thenReturn(EitherT.rightT(Seq(employment, employment2)))
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK
@@ -279,7 +275,7 @@ class IncomeTaxComparisonControllerSpec extends BaseSpec {
       when(taxAccountService.taxCodeIncomes(any(), meq(TaxYear().next))(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomesNoEmpId)))
       when(employmentService.employments(any(), meq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Seq(employment, employment2)))
+        .thenReturn(EitherT.rightT(Seq(employment, employment2)))
 
       val result = controller.onPageLoad()(request)
       status(result) mustBe OK

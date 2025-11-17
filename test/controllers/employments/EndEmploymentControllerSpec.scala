@@ -17,32 +17,34 @@
 package controllers.employments
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.{never, reset, times, verify, when}
-import pages.endEmployment._
-import pages._
+import pages.endEmployment.*
+import pages.*
 import pages.updateEmployment.UpdateEndEmploymentPage
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.JourneyCacheRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
-import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, RtiService}
+import uk.gov.hmrc.tai.util.constants.journeyCache.*
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants}
 import utils.{FakeAuthJourney, NewCachingBaseSpec}
 import views.html.CanWeContactByPhoneView
-import views.html.employments._
+import views.html.employments.*
 import views.html.incomes.AddIncomeCheckYourAnswersView
 
 import java.time.LocalDate
@@ -55,8 +57,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
 
   private def fakePostRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("POST")
 
-  val auditService: AuditService           = mock[AuditService]
-  val employmentService: EmploymentService = mock[EmploymentService]
+  val mockAuditService: AuditService           = mock[AuditService]
+  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+  val mockRtiService: RtiService               = mock[RtiService]
 
   val userAnswers: UserAnswers = UserAnswers(
     RequestBuilder.uuid,
@@ -73,8 +76,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     userAnswersAsArg: Option[UserAnswers] = None,
     repository: JourneyCacheRepository = mockRepository
   ) = new EndEmploymentController(
-    auditService,
-    employmentService,
+    mockAuditService,
+    mockEmploymentService,
+    mockRtiService,
     mock[AuditConnector],
     mcc,
     inject[ErrorPagesHandler],
@@ -92,8 +96,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
 
   override def beforeEach(): Unit = {
     reset(mockFeatureFlagService)
-    reset(employmentService)
-    when(employmentService.employment(any(), any())(any()))
+    reset(mockEmploymentService)
+    reset(mockRtiService)
+    when(mockEmploymentService.employment(any(), any(), any())(any()))
       .thenReturn(
         Future.successful(
           Some(
@@ -103,7 +108,6 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
               None,
               Some(LocalDate.now),
               None,
-              Nil,
               "",
               "",
               1,
@@ -115,7 +119,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           )
         )
       )
-    when(auditService.createAndSendAuditEvent(any(), any())(any(), any()))
+    when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+      .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq()))))
+    when(mockAuditService.createAndSendAuditEvent(any(), any())(any(), any()))
       .thenReturn(Future.successful(Success))
     when(mockRepository.set(any())).thenReturn(Future.successful(true))
     when(mockRepository.get(any(), any())).thenReturn(Future.successful(Some(userAnswers)))
@@ -164,7 +170,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the call to retrieve employment data fails" in {
-      when(employmentService.employment(any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request     = fakeGetRequest
       val application = applicationBuilder(userAnswers = userAnswers).build()
@@ -199,9 +205,13 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     "redirect to end employment page if value no is passed in the form and the employment has a payment no more than 6 weeks 1 day in the past" in {
       val payment       = paymentOnDate(LocalDate.now().minusWeeks(6).minusDays(1))
       val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-      val employment    = employmentWithAccounts(List(annualAccount))
 
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment)))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount))
+        )
 
       val request           =
         fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
@@ -223,10 +233,14 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to error page if value no is passed in the form and the employment has a payment is less than 6 weeks 1 day from today in the past" in {
       val payment       = paymentOnDate(LocalDate.now().minusWeeks(6))
-      val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-      val employment    = employmentWithAccounts(List(annualAccount))
+      val annualAccount = AnnualAccount(8, TaxYear(), Available, List(payment), Nil)
 
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment)))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount))
+        )
 
       val request           = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
@@ -245,10 +259,14 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
     "redirect to irregular payment page if value No is passed in the form and the employment has an irregular payment frequency" in {
       val payment       = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
-      val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-      val employment    = employmentWithAccounts(List(annualAccount))
+      val annualAccount = AnnualAccount(8, TaxYear(), Available, List(payment), Nil)
 
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment)))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount))
+        )
 
       val request           = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
@@ -266,6 +284,9 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to endEmploymentPage if there is no latest payment data" in {
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](None)
+      )
       val request           = fakePostRequest.withFormUrlEncodedBody("employmentDecision" -> FormValuesConstants.NoValue)
       val userAnswersWithNo =
         userAnswers.copy(data =
@@ -282,7 +303,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the employer id is missing from the cache" in {
-      when(employmentService.employment(any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request          = FakeRequest("POST", "")
       val emptyUserAnswers = userAnswers.copy(data = Json.obj())
@@ -294,7 +315,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(employmentService.employment(any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val request     = FakeRequest("POST", "")
         .withFormUrlEncodedBody(EmploymentDecisionConstants.EmploymentDecision -> FormValuesConstants.YesValue)
@@ -340,7 +361,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(employmentService.employment(any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
         userAnswers.copy(data =
@@ -377,7 +398,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(employmentService.employment(any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
@@ -398,7 +419,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
   }
   "confirmAndSendEndEmployment is called" must { // TODO - Can't test service failure as long as it's Future[String]
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, and cache succeeds" in {
-      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful(""))
+      when(mockEmploymentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful(""))
       when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -418,7 +439,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "redirect to showConfirmationPage if all user answers are present, and end employment call is successful, but cache fails" in {
-      when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful(""))
+      when(mockEmploymentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful(""))
       when(mockRepository.clear(any(), any())).thenReturn(Future.successful(false))
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -475,7 +496,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if the request for employment data fails" in {
-      when(employmentService.employment(any(), any())(any()))
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(None))
       val userAnswersWithDate =
         userAnswers.copy(data =
@@ -560,7 +581,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers = userAnswers).build()
 
       running(application) {
@@ -799,7 +820,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not and there are form errors" in {
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val request     = FakeRequest("POST", "")
         .withFormUrlEncodedBody(IrregularPayConstants.IrregularPayDecision -> "")
       val application = applicationBuilder(userAnswers).build()
@@ -912,7 +933,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
@@ -959,7 +980,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
       }
     }
     "return BAD_REQUEST if user answers data exists but employment data does not" in {
-      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
       val application = applicationBuilder(userAnswers).build()
 
       running(application) {
@@ -998,14 +1019,13 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     }
   }
 
-  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
+  val employment: Employment =
     Employment(
       "employer",
       Live,
       Some("emp123"),
       Some(LocalDate.of(2000, 5, 20)),
       None,
-      accounts,
       "",
       "",
       8,
