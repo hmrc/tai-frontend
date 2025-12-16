@@ -31,24 +31,23 @@ class IabdConnector @Inject() (
   httpClientV2: HttpClientV2,
   servicesConfig: ServicesConfig,
   httpClientResponse: HttpClientResponse
-)(implicit ec: ExecutionContext) {
+)(implicit
+  ec: ExecutionContext
+) {
 
-  private val serviceUrl: String        = servicesConfig.baseUrl("tai")
-  private def abs(path: String): String = s"$serviceUrl$path"
+  val serviceUrl: String = servicesConfig.baseUrl("tai")
 
-  def getIabds(nino: Nino, taxYear: TaxYear, iabdType: Option[String] = None)(implicit
+  def url(path: String): String = s"$serviceUrl$path"
+
+  def getIabds(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
-
-    val base = abs(s"/tai/${nino.nino}/iabds/years/${taxYear.year}")
-
-    val req = iabdType match {
-      case Some(t) => httpClientV2.get(url"$base?type=$t")
-      case None    => httpClientV2.get(url"$base")
-    }
+    val iabdsUrl = url(s"/tai/${nino.nino}/iabds/years/${taxYear.year}")
 
     httpClientResponse.read(
-      req.execute[Either[UpstreamErrorResponse, HttpResponse]]
+      httpClientV2
+        .get(url"$iabdsUrl")
+        .execute[Either[UpstreamErrorResponse, HttpResponse]]
     )
   }
 }
