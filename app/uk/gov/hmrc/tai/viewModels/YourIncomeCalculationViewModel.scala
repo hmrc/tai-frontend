@@ -62,6 +62,7 @@ object YourIncomeCalculationViewModel {
     apply(
       taxCodeIncome = taxCodeIncome,
       employment = employment,
+      annualAccountForEmployment = annualAccountForEmployment,
       maybeIabd = maybeIabd,
       paymentDetails = paymentDetails,
       username = username,
@@ -71,6 +72,7 @@ object YourIncomeCalculationViewModel {
   def apply(
     taxCodeIncome: Option[TaxCodeIncome],
     employment: Employment,
+    annualAccountForEmployment: Option[AnnualAccount],
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String,

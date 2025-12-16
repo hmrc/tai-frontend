@@ -128,7 +128,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         when(mockEploymentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(rtiResponse())
-        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
         val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -480,10 +479,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
     when(taxAccountService.taxCodeIncomes(any(), any())(any()))
       .thenReturn(Future.successful(Right(taxCodeIncomes)))
-    when(mockEploymentService.employmentOnly(any(), any(), any())(any()))
+    when(mockEploymentService.employment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
-    when(mockRtiService.getPaymentsForYear(any(), any())(any()))
-      .thenReturn(rtiResponse(Seq(annualAccount.copy(sequenceNumber = employmentId))))
+    when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+      .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
 
     when(taxAccountService.iabdEstimatedPayOverrides(any(), any())(any()))
       .thenReturn(Future.successful(Map(employmentId -> BigDecimal(9999))))

@@ -62,7 +62,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           Some(taxAccountSummary),
           ThreeWeeks,
           Some(nonTaxCodeIncome),
-          noIncomesSources
+          noIncomesSources,
+          Map.empty
         )
         sut.header mustBe expectedHeader
       }
@@ -74,7 +75,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           Some(taxAccountSummary),
           ThreeWeeks,
           Some(nonTaxCodeIncome),
-          noIncomesSources
+          noIncomesSources,
+          Map.empty
         )
         sut.title mustBe expectedTitle
       }
@@ -82,7 +84,13 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
       "has correctly formatted positive tax free amount and estimated income" when {
         "taxAccountSummary has positive values" in {
           val sut =
-            TaxAccountSummaryViewModel(Some(taxAccountSummary), ThreeWeeks, Some(nonTaxCodeIncome), noIncomesSources)
+            TaxAccountSummaryViewModel(
+              Some(taxAccountSummary),
+              ThreeWeeks,
+              Some(nonTaxCodeIncome),
+              noIncomesSources,
+              Map.empty
+            )
           sut.taxFreeAmount mustBe Some("£2,222")
           sut.estimatedIncomeTaxAmount mustBe Some("£1,111")
         }
@@ -94,7 +102,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(-54321, -12345, 333.32, 444.44, 111.11)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.taxFreeAmount mustBe Some(s"$EncodedMinusSign£12,345")
           sut.estimatedIncomeTaxAmount mustBe Some(s"$EncodedMinusSign£54,321")
@@ -107,7 +116,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.taxFreeAmount mustBe Some("£0")
           sut.estimatedIncomeTaxAmount mustBe Some("£0")
@@ -120,7 +130,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
           Some(taxAccountSummary),
           ThreeWeeks,
           Some(nonTaxCodeIncome),
-          noIncomesSources
+          noIncomesSources,
+          Map.empty
         )
         sut.lastTaxYearEnd mustBe expectedLastTaxYearEnd
       }
@@ -131,7 +142,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.employments mustBe Seq.empty[IncomeSourceViewModel]
           sut.pensions mustBe Seq.empty[IncomeSourceViewModel]
@@ -143,7 +155,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.employments mustBe Seq.empty[IncomeSourceViewModel]
           sut.pensions mustBe Seq.empty[IncomeSourceViewModel]
@@ -155,7 +168,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.employments mustBe Seq.empty[IncomeSourceViewModel]
           sut.pensions mustBe Seq.empty[IncomeSourceViewModel]
@@ -169,7 +183,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            incomeSources
+            incomeSources,
+            Map.empty
           )
 
           sut.employments.size mustBe 2
@@ -184,7 +199,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            incomeSources
+            incomeSources,
+            Map.empty
           )
           sut.pensions.size mustBe 2
           sut.pensions.head.name mustBe "Pension name1"
@@ -198,7 +214,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            incomeSources.copy(liveEmploymentIncomeSources = Seq(), livePensionIncomeSources = Seq())
+            incomeSources.copy(liveEmploymentIncomeSources = Seq(), livePensionIncomeSources = Seq()),
+            Map.empty
           )
           sut.ceasedEmployments.size mustBe 2
           sut.ceasedEmployments.head.name mustBe "Employer name3"
@@ -221,7 +238,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
               liveEmploymentIncomeSources = Seq(),
               livePensionIncomeSources = Seq(),
               ceasedEmploymentIncomeSources = ceasedEmployments
-            )
+            ),
+            Map.empty
           )
           sut.ceasedEmployments.size mustBe 0
         }
@@ -233,7 +251,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0.01, 0.02, 0.01)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.displayIyaBanner mustBe true
         }
@@ -245,14 +264,16 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(TaxAccountSummary(0, 0, 0, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.displayIyaBanner mustBe false
           val sutNeg = TaxAccountSummaryViewModel(
             Some(TaxAccountSummary(0, 0, -0.01, 0, 0)),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sutNeg.displayIyaBanner mustBe false
         }
@@ -271,7 +292,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(taxAccountSummary),
             ThreeWeeks,
             Some(nonTaxCodeIncome),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
 
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel2)
@@ -296,7 +318,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(taxAccountSummary),
             ThreeWeeks,
             Some(nonTaxCodeIncomeWithBankAccounts),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel2)
         }
@@ -314,7 +337,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(taxAccountSummary),
             ThreeWeeks,
             Some(nonTaxCodeIncomeWithOutUntaxedInterest),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
 
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel1)
@@ -363,7 +387,8 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(taxAccountSummary),
             ThreeWeeks,
             Some(nonTaxCodeIncomeWithBankAccounts),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
 
           sut.otherIncomeSources mustBe Seq(
@@ -382,22 +407,21 @@ class TaxAccountSummaryViewModelSpec extends BaseSpec with TaxAccountSummaryTest
             Some(taxAccountSummary),
             ThreeWeeks,
             Some(nonTaxCodeIncomeWithOutAnything),
-            noIncomesSources
+            noIncomesSources,
+            Map.empty
           )
           sut.otherIncomeSources mustBe Seq.empty[IncomeSourceViewModel]
         }
       }
     }
-  }
 
     "apply estimatedPayOverrides to employment amounts" in {
       val seq = incomeSources.liveEmploymentIncomeSources.head.employment.sequenceNumber
       val sut = TaxAccountSummaryViewModel(
-        taxAccountSummary.copy(totalEstimatedIncome = 0), // not used for per-employment amounts
+        Some(taxAccountSummary.copy(totalEstimatedIncome = 0)), // not used for per-employment amounts
         ThreeWeeks,
-        nonTaxCodeIncome,
+        Some(nonTaxCodeIncome),
         incomeSources,
-        Seq(),
         Map(seq -> BigDecimal(5555))
       )
 
