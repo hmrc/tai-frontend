@@ -54,6 +54,7 @@ object YourIncomeCalculationViewModel {
   def apply(
     taxCodeIncome: Option[TaxCodeIncome],
     employment: Employment,
+    annualAccountForEmployment: Option[AnnualAccount],
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String
@@ -76,7 +77,7 @@ object YourIncomeCalculationViewModel {
     estimatedPayOverrides: Map[Int, BigDecimal]
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
-    val latestPayment = latestPaymentDetails(employment)
+    val latestPayment = latestPaymentDetails(annualAccountForEmployment)
     val isPension     = taxCodeIncome.exists(_.componentType == PensionIncome)
     val status        = employment.employmentStatus
 
@@ -146,17 +147,18 @@ object YourIncomeCalculationViewModel {
     }
   }
 
-  private def latestPaymentDetails(employment: Employment): Option[LatestPayment] =
-    for {
-      latestAnnualAccount <- employment.latestAnnualAccount
-      latestPayment       <- latestAnnualAccount.latestPayment
-    } yield LatestPayment(
-      latestPayment.date,
-      latestPayment.amountYearToDate,
-      latestPayment.taxAmountYearToDate,
-      latestPayment.nationalInsuranceAmountYearToDate,
-      latestPayment.payFrequency
-    )
+  private def latestPaymentDetails(annualAccount: Option[AnnualAccount]): Option[LatestPayment] =
+    annualAccount.flatMap { account =>
+      account.latestPayment.map { payment =>
+        LatestPayment(
+          payment.date,
+          payment.amountYearToDate,
+          payment.taxAmountYearToDate,
+          payment.nationalInsuranceAmountYearToDate,
+          payment.payFrequency
+        )
+      }
+    }
 
   def incomeExplanationMessage(
     employmentStatus: TaxCodeIncomeSourceStatus,

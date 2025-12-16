@@ -73,7 +73,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     setup(UserAnswers("testSessionId", nino.nino))
     Mockito.reset(auditService, employmentService, taxAccountService, mockTrackingService)
 
-    when(employmentService.employmentsOnly(any(), any())(any()))
+    when(employmentService.employments(any(), any())(any()))
       .thenReturn(EitherT.right(Future.successful(Seq(employment))))
 
     when(taxAccountService.newNonTaxCodeIncomes(any(), any())(any()))
@@ -158,12 +158,14 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
         when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("Unauthorised", UNAUTHORIZED)))
 
-        when(taxAccountService.newNonTaxCodeIncomes(any(), any())(any()))
-          .thenReturn(EitherT.rightT(Some(nonTaxCodeIncome)))
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(EitherT.rightT(taxAccountSummary))
-        when(employmentService.employmentsOnly(any(), any())(any()))
-          .thenReturn(EitherT.rightT(Seq(employment)))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(nonTaxCodeIncome)
+        )
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT(taxAccountSummary)
+        )
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR

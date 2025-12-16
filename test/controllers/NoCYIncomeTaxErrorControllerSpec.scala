@@ -17,13 +17,14 @@
 package controllers
 
 import builders.RequestBuilder
+import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.test.Helpers._
-import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
@@ -32,7 +33,7 @@ import utils.BaseSpec
 import views.html.NoCYIncomeTaxErrorView
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -59,7 +60,6 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
         None,
         Some(LocalDate.of(2017, 6, 9)),
         None,
-        Nil,
         "taxNumber",
         "payeNumber",
         1,
@@ -72,9 +72,12 @@ class NoCYIncomeTaxErrorControllerSpec extends BaseSpec with I18nSupport {
 
     employmentDataFailure match {
       case None            =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](sampleEmployment))
       case Some(throwable) =>
-        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(throwable))
+        when(employmentService.employments(any(), any())(any())).thenReturn(
+          EitherT.leftT[Future, Seq[Employment]](UpstreamErrorResponse.apply("Server Error", INTERNAL_SERVER_ERROR))
+        )
     }
 
   }

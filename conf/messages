@@ -196,7 +196,6 @@ tai.addPensionProvider.cya.q1=Provider name
 tai.addPensionProvider.cya.q2=First payment date
 tai.addPensionProvider.cya.q3=Pension number
 tai.addPensionProvider.cya.q4=Can we contact you by phone
-tai.addPensionProvider.cya.title=I want to add as a pension provider
 
 tai.addPensionProvider.date.enterDate=Enter the date you got your first pension payment from {0}
 tai.addPensionProvider.date.enterDay=The date you got your first pension payment must include a day
@@ -596,6 +595,8 @@ tai.income.details.estimatedTaxableIncome=Estimated taxable income
 tai.income.details.incomeReceivedToDate.desc=How much you have been paid since {0}.
 tai.income.details.incomeReceivedToDate.screenReader=The income you have received to date is {0}.
 tai.income.details.incomeReceivedToDate=Income received to date
+tai.income.details.incomeReceivedToDateUnavailable=Your income received to date is unavailable. Try again later
+tai.income.details.taxCodeUnavailable=Your tax code is unavailable. Try again later
 tai.income.details.noCompanyBenefitsMsg=You have no company benefits from {0}
 tai.income.details.taxCode.linkText=Understand your tax code
 tai.income.details.updateTaxableIncome.full=Update your estimated taxable income
@@ -1774,12 +1775,25 @@ beforeYouStart.list.payrollNumber = payroll number
 beforeYouStart.list.payeReference = employer PAYE reference
 beforeYouStart.list.phoneNumber = phone number
 
-tai.payeRefForm.title = What is {0}’s employer PAYE reference?
-tai.payeRefForm.hint = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB456.
+# Pension list
+beforeYouStart.pension.list.providerName = pension provider name
+beforeYouStart.pension.list.firstPaymentDate = first payment date
+beforeYouStart.pension.list.pensionNumber = pension number
+beforeYouStart.pension.list.providerPayeReference = pension provider’s PAYE reference
+
+tai.payeRefForm.employment.title = What is {0}’s employer PAYE reference?
+tai.payeRefForm.pension.title = What is {0}’s PAYE reference?
+tai.payeRefForm.employment.hint = This is a 3 digit tax office number, a forward slash, and a tax office employer reference, like 123/AB456.
+tai.payeRefForm.pension.hint = This is a 3 digit tax office number, a forward slash, and a tax office provider reference, like 123/AB456.
 tai.payeRefForm.hint2 = It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
-tai.payeRefForm.hint3 = It will be on your payslip or tax forms.
+tai.payeRefForm.employment.hint3 = It will be on your payslip or tax forms.
+tai.payeRefForm.pension.hint3 = Contact your pension provider for their PAYE reference.
 tai.payeRefForm.required = Enter {0}’s employer PAYE reference
 tai.payeRefForm.format = Enter {0}’s employer PAYE reference in the correct format
+tai.payeRefForm.pension.required = Enter {0}’s pension provider''s PAYE reference
+tai.payeRefForm.pension.format = Enter {0}’s pension provider''s PAYE reference in the correct format
+
+tai.addPensionProvider.cya.payeRef = PAYE reference
 
 tai.idNotFound.title = Page not found
 tai.idNotFound.linkText = Go to your PAYE Income Tax overview

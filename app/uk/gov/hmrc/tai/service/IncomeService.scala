@@ -22,8 +22,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.income.{Ceased, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.journeyCache._
 
@@ -34,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncomeService @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
+  rtiService: RtiService,
   taiConnector: TaiConnector
 ) {
 
@@ -52,13 +52,13 @@ class IncomeService @Inject() (
       case _                                  => throw new RuntimeException("Exception while reading employment")
     }
 
-  def latestPayment(nino: Nino, id: Int)(implicit
+  def latestPayment(nino: Nino, empId: Int)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Option[Payment]] =
-    employmentService
-      .employment(nino, id)
-      .map(_.flatMap(_.latestAnnualAccount.flatMap(_.latestPayment))) // TODO Use the ATI getPaymentsForYear
+    rtiService
+      .getPaymentsForEmploymentAndYear(nino, TaxYear(), empId)
+      .fold(_ => None, _.flatMap(_.latestPayment))
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit
     hc: HeaderCarrier
@@ -85,14 +85,4 @@ class IncomeService @Inject() (
     taiConnector.calculateEstimatedPay(payDetails)
   }
 
-  def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] =
-    taxCodeIncomes.filter(income =>
-      (income.componentType == EmploymentIncome || income.componentType == PensionIncome) && income.status != Ceased
-    )
-
-  def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] =
-    editableIncomes(taxCodeIncomes) match {
-      case Seq(singleIncome) => singleIncome.employmentId
-      case _                 => None
-    }
 }

@@ -21,29 +21,22 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(implicit ec: ExecutionContext) {
 
-  def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.employments(nino, year)
+  def employment(nino: Nino, id: Int, taxYear: TaxYear = TaxYear())(implicit
+    hc: HeaderCarrier
+  ): Future[Option[Employment]] =
+    employmentsConnector.employment(nino, id, taxYear)
 
-  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] =
-    employmentsConnector.ceasedEmployments(nino, year)
-
-  def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    employmentsConnector.employment(nino, id.toString)
-
-  def employmentOnly(nino: Nino, id: Int, taxYear: TaxYear)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
-    employmentsConnector.employmentOnly(nino, id, taxYear)
-
-  def employmentsOnly(nino: Nino, taxYear: TaxYear)(implicit
+  def employments(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[Employment]] =
-    employmentsConnector.employmentsOnly(nino, taxYear)
+    employmentsConnector.employments(nino, taxYear)
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     employmentsConnector.endEmployment(nino, id, endEmploymentData)
@@ -71,7 +64,9 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
   def employmentNames(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): Future[Map[Int, String]] =
-    for {
-      records <- employments(nino, year)
-    } yield records.iterator.map(e => e.sequenceNumber -> e.name).toMap
+    employments(nino, year).value.map {
+      case Right(employments) => employments.iterator.map(e => e.sequenceNumber -> e.name).toMap
+      case Left(error)        =>
+        throw new RuntimeException(s"No employment names found, error occurred with message ${error.message}")
+    }
 }

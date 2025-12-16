@@ -16,17 +16,20 @@
 
 package uk.gov.hmrc.tai.service
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.http.Status.NOT_FOUND
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.*
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
-import uk.gov.hmrc.tai.util.constants.journeyCache._
+import uk.gov.hmrc.tai.util.constants.journeyCache.*
 import utils.BaseSpec
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
 class IncomeServiceSpec extends BaseSpec {
@@ -35,14 +38,13 @@ class IncomeServiceSpec extends BaseSpec {
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
-  def employmentWithAccounts(accounts: List[AnnualAccount]): Employment =
+  val employment: Employment =
     Employment(
       "employment",
       Live,
       Some("ABC123"),
       Some(LocalDate.of(2000, 5, 20)),
       None,
-      accounts,
       "",
       "",
       1,
@@ -70,11 +72,13 @@ class IncomeServiceSpec extends BaseSpec {
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val employmentService: EmploymentService = mock[EmploymentService]
   val taiConnector: TaiConnector           = mock[TaiConnector]
+  val rtiService: RtiService               = mock[RtiService]
 
   class SUT
       extends IncomeService(
         taxAccountService,
         employmentService,
+        rtiService,
         taiConnector
       )
 
@@ -85,10 +89,14 @@ class IncomeServiceSpec extends BaseSpec {
 
         val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment    = employmentWithAccounts(List(annualAccount))
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment)))
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(
+            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
+          )
 
         val result = Await.result(sut.employmentAmount(nino, 1), 5.seconds)
 
@@ -113,7 +121,7 @@ class IncomeServiceSpec extends BaseSpec {
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
         ex.getMessage mustBe "Exception while reading employment"
@@ -127,29 +135,34 @@ class IncomeServiceSpec extends BaseSpec {
         val sut = createSUT
 
         val payment       = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount(7, TaxYear(), Available, List(payment), Nil)
-        val employment    = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        val annualAccount = AnnualAccount(1, TaxYear(), Available, List(payment), Nil)
+        when(rtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+          .thenReturn(
+            EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount))
+          )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
       }
     }
 
     "return none" when {
-      "employment details are not found" in {
+      "rti details are not found" in {
         val sut = createSUT
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(rtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](None)
+        )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }
 
-      "payments details are not present" in {
+      "rti returns not found" in {
         val sut = createSUT
 
-        val annualAccount = AnnualAccount(7, TaxYear(), Available, Seq.empty[Payment], Nil)
-        val employment    = employmentWithAccounts(List(annualAccount))
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(rtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+          .thenReturn(
+            EitherT.leftT[Future, Option[AnnualAccount]](UpstreamErrorResponse("not found", NOT_FOUND))
+          )
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
       }
@@ -210,206 +223,6 @@ class IncomeServiceSpec extends BaseSpec {
       val result = Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds)
 
       result mustBe CalculatedPay(Some(1500), Some(1400))
-    }
-  }
-
-  "editableIncome" must {
-    "return editable incomes" when {
-      "provided with sequence of tax code income" in {
-        val sut = createSUT
-
-        val taxCodeIncomes = Seq(
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(1),
-            1111,
-            "employment",
-            "1150L",
-            "employer1",
-            OtherBasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(4),
-            4444,
-            "employment",
-            "BR",
-            "employer4",
-            Week1Month1BasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            JobSeekerAllowanceIncome,
-            Some(5),
-            5555,
-            "employment",
-            "1150L",
-            "employer5",
-            OtherBasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            JobSeekerAllowanceIncome,
-            Some(6),
-            6666,
-            "employment",
-            "BR",
-            "employer6",
-            Week1Month1BasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
-          TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOfOperation, Live),
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(9),
-            1111,
-            "employment",
-            "1150L",
-            "employer9",
-            OtherBasisOfOperation,
-            PotentiallyCeased
-          ),
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(10),
-            2222,
-            "employment",
-            "BR",
-            "employer10",
-            Week1Month1BasisOfOperation,
-            Ceased
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(11),
-            1111,
-            "employment",
-            "1150L",
-            "employer11",
-            OtherBasisOfOperation,
-            PotentiallyCeased
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(12),
-            2222,
-            "employment",
-            "BR",
-            "employer12",
-            Week1Month1BasisOfOperation,
-            Ceased
-          )
-        )
-
-        val expectedTaxCodeIncomes = Seq(
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(1),
-            1111,
-            "employment",
-            "1150L",
-            "employer1",
-            OtherBasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(4),
-            4444,
-            "employment",
-            "BR",
-            "employer4",
-            Week1Month1BasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(9),
-            1111,
-            "employment",
-            "1150L",
-            "employer9",
-            OtherBasisOfOperation,
-            PotentiallyCeased
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(11),
-            1111,
-            "employment",
-            "1150L",
-            "employer11",
-            OtherBasisOfOperation,
-            PotentiallyCeased
-          )
-        )
-
-        sut.editableIncomes(taxCodeIncomes) mustBe expectedTaxCodeIncomes
-      }
-    }
-  }
-
-  "getSingularIncomeId" must {
-    "return singular income employment id" when {
-      "income size is 1" in {
-        val sut            = createSUT
-        val taxCodeIncomes = Seq(
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(1),
-            1111,
-            "employment",
-            "1150L",
-            "employer1",
-            OtherBasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(4),
-            4444,
-            "employment",
-            "BR",
-            "employer4",
-            Week1Month1BasisOfOperation,
-            Ceased
-          )
-        )
-
-        sut.singularIncomeId(taxCodeIncomes) mustBe Some(1)
-      }
-    }
-
-    "return none" when {
-      "income size is not 1" in {
-        val sut            = createSUT
-        val taxCodeIncomes = Seq(
-          TaxCodeIncome(
-            EmploymentIncome,
-            Some(1),
-            1111,
-            "employment",
-            "1150L",
-            "employer1",
-            OtherBasisOfOperation,
-            Live
-          ),
-          TaxCodeIncome(
-            PensionIncome,
-            Some(4),
-            4444,
-            "employment",
-            "BR",
-            "employer4",
-            Week1Month1BasisOfOperation,
-            Live
-          )
-        )
-
-        sut.singularIncomeId(taxCodeIncomes) mustBe None
-      }
     }
   }
 }

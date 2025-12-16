@@ -61,7 +61,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       .filter(_.income > 0)
       .filterNot(_.rate == 0)
 
-    val savings = totalTax.incomeCategories
+    val savings: Seq[TaxBand] = totalTax.incomeCategories
       .filter { category =>
         category.incomeCategoryType == UntaxedInterestIncomeCategory ||
         category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory

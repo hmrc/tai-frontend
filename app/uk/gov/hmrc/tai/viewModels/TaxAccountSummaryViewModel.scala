@@ -41,67 +41,6 @@ case class TaxAccountSummaryViewModel(
 object TaxAccountSummaryViewModel extends ViewModelHelper {
 
   def apply(
-    taxAccountSummary: TaxAccountSummary,
-    isAnyFormInProgress: TimeToProcess,
-    nonTaxCodeIncome: NonTaxCodeIncome,
-    incomesSources: IncomeSources,
-    nonMatchingCeasedEmployments: Seq[Employment],
-    estimatedPayOverrides: Map[Int, BigDecimal]
-  )(implicit messages: Messages): TaxAccountSummaryViewModel = {
-
-    val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
-    val title  = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
-
-    val taxFreeAmount            = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
-    val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
-
-    val employmentViewModels =
-      incomesSources.liveEmploymentIncomeSources.map { ti =>
-        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
-        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
-      }
-
-    val pensionsViewModels =
-      incomesSources.livePensionIncomeSources.map { ti =>
-        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
-        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
-      }
-
-    def employmentCeasedThisYear(employment: Employment): Boolean = {
-      val currentYear = TaxYear()
-      employment.endDate.fold(true)(endDate => !(endDate isBefore currentYear.start))
-    }
-
-    val ceasedEmploymentViewModels =
-      incomesSources.ceasedEmploymentIncomeSources.collect {
-        case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
-          val overrideAmt = estimatedPayOverrides.get(employment.sequenceNumber)
-          IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
-      } ++ nonMatchingCeasedEmployments.collect {
-        case employment if employmentCeasedThisYear(employment) =>
-          IncomeSourceViewModel.createFromEmployment(employment)
-      }
-
-    val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
-    val totalEstimatedIncome   = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedIncome, 0))
-
-    TaxAccountSummaryViewModel(
-      header = header,
-      title = title,
-      taxFreeAmount = Some(taxFreeAmount),
-      estimatedIncomeTaxAmount = Some(estimatedIncomeTaxAmount),
-      lastTaxYearEnd = lastTaxYearEnd,
-      employments = employmentViewModels,
-      pensions = pensionsViewModels,
-      ceasedEmployments = ceasedEmploymentViewModels,
-      displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
-      isAnyFormInProgress = isAnyFormInProgress,
-      otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome),
-      totalEstimatedIncome = Some(totalEstimatedIncome)
-    )
-  }
-
-  def apply(
     taxAccountSummary: Option[TaxAccountSummary],
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: Option[NonTaxCodeIncome],

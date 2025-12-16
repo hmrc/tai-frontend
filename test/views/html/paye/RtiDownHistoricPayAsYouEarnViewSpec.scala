@@ -38,7 +38,7 @@ class RtiDownHistoricPayAsYouEarnViewSpec extends TaiViewSpec {
 
   override def view: Html =
     RtiDisabledHistoricPayAsYouEarn(
-      HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, showTaxCodeDescriptionLink = true),
+      HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, showTaxCodeDescriptionLink = true),
       appConfig
     )
 
