@@ -243,7 +243,7 @@ class TaxAccountServiceSpec extends BaseSpec {
         IabdDetails(Some(3), None, None, None, None, None)
       )
 
-      when(iabdService.getIabds(any(), any(), any())(any()))
+      when(iabdService.getIabds(any(), any())(any()))
         .thenReturn(EitherT.rightT(iabds))
 
       val result = Await.result(sut.iabdEstimatedPayOverrides(nino, TaxYear()), 5.seconds)
@@ -253,7 +253,7 @@ class TaxAccountServiceSpec extends BaseSpec {
     "return empty map when IABD returns an error" in {
       val sut = createSut
 
-      when(iabdService.getIabds(any(), any(), any())(any()))
+      when(iabdService.getIabds(any(), any())(any()))
         .thenReturn(EitherT.leftT(UpstreamErrorResponse("boom", 500)))
 
       val result = Await.result(sut.iabdEstimatedPayOverrides(nino, TaxYear()), 5.seconds)

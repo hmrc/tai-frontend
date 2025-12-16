@@ -36,13 +36,11 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector, iab
   ec: ExecutionContext
 ) extends Logging {
 
-  private val IabdTypeNewEstimatedPay = "New Estimated Pay (027)"
-
   def iabdEstimatedPayOverrides(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier
   ): Future[Map[Int, BigDecimal]] =
     iabdService
-      .getIabds(nino, year, Some(IabdTypeNewEstimatedPay))
+      .getIabds(nino, year)
       .value
       .map {
         case Right(details) =>
