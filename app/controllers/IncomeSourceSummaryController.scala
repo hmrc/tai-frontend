@@ -23,13 +23,14 @@ import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.EmpIdCheck
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
-import uk.gov.hmrc.tai.model.domain.Available
+import uk.gov.hmrc.tai.model.domain.{Available, Employment, IabdDetails}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,6 +40,7 @@ class IncomeSourceSummaryController @Inject() (
   val auditConnector: AuditConnector,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
+  iabdService: IabdService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
@@ -69,7 +71,7 @@ class IncomeSourceSummaryController @Inject() (
           rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value,
           Future.successful(hasJourneyCompleted),
           cacheUpdatedIncomeAmountFuture,
-          taxAccountService.iabdEstimatedPayOverrides(nino, TaxYear())
+          iabdService.getIabds(nino, TaxYear()).value
         ).mapN {
           case (
                 Some(employment),
@@ -77,9 +79,16 @@ class IncomeSourceSummaryController @Inject() (
                 payments,
                 estimatedPayCompletion,
                 cacheUpdatedIncomeAmount,
-                iabdOverrides
+                Right(iabds)
               ) =>
-            val vm = IncomeSourceSummaryViewModel.apply(
+            val estimatedPayOverrides: Map[Int, BigDecimal] = iabds
+              .collect {
+                case iabd if iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode =>
+                  iabd.employmentSequenceNumber -> iabd.grossAmount
+              }
+              .collect { case (Some(id), Some(amount)) => id -> amount }
+              .toMap
+            val vm                                          = IncomeSourceSummaryViewModel.apply(
               empId = empId,
               displayName = request.fullName,
               optTaxCodeIncome =
@@ -93,7 +102,7 @@ class IncomeSourceSummaryController @Inject() (
               // The service also does not handle the case when there is no payments but assume the rti api not been available.
               rtiAvailable = payments.fold(_ => false, _.fold(false)(_.realTimeStatus == Available)),
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
-              estimatedPayOverrides = iabdOverrides
+              estimatedPayOverrides = estimatedPayOverrides
             )
 
             if (!vm.isUpdateInProgress) {
@@ -103,7 +112,8 @@ class IncomeSourceSummaryController @Inject() (
 
             Ok(incomeSourceSummary(vm))
 
-          case _ => errorPagesHandler.internalServerError("Error while fetching income summary details")
+          case _ =>
+            errorPagesHandler.internalServerError("Error while fetching income summary details")
         } recover { case NonFatal(e) =>
           errorPagesHandler.internalServerError("IncomeSourceSummaryController exception", Some(e))
         }

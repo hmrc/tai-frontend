@@ -20,9 +20,14 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 @import views.html.estimatedIncomeTax.navigationLinks
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 
-@this(mainTemplate: MainTemplate)
+@this(
+  mainTemplate: MainTemplate,
+  govukInsetText: GovukInsetText
+)
 
 @(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
@@ -51,7 +56,15 @@
     </div>
 </div>
 
-<div class="govuk-grid-row">
+    @if(viewModel.newIncomeEstimateAvailable) {
+        @govukInsetText(InsetText(
+            content = Text("We’re updating your income tax estimate. It will be ready tomorrow."),
+            classes = "govuk-!-margin-bottom-9"
+        ))
+    }
+
+
+    <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
             @Messages("tai.incomeTax.totalIncomeTaxEstimate")

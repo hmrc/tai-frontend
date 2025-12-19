@@ -24,9 +24,9 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome, TaxAccountSummary, TaxedIncome}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IabdDetails, PensionIncome, TaxAccountSummary, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import views.html.IncomeTaxSummaryView
@@ -39,6 +39,7 @@ import scala.util.control.NonFatal
 class TaxAccountSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
+  iabdService: IabdService,
   auditService: AuditService,
   authenticate: AuthJourney,
   appConfig: ApplicationConfig,
@@ -100,9 +101,7 @@ class TaxAccountSummaryController @Inject() (
       employmentsFromTaxAccount <- optionalTaxCodeIncomes(nino, TaxYear())
       taxAccountSummary         <- optionalTaxAccountSummary(nino, TaxYear())
       isAnyFormInProgress       <- optionalIsAnyIFormInProgress(nino)
-      iabdOverrides             <- EitherT.right[UpstreamErrorResponse](
-                                     taxAccountService.iabdEstimatedPayOverrides(nino, TaxYear())
-                                   )
+      iabds                     <- iabdService.getIabds(nino, TaxYear())
     } yield {
       val livePensions = employments
         .filter(employment => employment.employmentType == PensionIncome && employment.employmentStatus == Live)
@@ -131,12 +130,20 @@ class TaxAccountSummaryController @Inject() (
         ceasedEmploymentIncomeSources = ceasedEmployments
       )
 
+      val estimatedPayOverrides: Map[Int, BigDecimal] = iabds
+        .collect {
+          case iabd if iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode =>
+            iabd.employmentSequenceNumber -> iabd.grossAmount
+        }
+        .collect { case (Some(id), Some(amount)) => id -> amount }
+        .toMap
+
       val vm = TaxAccountSummaryViewModel(
         taxAccountSummary,
         isAnyFormInProgress,
         nonTaxCodeIncomes,
         incomeSources,
-        iabdOverrides
+        estimatedPayOverrides
       )
 
       Ok(incomeTaxSummary(vm, appConfig))

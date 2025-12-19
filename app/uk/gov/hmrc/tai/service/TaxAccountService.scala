@@ -25,36 +25,16 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{IabdDetails, TaxAccountSummary}
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector, iabdService: IabdService)(implicit
+class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(implicit
   ec: ExecutionContext
 ) extends Logging {
-
-  def iabdEstimatedPayOverrides(nino: Nino, year: TaxYear)(implicit
-    hc: HeaderCarrier
-  ): Future[Map[Int, BigDecimal]] =
-    iabdService
-      .getIabds(nino, year)
-      .value
-      .map {
-        case Right(details) =>
-          details.collect { case IabdDetails(Some(empId), _, _, _, _, Some(amount)) =>
-            empId -> amount
-          }.toMap
-        case Left(e)        =>
-          logger.warn(s"IABD 027 fetch failed: ${e.statusCode} ${e.message}")
-          Map.empty[Int, BigDecimal]
-      }
-      .recover { case t =>
-        logger.warn(s"IABD 027 fetch threw: ${t.getMessage}", t)
-        Map.empty[Int, BigDecimal]
-      }
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier

@@ -16,23 +16,25 @@
 
 package controllers
 
-import cats.implicits._
+import cats.implicits.*
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
+import uk.gov.hmrc.tai.model.domain.IabdDetails
+import uk.gov.hmrc.tai.service.{CodingComponentService, IabdService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
-import uk.gov.hmrc.tai.util.EitherTExtensions._
+import uk.gov.hmrc.tai.util.EitherTExtensions.*
 
 @Singleton
 class DetailedIncomeTaxEstimateController @Inject() (
   taxAccountService: TaxAccountService,
   codingComponentService: CodingComponentService,
+  iabdService: IabdService,
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   detailedIncomeTaxEstimate: DetailedIncomeTaxEstimateView,
@@ -48,22 +50,30 @@ class DetailedIncomeTaxEstimateController @Inject() (
       taxAccountService.taxCodeIncomes(nino, TaxYear()),
       taxAccountService.taxAccountSummary(nino, TaxYear()).toFutureOrThrow,
       codingComponentService.taxFreeAmountComponents(nino, TaxYear()),
-      taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+      taxAccountService.nonTaxCodeIncomes(nino, TaxYear()),
+      iabdService.getIabds(nino, TaxYear()).getOrElse(Seq.empty[IabdDetails])
     ).mapN {
       case (
             totalTax,
             Right(taxCodeIncomes),
             taxAccountSummary,
             codingComponents,
-            nonTaxCodeIncome
+            nonTaxCodeIncome,
+            iabds: Seq[IabdDetails]
           ) =>
-        implicit val user: AuthedUser = request.taiUser
-        val model                     = DetailedIncomeTaxEstimateViewModel(
+        implicit val user: AuthedUser  = request.taiUser
+        val newIncomeEstimateAvailable =
+          iabds.exists(iabd =>
+            iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode && iabd.grossAmount.isDefined
+          )
+
+        val model = DetailedIncomeTaxEstimateViewModel(
           totalTax,
           taxCodeIncomes,
           taxAccountSummary,
           codingComponents,
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          newIncomeEstimateAvailable
         )
         Ok(detailedIncomeTaxEstimate(model))
     } recover { case NonFatal(e) =>
