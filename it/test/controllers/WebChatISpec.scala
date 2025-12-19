@@ -25,13 +25,16 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.twirl.api.Html
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.webchat.client.WebChatClient
 import utils.{FileHelper, IntegrationSpec}
+
+import java.time.LocalDate
 
 class WebChatISpec extends IntegrationSpec {
 
@@ -89,7 +92,21 @@ class WebChatISpec extends IntegrationSpec {
               |}""".stripMargin))
       )
 
-      val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
+      val emp1        = Employment(
+        "employer1",
+        Live,
+        None,
+        Some(LocalDate.of(2016, 6, 9)),
+        None,
+        "taxNumber",
+        "payeNumber",
+        1,
+        None,
+        hasPayrolledBenefit = false,
+        receivingOccupationalPension = false,
+        EmploymentIncome
+      )
+      val employments = Json.obj("data" -> Json.obj("employments" -> Seq(emp1)))
       server.stubFor(
         get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
           .willReturn(ok(Json.toJson(employments).toString))

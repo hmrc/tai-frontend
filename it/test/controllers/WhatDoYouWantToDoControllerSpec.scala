@@ -25,12 +25,13 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.Week1Month1BasisOfOperation
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.{Live, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil.formatDate
 import utils.JsonGenerator.{taxCodeChangeJson, taxCodeIncomesJson}
 import utils.{FileHelper, IntegrationSpec}
 
+import java.time.LocalDate
 import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
@@ -66,7 +67,21 @@ class WhatDoYouWantToDoControllerSpec extends IntegrationSpec {
         .willReturn(ok(FileHelper.loadFile("./it/resources/personDetails.json")))
     )
 
-    val employments = Json.obj("data" -> Json.obj("employments" -> Seq.empty[JsValue]))
+    val emp1        = Employment(
+      "employer1",
+      Live,
+      None,
+      Some(LocalDate.of(2016, 6, 9)),
+      None,
+      "taxNumber",
+      "payeNumber",
+      1,
+      None,
+      hasPayrolledBenefit = false,
+      receivingOccupationalPension = false,
+      EmploymentIncome
+    )
+    val employments = Json.obj("data" -> Json.obj("employments" -> Seq(emp1)))
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/employments/years/$startTaxYear"))
         .willReturn(ok(Json.toJson(employments).toString))
