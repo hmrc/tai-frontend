@@ -43,8 +43,7 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
-
-  def applyNew(
+  def apply(
     empId: Int,
     displayName: String,
     optTaxCodeIncome: Option[TaxCodeIncome], // Tax account API response
@@ -52,16 +51,19 @@ object IncomeSourceSummaryViewModel {
     payments: Option[AnnualAccount],
     estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
-    cacheUpdatedIncomeAmount: Option[Int]
+    cacheUpdatedIncomeAmount: Option[Int],
+    estimatedPayOverrides: Map[Int, BigDecimal]
   ): IncomeSourceSummaryViewModel = {
-    val estimatedPayAmount = optTaxCodeIncome.map(_.amount)
-    val taxCode            = optTaxCodeIncome.map(_.taxCode)
+
+    val taxAccountEstimated = optTaxCodeIncome.map(_.amount)
+    val estimatedPayAmount  = estimatedPayOverrides.get(empId).orElse(taxAccountEstimated)
+    val taxCode             = optTaxCodeIncome.map(_.taxCode)
 
     val amountYearToDate = payments.flatMap(_.latestPayment).map(_.amountYearToDate)
 
-    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => cacheUpdateAMount != estimatedPayAmount.map(_.toInt).getOrElse(0)
-      case None                    => false
+    val isUpdateInProgress = cacheUpdatedIncomeAmount.exists { cached =>
+      val currentDisplayed = estimatedPayAmount.map(_.toInt).getOrElse(0)
+      cached != currentDisplayed
     }
 
     IncomeSourceSummaryViewModel(

@@ -32,6 +32,8 @@ case class IabdDetails(
 )
 
 object IabdDetails {
+  val newEstimatedPayCode = 27
+
   private val dateReads: Reads[LocalDate] = localDateReads("yyyy-MM-dd")
 
   implicit val readsIabds: Reads[IabdDetails] = (
