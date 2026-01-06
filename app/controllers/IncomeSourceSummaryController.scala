@@ -71,7 +71,6 @@ class IncomeSourceSummaryController @Inject() (
                 cacheUpdatedIncomeAmount,
                 Right(iabds)
               ) =>
-            println("******* " + iabds)
             val estimatedPayOverrides: Option[BigDecimal] =
               iabds
                 .find { iabd =>
@@ -80,7 +79,6 @@ class IncomeSourceSummaryController @Inject() (
                   iabd.grossAmount.isDefined
                 }
                 .map(_.grossAmount.get)
-            println("******* " + estimatedPayOverrides)
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
