@@ -63,9 +63,11 @@ class DetailedIncomeTaxEstimateController @Inject() (
           ) =>
         implicit val user: AuthedUser  = request.taiUser
         val newIncomeEstimateAvailable =
-          iabds.exists(iabd =>
-            iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode && iabd.grossAmount.isDefined
-          )
+          iabds.exists { iabd =>
+            iabd.`type`.contains(IabdDetails.newEstimatedPayCode) &&
+            iabd.employmentSequenceNumber.isDefined &&
+            iabd.grossAmount.isDefined
+          }
 
         val model = DetailedIncomeTaxEstimateViewModel(
           totalTax,

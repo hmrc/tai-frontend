@@ -105,11 +105,23 @@ class EstimatedIncomeTaxController @Inject() (
               )
             case SimpleTaxView   =>
               val model =
-                SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+                SimpleEstimatedIncomeTaxViewModel(
+                  codingComponents,
+                  taxAccountSummary,
+                  taxCodeIncomes,
+                  taxBands,
+                  newIncomeEstimateAvailable
+                )
               Ok(simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
             case ZeroTaxView     =>
               val model =
-                ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+                ZeroTaxEstimatedIncomeTaxViewModel(
+                  codingComponents,
+                  taxAccountSummary,
+                  taxCodeIncomes,
+                  taxBands,
+                  newIncomeEstimateAvailable
+                )
               Ok(zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
           }
         case _ =>

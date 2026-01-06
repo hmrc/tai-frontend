@@ -23,7 +23,6 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
@@ -48,15 +47,17 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     Seq(OtherNonTaxCodeIncome(Profit, None, testAmount, "Profit"))
   )
 
-  val auditService: AuditService           = mock[AuditService]
-  val employmentService: EmploymentService = mock[EmploymentService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val mockTrackingService: TrackingService = mock[TrackingService]
+  val mockAuditService: AuditService           = mock[AuditService]
+  val mockEmploymentService: EmploymentService = mock[EmploymentService]
+  val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
+  val mockTrackingService: TrackingService     = mock[TrackingService]
+  val mockIabdService: IabdService             = mock[IabdService]
 
   def sut: TaxAccountSummaryController = new TaxAccountSummaryController(
-    taxAccountService,
-    employmentService,
-    auditService,
+    mockTaxAccountService,
+    mockEmploymentService,
+    mockIabdService,
+    mockAuditService,
     mockAuthJourney,
     appConfig,
     mcc,
@@ -66,30 +67,30 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
   )
 
   val defaultUserAnswers: UserAnswers =
-    UserAnswers("testSessionId", nino.nino).setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(1), true)
+    UserAnswers("testSessionId", nino.nino)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(UserAnswers("testSessionId", nino.nino))
-    Mockito.reset(auditService, employmentService, taxAccountService, mockTrackingService)
+    Mockito.reset(mockAuditService, mockEmploymentService, mockTaxAccountService, mockTrackingService)
 
-    when(employmentService.employments(any(), any())(any()))
+    when(mockEmploymentService.employments(any(), any())(any()))
       .thenReturn(EitherT.right(Future.successful(Seq(employment))))
 
-    when(taxAccountService.newNonTaxCodeIncomes(any(), any())(any()))
+    when(mockTaxAccountService.newNonTaxCodeIncomes(any(), any())(any()))
       .thenReturn(EitherT.rightT(None))
 
-    when(taxAccountService.taxAccountSummary(any(), any())(any()))
+    when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
       .thenReturn(EitherT.rightT(taxAccountSummary))
 
-    when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
+    when(mockTaxAccountService.newTaxCodeIncomes(any(), any())(any()))
       .thenReturn(EitherT.rightT(Seq.empty))
 
     when(mockTrackingService.isAnyIFormInProgress(any())(any(), any(), any()))
       .thenReturn(Future.successful(NoTimeToProcess))
 
-    when(taxAccountService.iabdEstimatedPayOverrides(any(), any())(any()))
-      .thenReturn(Future.successful(Map.empty[Int, BigDecimal]))
+    when(mockIabdService.getIabds(any(), any())(any()))
+      .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty[IabdDetails]))
   }
 
   "onPageLoad" must {
@@ -97,7 +98,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     "display the income tax summary page" in {
       setup(UserAnswers("testSessionId", nino.nino))
 
-      when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
         .thenReturn(EitherT.rightT(taxAccountSummary))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -110,7 +111,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     }
 
     "after recovering from a 404 from tax account service" in {
-      when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
         .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", NOT_FOUND)))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -118,11 +119,11 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
     }
 
     "raise an audit event" in {
-      when(taxAccountService.taxAccountSummary(any(), any())(any()))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
         .thenReturn(EitherT.rightT(taxAccountSummary))
 
       when(
-        auditService.createAndSendAuditEvent(
+        mockAuditService.createAndSendAuditEvent(
           meq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
           meq(Map("nino" -> nino.nino))
         )(any(), any())
@@ -130,7 +131,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
-      verify(auditService, times(1))
+      verify(mockAuditService, times(1))
         .createAndSendAuditEvent(
           meq(AuditConstants.TaxAccountSummaryUserEntersSummaryPage),
           meq(Map("nino" -> nino.nino))
@@ -139,7 +140,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
 
     "display an error page" when {
       "a downstream error has occurred in one of the TaiResponse responding service methods" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -147,7 +148,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
       }
 
       "a downstream unauthorised exception has occurred in the tax account service" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("Unauthorised", UNAUTHORIZED)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -155,16 +156,16 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
       }
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
-        when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
+        when(mockTaxAccountService.newTaxCodeIncomes(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("Unauthorised", UNAUTHORIZED)))
 
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(nonTaxCodeIncome)
         )
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           EitherT.rightT(taxAccountSummary)
         )
-        when(employmentService.employments(any(), any())(any()))
+        when(mockEmploymentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(employment)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -172,7 +173,7 @@ class TaxAccountSummaryControllerSpec extends BaseSpec with TaxAccountSummaryTes
       }
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to not being authorised" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("not found", UNAUTHORIZED)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))

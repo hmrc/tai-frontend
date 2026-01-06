@@ -49,13 +49,14 @@ class ZeroTaxEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         None
       )
 
-      val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, bandedGraph, UkTaxRegion)
+      val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, bandedGraph, UkTaxRegion, false)
 
       ZeroTaxEstimatedIncomeTaxViewModel(
         codingComponents,
         taxAccountSummary,
         Seq.empty[TaxCodeIncome],
-        List.empty[TaxBand]
+        List.empty[TaxBand],
+        false
       ) mustBe expectedViewModel
 
     }

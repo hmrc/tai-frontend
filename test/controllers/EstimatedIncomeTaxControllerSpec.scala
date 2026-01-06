@@ -20,28 +20,30 @@ import builders.{RequestBuilder, UserBuilder}
 import cats.data.EitherT
 import cats.instances.future.*
 import controllers.auth.{AuthedUser, AuthenticatedRequest}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.twirl.api.Html
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.partials.HtmlPartial
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.income.*
+import uk.gov.hmrc.tai.model.domain.tax.*
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.util.Money.pounds
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
-import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants.*
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.*
 import utils.BaseSpec
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
 import views.html.includes.link
 
 import scala.concurrent.Future
+import uk.gov.hmrc.tai.service.IabdService
 
 class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
@@ -58,15 +60,17 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
 
   private def createSUT = new SUT
 
-  val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val taxAccountService: TaxAccountService           = mock[TaxAccountService]
-  val partialService: HasFormPartialService          = mock[HasFormPartialService]
+  val mockCodingComponentService: CodingComponentService = mock[CodingComponentService]
+  val mockTaxAccountService: TaxAccountService           = mock[TaxAccountService]
+  val mockPartialService: HasFormPartialService          = mock[HasFormPartialService]
+  val mockIabdService: IabdService                       = mock[IabdService]
 
   class SUT
       extends EstimatedIncomeTaxController(
-        codingComponentService,
-        partialService,
-        taxAccountService,
+        mockCodingComponentService,
+        mockPartialService,
+        mockTaxAccountService,
+        mockIabdService,
         mockAuthJourney,
         noCurrentIncomeView,
         complexEstimatedIncomeTaxView,
@@ -155,41 +159,48 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
               copy = messages("tai.estimatedIncome.taxFree.link")
             ),
             pounds(11500)
-          )
+          ),
+          false
         )
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
 
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             nonTaxCodeIncome
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq(taxCodeIncome)
             )
           )
         )
-        when(partialService.getIncomeTaxPartial(any()))
+        when(mockPartialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
+        when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty)
+        )
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
-
-        contentAsString(result) mustEqual simpleEstimatedIncomeTaxView(viewModel, Html("<title/>"))
-          .toString()
+        val content  = Jsoup.parse(contentAsString(result)).getElementsByTag("main").html()
+        val expected = Jsoup
+          .parse(simpleEstimatedIncomeTaxView(viewModel, Html("<title/>")).toString)
+          .getElementsByTag("main")
+          .html()
+        content mustEqual expected
       }
 
       "loading the complex view" in {
@@ -252,39 +263,57 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           Some(Swatch(4.24, 700))
         )
 
-        val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, viewModelBandedGraph, UkTaxRegion)
+        val expectedViewModel =
+          ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, viewModelBandedGraph, UkTaxRegion, false)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             nonTaxCodeIncome
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq(taxCodeIncome)
             )
           )
         )
-        when(partialService.getIncomeTaxPartial(any()))
+        when(mockPartialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual complexEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
-          .toString()
+        val fakeAuthenticatedRequest = AuthenticatedRequest(
+          RequestBuilder.buildFakeRequestWithAuth("GET"),
+          user,
+          Person(nino, "Firstname", "Surname", false, Address(None, None, None, None, None))
+        )
+
+        val content  = Jsoup.parse(contentAsString(result)).getElementsByTag("main").html()
+        val expected = Jsoup
+          .parse(
+            complexEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))(
+              fakeAuthenticatedRequest,
+              implicitly,
+              implicitly
+            ).toString
+          )
+          .getElementsByTag("main")
+          .html()
+
+        content mustEqual expected
 
       }
 
@@ -340,74 +369,109 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
         val viewModelBandedGraph =
           BandedGraph("taxGraph", viewModelBands, 0, 11500, 11500, 78.26, 11500, 78.26, 0, None, None)
 
-        val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, viewModelBandedGraph, UkTaxRegion)
+        val expectedViewModel =
+          ZeroTaxEstimatedIncomeTaxViewModel(0, 9000, 11500, viewModelBandedGraph, UkTaxRegion, false)
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(taxAccountSummary))
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             totalTax
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(codingComponents))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             nonTaxCodeIncome
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq(taxCodeIncome)
             )
           )
         )
-        when(partialService.getIncomeTaxPartial(any()))
+        when(mockPartialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual zeroTaxEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))
-          .toString()
+        val fakeAuthenticatedRequest = AuthenticatedRequest(
+          RequestBuilder.buildFakeRequestWithAuth("GET"),
+          user,
+          Person(nino, "Firstname", "Surname", false, Address(None, None, None, None, None))
+        )
+        val content                  = Jsoup.parse(contentAsString(result)).getElementsByTag("main").html()
+        val expected                 = Jsoup
+          .parse(
+            zeroTaxEstimatedIncomeTaxView(expectedViewModel, Html("<title/>"))(
+              fakeAuthenticatedRequest,
+              implicitly,
+              implicitly
+            ).toString()
+          )
+          .getElementsByTag("main")
+          .html()
+
+        content mustEqual expected
 
       }
 
       "loading the no income tax view" in {
 
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.rightT(TaxAccountSummary(0, 0, 0, 0, 0)))
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, List.empty[IncomeCategory], None, None, None, None, None)
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq.empty[TaxCodeIncome]
             )
           )
         )
-        when(partialService.getIncomeTaxPartial(any()))
+        when(mockPartialService.getIncomeTaxPartial(any()))
           .thenReturn(Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual noCurrentIncomeView().toString()
+        val fakeAuthenticatedRequest = AuthenticatedRequest(
+          RequestBuilder.buildFakeRequestWithAuth("GET"),
+          user,
+          Person(nino, "Firstname", "Surname", false, Address(None, None, None, None, None))
+        )
+        val content                  = Jsoup.parse(contentAsString(result)).getElementsByTag("main").html()
+        val expected                 = Jsoup
+          .parse(
+            noCurrentIncomeView()(
+              fakeAuthenticatedRequest,
+              implicitly,
+              implicitly
+            ).toString()
+          )
+          .getElementsByTag("main")
+          .html()
+
+        content mustEqual expected
+
       }
 
     }
@@ -415,21 +479,21 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
     "return error" when {
       "failed to fetch details" in {
         val sut = createSUT
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
-        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.totalTax(any(), any())(any())).thenReturn(
           Future.successful(
             TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
           )
         )
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.successful(Seq.empty[CodingComponent]))
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           )
         )
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(
             Right(
               Seq.empty[TaxCodeIncome]

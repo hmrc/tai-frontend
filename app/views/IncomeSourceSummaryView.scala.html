@@ -68,28 +68,6 @@
     backLinkId = "back-link-custom-url"
 ) {
 
-@if(model.estimatedPayJourneyCompleted){
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title"
-             data-module="govuk-notification-banner">
-            <div class="govuk-notification-banner__header">
-                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                    @messages("checkProgress.important")
-                </h2>
-            </div>
-            <div class="govuk-notification-banner__content">
-                <h3 class="govuk-notification-banner__heading">
-                    @messages("tai.whatDoYouWantToDo.iformPanel.p1")
-                </h3>
-                <p>@messages("tai.estimatedIncome.confirmation.banner.heading")</p>
-            </div>
-        </div>
-    </div>
-</div>
-}
-
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         @header()
@@ -129,8 +107,7 @@
                 <h2 class="govuk-heading-m">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="govuk-body govuk-!-margin-bottom-4">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
 
-            @(model.estimatedTaxableIncome.isEmpty, model.isUpdateInProgress) match {
-                case (true, _) => {
+            @if(model.estimatedTaxableIncome.isEmpty) {
                     @govukInsetText(InsetText(
                         id = Some("estimatedIncome"),
                         content = HtmlContent(s"""${messages("tai.income.details.estimateUnavailable")} ${link(
@@ -139,19 +116,7 @@
                                         copy=messages("tai.income.details.estimateUnavailable.linkText"))}
                                 """)
                     ))
-                }
-                case (false, true) => {
-                    <p class="govuk-inset-text govuk-!-font-size-16">
-                        @messages("tai.income.details.updateInProgress")
-                    </p>
-                    <p class="govuk-body govuk-!-padding-bottom-4">
-                        @link(
-                        id=Some("updateIncome"),
-                        url=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.onPageLoad(model.empId).url,
-                        copy=messages("tai.income.details.updateTaxableIncome.full"))
-                    </p>
-                }
-                case (false, false) => {
+                } else {
                     @for(estimatedIncome <- model.estimatedTaxableIncome) {
                         <p id="estimatedIncome" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(estimatedIncome)</p>
                     }
@@ -162,7 +127,6 @@
                         copy=messages("tai.income.details.updateTaxableIncome.full"))
                     </p>
                 }
-            }
         </div>
 
         <div class="govuk-grid-column-one-half">

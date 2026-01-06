@@ -46,7 +46,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     taxCode = Some("1100L"),
     pensionOrPayrollNumber = "PENSION-1122",
     isPension = true,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "475",
     payeNumber = "GA82452"
@@ -61,11 +60,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     taxCode = Some("100L"),
     pensionOrPayrollNumber = "PENSION-1122",
     isPension = true,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "475",
-    payeNumber = "GA82452",
-    isUpdateInProgress = true
+    payeNumber = "GA82452"
   )
 
   private val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(
@@ -77,7 +74,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     taxCode = Some("1100L"),
     pensionOrPayrollNumber = "EMPLOYER-1122",
     isPension = false,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
@@ -92,11 +88,9 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     taxCode = Some("100L"),
     pensionOrPayrollNumber = "EMPLOYER-1122",
     isPension = false,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
-    payeNumber = "AB12345",
-    isUpdateInProgress = true
+    payeNumber = "AB12345"
   )
 
   private def createViewModel(
@@ -104,7 +98,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     employment: Employment,
     payments: Option[AnnualAccount],
     empId: Int = 1,
-    overrides: Map[Int, BigDecimal] = Map.empty
+    overrides: Option[BigDecimal] = None
   ): IncomeSourceSummaryViewModel =
     IncomeSourceSummaryViewModel(
       empId = empId,
@@ -112,7 +106,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       optTaxCodeIncome = taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
       employment = employment,
       payments = payments,
-      estimatedPayJourneyCompleted = false,
       rtiAvailable = true,
       cacheUpdatedIncomeAmount = None,
       estimatedPayOverrides = overrides
@@ -182,7 +175,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           employment: Employment,
           payments: Option[AnnualAccount],
           empId: Int = 1,
-          overrides: Map[Int, BigDecimal] = Map.empty
+          overrides: Option[BigDecimal] = None
         ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId = empId,
@@ -190,7 +183,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             optTaxCodeIncome = taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
             payments = payments,
-            estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
             cacheUpdatedIncomeAmount = Some(300),
             estimatedPayOverrides = overrides
@@ -227,7 +219,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           employment: Employment,
           payments: Option[AnnualAccount],
           empId: Int = 1,
-          overrides: Map[Int, BigDecimal] = Map.empty
+          overrides: Option[BigDecimal] = None
         ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId = empId,
@@ -235,7 +227,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             optTaxCodeIncome = taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
             payments = payments,
-            estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
             cacheUpdatedIncomeAmount = Some(300),
             estimatedPayOverrides = overrides
@@ -274,7 +265,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           employment: Employment,
           payments: Option[AnnualAccount],
           empId: Int = 1,
-          overrides: Map[Int, BigDecimal] = Map.empty
+          overrides: Option[BigDecimal] = None
         ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId = empId,
@@ -282,7 +273,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             optTaxCodeIncome = taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
             payments = payments,
-            estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
             cacheUpdatedIncomeAmount = Some(100),
             estimatedPayOverrides = overrides
@@ -319,7 +309,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
           employment: Employment,
           payments: Option[AnnualAccount],
           empId: Int = 1,
-          overrides: Map[Int, BigDecimal] = Map.empty
+          overrides: Option[BigDecimal] = None
         ): IncomeSourceSummaryViewModel =
           IncomeSourceSummaryViewModel(
             empId = empId,
@@ -327,7 +317,6 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             optTaxCodeIncome = taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
             employment = employment,
             payments = payments,
-            estimatedPayJourneyCompleted = false,
             rtiAvailable = true,
             cacheUpdatedIncomeAmount = Some(100),
             estimatedPayOverrides = overrides
@@ -408,7 +397,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
         employment,
         Some(annualAccount),
         empId = 1,
-        overrides = Map(1 -> BigDecimal(9999))
+        overrides = Some(BigDecimal(9999))
       )
 
       model.estimatedTaxableIncome mustBe Some(BigDecimal(9999))

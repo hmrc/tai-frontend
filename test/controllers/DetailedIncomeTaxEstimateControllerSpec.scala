@@ -21,12 +21,12 @@ import cats.data.EitherT
 import cats.instances.future.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.{BadRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, IabdService, PersonService, TaxAccountService}
 import utils.BaseSpec
 import views.html.estimatedIncomeTax.DetailedIncomeTaxEstimateView
 
@@ -34,30 +34,34 @@ import scala.concurrent.Future
 
 class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
-  val personService: PersonService                   = mock[PersonService]
-  val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  val taxAccountService: TaxAccountService           = mock[TaxAccountService]
+  val mockPersonService: PersonService                   = mock[PersonService]
+  val mockCodingComponentService: CodingComponentService = mock[CodingComponentService]
+  val mockTaxAccountService: TaxAccountService           = mock[TaxAccountService]
+  val mockIabdService: IabdService                       = mock[IabdService]
 
   def sut =
     new DetailedIncomeTaxEstimateController(
-      taxAccountService,
-      codingComponentService,
+      mockTaxAccountService,
+      mockCodingComponentService,
+      mockIabdService,
       mockAuthJourney,
       mcc,
       inject[DetailedIncomeTaxEstimateView],
       inject[ErrorPagesHandler]
     )
 
-  when(taxAccountService.totalTax(any(), any())(any()))
+  when(mockTaxAccountService.totalTax(any(), any())(any()))
     .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
-  when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+  when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
     .thenReturn(Future.successful(Right(Seq.empty[TaxCodeIncome])))
-  when(taxAccountService.taxAccountSummary(any(), any())(any()))
+  when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
     .thenReturn(EitherT.rightT(TaxAccountSummary(0, 0, 0, 0, 0)))
-  when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
+  when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any()))
     .thenReturn(Future.successful(NonTaxCodeIncome(None, Seq.empty)))
-  when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+  when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
     .thenReturn(Future.successful(Seq.empty))
+  when(mockIabdService.getIabds(any(), any())(any()))
+    .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty))
 
   "Detailed Income Tax Estimate Controller" must {
     "return OK when responses are " when {
@@ -69,35 +73,35 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
     "return Internal server error" when {
       "fetch total tax details fails" in {
-        when(taxAccountService.totalTax(any(), any())(any()))
+        when(mockTaxAccountService.totalTax(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch tax code incomes fails" in {
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch tax account summary fails" in {
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(EitherT.leftT(UpstreamErrorResponse("error", INTERNAL_SERVER_ERROR)))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch of non-tax code incomes fails" in {
-        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any()))
+        when(mockTaxAccountService.nonTaxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.failed(new BadRequestException("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch of tax free amount components" in {
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any()))
+        when(mockCodingComponentService.taxFreeAmountComponents(any(), any())(any()))
           .thenReturn(Future.failed(new Error))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR

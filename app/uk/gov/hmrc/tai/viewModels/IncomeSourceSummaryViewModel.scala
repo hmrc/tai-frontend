@@ -31,11 +31,9 @@ case class IncomeSourceSummaryViewModel(
   taxCode: Option[String],
   pensionOrPayrollNumber: String,
   isPension: Boolean,
-  estimatedPayJourneyCompleted: Boolean,
   rtiAvailable: Boolean,
   taxDistrictNumber: String,
-  payeNumber: String,
-  isUpdateInProgress: Boolean = false
+  payeNumber: String
 ) extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
@@ -49,22 +47,16 @@ object IncomeSourceSummaryViewModel {
     optTaxCodeIncome: Option[TaxCodeIncome], // Tax account API response
     employment: Employment, // Employment API response
     payments: Option[AnnualAccount],
-    estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
     cacheUpdatedIncomeAmount: Option[Int],
-    estimatedPayOverrides: Map[Int, BigDecimal]
+    estimatedPayOverrides: Option[BigDecimal]
   ): IncomeSourceSummaryViewModel = {
 
     val taxAccountEstimated = optTaxCodeIncome.map(_.amount)
-    val estimatedPayAmount  = estimatedPayOverrides.get(empId).orElse(taxAccountEstimated)
+    val estimatedPayAmount  = estimatedPayOverrides.orElse(taxAccountEstimated)
     val taxCode             = optTaxCodeIncome.map(_.taxCode)
 
     val amountYearToDate = payments.flatMap(_.latestPayment).map(_.amountYearToDate)
-
-    val isUpdateInProgress = cacheUpdatedIncomeAmount.exists { cached =>
-      val currentDisplayed = estimatedPayAmount.map(_.toInt).getOrElse(0)
-      cached != currentDisplayed
-    }
 
     IncomeSourceSummaryViewModel(
       empId = empId,
@@ -75,11 +67,9 @@ object IncomeSourceSummaryViewModel {
       taxCode = taxCode,
       pensionOrPayrollNumber = employment.payrollNumber.getOrElse(""),
       isPension = employment.receivingOccupationalPension,
-      estimatedPayJourneyCompleted = estimatedPayJourneyCompleted,
       rtiAvailable = rtiAvailable,
       taxDistrictNumber = employment.taxDistrictNumber,
-      payeNumber = employment.payeNumber,
-      isUpdateInProgress = isUpdateInProgress
+      payeNumber = employment.payeNumber
     )
   }
 }

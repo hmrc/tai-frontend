@@ -18,11 +18,8 @@ package controllers
 
 import cats.implicits.*
 import controllers.auth.AuthJourney
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
-import pages.income.UpdateIncomeConfirmedNewAmountPage
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repository.JourneyCacheRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
@@ -44,7 +41,6 @@ class IncomeSourceSummaryController @Inject() (
   authenticate: AuthJourney,
   mcc: MessagesControllerComponents,
   incomeSourceSummary: IncomeSourceSummaryView,
-  journeyCacheRepository: JourneyCacheRepository,
   rtiService: RtiService,
   empIdCheck: EmpIdCheck,
   implicit val errorPagesHandler: ErrorPagesHandler
@@ -58,10 +54,6 @@ class IncomeSourceSummaryController @Inject() (
     val cacheUpdatedIncomeAmountFuture =
       Future.successful(request.userAnswers.get(EndCompanyBenefitsUpdateIncomePage(empId)).map(_.toInt))
 
-    val hasJourneyCompleted: Boolean = request.userAnswers
-      .get(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId))
-      .getOrElse(false)
-
     empIdCheck.checkValidId(empId).flatMap {
       case Some(result) => Future.successful(result)
       case _            =>
@@ -69,7 +61,6 @@ class IncomeSourceSummaryController @Inject() (
           employmentService.employment(nino, empId, TaxYear()),
           taxAccountService.taxCodeIncomes(nino, TaxYear()),
           rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value,
-          Future.successful(hasJourneyCompleted),
           cacheUpdatedIncomeAmountFuture,
           iabdService.getIabds(nino, TaxYear()).value
         ).mapN {
@@ -77,25 +68,27 @@ class IncomeSourceSummaryController @Inject() (
                 Some(employment),
                 taxCodeIncomes,
                 payments,
-                estimatedPayCompletion,
                 cacheUpdatedIncomeAmount,
                 Right(iabds)
               ) =>
-            val estimatedPayOverrides: Map[Int, BigDecimal] = iabds
-              .collect {
-                case iabd if iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode =>
-                  iabd.employmentSequenceNumber -> iabd.grossAmount
-              }
-              .collect { case (Some(id), Some(amount)) => id -> amount }
-              .toMap
-            val vm                                          = IncomeSourceSummaryViewModel.apply(
+            println("******* " + iabds)
+            val estimatedPayOverrides: Option[BigDecimal] =
+              iabds
+                .find { iabd =>
+                  iabd.`type`.contains(IabdDetails.newEstimatedPayCode) &&
+                  iabd.employmentSequenceNumber.contains(empId) &&
+                  iabd.grossAmount.isDefined
+                }
+                .map(_.grossAmount.get)
+            println("******* " + estimatedPayOverrides)
+
+            val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
               displayName = request.fullName,
               optTaxCodeIncome =
                 taxCodeIncomes.fold(_ => None, _.find(_.employmentId.contains(employment.sequenceNumber))),
               employment = employment,
               payments = payments.toOption.flatten,
-              estimatedPayJourneyCompleted = estimatedPayCompletion,
               // TODO: handle a failure vs no payment present
               // The way the rti availability is implemented using a stub Annual account is not compatible with None type
               // So when no annual account found for an employment, assuming rti is down.
@@ -104,11 +97,6 @@ class IncomeSourceSummaryController @Inject() (
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
               estimatedPayOverrides = estimatedPayOverrides
             )
-
-            if (!vm.isUpdateInProgress) {
-              val updatedUserAnswers = request.userAnswers.remove(UpdateIncomeConfirmedNewAmountPage(empId))
-              journeyCacheRepository.set(updatedUserAnswers)
-            }
 
             Ok(incomeSourceSummary(vm))
 

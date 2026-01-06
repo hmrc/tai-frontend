@@ -20,14 +20,41 @@ import controllers.auth.AuthenticatedRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContentAsEmpty, Call}
+import play.api.libs.typedmap.TypedMap
+import play.api.mvc.request.{Cell, RequestAttrKey}
+import play.api.mvc.{AnyContentAsEmpty, Call, Cookie, Cookies, Headers}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
+import uk.gov.hmrc.sca.utils.Keys
 import utils.BaseSpec
 
 trait TaiViewSpec extends BaseSpec with JsoupMatchers {
+  val wrapperDataResponse: WrapperDataResponse = WrapperDataResponse(
+    Seq.empty,
+    PtaMinMenuConfig("", ""),
+    List.empty,
+    List.empty,
+    None,
+    None
+  )
+
+  override val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(
+    method = "GET",
+    uri = "/",
+    headers = Headers(),
+    body = AnyContentAsEmpty,
+    attrs = TypedMap(
+      Keys.wrapperIsAuthenticatedKey -> true,
+      Keys.wrapperFilterHasRun       -> true,
+      Keys.wrapperDataKey            -> wrapperDataResponse,
+      Keys.messageDataKey            -> 0,
+      RequestAttrKey.Cookies         -> Cell(Cookies(Seq(Cookie("PLAY_LANG", "en"))))
+    )
+  )
+
   implicit val authRequest: AuthenticatedRequest[AnyContentAsEmpty.type] =
-    AuthenticatedRequest(FakeRequest(), authedUser, fakePerson(nino))
+    AuthenticatedRequest(fakeRequest, authedUser, fakePerson(nino))
 
   def view: Html
 

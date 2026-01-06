@@ -54,12 +54,10 @@ class TaxAccountServiceSpec extends BaseSpec {
   private def createSut = new SUT
 
   val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
-  val iabdService: IabdService                 = mock[IabdService]
 
   private class SUT
       extends TaxAccountService(
-        taxAccountConnector,
-        iabdService
+        taxAccountConnector
       )
 
   "taxCodeIncomes" must {
@@ -232,32 +230,4 @@ class TaxAccountServiceSpec extends BaseSpec {
     }
   }
 
-  "iabdEstimatedPayOverrides" must {
-
-    "return a map of employment sequence numbers to override amounts when IABD returns data" in {
-      val sut = createSut
-
-      val iabds: Seq[IabdDetails] = Seq(
-        IabdDetails(Some(2), None, None, None, None, Some(BigDecimal(3333))),
-        IabdDetails(None, None, None, None, None, Some(BigDecimal(9999))),
-        IabdDetails(Some(3), None, None, None, None, None)
-      )
-
-      when(iabdService.getIabds(any(), any())(any()))
-        .thenReturn(EitherT.rightT(iabds))
-
-      val result = Await.result(sut.iabdEstimatedPayOverrides(nino, TaxYear()), 5.seconds)
-      result mustBe Map(2 -> BigDecimal(3333))
-    }
-
-    "return empty map when IABD returns an error" in {
-      val sut = createSut
-
-      when(iabdService.getIabds(any(), any())(any()))
-        .thenReturn(EitherT.leftT(UpstreamErrorResponse("boom", 500)))
-
-      val result = Await.result(sut.iabdEstimatedPayOverrides(nino, TaxYear()), 5.seconds)
-      result mustBe Map.empty
-    }
-  }
 }
