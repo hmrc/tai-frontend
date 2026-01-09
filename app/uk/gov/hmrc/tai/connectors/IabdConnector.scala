@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.EitherT
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.HttpReads.Implicits.*
@@ -41,13 +42,13 @@ class IabdConnector @Inject() (
 
   def getIabds(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, UpstreamErrorResponse, HttpResponse] = {
+  ): EitherT[Future, UpstreamErrorResponse, JsValue] = {
     val iabdsUrl = url(s"/tai/${nino.nino}/iabds/years/${taxYear.year}")
 
     httpClientResponse.read(
       httpClientV2
         .get(url"$iabdsUrl")
-        .execute[Either[UpstreamErrorResponse, HttpResponse]]
+        .execute[Either[UpstreamErrorResponse, JsValue]]
     )
   }
 }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IabdDetails, PensionIncome, TaxAccountSummary, TaxedIncome}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome, TaxAccountSummary, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.util.constants.AuditConstants
@@ -130,20 +130,12 @@ class TaxAccountSummaryController @Inject() (
         ceasedEmploymentIncomeSources = ceasedEmployments
       )
 
-      val estimatedPayOverrides: Map[Int, BigDecimal] = iabds
-        .collect {
-          case iabd if iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode =>
-            iabd.employmentSequenceNumber -> iabd.grossAmount
-        }
-        .collect { case (Some(id), Some(amount)) => id -> amount }
-        .toMap
-
       val vm = TaxAccountSummaryViewModel(
         taxAccountSummary,
         isAnyFormInProgress,
         nonTaxCodeIncomes,
         incomeSources,
-        estimatedPayOverrides
+        iabds
       )
 
       Ok(incomeTaxSummary(vm, appConfig))

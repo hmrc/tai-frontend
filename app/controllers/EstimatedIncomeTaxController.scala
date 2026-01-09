@@ -30,6 +30,7 @@ import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIn
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import uk.gov.hmrc.tai.util.EitherTExtensions.*
+import uk.gov.hmrc.tai.util.TaxAccountHelper
 
 class EstimatedIncomeTaxController @Inject() (
   codingComponentService: CodingComponentService,
@@ -82,9 +83,7 @@ class EstimatedIncomeTaxController @Inject() (
             taxCodeIncomes.nonEmpty
           )
           val newIncomeEstimateAvailable =
-            iabds.exists(iabd =>
-              iabd.`type`.getOrElse(-1) == IabdDetails.newEstimatedPayCode && iabd.grossAmount.isDefined
-            )
+            TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, taxAccountSummary.date, None).nonEmpty
 
           taxViewType match {
             case NoIncomeTaxView => Ok(noCurrentIncome())

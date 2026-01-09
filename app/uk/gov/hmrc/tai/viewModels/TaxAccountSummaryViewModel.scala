@@ -17,11 +17,13 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.*
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.service.TimeToProcess
-import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxAccountHelper, TaxYearRangeUtil as Dates, ViewModelHelper}
+
+import java.time.LocalDate
 
 case class TaxAccountSummaryViewModel(
   header: String,
@@ -45,8 +47,15 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: Option[NonTaxCodeIncome],
     incomesSources: IncomeSources,
-    estimatedPayOverrides: Map[Int, BigDecimal]
+    iabds: Seq[IabdDetails]
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
+
+    def iabdEstimateAmount(ti: TaxedIncome): Option[BigDecimal] = {
+      // if taxAccountSummary is None, choose a date well in the past so that any available estimate in iabd is used.
+      // if date is missing in taxAccountSummary, choose today's date. The backend already log an exception for this.
+      val taxAccountDate = taxAccountSummary.map(_.date).getOrElse(Some(LocalDate.now.minusYears(1)))
+      TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, taxAccountDate, Some(ti.employment.sequenceNumber))
+    }
 
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
     val title  = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
@@ -57,14 +66,12 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
 
     val employmentViewModels =
       incomesSources.liveEmploymentIncomeSources.map { ti =>
-        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
-        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+        IncomeSourceViewModel.createFromTaxedIncome(ti, iabdEstimateAmount(ti))
       }
 
     val pensionsViewModels =
       incomesSources.livePensionIncomeSources.map { ti =>
-        val overrideAmt = estimatedPayOverrides.get(ti.employment.sequenceNumber)
-        IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+        IncomeSourceViewModel.createFromTaxedIncome(ti, iabdEstimateAmount(ti))
       }
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
@@ -75,8 +82,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     val ceasedEmploymentViewModels =
       incomesSources.ceasedEmploymentIncomeSources.collect {
         case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
-          val overrideAmt = estimatedPayOverrides.get(employment.sequenceNumber)
-          IncomeSourceViewModel.createFromTaxedIncome(ti, overrideAmt)
+          IncomeSourceViewModel.createFromTaxedIncome(ti, iabdEstimateAmount(ti))
       }
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)

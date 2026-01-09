@@ -114,6 +114,27 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   private val employmentId = 1
   private val pensionId    = 2
 
+  def taxAccountSummary(
+    totalEstimatedTax: BigDecimal = BigDecimal(0),
+    taxFreeAmount: BigDecimal = BigDecimal(0),
+    totalInYearAdjustmentIntoCY: BigDecimal = BigDecimal(0),
+    totalInYearAdjustment: BigDecimal = BigDecimal(0),
+    totalInYearAdjustmentIntoCYPlusOne: BigDecimal = BigDecimal(0),
+    totalEstimatedIncome: BigDecimal = BigDecimal(0),
+    taxFreeAllowance: BigDecimal = BigDecimal(0),
+    date: Option[LocalDate] = None
+  ) =
+    TaxAccountSummary(
+      totalEstimatedTax,
+      taxFreeAmount,
+      totalInYearAdjustmentIntoCY,
+      totalInYearAdjustment,
+      totalInYearAdjustmentIntoCYPlusOne,
+      totalEstimatedIncome,
+      taxFreeAllowance,
+      date
+    )
+
   "onPageLoad" must {
     "display the income details page" when {
       "asked for employment details" in {
@@ -122,6 +143,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
+        )
         when(mockEmploymentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(rtiResponse())
@@ -158,6 +182,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
                 )
             )
           )
+        )
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
         )
         when(mockEmploymentService.employment(any(), any(), any())(any()))
           .thenReturn(
@@ -284,6 +311,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       "failed to read tax code incomes" in {
         when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Left("Failed")))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
+        )
         when(mockEmploymentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
@@ -317,6 +347,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       "failed to read employment details" in {
         when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
+        )
         when(mockEmploymentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
         when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](None)
@@ -333,6 +366,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       "cache update amount is the same as the HOD amount" in {
         when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
           .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
+        )
         when(mockEmploymentService.employment(any(), any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
         when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
@@ -390,6 +426,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
     when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
       .thenReturn(Future.successful(Right(taxCodeIncomes)))
+    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
+    )
     when(mockEmploymentService.employment(any(), any(), any())(any()))
       .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
     when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))

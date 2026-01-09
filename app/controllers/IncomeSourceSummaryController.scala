@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, RtiService, TaxAccountService}
-import uk.gov.hmrc.tai.util.EmpIdCheck
+import uk.gov.hmrc.tai.util.{EmpIdCheck, TaxAccountHelper}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
 import uk.gov.hmrc.tai.model.domain.{Available, Employment, IabdDetails}
@@ -60,6 +60,7 @@ class IncomeSourceSummaryController @Inject() (
         (
           employmentService.employment(nino, empId, TaxYear()),
           taxAccountService.taxCodeIncomes(nino, TaxYear()),
+          taxAccountService.taxAccountSummary(nino, TaxYear()).value,
           rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value,
           cacheUpdatedIncomeAmountFuture,
           iabdService.getIabds(nino, TaxYear()).value
@@ -67,18 +68,14 @@ class IncomeSourceSummaryController @Inject() (
           case (
                 Some(employment),
                 taxCodeIncomes,
+                taxAccountSummary,
                 payments,
                 cacheUpdatedIncomeAmount,
                 Right(iabds)
               ) =>
-            val estimatedPayOverrides: Option[BigDecimal] =
-              iabds
-                .find { iabd =>
-                  iabd.`type`.contains(IabdDetails.newEstimatedPayCode) &&
-                  iabd.employmentSequenceNumber.contains(empId) &&
-                  iabd.grossAmount.isDefined
-                }
-                .map(_.grossAmount.get)
+            val TaxAccountSummaryDate = taxAccountSummary.fold(_ => None, _.date)
+            val estimatedPayOverrides =
+              TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, TaxAccountSummaryDate, Some(empId))
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,

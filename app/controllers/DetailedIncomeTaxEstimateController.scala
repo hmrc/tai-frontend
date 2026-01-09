@@ -29,6 +29,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 import scala.util.control.NonFatal
 import uk.gov.hmrc.tai.util.EitherTExtensions.*
+import uk.gov.hmrc.tai.util.TaxAccountHelper
 
 @Singleton
 class DetailedIncomeTaxEstimateController @Inject() (
@@ -63,11 +64,7 @@ class DetailedIncomeTaxEstimateController @Inject() (
           ) =>
         implicit val user: AuthedUser  = request.taiUser
         val newIncomeEstimateAvailable =
-          iabds.exists { iabd =>
-            iabd.`type`.contains(IabdDetails.newEstimatedPayCode) &&
-            iabd.employmentSequenceNumber.isDefined &&
-            iabd.grossAmount.isDefined
-          }
+          TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, taxAccountSummary.date, None).nonEmpty
 
         val model = DetailedIncomeTaxEstimateViewModel(
           totalTax,
