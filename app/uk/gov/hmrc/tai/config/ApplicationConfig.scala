@@ -106,7 +106,6 @@ class ApplicationConfig @Inject() (
   // These hosts should be empty for Prod like environments, all frontend services run on the same host so e.g localhost:9030/tai in local should be /tai in prod
   private lazy val basGatewayHost: String           = decorateUrlForLocalDev("bas-gateway-frontend.host")
   private lazy val feedbackHost: String             = decorateUrlForLocalDev("feedback-survey-frontend.host")
-  lazy val unauthorisedSignOutUrl: String           = decorateUrlForLocalDev("company-auth.unauthorised-url")
   private lazy val dfsFrontendHost: String          = decorateUrlForLocalDev(s"dfs-digital-forms-frontend.host")
   lazy val taiRootUri: String                       = decorateUrlForLocalDev("tai-frontend.host")
   private lazy val pertaxFrontendHost: String       = decorateUrlForLocalDev("pertax-frontend.host")
