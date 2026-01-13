@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
+import views.html.{ManualCorrespondenceView, TimeoutView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,6 @@ class ServiceController @Inject() (
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
   timeout: TimeoutView,
-  sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView,
   journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
@@ -60,6 +59,6 @@ class ServiceController @Inject() (
   }
 
   def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(sessionExpired()).withNewSession)
+    Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
   }
 }
