@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.auth.AuthJourney
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import views.html.{ManualCorrespondenceView, TimeoutView}
@@ -40,8 +40,12 @@ class ServiceController @Inject() (
   }
 
   def serviceSignout(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
-    Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
+    Future.successful(basSignOutRedirect)
   }
+
+  def sessionExpired(): Action[AnyContent] = Action(implicit request => basSignOutRedirect)
+
+  private def basSignOutRedirect: Result = Redirect(applicationConfig.basGatewayFrontendSignOutUrl)
 
   def mciErrorPage(): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
     val contactUrl = request2Messages.lang.code match {
@@ -56,9 +60,5 @@ class ServiceController @Inject() (
     journeyCacheRepository.keepAlive(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Ok("")
     }
-  }
-
-  def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
   }
 }

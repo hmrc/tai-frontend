@@ -17,7 +17,7 @@ GET         /signout                                                            
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.mciErrorPage()
 
 GET         /keep-alive                                                                controllers.ServiceController.keepAlive()
-GET         /session-expired                                                           controllers.ServiceController.sessionExpiredPage()
+GET         /session-expired                                                           controllers.ServiceController.sessionExpired()
 
 GET         /start-government-gateway                                                  controllers.AuthProviderController.governmentGatewayEntryPoint()
 
