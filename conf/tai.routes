@@ -12,7 +12,6 @@ GET         /historic-paye/:taxYear                                             
 
 GET         /income-tax-history                                                        controllers.IncomeTaxHistoryController.onPageLoad()
 
-GET         /timeout                                                                   controllers.ServiceController.timeoutPage()
 GET         /signout                                                                   controllers.ServiceController.serviceSignout()
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.mciErrorPage()
 

@@ -20,7 +20,7 @@ import controllers.auth.AuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import views.html.{ManualCorrespondenceView, TimeoutView}
+import views.html.ManualCorrespondenceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,15 +29,10 @@ class ServiceController @Inject() (
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  timeout: TimeoutView,
   manualCorrespondence: ManualCorrespondenceView,
   journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
-
-  def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(timeout()))
-  }
 
   def serviceSignout(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
     Future.successful(basSignOutRedirect)
