@@ -25,8 +25,7 @@ lazy val scoverageSettings = {
     List(
       "<empty>",
       "Reverse.*",
-      "dev.Routes.*",
-      "tai.Routes.*",
+      ".*\\.Routes.*",
       "prod.*",
       "testOnlyDoNotUseInAppConf.*",
       "config.*",

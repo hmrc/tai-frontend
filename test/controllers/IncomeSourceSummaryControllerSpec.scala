@@ -72,7 +72,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
   private val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
+    TaxCodeIncome(PensionIncome, Some(2), 1112, "employment2", "150L", "pension", Week1Month1BasisOfOperation, Live)
   )
 
   private val mockEmploymentService: EmploymentService = mock[EmploymentService]
@@ -222,7 +222,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           )
         )
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
-          "£1,111"
+          "£1,112"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate")).map(_.text()) mustBe Some(
           "£400"
@@ -241,7 +241,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         status(result) mustBe OK
         val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
-          "£1,111"
+          "£1,112"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
           .map(_.text()) mustBe Some(
@@ -260,7 +260,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         status(result) mustBe OK
         val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
-          "£1,111"
+          "£1,112"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
           .map(_.text()) mustBe Some(
@@ -278,7 +278,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         status(result) mustBe OK
         val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
-          "£1,111"
+          "£1,112"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
           .map(_.text()) mustBe Some(
@@ -296,7 +296,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         status(result) mustBe OK
         val doc    = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
-          "£1,111"
+          "£1,112"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
           .map(_.text()) mustBe Some(
@@ -390,7 +390,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           Messages("tai.employment.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeBreak)
         )
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
-          "£1,111"
+          "£1,112"
         ) withClue "html id estimatedIncome"
         Option(doc.getElementById("incomeReceivedToDate"))
           .map(_.text()) mustBe Some("£400") withClue "html id incomeReceivedToDate"
@@ -420,31 +420,194 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     }
   }
 
-  "apply IABD override when present for the empId" in {
-    val ua = baseUserAnswers
-    setup(ua)
+  "display estimated income from iabd instead of tax account details for the employment" when {
+    "iabd is more recent than tax account details" in {
+      val ua = baseUserAnswers
+      setup(ua)
 
-    when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
-      .thenReturn(Future.successful(Right(taxCodeIncomes)))
-    when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-      EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
-    )
-    when(mockEmploymentService.employment(any(), any(), any())(any()))
-      .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
-    when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
-      .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
-
-    when(mockIabdService.getIabds(any(), any())(any()))
-      .thenReturn(
-        EitherT.rightT[Future, UpstreamErrorResponse](
-          Seq(IabdDetails(Some(employmentId), None, Some(27), None, None, Some(BigDecimal(9999))))
-        )
+      when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = Some(LocalDate.now.minusWeeks(1))))
       )
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
 
-    val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      when(mockIabdService.getIabds(any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(
+              IabdDetails(
+                Some(employmentId),
+                None,
+                Some(27),
+                None,
+                Some(LocalDate.now.minusWeeks(2)),
+                Some(BigDecimal(9994))
+              ),
+              IabdDetails(Some(45), None, Some(27), None, Some(LocalDate.now), Some(BigDecimal(9995))),
+              IabdDetails(Some(employmentId), None, Some(27), None, Some(LocalDate.now), Some(BigDecimal(9999))),
+              IabdDetails(
+                Some(employmentId),
+                None,
+                Some(27),
+                None,
+                Some(LocalDate.now.minusWeeks(1)),
+                Some(BigDecimal(9996))
+              )
+            )
+          )
+        )
 
-    status(result) mustBe OK
-    val doc = Jsoup.parse(contentAsString(result))
-    Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+      val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+    }
+
+    "no date is available for both iabd and tax account" in {
+      val ua = baseUserAnswers
+      setup(ua)
+
+      when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = None))
+      )
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
+
+      when(mockIabdService.getIabds(any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(IabdDetails(Some(employmentId), None, Some(27), None, None, Some(BigDecimal(9999))))
+          )
+        )
+
+      val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+    }
+
+    "There is no date in tax account details" in {
+      val ua = baseUserAnswers
+      setup(ua)
+
+      when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = None))
+      )
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
+
+      when(mockIabdService.getIabds(any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(
+              IabdDetails(
+                Some(employmentId),
+                None,
+                Some(27),
+                None,
+                Some(LocalDate.now.minusMonths(6)),
+                Some(BigDecimal(9999))
+              )
+            )
+          )
+        )
+
+      val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+    }
+
+    "There is no date for iabd" in {
+      val ua = baseUserAnswers
+      setup(ua)
+
+      when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = Some(LocalDate.now.minusWeeks(1))))
+      )
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
+
+      when(mockIabdService.getIabds(any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(IabdDetails(Some(employmentId), None, Some(27), None, None, Some(BigDecimal(9999))))
+          )
+        )
+
+      val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+    }
+
+  }
+
+  "display estimated income from tax account details for the employment" when {
+    "iabd is too old" in {
+      val ua = baseUserAnswers
+      setup(ua)
+
+      when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = Some(LocalDate.now)))
+      )
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
+
+      when(mockIabdService.getIabds(any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(
+              IabdDetails(
+                Some(employmentId),
+                None,
+                Some(27),
+                None,
+                Some(LocalDate.now.minusWeeks(2)),
+                Some(BigDecimal(9994))
+              ),
+              IabdDetails(Some(45), None, Some(27), None, Some(LocalDate.now), Some(BigDecimal(9995))),
+              IabdDetails(
+                Some(employmentId),
+                None,
+                Some(27),
+                None,
+                Some(LocalDate.now.minusWeeks(1)),
+                Some(BigDecimal(9996))
+              )
+            )
+          )
+        )
+
+      val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£1,111")
+    }
   }
 }

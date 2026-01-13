@@ -62,6 +62,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
 
     @if(viewModel.newIncomeEstimateAvailable) {
         @govukInsetText(InsetText(
+            id = Some("new-income-estimate"),
             content = Text(messages("tai.incomeTax.incomeTaxEstimate.taxIsGettingUpdated")),
             classes = "govuk-!-margin-bottom-9"
         ))

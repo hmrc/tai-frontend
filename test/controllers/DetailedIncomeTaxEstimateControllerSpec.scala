@@ -100,7 +100,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
   "Detailed Income Tax Estimate Controller" must {
     "return OK when responses are " when {
-      "there are bands present" in {
+      "there are bands present and no iabd estimate" in {
         when(mockTaxAccountService.totalTax(any(), any())(any()))
           .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
         when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
@@ -116,6 +116,8 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
 
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
+        val html   = Jsoup.parse(contentAsString(result))
+        Option(html.getElementById("new-income-estimate")).map(_.text()) mustBe None
       }
 
       "iabd estimate income is used instead of tax code income" in {
@@ -141,7 +143,9 @@ class DetailedIncomeTaxEstimateControllerSpec extends BaseSpec {
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val html   = Jsoup.parse(contentAsString(result))
-        html.getElementById("new-income-estimate")
+        Option(html.getElementById("new-income-estimate")).map(_.text()) mustBe Some(
+          "We’re updating your income tax estimate. It will be ready tomorrow."
+        )
       }
     }
 
