@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,16 @@
 
 package controllers
 
-import org.jsoup.Jsoup
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import utils.BaseSpec
-import views.html.ErrorTemplateNoauth
 
 class UnauthorisedControllerSpec extends BaseSpec {
 
   private val controller = new UnauthorisedController(
     mcc,
     appConfig,
-    inject[ErrorTemplateNoauth],
     ec
   ) {
     override def upliftUrl: String     = "/uplift"
@@ -37,20 +34,13 @@ class UnauthorisedControllerSpec extends BaseSpec {
   }
 
   "onPageLoad" must {
-    "return OK for a GET request" in {
+    "redirect the user to BAS sign-out when accessed" in {
       val result = controller.onPageLoad(fakeRequest)
 
-      status(result) mustBe OK
-    }
-
-    "return the unauthorised error page" in {
-      val result = controller.onPageLoad(fakeRequest)
-
-      val content = contentAsString(result)
-      val doc     = Jsoup.parse(content)
-
-      val title = doc.select("title").text()
-      title must include("You have been signed out for your security")
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http://localhost:9514/feedback/TES"
+      )
     }
   }
 

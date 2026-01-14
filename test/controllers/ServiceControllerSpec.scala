@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.model.UserAnswers
 import utils.BaseSpec
-import views.html.{ManualCorrespondenceView, SessionExpiredView}
+import views.html.ManualCorrespondenceView
 
 import scala.concurrent.Future
 
@@ -40,7 +40,6 @@ class ServiceControllerSpec extends BaseSpec {
         authAction,
         appConfig,
         mcc,
-        inject[SessionExpiredView],
         inject[ManualCorrespondenceView],
         mockJourneyCacheRepository
       )
@@ -52,12 +51,12 @@ class ServiceControllerSpec extends BaseSpec {
   }
 
   "Sign Out" must {
-    "redirect to company auth frontend if it is a GG user" in {
+    "redirect to BAS sign-out" in {
       val sut = createSut()
 
       val result = sut.serviceSignout()(fakeRequest)
 
-      status(result) mustBe 303
+      status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(appConfig.basGatewayFrontendSignOutUrl)
     }
   }
@@ -75,13 +74,14 @@ class ServiceControllerSpec extends BaseSpec {
     }
   }
 
-  "sessionExpiredPage" should {
-    "clear the session" in {
+  "sessionExpired" should {
+    "redirect to BAS sign-out" in {
       val sut = createSut()
 
-      val result = sut.sessionExpiredPage()(FakeRequest("GET", "").withSession("test" -> "session"))
+      val result = sut.sessionExpired()(FakeRequest("GET", "").withSession("test" -> "session"))
 
-      session(result) mustBe empty
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(appConfig.basGatewayFrontendSignOutUrl)
     }
   }
 
