@@ -833,7 +833,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
       )
 
       server.stubFor(
-        get(urlEqualTo(s"/tai/$generatedNino/iabds/years/$year"))
+        get(urlEqualTo(s"/tai/$generatedNino/iabds/years/$year?iabdType=27"))
           .willReturn(ok(iabdDetails))
       )
 

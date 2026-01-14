@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{get, notFound, ok, urlEq
 import play.api.Application
 import play.api.http.Status.OK
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import uk.gov.hmrc.http.SessionKeys
