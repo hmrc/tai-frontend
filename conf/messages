@@ -1471,10 +1471,7 @@ tai.technical.error.message=Try again later.
 tai.technical.error.npsdown.message=Please try again later. You do not need to contact us about this.
 tai.technical.error.title=Error
 tai.tellUsAboutEmployment.title=Tell us about your employment
-tai.timeout.login_button.text=Login
-tai.timeout.message.pleaseLogin=Please log in to continue.
-tai.timeout.message=You are not currently logged in to this service. This may be due to inactivity or because it is the first time you have used it.
-tai.timeout.title=Log In
+
 tai.typeDecodes.BankOrBuildingSocietyInterest=Bank Or Building Society Interest
 tai.typeDecodes.CasualEarnings=Casual Earnings
 tai.typeDecodes.Commission=Commission
