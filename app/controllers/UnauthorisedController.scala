@@ -34,7 +34,7 @@ class UnauthorisedController @Inject() (
   def failureUrl: String    = applicationConfig.pertaxServiceUpliftFailedUrl
   def completionUrl: String = applicationConfig.taiHomePageUrl
 
-  // TODO: Check kibana if this still in use
+  // TODO: Verify if this still used ?
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Redirect(applicationConfig.basGatewayFrontendSignOutUrl)
   }
