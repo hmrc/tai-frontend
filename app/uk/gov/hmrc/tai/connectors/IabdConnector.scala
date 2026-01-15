@@ -43,7 +43,7 @@ class IabdConnector @Inject() (
   def getIabds(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, JsValue] = {
-    val iabdsUrl = url(s"/tai/${nino.nino}/iabds/years/${taxYear.year}iabdType=27")
+    val iabdsUrl = url(s"/tai/${nino.nino}/iabds/years/${taxYear.year}?iabdType=27")
 
     httpClientResponse.read(
       httpClientV2
