@@ -32,7 +32,8 @@ case class SimpleEstimatedIncomeTaxViewModel(
   taxRegion: String,
   mergedTaxBands: List[TaxBand],
   taxOnIncomeTypeHeading: String,
-  taxOnIncomeTypeDescription: String
+  taxOnIncomeTypeDescription: String,
+  newIncomeEstimateAvailable: Boolean
 ) extends ViewModelHelper
 
 object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
@@ -41,7 +42,8 @@ object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
     codingComponents: Seq[CodingComponent],
     taxAccountSummary: TaxAccountSummary,
     taxCodeIncomes: Seq[TaxCodeIncome],
-    taxBands: List[TaxBand]
+    taxBands: List[TaxBand],
+    newIncomeEstimateAvailable: Boolean
   )(implicit messages: Messages): SimpleEstimatedIncomeTaxViewModel = {
 
     val paBand                     = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
@@ -65,7 +67,8 @@ object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
       taxRegion,
       mergedTaxBands,
       taxOnIncomeTypeHeading,
-      taxOnIncomeTypeDescription
+      taxOnIncomeTypeDescription,
+      newIncomeEstimateAvailable
     )
   }
 }

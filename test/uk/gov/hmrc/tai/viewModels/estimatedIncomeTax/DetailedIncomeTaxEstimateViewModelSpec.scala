@@ -185,7 +185,14 @@ class DetailedIncomeTaxEstimateViewModelSpec
         )
         val totalTax         = TotalTax(100, incomeCategories, None, None, None, None)
         val model            =
-          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
+          DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncomes,
+            taxCodeSummary,
+            Seq.empty,
+            nonTaxCodeIncome,
+            false
+          )
 
         model.dividends must contain theSameElementsAs taxBands
 
@@ -595,7 +602,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
       val totalTax         = TotalTax(100, incomeCategories, None, None, None, None)
 
       val model =
-        DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
+        DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome, false)
 
       model.nonSavings mustEqual Seq(
         TaxBand(BandTypesConstants.TaxFreeAllowanceBand, "", 0, 0, Some(0), None, 0)
@@ -608,7 +615,14 @@ class DetailedIncomeTaxEstimateViewModelSpec
       "be returned when Non-Coded Income is present" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome, None, 0, "")))
         val model            =
-          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
+          DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncomes,
+            taxCodeSummary,
+            Seq.empty,
+            nonTaxCodeIncome,
+            false
+          )
 
         model.selfAssessmentAndPayeText mustEqual Some(messagesApi("tai.estimatedIncome.selfAssessmentAndPayeText"))
       }
@@ -616,7 +630,14 @@ class DetailedIncomeTaxEstimateViewModelSpec
       "not returned when Non-Coded Income is absent" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
         val model            =
-          DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
+          DetailedIncomeTaxEstimateViewModel(
+            totalTax,
+            taxCodeIncomes,
+            taxCodeSummary,
+            Seq.empty,
+            nonTaxCodeIncome,
+            false
+          )
 
         model.selfAssessmentAndPayeText mustEqual None
       }
@@ -630,6 +651,6 @@ class DetailedIncomeTaxEstimateViewModelSpec
   private val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty)
 
   val basicModel =
-    DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
+    DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome, false)
 
 }

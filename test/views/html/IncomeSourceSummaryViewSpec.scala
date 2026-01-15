@@ -39,7 +39,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     Some("1100L"),
     "EMPLOYER-1122",
     isPension = false,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
@@ -54,11 +53,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     Some("1100L"),
     "EMPLOYER-1122",
     isPension = false,
-    estimatedPayJourneyCompleted = true,
     rtiAvailable = true,
     taxDistrictNumber = "123",
-    payeNumber = "AB12345",
-    isUpdateInProgress = true
+    payeNumber = "AB12345"
   )
 
   private lazy val modelWithUpdateInProgressPension = IncomeSourceSummaryViewModel(
@@ -70,11 +67,9 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     Some("1100L"),
     "PENSION-1122",
     isPension = true,
-    estimatedPayJourneyCompleted = true,
     rtiAvailable = true,
     taxDistrictNumber = "123",
-    payeNumber = "AB12345",
-    isUpdateInProgress = true
+    payeNumber = "AB12345"
   )
 
   private lazy val modelWithEstimateUnavailable = IncomeSourceSummaryViewModel(
@@ -86,7 +81,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     Some("1100L"),
     "PENSION-1122",
     isPension = true,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
@@ -101,7 +95,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     Some("1100L"),
     "PENSION-1122",
     isPension = true,
-    estimatedPayJourneyCompleted = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
@@ -300,7 +293,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           Some("1100L"),
           "EMPLOYER-1122",
           isPension = false,
-          estimatedPayJourneyCompleted = true,
           rtiAvailable = false,
           taxDistrictNumber = "123",
           payeNumber = "AB12345"
@@ -324,7 +316,6 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           Some("1100L"),
           "EMPLOYER-1122",
           isPension = true,
-          estimatedPayJourneyCompleted = true,
           rtiAvailable = false,
           taxDistrictNumber = "123",
           payeNumber = "AB12345"

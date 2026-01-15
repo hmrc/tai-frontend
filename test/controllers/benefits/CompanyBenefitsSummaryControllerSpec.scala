@@ -21,7 +21,6 @@ import controllers.ErrorPagesHandler
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.mvc.Results.NotFound
@@ -125,7 +124,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
         when(mockJourneyCacheRepository.get(any(), any()))
@@ -155,7 +153,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(pensionId), true)
         setup(mockUserAnswers)
 
         when(mockJourneyCacheRepository.get(any(), any()))
@@ -224,7 +221,6 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val mockUserAnswers = baseUserAnswers
           .setOrException(EndCompanyBenefitsUpdateIncomePage(employmentId), employmentId.toString)
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
         setup(mockUserAnswers)
 
         when(taxAccountService.taxCodeIncomes(any(), any())(any()))

@@ -19,7 +19,6 @@ package controllers
 import cats.data.EitherT
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser, DataRequest}
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.Logging
 import play.api.data.Form
@@ -245,7 +244,6 @@ class IncomeController @Inject() (
                 val updatedUserAnswers =
                   request.userAnswers
                     .setOrException(UpdateIncomeConfirmedNewAmountPage(empId), newAmountInt.toString)
-                    .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(empId), true)
 
                 journeyCacheRepository.set(updatedUserAnswers)
                 if (isPension) Ok(editPensionSuccess(empName, empId)) else Ok(editSuccess(empName, empId))

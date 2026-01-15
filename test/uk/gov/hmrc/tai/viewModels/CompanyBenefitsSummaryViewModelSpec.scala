@@ -103,7 +103,7 @@ class CompanyBenefitsSummaryViewModelSpec extends BaseSpec {
         model mustBe expectedEmploymentViewModel
         /*
          IncomeSourceSummaryViewModel(1, "User Name", "test employment", Some(100), 400, Some("1100L"), "EMPLOYER-1122", false, List(), true, false, true, "123", "AB12345", false) was not equal to
-         IncomeSourceSummaryViewModel(1, "User Name", "Employer", Some(100), 400, Some("1100L"), "EMPLOYER-1122", false, List(), true, false, true, "123", "AB12345", false) (IncomeSourceSummaryViewModelNewSpec.scala:178)
+         IncomeSourceSummaryViewModel(1, "User Name", "Employer", Some(100), 400, Some("1100L"), "EMPLOYER-1122", false, List(), true, false, true, "123", "AB12345", false) (IncomeSourceSummaryViewModelSpec.scala:178)
 
          */
       }
