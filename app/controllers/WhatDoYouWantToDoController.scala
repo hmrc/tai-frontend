@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
-import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, TaxCodeChange}
+import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, TaxAccountSummary, TaxCodeChange}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
@@ -73,9 +73,11 @@ class WhatDoYouWantToDoController @Inject() (
           employmentService
             .employments(nino, year)
             .transform {
-              case Right(_)                                     => Right(true)
-              case Left(error) if error.statusCode == NOT_FOUND => Right(false)
-              case Left(error)                                  => Left(error)
+              case Right(employments) if employments.forall(_.employmentType == JobSeekerAllowanceIncome) =>
+                Right(false)
+              case Right(_)                                                                               => Right(true)
+              case Left(error) if error.statusCode == NOT_FOUND                                           => Right(false)
+              case Left(error)                                                                            => Left(error)
             }
             .value
       })

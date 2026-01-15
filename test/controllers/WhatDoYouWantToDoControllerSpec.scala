@@ -317,6 +317,34 @@ class WhatDoYouWantToDoControllerSpec extends BaseSpec with JsoupMatchers {
           val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           redirectLocation(result) mustBe Some("/check-income-tax/income-tax/no-info")
         }
+      "employments hod call has returned only JSA employments" in {
+        val jsaEmployment = Employment(
+          "TEST",
+          Live,
+          Some("12345"),
+          Some(LocalDate.now()),
+          None,
+          "",
+          "",
+          2,
+          None,
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false,
+          JobSeekerAllowanceIncome
+        )
+
+        val testController = createTestController()
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq(jsaEmployment)))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](taxCodeNotChanged))
+        when(taxAccountService.newTaxCodeIncomes(any(), any())(any()))
+          .thenReturn(EitherT.rightT(Seq.empty[TaxCodeIncome]))
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        redirectLocation(result) mustBe Some("/check-income-tax/income-tax/no-info")
+
+      }
     }
 
     "display the WDYWTD page (not redirect)" when {
