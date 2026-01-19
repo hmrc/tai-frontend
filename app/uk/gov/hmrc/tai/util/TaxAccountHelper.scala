@@ -29,7 +29,7 @@ object TaxAccountHelper {
   ): Option[BigDecimal] = {
     // If no date is present in tax account, used a date in past to allow the new estimate from iabd to be picked up if any
     val taxAccountDate = maybeTaxAccountDate.getOrElse(LocalDate.now.minusYears(1))
-    println(s";;;;;;; $iabds $maybeEmpId $maybeTaxAccountDate")
+
     iabds
       .sortBy(_.captureDate)
       .findLast { iabd => // find most recent iabd update

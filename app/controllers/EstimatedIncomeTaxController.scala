@@ -84,7 +84,6 @@ class EstimatedIncomeTaxController @Inject() (
           )
           val newIncomeEstimateAvailable =
             TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, taxAccountSummary.date, None).nonEmpty
-          println(s"%%%%%%% $newIncomeEstimateAvailable")
 
           taxViewType match {
             case NoIncomeTaxView => Ok(noCurrentIncome())
