@@ -12,14 +12,11 @@ GET         /historic-paye/:taxYear                                             
 
 GET         /income-tax-history                                                        controllers.IncomeTaxHistoryController.onPageLoad()
 
-GET         /timeout                                                                   controllers.ServiceController.timeoutPage()
 GET         /signout                                                                   controllers.ServiceController.serviceSignout()
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.mciErrorPage()
 
 GET         /keep-alive                                                                controllers.ServiceController.keepAlive()
-GET         /session-expired                                                           controllers.ServiceController.sessionExpiredPage()
-
-GET         /start-government-gateway                                                  controllers.AuthProviderController.governmentGatewayEntryPoint()
+GET         /session-expired                                                           controllers.ServiceController.sessionExpired()
 
 GET         /income-summary                                                            controllers.TaxAccountSummaryController.onPageLoad()
 GET         /income-tax                                                                controllers.TaxAccountSummaryController.onPageLoad()

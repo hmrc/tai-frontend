@@ -85,7 +85,7 @@ class MainTemplateImpl @Inject() (
         accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl)
       ),
 //    sidebarContent: Option[Html] = None,
-      timeOutUrl = Some(controllers.routes.ServiceController.sessionExpiredPage().url),
+      timeOutUrl = Some(controllers.routes.ServiceController.sessionExpired().url),
       keepAliveUrl = controllers.routes.ServiceController.keepAlive().url,
       showBackLinkJS = backLinkContent.isDefined && backLinkUrl.contains("#"),
       backLinkUrl = if (backLinkContent.isDefined) backLinkUrl else None,

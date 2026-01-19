@@ -1450,10 +1450,7 @@ tai.technical.error.message=Rhowch gynnig arall arni yn nes ymlaen.
 tai.technical.error.npsdown.message=Rhowch gynnig arall arni yn nes ymlaen. Does dim rhaid i chi gysylltu â ni am hyn.
 tai.technical.error.title=Gwall
 tai.tellUsAboutEmployment.title=Rhowch wybod i ni am eich cyflogaeth
-tai.timeout.login_button.text=Mewngofnodi
-tai.timeout.message.pleaseLogin=Mewngofnodwch i fynd yn eich blaen.
-tai.timeout.message=Nid ydych wedi mewngofnodi i’r gwasanaeth hwn ar hyn o bryd. Gall hyn fod oherwydd anweithgarwch neu oherwydd dyma’r tro cyntaf i chi ei ddefnyddio.
-tai.timeout.title=Mewngofnodi
+
 tai.typeDecodes.BankOrBuildingSocietyInterest=Llog Banc Neu Gymdeithas Adeiladu
 tai.typeDecodes.CasualEarnings=Enillion Achlysurol
 tai.typeDecodes.Commission=Comisiwn

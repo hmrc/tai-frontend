@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package controllers
 
-import play.api.i18n.Messages
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.util.constants.TaiConstants._
-import views.html.ErrorTemplateNoauth
+import uk.gov.hmrc.tai.util.constants.TaiConstants.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +27,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class UnauthorisedController @Inject() (
   mcc: MessagesControllerComponents,
   applicationConfig: ApplicationConfig,
-  errorTemplateNoAuth: ErrorTemplateNoauth,
   implicit val ec: ExecutionContext
 ) extends TaiBaseController(mcc) {
 
@@ -37,8 +34,9 @@ class UnauthorisedController @Inject() (
   def failureUrl: String    = applicationConfig.pertaxServiceUpliftFailedUrl
   def completionUrl: String = applicationConfig.taiHomePageUrl
 
+  // TODO: Verify if this still used ?
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(unauthorisedView()).withNewSession
+    Redirect(applicationConfig.basGatewayFrontendSignOutUrl)
   }
 
   def loginGG: Action[AnyContent] = Action.async {
@@ -71,21 +69,4 @@ class UnauthorisedController @Inject() (
 
     Future.successful(Redirect(ggSignIn))
   }
-
-  private def unauthorisedView()(implicit request: Request[_]) =
-    errorTemplateNoAuth(
-      Messages("tai.unauthorised.heading"),
-      Messages("tai.unauthorised.heading"),
-      Messages("tai.unauthorised.message"),
-      List(
-        views.html.includes
-          .link(
-            copy = Messages("tai.unauthorised.button-text"),
-            url = applicationConfig.unauthorisedSignOutUrl,
-            isButton = true,
-            id = Some("sign-in")
-          )
-          .toString()
-      )
-    )
 }

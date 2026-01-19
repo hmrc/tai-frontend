@@ -97,12 +97,9 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
         )
       case "income-tax-history"       =>
         ExpectedData("Income tax history - Check your Income Tax - GOV.UK", navBarExpected = true)
-      case "timeout"                  => ExpectedData("Log In - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "tax-estimate-unavailable" =>
         ExpectedData("We cannot access your details - Check your Income Tax - GOV.UK", navBarExpected = false, LOCKED)
 
-      case "session-expired"                                                  =>
-        ExpectedData("For your security, we signed you out - Check your Income Tax - GOV.UK", navBarExpected = false)
       case "add-employment-name"                                              =>
         ExpectedData(
           "What is the name of the employer you want to add? - Check your Income Tax - GOV.UK",
@@ -372,11 +369,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           "What happens next - Check your Income Tax - GOV.UK",
           navBarExpected = true
         )
-      case "unauthorised"                                                     =>
-        ExpectedData(
-          "You have been signed out for your security - Check your Income Tax - GOV.UK",
-          navBarExpected = false
-        )
       case "update-next-income-warning"                                       =>
         ExpectedData(
           "You have already sent a new estimated income - Check your Income Tax - GOV.UK",
@@ -414,9 +406,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     "/check-income-tax/income-tax/no-info"                                     -> getExpectedData("no-info"),
     s"/check-income-tax/historic-paye/${startTaxYear - 1}"                     -> getExpectedData("historic-paye-year"),
     "/check-income-tax/income-tax-history"                                     -> getExpectedData("income-tax-history"),
-    "/check-income-tax/timeout"                                                -> getExpectedData("timeout"),
     "/check-income-tax/tax-estimate-unavailable"                               -> getExpectedData("tax-estimate-unavailable"),
-    "/check-income-tax/session-expired"                                        -> getExpectedData("session-expired"),
     "/check-income-tax/add-employment/employment-name"                         -> getExpectedData("add-employment-name"),
     "/check-income-tax/add-employment/employment-start-date"                   -> getExpectedData("add-employment-start-date"),
     "/check-income-tax/add-employment/employment-first-pay"                    -> getExpectedData("add-employment-first-pay"),
@@ -511,7 +501,6 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
     "/check-income-tax/tax-code-change/tax-code-comparison"                    -> getExpectedData("tax-code-comparison"),
     "/check-income-tax/tax-code-change/your-tax-free-amount"                   -> getExpectedData("your-tax-free-amount"),
     "/check-income-tax/tax-code-change/what-happens-next"                      -> getExpectedData("what-happens-next"),
-    "/check-income-tax/unauthorised"                                           -> getExpectedData("unauthorised"),
     "/check-income-tax/update-income/next-year/income/1/warning"               -> getExpectedData("update-next-income-warning"),
     "/check-income-tax/update-income/next-year/income/1/start"                 -> getExpectedData("update-next-income-start"),
     "/check-income-tax/update-income/next-year/income/1/edit"                  -> getExpectedData("update-next-income-edit"),
