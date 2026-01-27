@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
 import cats.implicits.*
+import play.api.Logging
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.IabdConnector
@@ -29,12 +30,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IabdService @Inject() (
   iabdConnector: IabdConnector
-)(implicit ec: ExecutionContext) {
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   def getIabds(nino: Nino, taxYear: TaxYear)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, Seq[IabdDetails]] =
     iabdConnector.getIabds(nino, taxYear).map { response =>
-      (response \ "data" \ "iabdDetails").as[Seq[IabdDetails]]
+      val iabdList = (response \ "data" \ "iabdDetails").as[Seq[IabdDetails]]
+      iabdList.foreach { iabd =>
+        if (iabd.receiptDate.isEmpty) {
+          logger.error(s"ReceiptDate is empty in iabd for nino ${nino.nino} and tax year ${taxYear.year}")
+        }
+      }
+      iabdList
     }
 }
