@@ -39,8 +39,8 @@ class IabdService @Inject() (
     iabdConnector.getIabds(nino, taxYear).map { response =>
       val iabdList = (response \ "data" \ "iabdDetails").as[Seq[IabdDetails]]
       iabdList.foreach { iabd =>
-        if (iabd.receiptDate.isEmpty) {
-          logger.error(s"ReceiptDate is empty in iabd for nino ${nino.nino} and tax year ${taxYear.year}")
+        if (iabd.captureDate.isEmpty) {
+          logger.error(s"captureDate is empty in iabd for nino ${nino.nino} and tax year ${taxYear.year}")
         }
       }
       iabdList
