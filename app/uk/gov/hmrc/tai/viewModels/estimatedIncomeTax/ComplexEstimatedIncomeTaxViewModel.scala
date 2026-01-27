@@ -29,7 +29,8 @@ case class ComplexEstimatedIncomeTaxViewModel(
   incomeEstimate: BigDecimal,
   taxFreeEstimate: BigDecimal,
   graph: BandedGraph,
-  taxRegion: String
+  taxRegion: String,
+  newIncomeEstimateAvailable: Boolean
 ) extends ViewModelHelper
 
 object ComplexEstimatedIncomeTaxViewModel {
@@ -38,7 +39,8 @@ object ComplexEstimatedIncomeTaxViewModel {
     codingComponents: Seq[CodingComponent],
     taxAccountSummary: TaxAccountSummary,
     taxCodeIncomes: Seq[TaxCodeIncome],
-    taxBands: List[TaxBand]
+    taxBands: List[TaxBand],
+    newIncomeEstimateAvailable: Boolean
   )(implicit messages: Messages): ComplexEstimatedIncomeTaxViewModel = {
 
     val paBand         = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
@@ -57,7 +59,8 @@ object ComplexEstimatedIncomeTaxViewModel {
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,
       graph,
-      taxRegion
+      taxRegion,
+      newIncomeEstimateAvailable
     )
   }
 }

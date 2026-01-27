@@ -31,11 +31,9 @@ case class IncomeSourceSummaryViewModel(
   taxCode: Option[String],
   pensionOrPayrollNumber: String,
   isPension: Boolean,
-  estimatedPayJourneyCompleted: Boolean,
   rtiAvailable: Boolean,
   taxDistrictNumber: String,
-  payeNumber: String,
-  isUpdateInProgress: Boolean = false
+  payeNumber: String
 ) extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
@@ -43,26 +41,22 @@ case class IncomeSourceSummaryViewModel(
 }
 
 object IncomeSourceSummaryViewModel {
-
-  def applyNew(
+  def apply(
     empId: Int,
     displayName: String,
     optTaxCodeIncome: Option[TaxCodeIncome], // Tax account API response
     employment: Employment, // Employment API response
     payments: Option[AnnualAccount],
-    estimatedPayJourneyCompleted: Boolean,
     rtiAvailable: Boolean,
-    cacheUpdatedIncomeAmount: Option[Int]
+    cacheUpdatedIncomeAmount: Option[Int],
+    estimatedPayOverrides: Option[BigDecimal]
   ): IncomeSourceSummaryViewModel = {
-    val estimatedPayAmount = optTaxCodeIncome.map(_.amount)
-    val taxCode            = optTaxCodeIncome.map(_.taxCode)
+
+    val taxAccountEstimated = optTaxCodeIncome.map(_.amount)
+    val estimatedPayAmount  = estimatedPayOverrides.orElse(taxAccountEstimated)
+    val taxCode             = optTaxCodeIncome.map(_.taxCode)
 
     val amountYearToDate = payments.flatMap(_.latestPayment).map(_.amountYearToDate)
-
-    val isUpdateInProgress = cacheUpdatedIncomeAmount match {
-      case Some(cacheUpdateAMount) => cacheUpdateAMount != estimatedPayAmount.map(_.toInt).getOrElse(0)
-      case None                    => false
-    }
 
     IncomeSourceSummaryViewModel(
       empId = empId,
@@ -73,11 +67,9 @@ object IncomeSourceSummaryViewModel {
       taxCode = taxCode,
       pensionOrPayrollNumber = employment.payrollNumber.getOrElse(""),
       isPension = employment.receivingOccupationalPension,
-      estimatedPayJourneyCompleted = estimatedPayJourneyCompleted,
       rtiAvailable = rtiAvailable,
       taxDistrictNumber = employment.taxDistrictNumber,
-      payeNumber = employment.payeNumber,
-      isUpdateInProgress = isUpdateInProgress
+      payeNumber = employment.payeNumber
     )
   }
 }

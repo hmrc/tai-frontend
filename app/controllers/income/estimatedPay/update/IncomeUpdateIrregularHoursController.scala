@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
@@ -174,7 +173,6 @@ class IncomeUpdateIrregularHoursController @Inject() (
       val cacheAndRespond = (incomeName: String, incomeId: Int, newPay: String) => {
 
         val updatedUserAnswers = request.userAnswers
-          .setOrException(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId), true)
           .setOrException(UpdateIncomeConfirmedNewAmountPage(employmentId), newPay)
 
         journeyCacheRepository

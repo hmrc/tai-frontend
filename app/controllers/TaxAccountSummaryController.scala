@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome, TaxAccountSummary, TaxedIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import views.html.IncomeTaxSummaryView
@@ -39,6 +39,7 @@ import scala.util.control.NonFatal
 class TaxAccountSummaryController @Inject() (
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
+  iabdService: IabdService,
   auditService: AuditService,
   authenticate: AuthJourney,
   appConfig: ApplicationConfig,
@@ -100,29 +101,27 @@ class TaxAccountSummaryController @Inject() (
       employmentsFromTaxAccount <- optionalTaxCodeIncomes(nino, TaxYear())
       taxAccountSummary         <- optionalTaxAccountSummary(nino, TaxYear())
       isAnyFormInProgress       <- optionalIsAnyIFormInProgress(nino)
+      iabds                     <- iabdService.getIabds(nino, TaxYear())
     } yield {
       val livePensions = employments
         .filter(employment => employment.employmentType == PensionIncome && employment.employmentStatus == Live)
         .map { employment =>
-          val taxAccountEmployment = employmentsFromTaxAccount
-            .find(taxAccountEMployment => taxAccountEMployment.employmentId.contains(employment.sequenceNumber))
-          TaxedIncome(taxAccountEmployment, employment)
+          val tci = employmentsFromTaxAccount.find(_.employmentId.contains(employment.sequenceNumber))
+          TaxedIncome(tci, employment)
         }
 
       val liveEmployments = employments
         .filter(employment => employment.employmentType == EmploymentIncome && employment.employmentStatus == Live)
         .map { employment =>
-          val taxAccountEmployment = employmentsFromTaxAccount
-            .find(taxAccountEMployment => taxAccountEMployment.employmentId.contains(employment.sequenceNumber))
-          TaxedIncome(taxAccountEmployment, employment)
+          val tci = employmentsFromTaxAccount.find(_.employmentId.contains(employment.sequenceNumber))
+          TaxedIncome(tci, employment)
         }
 
       val ceasedEmployments = employments
         .filter(employment => employment.employmentType == EmploymentIncome && employment.employmentStatus != Live)
         .map { employment =>
-          val taxAccountEmployment = employmentsFromTaxAccount
-            .find(taxAccountEMployment => taxAccountEMployment.employmentId.contains(employment.sequenceNumber))
-          TaxedIncome(taxAccountEmployment, employment)
+          val tci = employmentsFromTaxAccount.find(_.employmentId.contains(employment.sequenceNumber))
+          TaxedIncome(tci, employment)
         }
 
       val incomeSources = IncomeSources(
@@ -135,8 +134,10 @@ class TaxAccountSummaryController @Inject() (
         taxAccountSummary,
         isAnyFormInProgress,
         nonTaxCodeIncomes,
-        incomeSources
+        incomeSources,
+        iabds
       )
+
       Ok(incomeTaxSummary(vm, appConfig))
     }).leftMap(error => errorPagesHandler.internalServerError(error.message)).merge
   }

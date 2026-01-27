@@ -19,7 +19,6 @@ package controllers.income.estimatedPay.update
 import cats.implicits._
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.TrackSuccessfulJourneyUpdateEstimatedPayPage
 import pages.income._
 import play.api.Logger
 import play.api.libs.json.Format.GenericFormat
@@ -53,22 +52,12 @@ class IncomeUpdateCalculatorController @Inject() (
 
   def onPageLoad(employmentId: Int): Action[AnyContent] =
     authenticate.authWithDataRetrieval.async { implicit request =>
-      val nino                 = request.taiUser.nino
-      val showDuplicateWarning =
-        request.userAnswers.get(TrackSuccessfulJourneyUpdateEstimatedPayPage(employmentId)).getOrElse(false)
+      val nino = request.taiUser.nino
 
-      (
-        Future.successful(showDuplicateWarning),
-        employmentService.employment(nino, employmentId)
-      ).mapN {
-        case (_, None)        =>
-          errorPagesHandler.internalServerError("Not able to find employment")
-        case (true, Some(_))  =>
-          Redirect(routes.IncomeUpdateCalculatorController.duplicateSubmissionWarningPage(employmentId))
-        case (false, Some(_)) =>
+      employmentService.employment(nino, employmentId).map {
+        case Some(employment) =>
           Redirect(routes.IncomeUpdateEstimatedPayController.estimatedPayLandingPage(employmentId))
-      }.recover { case NonFatal(e) =>
-        errorPagesHandler.internalServerError(e.getMessage)
+        case None             => errorPagesHandler.internalServerError(s"Employment id $employmentId not found")
       }
     }
 

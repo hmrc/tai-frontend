@@ -96,7 +96,7 @@ class ComplexEstimatedIncomeTaxViewSpec extends TaiViewSpec {
     TaxBand("D0", "", income = 30000, tax = 12000, lowerBand = Some(32000), upperBand = Some(147000), rate = 40)
   )
 
-  val viewModel = ComplexEstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
+  val viewModel = ComplexEstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK", false)
 
   private val template = inject[ComplexEstimatedIncomeTaxView]
 

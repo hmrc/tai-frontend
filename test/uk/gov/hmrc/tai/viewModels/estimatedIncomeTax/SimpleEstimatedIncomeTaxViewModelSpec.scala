@@ -84,10 +84,12 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec {
           pounds(47835),
           "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" class=\"govuk-link display-for-print\">tax-free amount</a>",
           pounds(11500)
-        ).replaceAll("\\s+", "")
+        ).replaceAll("\\s+", ""),
+        false
       )
 
-      val result  = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands)
+      val result  =
+        SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncome, taxBands, false)
       val resCopy = result.copy(
         taxOnIncomeTypeDescription = result.taxOnIncomeTypeDescription.replaceAll("\\s+", "")
       )

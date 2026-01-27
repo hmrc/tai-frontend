@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.*
 import uk.gov.hmrc.tai.model.{IncomeSources, TaxYear}
 import uk.gov.hmrc.tai.service.TimeToProcess
-import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil => Dates, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{MoneyPounds, TaxAccountHelper, TaxYearRangeUtil as Dates, ViewModelHelper}
+
+import java.time.LocalDate
 
 case class TaxAccountSummaryViewModel(
   header: String,
@@ -44,38 +46,48 @@ object TaxAccountSummaryViewModel extends ViewModelHelper {
     taxAccountSummary: Option[TaxAccountSummary],
     isAnyFormInProgress: TimeToProcess,
     nonTaxCodeIncome: Option[NonTaxCodeIncome],
-    incomesSources: IncomeSources
+    incomesSources: IncomeSources,
+    iabds: Seq[IabdDetails]
   )(implicit messages: Messages): TaxAccountSummaryViewModel = {
+
+    def iabdEstimateAmount(ti: TaxedIncome): Option[BigDecimal] = {
+      // if taxAccountSummary is None, choose a date well in the past so that any available estimate in iabd is used.
+      // if date is missing in taxAccountSummary, choose today's date. The backend already log an exception for this.
+      val taxAccountDate = taxAccountSummary.map(_.date).getOrElse(Some(LocalDate.now.minusYears(1)))
+      TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, taxAccountDate, Some(ti.employment.sequenceNumber))
+    }
 
     val header = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
     val title  = messages("tai.incomeTaxSummary.heading.part1", Dates.currentTaxYearRange)
 
-    val taxFreeAmount            = taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.taxFreeAmount, 0)))
+    val taxFreeAmount            = taxAccountSummary.map(a => withPoundPrefixAndSign(MoneyPounds(a.taxFreeAmount, 0)))
     val estimatedIncomeTaxAmount =
-      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedTax, 0)))
+      taxAccountSummary.map(a => withPoundPrefixAndSign(MoneyPounds(a.totalEstimatedTax, 0)))
 
     val employmentViewModels =
-      incomesSources.liveEmploymentIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
+      incomesSources.liveEmploymentIncomeSources.map { ti =>
+        IncomeSourceViewModel.createFromTaxedIncome(ti, iabdEstimateAmount(ti))
+      }
 
-    val pensionsViewModels = incomesSources.livePensionIncomeSources.map(IncomeSourceViewModel.createFromTaxedIncome)
+    val pensionsViewModels =
+      incomesSources.livePensionIncomeSources.map { ti =>
+        IncomeSourceViewModel.createFromTaxedIncome(ti, iabdEstimateAmount(ti))
+      }
 
     def employmentCeasedThisYear(employment: Employment): Boolean = {
       val currentYear = TaxYear()
-      // Default to true as if there is no endDate it's potentially ceased
-      employment.endDate.fold(true) { endDate =>
-        !(endDate isBefore currentYear.start)
-      }
+      employment.endDate.fold(true)(endDate => !(endDate isBefore currentYear.start))
     }
 
-    val ceasedEmploymentViewModels = incomesSources.ceasedEmploymentIncomeSources.collect {
-      case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
-        IncomeSourceViewModel.createFromTaxedIncome(ti)
-    }
+    val ceasedEmploymentViewModels =
+      incomesSources.ceasedEmploymentIncomeSources.collect {
+        case ti @ TaxedIncome(_, employment) if employmentCeasedThisYear(employment) =>
+          IncomeSourceViewModel.createFromTaxedIncome(ti, iabdEstimateAmount(ti))
+      }
 
     val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
-
-    val totalEstimatedIncome =
-      taxAccountSummary.map(account => withPoundPrefixAndSign(MoneyPounds(account.totalEstimatedIncome, 0)))
+    val totalEstimatedIncome   =
+      taxAccountSummary.map(a => withPoundPrefixAndSign(MoneyPounds(a.totalEstimatedIncome, 0)))
 
     TaxAccountSummaryViewModel(
       header = header,
