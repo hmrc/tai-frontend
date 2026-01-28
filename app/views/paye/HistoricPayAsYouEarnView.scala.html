@@ -61,8 +61,8 @@ messages: Messages)
         <div class="govuk-!-display-inline-block inner-block" id="lastTaxYear">
             @if(!viewModel.hasEmploymentsOrPensions) {
                 <div class="govuk-!-margin-bottom-0 soft--bottom" id="rtiDown">
-                    <p id="rtiDownMessage">@messages("tai.rti_down_message")</p>
-                    <p id="rtiDownContact">@messages("tai.rti_down_message_contact")</p>
+                    <p id="rtiDownMessage" class="govuk-body">@messages("tai.rti_down_message")</p>
+                    <p id="rtiDownContact" class="govuk-body">@messages("tai.rti_down_message_contact")</p>
                 </div>
             } else {
                 <div id="lastTaxYearIncome">
