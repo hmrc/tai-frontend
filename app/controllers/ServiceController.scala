@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package controllers
 
 import controllers.auth.AuthJourney
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import views.html.{ManualCorrespondenceView, SessionExpiredView, TimeoutView}
+import views.html.ManualCorrespondenceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,20 +29,18 @@ class ServiceController @Inject() (
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
   mcc: MessagesControllerComponents,
-  timeout: TimeoutView,
-  sessionExpired: SessionExpiredView,
   manualCorrespondence: ManualCorrespondenceView,
   journeyCacheRepository: JourneyCacheRepository
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc) {
 
-  def timeoutPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(timeout()))
+  def serviceSignout(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
+    Future.successful(basSignOutRedirect)
   }
 
-  def serviceSignout(): Action[AnyContent] = authenticate.authWithValidatePerson.async {
-    Future.successful(Redirect(applicationConfig.basGatewayFrontendSignOutUrl))
-  }
+  def sessionExpired(): Action[AnyContent] = Action(implicit request => basSignOutRedirect)
+
+  private def basSignOutRedirect: Result = Redirect(applicationConfig.basGatewayFrontendSignOutUrl)
 
   def mciErrorPage(): Action[AnyContent] = authenticate.authWithoutValidatePerson.async { implicit request =>
     val contactUrl = request2Messages.lang.code match {
@@ -57,9 +55,5 @@ class ServiceController @Inject() (
     journeyCacheRepository.keepAlive(request.userAnswers.sessionId, request.userAnswers.nino).map { _ =>
       Ok("")
     }
-  }
-
-  def sessionExpiredPage(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(sessionExpired()).withNewSession)
   }
 }
