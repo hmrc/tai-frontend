@@ -1292,6 +1292,7 @@ tai.taxFreeAmount.table.taxComponent.VanFuelBenefit=Buddiant tanwydd fan
 tai.taxFreeAmount.table.taxComponent.VehicleExpenses=Treuliau cerbyd
 tai.taxFreeAmount.table.taxComponent.VentureCapitalTrust=Ymddiriedolaeth cyfalaf menter
 tai.taxFreeAmount.table.taxComponent.VouchersAndCreditCards=Talebau a chardiau credyd
+tai.taxFreeAmount.table.taxComponent.WinterPaymentTaxCharge= Winter Fuel Payment Charge - based on a charge of £{0}
 tai.taxFreeAmount.table.taxComponent.from.employment=o {0}
 tai.taxFreeAmount.table.totals.caption=Yn gyffredinol
 tai.taxFreeAmount.table.totals.label=Cyfanswm eich swm rhydd o dreth
