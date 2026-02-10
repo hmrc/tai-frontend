@@ -52,7 +52,8 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
       "47,835",
       messages("tai.estimatedIncome.taxFree.link"),
       "£11,500"
-    )
+    ),
+    false
   )
 
   private val template = inject[SimpleEstimatedIncomeTaxView]
@@ -113,7 +114,8 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           Seq.empty[CodingComponent],
           taxAccountSummary,
           taxCodeIncome,
-          List.empty[TaxBand]
+          List.empty[TaxBand],
+          false
         )
         val document                          = doc(view(viewModel))
         val message                           = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
@@ -130,7 +132,8 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
           Seq.empty[CodingComponent],
           taxAccountSummary,
           taxCodeIncome,
-          List.empty[TaxBand]
+          List.empty[TaxBand],
+          false
         )
         val document                          = doc(view(viewModel))
         val message                           = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
@@ -150,7 +153,8 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
             Seq.empty[CodingComponent],
             taxAccountSummary,
             taxCodeIncome,
-            List.empty[TaxBand]
+            List.empty[TaxBand],
+            false
           )
           val document                          = doc(view(viewModel))
           val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
@@ -167,7 +171,8 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
             Seq.empty[CodingComponent],
             taxAccountSummary,
             taxCodeIncome,
-            List.empty[TaxBand]
+            List.empty[TaxBand],
+            false
           )
           val document                          = doc(view(viewModel))
           val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
@@ -184,7 +189,8 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
             Seq.empty[CodingComponent],
             taxAccountSummary,
             taxCodeIncome,
-            List.empty[TaxBand]
+            List.empty[TaxBand],
+            false
           )
           val document                          = doc(view(viewModel))
           val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")

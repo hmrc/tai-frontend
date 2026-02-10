@@ -656,6 +656,7 @@ tai.incomeTax.history.unavailable = Currently unavailable
 tai.incomeTax.history.endDate.notApplicable = Not applicable
 
 tai.incomeTax.incomeTaxEstimate.subheading=Income Tax estimate
+tai.incomeTax.incomeTaxEstimate.taxIsGettingUpdated = We’re updating your income tax estimate. It will be ready tomorrow.
 tai.incomeTax.taxCodes.link=Check your tax codes
 tai.incomeTax.taxFree.link=Check your tax-free amount
 tai.incomeTax.totalEstimatedIncome.subheading=Total estimated income

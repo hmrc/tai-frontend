@@ -42,7 +42,8 @@ case class DetailedIncomeTaxEstimateViewModel(
   taxFreeDividendAllowance: BigDecimal,
   selfAssessmentAndPayeText: Option[String],
   taxOnIncomeTypeHeading: String,
-  taxOnIncomeTypeDescription: String
+  taxOnIncomeTypeDescription: String,
+  newIncomeEstimateAvailable: Boolean
 ) extends ViewModelHelper
 
 object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
@@ -52,7 +53,8 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
     taxCodeIncomes: Seq[TaxCodeIncome],
     taxAccountSummary: TaxAccountSummary,
     codingComponents: Seq[CodingComponent],
-    nonTaxCodeIncome: NonTaxCodeIncome
+    nonTaxCodeIncome: NonTaxCodeIncome,
+    newIncomeEstimateAvailable: Boolean
   )(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
 
     val nonSavings = totalTax.incomeCategories
@@ -105,7 +107,8 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       taxFreeDividend,
       additionIncomePayableText,
       taxOnIncomeTypeHeading,
-      taxOnIncomeTypeDescription
+      taxOnIncomeTypeDescription,
+      newIncomeEstimateAvailable
     )
   }
 

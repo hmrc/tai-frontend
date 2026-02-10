@@ -57,13 +57,14 @@ class ComplexEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         Some(Swatch(4.24, 700))
       )
 
-      val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, bandedGraph, UkTaxRegion)
+      val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, bandedGraph, UkTaxRegion, false)
 
       ComplexEstimatedIncomeTaxViewModel(
         codingComponents,
         taxAccountSummary,
         taxCodeIncome,
-        taxBands
+        taxBands,
+        false
       ) mustBe expectedViewModel
 
     }

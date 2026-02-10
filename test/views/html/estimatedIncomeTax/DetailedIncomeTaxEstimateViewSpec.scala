@@ -60,7 +60,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       "£68,476",
       messages("tai.estimatedIncome.taxFree.link"),
       "£11,500"
-    )
+    ),
+    false
   )
 
   def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = detailedIncomeTaxEstimate(vm)
@@ -85,7 +86,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       taxFreeDividendAllowance = 0,
       selfAssessmentAndPayeText = None,
       taxOnIncomeTypeHeading = "",
-      taxOnIncomeTypeDescription = ""
+      taxOnIncomeTypeDescription = "",
+      false
     )
 
   "view" must {
@@ -128,7 +130,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
         val document                          = doc(view(viewModel))
         val message                           = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
@@ -148,7 +151,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
         val document                          = doc(view(viewModel))
         val message                           = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
@@ -171,7 +175,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             taxCodeIncome,
             taxAccountSummary,
             Seq.empty[CodingComponent],
-            nonTaxCodeIncome
+            nonTaxCodeIncome,
+            false
           )
           val document                          = doc(view(viewModel))
           val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
@@ -191,7 +196,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             taxCodeIncome,
             taxAccountSummary,
             Seq.empty[CodingComponent],
-            nonTaxCodeIncome
+            nonTaxCodeIncome,
+            false
           )
           val document                          = doc(view(viewModel))
           val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
@@ -211,7 +217,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             taxCodeIncome,
             taxAccountSummary,
             Seq.empty[CodingComponent],
-            nonTaxCodeIncome
+            nonTaxCodeIncome,
+            false
           )
           val document                          = doc(view(viewModel))
           val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
@@ -244,7 +251,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
 
         val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel)
@@ -282,7 +290,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
 
         val viewWithNonSavings: Html = detailedIncomeTaxEstimate(viewModel)
@@ -321,7 +330,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
 
         val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel)
@@ -356,7 +366,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
 
         val viewWithSavings: Html = detailedIncomeTaxEstimate(viewModel)
@@ -391,7 +402,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
 
         val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel)
@@ -427,7 +439,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           taxCodeIncome,
           taxAccountSummary,
           Seq.empty[CodingComponent],
-          nonTaxCodeIncome
+          nonTaxCodeIncome,
+          false
         )
 
         val viewWithDividends: Html = detailedIncomeTaxEstimate(viewModel)

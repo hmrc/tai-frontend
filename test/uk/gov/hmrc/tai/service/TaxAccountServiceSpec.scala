@@ -21,7 +21,7 @@ import cats.instances.future.*
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -34,6 +34,31 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class TaxAccountServiceSpec extends BaseSpec {
+
+  val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333.23, 444.44, 111.11)
+
+  private val taxCodeIncome1             =
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    taxCodeIncome1,
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodes: Seq[String] = Seq("SD0", "1150L")
+
+  private val nonTaxCodeIncome = NonTaxCodeIncome(
+    Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")),
+    Seq(OtherNonTaxCodeIncome(Profit, None, 100, "Profit"))
+  )
+
+  private def createSut = new SUT
+
+  val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
+
+  private class SUT
+      extends TaxAccountService(
+        taxAccountConnector
+      )
 
   "taxCodeIncomes" must {
     "return seq of tax codes" in {
@@ -53,8 +78,7 @@ class TaxAccountServiceSpec extends BaseSpec {
       when(taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
-
+      val result   = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 1)
       val expected = Right(Some(taxCodeIncome1))
 
       Await.result(result, 5 seconds) mustBe expected
@@ -67,7 +91,6 @@ class TaxAccountServiceSpec extends BaseSpec {
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
-
       Await.result(result, 5 seconds) mustBe Right(Option.empty[TaxCodeIncome])
     }
 
@@ -78,7 +101,6 @@ class TaxAccountServiceSpec extends BaseSpec {
         .thenReturn(Future.successful(Left("error")))
 
       val result = testService.taxCodeIncomeForEmployment(nino, TaxYear(), 99)
-
       Await.result(result, 5 seconds) mustBe Left("error")
     }
   }
@@ -207,30 +229,5 @@ class TaxAccountServiceSpec extends BaseSpec {
       }
     }
   }
-
-  val taxAccountSummary: TaxAccountSummary = TaxAccountSummary(111, 222, 333.23, 444.44, 111.11)
-
-  private val taxCodeIncome1             =
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
-  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
-    taxCodeIncome1,
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
-  )
-
-  val taxCodes: Seq[String] = Seq("SD0", "1150L")
-
-  private val nonTaxCodeIncome = NonTaxCodeIncome(
-    Some(income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest")),
-    Seq(OtherNonTaxCodeIncome(Profit, None, 100, "Profit"))
-  )
-
-  private def createSut = new SUT
-
-  val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
-
-  private class SUT
-      extends TaxAccountService(
-        taxAccountConnector
-      )
 
 }

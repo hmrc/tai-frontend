@@ -629,6 +629,8 @@ tai.income=Cyflogwr neu ddarparwr pensiwn
 tai.incomeSources=Ffynonellau incwm
 tai.incomeTax.calculated.title=Sut y cyfrifir eich Treth Incwm TWE
 tai.incomeTax.incomeTaxEstimate.subheading=Amcangyfrif o’r Dreth Incwm
+tai.incomeTax.incomeTaxEstimate.taxIsGettingUpdated = Rydym yn diweddaru’ch amcangyfrif treth incwm. Bydd yn barod yfory.
+
 tai.incomeTax.taxCodes.link=Gwirio’ch codau treth
 tai.incomeTax.taxFree.link=Gwirio’ch swm rhydd o dreth
 tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig

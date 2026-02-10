@@ -21,8 +21,12 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ZeroTaxView
 @import views.html.estimatedIncomeTax.navigationLinks
+@import uk.gov.hmrc.govukfrontend.views.html.components.*
 
-@this(main: MainTemplate)
+@this(
+        main: MainTemplate,
+        govukInsetText: GovukInsetText
+)
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ZeroTaxEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.AuthedUser)
@@ -55,6 +59,14 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
             @header()
         </div>
     </div>
+
+    @if(viewModel.newIncomeEstimateAvailable) {
+        @govukInsetText(InsetText(
+            id = Some("new-income-estimate"),
+            content = Text(messages("tai.incomeTax.incomeTaxEstimate.taxIsGettingUpdated")),
+            classes = "govuk-!-margin-bottom-9 govuk-!-margin-top-1"
+        ))
+    }
 
     <div class="govuk-grid-row">
         <div class="grid govuk-grid-column-two-thirds">

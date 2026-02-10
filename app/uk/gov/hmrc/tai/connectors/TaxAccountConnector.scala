@@ -124,7 +124,11 @@ class TaxAccountConnector @Inject() (
           .execute[Either[UpstreamErrorResponse, HttpResponse]]
       )
       .map { httpResponse =>
-        (httpResponse.json \ "data").as[TaxAccountSummary]
+        val summary = (httpResponse.json \ "data").as[TaxAccountSummary]
+        if (summary.date.isEmpty) {
+          logger.error(s"Date is empty in tax account summary for nino ${nino.nino} and tax year ${year.year}")
+        }
+        summary
       }
   }
 

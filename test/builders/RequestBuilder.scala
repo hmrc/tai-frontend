@@ -16,9 +16,13 @@
 
 package builders
 
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.libs.typedmap.TypedMap
+import play.api.mvc.request.{Cell, RequestAttrKey}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Cookie, Cookies, Headers}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
+import uk.gov.hmrc.sca.utils.Keys
 
 import java.util.UUID
 
@@ -27,6 +31,15 @@ object RequestBuilder {
   private val HTTP_VERBS = List("GET", "POST", "PUT", "DELETE")
 
   val uuid = UUID.randomUUID().toString
+
+  val wrapperDataResponse: WrapperDataResponse = WrapperDataResponse(
+    Seq.empty,
+    PtaMinMenuConfig("", ""),
+    List.empty,
+    List.empty,
+    None,
+    None
+  )
 
   def buildFakeRequestWithOnlySession(method: String) = {
     require(HTTP_VERBS contains method)
@@ -54,21 +67,31 @@ object RequestBuilder {
       .withHeaders(headers: _*)
 
   def buildFakeRequestWithAuth(method: String) =
-    FakeRequest(method = method, path = "/")
-      .withFormUrlEncodedBody(
-        "name"                  -> "test1",
-        "description"           -> "description",
-        "employmentId"          -> "14",
-        "newAmount"             -> "1675",
-        "oldAmount"             -> "11",
-        "worksNumber"           -> "",
-        "startDate"             -> "2013-08-03",
-        "endDate"               -> "",
-        "isLive"                -> "true",
-        "isOccupationalPension" -> "false",
-        "hasMultipleIncomes"    -> "true"
+    FakeRequest(
+      method = method,
+      uri = "/",
+      headers = Headers(),
+      body = AnyContentAsEmpty,
+      attrs = TypedMap(
+        Keys.wrapperIsAuthenticatedKey -> true,
+        Keys.wrapperFilterHasRun       -> true,
+        Keys.wrapperDataKey            -> wrapperDataResponse,
+        Keys.messageDataKey            -> 0,
+        RequestAttrKey.Cookies         -> Cell(Cookies(Seq(Cookie("PLAY_LANG", "en"))))
       )
-      .withSession(SessionKeys.sessionId -> s"session-$uuid", SessionKeys.authToken -> "Bearer 1")
+    ).withFormUrlEncodedBody(
+      "name"                  -> "test1",
+      "description"           -> "description",
+      "employmentId"          -> "14",
+      "newAmount"             -> "1675",
+      "oldAmount"             -> "11",
+      "worksNumber"           -> "",
+      "startDate"             -> "2013-08-03",
+      "endDate"               -> "",
+      "isLive"                -> "true",
+      "isOccupationalPension" -> "false",
+      "hasMultipleIncomes"    -> "true"
+    ).withSession(SessionKeys.sessionId -> s"session-$uuid", SessionKeys.authToken -> "Bearer 1")
 
   def buildFakeRequestWithAuth(method: String, action: String) =
     FakeRequest(method = method, path = "")

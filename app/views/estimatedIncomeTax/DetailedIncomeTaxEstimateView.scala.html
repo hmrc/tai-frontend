@@ -20,9 +20,14 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 @import views.html.estimatedIncomeTax.navigationLinks
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 
-@this(mainTemplate: MainTemplate)
+@this(
+  mainTemplate: MainTemplate,
+  govukInsetText: GovukInsetText
+)
 
 @(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
@@ -51,10 +56,19 @@
     </div>
 </div>
 
-<div class="govuk-grid-row">
+    @if(viewModel.newIncomeEstimateAvailable) {
+        @govukInsetText(InsetText(
+            id = Some("new-income-estimate"),
+            content = Text(messages("tai.incomeTax.incomeTaxEstimate.taxIsGettingUpdated")),
+            classes = "govuk-!-margin-bottom-9 govuk-!-margin-top-1"
+        ))
+    }
+
+
+    <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
-            @Messages("tai.incomeTax.totalIncomeTaxEstimate")
+            @messages("tai.incomeTax.totalIncomeTaxEstimate")
             <span id="total-income-tax-estimate"
                   class="govuk-!-display-block govuk-heading-xl section govuk-!-margin-0 govuk-!-padding-top-5 govuk-!-padding-bottom-5">
                                             @pounds(viewModel.incomeTaxEstimate)
@@ -84,9 +98,9 @@
         @if(viewModel.dividends.nonEmpty){
         <div class="section soft--top">
             <h2 id="tax-on-dividend-income-text" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2 govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
+                @messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
             <p id="tax-on-dividend-income-desc" class="govuk-body">
-                @Messages("tai.estimatedIncome.dividend.para.desc",
+                @messages("tai.estimatedIncome.dividend.para.desc",
                 MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                 MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
             </p>
@@ -98,15 +112,15 @@
         @if(viewModel.savings.nonEmpty){
         <div class="section soft--top">
             <h2 id="tax-on-savings-text" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2 govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
+                @messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
 
             <p id="income-from-savings" class="govuk-body">
-                @Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate",
+                @messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate",
                 withPoundPrefix(MoneyPounds(viewModel.savings.map(_.income).sum,0)))
             </p>
             @if(DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(viewModel.savings)) {
             <p id="higher-rate-para" class="govuk-body">
-                @Messages("tai.estimatedIncome.savings.desc.higherRate",
+                @messages("tai.estimatedIncome.savings.desc.higherRate",
                 DetailedIncomeTaxEstimateViewModel.taxFreeSavingsIncome(viewModel.savings))
             </p>
             }
@@ -119,16 +133,16 @@
         @if(viewModel.additionalTaxTable.nonEmpty){
         <div>
             <h3 id="additionalTaxTable-heading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2 govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.additionalTax.title")</h3>
-            <p id="additionalTaxTable-desc" class="govuk-body">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
+                @messages("tai.estimatedIncome.additionalTax.title")</h3>
+            <p id="additionalTaxTable-desc" class="govuk-body">@messages("tai.estimatedIncome.additionalTax.desc")</p>
             <table id="additionalTaxTable" class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.additionalTax.table.caption")</caption>
+                <caption class="govuk-table__caption govuk-table__caption--m">@messages("tai.estimatedIncome.additionalTax.table.caption")</caption>
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     @if(viewModel.additionalTaxTable.size>1) {
-                    <th class="govuk-table__header" colspan="2">@Messages("tax.adjustments")</th>
+                    <th class="govuk-table__header" colspan="2">@messages("tax.adjustments")</th>
                     } else {
-                    <th class="govuk-table__header" colspan="2">@Messages("tax.adjustment")</th>
+                    <th class="govuk-table__header" colspan="2">@messages("tax.adjustment")</th>
                     }
 
                 </tr>
@@ -157,17 +171,17 @@
         @if(viewModel.reductionTaxTable.nonEmpty){
         <div class="section soft--top soft--bottom">
             <h3 id="taxPaidElsewhereTable-heading" class="govuk-heading-m heading-section govuk-!-margin-bottom-5 govuk-!-padding-bottom-2 govuk-!-padding-top-3">
-                @Messages("tai.estimatedIncome.reductionsTax.title")</h3>
+                @messages("tai.estimatedIncome.reductionsTax.title")</h3>
             <p id="taxPaidElsewhereTable-desc" class="govuk-body">
-                @Messages("tai.estimatedIncome.reductionsTax.desc")</p>
+                @messages("tai.estimatedIncome.reductionsTax.desc")</p>
             <table id="taxPaidElsewhereTable" class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">@Messages("tai.estimatedIncome.reductionsTax.desc")</caption>
+                <caption class="govuk-table__caption govuk-table__caption--m">@messages("tai.estimatedIncome.reductionsTax.desc")</caption>
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     @if(viewModel.reductionTaxTable.size>1) {
-                    <th colspan="2" class="govuk-table__header">@Messages("tax.adjustments")</th>
+                    <th colspan="2" class="govuk-table__header">@messages("tax.adjustments")</th>
                     } else {
-                    <th colspan="2" class="govuk-table__header">@Messages("tax.adjustment")</th>
+                    <th colspan="2" class="govuk-table__header">@messages("tax.adjustment")</th>
                     }
                 </tr>
                 </thead>
