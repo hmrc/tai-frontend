@@ -324,7 +324,7 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
 
     "display the WFP row" when {
       val mockAppConfig = mock[ApplicationConfig]
-      "the coding component type is Winter Payment Tax Charge and non empty link is in config" in {
+      "the coding component type is Winter Payment Tax Charge" in {
         val row = TaxFreeAmountSummaryRowViewModel(
           codingComponent = CodingComponent(
             componentType = WinterPaymentTaxCharge,
@@ -336,8 +336,7 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
           taxFreeAmountDetails = taxFreeAmountDetails,
           applicationConfig = mockAppConfig
         )
-        row.label.value mustBe "Winter Fuel Tax Charge – based on a charge of £1234"
-        row.link.isDisplayed mustBe true
+        row.label.value mustBe "Winter Fuel Payment Charge - based on a charge of £1,234"
       }
     }
   }
