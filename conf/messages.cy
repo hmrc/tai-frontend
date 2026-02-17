@@ -1298,6 +1298,7 @@ tai.taxFreeAmount.table.totals.caption=Yn gyffredinol
 tai.taxFreeAmount.table.totals.label=Cyfanswm eich swm rhydd o dreth
 tai.taxFreeAmount.table.taxComponent.JobSeekersAllowance=Lwfans Ceisio Gwaith
 tai.taxFreeAmount.table.taxComponent.StatePension=Pensiwn y Wladwriaeth
+tai.taxFreeAmount.tableV2.taxComponent.plural.WinterPaymentTaxCharge=Taliad Tanwydd Gaeaf
 
 tai.taxFreeAmount.tableV2.taxComponent.singular.Accommodation=llety
 tai.taxFreeAmount.tableV2.taxComponent.singular.AdjustmentToRateBand=addasiad i’r haen cyfradd

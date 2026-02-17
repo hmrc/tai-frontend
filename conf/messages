@@ -1427,6 +1427,7 @@ tai.taxFreeAmount.tableV2.taxComponent.singular.VentureCapitalTrust=venture capi
 tai.taxFreeAmount.tableV2.taxComponent.plural.VouchersAndCreditCards=vouchers and credit cards
 tai.taxFreeAmount.tableV2.taxComponent.singular.JobSeekersAllowance=Jobseeker’s Allowance
 tai.taxFreeAmount.tableV2.taxComponent.singular.StatePension=State Pension
+tai.taxFreeAmount.tableV2.taxComponent.plural.WinterPaymentTaxCharge=Winter Fuel Payment Charge
 
 tai.taxFreeAmount.table.totals.caption=Overall
 tai.taxFreeAmount.table.totals.label=Your total tax-free amount
