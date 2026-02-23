@@ -1,0 +1,97 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.tai.filters
+
+import org.scalatestplus.play.PlaySpec
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.*
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
+
+import scala.concurrent.Future
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
+
+class PegaRedirectFilterSpec extends PlaySpec {
+
+  private implicit val system: ActorSystem = ActorSystem("pega-redirect-filter")
+
+  private implicit val mat: Materializer = Materializer(system)
+
+  private def buildApp(redirectsEnabled: Boolean): Application =
+    new GuiceApplicationBuilder()
+      .configure(
+        Map(
+          "pega.redirects.enabled"                                       -> redirectsEnabled,
+          "pega.host"                                                    -> "http://localhost:9999",
+          "pega.redirect-urls-mapping./check-income-tax/income-summary"  -> "/pay-as-you-earn/paye/summary",
+          "pega.redirect-urls-mapping./check-income-tax/income-details/" -> "/pay-as-you-earn/paye/summary"
+        )
+      )
+      .build()
+
+  val nextFilter: RequestHeader => Future[Result] = _ => Future.successful(Results.Ok(""))
+
+  "PegaRedirectFilter" should {
+
+    "redirect to pega when redirects enabled and mapping exists for the requested path" in {
+
+      val filter = new PegaRedirectFilter(buildApp(true).configuration)
+
+      val request = FakeRequest(GET, "/check-income-tax/income-summary")
+
+      val result = filter.apply(nextFilter)(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("http://localhost:9999/pay-as-you-earn/paye/summary")
+    }
+
+    "redirect to pega when redirects enabled and prefix mapping matches " in {
+      val filter = new PegaRedirectFilter(buildApp(true).configuration)
+
+      val request = FakeRequest(GET, "/check-income-tax/income-details/777")
+
+      val result = filter.apply(nextFilter)(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("http://localhost:9999/pay-as-you-earn/paye/summary")
+    }
+
+    "Don't redirect to pega when redirect enabled but no mapping matches" in {
+
+      val filter = new PegaRedirectFilter(buildApp(false).configuration)
+
+      val request = FakeRequest(GET, "/some/other/path")
+
+      val result = filter.apply(nextFilter)(request)
+
+      status(result) mustBe OK
+    }
+
+    "Dont redirect when pega redirects are not enabled" in {
+
+      val filter = new PegaRedirectFilter(buildApp(false).configuration)
+
+      val request = FakeRequest(GET, "/check-income-tax/income-summary")
+
+      val result = filter.apply(nextFilter)(request)
+
+      status(result) mustBe OK
+    }
+  }
+}
