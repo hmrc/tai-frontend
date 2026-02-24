@@ -22,6 +22,7 @@ import org.apache.pekko.stream.Materializer
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
+import uk.gov.hmrc.tai.util.PathPatternMatcher.patternMatches
 
 @Singleton
 class PegaRedirectFilter @Inject() (config: Configuration)(implicit val mat: Materializer) extends Filter {
@@ -38,11 +39,12 @@ class PegaRedirectFilter @Inject() (config: Configuration)(implicit val mat: Mat
     if (!enabled) {
       f(requestHeader)
     } else {
-      val path = requestHeader.path
+      val requestPath = requestHeader.path
 
       val redirectUrl = mappings.collectFirst {
-        case (sourcePrefix, targetPath) if path.startsWith(sourcePrefix) => targetPath
+        case (requestPathPattern, targetPath) if patternMatches(requestPathPattern, requestPath) => targetPath
       }
+
       redirectUrl match {
         case Some(path) => Future.successful(Results.Redirect(s"$host$path"))
         case None       => f(requestHeader)

@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.filters
 
+import com.typesafe.config.ConfigFactory
 import org.scalatestplus.play.PlaySpec
-import play.api.Application
+import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.*
 import play.api.test.FakeRequest
@@ -33,17 +34,21 @@ class PegaRedirectFilterSpec extends PlaySpec {
 
   private implicit val mat: Materializer = Materializer(system)
 
-  private def buildApp(redirectsEnabled: Boolean): Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        Map(
-          "pega.redirects.enabled"                                       -> redirectsEnabled,
-          "pega.host"                                                    -> "http://localhost:9999",
-          "pega.redirect-urls-mapping./check-income-tax/income-summary"  -> "/pay-as-you-earn/paye/summary",
-          "pega.redirect-urls-mapping./check-income-tax/income-details/" -> "/pay-as-you-earn/paye/summary"
-        )
-      )
-      .build()
+  private def buildApp(redirectsEnabled: Boolean): Application = {
+    val config = ConfigFactory.parseString(
+      s"""
+        pega {
+          host = "http://localhost:9999"
+          redirects.enabled = $redirectsEnabled
+          redirect-urls-mapping {
+              "/check-income-tax/income-summary" = "/pay-as-you-earn/paye/summary"
+              "/check-income-tax/income-details/:empId" = "/pay-as-you-earn/paye/summary"
+          }
+        }
+      """
+    )
+    new GuiceApplicationBuilder().loadConfig(env => Configuration(config.withFallback(ConfigFactory.load()))).build()
+  }
 
   val nextFilter: RequestHeader => Future[Result] = _ => Future.successful(Results.Ok(""))
 
