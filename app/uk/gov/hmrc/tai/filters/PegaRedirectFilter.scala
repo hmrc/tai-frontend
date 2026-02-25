@@ -23,6 +23,7 @@ import org.apache.pekko.stream.Materializer
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 import uk.gov.hmrc.tai.util.PathPatternMatcher.patternMatches
+import uk.gov.hmrc.sca.utils.Keys.getTrustedHelperFromRequest
 
 @Singleton
 class PegaRedirectFilter @Inject() (config: Configuration)(implicit val mat: Materializer) extends Filter {
@@ -35,8 +36,11 @@ class PegaRedirectFilter @Inject() (config: Configuration)(implicit val mat: Mat
 
   private val mappings: Map[String, String] = pegaConfig.get[Map[String, String]]("redirect-urls-mapping")
 
-  override def apply(f: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] =
-    if (!enabled) {
+  override def apply(f: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
+
+    val isTrustedHelper: Boolean = getTrustedHelperFromRequest(requestHeader).isDefined
+
+    if (isTrustedHelper || !enabled) {
       f(requestHeader)
     } else {
       val requestPath = requestHeader.path
@@ -50,4 +54,5 @@ class PegaRedirectFilter @Inject() (config: Configuration)(implicit val mat: Mat
         case None       => f(requestHeader)
       }
     }
+  }
 }

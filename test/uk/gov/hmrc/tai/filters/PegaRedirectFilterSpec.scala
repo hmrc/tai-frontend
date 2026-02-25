@@ -27,6 +27,10 @@ import play.api.test.Helpers.*
 import scala.concurrent.Future
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
+import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
+import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
+import uk.gov.hmrc.sca.utils.Keys
 
 class PegaRedirectFilterSpec extends PlaySpec {
 
@@ -50,9 +54,35 @@ class PegaRedirectFilterSpec extends PlaySpec {
     new GuiceApplicationBuilder().loadConfig(env => Configuration(config.withFallback(ConfigFactory.load()))).build()
   }
 
-  val nextFilter: RequestHeader => Future[Result] = _ => Future.successful(Results.Ok(""))
+  val nextFilter: RequestHeader => Future[Result] = _ => Future.successful(Results.Ok("NextFilter"))
 
   "PegaRedirectFilter" should {
+
+    "shouldn't redirect for trusted helpers even when redirects enabled and mapping exists for the requested path" in {
+
+      val filter = new PegaRedirectFilter(buildApp(true).configuration)
+
+      val nino          = new Generator().nextNino
+      val trustedHelper = TrustedHelper("principalName", "attorneyName", "returnLinkUrl", Some(nino.nino))
+
+      val request = FakeRequest(GET, "/check-income-tax/income-summary")
+        .addAttr(
+          Keys.wrapperDataKey,
+          WrapperDataResponse(
+            Nil,
+            PtaMinMenuConfig("", ""),
+            Nil,
+            Nil,
+            Some(0),
+            Some(trustedHelper)
+          )
+        )
+
+      val result = filter.apply(nextFilter)(request)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe "NextFilter"
+    }
 
     "redirect to pega when redirects enabled and mapping exists for the requested path" in {
 
