@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.config
 
 import play.api.http.{EnabledFilters, HttpFilters}
 import play.api.mvc.EssentialFilter
-import uk.gov.hmrc.sca.filters.WrapperDataFilter
+import uk.gov.hmrc.sca.filters.{LangQueryParamFilter, WrapperDataFilter}
 import uk.gov.hmrc.tai.filters.PegaRedirectFilter
 
 import javax.inject.{Inject, Singleton}
@@ -27,9 +27,10 @@ import javax.inject.{Inject, Singleton}
 class Filters @Inject() (
   defaultFilters: EnabledFilters,
   wrapperDataFilter: WrapperDataFilter,
-  pegaRedirectFilter: PegaRedirectFilter
+  pegaRedirectFilter: PegaRedirectFilter,
+  langQueryParamFilter: LangQueryParamFilter
 ) extends HttpFilters {
 
   override val filters: Seq[EssentialFilter] =
-    defaultFilters.filters ++ Some(wrapperDataFilter) ++ Some(pegaRedirectFilter)
+    defaultFilters.filters ++ Seq(wrapperDataFilter, langQueryParamFilter, pegaRedirectFilter)
 }
