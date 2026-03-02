@@ -743,7 +743,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
           .setOrException(EndCompanyBenefitsRefererPage, "Test")
           .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "Yes")
           .setOrException(EndCompanyBenefitsTelephoneNumberPage, "0123456789")
-          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
         setup(mockUserAnswers)
 
@@ -780,7 +780,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
           .setOrException(EndCompanyBenefitsRefererPage, "Test")
           .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "Yes")
           .setOrException(EndCompanyBenefitsTelephoneNumberPage, "0123456789")
-          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
         setup(mockUserAnswers)
 
@@ -838,7 +838,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         .setOrException(EndCompanyBenefitsRefererPage, "Url")
         .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "Yes")
         .setOrException(EndCompanyBenefitsTelephoneTesterNumberPage, Some("123456789"))
-        .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+        .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
       setup(mockUserAnswers)
 
@@ -883,7 +883,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         .setOrException(EndCompanyBenefitsValueTesterPage, None)
         .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "Yes")
         .setOrException(EndCompanyBenefitsTelephoneNumberPage, "0123456789")
-        .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+        .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
       setup(mockUserAnswers)
       val sut = createSUT
@@ -919,7 +919,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
           .setOrException(EndCompanyBenefitsValueTesterPage, Some("1000000"))
           .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "Yes")
           .setOrException(EndCompanyBenefitsTelephoneTesterNumberPage, Some("0123456789"))
-          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
         setup(mockUserAnswers)
         val SUT = createSUT
@@ -963,7 +963,51 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
           .setOrException(EndCompanyBenefitsValueTesterPage, None)
           .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "No")
           .setOrException(EndCompanyBenefitsTelephoneTesterNumberPage, None)
-          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
+
+        setup(mockUserAnswers)
+        val SUT = createSUT
+
+        when(
+          benefitsService
+            .endedCompanyBenefit(any(), any(), any())(any())
+        )
+          .thenReturn(Future.successful("1"))
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+
+        when(mockJourneyCacheRepository.clear(any(), any())) thenReturn Future.successful(true)
+
+        val result = SUT.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
+          .confirmation()
+          .url
+      }
+
+      "the request has an authorised session and a telephone number has been provided but not a benefit value" in {
+        reset(mockJourneyCacheRepository)
+
+        val mockUserAnswers = UserAnswers(
+          sessionId,
+          randomNino().nino,
+          data = Json.obj(
+            EndCompanyBenefitConstants.TelephoneQuestionKey -> FormValuesConstants.YesValue,
+            EndCompanyBenefitConstants.TelephoneNumberKey   -> "0123456789"
+          )
+        )
+          .setOrException(EndCompanyBenefitsIdPage, 1234)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, "employment")
+          .setOrException(EndCompanyBenefitsTypePage, "Accommodation")
+          .setOrException(EndCompanyBenefitsStopDatePage, stopDateFormatted)
+          .setOrException(EndCompanyBenefitsValueTesterPage, None)
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "Yes")
+          .setOrException(EndCompanyBenefitsTelephoneTesterNumberPage, Some("0123456789"))
+          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
         setup(mockUserAnswers)
         val SUT = createSUT
@@ -1008,7 +1052,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
           .setOrException(EndCompanyBenefitsValueTesterPage, Some("1000000"))
           .setOrException(EndCompanyBenefitsTelephoneQuestionPage, "No")
           .setOrException(EndCompanyBenefitsTelephoneTesterNumberPage, None)
-          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, "true")
+          .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
 
         setup(mockUserAnswers)
         val SUT = createSUT

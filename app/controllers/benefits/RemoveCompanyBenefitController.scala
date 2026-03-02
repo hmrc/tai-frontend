@@ -278,87 +278,74 @@ class RemoveCompanyBenefitController @Inject() (
       )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
+  def checkYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>
     implicit val user: AuthedUser = request.taiUser
+    val userAnswers               = request.userAnswers
 
-    val userAnswers = request.userAnswers
+    val mandatoryValues = for {
+      employmentName    <- userAnswers.get(EndCompanyBenefitsEmploymentNamePage)
+      benefitName       <- userAnswers.get(EndCompanyBenefitsNamePage)
+      stopDate          <- userAnswers.get(EndCompanyBenefitsStopDatePage)
+      telephoneQuestion <- userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage)
+    } yield (employmentName, benefitName, stopDate, telephoneQuestion)
 
-    val mandatoryJourneyValues = Seq(
-      userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
-      userAnswers.get(EndCompanyBenefitsNamePage),
-      userAnswers.get(EndCompanyBenefitsStopDatePage),
-      userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage),
-      userAnswers.get(EndCompanyBenefitsRefererPage)
-    )
-    val optionalSeq            = Seq(
-      userAnswers.get(EndCompanyBenefitsValuePage),
-      userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
-    )
-    (mandatoryJourneyValues, optionalSeq) match {
-      case (mandatory, _) if mandatory.forall(_.isDefined) =>
-        val stopDate = LocalDate.parse(mandatoryJourneyValues(2).get)
+    val benefitValue    = userAnswers.get(EndCompanyBenefitsValuePage)
+    val telephoneNumber = userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
 
-        Future.successful(
-          Ok(
-            removeCompanyBenefitCheckYourAnswers(
-              RemoveCompanyBenefitsCheckYourAnswersViewModel(
-                mandatoryJourneyValues.head.get,
-                mandatoryJourneyValues(1).get,
-                stopDate,
-                optionalSeq.head,
-                mandatoryJourneyValues(3).get,
-                optionalSeq(1)
-              )
+    mandatoryValues match {
+      case Some((employmentName, benefitName, stopDateRaw, telephoneQuestion)) =>
+        Ok(
+          removeCompanyBenefitCheckYourAnswers(
+            RemoveCompanyBenefitsCheckYourAnswersViewModel(
+              employmentName,
+              benefitName,
+              LocalDate.parse(stopDateRaw),
+              benefitValue,
+              telephoneQuestion,
+              telephoneNumber
             )
           )
         )
-      case _                                               =>
-        Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+      case _                                                                   => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
   def submitYourAnswers(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    for {
-      (mandatoryCacheSeq, optionalCacheSeq) <- {
-        val userAnswers = request.userAnswers
+    val userAnswers = request.userAnswers
 
-        Future.successful(
-          (
-            Seq(
-              userAnswers.get(EndCompanyBenefitsIdPage),
-              userAnswers.get(EndCompanyBenefitsEmploymentNamePage),
-              userAnswers.get(EndCompanyBenefitsTypePage),
-              userAnswers.get(EndCompanyBenefitsStopDatePage),
-              userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage)
-            ).flatten,
-            Seq(
-              userAnswers.get(EndCompanyBenefitsValuePage),
-              userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
-            ).flatten
-          )
+    val mandatoryValues = for {
+      id                <- userAnswers.get(EndCompanyBenefitsIdPage)
+      benefitType       <- userAnswers.get(EndCompanyBenefitsTypePage)
+      stopDateRaw       <- userAnswers.get(EndCompanyBenefitsStopDatePage)
+      telephoneQuestion <- userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage)
+    } yield (id, benefitType, stopDateRaw, telephoneQuestion)
+
+    mandatoryValues match {
+      case Some((id, benefitType, stopDateRaw, telephoneQuestion)) =>
+        val stopDate        = LocalDate.parse(stopDateRaw).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
+        val benefitValue    = userAnswers.get(EndCompanyBenefitsValuePage)
+        val telephoneNumber = userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
+
+        val model = EndedCompanyBenefit(
+          benefitType = benefitType,
+          stopDate = stopDate,
+          valueOfBenefit = benefitValue,
+          contactByPhone = telephoneQuestion,
+          phoneNumber = telephoneNumber
         )
-      }
 
-      stopDate =
-        LocalDate.parse(mandatoryCacheSeq(3).toString).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat))
-
-      model = EndedCompanyBenefit(
-                benefitType = mandatoryCacheSeq(2).toString,
-                stopDate = stopDate,
-                valueOfBenefit = optionalCacheSeq.headOption,
-                contactByPhone = mandatoryCacheSeq(4).toString,
-                phoneNumber = optionalCacheSeq.lift(1)
-              )
-
-      _ <- benefitsService.endedCompanyBenefit(user.nino, mandatoryCacheSeq.head.toString.toInt, model)
-      _ <- journeyCacheRepository.set(
-             UserAnswers(request.userAnswers.sessionId, user.nino.nino)
-               .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true.toString)
-           )
-      _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, user.nino.nino)
-    } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
+        for {
+          _ <- benefitsService.endedCompanyBenefit(user.nino, id, model)
+          _ <- journeyCacheRepository.set(
+                 UserAnswers(request.userAnswers.sessionId, user.nino.nino)
+                   .setOrException(EndCompanyBenefitsEndEmploymentBenefitsPage, true)
+               )
+          _ <- journeyCacheRepository.clear(request.userAnswers.sessionId, user.nino.nino)
+        } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
+      case _                                                       => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+    }
   }
 
   def cancel: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
