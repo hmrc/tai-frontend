@@ -125,7 +125,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       status(result) mustBe OK
       result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
     }
-    "show the tax amount summary screen when an upstream error occurs while retrieving tax code changes." in {
+    "show the tax account summary screen when an upstream error occurs while retrieving tax code changes." in {
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
