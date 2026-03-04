@@ -19,9 +19,10 @@ package controllers
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
@@ -50,11 +51,9 @@ class TaxCodeChangeController @Inject() (
   def taxCodeComparison: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino: Nino = request.taiUser.nino
 
-    val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
-
-    for {
-      yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
+    val returnResult = for {
       taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino).toFutureOrThrow
+      yourTaxFreeAmountComparison <- yourTaxFreeAmountService.taxFreeAmountComparison(nino, taxCodeChange)
       scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
     } yield {
       val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
@@ -74,6 +73,11 @@ class TaxCodeChangeController @Inject() (
 
       implicit val user: AuthedUser = request.taiUser
       Ok(taxCodeComparisonView(viewModel, appConfig))
+    }
+
+    returnResult.recover {
+      case e: UpstreamErrorResponse if e.statusCode == BAD_REQUEST || e.statusCode == INTERNAL_SERVER_ERROR =>
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
     }
   }
 
