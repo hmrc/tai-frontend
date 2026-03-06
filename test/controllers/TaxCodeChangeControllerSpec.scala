@@ -98,6 +98,7 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
 
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(EitherT.rightT(true))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
       when(taxAccountService.totalTax(meq(FakeAuthRetrievals.nino), any())(any()))
@@ -125,14 +126,26 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       status(result) mustBe OK
       result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
     }
-    "show the tax account summary screen when an upstream error occurs while retrieving tax code changes." in {
+
+    "show an error page when there is any issue in upstream, though hasTaxCodeChanged is true" in {
       implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
 
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(EitherT.rightT(true))
       when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
       when(yourTaxFreeAmountService.taxFreeAmountComparison(any(), any())(any(), any(), any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Error from upstream", INTERNAL_SERVER_ERROR)))
+
+      val result = createController().taxCodeComparison()(request)
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "show the tax account summary when hasTaxCodeChanged is false" in {
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(EitherT.rightT(false))
 
       val result = createController().taxCodeComparison()(request)
 
@@ -172,6 +185,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
   private val taxCodeComparisonView = inject[TaxCodeComparisonView]
 
+  private val errorPagesHandler = inject[ErrorPagesHandler]
+
   private class TaxCodeChangeTestController
       extends TaxCodeChangeController(
         taxCodeChangeService,
@@ -184,7 +199,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         mcc,
         taxCodeComparisonView,
         yourTaxFreeAmountView,
-        whatHappensNextView
+        whatHappensNextView,
+        errorPagesHandler
       ) {}
 
 }
