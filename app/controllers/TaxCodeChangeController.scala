@@ -52,8 +52,7 @@ class TaxCodeChangeController @Inject() (
     with Logging {
 
   def taxCodeComparison: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
-    val messages = request2Messages
-    val nino     = request.taiUser.nino
+    val nino = request.taiUser.nino
 
     taxCodeChangeService
       .hasTaxCodeChanged(nino)
@@ -61,13 +60,10 @@ class TaxCodeChangeController @Inject() (
       .flatMap {
         case Right(false) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
         case Right(true)  => buildTaxCodeComparisonResult
-        case Left(error)  =>
-          logger.error(error.message)
-          Future.successful(InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message"))))
+        case Left(error)  => Future.successful(errorPagesHandler.internalServerError(error.message, Some(error)))
       }
       .recover { case exception =>
-        logger.error("Failed to build tax code comparison result", exception)
-        InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
+        errorPagesHandler.internalServerError("Failed to build tax code comparison result", Some(exception))
       }
   }
 
