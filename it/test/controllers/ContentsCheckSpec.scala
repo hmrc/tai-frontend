@@ -786,7 +786,7 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
 
     server.stubFor(
       get(urlEqualTo(s"/tai/$generatedNino/tax-account/tax-code-change/exists"))
-        .willReturn(ok("false"))
+        .willReturn(ok("true"))
     )
 
     server.stubFor(
