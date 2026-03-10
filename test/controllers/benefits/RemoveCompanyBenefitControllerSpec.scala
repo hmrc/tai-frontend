@@ -20,19 +20,20 @@ import builders.RequestBuilder
 import controllers.ControllerViewTestHelper
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatcher
-import org.mockito.ArgumentMatchers.{any, argThat}
+import org.mockito.ArgumentMatchers.{any, argThat, eq => meq}
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages.benefits._
+import pages.benefits.*
 import pages.testPages.{EndCompanyBenefitsTelephoneTesterNumberPage, EndCompanyBenefitsValueTesterPage}
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
+import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
@@ -42,11 +43,11 @@ import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.TaxDateWordMonthFormat
 import uk.gov.hmrc.tai.util.constants.journeyCache.EndCompanyBenefitConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil as Dates
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitsCheckYourAnswersViewModel}
 import utils.BaseSpec
 import views.html.CanWeContactByPhoneView
-import views.html.benefits._
+import views.html.benefits.*
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -1012,6 +1013,14 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         setup(mockUserAnswers)
         val SUT = createSUT
 
+        val companyBenefit = EndedCompanyBenefit(
+          "Accommodation",
+          LocalDate.parse(stopDateFormatted).format(DateTimeFormatter.ofPattern(TaxDateWordMonthFormat)),
+          None,
+          "Yes",
+          Some("0123456789")
+        )
+
         when(
           benefitsService
             .endedCompanyBenefit(any(), any(), any())(any())
@@ -1031,6 +1040,8 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController
           .confirmation()
           .url
+
+        verify(benefitsService, times(1)).endedCompanyBenefit(any(), any(), meq(companyBenefit))(any())
       }
 
       "the request has an authorised session and telephone number has not been provided but benefit value has been provided" in {
