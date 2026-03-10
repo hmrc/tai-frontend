@@ -227,8 +227,8 @@ class RemoveCompanyBenefitController @Inject() (
       .form()
       .fill(
         YesNoTextEntryForm(
-          Some(userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage).toString),
-          Some(userAnswers.get(EndCompanyBenefitsTelephoneNumberPage).toString)
+          userAnswers.get(EndCompanyBenefitsTelephoneQuestionPage),
+          userAnswers.get(EndCompanyBenefitsTelephoneNumberPage)
         )
       )
     Future.successful(Ok(canWeContactByPhone(Some(user), telephoneNumberViewModel, form)))
