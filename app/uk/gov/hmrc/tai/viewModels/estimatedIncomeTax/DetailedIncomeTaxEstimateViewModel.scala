@@ -43,7 +43,8 @@ case class DetailedIncomeTaxEstimateViewModel(
   selfAssessmentAndPayeText: Option[String],
   taxOnIncomeTypeHeading: String,
   taxOnIncomeTypeDescription: String,
-  newIncomeEstimateAvailable: Boolean
+  newIncomeEstimateAvailable: Boolean,
+  totalEstimatedIncomeDescription: String
 ) extends ViewModelHelper
 
 object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
@@ -80,18 +81,19 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       .filter(_.income > 0)
       .toList
 
-    val taxRegion                  = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
-    val paBand                     = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
-    val additionalTaxTable         = createAdditionalTaxTable(codingComponents, totalTax)
-    val reductionTaxTable          = createReductionsTable(codingComponents, totalTax)
-    val dividendIncome             = EstimatedIncomeTaxService.totalDividendIncome(totalTax.incomeCategories)
-    val taxFreeDividend            = taxFreeDividendAllowance(totalTax.incomeCategories)
-    val mergedNonSavingsBand       = (nonSavings :+ paBand).toList.sortBy(_.rate)
-    val additionIncomePayableText  = nonTaxCodeIncome.otherNonTaxCodeIncomes
+    val taxRegion                       = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
+    val paBand                          = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
+    val additionalTaxTable              = createAdditionalTaxTable(codingComponents, totalTax)
+    val reductionTaxTable               = createReductionsTable(codingComponents, totalTax)
+    val dividendIncome                  = EstimatedIncomeTaxService.totalDividendIncome(totalTax.incomeCategories)
+    val taxFreeDividend                 = taxFreeDividendAllowance(totalTax.incomeCategories)
+    val mergedNonSavingsBand            = (nonSavings :+ paBand).toList.sortBy(_.rate)
+    val additionIncomePayableText       = nonTaxCodeIncome.otherNonTaxCodeIncomes
       .find(_.incomeComponentType == NonCodedIncome)
       .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
-    val taxOnIncomeTypeHeading     = getTaxOnIncomeTypeHeading(taxCodeIncomes)
-    val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes, taxAccountSummary)
+    val taxOnIncomeTypeHeading          = getTaxOnIncomeTypeHeading(taxCodeIncomes)
+    val taxOnIncomeTypeDescription      = getDetailedTaxOnIncomeTypeDescription(taxCodeIncomes, taxAccountSummary)
+    val totalEstimatedIncomeDescription = getEstimatedIncomeDescription(taxAccountSummary)
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
@@ -108,7 +110,8 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       additionIncomePayableText,
       taxOnIncomeTypeHeading,
       taxOnIncomeTypeDescription,
-      newIncomeEstimateAvailable
+      newIncomeEstimateAvailable,
+      totalEstimatedIncomeDescription
     )
   }
 
