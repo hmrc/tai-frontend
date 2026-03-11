@@ -20,7 +20,7 @@ import pages.QuestionPage
 import play.api.libs.json.JsPath
 import uk.gov.hmrc.tai.util.constants.journeyCache.TrackSuccessfulJourneyConstants
 
-case object EndCompanyBenefitsEndEmploymentBenefitsPage extends QuestionPage[String] {
+case object EndCompanyBenefitsEndEmploymentBenefitsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
