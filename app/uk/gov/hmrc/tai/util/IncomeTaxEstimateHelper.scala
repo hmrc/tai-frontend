@@ -73,7 +73,7 @@ trait IncomeTaxEstimateHelper {
       case (true, false, false) => Messages(s"tax.on.your.employment.income")
       case (false, true, false) => Messages(s"tax.on.your.private.pension.income")
       case (true, true, false)  => Messages("tax.on.your.employment.and.pension.income")
-      case (_, _, _) => Messages(s"tax.on.your.paye.income")
+      case (_, _, _)            => Messages(s"tax.on.your.paye.income")
     }
 
   def getDetailedTaxOnIncomeTypeDescription(taxCodeIncomes: Seq[TaxCodeIncome], taxAccountSummary: TaxAccountSummary)(
