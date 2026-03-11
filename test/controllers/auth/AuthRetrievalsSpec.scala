@@ -38,13 +38,13 @@ import play.api.mvc.*
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino as _, *}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
 import uk.gov.hmrc.sca.utils.Keys
+import uk.gov.hmrc.sca.models.TrustedHelper
 import utils.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
