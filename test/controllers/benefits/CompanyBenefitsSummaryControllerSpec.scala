@@ -22,7 +22,6 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
-import play.api.i18n.Messages
 import play.api.mvc.Results.NotFound
 import play.api.test.Helpers._
 import repository.JourneyCacheRepository
@@ -142,10 +141,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages(
-            "tai.income.details.companyBenefitsHeading",
-            TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
-          )
+          s"Your company benefits with ${employment.name} ${TaxYearRangeUtil.currentTaxYearRangeBreak} - Check your Income Tax - GOV.UK"
         )
       }
 
@@ -171,10 +167,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages(
-            "tai.income.details.companyBenefitsHeading",
-            TaxYearRangeUtil.currentTaxYearRangeBreak.replaceAll("\u00A0", " ")
-          )
+          s"Your company benefits with ${employment.name} ${TaxYearRangeUtil.currentTaxYearRangeBreak} - Check your Income Tax - GOV.UK"
         )
       }
     }
@@ -238,7 +231,7 @@ class CompanyBenefitsSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(
-          Messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRangeBreak)
+          s"Your company benefits with ${employment.name} ${TaxYearRangeUtil.currentTaxYearRangeBreak} - Check your Income Tax - GOV.UK"
         )
       }
     }

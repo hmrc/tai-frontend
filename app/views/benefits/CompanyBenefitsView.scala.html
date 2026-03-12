@@ -30,7 +30,7 @@
     messages("tai.income.details.companyBenefitsHeading", <span class="carry-over">{model.empOrPensionName}</span>, TaxYearRangeUtil.currentTaxYearRange)
 }
 @title = @{
-    messages("tai.income.details.companyBenefitsHeading", TaxYearRangeUtil.currentTaxYearRange)
+    messages("tai.income.details.companyBenefitsHeading", model.empOrPensionName, TaxYearRangeUtil.currentTaxYearRange)
 }
 @backLinkToTaxAccountSummary= {
     <p class="govuk-!-margin-bottom-0">
