@@ -91,7 +91,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
     val additionIncomePayableText       = nonTaxCodeIncome.otherNonTaxCodeIncomes
       .find(_.incomeComponentType == NonCodedIncome)
       .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
-    val taxOnIncomeTypeHeading          = getTaxOnIncomeTypeHeading(taxCodeIncomes)
+    val taxOnIncomeTypeHeading          = getDetailedTaxOnIncomeTypeHeading(taxCodeIncomes)
     val taxOnIncomeTypeDescription      = getDetailedTaxOnIncomeTypeDescription(taxCodeIncomes, taxAccountSummary)
     val totalEstimatedIncomeDescription = getEstimatedIncomeDescription(taxAccountSummary)
 
