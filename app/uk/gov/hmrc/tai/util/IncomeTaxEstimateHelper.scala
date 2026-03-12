@@ -102,7 +102,7 @@ trait IncomeTaxEstimateHelper {
 
   def getEstimatedIncomeDescription(taxAccountSummary: TaxAccountSummary)(implicit messages: Messages): String =
     Messages(
-      "tai.incomeTax.totalEstimatedIncome.text",
+      "detailed.incomeTax.totalEstimatedIncome.text",
       pounds(taxAccountSummary.totalEstimatedIncome)
     )
 }
