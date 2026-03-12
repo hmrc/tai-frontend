@@ -17,8 +17,8 @@
 package builders
 
 import controllers.auth.AuthedUser
-import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.sca.models.TrustedHelper
 
 object UserBuilder {
   val nino: Nino = new Generator().nextNino
