@@ -179,10 +179,11 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             false
           )
           val document                          = doc(view(viewModel))
-          val message                           = Messages("detailed.your.total.income.from.employment.and.pension.desc", "tax-free amount", "£0")
 
-          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
-          document must haveParagraphWithText(message)
+          document must haveH2HeadingWithText("Tax on your employment and pension income")
+          document must haveParagraphWithText(
+            "You have a tax-free amount for your employment and pension income. This means the first £0 of your employment and pensions earnings are tax free."
+          )
         }
       }
 
