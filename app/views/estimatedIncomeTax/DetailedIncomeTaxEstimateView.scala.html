@@ -67,13 +67,16 @@
 
     <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
             @messages("tai.incomeTax.totalIncomeTaxEstimate")
             <span id="total-income-tax-estimate"
                   class="govuk-!-display-block govuk-heading-xl section govuk-!-margin-0 govuk-!-padding-top-5 govuk-!-padding-bottom-5">
                                             @pounds(viewModel.incomeTaxEstimate)
                 </span>
         </h2>
+
+        <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@messages("tai.incomeTax.totalEstimatedIncome.subheading")</h3>
+        <p class="govuk-body">@Html(viewModel.totalEstimatedIncomeDescription)</p>
 
         @viewModel.selfAssessmentAndPayeText.map(paragraphText =>
         <p class="govuk-body">{paragraphText}</p>

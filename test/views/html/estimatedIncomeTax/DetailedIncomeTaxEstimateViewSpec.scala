@@ -19,7 +19,6 @@ package views.html.estimatedIncomeTax
 import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -56,12 +55,12 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     None,
     messages("tax.on.your.employment.income"),
     messages(
-      "your.total.income.from.employment.desc",
-      "£68,476",
+      "detailed.your.total.income.from.employment.desc",
       messages("tai.estimatedIncome.taxFree.link"),
       "£11,500"
     ),
-    false
+    false,
+    messages("detailed.incomeTax.totalEstimatedIncome.text", "£68,476")
   )
 
   def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = detailedIncomeTaxEstimate(vm)
@@ -87,7 +86,8 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       selfAssessmentAndPayeText = None,
       taxOnIncomeTypeHeading = "",
       taxOnIncomeTypeDescription = "",
-      false
+      false,
+      totalEstimatedIncomeDescription = ""
     )
 
   "view" must {
@@ -134,7 +134,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           false
         )
         val document                          = doc(view(viewModel))
-        val message                           = Messages("your.total.income.from.employment.desc", "£0", "tax-free amount", "£0")
+        val message                           = Messages("detailed.your.total.income.from.employment.desc", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
         document must haveParagraphWithText(message)
@@ -155,14 +155,14 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
           false
         )
         val document                          = doc(view(viewModel))
-        val message                           = Messages("your.total.income.from.private.pension.desc", "£0", "tax-free amount", "£0")
+        val message                           = Messages("detailed.your.total.income.from.private.pension.desc", "tax-free amount", "£0")
 
         document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
         document must haveParagraphWithText(message)
       }
 
-      "be 'Tax on your PAYE income' when income is only from any other combination" when {
-        "Employment and pension income" in {
+      "be 'Tax on your employment and pension income'" when {
+        "when income is only from Employment and pension income" in {
           val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
           val taxCodeIncome: Seq[TaxCodeIncome] = List(
             TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOfOperation, Live),
@@ -179,12 +179,15 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             false
           )
           val document                          = doc(view(viewModel))
-          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0")
 
-          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
-          document must haveParagraphWithText(message)
+          document must haveH2HeadingWithText("Tax on your employment and pension income")
+          document must haveParagraphWithText(
+            "You have a tax-free amount for your employment and pension income. This means the first £0 of your employment and pensions earnings are tax free."
+          )
         }
+      }
 
+      "be 'Tax on your PAYE income' when income is only from any other combination" when {
         "JSA income" in {
           val totalTax                          = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
           val taxCodeIncome: Seq[TaxCodeIncome] =
@@ -200,7 +203,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             false
           )
           val document                          = doc(view(viewModel))
-          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
+          val message                           = Messages("detailed.your.total.income.from.paye.desc", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -221,7 +224,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
             false
           )
           val document                          = doc(view(viewModel))
-          val message                           = Messages("your.total.income.from.paye.desc", "£0", "tax-free amount", "£0", "PAYE")
+          val message                           = Messages("detailed.your.total.income.from.paye.desc", "tax-free amount", "£0", "PAYE")
 
           document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
@@ -463,8 +466,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(
         Html(
           messages(
-            "your.total.income.from.employment.desc",
-            "£68,476",
+            "detailed.your.total.income.from.employment.desc",
             messages("tai.estimatedIncome.taxFree.link"),
             "£11,500"
           )
