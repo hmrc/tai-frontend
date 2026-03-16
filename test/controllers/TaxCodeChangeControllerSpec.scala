@@ -20,16 +20,17 @@ import builders.RequestBuilder
 import cats.data.EitherT
 import cats.instances.future.*
 import controllers.auth.AuthenticatedRequest
-import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.ArgumentMatchers.{any, eq as meq}
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{status, _}
+import play.api.test.Helpers.{status, *}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
@@ -97,12 +98,13 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
       val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
       val scottishRates = Map.empty[String, BigDecimal]
 
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(EitherT.rightT(true))
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map[String, BigDecimal]()))
       when(taxAccountService.totalTax(meq(FakeAuthRetrievals.nino), any())(any()))
         .thenReturn(Future.successful(TotalTax(0, Seq.empty, None, None, None)))
       when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
-      when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any(), any()))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
 
       val reasons = Seq("a reason")
@@ -123,6 +125,32 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
       status(result) mustBe OK
       result rendersTheSameViewAs taxCodeComparisonView(expectedViewModel, appConfig)
+    }
+
+    "show an error page when there is any issue in upstream, though hasTaxCodeChanged is true" in {
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+      val taxCodeChange = TaxCodeChange(List(taxCodeRecord1), List(taxCodeRecord2))
+
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(EitherT.rightT(true))
+      when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(EitherT.rightT(taxCodeChange))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(any(), any())(any(), any(), any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Error from upstream", INTERNAL_SERVER_ERROR)))
+
+      val result = createController().taxCodeComparison()(request)
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "show the tax account summary when hasTaxCodeChanged is false" in {
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(EitherT.rightT(false))
+
+      val result = createController().taxCodeComparison()(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
     }
   }
 
@@ -157,6 +185,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
 
   private val taxCodeComparisonView = inject[TaxCodeComparisonView]
 
+  private val errorPagesHandler = inject[ErrorPagesHandler]
+
   private class TaxCodeChangeTestController
       extends TaxCodeChangeController(
         taxCodeChangeService,
@@ -169,7 +199,8 @@ class TaxCodeChangeControllerSpec extends BaseSpec with ControllerViewTestHelper
         mcc,
         taxCodeComparisonView,
         yourTaxFreeAmountView,
-        whatHappensNextView
+        whatHappensNextView,
+        errorPagesHandler
       ) {}
 
 }

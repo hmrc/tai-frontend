@@ -51,15 +51,6 @@ class TaxCodeChangeSpec extends PlaySpec {
       }
     }
 
-    "mostRecentPreviousTaxCodeChangeDate" should {
-      "return the latest tax code change date from a List of tax code records" in {
-        val model =
-          TaxCodeChange(List(previousTaxCodeRecord1, fullYearTaxCode), List(currentTaxCodeRecord1, fullYearTaxCode))
-
-        model.mostRecentPreviousTaxCodeChangeDate mustEqual startDate
-      }
-    }
-
     "uniqueTaxCodes" should {
       "return a List of unique tax codes found in the previous and current lists" in {
         val model =

@@ -16,12 +16,14 @@
 
 package controllers
 
-import controllers.auth.{AuthJourney, AuthedUser}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import controllers.auth.{AuthJourney, AuthedUser, AuthenticatedRequest}
+import play.api.Logging
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
@@ -42,19 +44,34 @@ class TaxCodeChangeController @Inject() (
   mcc: MessagesControllerComponents,
   taxCodeComparisonView: TaxCodeComparisonView,
   yourTaxFreeAmountView: YourTaxFreeAmountView,
-  whatHappensNextView: WhatHappensNextView
+  whatHappensNextView: WhatHappensNextView,
+  errorPagesHandler: ErrorPagesHandler
 )(implicit val ec: ExecutionContext)
     extends TaiBaseController(mcc)
-    with YourTaxFreeAmount {
+    with YourTaxFreeAmount
+    with Logging {
 
   def taxCodeComparison: Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
+    val nino = request.taiUser.nino
+
+    taxCodeChangeService
+      .hasTaxCodeChanged(nino)
+      .value
+      .flatMap {
+        case Right(false) => Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
+        case Right(true)  => buildTaxCodeComparisonResult
+        case Left(error)  => Future.successful(errorPagesHandler.internalServerError(error.message, Some(error)))
+      }
+      .recover { case exception =>
+        errorPagesHandler.internalServerError("Failed to build tax code comparison result", Some(exception))
+      }
+  }
+
+  private def buildTaxCodeComparisonResult(implicit request: AuthenticatedRequest[_]): Future[Result] = {
     val nino: Nino = request.taiUser.nino
-
-    val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
-
     for {
-      yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
       taxCodeChange               <- taxCodeChangeService.taxCodeChange(nino).toFutureOrThrow
+      yourTaxFreeAmountComparison <- yourTaxFreeAmountService.taxFreeAmountComparison(nino, taxCodeChange)
       scottishTaxRateBands        <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
     } yield {
       val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
