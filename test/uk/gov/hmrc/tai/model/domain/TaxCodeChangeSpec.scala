@@ -56,7 +56,7 @@ class TaxCodeChangeSpec extends PlaySpec {
         val model =
           TaxCodeChange(List(previousTaxCodeRecord1, fullYearTaxCode), List(currentTaxCodeRecord1, fullYearTaxCode))
 
-        model.mostRecentPreviousTaxCodeChangeDate mustEqual startDate
+        model.mostRecentPreviousTaxCodeChangeDate mustEqual Some(startDate)
       }
     }
 
