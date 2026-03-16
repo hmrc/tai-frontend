@@ -34,6 +34,9 @@ object DateHelper {
   def mostRecentDate(dates: Seq[LocalDate]): LocalDate =
     dates.min
 
+  def mostRecentDateOption(dates: Seq[LocalDate]): Option[LocalDate] =
+    dates.reduceOption((a, b) => if (a.isAfter(b)) a else b)
+
   def monthOfYear(date: String): String = {
     val monthRegex = "[A-Za-z]+".r
     monthRegex.findFirstIn(date).getOrElse("")
