@@ -37,7 +37,7 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         cancelUrl = "/fake/cancel/url"
       )
       val res = sut.journeyConfirmationLines
-      res.size mustBe 5
+      res.size mustBe 4
       res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q1"),
         "income source",
@@ -57,11 +57,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         Messages("tai.income.details.ERN"),
         "123/AB456",
         controllers.employments.routes.AddEmploymentController.addPayeReference().url
-      )
-      res(4) mustBe CheckYourAnswersConfirmationLine(
-        Messages("tai.addEmployment.cya.q4"),
-        "No",
-        controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       )
     }
 
@@ -126,16 +121,11 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      res.size mustBe 2
+      res.size mustBe 1
       res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.dateEmploymentEnded"),
         "13 June 2017",
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
-      )
-      res(1) mustBe CheckYourAnswersConfirmationLine(
-        Messages("tai.checkYourAnswers.contactByPhone"),
-        "No",
-        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
     }
 

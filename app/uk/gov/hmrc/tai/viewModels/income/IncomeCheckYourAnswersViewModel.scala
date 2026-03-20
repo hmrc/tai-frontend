@@ -69,16 +69,16 @@ object IncomeCheckYourAnswersViewModel {
           Messages("tai.income.details.ERN"),
           payeRef,
           controllers.employments.routes.AddEmploymentController.addPayeReference().url
-        ),
-        CheckYourAnswersConfirmationLine(
-          Messages("tai.addEmployment.cya.q4"),
-          contactableByPhone,
-          controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
         )
       )
 
       val optionalPhoneNoLine = phoneNumber map { phoneNo =>
         Seq(
+          CheckYourAnswersConfirmationLine(
+            Messages("tai.addEmployment.cya.q4"),
+            contactableByPhone,
+            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+          ),
           CheckYourAnswersConfirmationLine(
             Messages("tai.phoneNumber"),
             phoneNo,
@@ -119,16 +119,16 @@ object IncomeCheckYourAnswersViewModel {
           Messages("tai.checkYourAnswers.dateEmploymentEnded"),
           Dates.formatDate(LocalDate.parse(incomeSourceEnd)),
           controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
-        ),
-        CheckYourAnswersConfirmationLine(
-          Messages("tai.checkYourAnswers.contactByPhone"),
-          contactableByPhone,
-          controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
         )
       )
 
       val optionalPhoneNoLine = phoneNumber map { phoneNo =>
         Seq(
+          CheckYourAnswersConfirmationLine(
+            Messages("tai.checkYourAnswers.contactByPhone"),
+            contactableByPhone,
+            controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
+          ),
           CheckYourAnswersConfirmationLine(
             Messages("tai.phoneNumber"),
             phoneNo,
