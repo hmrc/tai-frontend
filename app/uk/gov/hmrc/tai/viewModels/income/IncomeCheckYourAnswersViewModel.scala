@@ -72,22 +72,25 @@ object IncomeCheckYourAnswersViewModel {
         )
       )
 
-      val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-        Seq(
-          CheckYourAnswersConfirmationLine(
-            Messages("tai.addEmployment.cya.q4"),
-            contactableByPhone,
-            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
-          ),
-          CheckYourAnswersConfirmationLine(
-            Messages("tai.phoneNumber"),
-            phoneNo,
-            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
-          )
-        )
-      }
+      val optionalPhoneNoLine = phoneNumber
+        .collect {
+          case phoneNo if contactableByPhone == "Yes" =>
+            Seq(
+              CheckYourAnswersConfirmationLine(
+                Messages("tai.addEmployment.cya.q4"),
+                contactableByPhone,
+                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+              ),
+              CheckYourAnswersConfirmationLine(
+                Messages("tai.phoneNumber"),
+                phoneNo,
+                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+              )
+            )
+        }
+        .getOrElse(Seq.empty)
 
-      if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
+      mandatoryLines ++ optionalPhoneNoLine
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
@@ -122,22 +125,25 @@ object IncomeCheckYourAnswersViewModel {
         )
       )
 
-      val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-        Seq(
-          CheckYourAnswersConfirmationLine(
-            Messages("tai.checkYourAnswers.contactByPhone"),
-            contactableByPhone,
-            controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
-          ),
-          CheckYourAnswersConfirmationLine(
-            Messages("tai.phoneNumber"),
-            phoneNo,
-            controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
-          )
-        )
-      }
+      val optionalPhoneNoLine = phoneNumber
+        .collect {
+          case phoneNo if contactableByPhone == "Yes" =>
+            Seq(
+              CheckYourAnswersConfirmationLine(
+                Messages("tai.checkYourAnswers.contactByPhone"),
+                contactableByPhone,
+                controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
+              ),
+              CheckYourAnswersConfirmationLine(
+                Messages("tai.phoneNumber"),
+                phoneNo,
+                controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
+              )
+            )
+        }
+        .getOrElse(Seq.empty)
 
-      if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
+      mandatoryLines ++ optionalPhoneNoLine
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
