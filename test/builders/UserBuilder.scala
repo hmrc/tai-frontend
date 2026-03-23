@@ -17,7 +17,7 @@
 package builders
 
 import controllers.auth.AuthedUser
-import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
+import uk.gov.hmrc.sca.models.TrustedHelper
 import uk.gov.hmrc.domain.{Generator, Nino}
 
 object UserBuilder {

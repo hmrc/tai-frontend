@@ -27,9 +27,8 @@ import play.api.test.Helpers.*
 import scala.concurrent.Future
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
-import uk.gov.hmrc.auth.core.retrieve.v2.TrustedHelper
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
+import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, TrustedHelper, WrapperDataResponse}
 import uk.gov.hmrc.sca.utils.Keys
 
 class PegaRedirectFilterSpec extends PlaySpec {
