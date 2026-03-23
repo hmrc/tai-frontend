@@ -93,7 +93,7 @@ class IncomeSourceSummaryController @Inject() (
               employment = employment,
               payments = paymentsForEmp.toOption.flatten,
               rtiAvailable = if (rtiUnavailableMarkerPresent) false else rtiAvailableCalculated,
-              cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmountFuture.value.get.getOrElse(None),
+              cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
               estimatedPayOverrides = estimatedPayOverrides
             )
 
