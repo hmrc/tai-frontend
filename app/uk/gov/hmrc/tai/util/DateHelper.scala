@@ -31,8 +31,7 @@ object DateHelper {
 
   implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
 
-  def mostRecentDate(dates: Seq[LocalDate]): LocalDate =
-    dates.min
+  def mostRecentDate(dates: Seq[LocalDate]): LocalDate = dates.minOption.getOrElse(LocalDate.now)
 
   def monthOfYear(date: String): String = {
     val monthRegex = "[A-Za-z]+".r

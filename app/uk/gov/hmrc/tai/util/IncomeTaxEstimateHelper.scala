@@ -67,4 +67,42 @@ trait IncomeTaxEstimateHelper {
     )
 
   }
+
+  def getDetailedTaxOnIncomeTypeHeading(taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): String =
+    determineIncomeTypes(taxCodeIncomes) match {
+      case (true, false, false) => Messages(s"tax.on.your.employment.income")
+      case (false, true, false) => Messages(s"tax.on.your.private.pension.income")
+      case (true, true, false)  => Messages("tax.on.your.employment.and.pension.income")
+      case (_, _, _)            => Messages(s"tax.on.your.paye.income")
+    }
+
+  def getDetailedTaxOnIncomeTypeDescription(taxCodeIncomes: Seq[TaxCodeIncome], taxAccountSummary: TaxAccountSummary)(
+    implicit messages: Messages
+  ): String = {
+
+    val incomeType = determineIncomeTypes(taxCodeIncomes) match {
+      case (true, false, false) => "employment"
+      case (false, true, false) => "private.pension"
+      case (true, true, false)  => "employment.and.pension"
+      case (_, _, _)            => "paye"
+    }
+
+    Messages(
+      s"detailed.your.total.income.from.$incomeType.desc",
+      link(
+        id = Some("taxFreeAmountLink"),
+        linkClasses = Seq("display-for-print"),
+        url = routes.TaxFreeAmountController.taxFreeAmount().url,
+        copy = Messages("tai.estimatedIncome.taxFree.link")
+      ),
+      pounds(taxAccountSummary.taxFreeAllowance)
+    )
+
+  }
+
+  def getEstimatedIncomeDescription(taxAccountSummary: TaxAccountSummary)(implicit messages: Messages): String =
+    Messages(
+      "detailed.incomeTax.totalEstimatedIncome.text",
+      pounds(taxAccountSummary.totalEstimatedIncome)
+    )
 }
