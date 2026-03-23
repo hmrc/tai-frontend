@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil as Dates
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 import java.time.LocalDate
@@ -74,7 +75,7 @@ object IncomeCheckYourAnswersViewModel {
 
       val optionalPhoneNoLine = phoneNumber
         .collect {
-          case phoneNo if contactableByPhone == "Yes" =>
+          case phoneNo if contactableByPhone == FormValuesConstants.YesValue =>
             Seq(
               CheckYourAnswersConfirmationLine(
                 Messages("tai.addEmployment.cya.q4"),
@@ -127,7 +128,7 @@ object IncomeCheckYourAnswersViewModel {
 
       val optionalPhoneNoLine = phoneNumber
         .collect {
-          case phoneNo if contactableByPhone == "Yes" =>
+          case phoneNo if contactableByPhone == FormValuesConstants.YesValue =>
             Seq(
               CheckYourAnswersConfirmationLine(
                 Messages("tai.checkYourAnswers.contactByPhone"),
