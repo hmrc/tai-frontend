@@ -109,7 +109,7 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
   }
 
   "companion apply method for end employment" must {
-    "generate two confirmation lines when telephone contact not approved" in {
+    "generate one confirmation line when telephone contact not approved" in {
       val sut = IncomeCheckYourAnswersViewModel(
         preHeading = "pre heading",
         incomeSourceEnd = "2017-06-13",
