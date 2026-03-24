@@ -23,7 +23,7 @@ import utils.BaseSpec
 class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "companion apply method" must {
-    "generate five confirmation lines when telephone contact not approved (includes PAYE ref)" in {
+    "generate four confirmation lines when telephone contact not approved (includes PAYE ref)" in {
       val sut = IncomeCheckYourAnswersViewModel(
         preHeading = "pre heading",
         incomeSourceName = "income source",
