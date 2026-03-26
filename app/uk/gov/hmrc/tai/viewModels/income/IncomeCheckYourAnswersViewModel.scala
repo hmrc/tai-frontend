@@ -17,8 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil as Dates
-import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 import java.time.LocalDate
@@ -70,28 +69,25 @@ object IncomeCheckYourAnswersViewModel {
           Messages("tai.income.details.ERN"),
           payeRef,
           controllers.employments.routes.AddEmploymentController.addPayeReference().url
+        ),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.addEmployment.cya.q4"),
+          contactableByPhone,
+          controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
         )
       )
 
-      val optionalPhoneNoLine = phoneNumber
-        .collect {
-          case phoneNo if contactableByPhone == FormValuesConstants.YesValue =>
-            Seq(
-              CheckYourAnswersConfirmationLine(
-                Messages("tai.addEmployment.cya.q4"),
-                contactableByPhone,
-                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
-              ),
-              CheckYourAnswersConfirmationLine(
-                Messages("tai.phoneNumber"),
-                phoneNo,
-                controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
-              )
-            )
-        }
-        .getOrElse(Seq.empty)
+      val optionalPhoneNoLine = phoneNumber map { phoneNo =>
+        Seq(
+          CheckYourAnswersConfirmationLine(
+            Messages("tai.phoneNumber"),
+            phoneNo,
+            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+          )
+        )
+      }
 
-      mandatoryLines ++ optionalPhoneNoLine
+      if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
@@ -123,28 +119,25 @@ object IncomeCheckYourAnswersViewModel {
           Messages("tai.checkYourAnswers.dateEmploymentEnded"),
           Dates.formatDate(LocalDate.parse(incomeSourceEnd)),
           controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+        ),
+        CheckYourAnswersConfirmationLine(
+          Messages("tai.checkYourAnswers.contactByPhone"),
+          contactableByPhone,
+          controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
         )
       )
 
-      val optionalPhoneNoLine = phoneNumber
-        .collect {
-          case phoneNo if contactableByPhone == FormValuesConstants.YesValue =>
-            Seq(
-              CheckYourAnswersConfirmationLine(
-                Messages("tai.checkYourAnswers.contactByPhone"),
-                contactableByPhone,
-                controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
-              ),
-              CheckYourAnswersConfirmationLine(
-                Messages("tai.phoneNumber"),
-                phoneNo,
-                controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
-              )
-            )
-        }
-        .getOrElse(Seq.empty)
+      val optionalPhoneNoLine = phoneNumber map { phoneNo =>
+        Seq(
+          CheckYourAnswersConfirmationLine(
+            Messages("tai.phoneNumber"),
+            phoneNo,
+            controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
+          )
+        )
+      }
 
-      mandatoryLines ++ optionalPhoneNoLine
+      if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")

@@ -23,7 +23,7 @@ import utils.BaseSpec
 class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
 
   "companion apply method" must {
-    "generate four confirmation lines when telephone contact not approved (includes PAYE ref)" in {
+    "generate five confirmation lines when telephone contact not approved (includes PAYE ref)" in {
       val sut = IncomeCheckYourAnswersViewModel(
         preHeading = "pre heading",
         incomeSourceName = "income source",
@@ -37,7 +37,7 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         cancelUrl = "/fake/cancel/url"
       )
       val res = sut.journeyConfirmationLines
-      res.size mustBe 4
+      res.size mustBe 5
       res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.addEmployment.cya.q1"),
         "income source",
@@ -57,6 +57,11 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         Messages("tai.income.details.ERN"),
         "123/AB456",
         controllers.employments.routes.AddEmploymentController.addPayeReference().url
+      )
+      res(4) mustBe CheckYourAnswersConfirmationLine(
+        Messages("tai.addEmployment.cya.q4"),
+        "No",
+        controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
       )
     }
 
@@ -109,7 +114,7 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
   }
 
   "companion apply method for end employment" must {
-    "generate one confirmation line when telephone contact not approved" in {
+    "generate two confirmation lines when telephone contact not approved" in {
       val sut = IncomeCheckYourAnswersViewModel(
         preHeading = "pre heading",
         incomeSourceEnd = "2017-06-13",
@@ -121,11 +126,16 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
       val res = sut.journeyConfirmationLines
 
-      res.size mustBe 1
+      res.size mustBe 2
       res.head mustBe CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.dateEmploymentEnded"),
         "13 June 2017",
         controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+      )
+      res(1) mustBe CheckYourAnswersConfirmationLine(
+        Messages("tai.checkYourAnswers.contactByPhone"),
+        "No",
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
       )
     }
 
