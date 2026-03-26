@@ -20,19 +20,19 @@ import builders.RequestBuilder
 import cats.data.EitherT
 import controllers.auth.AuthenticatedRequest
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
-import play.api.http.Status.OK
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment}
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
 import utils.{AuthenticatedRequestFixture, BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
@@ -45,12 +45,26 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   val employmentService: EmploymentService             = mock[EmploymentService]
   val taxAccountService: TaxAccountService             = mock[TaxAccountService]
   val rtiService: RtiService                           = mock[RtiService]
-  override def beforeEach(): Unit                      = {
+  val errorPagesHandler: ErrorPagesHandler             = mock[ErrorPagesHandler]
+
+  override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(taxAccountService, employmentService, rtiService)
+    reset(taxAccountService, employmentService, rtiService, errorPagesHandler)
+
     when(rtiService.getAllPaymentsForYear(any(), any())(any()))
       .thenReturn(
         EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil)))
+      )
+
+    when(errorPagesHandler.error5xx(any())(any(), any()))
+      .thenReturn(
+        inject[views.html.ErrorTemplateNoauth]
+          .apply(
+            Messages("global.error.InternalServerError500.title"),
+            Messages("tai.technical.error.heading"),
+            Messages("tai.technical.error.message"),
+            List.empty
+          )(request, messagesApi.preferred(request))
       )
   }
 
@@ -62,7 +76,8 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         mcc,
         taxAccountService,
         employmentService,
-        rtiService
+        rtiService,
+        errorPagesHandler
       )
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -77,7 +92,6 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       "employment data is returned" in {
 
         for (_ <- taxYears) {
-
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome))
           )
@@ -90,6 +104,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
+
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -97,12 +112,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
         verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
-
       }
 
       "pension data is returned" in {
         for (_ <- taxYears) {
-
           when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
             Right(Seq(taxCodeIncome))
           )
@@ -114,6 +127,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
+
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -121,7 +135,6 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
         verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
-
       }
 
       "tax code is empty if the tax account can't be found" in {
@@ -135,6 +148,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
+
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -154,10 +168,85 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
+
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.body().text() must include(Messages("tai.incomeTax.history.unavailable"))
+      }
+
+      "return an internal server error page when an upstream 502 is returned" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
+          Right(Seq(taxCodeIncome))
+        )
+        when(employmentService.employments(any(), any())(any())) thenReturn EitherT
+          .leftT[Future, Seq[Employment]](
+            UpstreamErrorResponse("bad gateway", 502, 502, Map.empty)
+          )
+
+        val controller = new TestController
+        val result     = controller.onPageLoad()(request)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        verify(errorPagesHandler).error5xx(eqTo(Messages("tai.technical.error.message")))(any(), any())
+      }
+
+      "return an internal server error page when an upstream 503 is returned" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
+          Right(Seq(taxCodeIncome))
+        )
+        when(employmentService.employments(any(), any())(any())) thenReturn EitherT
+          .leftT[Future, Seq[Employment]](
+            UpstreamErrorResponse("service unavailable", 503, 503, Map.empty)
+          )
+
+        val controller = new TestController
+        val result     = controller.onPageLoad()(request)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        verify(errorPagesHandler).error5xx(eqTo(Messages("tai.technical.error.message")))(any(), any())
+      }
+
+      "return an internal server error page when an upstream 504 is returned" in {
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
+          Right(Seq(taxCodeIncome))
+        )
+        when(employmentService.employments(any(), any())(any())) thenReturn EitherT
+          .leftT[Future, Seq[Employment]](
+            UpstreamErrorResponse("gateway timeout", 504, 504, Map.empty)
+          )
+
+        val controller = new TestController
+        val result     = controller.onPageLoad()(request)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        verify(errorPagesHandler).error5xx(eqTo(Messages("tai.technical.error.message")))(any(), any())
+      }
+
+      "display the income tax history page with no tax history message" when {
+        "given taxYear returns non-5xx gateway/service unavailable errors" in {
+          for (_ <- taxYears) {
+            when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
+            when(employmentService.employments(any(), any())(any())) thenReturn EitherT
+              .leftT[Future, Seq[Employment]](
+                UpstreamErrorResponse("", 500, 500, Map.empty)
+              )
+          }
+
+          val controller = new TestController
+          val result     = controller.onPageLoad()(request)
+
+          status(result) mustBe OK
+
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
+          doc         must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
+
+          verify(taxAccountService, times(totalInvocations))
+            .taxCodeIncomes(any(), any())(any())
+          verify(employmentService, times(totalInvocations))
+            .employments(any(), any())(any())
+        }
       }
     }
   }
@@ -192,34 +281,6 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         .futureValue mustBe List(None)
     }
 
-    "display the income tax history page with no tax history message" when {
-      "given taxYear returns no data" in {
-
-        for (_ <- taxYears) {
-
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
-          when(employmentService.employments(any(), any())(any())) thenReturn EitherT
-            .leftT[Future, Seq[Employment]](
-              UpstreamErrorResponse("", 500, 500, Map.empty)
-            )
-        }
-
-        val controller = new TestController
-        val result     = controller.onPageLoad()(request)
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
-        doc         must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
-
-        verify(taxAccountService, times(totalInvocations))
-          .taxCodeIncomes(any(), any())(any())
-        verify(employmentService, times(totalInvocations))
-          .employments(any(), any())(any())
-
-      }
-    }
-
     "return a tax code if it's returned by the taxAccountService" in {
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
         Right(Seq(taxCodeIncome))
@@ -236,20 +297,19 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         .futureValue mustBe List(Some(taxCodeIncome.taxCode))
     }
 
-    "return an error when " in {
+    "return an upstream error when employmentService fails" in {
+      val upstreamError = UpstreamErrorResponse("bad gateway", 502, 502, Map.empty)
+
       when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
         Right(Seq(taxCodeIncome))
       )
       when(employmentService.employments(any(), any())(any())) thenReturn EitherT
-        .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
+        .leftT[Future, Seq[Employment]](upstreamError)
 
       val controller = new TestController
-      val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
+      val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest).value.futureValue
 
-      result
-        .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
-        .map(_.incomeTaxHistory.map(_.maybeTaxCode))
-        .futureValue mustBe List(Some(taxCodeIncome.taxCode))
+      result mustBe Left(upstreamError)
     }
   }
 }

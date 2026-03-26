@@ -17,10 +17,10 @@
 package controllers
 
 import cats.data.EitherT
-import cats.implicits._
+import cats.implicits.*
 import controllers.auth.{AuthJourney, AuthedUser}
 import play.api.Logging
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, IncomeTaxHistoryToggle}
 import uk.gov.hmrc.tai.model.domain.{JobSeekerAllowanceIncome, TaxAccountSummary, TaxCodeChange}
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.*
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import views.html.WhatDoYouWantToDoTileView
 
@@ -59,7 +59,6 @@ class WhatDoYouWantToDoController @Inject() (
     nino: Nino
   )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] = {
     val taxYears =
-      // start from the current year which is the most probable year to be present
       (TaxYear().year to (TaxYear().year - applicationConfig.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
         .map(TaxYear(_))
         .toList
@@ -67,9 +66,9 @@ class WhatDoYouWantToDoController @Inject() (
     taxYears.foldLeft(EitherT.rightT[Future, UpstreamErrorResponse](false)) { (acc, year) =>
       EitherT(acc.value.flatMap {
         case Right(true) =>
-          // Short-circuit if we've already found an employment
           Future.successful(Right[UpstreamErrorResponse, Boolean](true))
-        case _           =>
+
+        case _ =>
           employmentService
             .employments(nino, year)
             .transform {
@@ -77,7 +76,11 @@ class WhatDoYouWantToDoController @Inject() (
                 Right(false)
               case Right(_)                                                                               => Right(true)
               case Left(error) if error.statusCode == NOT_FOUND                                           => Right(false)
-              case Left(error)                                                                            => Left(error)
+              case Left(error)                                                                            =>
+                logger.warn(
+                  s"Employments lookup failed for year=${year.year} status=${error.statusCode}; allowing entry"
+                )
+                Right(true)
             }
             .value
       })
@@ -90,14 +93,11 @@ class WhatDoYouWantToDoController @Inject() (
     for {
       hasTaxCodeChanged <- taxCodeChangeService.hasTaxCodeChanged(nino).transform {
                              case Right(taxCodeChange) => Right(taxCodeChange)
-                             case Left(_)              =>
-                               // don't fail the page when the tax code change banner is failing
-                               Right(false)
+                             case Left(_)              => Right(false)
                            }
       taxCodeChange     <- if (hasTaxCodeChanged) {
                              taxCodeChangeService.taxCodeChange(nino).transform {
                                case Right(taxCodeChange) => Right(Some(taxCodeChange))
-                               // don't fail the page when the tax code change banner is failing
                                case _                    => Right(None)
                              }: EitherT[Future, UpstreamErrorResponse, Option[TaxCodeChange]]
                            } else {
@@ -116,13 +116,10 @@ class WhatDoYouWantToDoController @Inject() (
             case Right(taxAccount)                            =>
               Right[UpstreamErrorResponse, Option[TaxAccountSummary]](Some(taxAccount))
             case Left(error) if error.statusCode == NOT_FOUND =>
-              logger.error(
-                "No CY+1 tax account summary found, consider disabling the CY+1 toggles"
-              )
+              logger.error("No CY+1 tax account summary found, consider disabling the CY+1 toggles")
               Right(None)
             case Left(_)                                      =>
-              // don't fail the page when we get an error for CY+1
-              Right(none)
+              Right(None)
           }
         } else {
           EitherT.rightT[Future, UpstreamErrorResponse](None: Option[TaxAccountSummary])
@@ -193,5 +190,4 @@ class WhatDoYouWantToDoController @Inject() (
           case Left(error)        => Future.successful(Failure(error.message))
         })
     }
-
 }

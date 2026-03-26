@@ -20,18 +20,18 @@ import builders.RequestBuilder
 import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.stubbing.OngoingStubbing
-import org.mockito.Mockito
 import org.scalatest.AppendedClues.convertToClueful
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.mvc.Results.NotFound
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -55,7 +55,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
     payments = Seq(latestPayment, secondPayment, thirdPayment, firstPayment),
     endOfTaxYearUpdates = Nil
   )
-  private val employment: Employment       = Employment(
+
+  private val employment: Employment = Employment(
     name = "test employment",
     employmentStatus = Live,
     payrollNumber = Some("EMPLOYER-1122"),
@@ -77,8 +78,8 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
   private val mockEmploymentService: EmploymentService = mock[EmploymentService]
   private val mockTaxAccountService: TaxAccountService = mock[TaxAccountService]
-  private val mockRtiService                           = mock[RtiService]
-  private val mockIabdService                          = mock[IabdService]
+  private val mockRtiService: RtiService               = mock[RtiService]
+  private val mockIabdService: IabdService             = mock[IabdService]
   private val baseUserAnswers: UserAnswers             = UserAnswers("testSessionId", nino.nino)
 
   private def sut = new IncomeSourceSummaryController(
@@ -99,6 +100,11 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
   ): EitherT[Future, UpstreamErrorResponse, Option[AnnualAccount]] =
     EitherT.rightT[Future, UpstreamErrorResponse](aa)
 
+  private def allPaymentsForYearResponse(
+    accounts: Seq[AnnualAccount] = Seq.empty
+  ): EitherT[Future, UpstreamErrorResponse, Seq[AnnualAccount]] =
+    EitherT.rightT[Future, UpstreamErrorResponse](accounts)
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     setup(baseUserAnswers)
@@ -109,6 +115,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
     when(mockIabdService.getIabds(any(), any())(any()))
       .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty[IabdDetails]))
+
+    when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+      .thenReturn(allPaymentsForYearResponse())
   }
 
   private val employmentId = 1
@@ -162,10 +171,12 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
           )
         )
         verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
+        verify(mockRtiService, times(1)).getAllPaymentsForYear(any(), any())(any())
       }
 
       def setUpPension(
-        annualAccount: Either[Int, Option[AnnualAccount]]
+        annualAccount: Either[Int, Option[AnnualAccount]],
+        allPaymentsForYear: Seq[AnnualAccount] = Nil
       ): OngoingStubbing[?] = {
         val userAnswers = baseUserAnswers
         setup(userAnswers)
@@ -177,7 +188,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
                 .filter(_.componentType == PensionIncome)
                 .map(
                   _.copy(employmentId =
-                    Some(annualAccount.fold(_ => 1, accounts => accounts.headOption.fold(1)(_.sequenceNumber)))
+                    Some(annualAccount.fold(_ => 1, accounts => accounts.fold(1)(_.sequenceNumber)))
                   )
                 )
             )
@@ -192,20 +203,22 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
               Some(
                 employment
                   .copy(
-                    sequenceNumber =
-                      annualAccount.fold(_ => 1, accounts => accounts.headOption.fold(1)(_.sequenceNumber)),
+                    sequenceNumber = annualAccount.fold(_ => 1, accounts => accounts.fold(1)(_.sequenceNumber)),
                     receivingOccupationalPension = true
                   )
               )
             )
           )
+
         val rtiResponseOrError = annualAccount.fold(
           status => EitherT.leftT[Future, Option[AnnualAccount]](UpstreamErrorResponse(s"status $status", status)),
           accountRight => EitherT.rightT[Future, UpstreamErrorResponse](accountRight)
         )
-        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(
-          rtiResponseOrError
-        )
+
+        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any())).thenReturn(rtiResponseOrError)
+
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(allPaymentsForYearResponse(allPaymentsForYear))
       }
 
       "asked for pension details and include RTI section where RTI data present" in {
@@ -237,9 +250,11 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         setUpPension(Right(None))
         when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
+
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
-        val doc    = Jsoup.parse(contentAsString(result))
+        val doc = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
@@ -257,8 +272,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         setUpPension(Right(Some(annualAccount.copy(realTimeStatus = TemporarilyUnavailable))))
 
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
-        val doc    = Jsoup.parse(contentAsString(result))
+        val doc = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
@@ -272,11 +288,45 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
       }
 
+      "asked for pension details and NOT include RTI section where yearly RTI unavailable marker is present" in {
+        val unavailableMarker = AnnualAccount(
+          sequenceNumber = 0,
+          taxYear = uk.gov.hmrc.tai.model.TaxYear(),
+          realTimeStatus = TemporarilyUnavailable,
+          payments = Nil,
+          endOfTaxYearUpdates = Nil
+        )
+
+        setUpPension(
+          Right(Some(annualAccount)),
+          allPaymentsForYear = Seq(unavailableMarker)
+        )
+
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
+          "£1,112"
+        ) withClue "html id estimatedIncome"
+        Option(doc.getElementById("incomeReceivedToDate"))
+          .map(_.text()) mustBe Some(
+          "Your income received to date is unavailable. Try again later"
+        ) withClue "html id incomeReceivedToDate"
+        Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
+        Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
+        Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
+        verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
+        verify(mockRtiService, times(1)).getAllPaymentsForYear(any(), any())(any())
+      }
+
       "asked for pension details and NOT include RTI section where RTI response is 500" in {
         setUpPension(Left(INTERNAL_SERVER_ERROR))
+
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
-        val doc    = Jsoup.parse(contentAsString(result))
+        val doc = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
@@ -292,9 +342,11 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
       "asked for pension details and NOT include RTI section where left not found response" in {
         setUpPension(Left(NOT_FOUND))
+
         val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
-        val doc    = Jsoup.parse(contentAsString(result))
+        val doc = Jsoup.parse(contentAsString(result))
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
@@ -415,7 +467,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         verify(mockRtiService, times(0)).getAllPaymentsForYear(any(), any())(any())
         verify(mockTaxAccountService, times(0)).taxCodeIncomes(any(), any())(any())
         verify(mockIabdService, times(0)).getIabds(any(), any())(any())
-
       }
     }
   }
@@ -560,7 +611,6 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       val doc = Jsoup.parse(contentAsString(result))
       Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
     }
-
   }
 
   "display estimated income from tax account details for the employment" when {
