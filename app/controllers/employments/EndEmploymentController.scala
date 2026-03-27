@@ -166,6 +166,8 @@ class EndEmploymentController @Inject() (
                       ),
                     {
                       case Some(FormValuesConstants.YesValue) =>
+                        journeyCacheRepository
+                          .set(request.userAnswers.setOrException(EmploymentDecisionPage, FormValuesConstants.YesValue))
                         Future.successful(
                           Redirect(
                             controllers.employments.routes.UpdateEmploymentController
@@ -173,6 +175,8 @@ class EndEmploymentController @Inject() (
                           )
                         )
                       case _                                  =>
+                        journeyCacheRepository
+                          .set(request.userAnswers.setOrException(EmploymentDecisionPage, FormValuesConstants.NoValue))
                         rtiService.getPaymentsForEmploymentAndYear(user.nino, TaxYear(), empId).value.flatMap {
                           case Right(accounts) =>
                             hasIrregularPayment(

@@ -98,6 +98,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
     reset(mockFeatureFlagService)
     reset(mockEmploymentService)
     reset(mockRtiService)
+    reset(mockRepository)
     when(mockEmploymentService.employment(any(), any(), any())(any()))
       .thenReturn(
         Future.successful(
@@ -200,6 +201,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           case _               => ""
         }
         redirectUrl mustBe controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(1).url
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "redirect to end employment page if value no is passed in the form and the employment has a payment no more than 6 weeks 1 day in the past" in {
@@ -229,6 +231,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
           case _               => ""
         }
         redirectUrl mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+        verify(mockRepository, times(2)).set(any[UserAnswers])
       }
     }
     "redirect to error page if value no is passed in the form and the employment has a payment is less than 6 weeks 1 day from today in the past" in {
@@ -255,6 +258,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
         redirectLocation(result).map(
           _ mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
         )
+        verify(mockRepository, times(2)).set(any[UserAnswers])
       }
     }
     "redirect to irregular payment page if value No is passed in the form and the employment has an irregular payment frequency" in {
@@ -281,6 +285,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
         redirectLocation(result).map(
           _ mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError().url
         )
+        verify(mockRepository, times(2)).set(any[UserAnswers])
       }
     }
     "redirect to endEmploymentPage if there is no latest payment data" in {
@@ -300,6 +305,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
         redirectLocation(result).map(
           _ mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
         )
+        verify(mockRepository, times(1)).set(any[UserAnswers])
       }
     }
     "return BAD_REQUEST if the employer id is missing from the cache" in {
@@ -313,6 +319,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
         val result = controller(Some(emptyUserAnswers)).handleEmploymentUpdateRemove(request)
         status(result) mustBe BAD_REQUEST
       }
+      verify(mockRepository, never()).set(any[UserAnswers])
     }
     "return BAD_REQUEST if the request for employment data fails" in {
       when(mockEmploymentService.employment(any(), any(), any())(any()))
@@ -325,6 +332,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
         val result = controller(Some(userAnswersWithYesOrNo)).handleEmploymentUpdateRemove(request)
         status(result) mustBe BAD_REQUEST
       }
+      verify(mockRepository, never()).set(any[UserAnswers])
     }
     "return BAD_REQUEST and display form with errors if no form value is passed as EmploymentDecision" in {
       val request                = FakeRequest("POST", "")
@@ -337,6 +345,7 @@ class EndEmploymentControllerSpec extends NewCachingBaseSpec {
         val result = controller().handleEmploymentUpdateRemove(request)
         status(result) mustBe BAD_REQUEST
       }
+      verify(mockRepository, never()).set(any[UserAnswers])
     }
   }
   "endEmploymentError is called"          must {
