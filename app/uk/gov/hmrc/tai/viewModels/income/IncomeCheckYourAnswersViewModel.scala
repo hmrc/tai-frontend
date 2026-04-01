@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil as Dates
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 import java.time.LocalDate
@@ -127,17 +128,16 @@ object IncomeCheckYourAnswersViewModel {
         )
       )
 
-      val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-        Seq(
-          CheckYourAnswersConfirmationLine(
-            Messages("tai.phoneNumber"),
-            phoneNo,
-            controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
-          )
-        )
-      }
+      val optionalPhoneNoLine = for {
+        _       <- Option.when(contactableByPhone == FormValuesConstants.YesValue)(())
+        phoneNo <- phoneNumber
+      } yield CheckYourAnswersConfirmationLine(
+        Messages("tai.phoneNumber"),
+        phoneNo,
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
+      )
 
-      if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
+      mandatoryLines ++ optionalPhoneNoLine.toSeq
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
