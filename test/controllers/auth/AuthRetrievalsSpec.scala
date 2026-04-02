@@ -42,9 +42,8 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{Nino as _, *}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, WrapperDataResponse}
+import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, TrustedHelper, WrapperDataResponse}
 import uk.gov.hmrc.sca.utils.Keys
-import uk.gov.hmrc.sca.models.TrustedHelper
 import utils.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
