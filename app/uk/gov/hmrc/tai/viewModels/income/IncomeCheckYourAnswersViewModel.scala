@@ -78,17 +78,16 @@ object IncomeCheckYourAnswersViewModel {
         )
       )
 
-      val optionalPhoneNoLine = phoneNumber map { phoneNo =>
-        Seq(
-          CheckYourAnswersConfirmationLine(
-            Messages("tai.phoneNumber"),
-            phoneNo,
-            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
-          )
-        )
-      }
+      val optionalPhoneNoLine = for {
+        _       <- Option.when(contactableByPhone == FormValuesConstants.YesValue)(())
+        phoneNo <- phoneNumber
+      } yield CheckYourAnswersConfirmationLine(
+        Messages("tai.phoneNumber"),
+        phoneNo,
+        controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url
+      )
 
-      if (optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
+      mandatoryLines ++ optionalPhoneNoLine.toSeq
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
