@@ -139,6 +139,31 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
       )
     }
 
+    "generate two confirmation lines when telephone contact not approved and phoneNumber has some value" in {
+      val sut = IncomeCheckYourAnswersViewModel(
+        preHeading = "pre heading",
+        incomeSourceEnd = "2017-06-13",
+        contactableByPhone = "No",
+        phoneNumber = Some("123456789"),
+        backLinkUrl = "/fake/backlink/url",
+        submissionUrl = "/fake/continue/url",
+        cancelUrl = "/fake/cancel/url"
+      )
+      val res = sut.journeyConfirmationLines
+
+      res.size mustBe 2
+      res.head mustBe CheckYourAnswersConfirmationLine(
+        Messages("tai.checkYourAnswers.dateEmploymentEnded"),
+        "13 June 2017",
+        controllers.employments.routes.EndEmploymentController.endEmploymentPage().url
+      )
+      res(1) mustBe CheckYourAnswersConfirmationLine(
+        Messages("tai.checkYourAnswers.contactByPhone"),
+        "No",
+        controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url
+      )
+    }
+
     "generate three confirmation lines when telephone contact is approved" in {
       val sut = IncomeCheckYourAnswersViewModel(
         preHeading = "pre heading",
