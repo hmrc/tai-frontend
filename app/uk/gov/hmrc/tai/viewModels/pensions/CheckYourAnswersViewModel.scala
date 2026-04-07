@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.viewModels.pensions
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil as Dates
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 import java.time.LocalDate
@@ -44,7 +45,7 @@ object CheckYourAnswersViewModel {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
-      val mandatoryLines      = Seq(
+      val mandatoryLines = Seq(
         CheckYourAnswersConfirmationLine(
           Messages("tai.addPensionProvider.cya.q1"),
           pensionProviderName,
@@ -71,15 +72,17 @@ object CheckYourAnswersViewModel {
           controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
         )
       )
-      val optionalPhoneNoLine = phoneNumber map {
-        CheckYourAnswersConfirmationLine(
-          Messages("tai.phoneNumber"),
-          _,
-          controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
-        )
-      }
-      if (optionalPhoneNoLine.isDefined) mandatoryLines :+ optionalPhoneNoLine.get else mandatoryLines
 
+      val optionalPhoneNoLine = for {
+        _       <- Option.when(contactableByPhone == FormValuesConstants.YesValue)(())
+        phoneNo <- phoneNumber
+      } yield CheckYourAnswersConfirmationLine(
+        Messages("tai.phoneNumber"),
+        phoneNo,
+        controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
+      )
+
+      mandatoryLines ++ optionalPhoneNoLine.toSeq
     }
 
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
