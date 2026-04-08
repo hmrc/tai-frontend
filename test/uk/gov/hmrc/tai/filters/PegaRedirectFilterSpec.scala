@@ -17,19 +17,19 @@
 package uk.gov.hmrc.tai.filters
 
 import com.typesafe.config.ConfigFactory
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
 import org.scalatestplus.play.PlaySpec
-import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.*
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-
-import scala.concurrent.Future
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.Materializer
+import play.api.{Application, Configuration}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.sca.models.{PtaMinMenuConfig, TrustedHelper, WrapperDataResponse}
 import uk.gov.hmrc.sca.utils.Keys
+
+import scala.concurrent.Future
 
 class PegaRedirectFilterSpec extends PlaySpec {
 

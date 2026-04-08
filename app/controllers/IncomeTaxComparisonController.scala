@@ -20,9 +20,12 @@ import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
 import controllers.auth.{AuthJourney, DataRequest}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.UpstreamErrorResponse
+import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.admin.CyPlusOneToggle
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, TaxAccountSummary}
@@ -33,7 +36,7 @@ import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxCompari
 import views.html.incomeTaxComparison.MainView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeTaxComparisonController @Inject() (
   val auditConnector: AuditConnector,
@@ -43,6 +46,7 @@ class IncomeTaxComparisonController @Inject() (
   updateNextYearsIncomeService: UpdateNextYearsIncomeService,
   authenticate: AuthJourney,
   applicationConfig: ApplicationConfig,
+  featureFlagService: FeatureFlagService,
   mcc: MessagesControllerComponents,
   mainView: MainView,
   errorPagesHandler: ErrorPagesHandler
@@ -54,23 +58,55 @@ class IncomeTaxComparisonController @Inject() (
     val currentTaxYear = TaxYear()
     val nextTaxYear    = currentTaxYear.next
 
-    (
-      taxAccountService.taxAccountSummary(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
-      taxAccountService.taxAccountSummary(nino, nextTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
-      EitherT(taxAccountService.taxCodeIncomes(nino, currentTaxYear)).leftMap(msg =>
-        NonEmptyList.one(new Throwable(msg))
-      ),
-      EitherT(taxAccountService.taxCodeIncomes(nino, nextTaxYear)).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
-      codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
-      codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
-      employmentService.employments(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
-      updateNextYearsIncomeService.isEstimatedPayJourneyComplete(request.userAnswers).attemptTNel
-    ).parMapN(computeModel(currentTaxYear, nextTaxYear))
-      .fold(
-        errorPagesHandler
-          .internalServerError("Not able to fetch income tax comparison details in IncomeTaxComparisonController", _),
-        model => Ok(mainView(model, applicationConfig))
-      )
+    featureFlagService.getAsEitherT[UpstreamErrorResponse](CyPlusOneToggle).value.flatMap {
+      case Right(toggle) if !toggle.isEnabled =>
+        Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
+
+      case Left(error) =>
+        Future.successful(
+          errorPagesHandler.internalServerError(
+            "Not able to fetch income tax comparison details in IncomeTaxComparisonController",
+            NonEmptyList.one(new Throwable(error.message))
+          )
+        )
+
+      case Right(_) =>
+        taxAccountService.taxAccountSummary(nino, nextTaxYear).value.flatMap {
+          case Left(error) if error.statusCode == NOT_FOUND =>
+            Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
+
+          case Left(error) =>
+            Future.successful(
+              errorPagesHandler.internalServerError(
+                "Not able to fetch income tax comparison details in IncomeTaxComparisonController",
+                NonEmptyList.one(new Throwable(error.message))
+              )
+            )
+
+          case Right(cyPlusOneTaxAccountSummary) =>
+            (
+              taxAccountService
+                .taxAccountSummary(nino, currentTaxYear)
+                .leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+              EitherT.rightT[Future, NonEmptyList[Throwable]](cyPlusOneTaxAccountSummary),
+              EitherT(taxAccountService.taxCodeIncomes(nino, currentTaxYear))
+                .leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+              EitherT(taxAccountService.taxCodeIncomes(nino, nextTaxYear))
+                .leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+              codingComponentService.taxFreeAmountComponents(nino, currentTaxYear).attemptTNel,
+              codingComponentService.taxFreeAmountComponents(nino, nextTaxYear).attemptTNel,
+              employmentService.employments(nino, currentTaxYear).leftMap(msg => NonEmptyList.one(new Throwable(msg))),
+              updateNextYearsIncomeService.isEstimatedPayJourneyComplete(request.userAnswers).attemptTNel
+            ).parMapN(computeModel(currentTaxYear, nextTaxYear))
+              .fold(
+                errorPagesHandler.internalServerError(
+                  "Not able to fetch income tax comparison details in IncomeTaxComparisonController",
+                  _
+                ),
+                model => Ok(mainView(model, applicationConfig))
+              )
+        }
+    }
   }
 
   private def computeModel(currentTaxYear: TaxYear, nextTaxYear: TaxYear)(
@@ -100,7 +136,7 @@ class IncomeTaxComparisonController @Inject() (
       val cyCodingComponents     = CodingComponentForYear(currentTaxYear, codingComponentsCY)
       val cyPlusOneTaxComponents = CodingComponentForYear(nextTaxYear, codingComponentsCYPlusOne)
       val cyTaxSummary           = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCY)
-      val cyPlusOneTaxSummary    = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCYPlusOne)
+      val cyPlusOneTaxSummary    = TaxAccountSummaryForYear(nextTaxYear, taxAccountSummaryCYPlusOne)
 
       TaxFreeAmountComparisonViewModel(
         Seq(cyCodingComponents, cyPlusOneTaxComponents),
