@@ -83,6 +83,7 @@ class IncomeTaxHistoryController @Inject() (
           val maybeLastPayment: Option[Payment] = lastPaymentForEmployment(accounts, employment.sequenceNumber)
 
           val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
+          val maybeTaxAmount = maybeLastPayment.map(_.taxAmountYearToDate)
 
           IncomeTaxHistoryViewModel(
             employerName = employment.name,
@@ -94,9 +95,10 @@ class IncomeTaxHistoryController @Inject() (
             maybeTaxableIncome = maybeLastPayment.map { payment =>
               withPoundPrefix(MoneyPounds(payment.amountYearToDate))
             },
-            maybeIncomeTaxPaid = maybeLastPayment.map { payment =>
-              withPoundPrefix(MoneyPounds(payment.taxAmountYearToDate))
+            maybeIncomeTaxPaid = maybeTaxAmount.map { amount =>
+              withPoundPrefix(MoneyPounds(amount))
             },
+            isIncomeTaxRefund = maybeTaxAmount.exists(_ < 0),
             maybeTaxCode = maybeTaxCode.map(_.taxCode)
           )
         }.toList
