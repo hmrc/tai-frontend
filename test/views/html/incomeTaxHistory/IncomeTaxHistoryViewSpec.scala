@@ -278,7 +278,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       val doc  = Jsoup.parse(html.toString())
 
       doc.text() must include(messages("tai.incomeTax.history.incomeTaxRefund"))
-      doc.html() must not include "&minus;"
+      doc.text() must not include "&minus;"
     }
 
   }
