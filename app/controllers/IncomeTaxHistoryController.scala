@@ -82,7 +82,7 @@ class IncomeTaxHistoryController @Inject() (
           // a failure is treated as no payment instead of marking the value as temporary not available
           val maybeLastPayment: Option[Payment] = lastPaymentForEmployment(accounts, employment.sequenceNumber)
 
-          val isPension = maybeTaxCode.exists(_.componentType == PensionIncome)
+          val isPension      = maybeTaxCode.exists(_.componentType == PensionIncome)
           val maybeTaxAmount = maybeLastPayment.map(_.taxAmountYearToDate)
 
           IncomeTaxHistoryViewModel(
