@@ -229,15 +229,14 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     "display Income Tax refund label when isIncomeTaxRefund is true" in {
 
       val model = historyViewModel.copy(
-        maybeIncomeTaxPaid = Some("£187"),
+        maybeIncomeTaxPaid = Some("£150"),
         isIncomeTaxRefund = true
       )
 
       val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
       val doc  = Jsoup.parse(html.toString())
 
-      doc.text() must include(messages("tai.incomeTax.history.incomeTaxRefund"))
-      doc.text() must include("£187")
+      doc must haveDivItemWithText("Income Tax refund £150")
     }
 
     "display Income Tax paid label when isIncomeTaxRefund is false" in {
@@ -250,7 +249,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
       val doc  = Jsoup.parse(html.toString())
 
-      doc.text() must include(messages("tai.incomeTax.history.incomeTaxPaid"))
+      doc must haveDivItemWithText("Income Tax paid £100")
     }
 
     "display Income Tax paid label with 0 when amount is zero" in {
@@ -263,8 +262,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
       val doc  = Jsoup.parse(html.toString())
 
-      doc.text() must include(messages("tai.incomeTax.history.incomeTaxPaid"))
-      doc.text() must include("£0")
+      doc must haveDivItemWithText("Income Tax paid £0")
     }
 
     "not display minus sign for income tax values" in {
@@ -277,7 +275,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
       val doc  = Jsoup.parse(html.toString())
 
-      doc.text() must include(messages("tai.incomeTax.history.incomeTaxRefund"))
+      doc        must haveDivItemWithText("Income Tax refund £187")
       doc.text() must not include "&minus;"
     }
 
