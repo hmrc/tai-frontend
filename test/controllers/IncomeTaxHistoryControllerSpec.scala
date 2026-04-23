@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,13 @@ import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment}
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Monthly, Payment}
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import utils.{AuthenticatedRequestFixture, BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTestData with JsoupMatchers {
@@ -250,6 +251,85 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
         .map(_.incomeTaxHistory.map(_.maybeTaxCode))
         .futureValue mustBe List(Some(taxCodeIncome.taxCode))
+    }
+
+    "set IncomeTaxHistoryViewModel.isIncomeTaxRefund to true" when {
+      "taxAmountYearToDate is negative value" in {
+        val taxAmountYearToDate = BigDecimal(-187)
+        val latestPayment       =
+          Payment(LocalDate.now.minusWeeks(1), BigDecimal(1000), taxAmountYearToDate, 0, 100, 10, 5, Monthly)
+
+        val annualAccount = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
+
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
+
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(Seq(taxCodeIncome))))
+
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(empEmployment1)))
+
+        val controller = new TestController
+        val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
+
+        result
+          .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
+          .map(_.incomeTaxHistory.head.isIncomeTaxRefund)
+          .futureValue mustBe true
+      }
+    }
+
+    "set IncomeTaxHistoryViewModel.isIncomeTaxRefund to false" when {
+      "taxAmountYearToDate is zero" in {
+        val taxAmountYearToDate = BigDecimal(0)
+        val latestPayment       =
+          Payment(LocalDate.now.minusWeeks(1), BigDecimal(1000), taxAmountYearToDate, 0, 100, 10, 5, Monthly)
+
+        val annualAccount = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
+
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
+
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(Seq(taxCodeIncome))))
+
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(empEmployment1)))
+
+        val controller = new TestController
+        val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
+
+        result
+          .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
+          .map(_.incomeTaxHistory.head.isIncomeTaxRefund)
+          .futureValue mustBe false
+      }
+
+      "taxAmountYearToDate is positive value" in {
+        val taxAmountYearToDate = BigDecimal(150)
+        val latestPayment       =
+          Payment(LocalDate.now.minusWeeks(1), BigDecimal(1000), taxAmountYearToDate, 0, 100, 10, 5, Monthly)
+
+        val annualAccount = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
+
+        when(rtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
+
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(Seq(taxCodeIncome))))
+
+        when(employmentService.employments(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(empEmployment1)))
+
+        val controller = new TestController
+        val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
+
+        result
+          .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
+          .map(_.incomeTaxHistory.head.isIncomeTaxRefund)
+          .futureValue mustBe false
+      }
     }
   }
 }

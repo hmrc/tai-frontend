@@ -651,6 +651,7 @@ tai.incomeTax.history.startDate = Start date
 tai.incomeTax.history.endDate = End date
 tai.incomeTax.history.taxableIncome = Taxable income
 tai.incomeTax.history.incomeTaxPaid = Income Tax paid
+tai.incomeTax.history.incomeTaxRefund = Income Tax refund
 tai.incomeTax.history.taxCode = Tax code
 tai.incomeTax.history.unavailable = Currently unavailable
 tai.incomeTax.history.endDate.notApplicable = Not applicable
