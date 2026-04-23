@@ -224,7 +224,7 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
       }
 
       "display the income tax history page with no tax history message" when {
-        "given taxYear returns non-5xx gateway/service unavailable errors" in {
+        "given taxYear returns nnon-502/503/504 errors errors" in {
           for (_ <- taxYears) {
             when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
             when(employmentService.employments(any(), any())(any())) thenReturn EitherT
