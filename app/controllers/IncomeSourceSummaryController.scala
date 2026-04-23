@@ -79,8 +79,8 @@ class IncomeSourceSummaryController @Inject() (
             val estimatedPayOverrides =
               TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, TaxAccountSummaryDate, Some(empId))
 
-            val rtiUnavailableMarkerPresent: Boolean = paymentsForYear.exists(_.exists(a => a.sequenceNumber == 0 && a.realTimeStatus == TemporarilyUnavailable))
-
+            val rtiUnavailableMarkerPresent: Boolean =
+              paymentsForYear.exists(_.exists(a => a.sequenceNumber == 0 && a.realTimeStatus == TemporarilyUnavailable))
 
             val rtiAvailableCalculated: Boolean = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
 
