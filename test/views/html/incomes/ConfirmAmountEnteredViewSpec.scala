@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
     }
 
     "display a cancel link" in {
-      doc(view) must haveLinkWithText(messages("tai.cancel.noSave"))
+      doc(view) must haveLinkWithText("Cancel - your changes will not be saved")
     }
   }
 

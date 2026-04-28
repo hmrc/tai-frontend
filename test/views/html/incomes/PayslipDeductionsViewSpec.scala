@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ class PayslipDeductionsViewSpec extends TaiViewSpec {
       controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
     )
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
+    behave like pageWithCancelLinkText("Cancel all changes")
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.payslipDeductions.preHeading", employer.name),
       messages("tai.payslipDeductions.heading"),

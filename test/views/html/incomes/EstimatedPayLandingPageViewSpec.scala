@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ class EstimatedPayLandingPageViewSpec extends TaiViewSpec {
   "Estimated Pay Landing Page" should {
     behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
+    behave like pageWithCancelLinkText("Cancel all changes")
   }
 
   "have an accessible heading" in {
