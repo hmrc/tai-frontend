@@ -57,12 +57,7 @@ trait IncomeTaxEstimateHelper {
     Messages(
       s"your.total.income.from.$incomeType.desc",
       pounds(taxAccountSummary.totalEstimatedIncome),
-      link(
-        id = Some("taxFreeAmountLink"),
-        linkClasses = Seq("display-for-print"),
-        url = routes.TaxFreeAmountController.taxFreeAmount().url,
-        copy = Messages("tai.estimatedIncome.taxFree.link")
-      ),
+      Messages("tai.estimatedIncome.taxFree.link"),
       pounds(taxAccountSummary.taxFreeAllowance)
     )
 
