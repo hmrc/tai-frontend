@@ -82,7 +82,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends BaseSpec {
         Messages(
           "your.total.income.from.employment.desc",
           pounds(47835),
-          "tai.estimatedIncome.taxFree.link",
+          Messages("tai.estimatedIncome.taxFree.link"),
           pounds(11500)
         ).replaceAll("\\s+", ""),
         false
