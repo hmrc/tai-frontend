@@ -153,7 +153,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           messages(
             "your.total.income.from.employment.desc",
             pounds(47835),
-            "tai.estimatedIncome.taxFree.link",
+            messages("tai.estimatedIncome.taxFree.link"),
             pounds(11500)
           ),
           false
