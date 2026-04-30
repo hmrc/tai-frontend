@@ -40,7 +40,6 @@ import uk.gov.hmrc.tai.util.constants.TaxRegionConstants.*
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.*
 import utils.BaseSpec
 import views.html.estimatedIncomeTax.{ComplexEstimatedIncomeTaxView, NoCurrentIncomeView, SimpleEstimatedIncomeTaxView, ZeroTaxEstimatedIncomeTaxView}
-import views.html.includes.link
 
 import scala.concurrent.Future
 import uk.gov.hmrc.tai.service.IabdService
@@ -154,12 +153,7 @@ class EstimatedIncomeTaxControllerSpec extends BaseSpec {
           messages(
             "your.total.income.from.employment.desc",
             pounds(47835),
-            link(
-              id = Some("taxFreeAmountLink"),
-              linkClasses = Seq("display-for-print"),
-              url = routes.TaxFreeAmountController.taxFreeAmount().url,
-              copy = messages("tai.estimatedIncome.taxFree.link")
-            ),
+            messages("tai.estimatedIncome.taxFree.link"),
             pounds(11500)
           ),
           false
