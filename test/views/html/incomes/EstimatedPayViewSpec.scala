@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ class EstimatedPayViewSpec extends TaiViewSpec {
     behave like pageWithCancelLink(
       Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(employer.id).url)
     )
+    behave like pageWithCancelLinkText("Cancel - your changes will not be saved")
     behave like pageWithCombinedHeaderNewFormatNew(
       messages("tai.estimatedPay.preHeading", employer.name),
       messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeBreak)
