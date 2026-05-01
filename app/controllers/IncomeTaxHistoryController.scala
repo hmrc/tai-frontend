@@ -19,8 +19,8 @@ package controllers
 import cats.data.EitherT
 import cats.implicits.*
 import controllers.auth.{AuthJourney, AuthenticatedRequest}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.Logging
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -43,7 +43,8 @@ class IncomeTaxHistoryController @Inject() (
   mcc: MessagesControllerComponents,
   taxAccountService: TaxAccountService,
   employmentService: EmploymentService,
-  rtiService: RtiService
+  rtiService: RtiService,
+  implicit val errorPagesHandler: ErrorPagesHandler
 )(implicit ec: ExecutionContext)
     extends TaiBaseController(mcc)
     with Logging {
@@ -78,8 +79,6 @@ class IncomeTaxHistoryController @Inject() (
             taxCode     <- incomes.headOption
           } yield taxCode
 
-          // TODO: handle a failure vs no payment
-          // a failure is treated as no payment instead of marking the value as temporary not available
           val maybeLastPayment: Option[Payment] = lastPaymentForEmployment(accounts, employment.sequenceNumber)
 
           val isPension      = maybeTaxCode.exists(_.componentType == PensionIncome)
@@ -108,22 +107,33 @@ class IncomeTaxHistoryController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
     val nino     = request.taiUser.nino
+    val messages = request2Messages
     val taxYears = (TaxYear().year to (TaxYear().year - config.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
       .map(TaxYear(_))
       .toList
 
     taxYears
-      .traverse(taxYear =>
+      .traverse { taxYear =>
         getIncomeTaxYear(nino, taxYear).value.map {
-          case Right(taxCodeIncome) =>
-            taxCodeIncome
-          case Left(e)              =>
+          case Right(incomeTaxYear) =>
+            Right(incomeTaxYear)
+
+          case Left(e) if e.statusCode == 502 || e.statusCode == 503 || e.statusCode == 504 =>
+            Left(e)
+
+          case Left(e) =>
             logger.error(e.getMessage, e)
-            IncomeTaxYear(taxYear, Nil)
+            Right(IncomeTaxYear(taxYear, Nil))
         }
-      )
-      .map { taxCodeIncome =>
-        Ok(incomeTaxHistoryView(request.person, taxCodeIncome))
+      }
+      .map { results =>
+        results.collectFirst { case Left(e) => e } match {
+          case Some(e) =>
+            InternalServerError(errorPagesHandler.error5xx(messages("tai.technical.error.message")))
+          case None    =>
+            val years = results.collect { case Right(y) => y }
+            Ok(incomeTaxHistoryView(request.person, years))
+        }
       }
   }
 }

@@ -56,15 +56,15 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   }
 
   class TestController
-      extends IncomeTaxHistoryController(
-        appConfig,
-        mockAuthJourney,
-        inject[IncomeTaxHistoryView],
-        mcc,
-        taxAccountService,
-        employmentService,
-        rtiService
-      )
+    extends IncomeTaxHistoryController(
+      appConfig,
+      mockAuthJourney,
+      inject[IncomeTaxHistoryView],
+      mcc,
+      taxAccountService,
+      employmentService,
+      rtiService
+    )
 
   implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
   implicit val authRequest: AuthenticatedRequest[AnyContent]    =
