@@ -108,3 +108,4 @@ ensime\.sbt
 package-lock.json
 
 *.sc
+project/metals.sbt

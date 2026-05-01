@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     None,
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
+    isIncomeTaxRefund = false,
     Some(s"taxCode-${taxYear.start}")
   )
 
@@ -51,6 +52,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some(taxYear.end.minusYears(1)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
+    isIncomeTaxRefund = false,
     Some(s"taxCode-${taxYear.start}")
   )
 
@@ -63,6 +65,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some(taxYear.end.minusYears(2)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
+    isIncomeTaxRefund = false,
     None
   )
 
@@ -75,6 +78,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some(taxYear.end.minusYears(3)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
+    isIncomeTaxRefund = false,
     None
   )
 
@@ -87,6 +91,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some(taxYear.end.minusYears(4)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
+    isIncomeTaxRefund = false,
     Some(s"taxCode-${taxYear.start}")
   )
 
@@ -99,6 +104,7 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
     Some(taxYear.end.minusYears(5)),
     Some("taxableIncome"),
     Some("incomeTaxPaid"),
+    isIncomeTaxRefund = false,
     Some(s"taxCode-${taxYear.start}")
   )
 
@@ -218,6 +224,59 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
             doc must haveDivItemWithText("Tax code " + messages("tai.incomeTax.history.unavailable"))
         }
       }
+    }
+
+    "display Income Tax refund label when isIncomeTaxRefund is true" in {
+
+      val model = historyViewModel.copy(
+        maybeIncomeTaxPaid = Some("£150"),
+        isIncomeTaxRefund = true
+      )
+
+      val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
+      val doc  = Jsoup.parse(html.toString())
+
+      doc must haveDivItemWithText("Income Tax refund £150")
+    }
+
+    "display Income Tax paid label when isIncomeTaxRefund is false" in {
+
+      val model = historyViewModel.copy(
+        maybeIncomeTaxPaid = Some("£100"),
+        isIncomeTaxRefund = false
+      )
+
+      val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
+      val doc  = Jsoup.parse(html.toString())
+
+      doc must haveDivItemWithText("Income Tax paid £100")
+    }
+
+    "display Income Tax paid label with 0 when amount is zero" in {
+
+      val model = historyViewModel.copy(
+        maybeIncomeTaxPaid = Some("£0"),
+        isIncomeTaxRefund = false
+      )
+
+      val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
+      val doc  = Jsoup.parse(html.toString())
+
+      doc must haveDivItemWithText("Income Tax paid £0")
+    }
+
+    "not display minus sign for income tax values" in {
+
+      val model = historyViewModel.copy(
+        maybeIncomeTaxPaid = Some("£187"),
+        isIncomeTaxRefund = true
+      )
+
+      val html = incomeTaxHistoryView(person, List(IncomeTaxYear(taxYear, List(model))))
+      val doc  = Jsoup.parse(html.toString())
+
+      doc        must haveDivItemWithText("Income Tax refund £187")
+      doc.text() must not include "&minus;"
     }
 
   }

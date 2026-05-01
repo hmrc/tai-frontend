@@ -162,7 +162,11 @@ messages: Messages)
                                 @if(summary.maybeIncomeTaxPaid.isDefined) {
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
-                                            @Messages("tai.incomeTax.history.incomeTaxPaid")
+                                            @if(summary.isIncomeTaxRefund) {
+                                                @Messages("tai.incomeTax.history.incomeTaxRefund")
+                                            } else {
+                                                @Messages("tai.incomeTax.history.incomeTaxPaid")
+                                            }
                                         </dt>
                                         <dd class="govuk-summary-list__value">
                                             @summary.maybeIncomeTaxPaid

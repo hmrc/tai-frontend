@@ -651,6 +651,7 @@ tai.incomeTax.history.startDate = Dyddiad dechrau
 tai.incomeTax.history.endDate = Dyddiad dod i ben
 tai.incomeTax.history.taxableIncome = Incwm trethadwy
 tai.incomeTax.history.incomeTaxPaid = Treth Incwm a dalwyd
+tai.incomeTax.history.incomeTaxRefund = Ad-daliad Treth Incwm
 tai.incomeTax.history.taxCode = Cod treth
 tai.incomeTax.history.unavailable = Ddim ar gael ar hyn o bryd
 tai.incomeTax.history.endDate.notApplicable = ddim yn gymwys
