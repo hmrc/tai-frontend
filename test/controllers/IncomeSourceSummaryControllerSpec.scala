@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -468,14 +468,15 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
     }
 
-    "no date is available for both iabd and tax account" in {
-      val ua = baseUserAnswers
+    "some IABDs have no captureDate but a valid recent one exists" in {
+      val ua          = baseUserAnswers
       setup(ua)
+      val captureDate = None
 
       when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = None))
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = Some(LocalDate.now.minusWeeks(1))))
       )
       when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
@@ -485,7 +486,17 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       when(mockIabdService.getIabds(any(), any())(any()))
         .thenReturn(
           EitherT.rightT[Future, UpstreamErrorResponse](
-            Seq(IabdDetails(Some(employmentId), None, Some(27), None, None, Some(BigDecimal(9999))))
+            Seq(
+              IabdDetails(Some(employmentId), None, Some(27), None, captureDate, Some(BigDecimal(5000))),
+              IabdDetails(
+                Some(employmentId),
+                None,
+                Some(27),
+                None,
+                Some(LocalDate.now),
+                Some(BigDecimal(3000))
+              )
+            )
           )
         )
 
@@ -493,7 +504,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£3,000")
     }
 
     "There is no date in tax account details" in {
@@ -532,15 +543,17 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
       val doc = Jsoup.parse(contentAsString(result))
       Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
     }
+  }
 
-    "There is no date for iabd" in {
+  "display estimated income from tax account details when IABD cannot be used" when {
+    "recency cannot be determined as both IABD and tax account dates are missing" in {
       val ua = baseUserAnswers
       setup(ua)
 
       when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(Right(taxCodeIncomes)))
       when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = Some(LocalDate.now.minusWeeks(1))))
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = None))
       )
       when(mockEmploymentService.employment(any(), any(), any())(any()))
         .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
@@ -558,9 +571,37 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£9,999")
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£1,111")
     }
 
+    "the IABD has no captureDate to compare recency" in {
+      val ua          = baseUserAnswers
+      setup(ua)
+      val captureDate = None
+
+      when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(Right(taxCodeIncomes)))
+      when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary(date = Some(LocalDate.now.minusWeeks(1))))
+      )
+      when(mockEmploymentService.employment(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+      when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+        .thenReturn(rtiResponse(Some(annualAccount.copy(sequenceNumber = employmentId))))
+
+      when(mockIabdService.getIabds(any(), any())(any()))
+        .thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](
+            Seq(IabdDetails(Some(employmentId), None, Some(27), None, captureDate, Some(BigDecimal(9999))))
+          )
+        )
+
+      val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some("£1,111")
+    }
   }
 
   "display estimated income from tax account details for the employment" when {

@@ -38,9 +38,8 @@ object TaxAccountHelper {
           iabd.employmentSequenceNumber.contains(empId)
         ) && // if employment not provided, get iabd for any employment
         iabd.grossAmount.isDefined &&
-        iabd.captureDate
-          .getOrElse(LocalDate.now)
-          .isAfter(taxAccountDate) // the iabd update needs to be more recent than the value from tax account
+        // Only consider iabd if we have a captureDate and it's after taxAccountDate
+        iabd.captureDate.exists(_.isAfter(taxAccountDate))
       }
       .map(_.grossAmount.get)
   }
