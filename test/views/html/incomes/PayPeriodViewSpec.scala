@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ class PayPeriodViewSpec extends TaiViewSpec {
       controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url
     )
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
+    behave like pageWithCancelLinkText("Cancel all changes")
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.payPeriod.preHeading", employerName),
       messages("tai.payPeriod.heading"),

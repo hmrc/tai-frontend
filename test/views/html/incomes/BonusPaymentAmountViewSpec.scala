@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ class BonusPaymentAmountViewSpec extends TaiViewSpec {
         .replaceAll("\u00A0", " ")
     )
     behave like pageWithContinueButtonFormNew("/check-income-tax/update-income/bonus-overtime-amount/" + employer.id)
+    behave like pageWithCancelLinkText("Cancel all changes")
 
     "contain a hint with text" in {
       doc must haveHintWithText("amount-hint", messages("tai.bonusPaymentsAmount.hint"))

@@ -230,6 +230,11 @@ trait TaiViewSpec extends BaseSpec with JsoupMatchers {
       doc must haveCancelLinkWithUrl(call.url)
     }
 
+  def pageWithCancelLinkText(expectedText: String): Unit =
+    s"have a cancel link with text '$expectedText'" in {
+      doc.getElementById("cancelLink").text() mustBe expectedText
+    }
+
   def haveInternalLink(url: String, linkText: String, id: String): Unit =
     "have an internal link" in {
       doc must haveLinkElement(id, url, linkText)
