@@ -40,6 +40,23 @@ class TaxAccountHelperSpec extends BaseSpec {
         call(Seq.empty) mustBe None
       }
 
+      "the IABD has no captureDate" in {
+        val taxDate = LocalDate.now.minusDays(1)
+
+        val iabds = Seq(
+          IabdDetails(
+            employmentSequenceNumber = Some(1),
+            source = None,
+            `type` = Some(estimatedPayCode),
+            receiptDate = None,
+            captureDate = None,
+            grossAmount = Some(BigDecimal(20000))
+          )
+        )
+
+        call(iabds, Some(taxDate), Some(1)) mustBe None
+      }
+
       "no IABD has the new estimated pay type" in {
         val iabds = Seq(
           IabdDetails(
@@ -113,6 +130,31 @@ class TaxAccountHelperSpec extends BaseSpec {
         )
 
         call(iabds, Some(taxDate), Some(1)) mustBe Some(BigDecimal(25000))
+      }
+
+      "some IABDs have no captureDate but a valid one exists" in {
+        val taxDate = LocalDate.of(2024, 1, 1)
+
+        val iabds = Seq(
+          IabdDetails(
+            employmentSequenceNumber = Some(1),
+            source = None,
+            `type` = Some(estimatedPayCode),
+            receiptDate = None,
+            captureDate = None,
+            grossAmount = Some(BigDecimal(50000))
+          ),
+          IabdDetails(
+            employmentSequenceNumber = Some(1),
+            source = None,
+            `type` = Some(estimatedPayCode),
+            receiptDate = None,
+            captureDate = Some(LocalDate.of(2024, 2, 1)),
+            grossAmount = Some(BigDecimal(20000))
+          )
+        )
+
+        call(iabds, Some(taxDate), Some(1)) mustBe Some(BigDecimal(20000))
       }
 
       "employment id is not provided" in {
