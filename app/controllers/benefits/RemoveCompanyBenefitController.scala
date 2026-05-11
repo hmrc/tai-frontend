@@ -18,7 +18,6 @@ package controllers.benefits
 
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
-import pages.BenefitDecisionPage
 import pages.benefits._
 import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
@@ -208,20 +207,7 @@ class RemoveCompanyBenefitController @Inject() (
   def telephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val userAnswers               = request.userAnswers
-
-    val cache: Map[String, String] = Map(
-      BenefitDecisionPage.toString                     -> userAnswers.get(BenefitDecisionPage).toString,
-      EndCompanyBenefitsStopDatePage.toString          -> userAnswers.get(EndCompanyBenefitsStopDatePage).toString,
-      EndCompanyBenefitsTypePage.toString              -> userAnswers.get(EndCompanyBenefitsTypePage).toString,
-      EndCompanyBenefitsNamePage.toString              -> userAnswers.get(EndCompanyBenefitsNamePage).toString,
-      EndCompanyBenefitsValuePage.toString             -> userAnswers.get(EndCompanyBenefitsValuePage).toString,
-      EndCompanyBenefitsTelephoneQuestionPage.toString -> userAnswers
-        .get(EndCompanyBenefitsTelephoneQuestionPage)
-        .toString,
-      EndCompanyBenefitsTelephoneNumberPage.toString   -> userAnswers.get(EndCompanyBenefitsTelephoneNumberPage).toString
-    )
-
-    val telephoneNumberViewModel = extractViewModelFromCache(cache)
+    val telephoneNumberViewModel  = extractViewModelFromUA(userAnswers)
 
     val form = YesNoTextEntryForm
       .form()
@@ -247,10 +233,7 @@ class RemoveCompanyBenefitController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-
-          val cache: Map[String, String] =
-            userAnswers.data.as[Map[String, JsValue]].view.mapValues(_.toString).toMap
-          val telephoneNumberViewModel   = extractViewModelFromCache(cache)
+          val telephoneNumberViewModel = extractViewModelFromUA(userAnswers)
 
           Future.successful(BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors)))
         },
@@ -370,15 +353,14 @@ class RemoveCompanyBenefitController @Inject() (
     }
   }
 
-  private def extractViewModelFromCache(
-    cache: Map[String, String]
+  private def extractViewModelFromUA(
+    userAnswers: UserAnswers
   )(implicit messages: Messages): CanWeContactByPhoneViewModel = {
-    val backUrl =
-      if (cache.contains(EndCompanyBenefitConstants.BenefitValueKey)) {
-        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
-      } else {
-        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
-      }
+    val backUrl = if (userAnswers.get(EndCompanyBenefitsValuePage).isDefined) {
+      controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
+    } else {
+      controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+    }
 
     CanWeContactByPhoneViewModel(
       messages("tai.benefits.ended.journey.preHeader"),
