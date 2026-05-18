@@ -20,18 +20,18 @@ import builders.RequestBuilder
 import cats.data.EitherT
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.stubbing.OngoingStubbing
-import org.mockito.Mockito
 import org.scalatest.AppendedClues.convertToClueful
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
 import play.api.i18n.Messages
 import play.api.mvc.Results.NotFound
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -109,6 +109,9 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
     when(mockIabdService.getIabds(any(), any())(any()))
       .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty[IabdDetails]))
+
+    when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+      .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty[AnnualAccount]))
   }
 
   private val employmentId = 1
@@ -306,6 +309,31 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
         verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
+      }
+
+      "asked for pension details and NOT include RTI section where yearly RTI unavailable marker is present" in {
+        setUpPension(Right(Some(annualAccount)))
+
+        val unavailableMarker = annualAccount.copy(
+          sequenceNumber = 0,
+          realTimeStatus = TemporarilyUnavailable
+        )
+
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(unavailableMarker)))
+
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+
+        Option(doc.getElementById("incomeReceivedToDate"))
+          .map(_.text()) mustBe Some(
+          "Your income received to date is unavailable. Try again later"
+        ) withClue "html id incomeReceivedToDate"
+
+        Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
       }
 
       "failed to read tax code incomes" in {
