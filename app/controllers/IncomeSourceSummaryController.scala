@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,8 @@ class IncomeSourceSummaryController @Inject() (
             val TaxAccountSummaryDate = taxAccountSummary.fold(_ => None, _.date)
             val estimatedPayOverrides =
               TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, TaxAccountSummaryDate, Some(empId))
+            val rtiAvailable          = payments.exists(_.exists(_.realTimeStatus == Available))
+            val noPaymentsReceivedYet = payments == Right(None)
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
@@ -84,11 +86,8 @@ class IncomeSourceSummaryController @Inject() (
                 taxCodeIncomes.fold(_ => None, _.find(_.employmentId.contains(employment.sequenceNumber))),
               employment = employment,
               payments = payments.toOption.flatten,
-              // TODO: handle a failure vs no payment present
-              // The way the rti availability is implemented using a stub Annual account is not compatible with None type
-              // So when no annual account found for an employment, assuming rti is down.
-              // The service also does not handle the case when there is no payments but assume the rti api not been available.
-              rtiAvailable = payments.fold(_ => false, _.fold(false)(_.realTimeStatus == Available)),
+              rtiAvailable = rtiAvailable,
+              noPaymentsReceivedYet = noPaymentsReceivedYet,
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
               estimatedPayOverrides = estimatedPayOverrides
             )
