@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ case class YourIncomeCalculationViewModel(
   payments: Seq[PaymentDetailsViewModel],
   employmentStatus: TaxCodeIncomeSourceStatus,
   latestPayment: Option[LatestPayment],
+  rtiUnavailable: Boolean,
   endDate: Option[LocalDate],
   isPension: Boolean,
   messageWhenTotalNotEqual: Option[String],
@@ -79,9 +80,10 @@ object YourIncomeCalculationViewModel {
     estimatedPayOverrides: Map[Int, BigDecimal]
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
-    val latestPayment = latestPaymentDetails(annualAccountForEmployment)
-    val isPension     = taxCodeIncome.exists(_.componentType == PensionIncome)
-    val status        = employment.employmentStatus
+    val latestPayment  = latestPaymentDetails(annualAccountForEmployment)
+    val isPension      = taxCodeIncome.exists(_.componentType == PensionIncome)
+    val status         = employment.employmentStatus
+    val rtiUnavailable = annualAccountForEmployment.exists(_.realTimeStatus == TemporarilyUnavailable)
 
     val effectiveTaxCodeIncome: Option[TaxCodeIncome] =
       taxCodeIncome.map { income =>
@@ -115,6 +117,7 @@ object YourIncomeCalculationViewModel {
       paymentDetails,
       status,
       latestPayment,
+      rtiUnavailable,
       employment.endDate,
       isPension,
       totalNotEqualMessage(status == Live, paymentDetails, latestPayment, isPension),

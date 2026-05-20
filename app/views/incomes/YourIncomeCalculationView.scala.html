@@ -92,7 +92,6 @@
                 </div>
 
                 @if(model.latestPayment.isDefined) {
-
                         <table id="taxable-income-table" class="govuk-table">
                         <caption class="govuk-visually-hidden">@Messages("tai.income.calculation.incomeTable.caption")</caption>
                             <thead class="govuk-table__head">
@@ -125,6 +124,12 @@
                             <p class="govuk-body">@message</p>
                             <p class="govuk-body">@Messages("tai.income.calculation.totalNotMatching.message")</p>
                         }
+                } else if (model.rtiUnavailable) {
+                    @govukInsetText(InsetText(
+                        id = Some("incomeReceivedToDateUnavailable"),
+                        content = Text(messages("tai.income.details.incomeReceivedToDateUnavailable")),
+                        classes = "govuk-!-margin-bottom-4"
+                    ))
                 } else {
                     @govukInsetText(InsetText(
                         id = Some("noPaymentMadeYet"),
