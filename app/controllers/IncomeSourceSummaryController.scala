@@ -19,15 +19,15 @@ package controllers
 import cats.implicits.*
 import controllers.auth.AuthJourney
 import pages.benefits.EndCompanyBenefitsUpdateIncomePage
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{Available, Employment, IabdDetails, TemporarilyUnavailable}
 import uk.gov.hmrc.tai.service.{EmploymentService, IabdService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{EmpIdCheck, TaxAccountHelper}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 import views.html.IncomeSourceSummaryView
-import uk.gov.hmrc.tai.model.domain.{Available, Employment, IabdDetails}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,6 +62,7 @@ class IncomeSourceSummaryController @Inject() (
           taxAccountService.taxCodeIncomes(nino, TaxYear()),
           taxAccountService.taxAccountSummary(nino, TaxYear()).value,
           rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value,
+          rtiService.getAllPaymentsForYear(nino, TaxYear()).value,
           cacheUpdatedIncomeAmountFuture,
           iabdService.getIabds(nino, TaxYear()).value
         ).mapN {
@@ -69,15 +70,19 @@ class IncomeSourceSummaryController @Inject() (
                 Some(employment),
                 taxCodeIncomes,
                 taxAccountSummary,
-                payments,
+                paymentsForEmp,
+                paymentsForYear,
                 cacheUpdatedIncomeAmount,
                 Right(iabds)
               ) =>
             val TaxAccountSummaryDate = taxAccountSummary.fold(_ => None, _.date)
             val estimatedPayOverrides =
               TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, TaxAccountSummaryDate, Some(empId))
-            val rtiAvailable          = payments.exists(_.exists(_.realTimeStatus == Available))
-            val noPaymentsReceivedYet = payments == Right(None)
+
+            val rtiUnavailableMarkerPresent: Boolean =
+              paymentsForYear.exists(_.exists(a => a.sequenceNumber == 0 && a.realTimeStatus == TemporarilyUnavailable))
+
+            val rtiAvailableCalculated: Boolean = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
@@ -85,9 +90,8 @@ class IncomeSourceSummaryController @Inject() (
               optTaxCodeIncome =
                 taxCodeIncomes.fold(_ => None, _.find(_.employmentId.contains(employment.sequenceNumber))),
               employment = employment,
-              payments = payments.toOption.flatten,
-              rtiAvailable = rtiAvailable,
-              noPaymentsReceivedYet = noPaymentsReceivedYet,
+              payments = paymentsForEmp.toOption.flatten,
+              rtiAvailable = if (rtiUnavailableMarkerPresent) false else rtiAvailableCalculated,
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
               estimatedPayOverrides = estimatedPayOverrides
             )
