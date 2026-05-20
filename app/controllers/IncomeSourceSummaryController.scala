@@ -81,7 +81,7 @@ class IncomeSourceSummaryController @Inject() (
             val rtiUnavailableMarkerPresent: Boolean =
               paymentsForYear.exists(_.exists(a => a.sequenceNumber == 0 && a.realTimeStatus == TemporarilyUnavailable))
             val rtiAvailableCalculated: Boolean      = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
-            val noPaymentsReceivedYet: Boolean       = paymentsForEmp == Right(None)
+            val noPaymentsReceivedYet: Boolean       = paymentsForEmp.exists(_.isEmpty)
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
