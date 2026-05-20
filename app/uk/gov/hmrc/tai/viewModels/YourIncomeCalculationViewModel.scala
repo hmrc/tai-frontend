@@ -41,7 +41,7 @@ case class YourIncomeCalculationViewModel(
   payments: Seq[PaymentDetailsViewModel],
   employmentStatus: TaxCodeIncomeSourceStatus,
   latestPayment: Option[LatestPayment],
-  rtiUnavailable: Boolean,
+  noPaymentsReceivedYet: Boolean,
   endDate: Option[LocalDate],
   isPension: Boolean,
   messageWhenTotalNotEqual: Option[String],
@@ -58,7 +58,8 @@ object YourIncomeCalculationViewModel {
     annualAccountForEmployment: Option[AnnualAccount],
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
-    username: String
+    username: String,
+    noPaymentsReceivedYet: Boolean
   )(implicit messages: Messages): YourIncomeCalculationViewModel =
     apply(
       taxCodeIncome = taxCodeIncome,
@@ -67,7 +68,8 @@ object YourIncomeCalculationViewModel {
       maybeIabd = maybeIabd,
       paymentDetails = paymentDetails,
       username = username,
-      estimatedPayOverrides = Map.empty[Int, BigDecimal]
+      estimatedPayOverrides = Map.empty[Int, BigDecimal],
+      noPaymentsReceivedYet = noPaymentsReceivedYet
     )
 
   def apply(
@@ -77,15 +79,13 @@ object YourIncomeCalculationViewModel {
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String,
-    estimatedPayOverrides: Map[Int, BigDecimal]
+    estimatedPayOverrides: Map[Int, BigDecimal],
+    noPaymentsReceivedYet: Boolean
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
-    val latestPayment  = latestPaymentDetails(annualAccountForEmployment)
-    val isPension      = taxCodeIncome.exists(_.componentType == PensionIncome)
-    val status         = employment.employmentStatus
-    val rtiUnavailable = annualAccountForEmployment.exists(account =>
-      account.sequenceNumber == 0 && account.realTimeStatus == TemporarilyUnavailable
-    )
+    val latestPayment = latestPaymentDetails(annualAccountForEmployment)
+    val isPension     = taxCodeIncome.exists(_.componentType == PensionIncome)
+    val status        = employment.employmentStatus
 
     val effectiveTaxCodeIncome: Option[TaxCodeIncome] =
       taxCodeIncome.map { income =>
@@ -119,7 +119,7 @@ object YourIncomeCalculationViewModel {
       paymentDetails,
       status,
       latestPayment,
-      rtiUnavailable,
+      noPaymentsReceivedYet,
       employment.endDate,
       isPension,
       totalNotEqualMessage(status == Live, paymentDetails, latestPayment, isPension),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,8 @@ class YourIncomeCalculationController @Inject() (
       maybeIabdDetail       = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
     } yield (taxCodeIncomeDetails, employmentDetails, accountForEmployment, maybeIabdDetail) match {
       case (Right(taxCodeIncomes), Some(employment), Right(account), Right(maybeIabd)) =>
-        val paymentDetails = paymentsService.filterDuplicates(account)
+        val paymentDetails        = paymentsService.filterDuplicates(account)
+        val noPaymentsReceivedYet = account.isEmpty
 
         val model                     = YourIncomeCalculationViewModel(
           taxCodeIncomes.find(_.employmentId.contains(empId)),
@@ -72,7 +73,8 @@ class YourIncomeCalculationController @Inject() (
           account,
           maybeIabd,
           paymentDetails,
-          request.fullName
+          request.fullName,
+          noPaymentsReceivedYet
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))
@@ -83,7 +85,8 @@ class YourIncomeCalculationController @Inject() (
           None,
           maybeIabd,
           Seq.empty,
-          request.fullName
+          request.fullName,
+          noPaymentsReceivedYet = false
         )
         implicit val user: AuthedUser = request.taiUser
         Ok(yourIncomeCalculation(model))

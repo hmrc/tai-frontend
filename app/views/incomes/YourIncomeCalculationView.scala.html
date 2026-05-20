@@ -124,16 +124,16 @@
                             <p class="govuk-body">@message</p>
                             <p class="govuk-body">@Messages("tai.income.calculation.totalNotMatching.message")</p>
                         }
-                } else if (model.rtiUnavailable) {
+                } else if (model.noPaymentsReceivedYet) {
                     @govukInsetText(InsetText(
-                        id = Some("incomeReceivedToDateUnavailable"),
-                        content = Text(messages("tai.income.details.incomeReceivedToDateUnavailable")),
+                        id = Some("noPaymentMadeYet"),
+                        content = Text(messages("tai.income.calculation.noPaymentMadeYet")),
                         classes = "govuk-!-margin-bottom-4"
                     ))
                 } else {
                     @govukInsetText(InsetText(
-                        id = Some("noPaymentMadeYet"),
-                        content = Text(messages("tai.income.calculation.noPaymentMadeYet")),
+                        id = Some("incomeReceivedToDateUnavailable"),
+                        content = Text(messages("tai.income.details.incomeReceivedToDateUnavailable")),
                         classes = "govuk-!-margin-bottom-4"
                     ))
                 }
