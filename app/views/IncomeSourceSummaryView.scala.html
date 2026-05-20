@@ -144,7 +144,7 @@
                     </p>
                 } else if (model.noPaymentsReceivedYet) {
                     @govukInsetText(InsetText(
-                        id = Some("incomeReceivedToDate"),
+                        id = Some("incomeReceivedToDateNoPayment"),
                         content = Text(
                             if(model.isPension)
                                 messages("tai.income.details.noPaymentPension")
@@ -155,7 +155,7 @@
                     ))
                 } else {
                     @govukInsetText(InsetText(
-                        id = Some("incomeReceivedToDate"),
+                        id = Some("incomeReceivedToDateUnavailable"),
                         content = Text(messages("tai.income.details.incomeReceivedToDateUnavailable")),
                         classes = "govuk-!-margin-bottom-4"
                     ))
