@@ -59,7 +59,6 @@ class WhatDoYouWantToDoController @Inject() (
     nino: Nino
   )(implicit hc: HeaderCarrier): EitherT[Future, UpstreamErrorResponse, Boolean] = {
     val taxYears =
-      // start from the current year which is the most probable year to be present
       (TaxYear().year to (TaxYear().year - applicationConfig.numberOfPreviousYearsToShowIncomeTaxHistory) by -1)
         .map(TaxYear(_))
         .toList
@@ -67,7 +66,6 @@ class WhatDoYouWantToDoController @Inject() (
     taxYears.foldLeft(EitherT.rightT[Future, UpstreamErrorResponse](false)) { (acc, year) =>
       EitherT(acc.value.flatMap {
         case Right(true) =>
-          // Short-circuit if we've already found an employment
           Future.successful(Right[UpstreamErrorResponse, Boolean](true))
         case _           =>
           employmentService
@@ -122,7 +120,7 @@ class WhatDoYouWantToDoController @Inject() (
               Right(None)
             case Left(_)                                      =>
               // don't fail the page when we get an error for CY+1
-              Right(none)
+              Right(None)
           }
         } else {
           EitherT.rightT[Future, UpstreamErrorResponse](None: Option[TaxAccountSummary])

@@ -100,7 +100,7 @@ class IncomeTaxComparisonController @Inject() (
       val cyCodingComponents     = CodingComponentForYear(currentTaxYear, codingComponentsCY)
       val cyPlusOneTaxComponents = CodingComponentForYear(nextTaxYear, codingComponentsCYPlusOne)
       val cyTaxSummary           = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCY)
-      val cyPlusOneTaxSummary    = TaxAccountSummaryForYear(currentTaxYear, taxAccountSummaryCYPlusOne)
+      val cyPlusOneTaxSummary    = TaxAccountSummaryForYear(nextTaxYear, taxAccountSummaryCYPlusOne)
 
       TaxFreeAmountComparisonViewModel(
         Seq(cyCodingComponents, cyPlusOneTaxComponents),

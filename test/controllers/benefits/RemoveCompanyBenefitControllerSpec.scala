@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -632,6 +632,69 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
+      }
+    }
+
+    "have a back link to 'when did you stop getting benefits' page" when {
+      "no benefit value exists in UserAnswers" in {
+        reset(mockJourneyCacheRepository)
+
+        val stopDateBeforeTaxYear = TaxYear().start.minusDays(1).toString
+
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "Other")
+          .setOrException(EndCompanyBenefitsStopDatePage, stopDateBeforeTaxYear)
+          .setOrException(EndCompanyBenefitsRefererPage, "Test")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, "85256651")
+
+        setup(mockUserAnswers)
+        val sut = createSUT
+
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
+        val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc      = Jsoup.parse(contentAsString(result))
+        val backLink = doc.select("a[class=govuk-back-link]")
+
+        backLink.attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+      }
+    }
+
+    "have a back link to 'total value of benefit' page" when {
+      "a benefit value exists in UserAnswers" in {
+        reset(mockJourneyCacheRepository)
+
+        val stopDateWithinTaxYear = TaxYear().start.plusDays(6).toString
+
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsEmploymentNamePage, employment.name)
+          .setOrException(EndCompanyBenefitsTypePage, "Other")
+          .setOrException(EndCompanyBenefitsStopDatePage, stopDateWithinTaxYear)
+          .setOrException(EndCompanyBenefitsValuePage, "12345")
+          .setOrException(EndCompanyBenefitsTelephoneQuestionPage, FormValuesConstants.YesValue)
+          .setOrException(EndCompanyBenefitsTelephoneNumberPage, "85256651")
+
+        setup(mockUserAnswers)
+        val sut = createSUT
+
+        when(mockJourneyCacheRepository.get(any(), any())).thenReturn(Future.successful(Some(mockUserAnswers)))
+        when(mockJourneyCacheRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
+        val result = sut.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc      = Jsoup.parse(contentAsString(result))
+        val backLink = doc.select("a[class=govuk-back-link]")
+
+        backLink
+          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
       }
     }
   }
