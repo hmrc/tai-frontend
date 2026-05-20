@@ -75,14 +75,13 @@ class IncomeSourceSummaryController @Inject() (
                 cacheUpdatedIncomeAmount,
                 Right(iabds)
               ) =>
-            val TaxAccountSummaryDate = taxAccountSummary.fold(_ => None, _.date)
-            val estimatedPayOverrides =
+            val TaxAccountSummaryDate                = taxAccountSummary.fold(_ => None, _.date)
+            val estimatedPayOverrides                =
               TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, TaxAccountSummaryDate, Some(empId))
-
             val rtiUnavailableMarkerPresent: Boolean =
               paymentsForYear.exists(_.exists(a => a.sequenceNumber == 0 && a.realTimeStatus == TemporarilyUnavailable))
-
-            val rtiAvailableCalculated: Boolean = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
+            val rtiAvailableCalculated: Boolean      = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
+            val noPaymentsReceivedYet: Boolean       = paymentsForEmp == Right(None)
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
@@ -92,6 +91,7 @@ class IncomeSourceSummaryController @Inject() (
               employment = employment,
               payments = paymentsForEmp.toOption.flatten,
               rtiAvailable = if (rtiUnavailableMarkerPresent) false else rtiAvailableCalculated,
+              noPaymentsReceivedYet = noPaymentsReceivedYet,
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
               estimatedPayOverrides = estimatedPayOverrides
             )

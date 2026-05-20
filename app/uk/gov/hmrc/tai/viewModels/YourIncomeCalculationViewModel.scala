@@ -83,7 +83,9 @@ object YourIncomeCalculationViewModel {
     val latestPayment  = latestPaymentDetails(annualAccountForEmployment)
     val isPension      = taxCodeIncome.exists(_.componentType == PensionIncome)
     val status         = employment.employmentStatus
-    val rtiUnavailable = annualAccountForEmployment.exists(_.realTimeStatus == TemporarilyUnavailable)
+    val rtiUnavailable = annualAccountForEmployment.exists(account =>
+      account.sequenceNumber == 0 && account.realTimeStatus == TemporarilyUnavailable
+    )
 
     val effectiveTaxCodeIncome: Option[TaxCodeIncome] =
       taxCodeIncome.map { income =>
