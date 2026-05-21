@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     pensionOrPayrollNumber = "PENSION-1122",
     isPension = true,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "475",
     payeNumber = "GA82452"
   )
@@ -61,6 +62,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     pensionOrPayrollNumber = "PENSION-1122",
     isPension = true,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "475",
     payeNumber = "GA82452"
   )
@@ -76,6 +78,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     isPension = false,
     rtiAvailable = true,
     taxDistrictNumber = "123",
+    noPaymentsReceivedYet = false,
     payeNumber = "AB12345"
   )
 
@@ -89,6 +92,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
     pensionOrPayrollNumber = "EMPLOYER-1122",
     isPension = false,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
@@ -107,6 +111,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       employment = employment,
       payments = payments,
       rtiAvailable = true,
+      noPaymentsReceivedYet = false,
       cacheUpdatedIncomeAmount = None,
       estimatedPayOverrides = overrides
     )
@@ -184,6 +189,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             employment = employment,
             payments = payments,
             rtiAvailable = true,
+            noPaymentsReceivedYet = false,
             cacheUpdatedIncomeAmount = Some(300),
             estimatedPayOverrides = overrides
           )
@@ -228,6 +234,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             employment = employment,
             payments = payments,
             rtiAvailable = true,
+            noPaymentsReceivedYet = false,
             cacheUpdatedIncomeAmount = Some(300),
             estimatedPayOverrides = overrides
           )
@@ -274,6 +281,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             employment = employment,
             payments = payments,
             rtiAvailable = true,
+            noPaymentsReceivedYet = false,
             cacheUpdatedIncomeAmount = Some(100),
             estimatedPayOverrides = overrides
           )
@@ -318,6 +326,7 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
             employment = employment,
             payments = payments,
             rtiAvailable = true,
+            noPaymentsReceivedYet = false,
             cacheUpdatedIncomeAmount = Some(100),
             estimatedPayOverrides = overrides
           )
@@ -401,6 +410,43 @@ class IncomeSourceSummaryViewModelSpec extends BaseSpec {
       )
 
       model.estimatedTaxableIncome mustBe Some(BigDecimal(9999))
+    }
+
+    "generate a view model with noPaymentsReceivedYet set to true" when {
+      "no payments are present" in {
+        val taxCodeIncomeSources = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "123L", "Employer", OtherBasisOfOperation, Live)
+        )
+
+        val employment = Employment(
+          name = "test employment",
+          employmentStatus = Live,
+          payrollNumber = Some("EMPLOYER-1122"),
+          startDate = Some(LocalDate.now()),
+          endDate = None,
+          taxDistrictNumber = "123",
+          payeNumber = "AB12345",
+          sequenceNumber = 1,
+          cessationPay = None,
+          hasPayrolledBenefit = false,
+          receivingOccupationalPension = false,
+          employmentType = EmploymentIncome
+        )
+
+        val model = IncomeSourceSummaryViewModel(
+          empId = 1,
+          displayName = "User Name",
+          optTaxCodeIncome = taxCodeIncomeSources.find(_.employmentId.fold(false)(_ == employment.sequenceNumber)),
+          employment = employment,
+          payments = None,
+          rtiAvailable = false,
+          noPaymentsReceivedYet = true,
+          cacheUpdatedIncomeAmount = None,
+          estimatedPayOverrides = None
+        )
+
+        model.noPaymentsReceivedYet mustBe true
+      }
     }
   }
 }
