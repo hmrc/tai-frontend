@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,6 +186,28 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", employment.name))
       }
+
+      "no payments have been received yet" in {
+        val empId = 1
+
+        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+        when(employmentService.employment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = empId))))
+        when(mockIabdService.getIabds(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](Seq(IabdDetails(Some(empId), None, None, None, None)))
+        )
+
+        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](None))
+
+        val result = sut.yourIncomeCalculationPage(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+
+        doc.getElementById("noPaymentMadeYet").text() mustBe "No payment has been made yet."
+      }
     }
 
     "return internal server error" when {
@@ -254,10 +276,8 @@ class YourIncomeCalculationControllerSpec extends BaseSpec {
 
         val annualAccount = AnnualAccount(1, TaxYear().prev, Available, Nil, Nil)
 
-        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
-          .thenReturn(
-            EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Seq(annualAccount))))
-          )
+        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Some(annualAccount)))
 
         val result =
           sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))

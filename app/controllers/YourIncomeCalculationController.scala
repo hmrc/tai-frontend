@@ -58,8 +58,7 @@ class YourIncomeCalculationController @Inject() (
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
       employmentDetails    <- employmentFuture
-      accountForEmployment <-
-        rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value
+      accountForEmployment <- rtiService.getPaymentsForEmploymentAndYear(nino, TaxYear(), empId).value
       iabdDetails          <- iabdDetailsFuture
       maybeIabdDetail       = iabdDetails.map(_.find(_.employmentSequenceNumber.contains(empId)))
     } yield (taxCodeIncomeDetails, employmentDetails, accountForEmployment, maybeIabdDetail) match {
