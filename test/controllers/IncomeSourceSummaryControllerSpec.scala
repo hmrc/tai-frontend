@@ -236,7 +236,7 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
       }
 
-      "asked for pension details and NOT include RTI section where RTI data NOT present" in {
+      "asked for pension details and display not paid by this pension provider message where RTI data NOT present" in {
         setUpPension(Right(None))
         when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(EitherT(Future.successful[Either[UpstreamErrorResponse, Seq[AnnualAccount]]](Right(Nil))))
@@ -246,13 +246,47 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
-        Option(doc.getElementById("incomeReceivedToDate"))
+        Option(doc.getElementById("incomeReceivedToDateNoPayment"))
           .map(_.text()) mustBe Some(
-          "Your income received to date is unavailable. Try again later"
-        ) withClue "html id incomeReceivedToDate"
+          "You have not been paid by this pension provider yet."
+        ) withClue "html id incomeReceivedToDateNoPayment"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
+        verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
+      }
+
+      "asked for employment details and display not paid by this employer message where RTI data NOT present" in {
+        val userAnswers = baseUserAnswers
+        setup(userAnswers)
+
+        when(mockTaxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(Right(taxCodeIncomes)))
+
+        when(mockTaxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+          EitherT.rightT[Future, UpstreamErrorResponse](taxAccountSummary())
+        )
+
+        when(mockEmploymentService.employment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(employment.copy(sequenceNumber = employmentId))))
+
+        when(mockRtiService.getPaymentsForEmploymentAndYear(any(), any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](None))
+
+        when(mockRtiService.getAllPaymentsForYear(any(), any())(any()))
+          .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq.empty[AnnualAccount]))
+
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+
+        Option(doc.getElementById("incomeReceivedToDateNoPayment"))
+          .map(_.text()) mustBe Some(
+          "You have not been paid by this employer yet."
+        ) withClue "html id incomeReceivedToDateNoPayment"
+
         verify(mockEmploymentService, times(1)).employment(any(), any(), any())(any())
       }
 
@@ -265,10 +299,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
-        Option(doc.getElementById("incomeReceivedToDate"))
+        Option(doc.getElementById("incomeReceivedToDateUnavailable"))
           .map(_.text()) mustBe Some(
           "Your income received to date is unavailable. Try again later"
-        ) withClue "html id incomeReceivedToDate"
+        ) withClue "html id incomeReceivedToDateUnavailable"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -283,10 +317,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
-        Option(doc.getElementById("incomeReceivedToDate"))
+        Option(doc.getElementById("incomeReceivedToDateUnavailable"))
           .map(_.text()) mustBe Some(
           "Your income received to date is unavailable. Try again later"
-        ) withClue "html id incomeReceivedToDate"
+        ) withClue "html id incomeReceivedToDateUnavailable"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -301,10 +335,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
         Option(doc.getElementById("estimatedIncome")).map(_.text()) mustBe Some(
           "£1,112"
         ) withClue "html id estimatedIncome"
-        Option(doc.getElementById("incomeReceivedToDate"))
+        Option(doc.getElementById("incomeReceivedToDateUnavailable"))
           .map(_.text()) mustBe Some(
           "Your income received to date is unavailable. Try again later"
-        ) withClue "html id incomeReceivedToDate"
+        ) withClue "html id incomeReceivedToDateUnavailable"
         Option(doc.getElementById("taxCode")).map(_.text()) mustBe Some("150L") withClue "html id taxCode"
         Option(doc.getElementById("empPayeRef")).map(_.text()) mustBe Some("DD/001") withClue "html id empPayeRef"
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
@@ -328,10 +362,10 @@ class IncomeSourceSummaryControllerSpec extends BaseSpec {
 
         val doc = Jsoup.parse(contentAsString(result))
 
-        Option(doc.getElementById("incomeReceivedToDate"))
+        Option(doc.getElementById("incomeReceivedToDateUnavailable"))
           .map(_.text()) mustBe Some(
           "Your income received to date is unavailable. Try again later"
-        ) withClue "html id incomeReceivedToDate"
+        ) withClue "html id incomeReceivedToDateUnavailable"
 
         Option(doc.getElementById("updatePension")).isDefined mustBe false withClue "html id updatePension"
       }
