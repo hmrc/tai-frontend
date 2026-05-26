@@ -41,13 +41,9 @@ class RtiService @Inject() (rtiConnector: RtiConnector)(implicit ec: ExecutionCo
       case Right(payments) =>
         val paymentsForEmployment = payments.filter(_.sequenceNumber == empId)
         if (paymentsForEmployment.isEmpty) {
-          val temporarilyUnavailableAccount =
+          Right(
             payments.find(account => account.sequenceNumber == 0 && account.realTimeStatus == TemporarilyUnavailable)
-
-          temporarilyUnavailableAccount match {
-            case Some(tempAccount) => Right(Some(tempAccount))
-            case None              => Right(None)
-          }
+          )
         } else {
           if (paymentsForEmployment.length > 1) {
             val ex = new RuntimeException(
