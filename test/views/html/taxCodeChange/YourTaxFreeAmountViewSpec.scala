@@ -41,28 +41,28 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     "display a detail section" which {
 
-      "contains 4 columns when previous is present" in {
-        doc.select("th").size() mustBe 8
+      "contains 3 columns when previous is present" in {
+        doc.select("th").size() mustBe 6
       }
 
       "contains no header when previous is not present" in {
         doc(currentOnlyView).select("thead").size() mustBe 0
       }
 
-      "contains 4 cells for each addition and deduction" in {
-        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 8
+      "contains 3 cells for each addition and deduction" in {
+        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 6
       }
 
-      "contains 3 cells for each addition and deduction when previous is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 6
+      "contains 2 cells for each addition and deduction when previous is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 4
       }
 
-      "contains 4 cells for total tax free amount" in {
-        doc.select(".tax-free-amount-comparison-total th").size() mustBe 4
+      "contains 3 cells for total tax free amount" in {
+        doc.select(".tax-free-amount-comparison-total th").size() mustBe 3
       }
 
-      "contains 3 cells for total tax free amount is not present" in {
-        doc(currentOnlyView).select(".tax-free-amount-comparison-total th").size() mustBe 3
+      "contains 2 cells for total tax free amount is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-total th").size() mustBe 2
       }
 
       "contains a heading for the addition section" in {
