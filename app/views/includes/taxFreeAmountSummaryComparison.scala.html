@@ -43,13 +43,10 @@
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">@Messages("tai.incomeTaxComparison.taxFreeAmount.how.we.calculate")</th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric">
-                @Messages("tai.taxFreeAmount.table.previous.taxCodes")
+                    @Messages("tai.taxFreeAmount.table.previous.taxCodes")
                 </th>
                 <th scope="col" class="govuk-table__header govuk-table__header--numeric">
-                @Messages("tai.taxFreeAmount.table.current.taxCodes")
-                </th>
-                <th scope="col" class="govuk-table__header">
-                    <span class="visually-hidden"></span>
+                    @Messages("tai.taxFreeAmount.table.current.taxCodes")
                 </th>
             </tr>
         </thead>
@@ -66,17 +63,16 @@
 
     <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-        @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")
+            @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")
         </td>
         @if(showPreviousColumn) {
             <td class="govuk-table__cell govuk-table__cell--numeric">
-            @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)
+                @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)
             </td>
         }
         <td class="govuk-table__cell govuk-table__cell--numeric">
-        @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
+            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
         </td>
-        <td class="govuk-table__cell"></td>
     </tr>
 }
 
@@ -84,87 +80,83 @@
 
     <tr class="govuk-table__row">
         <td colspan="@taxFreeAmount.columns" class="govuk-table__cell govuk-table__header tax-free-amount-comparison-row-heading" aria-colspan="@taxFreeAmount.columns">
-        @Messages(translations("title"))
+            @Messages(translations("title"))
         </td>
     </tr>
 
-@if(sequence.isEmpty) {
-    <tr class="govuk-table__row tax-free-amount-comparison-blank-row">
-        <td class="govuk-table__cell">@Messages(translations("noItems"))</td>
-        @if(showPreviousColumn) {
+    @if(sequence.isEmpty) {
+        <tr class="govuk-table__row tax-free-amount-comparison-blank-row">
+            <td class="govuk-table__cell">@Messages(translations("noItems"))</td>
+            @if(showPreviousColumn) {
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @YourTaxFreeAmountViewModel.prettyPrint(0)
+                </td>
+            }
             <td class="govuk-table__cell govuk-table__cell--numeric">
-            @YourTaxFreeAmountViewModel.prettyPrint(0)
+                @YourTaxFreeAmountViewModel.prettyPrint(0)
             </td>
+        </tr>
+    } else {
+        @for(pair <- sequence) {
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                    @pair.label.value
+                    @if(pair.current != 0) {
+                        <br>
+                        @pair.label.link.map { link =>
+                            @includes.link(
+                                id = Some(link.id),
+                                copy = Messages(s"tai.taxFreeAmount.table.taxComponent.link.${link.id}"),
+                                url = link.href,
+                                linkClasses = Seq("link-list__item")
+                            )
+                        }
+                    }
+                </td>
+
+                @if(showPreviousColumn) {
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)
+                    </td>
+                }
+
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @YourTaxFreeAmountViewModel.prettyPrint(pair.current)
+                </td>
+            </tr>
         }
-        <td class="govuk-table__cell govuk-table__cell--numeric">
-        @YourTaxFreeAmountViewModel.prettyPrint(0)
-        </td>
-        <td class="govuk-table__cell"></td>
-    </tr>
-} else {
-    @for(pair <- sequence) {
+
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">
-            @pair.label.value
-            </td>
+            <td class="govuk-table__cell">@Messages(translations("totalTitle"))</td>
 
             @if(showPreviousColumn) {
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)
+                    @YourTaxFreeAmountViewModel.totalPrevious(sequence)
                 </td>
             }
 
             <td class="govuk-table__cell govuk-table__cell--numeric">
-            @YourTaxFreeAmountViewModel.prettyPrint(pair.current)
-            </td>
-            <td class="govuk-table__cell">
-            @if(pair.current != 0) {
-                @pair.label.link.map { link =>
-                    @includes.link(
-                        id = Some(link.id),
-                        copy = Messages("taxFreeAmountSummaryComparison.viewUnderpayments"),
-                        url = link.href,
-                        linkClasses = Seq("link-list__item")
-                    )
-                }
-            }
+                @YourTaxFreeAmountViewModel.totalCurrent(sequence)
             </td>
         </tr>
     }
-
-    <tr class="govuk-table__row">
-        <td class="govuk-table__cell">@Messages(translations("totalTitle"))</td>
-
-        @if(showPreviousColumn) {
-            <td class="govuk-table__cell govuk-table__cell--numeric">
-            @YourTaxFreeAmountViewModel.totalPrevious(sequence)
-            </td>
-        }
-
-        <td class="govuk-table__cell govuk-table__cell--numeric">
-        @YourTaxFreeAmountViewModel.totalCurrent(sequence)
-        </td>
-        <td class="govuk-table__cell"></td>
-    </tr>
-}
 }
 
 @totalTaxFreeAmountRow = {
     <tr class="govuk-table__row tax-free-amount-comparison-total">
         <th id="totals-label" scope="row" class="govuk-table__header">
-        @Messages("tai.taxFreeAmount.table.totals.label")
+            @Messages("tai.taxFreeAmount.table.totals.label")
         </th>
 
 
         @if(showPreviousColumn) {
             <th class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
-            @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.annualTaxFreeAmount)
+                @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.annualTaxFreeAmount)
             </th>
         }
 
         <th class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
-        @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
+            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
         </th>
-        <th class="govuk-table__cell"></th>
     </tr>
 }
