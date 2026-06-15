@@ -752,7 +752,7 @@ tai.incomeTaxSummary.annualAmounts.section.totalIncomePara=Your total gross Inco
 
 tai.incomeTaxSummary.ceased.section.heading=Employments that have ended since {0}
 tai.incomeTaxSummary.ceasedIncomeAmount.prefix=Your taxable income to date is
-tai.incomeTaxSummary.employment.link=View employment details
+tai.incomeTaxSummary.ceasedTaxable.income.link=View taxable income
 tai.incomeTaxSummary.employment.section.heading=Your current employment
 tai.incomeTaxSummary.employmentAndBenefits.link=View or update employment details
 tai.incomeTaxSummary.companyBenefits.link=View or update company benefits
