@@ -241,12 +241,13 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
   )(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
     val label = TaxSummaryLabel(codingComponent, taxFreeAmountDetails)
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
-    val link  = createChangeLink(codingComponent, applicationConfig)
+    val link  = createChangeLink(codingComponent, taxFreeAmountDetails, applicationConfig)
     TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
 
   private def createChangeLink(
     codingComponent: CodingComponent,
+    taxFreeAmountDetails: TaxFreeAmountDetails,
     applicationConfig: ApplicationConfig
   )(implicit messages: Messages): ChangeLinkViewModel = {
 
@@ -288,13 +289,26 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
         )
 
       case benefit: BenefitComponentType =>
-        ChangeLinkViewModel(
-          isDisplayed = true,
-          Messages(labelKey(benefit)),
-          controllers.benefits.routes.CompanyBenefitController
-            .redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), benefit)
-            .url
-        )
+        val hasCurrentYearEmployment =
+          codingComponent.employmentId.exists(taxFreeAmountDetails.employmentIdNameMap.contains)
+
+        if (hasCurrentYearEmployment) {
+          ChangeLinkViewModel(
+            isDisplayed = true,
+            Messages(labelKey(benefit)),
+            controllers.benefits.routes.CompanyBenefitController
+              .redirectCompanyBenefitSelection(codingComponent.employmentId.get, benefit)
+              .url
+          )
+        } else {
+          ChangeLinkViewModel(
+            isDisplayed = true,
+            Messages(labelKey(benefit)),
+            routes.ExternalServiceRedirectController
+              .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+              .url
+          )
+        }
 
       case allowance: AllowanceComponentType =>
         if (blockedAllowanceComponentTypes.contains(allowance)) {
