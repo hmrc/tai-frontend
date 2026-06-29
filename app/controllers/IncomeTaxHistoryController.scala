@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package controllers
 import cats.data.EitherT
 import cats.implicits.*
 import controllers.auth.{AuthJourney, AuthenticatedRequest}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.Logging
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -62,21 +62,17 @@ class IncomeTaxHistoryController @Inject() (
     hc: HeaderCarrier
   ): EitherT[Future, UpstreamErrorResponse, IncomeTaxYear] =
     EitherT(for {
-      maybeTaxCodeIncomeDetails <-
-        taxAccountService.taxCodeIncomes(nino, taxYear).map(_.toOption).recover { case _ =>
-          None
-        }
-      employmentDetails         <- employmentService.employments(nino, taxYear).value
-      accounts                  <- rtiService.getAllPaymentsForYear(nino, taxYear).value
-    } yield (maybeTaxCodeIncomeDetails, employmentDetails, accounts) match {
-      case (_, Right(employmentDetails), _) =>
-        val maybeTaxCodesMap                                  = maybeTaxCodeIncomeDetails.map(_.groupBy(_.employmentId))
+      taxCodeIncomes    <- taxAccountService.incomes(nino, taxYear).map(_.taxCodeIncomes).recover { case _ =>
+                             Seq.empty[TaxCodeIncome]
+                           }
+      employmentDetails <- employmentService.employments(nino, taxYear).value
+      accounts          <- rtiService.getAllPaymentsForYear(nino, taxYear).value
+    } yield (employmentDetails, accounts) match {
+      case (Right(employmentDetails), _) =>
+        val taxCodesMap                                       = taxCodeIncomes.groupBy(_.employmentId)
         val incomeTaxHistory: List[IncomeTaxHistoryViewModel] = employmentDetails.map { (employment: Employment) =>
-          val maybeTaxCode: Option[TaxCodeIncome] = for {
-            taxCodesMap <- maybeTaxCodesMap
-            incomes     <- taxCodesMap.get(Some(employment.sequenceNumber))
-            taxCode     <- incomes.headOption
-          } yield taxCode
+          val maybeTaxCode: Option[TaxCodeIncome] =
+            taxCodesMap.get(Some(employment.sequenceNumber)).flatMap(_.headOption)
 
           // TODO: handle a failure vs no payment
           // a failure is treated as no payment instead of marking the value as temporary not available
@@ -103,7 +99,7 @@ class IncomeTaxHistoryController @Inject() (
           )
         }.toList
         Right(IncomeTaxYear(taxYear, incomeTaxHistory))
-      case (_, Left(error), _)              => Left(error)
+      case (Left(error), _)              => Left(error)
     })
 
   def onPageLoad(): Action[AnyContent] = authenticate.authWithValidatePerson.async { implicit request =>
