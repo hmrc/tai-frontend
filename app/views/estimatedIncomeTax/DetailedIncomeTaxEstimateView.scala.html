@@ -143,11 +143,11 @@
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     @if(viewModel.additionalTaxTable.size>1) {
-                    <th class="govuk-table__header" colspan="2">@messages("tax.adjustments")</th>
+                    <th class="govuk-table__header">@messages("tax.adjustments")</th>
                     } else {
-                    <th class="govuk-table__header" colspan="2">@messages("tax.adjustment")</th>
+                    <th class="govuk-table__header">@messages("tax.adjustment")</th>
                     }
-
+                    <th class="govuk-table__header govuk-table__header--numeric">@messages("tax.amount")</th>
                 </tr>
                 </thead>
                 @for(additionalTaxRow <- viewModel.additionalTaxTable){
@@ -178,14 +178,15 @@
             <p id="taxPaidElsewhereTable-desc" class="govuk-body">
                 @messages("tai.estimatedIncome.reductionsTax.desc")</p>
             <table id="taxPaidElsewhereTable" class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">@messages("tai.estimatedIncome.reductionsTax.desc")</caption>
+                <caption class="govuk-table__caption govuk-table__caption--m">@messages("tai.estimatedIncome.reductionsTax.savings.desc")</caption>
                 <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
                     @if(viewModel.reductionTaxTable.size>1) {
-                    <th colspan="2" class="govuk-table__header">@messages("tax.adjustments")</th>
+                    <th class="govuk-table__header">@messages("tax.adjustments")</th>
                     } else {
-                    <th colspan="2" class="govuk-table__header">@messages("tax.adjustment")</th>
+                    <th class="govuk-table__header">@messages("tax.adjustment")</th>
                     }
+                    <th class="govuk-table__header govuk-table__header--numeric">@messages("tax.amount")</th>
                 </tr>
                 </thead>
                 @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
