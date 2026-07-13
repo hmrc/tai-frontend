@@ -56,7 +56,7 @@
                 @if(taxViewType == ZeroTaxView) {
                   <span id="totalEstimateIncome" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(incomeEstimate.get)</span>
                 }else{
-                  <span id="zeroIncomeTotal" class="centered" style="left:@graph.zeroIncomeAsPercentage%">@pounds(graph.zeroIncomeTotal)</span>
+                  <span id="zeroIncomeTotal" style="left:@graph.zeroIncomeAsPercentage%">@pounds(graph.zeroIncomeTotal)</span>
                 }
             </div>
         }
