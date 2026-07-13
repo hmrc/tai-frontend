@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "EMPLOYER-1122",
     isPension = false,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
@@ -54,6 +55,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "EMPLOYER-1122",
     isPension = false,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
@@ -68,6 +70,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "PENSION-1122",
     isPension = true,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
@@ -82,6 +85,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "PENSION-1122",
     isPension = true,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
@@ -96,6 +100,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "PENSION-1122",
     isPension = true,
     rtiAvailable = true,
+    noPaymentsReceivedYet = false,
     taxDistrictNumber = "123",
     payeNumber = "AB12345"
   )
@@ -294,13 +299,14 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           "EMPLOYER-1122",
           isPension = false,
           rtiAvailable = false,
+          noPaymentsReceivedYet = false,
           taxDistrictNumber = "123",
           payeNumber = "AB12345"
         )
 
         val doc = Jsoup.parse(template(model).toString())
         doc must haveElementWithIdAndText(
-          "incomeReceivedToDate",
+          "incomeReceivedToDateUnavailable",
           "Your income received to date is unavailable. Try again later"
         )
         doc must haveParagraphWithText(messages("tai.rti.down.updateEmployment"))
@@ -317,16 +323,65 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
           "EMPLOYER-1122",
           isPension = true,
           rtiAvailable = false,
+          noPaymentsReceivedYet = false,
           taxDistrictNumber = "123",
           payeNumber = "AB12345"
         )
 
         val doc = Jsoup.parse(template(model).toString())
         doc must haveElementWithIdAndText(
-          "incomeReceivedToDate",
+          "incomeReceivedToDateUnavailable",
           "Your income received to date is unavailable. Try again later"
         )
         doc must haveParagraphWithText(messages("tai.rti.down.updatePension"))
+      }
+
+      "no payment received message is displayed for employments" in {
+        val model = IncomeSourceSummaryViewModel(
+          1,
+          "User Name",
+          "Employer",
+          Some(100),
+          0,
+          Some("1100L"),
+          "EMPLOYER-1122",
+          isPension = false,
+          rtiAvailable = false,
+          noPaymentsReceivedYet = true,
+          taxDistrictNumber = "123",
+          payeNumber = "AB12345"
+        )
+
+        val doc = Jsoup.parse(template(model).toString())
+
+        doc must haveElementWithIdAndText(
+          "incomeReceivedToDateNoPayment",
+          "You have not been paid by this employer yet."
+        )
+      }
+
+      "no payment received message is displayed for pension" in {
+        val model = IncomeSourceSummaryViewModel(
+          1,
+          "User Name",
+          "Pension",
+          Some(100),
+          0,
+          Some("1100L"),
+          "PENSION-1122",
+          isPension = true,
+          rtiAvailable = false,
+          noPaymentsReceivedYet = true,
+          taxDistrictNumber = "123",
+          payeNumber = "AB12345"
+        )
+
+        val doc = Jsoup.parse(template(model).toString())
+
+        doc must haveElementWithIdAndText(
+          "incomeReceivedToDateNoPayment",
+          "You have not been paid by this pension provider yet."
+        )
       }
     }
 

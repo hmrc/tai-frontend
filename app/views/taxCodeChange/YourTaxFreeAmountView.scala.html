@@ -34,15 +34,15 @@
 }
 
 @mainTemplate(
-    title = Messages("taxCode.change.yourTaxFreeAmount.title"),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    authedUser = Some(user),
-    pagePrintable = true
+        title = Messages("taxCode.change.yourTaxFreeAmount.title"),
+        backLinkContent = Some(Messages("tai.back-link.upper")),
+        authedUser = Some(user),
+        pagePrintable = true
     ) {
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-        @header()
+            @header()
         </div>
     </div>
 
@@ -60,12 +60,12 @@
 
         <div class="grid-row">
             <div class="form-group">
-            @includes.link(
-                id = Some("seeWhatHappensNext"),
-                copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
-                url = routes.TaxCodeChangeController.whatHappensNext().url,
-                linkClasses = Seq("govuk-button")
-            )
+                @includes.link(
+                    id = Some("seeWhatHappensNext"),
+                    copy = Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"),
+                    url = routes.TaxCodeChangeController.whatHappensNext().url,
+                    linkClasses = Seq("govuk-button")
+                )
             </div>
         </div>
         <div class="print-this">

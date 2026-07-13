@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,14 +75,13 @@ class IncomeSourceSummaryController @Inject() (
                 cacheUpdatedIncomeAmount,
                 Right(iabds)
               ) =>
-            val TaxAccountSummaryDate = taxAccountSummary.fold(_ => None, _.date)
-            val estimatedPayOverrides =
+            val TaxAccountSummaryDate                = taxAccountSummary.fold(_ => None, _.date)
+            val estimatedPayOverrides                =
               TaxAccountHelper.getIabdLatestEstimatedIncome(iabds, TaxAccountSummaryDate, Some(empId))
-
             val rtiUnavailableMarkerPresent: Boolean =
               paymentsForYear.exists(_.exists(a => a.sequenceNumber == 0 && a.realTimeStatus == TemporarilyUnavailable))
-
-            val rtiAvailableCalculated: Boolean = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
+            val rtiAvailableCalculated: Boolean      = paymentsForEmp.exists(_.exists(_.realTimeStatus == Available))
+            val noPaymentsReceivedYet: Boolean       = paymentsForEmp.exists(_.isEmpty)
 
             val vm = IncomeSourceSummaryViewModel.apply(
               empId = empId,
@@ -92,6 +91,7 @@ class IncomeSourceSummaryController @Inject() (
               employment = employment,
               payments = paymentsForEmp.toOption.flatten,
               rtiAvailable = if (rtiUnavailableMarkerPresent) false else rtiAvailableCalculated,
+              noPaymentsReceivedYet = noPaymentsReceivedYet,
               cacheUpdatedIncomeAmount = cacheUpdatedIncomeAmount,
               estimatedPayOverrides = estimatedPayOverrides
             )

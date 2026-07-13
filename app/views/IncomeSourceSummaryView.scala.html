@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,19 +133,30 @@
             <h2 class="govuk-heading-m">@messages("tai.income.details.incomeReceivedToDate")</h2>
             <p class="govuk-body govuk-!-margin-bottom-4">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
                 @if(model.rtiAvailable) {
-                        <p  id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(model.incomeReceivedToDate)</p>
+                    <p  id="incomeReceivedToDate" class="govuk-body govuk-!-font-size-36 govuk-!-font-weight-bold govuk-!-margin-bottom-4">@pounds(model.incomeReceivedToDate)</p>
 
-                         <p class="govuk-body govuk-!-padding-bottom-4">
-                             @link(
-                                id=Some("viewIncomeReceivedToDate"),
-                                url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
-                                copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName),
-                                 linkClasses=Seq("carry-over"))
-                        </p>
+                     <p class="govuk-body govuk-!-padding-bottom-4">
+                         @link(
+                            id=Some("viewIncomeReceivedToDate"),
+                            url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url,
+                            copy=messages("tai.income.details.checkPaymentsReceived.with.employer", model.empOrPensionName),
+                             linkClasses=Seq("carry-over"))
+                    </p>
+                } else if (model.noPaymentsReceivedYet) {
+                    @govukInsetText(InsetText(
+                        id = Some("incomeReceivedToDateNoPayment"),
+                        content = Text(
+                            if(model.isPension)
+                                messages("tai.income.details.noPaymentPension")
+                            else
+                                messages("tai.income.details.noPaymentEmployer")
+                        ),
+                        classes = "govuk-!-margin-bottom-4"
+                    ))
                 } else {
                     @govukInsetText(InsetText(
-                        id = Some("incomeReceivedToDate"),
-                        content = HtmlContent(messages("tai.income.details.incomeReceivedToDateUnavailable")),
+                        id = Some("incomeReceivedToDateUnavailable"),
+                        content = Text(messages("tai.income.details.incomeReceivedToDateUnavailable")),
                         classes = "govuk-!-margin-bottom-4"
                     ))
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ case class IncomeSourceSummaryViewModel(
   pensionOrPayrollNumber: String,
   isPension: Boolean,
   rtiAvailable: Boolean,
+  noPaymentsReceivedYet: Boolean,
   taxDistrictNumber: String,
   payeNumber: String
 ) extends ViewModelHelper {
@@ -48,6 +49,7 @@ object IncomeSourceSummaryViewModel {
     employment: Employment, // Employment API response
     payments: Option[AnnualAccount],
     rtiAvailable: Boolean,
+    noPaymentsReceivedYet: Boolean,
     cacheUpdatedIncomeAmount: Option[Int],
     estimatedPayOverrides: Option[BigDecimal]
   ): IncomeSourceSummaryViewModel = {
@@ -68,6 +70,7 @@ object IncomeSourceSummaryViewModel {
       pensionOrPayrollNumber = employment.payrollNumber.getOrElse(""),
       isPension = employment.receivingOccupationalPension,
       rtiAvailable = rtiAvailable,
+      noPaymentsReceivedYet = noPaymentsReceivedYet,
       taxDistrictNumber = employment.taxDistrictNumber,
       payeNumber = employment.payeNumber
     )

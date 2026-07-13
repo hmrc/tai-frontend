@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,6 +194,31 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
           )
         ).body.replaceAll("\\s+", "")
       }
+
+      "no payments have been received yet" in {
+        val model = incomeCalculationViewModel(
+          payments = Seq.empty,
+          noPaymentsReceivedYet = true
+        )
+
+        val liveView = template(model)
+
+        doc(liveView) must haveElementWithIdAndText("noPaymentMadeYet", "No payment has been made yet.")
+      }
+
+      "rti is unavailable" in {
+        val model = incomeCalculationViewModel(
+          payments = Seq.empty,
+          noPaymentsReceivedYet = false
+        )
+
+        val liveView = template(model)
+
+        doc(liveView) must haveElementWithIdAndText(
+          "incomeReceivedToDateUnavailable",
+          "Your income received to date is unavailable. Try again later"
+        )
+      }
     }
 
     "show payment details" in {
@@ -296,7 +321,8 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
     totalNotEqualMessage: Option[String] = Some(""),
     incomeCalculationMessage: String = "",
     incomeCalculationEstimateMessage: Option[String] = None,
-    hasPayrolledBenefit: Boolean = false
+    hasPayrolledBenefit: Boolean = false,
+    noPaymentsReceivedYet: Boolean = false
   ) = {
 
     val latestPayment =
@@ -307,6 +333,7 @@ class YourIncomeCalculationViewSpec extends TaiViewSpec {
       payments,
       employmentStatus,
       latestPayment,
+      noPaymentsReceivedYet,
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,
       employmentType == PensionIncome,
       totalNotEqualMessage,

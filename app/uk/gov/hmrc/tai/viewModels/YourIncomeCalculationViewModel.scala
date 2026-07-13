@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ case class YourIncomeCalculationViewModel(
   payments: Seq[PaymentDetailsViewModel],
   employmentStatus: TaxCodeIncomeSourceStatus,
   latestPayment: Option[LatestPayment],
+  noPaymentsReceivedYet: Boolean,
   endDate: Option[LocalDate],
   isPension: Boolean,
   messageWhenTotalNotEqual: Option[String],
@@ -57,7 +58,8 @@ object YourIncomeCalculationViewModel {
     annualAccountForEmployment: Option[AnnualAccount],
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
-    username: String
+    username: String,
+    noPaymentsReceivedYet: Boolean
   )(implicit messages: Messages): YourIncomeCalculationViewModel =
     apply(
       taxCodeIncome = taxCodeIncome,
@@ -66,7 +68,8 @@ object YourIncomeCalculationViewModel {
       maybeIabd = maybeIabd,
       paymentDetails = paymentDetails,
       username = username,
-      estimatedPayOverrides = Map.empty[Int, BigDecimal]
+      estimatedPayOverrides = Map.empty[Int, BigDecimal],
+      noPaymentsReceivedYet = noPaymentsReceivedYet
     )
 
   def apply(
@@ -76,7 +79,8 @@ object YourIncomeCalculationViewModel {
     maybeIabd: Option[IabdDetails],
     paymentDetails: Seq[PaymentDetailsViewModel],
     username: String,
-    estimatedPayOverrides: Map[Int, BigDecimal]
+    estimatedPayOverrides: Map[Int, BigDecimal],
+    noPaymentsReceivedYet: Boolean
   )(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
     val latestPayment = latestPaymentDetails(annualAccountForEmployment)
@@ -115,6 +119,7 @@ object YourIncomeCalculationViewModel {
       paymentDetails,
       status,
       latestPayment,
+      noPaymentsReceivedYet,
       employment.endDate,
       isPension,
       totalNotEqualMessage(status == Live, paymentDetails, latestPayment, isPension),

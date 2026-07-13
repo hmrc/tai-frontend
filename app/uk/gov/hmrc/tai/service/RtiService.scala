@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,9 @@ class RtiService @Inject() (rtiConnector: RtiConnector)(implicit ec: ExecutionCo
       case Right(payments) =>
         val paymentsForEmployment = payments.filter(_.sequenceNumber == empId)
         if (paymentsForEmployment.isEmpty) {
-          Right(None)
+          Right(
+            payments.find(account => account.sequenceNumber == 0 && account.realTimeStatus == TemporarilyUnavailable)
+          )
         } else {
           if (paymentsForEmployment.length > 1) {
             val ex = new RuntimeException(
