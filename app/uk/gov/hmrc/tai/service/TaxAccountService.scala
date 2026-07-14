@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import cats.data.EitherT
-import cats.implicits._
+import cats.implicits.*
 import org.apache.pekko.Done
 import play.api.Logging
 import play.api.http.Status.NOT_FOUND
@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 
 import javax.inject.Inject
@@ -40,6 +40,9 @@ class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector)(imp
     hc: HeaderCarrier
   ): Future[Either[String, Seq[TaxCodeIncome]]] =
     taxAccountConnector.taxCodeIncomes(nino, year)
+
+  def incomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Incomes] =
+    taxAccountConnector.incomes(nino, year)
 
   def newTaxCodeIncomes(nino: Nino, year: TaxYear)(implicit
     hc: HeaderCarrier

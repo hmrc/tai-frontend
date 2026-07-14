@@ -29,10 +29,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Available, Employment, Monthly, Payment}
+import uk.gov.hmrc.tai.model.domain.income.{Incomes, NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.service.{EmploymentService, RtiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.viewModels.incomeTaxHistory.IncomeTaxYear
 import utils.{AuthenticatedRequestFixture, BaseSpec, TaxAccountSummaryTestData}
 import views.html.incomeTaxHistory.IncomeTaxHistoryView
 
@@ -46,7 +47,10 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   val employmentService: EmploymentService             = mock[EmploymentService]
   val taxAccountService: TaxAccountService             = mock[TaxAccountService]
   val rtiService: RtiService                           = mock[RtiService]
-  override def beforeEach(): Unit                      = {
+
+  private val emptyIncomes = Incomes(Seq.empty[TaxCodeIncome], NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome]))
+
+  override def beforeEach(): Unit = {
     super.beforeEach()
     reset(taxAccountService, employmentService, rtiService)
     when(rtiService.getAllPaymentsForYear(any(), any())(any()))
@@ -76,75 +80,63 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
   "onPageLoad" must {
     "display the income tax history page" when {
       "employment data is returned" in {
-
         for (_ <- taxYears) {
-
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Right(Seq(taxCodeIncome))
+          when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.successful(
+            Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome]))
           )
-
           when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(empEmployment1, empEmployment2)
             )
         }
-
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc        = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
-
         verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
-        verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
-
+        verify(taxAccountService, times(totalInvocations)).incomes(any(), any())(any())
       }
 
       "pension data is returned" in {
         for (_ <- taxYears) {
-
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-            Right(Seq(taxCodeIncome))
+          when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.successful(
+            Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome]))
           )
           when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(pensionEmployment3, pensionEmployment4)
             )
         }
-
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc        = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
-
-        verify(taxAccountService, times(totalInvocations)).taxCodeIncomes(any(), any())(any())
+        verify(taxAccountService, times(totalInvocations)).incomes(any(), any())(any())
         verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
-
       }
 
       "tax code is empty if the tax account can't be found" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left("not found"))
+          when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.failed(
+            new Exception("not found")
+          )
           when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .rightT[Future, UpstreamErrorResponse](
               Seq(pensionEmployment3, pensionEmployment4)
             )
         }
-
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc        = Jsoup.parse(contentAsString(result))
         doc.body().text() must include(Messages("tai.incomeTax.history.unavailable"))
       }
 
       "tax code is empty if the tax account throws an exception" in {
         for (_ <- taxYears) {
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(
+          when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.failed(
             new Exception("exception")
           )
           when(employmentService.employments(any(), any())(any())) thenReturn EitherT
@@ -152,27 +144,22 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
               Seq(pensionEmployment3, pensionEmployment4)
             )
         }
-
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc        = Jsoup.parse(contentAsString(result))
         doc.body().text() must include(Messages("tai.incomeTax.history.unavailable"))
       }
     }
   }
 
   "getIncomeTaxYear" must {
-
     "return an empty tax code if there isn't one" in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Right(Seq()))
+      when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.successful(emptyIncomes)
       when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
-
       val controller = new TestController
       val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
       result
         .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
         .map(_.incomeTaxHistory.map(_.maybeTaxCode))
@@ -180,13 +167,11 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
     }
 
     "return an empty tax code if the taxAccountService fails to retrieve" in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
+      when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.failed(new Exception("exception"))
       when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
-
       val controller = new TestController
       val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
       result
         .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
         .map(_.incomeTaxHistory.map(_.maybeTaxCode))
@@ -195,42 +180,32 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
 
     "display the income tax history page with no tax history message" when {
       "given taxYear returns no data" in {
-
         for (_ <- taxYears) {
-
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(Left(""))
+          when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.failed(new Exception(""))
           when(employmentService.employments(any(), any())(any())) thenReturn EitherT
             .leftT[Future, Seq[Employment]](
               UpstreamErrorResponse("", 500, 500, Map.empty)
             )
         }
-
         val controller = new TestController
         val result     = controller.onPageLoad()(request)
         status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
+        val doc        = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.incomeTax.history.pageTitle"))
         doc         must haveParagraphWithText(Messages("tai.incomeTax.history.noTaxHistory"))
-
-        verify(taxAccountService, times(totalInvocations))
-          .taxCodeIncomes(any(), any())(any())
-        verify(employmentService, times(totalInvocations))
-          .employments(any(), any())(any())
-
+        verify(taxAccountService, times(totalInvocations)).incomes(any(), any())(any())
+        verify(employmentService, times(totalInvocations)).employments(any(), any())(any())
       }
     }
 
     "return a tax code if it's returned by the taxAccountService" in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-        Right(Seq(taxCodeIncome))
+      when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.successful(
+        Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome]))
       )
       when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
-
       val controller = new TestController
       val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
       result
         .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
         .map(_.incomeTaxHistory.map(_.maybeTaxCode))
@@ -238,15 +213,13 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
     }
 
     "return an error when " in {
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())) thenReturn Future.successful(
-        Right(Seq(taxCodeIncome))
+      when(taxAccountService.incomes(any(), any())(any())) thenReturn Future.successful(
+        Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome]))
       )
       when(employmentService.employments(any(), any())(any())) thenReturn EitherT
         .rightT[Future, UpstreamErrorResponse](Seq(empEmployment1))
-
       val controller = new TestController
       val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
       result
         .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
         .map(_.incomeTaxHistory.map(_.maybeTaxCode))
@@ -258,21 +231,17 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val taxAmountYearToDate = BigDecimal(-187)
         val latestPayment       =
           Payment(LocalDate.now.minusWeeks(1), BigDecimal(1000), taxAmountYearToDate, 0, 100, 10, 5, Monthly)
-
-        val annualAccount = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
-
+        val annualAccount       = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
         when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
-
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq(taxCodeIncome))))
-
+        when(taxAccountService.incomes(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])))
+          )
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(empEmployment1)))
-
-        val controller = new TestController
-        val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
+        val controller          = new TestController
+        val result              = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
         result
           .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
           .map(_.incomeTaxHistory.head.isIncomeTaxRefund)
@@ -285,21 +254,17 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val taxAmountYearToDate = BigDecimal(0)
         val latestPayment       =
           Payment(LocalDate.now.minusWeeks(1), BigDecimal(1000), taxAmountYearToDate, 0, 100, 10, 5, Monthly)
-
-        val annualAccount = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
-
+        val annualAccount       = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
         when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
-
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq(taxCodeIncome))))
-
+        when(taxAccountService.incomes(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])))
+          )
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(empEmployment1)))
-
-        val controller = new TestController
-        val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
+        val controller          = new TestController
+        val result              = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
         result
           .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
           .map(_.incomeTaxHistory.head.isIncomeTaxRefund)
@@ -310,21 +275,17 @@ class IncomeTaxHistoryControllerSpec extends BaseSpec with TaxAccountSummaryTest
         val taxAmountYearToDate = BigDecimal(150)
         val latestPayment       =
           Payment(LocalDate.now.minusWeeks(1), BigDecimal(1000), taxAmountYearToDate, 0, 100, 10, 5, Monthly)
-
-        val annualAccount = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
-
+        val annualAccount       = AnnualAccount(empEmployment1.sequenceNumber, TaxYear(), Available, Seq(latestPayment), Nil)
         when(rtiService.getAllPaymentsForYear(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(annualAccount)))
-
-        when(taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(Right(Seq(taxCodeIncome))))
-
+        when(taxAccountService.incomes(any(), any())(any()))
+          .thenReturn(
+            Future.successful(Incomes(Seq(taxCodeIncome), NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])))
+          )
         when(employmentService.employments(any(), any())(any()))
           .thenReturn(EitherT.rightT[Future, UpstreamErrorResponse](Seq(empEmployment1)))
-
-        val controller = new TestController
-        val result     = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
-
+        val controller          = new TestController
+        val result              = controller.getIncomeTaxYear(nino, TaxYear())(authRequest)
         result
           .getOrElse(IncomeTaxYear(TaxYear(1), List.empty))
           .map(_.incomeTaxHistory.head.isIncomeTaxRefund)

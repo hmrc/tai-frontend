@@ -16,25 +16,25 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.apache.pekko.Done
-import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Application
 import play.api.http.ContentTypes
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.test.Helpers.CONTENT_TYPE
 import uk.gov.hmrc.http.{NotFoundException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.income.*
+import uk.gov.hmrc.tai.model.domain.tax.*
 import utils.{BaseSpec, WireMockHelper}
 
 import java.time.LocalDate
 import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFutures with IntegrationPatience {
 
@@ -490,6 +490,47 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
 
         assertThrows[UnauthorizedException] {
           Await.result(taxAccountConnector.nonTaxCodeIncomes(nino, currentTaxYear), 5.seconds)
+        }
+      }
+    }
+  }
+
+  "incomes" should {
+    "fetch the full incomes object" when {
+      "provided with valid nino" in {
+        server.stubFor(
+          get(nonTaxCodeIncomeUrl)
+            .willReturn(
+              aResponse.withBody(incomeJson.toString())
+            )
+        )
+        val result = taxAccountConnector.incomes(nino, currentTaxYear).futureValue
+        result mustBe income
+      }
+    }
+    "throw a JsResultException" when {
+      "tai sends an invalid json" in {
+        server.stubFor(
+          get(nonTaxCodeIncomeUrl)
+            .willReturn(
+              aResponse.withBody(corruptJsonResponse.toString())
+            )
+        )
+        assertThrows[JsResultException] {
+          Await.result(taxAccountConnector.incomes(nino, currentTaxYear), 5.seconds)
+        }
+      }
+    }
+    "throw an UnauthorizedException" when {
+      "the http response is Unauthorized" in {
+        server.stubFor(
+          get(nonTaxCodeIncomeUrl)
+            .willReturn(
+              unauthorized()
+            )
+        )
+        assertThrows[UnauthorizedException] {
+          Await.result(taxAccountConnector.incomes(nino, currentTaxYear), 5.seconds)
         }
       }
     }

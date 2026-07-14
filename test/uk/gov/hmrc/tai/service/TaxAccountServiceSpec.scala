@@ -24,12 +24,12 @@ import org.mockito.Mockito.when
 import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.*
+import uk.gov.hmrc.tai.model.domain.income.*
+import uk.gov.hmrc.tai.model.domain.tax.*
 import utils.BaseSpec
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
@@ -124,6 +124,17 @@ class TaxAccountServiceSpec extends BaseSpec {
 
       val result = sut.nonTaxCodeIncomes(nino, TaxYear())
       Await.result(result, 5 seconds) mustBe nonTaxCodeIncome
+    }
+  }
+
+  "incomes" must {
+    "return the full incomes object from the connector" in {
+      val sut             = createSut
+      val expectedIncomes = Incomes(taxCodeIncomes, nonTaxCodeIncome)
+      when(taxAccountConnector.incomes(any(), any())(any()))
+        .thenReturn(Future.successful(expectedIncomes))
+      val result          = sut.incomes(nino, TaxYear())
+      Await.result(result, 5 seconds) mustBe expectedIncomes
     }
   }
 
