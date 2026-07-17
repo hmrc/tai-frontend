@@ -24,6 +24,7 @@ import play.api.Logging
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.constants.{TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
@@ -57,6 +58,11 @@ class CompanyBenefitController @Inject() (
              )
       } yield Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
     }
+
+  private lazy val iFormFallback: Result =
+    Redirect(
+      controllers.routes.ExternalServiceRedirectController.auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+    )
 
   def decision: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
@@ -94,10 +100,15 @@ class CompanyBenefitController @Inject() (
           }
 
       case None =>
-        val ex = new IllegalArgumentException("Invalid employment id")
-        Future.successful(errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(ex)))
-    } recover { case NonFatal(e) =>
-      errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))
+        logger.warn("No employment found for company benefit, redirecting to iForm")
+        Future.successful(iFormFallback)
+    } recover {
+      case _: BadRequestException | _: NotFoundException =>
+        logger.warn("Employment lookup failed for company benefit, redirecting to iForm")
+        iFormFallback
+
+      case NonFatal(e) =>
+        errorPagesHandler.internalServerError("CompanyBenefitController exception", Some(e))
     }
   }
 
