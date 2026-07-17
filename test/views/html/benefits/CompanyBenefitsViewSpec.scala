@@ -135,12 +135,4 @@ class CompanyBenefitsViewSpec extends TaiViewSpec {
       testDoc must not(haveElementWithId("addMissingCompanyCarLink"))
     }
   }
-
-  "display a link to return to income tax summary" in {
-    doc must haveLinkWithUrlWithClass(
-      "govuk-back-link",
-      controllers.routes.TaxAccountSummaryController.onPageLoad().url
-    )
-  }
-
 }

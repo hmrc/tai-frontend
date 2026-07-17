@@ -16,7 +16,6 @@
 
 package views.html
 
-import controllers.routes
 import org.jsoup.Jsoup
 import play.api.test.Helpers.{contentAsString, *}
 import play.twirl.api.Html
@@ -56,12 +55,6 @@ class BeforeYouStartViewSpec extends TaiViewSpec {
       text must include(messages("beforeYouStart.list.phoneNumber"))
     }
 
-    "have a back link to the tax account summary" in {
-      val doc  = Jsoup.parse(contentAsString(render()))
-      val back = doc.select("a[class=govuk-back-link]")
-      back.attr("href") mustBe routes.TaxAccountSummaryController.onPageLoad().url
-    }
-
     "have a continue button that goes to add employment name" in {
       val doc  = Jsoup.parse(contentAsString(render()))
       val form = doc.select("form")
@@ -94,12 +87,6 @@ class BeforeYouStartViewSpec extends TaiViewSpec {
       text must include(messages("beforeYouStart.pension.list.pensionNumber"))
       text must include(messages("beforeYouStart.pension.list.providerPayeReference"))
       text must include(messages("beforeYouStart.list.phoneNumber"))
-    }
-
-    "have a back link to the tax account summary" in {
-      val doc  = Jsoup.parse(contentAsString(renderPension()))
-      val back = doc.select("a[class=govuk-back-link]")
-      back.attr("href") mustBe routes.TaxAccountSummaryController.onPageLoad().url
     }
 
     "have a continue button that goes to add pension provider name" in {

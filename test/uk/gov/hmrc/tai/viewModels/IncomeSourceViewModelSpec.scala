@@ -129,11 +129,17 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
             .url
         }
       }
-      "has details link with employment only label for ceased employment" when {
+      "has details link with employment and benefits label for ceased employment" when {
         "income source type is employment" in {
           val sut = IncomeSourceViewModel(taxCodeIncome, ceasedEmployment)
-          sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-          sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
+          sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employmentAndBenefits.link")
+          sut.detailsLinkUrl mustBe controllers.routes.IncomeSourceSummaryController
+            .onPageLoad(employment.sequenceNumber)
+            .url
+          sut.companyBenefitLinkLabel mustBe Messages("tai.incomeTaxSummary.ceasedTaxable.income.link")
+          sut.companyBenefitLinkUrl mustBe controllers.routes.YourIncomeCalculationController
+            .yourIncomeCalculationPage(employment.sequenceNumber)
+            .url
         }
       }
       "has details link with pension label" when {
@@ -247,8 +253,8 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
         }
       }
       "has details link with employment only label " in {
-        sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-        sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
+        sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employmentAndBenefits.link")
+        sut.detailsLinkUrl mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(1).url
       }
     }
   }
@@ -288,7 +294,7 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
         val taxedIncome = TaxedIncome(Some(taxCodeIncomeCeased), ceasedEmployment)
         val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
-        actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.employment.link")
+        actual.detailsLinkLabel mustBe messagesApi("tai.incomeTaxSummary.employmentAndBenefits.link")
       }
 
       "be the correct label for pension income" in {
@@ -309,11 +315,46 @@ class IncomeSourceViewModelSpec extends BaseSpec with TaxAccountSummaryTestData 
       }
     }
 
-    "detailsLinkUrl is yourIncomeCalculationPage for a ceased employment" in {
+    "detailsLinkUrl is incomeDetail for a ceased employment" in {
       val taxedIncome = TaxedIncome(Some(taxCodeIncome), ceasedEmployment)
       val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
 
-      actual.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController
+      actual.detailsLinkUrl mustBe controllers.routes.IncomeSourceSummaryController
+        .onPageLoad(taxedIncome.employment.sequenceNumber)
+        .url
+    }
+
+    "companyBenefitLinkLabel" must {
+      "be the correct label for ceased employments" in {
+        val taxedIncome = TaxedIncome(Some(taxCodeIncomeCeased), ceasedEmployment)
+        val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+
+        actual.companyBenefitLinkLabel mustBe messagesApi("tai.incomeTaxSummary.ceasedTaxable.income.link")
+      }
+
+      "be the correct label for pension income" in {
+        val taxedIncome = TaxedIncome(Some(livePension3), empEmployment1.copy(employmentType = PensionIncome))
+        val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+
+        actual.companyBenefitLinkLabel mustBe messagesApi("tai.incomeTaxSummary.pension.link")
+      }
+
+      "be the correct label for any other income" in {
+        val taxedIncome = TaxedIncome(
+          Some(livePension3.copy(componentType = OtherIncome)),
+          empEmployment1.copy(employmentType = OtherIncome)
+        )
+        val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+
+        actual.companyBenefitLinkLabel mustBe messagesApi("tai.incomeTaxSummary.income.link")
+      }
+    }
+
+    "companyBenefitLinkUrl is incomeDetail for a ceased employment" in {
+      val taxedIncome = TaxedIncome(Some(taxCodeIncome), ceasedEmployment)
+      val actual      = IncomeSourceViewModel.createFromTaxedIncome(taxedIncome)
+
+      actual.companyBenefitLinkUrl mustBe controllers.routes.YourIncomeCalculationController
         .yourIncomeCalculationPage(taxedIncome.employment.sequenceNumber)
         .url
     }
