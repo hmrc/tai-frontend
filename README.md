@@ -41,7 +41,7 @@ To verify the acceptance tests locally, follow the steps:
 - start the sm2 container for TAI profile: `sm2 --start TAI_ALL`
 - stop `TAI_FRONTEND` process running in sm2: `sm2 --stop TAI_FRONTEND`
 - launch tai-frontend in terminal and execute the following command in the tai-frontend project directory: <br> `sbt "run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes"`
-- open [tai-acceptance-test-suite](https://github.com/hmrc/tai-acceptance-test-suite) repository in the terminal and execute the script: `./run_tests_local.sh`
+- open [tai-acceptance-test-suite](https://github.com/hmrc/tai-acceptance-test-suite) repository in the terminal and execute the script: `./run_specs_local.sh`
 
 Endpoints for annual coding testing
 -----------------------------------
@@ -69,6 +69,8 @@ In the context of this service we use the following acronyms:
 * [JSON]: JavaScript Object Notation
 
 * [URL]: Uniform Resource Locator
+
+* DFS: Digital Forms Service
 
 License
 --------
