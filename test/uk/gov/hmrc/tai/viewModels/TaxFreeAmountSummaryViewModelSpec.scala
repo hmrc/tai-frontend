@@ -21,7 +21,7 @@ import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxFreeAmountDetails
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -154,15 +154,37 @@ class TaxFreeAmountSummaryViewModelSpec extends BaseSpec {
 
     "build a displayable Company Benefit LinkViewModel" which {
       "has the employment id and benefit type added to it" when {
-        "coding component is of type BenefitComponentType" in {
+        "the employment id exists in the employment name map" in {
+          val row = TaxFreeAmountSummaryRowViewModel(
+            CodingComponent(TaxableExpensesBenefit, Some(1), 11500, "TaxableExpensesBenefit"),
+            taxFreeAmountDetails,
+            appConfig
+          )
+
+          val url = controllers.benefits.routes.CompanyBenefitController
+            .redirectCompanyBenefitSelection(1, TaxableExpensesBenefit)
+            .url
+
+          row.link mustBe ChangeLinkViewModel(
+            true,
+            Messages("tai.taxFreeAmount.table.taxComponent.TaxableExpensesBenefit"),
+            url
+          )
+        }
+      }
+
+      "redirects to the company benefits iForm" when {
+        "the employment id does not exist in the employment name map" in {
           val row = TaxFreeAmountSummaryRowViewModel(
             CodingComponent(TaxableExpensesBenefit, Some(234), 11500, "TaxableExpensesBenefit"),
             taxFreeAmountDetails,
             appConfig
           )
-          val url = controllers.benefits.routes.CompanyBenefitController
-            .redirectCompanyBenefitSelection(234, TaxableExpensesBenefit)
+
+          val url = routes.ExternalServiceRedirectController
+            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
             .url
+
           row.link mustBe ChangeLinkViewModel(
             true,
             Messages("tai.taxFreeAmount.table.taxComponent.TaxableExpensesBenefit"),

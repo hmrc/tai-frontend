@@ -21,23 +21,24 @@ import controllers.{ControllerViewTestHelper, ErrorPagesHandler}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
-import pages._
-import pages.benefits._
+import pages.*
+import pages.benefits.*
 import pages.testPages.EndCompanyBenefitsTypeTesterPage
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException}
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.UserAnswers
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.*
 import uk.gov.hmrc.tai.model.domain.income.Live
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants._
+import uk.gov.hmrc.tai.util.constants.UpdateOrRemoveCompanyBenefitDecisionConstants.*
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 import utils.BaseSpec
@@ -189,8 +190,8 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
       }
     }
 
-    "throw exception" when {
-      "employment not found" in {
+    "redirect to company benefits iForm" when {
+      "employment is not found" in {
         reset(mockJourneyCacheRepository)
 
         val SUT = createSUT
@@ -203,12 +204,72 @@ class CompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers with Cont
 
         when(mockJourneyCacheRepository.get(any(), any()))
           .thenReturn(Future.successful(Some(mockUserAnswers)))
-        when(mockJourneyCacheRepository.set(any())) thenReturn Future.successful(true)
-        when(employmentService.employment(any(), any(), any())(any())).thenReturn(Future.successful(None))
+
+        when(employmentService.employment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(None))
 
         val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.ExternalServiceRedirectController
+            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+            .url
+        )
+      }
+
+      "employment lookup returns not found" in {
+        reset(mockJourneyCacheRepository)
+
+        val SUT = createSUT
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(employmentService.employment(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new NotFoundException("not found")))
+
+        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.ExternalServiceRedirectController
+            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+            .url
+        )
+      }
+
+      "employment lookup returns bad request" in {
+        reset(mockJourneyCacheRepository)
+
+        val SUT = createSUT
+
+        val mockUserAnswers = UserAnswers("testSessionId", randomNino().nino)
+          .setOrException(EndCompanyBenefitsIdPage, 1)
+          .setOrException(EndCompanyBenefitsTypePage, benefitType)
+          .setOrException(EndCompanyBenefitsRefererPage, "referrer")
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        when(employmentService.employment(any(), any(), any())(any()))
+          .thenReturn(Future.failed(new BadRequestException("bad request")))
+
+        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.routes.ExternalServiceRedirectController
+            .auditAndRedirectService(TaiConstants.CompanyBenefitsIform)
+            .url
+        )
       }
     }
   }
