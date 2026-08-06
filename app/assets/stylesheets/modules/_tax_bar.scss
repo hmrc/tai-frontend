@@ -34,19 +34,20 @@
 .number-bar {
     position:relative;
     width:auto;
-    height: calc(15em / 19);
+    height: calc(25em / 19);
     margin:calc(5em / 19) 0;
 }
 
 .number-bar span {
     position:absolute;
     text-align:center;
-    font-size:19px;
+    font-size:1em;
 }
 
-.number-bar .centred {
+.number-bar .centered {
     width:30%;
     margin-left:-15%;
+    text-align:center;
 }
 
 .number-bar .right {
