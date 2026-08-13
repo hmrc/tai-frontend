@@ -19,13 +19,20 @@
 
 
 @this(mainTemplate: MainTemplate, govukErrorSummary: GovukErrorSummary)
-@(employerName: String,
-  form: Option[Form[_]],
-  heading: String
-)(content: Html
-)(implicit request: Request[_],
-  user: controllers.auth.AuthedUser,
-  messages: Messages)
+
+@(
+    employerName: String,
+    form: Option[Form[_]],
+    heading: String,
+    title: String
+)( 
+    content: Html
+)(implicit 
+    request: Request[_],
+    user: controllers.auth.AuthedUser,
+    messages: Messages
+)
+
 @header() = @{
     ptaHeader(
         formForErrorSummary = form,
@@ -37,16 +44,16 @@
 
 @mainTemplate(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    title = heading,
+    title = title,
     authedUser = Some(user),
     backLinkContent = Some(Messages("tai.back-link.upper")),
     formForErrorSummary = form
 ){
-<div class = "govuk-grid-row">
-    <div class = "govuk-grid-column-two-thirds">
-        @header()
+    <div class = "govuk-grid-row">
+        <div class = "govuk-grid-column-two-thirds">
+            @header()
 
-        @content
+            @content
+        </div>
     </div>
-</div>
 }
