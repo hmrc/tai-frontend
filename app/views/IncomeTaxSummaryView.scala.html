@@ -15,7 +15,7 @@
  *@
 
 @import controllers.auth.DataRequest
-@import includes.{link, ptaHeader}
+@import includes.{link, printThis, ptaHeader}
 @import uk.gov.hmrc.govukfrontend.views.html.components
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
 @import uk.gov.hmrc.govukfrontend.views.html.components.{implicits, *}
@@ -178,9 +178,7 @@
             @* end of annual amounts print only*@
 
             <div class="govuk-!-margin-bottom-9 govuk-!-margin-top-9">
-                <div class="print-this">
-                    <a class="print-this__link" id="printLink" href="#">@messages("tai.label.print")</a>
-                </div>
+                @printThis()
             </div>
 
         </div>

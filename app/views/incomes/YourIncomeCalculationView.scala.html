@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
+@import includes.{printThis, ptaHeader}
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.model.domain.income._
 @import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil => Dates}
@@ -181,9 +181,7 @@
                 }
             }
 
-            <div class="print-this">
-                <a class="print-this__link" href="#" id="printLink">@messages("tai.label.print")</a>
-            </div>
+            @printThis()
 
         </div>
     </div>
