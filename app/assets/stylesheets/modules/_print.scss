@@ -13,11 +13,11 @@
 
   &__link {
       color: #1d70b8 !important;
-      padding-left: 25px;
+      padding: 0 0 2px 25px;
       text-underline-offset: .2em;
       font-family: "GDS Transport", arial, sans-serif;
       background-image: url(../images/printer-icon-hmrc-1.svg);
-      background-position: bottom left;
+      background-position: 2px 0;
       background-repeat: no-repeat;
       background-size: 20px;
       
