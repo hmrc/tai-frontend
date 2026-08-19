@@ -32,7 +32,8 @@
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = Some(incomeForm),
-    heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))
+    heading = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1)),
+    title = messages("tai.updateIncome.CYPlus1.edit.heading", TaxYearRangeUtil.futureTaxYearRange(yearsFromNow = 1))
 ) {
 
     @if(!isPension) {
