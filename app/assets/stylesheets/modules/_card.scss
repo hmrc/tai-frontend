@@ -18,13 +18,13 @@ $black: #0b0c0c;
 }
 
 .card p {
-  font-size: 16px;
+  font-size: 1rem;
   font-family: "GDS Transport", arial, sans-serif;
 }
 
 .cardSize {
-  height: 154px;
-  border-bottom: 0px;
+  min-height: 9.625rem;
+  border-bottom: 0;
 }
 
 .card-heading a {
@@ -63,7 +63,7 @@ $black: #0b0c0c;
 
 .card {
   border: 1px solid #dee0e2;
-  font-size: 16px;
+  font-size: 1rem;
 
   &.inactive {
     color: #6f777b;
@@ -71,11 +71,12 @@ $black: #0b0c0c;
 
   .card-heading {
     margin-top: 0;
-    line-height: 1.5em;
+    line-height: 1.5rem;
   }
 
   .card-body {
-      padding: 12px;
+      height: calc(100% - 1.5rem);
+      padding: .75rem;
 
     *:last-child {
       margin-bottom: 0;
@@ -100,21 +101,21 @@ $black: #0b0c0c;
 
     .detail-large {
       color: #6f777b;
-      font-size: 32px;
+      font-size: 2rem;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: .5rem;
     }
 
     .detail {
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: .5rem;
     }
 
   }
 
   .card-action {
     border-top: 0;
-    padding: 12px;
+    padding: .75rem;
 
     a {
       display: inline;
@@ -148,7 +149,7 @@ $black: #0b0c0c;
       margin: 0;
 
       li {
-        margin: 0 0 1em;
+        margin: 0 0 1rem;
 
         &:last-child {
           margin-bottom: 0;
