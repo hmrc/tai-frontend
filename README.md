@@ -27,7 +27,7 @@ Unit Tests
 ----------
 - **Unit test the entire test suite:**  `sbt test`
 
-- **Unit test a single spec file:**  sbt "test:testOnly *fileName"   (for e.g : `sbt "test:testOnly *AddEmploymentControllerSpec"`)
+- **Unit test a single spec file:**  sbt "Test/testOnly *fileName"   (for e.g : `sbt "Test/testOnly *AddEmploymentControllerSpec"`)
 
 
 Integration tests
@@ -70,7 +70,7 @@ In the context of this service we use the following acronyms:
 
 * [URL]: Uniform Resource Locator
 
-* DFS: Digital Forms Service
+* [DFS]: Digital Forms Service
 
 License
 --------
