@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import includes.ptaHeader
+@import includes.{printThis, ptaHeader}
 @import uk.gov.hmrc.tai.viewModels.TaxCodeViewModelPreviousYears
 
 @this(main: MainTemplate)
@@ -69,9 +69,9 @@
                     }
 
                 </div>
-            <div class="print-this">
-                <a class="print-this__link" id="printLink" href="#">@messages("tai.label.print") </a>
-            </div>
+                
+                @printThis()
+
         </div>
     </div>
 

@@ -15,7 +15,7 @@
  *@
 
 @import controllers.auth.AuthenticatedRequest
-@import includes.ptaHeader
+@import includes.{printThis, ptaHeader}
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.model.domain.Available
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
@@ -133,10 +133,7 @@
                     }
                 }
             </div>
-            <div class="print-this">
-                <a id="printLink" href="#" class="print-this__link" >@Messages("tai.label.print")</a>
-            </div>
-
+            @printThis()
         </div>
     </div>
 }

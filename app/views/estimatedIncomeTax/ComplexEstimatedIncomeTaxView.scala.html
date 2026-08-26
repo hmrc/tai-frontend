@@ -15,7 +15,7 @@
  *@
 
 @import controllers.auth.AuthenticatedRequest
-@import includes.ptaHeader
+@import includes.{printThis, ptaHeader}
 @import uk.gov.hmrc.tai.util.Money.pounds
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexTaxView
 @import views.html.estimatedIncomeTax.navigationLinks
@@ -113,9 +113,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
             </div>
 
             <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
-                <div class="print-this">
-                    <a class="print-this__link" href="#" id="printLink">@Messages("tai.label.print")</a>
-                </div>
+                @printThis()
             </div>
         </div>
         <div class="govuk-grid-column-one-third hide-for-print">

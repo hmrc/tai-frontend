@@ -15,7 +15,8 @@
  *@
 
 @import controllers.auth.AuthenticatedRequest
-@import includes.{ptaHeader, taxFreeAmountSummaryComparison}
+@import includes.{printThis, ptaHeader, taxFreeAmountSummaryComparison}
+
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 @this(mainTemplate: MainTemplate)
@@ -68,9 +69,7 @@
                 )
             </div>
         </div>
-        <div class="print-this">
-            <a class="print-this__link" href="#" id="printLink">@messages("tai.label.print") </a>
-        </div>
+        @printThis()
     </div>
 
     </div>
