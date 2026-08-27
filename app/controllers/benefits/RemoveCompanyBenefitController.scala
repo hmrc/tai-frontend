@@ -126,16 +126,16 @@ class RemoveCompanyBenefitController @Inject() (
     val taxYear                   = TaxYear()
     val userAnswers               = request.userAnswers
 
-    val currentBenefitName    = userAnswers.get(EndCompanyBenefitsNamePage).toString
-    val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).toString
+    val currentBenefitName    = userAnswers.get(EndCompanyBenefitsNamePage).getOrElse("")
+    val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).getOrElse("")
 
     RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form
       .bindFromRequest()
       .fold(
         formWithErrors => {
           val mandatoryJourneyValues = Seq(
-            userAnswers.get(EndCompanyBenefitsNamePage).toString,
-            userAnswers.get(EndCompanyBenefitsEmploymentNamePage).toString
+            userAnswers.get(EndCompanyBenefitsNamePage).getOrElse(""),
+            userAnswers.get(EndCompanyBenefitsEmploymentNamePage).getOrElse("")
           )
           Future.successful(
             BadRequest(
@@ -182,8 +182,8 @@ class RemoveCompanyBenefitController @Inject() (
       .fold(
         formWithErrors => {
           val mandatoryJourneyValues = Seq(
-            request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).toString,
-            request.userAnswers.get(EndCompanyBenefitsNamePage).toString
+            request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).getOrElse(""),
+            request.userAnswers.get(EndCompanyBenefitsNamePage).getOrElse("")
           )
           Future.successful(
             BadRequest(

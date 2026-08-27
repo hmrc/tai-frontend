@@ -144,7 +144,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       val userAnswers: UserAnswers      = request.userAnswers
-      val name: String                  = userAnswers.get(UpdateIncomeNamePage).toString
+      val name: String                  = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
       val paymentToDate: Option[String] = userAnswers.get(UpdateIncomePayToDatePage)
       val latestPayDate: Option[String] = userAnswers.get(UpdatedIncomeDatePage)
 
