@@ -126,25 +126,25 @@ class RemoveCompanyBenefitController @Inject() (
     val taxYear                   = TaxYear()
     val userAnswers               = request.userAnswers
 
-    val currentBenefitName    = userAnswers.get(EndCompanyBenefitsNamePage).getOrElse("")
-    val currentEmploymentName = userAnswers.get(EndCompanyBenefitsEmploymentNamePage).getOrElse("")
+    val benefitNameOption    = userAnswers.get(EndCompanyBenefitsNamePage)
+    val employmentNameOption = userAnswers.get(EndCompanyBenefitsEmploymentNamePage)
 
-    RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => {
-          val mandatoryJourneyValues = Seq(
-            userAnswers.get(EndCompanyBenefitsNamePage).getOrElse(""),
-            userAnswers.get(EndCompanyBenefitsEmploymentNamePage).getOrElse("")
+    (benefitNameOption, employmentNameOption) match {
+      case (Some(currentBenefitName), Some(currentEmploymentName)) =>
+        RemoveCompanyBenefitStopDateForm(currentBenefitName, currentEmploymentName).form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(
+                  removeCompanyBenefitStopDate(formWithErrors, currentBenefitName, currentEmploymentName)
+                )
+              ),
+            date => checkDate(date, userAnswers, user, taxYear)
           )
-          Future.successful(
-            BadRequest(
-              removeCompanyBenefitStopDate(formWithErrors, mandatoryJourneyValues.head, mandatoryJourneyValues(1))
-            )
-          )
-        },
-        date => checkDate(date, userAnswers, user, taxYear)
-      )
+      case _                                                       =>
+        throw new Exception("Benefit name or employment name not found")
+    }
   }
 
   def totalValueOfBenefit(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
@@ -176,27 +176,32 @@ class RemoveCompanyBenefitController @Inject() (
 
   def submitBenefitValue(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
+    val userAnswers               = request.userAnswers
 
     CompanyBenefitTotalValueForm.form
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val mandatoryJourneyValues = Seq(
-            request.userAnswers.get(EndCompanyBenefitsEmploymentNamePage).getOrElse(""),
-            request.userAnswers.get(EndCompanyBenefitsNamePage).getOrElse("")
-          )
-          Future.successful(
-            BadRequest(
-              removeBenefitTotalValue(
-                BenefitViewModel(mandatoryJourneyValues.head, mandatoryJourneyValues(1)),
-                formWithErrors
+          val employmentNameOption = userAnswers.get(EndCompanyBenefitsEmploymentNamePage)
+          val benefitNameOption    = userAnswers.get(EndCompanyBenefitsNamePage)
+
+          (employmentNameOption, benefitNameOption) match {
+            case (Some(employmentName), Some(benefitName)) =>
+              Future.successful(
+                BadRequest(
+                  removeBenefitTotalValue(
+                    BenefitViewModel(employmentName, benefitName),
+                    formWithErrors
+                  )
+                )
               )
-            )
-          )
+            case _                                         =>
+              throw new Exception("Employment name or benefit name not found")
+          }
         },
         totalValue => {
           val rounded            = BigDecimal(FormHelper.stripNumber(totalValue)).setScale(0, RoundingMode.UP)
-          val updatedUserAnswers = request.userAnswers.setOrException(EndCompanyBenefitsValuePage, rounded.toString)
+          val updatedUserAnswers = userAnswers.setOrException(EndCompanyBenefitsValuePage, rounded.toString)
           journeyCacheRepository
             .set(updatedUserAnswers)
             .map(_ => Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber()))

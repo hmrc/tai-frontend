@@ -16,10 +16,10 @@
 
 package controllers.income.estimatedPay.update
 
-import cats.implicits._
+import cats.implicits.*
 import controllers.auth.{AuthJourney, AuthedUser}
 import controllers.{ErrorPagesHandler, TaiBaseController}
-import pages.income._
+import pages.income.*
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -144,7 +144,6 @@ class IncomeUpdateIrregularHoursController @Inject() (
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authenticate.authWithDataRetrieval.async {
     implicit request =>
       val userAnswers: UserAnswers      = request.userAnswers
-      val name: String                  = userAnswers.get(UpdateIncomeNamePage).getOrElse("")
       val paymentToDate: Option[String] = userAnswers.get(UpdateIncomePayToDatePage)
       val latestPayDate: Option[String] = userAnswers.get(UpdatedIncomeDatePage)
 
@@ -153,6 +152,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => {
+            val name      = userAnswers.get(UpdateIncomeNamePage).getOrElse(throw new Exception("Employment name not found"))
             val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
             Future.successful(BadRequest(editIncomeIrregularHours(formWithErrors, viewModel)))
           },
