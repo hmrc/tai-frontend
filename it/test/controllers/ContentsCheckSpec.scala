@@ -1193,33 +1193,29 @@ class ContentsCheckSpec extends IntegrationSpec with MockitoSugar with Matchers 
           "http://localhost:12346/accessibility-statement/check-income-tax"
         )
 
-        if (expectedData.navBarExpected) {
-          val signoutLink = content
-            .getElementsByClass("hmrc-account-menu__link")
-            .asScala
-            .toList
-            .find(_.html().contains("Sign out"))
-            .get
-            .attr("href")
-          signoutLink mustBe "/check-income-tax/signout"
-        } else {
-          content
-            .getElementsByClass("hmrc-account-menu__link")
-            .asScala
-            .toList
-            .find(_.html().contains("Sign out")) mustBe None
+        val signoutLink = content
+          .getElementsByClass("hmrc-sign-out-nav__link")
+          .asScala
+          .toList
+          .find(_.html().contains("Sign out"))
+          .get
+          .attr("href")
+        signoutLink mustBe "/check-income-tax/signout"
+
+        if (!expectedData.navBarExpected) {
+          content.getElementsByClass("govuk-service-navigation__list").asScala.toList mustBe empty
         }
 
-        val languageToggle = content.getElementsByClass("hmrc-language-select__list")
-        languageToggle.text() must include("English")
-        languageToggle.text() must include("Cymraeg")
+        val languageToggle = content.getElementsByClass("hmrc-service-navigation-language-select__list")
+        languageToggle.text() must include("ENG")
+        languageToggle.text() must include("CYM")
 
         val reportIssueText = content.getElementsByClass("hmrc-report-technical-issue").get(0).text()
         val reportIssueLink = content.getElementsByClass("hmrc-report-technical-issue").get(0).attr("href")
         reportIssueText must include("Is this page not working properly? (opens in new tab)")
         reportIssueLink must include("/contact/report-technical-problem")
 
-        val serviceName = content.getElementsByClass("govuk-header__service-name").get(0).text()
+        val serviceName = content.getElementsByClass("govuk-service-navigation__service-name").get(0).text()
         serviceName mustBe expectedData.headerTitle
       }
     }

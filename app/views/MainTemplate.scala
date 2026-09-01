@@ -24,6 +24,7 @@ import play.api.i18n.Messages
 import play.api.mvc.RequestHeader
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.ServiceURLs
+import uk.gov.hmrc.sca.config.BackLinkConfig
 import uk.gov.hmrc.sca.models.BannerConfig
 import uk.gov.hmrc.sca.services.WrapperService
 import views.html.includes.{AdditionalJavascript, HeadBlock}
@@ -74,6 +75,17 @@ class MainTemplateImpl @Inject() (
       }
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
+    val backLinkConfig: Option[BackLinkConfig] =
+      if (backLinkContent.isDefined) {
+        backLinkUrl match {
+          case Some("#") => Some(BackLinkConfig.JsBack)
+          case Some(url) => Some(BackLinkConfig.UrlBack(url))
+          case None      => None
+        }
+      } else {
+        None
+      }
+
     logger.debug(s"SCA Wrapper layout used for request `${requestHeader.uri}``")
     wrapperService.standardScaLayout(
       content = content,
@@ -84,12 +96,7 @@ class MainTemplateImpl @Inject() (
         signOutUrl = Some(controllers.routes.ServiceController.serviceSignout().url),
         accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl)
       ),
-//    sidebarContent: Option[Html] = None,
-      timeOutUrl = Some(controllers.routes.ServiceController.sessionExpired().url),
-      keepAliveUrl = controllers.routes.ServiceController.keepAlive().url,
-      showBackLinkJS = backLinkContent.isDefined && backLinkUrl.contains("#"),
-      backLinkUrl = if (backLinkContent.isDefined) backLinkUrl else None,
-      // showSignOutInHeader: Boolean = false,
+      backLinkConfig = backLinkConfig,
       styleSheets = Seq(headBlock()),
       scripts = Seq(scripts()),
       bannerConfig = BannerConfig(false, true, false),
