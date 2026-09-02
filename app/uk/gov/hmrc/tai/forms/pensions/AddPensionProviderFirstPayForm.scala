@@ -23,7 +23,12 @@ import uk.gov.hmrc.tai.util.constants.AddPensionFirstPayChoiceConstants.FirstPay
 
 object AddPensionProviderFirstPayForm {
 
-  def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
-    single(FirstPayChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), _.isDefined))
+  def form(pensionProviderName: String)(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
+    single(
+      FirstPayChoice -> optional(text).verifying(
+        Messages("tai.addPensionProvider.firstPay.error.selectOption", pensionProviderName),
+        _.isDefined
+      )
+    )
   )
 }

@@ -216,6 +216,7 @@ tai.addPensionProvider.errorPage.para2=Check back after your first payment and i
 tai.addPensionProvider.errorPage.title=We cannot add this pension provider yet
 tai.addPensionProvider.firstPay.customGaTitle=Have you received your first pension payment?
 tai.addPensionProvider.firstPay.legend=Have you received your first payment?
+tai.addPensionProvider.firstPay.error.selectOption=Select yes if you have received your first pension payment from {0}
 tai.addPensionProvider.firstPay.title=Have you received your first pension payment from {0}?
 tai.addPensionProvider.firstPay.pagetitle=Have you received your first pension payment from this employer?
 tai.addPensionProvider.pensionNumber.customGaTitle=Do you know your pension number for this pension provider?

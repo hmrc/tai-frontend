@@ -43,13 +43,16 @@ class AddPensionProviderFirstPayFormSpec extends BaseSpec {
       val invalidChoice   = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))
+      invalidatedForm.errors.head.messages mustBe List(
+        Messages("tai.addPensionProvider.firstPay.error.selectOption", pensionProviderName)
+      )
       invalidatedForm.value mustBe None
     }
   }
 
-  val choice = AddPensionFirstPayChoiceConstants.FirstPayChoice
+  val choice                      = AddPensionFirstPayChoiceConstants.FirstPayChoice
+  private val pensionProviderName = "Allied Oatcakes"
 
-  private val form = AddPensionProviderFirstPayForm.form
+  private val form = AddPensionProviderFirstPayForm.form(pensionProviderName)
 
 }

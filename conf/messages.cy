@@ -210,6 +210,7 @@ tai.addPensionProvider.errorPage.para2=Gwiriwch eto ar ôl eich taliad cyntaf ac
 tai.addPensionProvider.errorPage.title=Ni allwn ychwanegu’r darparwr pensiwn hwn eto
 tai.addPensionProvider.firstPay.customGaTitle=Ydych chi wedi cael eich taliad pensiwn cyntaf?
 tai.addPensionProvider.firstPay.legend=A ydych wedi cael eich taliad cyntaf?
+tai.addPensionProvider.firstPay.error.selectOption=Dewiswch ie os ydych wedi cael eich taliad pensiwn cyntaf oddi wrth {0}
 tai.addPensionProvider.firstPay.title=A ydych wedi cael eich taliad pensiwn cyntaf oddi wrth {0}?
 tai.addPensionProvider.firstPay.pagetitle=A ydych wedi cael eich taliad pensiwn cyntaf gan y cyflogwr hwn?
 tai.addPensionProvider.pensionNumber.customGaTitle=A ydych yn gwybod beth yw’ch rhif pensiwn ar gyfer y darparwr pensiwn hwn?
