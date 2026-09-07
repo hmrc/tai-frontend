@@ -63,7 +63,7 @@ case class LocalDateFormatter(
   private def extractMonth(maybeMonth: Option[String]) =
     Either
       .catchNonFatal(maybeMonth.map { str =>
-        val month = Integer.parseInt(str.filterNot(_.isWhitespace))
+        val month = convertMonth(str).getOrElse(Integer.parseInt(str.filterNot(_.isWhitespace)))
         if (month < 1 || month > 12) throw new NumberFormatException("1 <= Month <= 12")
         month
       }.get)
@@ -77,6 +77,64 @@ case class LocalDateFormatter(
         day
       }.get)
       .leftMap(_ => List(FormError(key = formDay, message = mustBeValidDay)))
+
+  private val monthMap: Map[String, Int] = Map(
+    // English full
+    "january"    -> 1,
+    "february"   -> 2,
+    "march"      -> 3,
+    "april"      -> 4,
+    "may"        -> 5,
+    "june"       -> 6,
+    "july"       -> 7,
+    "august"     -> 8,
+    "september"  -> 9,
+    "october"    -> 10,
+    "november"   -> 11,
+    "december"   -> 12,
+    // English short
+    "jan"        -> 1,
+    "feb"        -> 2,
+    "mar"        -> 3,
+    "apr"        -> 4,
+    "may"        -> 5,
+    "jun"        -> 6,
+    "jul"        -> 7,
+    "aug"        -> 8,
+    "sep"        -> 9,
+    "oct"        -> 10,
+    "nov"        -> 11,
+    "dec"        -> 12,
+    // Welsh full
+    "ionawr"     -> 1,
+    "chwefror"   -> 2,
+    "mawrth"     -> 3,
+    "ebrill"     -> 4,
+    "mai"        -> 5,
+    "mehefin"    -> 6,
+    "gorffennaf" -> 7,
+    "awst"       -> 8,
+    "medi"       -> 9,
+    "hydref"     -> 10,
+    "tachwedd"   -> 11,
+    "rhagfyr"    -> 12,
+    // Welsh short
+    "ion"        -> 1,
+    "chwef"      -> 2,
+    "maw"        -> 3,
+    "ebr"        -> 4,
+    "mai"        -> 5,
+    "meh"        -> 6,
+    "gorff"      -> 7,
+    "awst"       -> 8,
+    "medi"       -> 9,
+    "hyd"        -> 10,
+    "tach"       -> 11,
+    "rhag"       -> 12
+  )
+
+  private def convertMonth(month: String): Option[Int] =
+    monthMap.get(month.toLowerCase)
 
   private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String]) = {
     val dayOrError   = extractDay(maybeDay)
@@ -109,26 +167,30 @@ case class LocalDateFormatter(
     }
   }
 
-  def errorIfEmpty(emptyDay: Boolean, emptyMonth: Boolean, emptyYear: Boolean): Seq[FormError] = {
+  def errorIfEmpty(emptyDay: Boolean, emptyMonth: Boolean, emptyYear: Boolean): Seq[FormError] =
     (emptyDay, emptyMonth, emptyYear) match {
       case (true, true, true)    =>
-        FormError(key = formDay, enterDate).some
+        Seq(
+          FormError(key = formDay, enterDate),
+          FormError(key = formDay, enterDay),
+          FormError(key = formMonth, enterMonth),
+          FormError(key = formYear, enterYear)
+        )
       case (true, false, false)  =>
-        FormError(key = formDay, enterDay).some
+        Seq(FormError(key = formDay, enterDay))
       case (false, true, false)  =>
-        FormError(key = formMonth, enterMonth).some
+        Seq(FormError(key = formMonth, enterMonth))
       case (false, false, true)  =>
-        FormError(key = formYear, enterYear).some
+        Seq(FormError(key = formYear, enterYear))
       case (true, true, false)   =>
-        FormError(key = formDay, enterDayAndMonth).some
+        Seq(FormError(key = formDay, enterDayAndMonth), FormError(key = formMonth, enterMonth))
       case (true, false, true)   =>
-        FormError(key = formDay, enterDayAndYear).some
+        Seq(FormError(key = formDay, enterDayAndYear), FormError(key = formYear, enterYear))
       case (false, true, true)   =>
-        FormError(key = formMonth, enterMonthAndYear).some
+        Seq(FormError(key = formMonth, enterMonthAndYear), FormError(key = formYear, enterYear))
       case (false, false, false) =>
-        none
+        Seq.empty
     }
-  }.toSeq
 }
 
 object LocalDateFormatter {

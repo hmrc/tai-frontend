@@ -160,7 +160,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
-        doc.select("#tellUsStartDateForm-year").get(0).attributes.get("value") mustBe ""
+        doc.select("input[id=tellUsStartDateForm.year]").get(0).attributes.get("value") mustBe ""
       }
 
       "the request has an authorised session and a previously supplied start date is present in cache" in {
@@ -177,7 +177,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           status(result) mustBe OK
           val doc = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.addEmployment.startDateForm.pagetitle"))
-          doc.select("#tellUsStartDateForm-year").get(0).attributes.get("value") mustBe "2017"
+          doc.select("input[id=tellUsStartDateForm.year]").get(0).attributes.get("value") mustBe "2017"
         }
       }
 
