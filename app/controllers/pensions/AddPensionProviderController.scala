@@ -111,7 +111,7 @@ class AddPensionProviderController @Inject() (
       case (Some(mandatoryValues), optionalVals) =>
         Ok(
           addPensionReceivedFirstPayView(
-            AddPensionProviderFirstPayForm.form.fill(optionalVals),
+            AddPensionProviderFirstPayForm.form(mandatoryValues).fill(optionalVals),
             mandatoryValues
           )
         )
@@ -122,12 +122,13 @@ class AddPensionProviderController @Inject() (
   def submitFirstPay(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
-    AddPensionProviderFirstPayForm.form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          request.userAnswers.get(AddPensionProviderNamePage) match {
-            case Some(pensionProviderName) =>
+    request.userAnswers.get(AddPensionProviderNamePage) match {
+      case Some(pensionProviderName) =>
+        AddPensionProviderFirstPayForm
+          .form(pensionProviderName)
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
               Future.successful(
                 BadRequest(
                   addPensionReceivedFirstPayView(
@@ -135,20 +136,20 @@ class AddPensionProviderController @Inject() (
                     pensionProviderName
                   )
                 )
-              )
-            case None                      =>
-              Future.successful(InternalServerError("No pension Data present in cache"))
-          },
-        yesNo =>
-          for {
-            _ <- journeyCacheRepository
-                   .set(request.userAnswers.setOrException(AddPensionProviderFirstPaymentPage, yesNo.getOrElse("")))
-          } yield yesNo match {
-            case Some(FormValuesConstants.YesValue) =>
-              Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
-            case _                                  => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
-          }
-      )
+              ),
+            yesNo =>
+              for {
+                _ <- journeyCacheRepository
+                       .set(request.userAnswers.setOrException(AddPensionProviderFirstPaymentPage, yesNo.getOrElse("")))
+              } yield yesNo match {
+                case Some(FormValuesConstants.YesValue) =>
+                  Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
+                case _                                  => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
+              }
+          )
+      case None                      =>
+        Future.successful(InternalServerError("No pension Data present in cache"))
+    }
   }
 
   def cantAddPension(): Action[AnyContent] = authenticate.authWithDataRetrieval { implicit request =>

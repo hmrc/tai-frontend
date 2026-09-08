@@ -18,11 +18,9 @@ package views.html.pensions
 
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
-import uk.gov.hmrc.tai.util.constants.{AddEmploymentFirstPayChoiceConstants, AddPensionFirstPayChoiceConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.{AddPensionFirstPayChoiceConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import views.html.employments.AddEmploymentFirstPayFormView
 
 class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
 
@@ -46,13 +44,14 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
 
     "display an error notification" when {
       "no user choice is made" in {
-        val noPayrollNumberChooseError           = messages("tai.error.chooseOneOption")
-        val expectedErrorMessage                 = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
+        val noPayrollNumberChooseError           =
+          messages("tai.addPensionProvider.firstPay.error.selectOption", pensionProviderName)
+        val expectedErrorMessage                 = messages("tai.error.message") + " " + noPayrollNumberChooseError
         val formWithErrors: Form[Option[String]] =
-          AddEmploymentFirstPayForm.form
-            .withError(AddEmploymentFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
-        val add_employment_first_pay_form        = inject[AddEmploymentFirstPayFormView]
-        def view: Html                           = add_employment_first_pay_form(formWithErrors, pensionProviderName)
+          AddPensionProviderFirstPayForm
+            .form(pensionProviderName)
+            .withError(AddPensionFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
+        def view: Html                           = addPensionReceivedFirstPay(formWithErrors, pensionProviderName)
 
         val errorMessage = doc(view).select(".govuk-error-message").text
         errorMessage mustBe expectedErrorMessage
@@ -62,11 +61,13 @@ class AddPensionReceivedFirstPayViewSpec extends TaiViewSpec {
 
   private lazy val pensionProviderName = "Allied Oatcakes"
 
-  private val pensionFirstPayForm: Form[Option[String]] = AddPensionProviderFirstPayForm.form.bind(
-    Map(
-      AddPensionFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
+  private val pensionFirstPayForm: Form[Option[String]] = AddPensionProviderFirstPayForm
+    .form(pensionProviderName)
+    .bind(
+      Map(
+        AddPensionFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
+      )
     )
-  )
 
   private val addPensionReceivedFirstPay = inject[AddPensionReceivedFirstPayView]
   override def view: Html                = addPensionReceivedFirstPay(pensionFirstPayForm, pensionProviderName)
