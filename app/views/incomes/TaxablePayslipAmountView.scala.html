@@ -41,8 +41,8 @@
             @govukErrorSummary(ErrorSummary(errorList = viewModel.form.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</h2>
-        <h1 class="govuk-heading-xl carry-over">@Messages(viewModel.title)</h1>
+        <h2 class="govuk-caption-l hmrc-caption-l carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.howToUpdate.preHeading", viewModel.employer.name)</h2>
+        <h1 class="govuk-heading-l carry-over">@Messages(viewModel.title)</h1>
 
         <p class="govuk-body">@messages("tai.taxablePayslip.taxablePay.explanation")</p>
         <p class="govuk-body">@messages("tai.taxablePayslip.shownOnPayslip")</p>

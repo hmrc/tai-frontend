@@ -243,16 +243,19 @@ trait JsoupMatchers {
   ) =
     new CssSelectorWithTextMatcher(
       s"$expectedPreHeadingAnnouncement $expectedText",
-      ".govuk-caption-xl.hmrc-caption-xl"
+      ".govuk-caption-l.hmrc-caption-l"
     )
 
   def havePreHeadingWithTextGds(expectedText: String, expectedPreHeadingAnnouncement: String = "This section is") =
-    new CssSelectorWithTextMatcher(s"$expectedPreHeadingAnnouncement $expectedText", "span.govuk-caption-xl")
+    new CssSelectorWithTextMatcher(
+      s"$expectedPreHeadingAnnouncement $expectedText",
+      ".govuk-caption-xl.hmrc-caption-xl"
+    )
 
   def havePreHeadingWithTextGdsNew(expectedText: String, expectedPreHeadingAnnouncement: String = "This section is") =
     new CssSelectorWithTextMatcher(
       s"$expectedPreHeadingAnnouncement $expectedText",
-      ".govuk-caption-xl.hmrc-caption-xl.carry-over"
+      ".govuk-caption-l.hmrc-caption-l.carry-over"
     )
   def haveH2HeadingWithText(expectedText: String)                                                                    = new TagWithTextMatcher(expectedText, "h2")
   def haveH3HeadingWithText(expectedText: String)                                                                    = new TagWithTextMatcher(expectedText, "h3")

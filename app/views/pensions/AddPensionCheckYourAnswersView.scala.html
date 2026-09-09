@@ -25,7 +25,9 @@
 @header() = @{
     ptaHeader(
         mainHeadingText = Messages("tai.checkYourAnswers.title"),
-        preHeadingText = viewModel.preHeading
+        preHeadingText = viewModel.preHeading,
+        mainHeadingCssClass = Some("govuk-heading-l"),
+        preHeadingCssClass = Some("govuk-caption-l hmrc-caption-l")
         )
 }
 

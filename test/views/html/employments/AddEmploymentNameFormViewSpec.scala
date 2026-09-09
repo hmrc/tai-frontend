@@ -34,7 +34,7 @@ class AddEmploymentNameFormViewSpec extends TaiViewSpec {
 
     "display label with preheading" in {
       doc must haveElementAtPathWithText(
-        ".govuk-caption-xl",
+        ".govuk-caption-l",
         messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.employment")
       )
     }

@@ -48,7 +48,7 @@
                     @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
                 }
 
-                <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.endEmployment.preHeadingText")</h2>
+                <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.endEmployment.preHeadingText")</h2>
                 @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
 
                 @govukDateInput(DateInput(
@@ -80,7 +80,7 @@
                         legend = Some(Legend(
                             content = Text(messages("tai.endEmployment.endDateForm.title",  viewmodel.employerName)),
                             isPageHeading = true,
-                            classes = "govuk-fieldset__legend--xl carry-over")
+                            classes = "govuk-fieldset__legend--l carry-over")
                         )))),
                 )
                 @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))

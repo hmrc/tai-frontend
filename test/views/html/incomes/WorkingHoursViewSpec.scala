@@ -31,7 +31,7 @@ class WorkingHoursViewSpec extends TaiViewSpec {
 
     "display label with heading" in {
       doc must haveElementAtPathWithText(
-        ".govuk-fieldset__legend--xl",
+        ".govuk-fieldset__legend--l",
         messages("tai.workingHours.heading", employerName)
       )
     }

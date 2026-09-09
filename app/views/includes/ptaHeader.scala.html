@@ -26,6 +26,7 @@
         customBackLinkContent: Option[Html] = None,
         govukErrorSummary: Option[GovukErrorSummary] = None,
         showPreHeading: Boolean = true,
+        preHeadingCssClass: Option[String] = None,
         mainHeadingCssClass: Option[String] = None
 )(implicit m: Messages)
 
@@ -46,11 +47,11 @@
 }
 
 @if(showPreHeading) {
-    <h2 class="govuk-caption-xl hmrc-caption-xl carry-over">
+    <h2 class="@preHeadingCssClass.getOrElse("govuk-caption-xl hmrc-caption-xl") carry-over">
         <span class="govuk-visually-hidden">@preHeadingHidden </span>@Html(preHeadingText)
     </h2>
 } else {
-    <span class="govuk-caption-l">@Html(preHeadingText)</span>
+    <span class="@preHeadingCssClass.getOrElse("govuk-caption-l")">@Html(preHeadingText)</span>
 }
 
 <h1 class="@mainHeadingCssClass.getOrElse("govuk-heading-xl") carry-over">

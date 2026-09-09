@@ -45,7 +45,7 @@
                     @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
                 }
 
-                <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("add.missing.employment")</h2>
+                <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("add.missing.employment")</h2>
 
                 @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate()) {
                     @govukDateInput(DateInput(
@@ -77,7 +77,7 @@
                         fieldset =  Some(Fieldset(
                             legend = Some(Legend(
                                 content = Text(messages("tai.addEmployment.startDateForm.title", employmentName)),
-                                classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                                classes="govuk-fieldset__legend govuk-fieldset__legend--l break-word",
                                 isPageHeading = true)
                             )))),
                         )
