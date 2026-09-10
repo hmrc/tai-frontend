@@ -134,34 +134,38 @@ case class LocalDateFormatter(
   )
 
   private def convertMonth(month: String): Option[Int] =
-    monthMap.get(month.toLowerCase)
+    monthMap.get(month.replaceAll(" ", "").toLowerCase)
 
   private def validateDate(maybeDay: Option[String], maybeMonth: Option[String], maybeYear: Option[String]) = {
     val dayOrError   = extractDay(maybeDay)
     val monthOrError = extractMonth(maybeMonth)
     val yearOrError  = extractYear(maybeYear)
 
-    val inputDate = (dayOrError, monthOrError, yearOrError)
-      .parMapN { case (day, month, year) =>
-        if (year < 1900) {
-          Left(List(FormError(key = formYear, message = mustBeAfter1900)))
-        } else {
-          Either
-            .catchNonFatal(LocalDate.of(year, month, day))
-            .leftMap(_ => List(FormError(key = formDay, message = mustBeReal)))
-        }
+    val inputDate = (dayOrError, monthOrError, yearOrError).parMapN { case (day, month, year) =>
+      if (year < 1900) {
+        Left(List(FormError(key = formYear, message = mustBeAfter1900)))
+      } else {
+        Either
+          .catchNonFatal(LocalDate.of(year, month, day))
+          .leftMap(_ =>
+            List(
+              FormError(key = formDay, message = mustBeReal),
+              FormError(key = formMonth, message = mustBeReal),
+              FormError(key = formYear, message = mustBeReal)
+            )
+          )
       }
-      .flatten
-      .leftMap {
-        case errs if errs.size > 1 =>
-          List(FormError(key = formDay, message = mustBeReal))
-        case errs                  =>
-          errs
-      }
+    }.flatten
 
     inputDate.flatMap {
       case date if date.isAfter(LocalDate.now()) =>
-        Left(Seq(FormError(key = formDay, message = mustBeFuture)))
+        Left(
+          Seq(
+            FormError(key = formDay, message = mustBeFuture),
+            FormError(key = formMonth, message = mustBeFuture),
+            FormError(key = formYear, message = mustBeFuture)
+          )
+        )
       case x                                     =>
         Right(x)
     }
