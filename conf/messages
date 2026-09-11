@@ -157,6 +157,7 @@ tai.addEmployment.employmentErrorPage.title=We cannot add this employer yet
 tai.addEmployment.employmentFirstPay.customGaTitle=Have you received your first pay from this employer?
 tai.addEmployment.employmentFirstPay.legend=Have you received your first pay from {0}?
 tai.addEmployment.employmentFirstPay.title=Have you received your first pay from {0}?
+tai.addEmployment.employmentFirstPay.error=Select yes if you have received your first pay from {0}?
 tai.addEmployment.employmentPayrollNumber.bullet1=employee ID
 tai.addEmployment.employmentPayrollNumber.bullet2=employee number
 tai.addEmployment.employmentPayrollNumber.bullet3=pay reference number
