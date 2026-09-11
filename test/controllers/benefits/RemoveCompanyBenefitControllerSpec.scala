@@ -548,11 +548,11 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title()                                                       must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
+        doc.title()                                                     must include(Messages("tai.canWeContactByPhone.title"))
+        doc.getElementsByClass("govuk-caption-l hmrc-caption-l").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
         )
-        doc                                                               must haveBackLink
+        doc                                                             must haveBackLink
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
@@ -624,11 +624,11 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
 
         val doc = Jsoup.parse(contentAsString(result))
 
-        doc.title()                                                       must include(Messages("tai.canWeContactByPhone.title"))
-        doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text() must endWith(
+        doc.title()                                                     must include(Messages("tai.canWeContactByPhone.title"))
+        doc.getElementsByClass("govuk-caption-l hmrc-caption-l").text() must endWith(
           Messages("tai.benefits.ended.journey.preHeader")
         )
-        doc                                                               must haveBackLink
+        doc                                                             must haveBackLink
         doc
           .getElementById("cancelLink")
           .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url

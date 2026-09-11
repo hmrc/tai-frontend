@@ -44,7 +44,7 @@
 
             <div class="section govuk-!-margin-bottom-0 soft--top">
 
-            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.bonusPaymentsAmount.preHeading", employer.name)</h2>
+            <h2 class="govuk-caption-l hmrc-caption-l carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.bonusPaymentsAmount.preHeading", employer.name)</h2>
 
             @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.handleBonusOvertimeAmount(employer.id)) {
 
@@ -62,7 +62,7 @@
                     label = Label(
                         content = Text(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)),
                         isPageHeading = true,
-                        classes = "govuk-label--xl carry-over")
+                        classes = "govuk-label--l carry-over")
                 ),
                 )
 

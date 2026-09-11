@@ -40,7 +40,7 @@
         }
 
 
-        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
+        <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
 
         @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
             @govukRadios(Radios(
@@ -50,7 +50,7 @@
                         Legend(
                             content = Text(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName)),
                             isPageHeading = true,
-                            classes = "govuk-fieldset__legend--xl carry-over")
+                            classes = "govuk-fieldset__legend--l carry-over")
                         )
                     )
                 ),

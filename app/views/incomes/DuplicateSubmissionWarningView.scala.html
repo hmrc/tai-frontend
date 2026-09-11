@@ -33,7 +33,9 @@
     ptaHeader(
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
         mainHeadingText = viewModel.heading,
-        preHeadingText = messages("tai.incomes.warning.preHeading")
+        preHeadingText = messages("tai.incomes.warning.preHeading"),
+        mainHeadingCssClass = Some("govuk-heading-l"),
+        preHeadingCssClass = Some("govuk-caption-l hmrc-caption-l")
     )
 }
 

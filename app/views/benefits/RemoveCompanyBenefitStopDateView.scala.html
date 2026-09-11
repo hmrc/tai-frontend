@@ -41,7 +41,7 @@
                 @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
+            <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
 
             @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
 
@@ -74,7 +74,7 @@
                     legend = Some(Legend(
                         content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
                         isPageHeading = true,
-                        classes = "govuk-fieldset__legend--xl carry-over")
+                        classes = "govuk-fieldset__legend--l carry-over")
                     )))),
             )
 
