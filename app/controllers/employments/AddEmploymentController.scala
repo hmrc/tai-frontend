@@ -160,7 +160,7 @@ class AddEmploymentController @Inject() (
     implicit val authedUser: AuthedUser = request.taiUser
     (request.userAnswers.get(AddEmploymentNamePage), request.userAnswers.get(AddEmploymentReceivedFirstPayPage)) match {
       case (Some(name), bool) =>
-        Ok(addEmploymentFirstPayForm(AddEmploymentFirstPayForm.form.fill(bool), name))
+        Ok(addEmploymentFirstPayForm(AddEmploymentFirstPayForm.form(name).fill(bool), name))
       case _                  =>
         error5xxInBadRequest()
     }
@@ -172,7 +172,8 @@ class AddEmploymentController @Inject() (
       .fold(
         Future.successful(error5xxInBadRequest())
       )(employmentName =>
-        AddEmploymentFirstPayForm.form
+        AddEmploymentFirstPayForm
+          .form(employmentName)
           .bindFromRequest()
           .fold(
             formWithErrors => {
