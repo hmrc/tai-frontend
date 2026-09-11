@@ -1054,6 +1054,7 @@ tai.remove.company.benefit.total.value.hint=Byddwn yn talgrynnu’r swm a nodwch
 tai.remove.company.benefit.total.value.value=Gwerth y buddiant
 tai.remove.company.benefit.total.value.whatHappens.desc=Bydd eich cyflogwr yn rhoi gwybod i ni beth yw gwerth gwirioneddol y buddiant ar gyferblwyddyn dreth {0} i {1} ar ôl {2}. Byddwn yn defnyddio’r swm i gyfrifo faint o Dreth Incwm y dylech fod wedi’i thalu yn ystod y flwyddyn honno.
 tai.remove.company.benefit.total.value.whatHappens.link=Beth sy’n digwydd os byddaf yn nodi’r swm anghywir?
+tai.remove.company.benefit.total.value.input.hint=Er enghraifft, £600 neu £193.54.
 tai.returnToChooseTaxYear=Dewiswch flwyddyn dreth
 tai.rti_down_message=Mae problem dros dro gydag un o’n systemau. Mae’n golygu na allwn ddangos eich incwm trethadwy gwirioneddol na manylion y Dreth Incwm a’r Yswiriant Gwladol yr ydych eisoes wedi’u talu.
 tai.rti_down_message_contact=Does dim rhaid i chi gysylltu â ni am hyn.
