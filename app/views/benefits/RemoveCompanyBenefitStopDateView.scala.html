@@ -17,7 +17,7 @@
 @import includes.cancelLink
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichDateInput
 @import java.time.LocalDate
 
 @this(main: MainTemplate, form: FormWithCSRF, govukDateInput: GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
@@ -38,7 +38,7 @@
         <div class="govuk-grid-column-two-thirds">
 
             @if(stopDateForm.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                @govukErrorSummary(ErrorSummary(errorList = Seq(stopDateForm.errors.asTextErrorLinks.head), title = Text(messages("tai.income.error.form.summary"))))
             }
 
             <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
@@ -47,35 +47,14 @@
 
             @govukDateInput(DateInput(
                 id = "benefitEndDateForm",
-                namePrefix = Some("benefitEndDateForm"),
                 hint = Some(Hint(content = Text(Messages("tai.label.date.example")))),
-                items = Seq(
-                    InputItem(
-                        name= "day",
-                        label = Some(messages("tai.label.day")),
-                        classes = s"govuk-input--width-2 ${if(stopDateForm.hasErrors)  " govuk-input--error" else "" }",
-                        value =  stopDateForm("benefitEndDateForm-day").value
-                    ),
-                    InputItem(
-                        name = "month",
-                        label = Some(messages("tai.label.month")),
-                        classes = s"govuk-input--width-2 ${if(stopDateForm.hasErrors ) " govuk-input--error" else "" }",
-                        value =  stopDateForm("benefitEndDateForm-month").value
-                    ),
-                    InputItem(
-                        name = "year",
-                        label = Some(messages("tai.label.year")),
-                        classes = s"govuk-input--width-4 ${if(stopDateForm.hasErrors) " govuk-input--error" else "" }",
-                        value =  stopDateForm("benefitEndDateForm-year").value
-                    )
-                ),
                 errorMessage = stopDateForm.errors.asTextErrorMessages.headOption,
                 fieldset =  Some(Fieldset(
                     legend = Some(Legend(
                         content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
                         isPageHeading = true,
                         classes = "govuk-fieldset__legend--xl carry-over")
-                    )))),
+                    )))).withDayMonthYearFormField(stopDateForm("benefitEndDateForm")),
             )
 
             @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))

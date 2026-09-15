@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{GovukDateInput, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
-
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichDateInput
 @import java.time.LocalDate
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
@@ -45,7 +45,7 @@
             <div class = "govuk-grid-column-two-thirds">
 
                 @if(dateForm.errors.nonEmpty) {
-                    @govukErrorSummary(ErrorSummary(errorList = dateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                    @govukErrorSummary(ErrorSummary(errorList = Seq(dateForm.errors.asTextErrorLinks.head), title = Text(messages("tai.income.error.form.summary"))))
                 }
 
                 <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.endEmployment.preHeadingText")</h2>
@@ -53,35 +53,14 @@
 
                 @govukDateInput(DateInput(
                     id = "tellUsAboutEmploymentForm",
-                    namePrefix = Some("tellUsAboutEmploymentForm"),
                     hint = Some(Hint(content = HtmlContent(hint))),
-                    items = Seq(
-                        InputItem(
-                            name= "day",
-                            label = Some(messages("tai.label.day")),
-                            classes = s"govuk-input--width-2 ${if(dateForm.hasErrors)  " govuk-input--error" else "" }",
-                            value =  dateForm("tellUsAboutEmploymentForm-day").value
-                        ),
-                        InputItem(
-                            name = "month",
-                            label = Some(messages("tai.label.month")),
-                            classes = s"govuk-input--width-2 ${if(dateForm.hasErrors ) " govuk-input--error" else "" }",
-                            value =  dateForm("tellUsAboutEmploymentForm-month").value
-                        ),
-                        InputItem(
-                            name = "year",
-                            label = Some(messages("tai.label.year")),
-                            classes = s"govuk-input--width-4 ${if(dateForm.hasErrors) " govuk-input--error" else "" }",
-                            value =  dateForm("tellUsAboutEmploymentForm-year").value
-                        )
-                    ),
                     errorMessage = dateForm.errors.asTextErrorMessages.headOption,
                     fieldset =  Some(Fieldset(
                         legend = Some(Legend(
                             content = Text(messages("tai.endEmployment.endDateForm.title",  viewmodel.employerName)),
                             isPageHeading = true,
                             classes = "govuk-fieldset__legend--xl carry-over")
-                        )))),
+                        )))).withDayMonthYearFormField(dateForm("tellUsAboutEmploymentForm")),
                 )
                 @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))
             }
