@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView, Swatch}
 import utils.BaseSpec
 
 class YourTaxGraphPageSpec extends BaseSpec {
@@ -81,6 +81,33 @@ class YourTaxGraphPageSpec extends BaseSpec {
       doc.select("#bandType2").size() mustBe 0
       doc.select("#zeroIncomeTotal").text() mustBe "£3,000"
       doc.select("#totalIncome").text() mustBe "£48,000"
+    }
+
+    "show taxable income label for the pink swatch when bands are merged" in {
+      val bands = List(
+        Band("TaxFree", 6.15, 3000, 0, "ZeroBand"),
+        Band("Band", 93.75, 45000, 15000, "NonZeroBand")
+      )
+
+      val graphData = BandedGraph(
+        "taxGraph",
+        bands,
+        0,
+        150000,
+        48000,
+        6.15,
+        3000,
+        93.75,
+        15000,
+        None,
+        Some(Swatch(31.25, 15000))
+      )
+
+      val doc =
+        Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTaxView).toString())
+
+      doc.select("#IncomeTaxEstimateType").text() mustBe Messages("tai.bandtype.nonZeroBand")
+      doc.select("#IncomeTaxEstimateAmount").text() mustBe "£15,000"
     }
 
     "show Tax-Free Allowance and PSA and 7.5% DIV" in {
