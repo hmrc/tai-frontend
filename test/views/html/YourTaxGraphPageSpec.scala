@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.tai.util.constants.TaxRegionConstants._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView, Swatch}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView}
 import utils.BaseSpec
 
 class YourTaxGraphPageSpec extends BaseSpec {

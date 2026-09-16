@@ -89,13 +89,7 @@
                 @graph.swatch.map{ swatch =>
                     <tr class="govuk-table__row">
                         <td aria-hidden="true" class="govuk-table__cell  hide-for-print" id="incomeTaxBackground"><span class="key-icon income-tax"></span></td>
-                        <td class="govuk-table__cell" id="IncomeTaxEstimateType">
-                            @if(graph.bands.exists(_.bandType == "NonZeroBand")) {
-                                @Messages("tai.bandtype.nonZeroBand")
-                            } else {
-                                @Messages("tai.bandtype.incomeTaxEstimate")
-                            }
-                        </td>
+                        <td class="govuk-table__cell" id="IncomeTaxEstimateType">@Messages("tai.bandtype.incomeTaxEstimate")</td>
                         <td class="text--right numeric govuk-table__cell govuk-table__cell--numeric " id="IncomeTaxEstimateAmount" >@withPoundPrefix(MoneyPounds(swatch.taxAmount,0))</td>
                     </tr>
                 }
@@ -103,5 +97,6 @@
             </tbody>
         </table>
     }
+
 
 
