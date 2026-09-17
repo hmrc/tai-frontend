@@ -156,6 +156,7 @@ tai.addEmployment.employmentErrorPage.title=Ni allwn ychwanegu’r cyflogwr hwn 
 tai.addEmployment.employmentFirstPay.customGaTitle=A ydych wedi cael eich cyflog cyntaf gan y cyflogwr hwn?
 tai.addEmployment.employmentFirstPay.legend=A ydych chi wedi cael eich cyflog cyntaf oddi wrth {0}?
 tai.addEmployment.employmentFirstPay.title=A ydych chi wedi cael eich cyflog cyntaf oddi wrth {0}?
+tai.addEmployment.employmentFirstPay.error=Dewiswch ‘Iawn’ os ydych wedi cael eich cyflog cyntaf oddi wrth {0}?
 tai.addEmployment.employmentPayrollNumber.bullet1=ID cyflogai
 tai.addEmployment.employmentPayrollNumber.bullet2=rhif cyflogai
 tai.addEmployment.employmentPayrollNumber.bullet3=cyfeirnod cyflog

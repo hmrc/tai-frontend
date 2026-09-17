@@ -43,13 +43,15 @@ class AddEmploymentFirstPayFormSpec extends BaseSpec {
       val invalidChoice   = Map(choice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(Messages("tai.error.chooseOneOption"))
+      invalidatedForm.errors.head.messages mustBe List(
+        Messages("tai.addEmployment.employmentFirstPay.error", "Employer Name")
+      )
       invalidatedForm.value mustBe None
     }
   }
 
   val choice = AddEmploymentFirstPayChoiceConstants.FirstPayChoice
 
-  private val form = AddEmploymentFirstPayForm.form
+  private val form = AddEmploymentFirstPayForm.form("Employer Name")
 
 }
