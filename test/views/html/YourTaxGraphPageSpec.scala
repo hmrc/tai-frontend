@@ -116,6 +116,24 @@ class YourTaxGraphPageSpec extends BaseSpec {
 
         doc.select("#bandType0").text() mustBe Messages("tai.bandtype.nonZeroBand")
       }
+
+      "multiple tax bands are grouped under the same label" in {
+
+        val bands = List(
+          Band("Band", 33.33, 12000, 1800, "NonZeroBand"),
+          Band("Band", 33.33, 14000, 2100, "NonZeroBand"),
+          Band("Band", 33.34, 18000, 2700, "NonZeroBand")
+        )
+
+        val graphData = BandedGraph("taxGraph", bands, 0, 44000, 44000, 0, 0, 100.00, 6600, None, None)
+
+        val doc =
+          Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ComplexTaxView).toString())
+
+        doc.select("#bandType0").text() mustBe Messages("tai.bandtype.nonZeroBand")
+        doc.select("#bandType1").size() mustBe 0
+        doc.select("#income0").text() mustBe "£44,000"
+      }
     }
   }
 
