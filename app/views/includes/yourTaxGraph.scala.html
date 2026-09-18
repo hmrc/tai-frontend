@@ -22,6 +22,26 @@
 @(graph: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.BandedGraph, taxRegion: String, taxViewType:TaxViewType,
     incomeEstimate:Option[BigDecimal] = None)(implicit messages: Messages)
 
+@displayBands = @{ 
+    val mergedBands = scala.collection.mutable.LinkedHashMap.empty[String, uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.Band]
+    graph.bands.foreach { band =>
+       if (band.bandType == "NonZeroBand" && mergedBands.contains(band.bandType)) {
+           val existingBand = mergedBands(band.bandType)
+           mergedBands.update(
+               band.bandType,
+               existingBand.copy(
+                   barPercentage = existingBand.barPercentage + band.barPercentage,
+                   income = existingBand.income + band.income,
+                   tax = existingBand.tax + band.tax
+               )
+           )
+       } else {
+           mergedBands.update(band.bandType, band)
+       }
+    }
+    mergedBands.values.toList
+}
+
 @swatchLeftPadding=@{ graph.swatch.foldLeft(BigDecimal(100))((acc: BigDecimal, next: Swatch) => acc - next.barPercentage)}
 
     <div aria-hidden="true" class="number-bar__container govuk-body hide-for-print">
@@ -72,12 +92,14 @@
                 </tr>
             </thead>
             <tbody class="govuk-table__body">
-                @for((band, count) <- graph.bands.zipWithIndex){
+                @for((band, count) <- displayBands.zipWithIndex){
                     <tr class="govuk-table__row">
                         <td aria-hidden="true" class="govuk-table__cell  hide-for-print" id="color@{count}"><span class="key-icon @band.colour"></span></td>
                         <td class="govuk-table__cell" id="bandType@{count}">
                             @if(band.bandType=="ZeroBand"){
                                 @Messages("tai.bandtype.zeroBand")
+                            } else if (band.bandType=="Band") {
+                                @Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${band.bandType}")
                             } else {
                                 @Messages("tai.bandtype.nonZeroBand")
                             }
@@ -97,6 +119,4 @@
             </tbody>
         </table>
     }
-
-
 
