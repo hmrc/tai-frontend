@@ -1804,7 +1804,6 @@ tai.payeRefForm.hint2 = Mae’n bosibl y cyfeirir ato fel ‘Cyfeirnod TWE y Cyf
 tai.payeRefForm.employment.hint3 = Bydd i’w weld ar eich slip cyflog neu ffurflenni treth.
 tai.payeRefForm.pension.hint3 = Cysylltwch â darparwr eich pensiwn i gael ei gyfeirnod TWE.
 tai.payeRefForm.required = Nodwch gyfeirnod TWE y cyflogwr {0}
-tai.payeRefForm.format = Nodwch gyfeirnod TWE y cyflogwr {0} yn y fformat cywir
 tai.payeRefForm.pension.required = Nodwch gyfeirnod TWE darparwr pensiwn {0}
 tai.payeRefForm.pension.format = Nodwch gyfeirnod TWE darparwr pensiwn {0} yn y fformat cywir
 
