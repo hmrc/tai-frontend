@@ -45,43 +45,23 @@
 
             @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection") {
 
-            @govukDateInput(DateInput(
-                id = "benefitEndDateForm",
-                hint = Some(Hint(content = Text(Messages("tai.label.date.example")))),
-                items = Seq(
-                    InputItem(
-                        name= "day",
-                        label = Some(messages("tai.label.day")),
-                        classes = s"govuk-input--width-2 ${if(stopDateForm.hasErrors)  " govuk-input--error" else "" }",
-                        value =  stopDateForm("benefitEndDateForm-day").value
-                    ),
-                    InputItem(
-                        name = "month",
-                        label = Some(messages("tai.label.month")),
-                        classes = s"govuk-input--width-2 ${if(stopDateForm.hasErrors ) " govuk-input--error" else "" }",
-                        value =  stopDateForm("benefitEndDateForm-month").value
-                    ),
-                    InputItem(
-                        name = "year",
-                        label = Some(messages("tai.label.year")),
-                        classes = s"govuk-input--width-4 ${if(stopDateForm.hasErrors) " govuk-input--error" else "" }",
-                        value =  stopDateForm("benefitEndDateForm-year").value
-                    )
-                ),
-                errorMessage = stopDateForm.errors.asTextErrorMessages.headOption,
-                fieldset =  Some(Fieldset(
-                    legend = Some(Legend(
-                        content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
-                        isPageHeading = true,
-                        classes = "govuk-fieldset__legend--l carry-over")
-                    )))).withDayMonthYearFormField(stopDateForm("benefitEndDateForm")),
-            )
+                @govukDateInput(DateInput(
+                    id = "benefitEndDateForm",
+                    hint = Some(Hint(content = Text(Messages("tai.label.date.example")))),
+                    errorMessage = stopDateForm.errors.asTextErrorMessages.headOption,
+                    fieldset =  Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
+                            isPageHeading = true,
+                            classes = "govuk-fieldset__legend--l carry-over")
+                        )))).withDayMonthYearFormField(stopDateForm("benefitEndDateForm")),
+                )
 
-            @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))
+                @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))
 
-        }
+            }
 
-        @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
+            @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
 
         </div>
     </div>
