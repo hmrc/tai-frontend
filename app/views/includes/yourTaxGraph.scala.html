@@ -98,8 +98,6 @@
                         <td class="govuk-table__cell" id="bandType@{count}">
                             @if(band.bandType=="ZeroBand"){
                                 @Messages("tai.bandtype.zeroBand")
-                            } else if (band.bandType=="Band") {
-                                @Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${band.bandType}")
                             } else {
                                 @Messages("tai.bandtype.nonZeroBand")
                             }
