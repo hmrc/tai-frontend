@@ -44,7 +44,8 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
         val noPayrollNumberChooseError           = messages("tai.error.chooseOneOption")
         val expectedErrorMessage                 = messages("tai.error.message") + " " + messages("tai.error.chooseOneOption")
         val formWithErrors: Form[Option[String]] =
-          AddEmploymentFirstPayForm.form
+          AddEmploymentFirstPayForm
+            .form(employerName)
             .withError(AddEmploymentFirstPayChoiceConstants.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html                           = template(formWithErrors, employerName)
 
@@ -54,11 +55,13 @@ class AddEmploymentFirstPayFormViewSpec extends TaiViewSpec {
     }
   }
 
-  private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm.form.bind(
-    Map(
-      AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
+  private val employmentFirstPayForm: Form[Option[String]] = AddEmploymentFirstPayForm
+    .form(employerName)
+    .bind(
+      Map(
+        AddEmploymentFirstPayChoiceConstants.FirstPayChoice -> FormValuesConstants.YesValue
+      )
     )
-  )
   private val template                                     = inject[AddEmploymentFirstPayFormView]
 
   override def view: Html = template(employmentFirstPayForm, employerName)

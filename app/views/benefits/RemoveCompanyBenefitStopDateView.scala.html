@@ -17,7 +17,7 @@
 @import includes.cancelLink
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichDateInput
 @import java.time.LocalDate
 
 @this(main: MainTemplate, form: FormWithCSRF, govukDateInput: GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
@@ -38,7 +38,7 @@
         <div class="govuk-grid-column-two-thirds">
 
             @if(stopDateForm.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummary(errorList = stopDateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
+                @govukErrorSummary(ErrorSummary(errorList = Seq(stopDateForm.errors.asTextErrorLinks.head), title = Text(messages("tai.income.error.form.summary"))))
             }
 
             <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.benefits.ended.journey.preHeader")</h2>
@@ -47,7 +47,6 @@
 
             @govukDateInput(DateInput(
                 id = "benefitEndDateForm",
-                namePrefix = Some("benefitEndDateForm"),
                 hint = Some(Hint(content = Text(Messages("tai.label.date.example")))),
                 items = Seq(
                     InputItem(
@@ -75,7 +74,7 @@
                         content = Text(Messages("tai.benefits.ended.stopDate.heading", benefitType, empName)),
                         isPageHeading = true,
                         classes = "govuk-fieldset__legend--l carry-over")
-                    )))),
+                    )))).withDayMonthYearFormField(stopDateForm("benefitEndDateForm")),
             )
 
             @govukButton(Button(content = Text(messages("tai.continue")), id=Some("submitButton")))

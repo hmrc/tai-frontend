@@ -28,12 +28,13 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
   private val employmentName                                = "Employer name"
   private val addDateForm                                   = EmploymentAddDateForm(employmentName)
   private val globalErrorMessage: String                    = "day error message"
-  private val formWithErrors: Form[LocalDate]               = addDateForm.form.withError("", globalErrorMessage)
+  private val formWithErrors: Form[LocalDate]               =
+    addDateForm.form.withError("tellUsStartDateForm.error.key", globalErrorMessage)
   private lazy val employmentStartDateForm: Form[LocalDate] = addDateForm.form.bind(
     Map(
-      EmploymentAddDateForm.EmploymentFormDay -> "1",
-      "month"                                 -> "1",
-      "year"                                  -> "2017"
+      EmploymentAddDateForm.EmploymentFormDay   -> "1",
+      EmploymentAddDateForm.EmploymentFormMonth -> "1",
+      EmploymentAddDateForm.EmploymentFormYear  -> "2017"
     )
   )
   private val template                                      = inject[AddEmploymentStartDateFormView]
@@ -68,27 +69,27 @@ class AddEmploymentStartDateFormViewSpec extends TaiViewSpec {
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay       = doc(view).select("label[for=tellUsStartDateForm-day]")
+      val labelDay       = doc(view).select("label[for=tellUsStartDateForm.day]")
       val inputLabelDay  = labelDay.text
-      val numberOfInputs = doc(view).select("#tellUsStartDateForm-day").size
+      val numberOfInputs = doc(view).select("input[id=tellUsStartDateForm.day]").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth      = doc(view).select("label[for=tellUsStartDateForm-month]")
+      val labelMonth      = doc(view).select("label[for=tellUsStartDateForm.month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs  = doc(view).select("#tellUsStartDateForm-month").size
+      val numberOfInputs  = doc(view).select("input[id=tellUsStartDateForm.month]").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear      = doc(view).select("label[for=tellUsStartDateForm-year]")
+      val labelYear      = doc(view).select("label[for=tellUsStartDateForm.year]")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select("#tellUsStartDateForm-year").size
+      val numberOfInputs = doc(view).select("input[id=tellUsStartDateForm.year]").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1

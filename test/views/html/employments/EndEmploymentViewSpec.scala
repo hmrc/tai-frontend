@@ -84,27 +84,27 @@ class EndEmploymentViewSpec extends TaiViewSpec {
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay       = doc(view).select("label[for=tellUsAboutEmploymentForm-day]")
+      val labelDay       = doc(view).select("label[for=tellUsAboutEmploymentForm.day]")
       val inputLabelDay  = labelDay.text
-      val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-day").size
+      val numberOfInputs = doc(view).select("input[id=tellUsAboutEmploymentForm.day]").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth      = doc(view).select("label[for=tellUsAboutEmploymentForm-month]")
+      val labelMonth      = doc(view).select("label[for=tellUsAboutEmploymentForm.month]")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs  = doc(view).select("#tellUsAboutEmploymentForm-month").size
+      val numberOfInputs  = doc(view).select("input[id=tellUsAboutEmploymentForm.month]").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear      = doc(view).select("label[for=tellUsAboutEmploymentForm-year]")
+      val labelYear      = doc(view).select("label[for=tellUsAboutEmploymentForm.year]")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select("#tellUsAboutEmploymentForm-year").size
+      val numberOfInputs = doc(view).select("input[id=tellUsAboutEmploymentForm.year]").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1
