@@ -49,8 +49,7 @@ class PayeRefFormSpec extends BaseSpec with OptionValues {
           "123/",
           "123/ABCDEFGHIJK",
           "123/ABC_DEF",
-          "123/ABC-DEF",
-          "123/abc def"
+          "123/ABC-DEF"
         )
 
         invalids.foreach { v =>
@@ -64,6 +63,35 @@ class PayeRefFormSpec extends BaseSpec with OptionValues {
     }
 
     "return the form without any errors" when {
+
+      "the payeReference contains spaces" in {
+        val values = Seq(
+          " 123/ABC123 "         -> "123/ABC123",
+          "123 /ABC123"          -> "123/ABC123",
+          "123/ ABC123"          -> "123/ABC123",
+          "123 / ABC123"         -> "123/ABC123",
+          "123  /  ABC123 "      -> "123/ABC123",
+          " 1 2 3 / A B C 1 2 3" -> "123/ABC123"
+        )
+
+        values.foreach { case (input, expected) =>
+          val form = PayeRefForm.form("company", "employment").bind(Map("payeReference" -> input))
+
+          withClue(s"Value '$input' should be valid") {
+            form.hasErrors mustBe false
+            form.value.value mustBe expected
+          }
+        }
+      }
+
+      "the payeReference contains non-breaking spaces" in {
+        val input = "123\u00A0/\u00A0ABC123"
+
+        val form = PayeRefForm.form("company", "employment").bind(Map("payeReference" -> input))
+
+        form.hasErrors mustBe false
+        form.value.value mustBe "123/ABC123"
+      }
 
       "the payeReference matches NNN/ALPHANUM(1..10)" in {
         val valids = Seq(
