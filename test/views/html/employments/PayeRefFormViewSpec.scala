@@ -38,14 +38,14 @@ class PayeRefFormViewSpec extends TaiViewSpec {
 
     "display the correct pre-heading (employment)" in {
       doc must haveElementAtPathWithText(
-        ".govuk-caption-xl",
+        ".govuk-caption-l",
         messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.employment")
       )
     }
 
     "show the page heading label including the company name" in {
       doc must haveElementAtPathWithText(
-        ".govuk-label--xl",
+        ".govuk-label--l",
         messages("tai.payeRefForm.employment.title", companyName)
       )
     }
@@ -97,7 +97,7 @@ class PayeRefFormViewSpec extends TaiViewSpec {
     "display the correct pre-heading (pension)" in {
       val d = doc(viewFor(PayeRefForm.form(companyName, "pension"), "pension"))
       d must haveElementAtPathWithText(
-        ".govuk-caption-xl",
+        ".govuk-caption-l",
         messages("tai.ptaHeader.accessible.preHeading") + " " + messages("add.missing.pension")
       )
     }

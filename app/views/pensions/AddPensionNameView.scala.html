@@ -38,7 +38,7 @@
             @govukErrorSummary(ErrorSummary(errorList = nameForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
+        <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.pension")</h2>
 
         @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
             @govukInput(Input(
@@ -46,7 +46,7 @@
                 name = "pensionProviderName",
                 label = Label(
                     content = Text(Messages("tai.addPensionProvider.addNameForm.title")),
-                    classes = "govuk-label--xl",
+                    classes = "govuk-label--l",
                     isPageHeading = true
                 ),
                 errorMessage = nameForm.errors.asTextErrorMessages.headOption

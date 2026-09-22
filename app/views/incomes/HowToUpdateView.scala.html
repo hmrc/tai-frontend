@@ -36,7 +36,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
             @if(howToUpdateForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary(errorList = howToUpdateForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
-            <h2 class="govuk-caption-xl hmrc-caption-xl carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.howToUpdate.preHeading", employerName)</h2>
+            <h2 class="govuk-caption-l hmrc-caption-l carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.howToUpdate.preHeading", employerName)</h2>
             @form(action=income.estimatedPay.update.routes.IncomeUpdateHowToUpdateController.handleChooseHowToUpdate()){
                 @govukRadios(Radios(
                     fieldset =  Some(
@@ -45,7 +45,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
                             Legend(
                                 content = Text(Messages("tai.howToUpdate.heading", employerName)),
                                 isPageHeading = true,
-                                classes = "govuk-fieldset__legend--xl carry-over")
+                                classes = "govuk-fieldset__legend--l carry-over")
                         )
                         )
                     ),

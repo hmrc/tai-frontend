@@ -106,7 +106,7 @@ class MainViewSpec extends TaiViewSpec with ViewModelHelper {
       )
     }
 
-    behave like pageWithCombinedHeaderNewFormatNew(
+    behave like pageWithCombinedHeaderNewFormat(
       preHeaderText = "USERNAME",
       mainHeaderText = messages("tai.incomeTaxComparison.heading.same"),
       preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader"))

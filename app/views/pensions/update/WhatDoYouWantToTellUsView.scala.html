@@ -42,7 +42,7 @@
             @govukErrorSummary(ErrorSummary(errorList = whatDoYouWantToTellUsForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.updatePension.preHeading")</h2>
+        <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.updatePension.preHeading")</h2>
 
         @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
             @govukCharacterCount(CharacterCount(
@@ -50,7 +50,7 @@
                 name = "pensionDetails",
                 label = Label(
                     content = Text(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name)),
-                    classes = "govuk-label--xl",
+                    classes = "govuk-label--l",
                     isPageHeading = true
                 ),
                 value = whatDoYouWantToTellUsForm.data.get("pensionDetails"),

@@ -64,7 +64,7 @@ class SimpleEstimatedIncomeTaxViewSpec extends TaiViewSpec {
   override def view: Html = view(ukViewModel)
 
   "Estimated Income Tax Page" must {
-    behave like pageWithCombinedHeaderNewFormatNew(
+    behave like pageWithCombinedHeaderNewFormat(
       messages("tai.taxYear", Dates.formatDate(TaxYear().start), Dates.formatDate(TaxYear().end)),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))

@@ -42,14 +42,14 @@ class UpdateRemoveEmploymentDecisionViewSpec extends TaiViewSpec {
 
     "display preheading" in {
       doc must haveElementAtPathWithText(
-        ".govuk-caption-xl",
+        ".govuk-caption-l",
         messages("tai.ptaHeader.accessible.preHeading") + " " + messages("tai.employment.decision.preHeading")
       )
     }
 
     "display label with heading" in {
       doc must haveElementAtPathWithText(
-        ".govuk-fieldset__legend--xl",
+        ".govuk-fieldset__legend--l",
         messages("tai.employment.decision.heading", employmentName)
       )
     }

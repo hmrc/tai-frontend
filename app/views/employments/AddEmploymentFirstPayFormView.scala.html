@@ -40,7 +40,7 @@
             @govukErrorSummary(ErrorSummary(errorList = firstPayForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
         }
 
-        <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.employment")</h2>
+        <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("add.missing.employment")</h2>
 
         @form(action = controllers.employments.routes.AddEmploymentController.submitFirstPay(), Symbol("data-dynamic-form") -> "true") {
             @govukRadios(Radios(
@@ -49,7 +49,7 @@
                         legend = Some(
                             Legend(
                                 content = Text(Messages("tai.addEmployment.employmentFirstPay.title", employerName)),
-                                classes="govuk-fieldset__legend govuk-fieldset__legend--xl break-word",
+                                classes="govuk-fieldset__legend govuk-fieldset__legend--l break-word",
                                 isPageHeading = true)
                         )
                     )

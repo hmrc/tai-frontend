@@ -134,7 +134,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   lazy val docWithNoEstimatedIncome: Document          = Jsoup.parse(viewWithNoEstimatedIncome.toString())
 
   "Income details spec" must {
-    behave like pageWithCombinedHeaderNewFormatNew(
+    behave like pageWithCombinedHeaderNewFormat(
       model.displayName,
       messages(
         "tai.employment.income.details.mainHeading",
@@ -149,7 +149,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
 
     "display headings" when {
       "income source is pension" in {
-        pensionDoc must havePreHeadingWithTextGdsNew(pensionModel.displayName)
+        pensionDoc must havePreHeadingWithTextGds(pensionModel.displayName)
 
         pensionDoc       must haveHeadingWithText(
           messages(

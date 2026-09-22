@@ -41,8 +41,8 @@
                 @govukErrorSummary(ErrorSummary(errorList = payrollNumberForm.errors.asTextErrorLinks, title = Text(messages("tai.income.error.form.summary"))))
             }
 
-            <h2 class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("add.missing.employment")</h2>
-            <h1 class="govuk-heading-xl break-word">@Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)</h1>
+            <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("add.missing.employment")</h2>
+            <h1 class="govuk-heading-l break-word">@Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName)</h1>
 
             <p class="govuk-body">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
             <ul id="payroll-number-info" class="govuk-list govuk-list--bullet">
