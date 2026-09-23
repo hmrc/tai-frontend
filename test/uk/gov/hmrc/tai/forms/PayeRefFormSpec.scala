@@ -43,6 +43,7 @@ class PayeRefFormSpec extends BaseSpec with OptionValues {
 
       "the payeReference field does not match NNN/XXXXXXXXXX format" in {
         val invalids = Seq(
+          "12333445",
           "ABC/123",
           "12/ABC",
           "123ABC",
