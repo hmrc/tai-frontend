@@ -168,21 +168,48 @@ object BandedGraph {
     totalTaxBandIncome: BigDecimal,
     taxViewType: TaxViewType
   ): List[Band] =
-    for (taxBand <- taxBands)
-      yield Band(
-        "Band",
-        calcBarPercentage(
+    mergeDuplicateBands(
+      for (taxBand <- taxBands)
+        yield Band(
+          "Band",
+          calcBarPercentage(
+            taxBand.income,
+            taxBands,
+            personalAllowance,
+            taxFreeAllowanceBandSum,
+            totalTaxBandIncome,
+            taxViewType = taxViewType
+          ),
           taxBand.income,
-          taxBands,
-          personalAllowance,
-          taxFreeAllowanceBandSum,
-          totalTaxBandIncome,
-          taxViewType = taxViewType
-        ),
-        taxBand.income,
-        taxBand.tax,
-        taxBand.bandType
-      )
+          taxBand.tax,
+          BandTypesConstants.NonZeroBand
+        )
+    )
+
+  def mergeDuplicateBands(bands: List[Band]): List[Band] = {
+    val mergedBands = scala.collection.mutable.LinkedHashMap.empty[String, Band]
+
+    bands.foreach { band =>
+      if (band.bandType == BandTypesConstants.NonZeroBand) {
+        mergedBands.get(band.bandType) match {
+          case Some(existingBand) =>
+            mergedBands.update(
+              band.bandType,
+              existingBand.copy(
+                barPercentage = existingBand.barPercentage + band.barPercentage,
+                income = existingBand.income + band.income,
+                tax = existingBand.tax + band.tax
+              )
+            )
+          case None               => mergedBands.update(band.bandType, band)
+        }
+      } else {
+        mergedBands.update(band.bandType, band)
+      }
+    }
+
+    mergedBands.values.toList
+  }
 
   def createSwatch(totalEstimatedTax: BigDecimal, totalTaxBandIncome: BigDecimal): Swatch = {
     val swatchPercentage = ((totalEstimatedTax / totalTaxBandIncome) * 100).setScale(2, BigDecimal.RoundingMode.FLOOR)

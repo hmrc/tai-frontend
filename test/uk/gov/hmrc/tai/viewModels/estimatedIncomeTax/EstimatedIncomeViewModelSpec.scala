@@ -148,11 +148,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
       )
 
-      val bands = List(
-        Band("Band", 10.00, 20000, 3000, "B"),
-        Band("Band", 75.00, 150000, 60000, "D0"),
-        Band("Band", 15.00, 30000, 2250, "D1")
-      )
+      val bands = List(Band("Band", 100.00, 200000, 65250, BandTypesConstants.NonZeroBand))
 
       val dataF = BandedGraph(Seq.empty[CodingComponent], taxBand, 0, 65250, taxViewType = SimpleTaxView)
 
@@ -180,12 +176,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
         TaxBand("HSR2", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
       )
 
-      val bands = List(
-        Band("Band", 8.69, 20000, 3000, "B"),
-        Band("Band", 65.21, 150000, 60000, "D0"),
-        Band("Band", 13.04, 30000, 2250, "D1"),
-        Band("Band", 13.04, 30000, 2250, "HSR2")
-      )
+      val bands = List(Band("Band", 99.98, 230000, 67500, BandTypesConstants.NonZeroBand))
 
       val dataF = BandedGraph(Seq.empty[CodingComponent], taxBand, 0, 67500, taxViewType = ComplexTaxView)
 
@@ -212,10 +203,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 25000))
 
-      val bands = List(
-        Band("Band", 26.80, 33500, 6700, "B"),
-        Band("Band", 73.20, 91500, 36600, "D0")
-      )
+      val bands = List(Band("Band", 100.00, 125000, 43300, BandTypesConstants.NonZeroBand))
 
       val dataF =
         BandedGraph(Seq.empty[CodingComponent], taxBand, totalEstimatedTax = 43300, taxViewType = SimpleTaxView)
@@ -591,7 +579,7 @@ class EstimatedIncomeViewModelSpec extends BaseSpec {
       )
 
       val dataF = BandedGraph.individualOtherRateBands(taxBand, totalTaxBandIncome = 3000, taxViewType = SimpleTaxView)
-      dataF mustBe List(Band("Band", 33.33, 1000, 200, "B"), Band("Band", 66.66, 2000, 800, "D0"))
+      dataF mustBe List(Band("Band", 99.99, 3000, 1000, BandTypesConstants.NonZeroBand))
     }
   }
 
