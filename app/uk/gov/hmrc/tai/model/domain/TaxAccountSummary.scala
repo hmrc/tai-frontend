@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 import java.time.LocalDate
 
@@ -32,5 +33,17 @@ case class TaxAccountSummary(
 )
 
 object TaxAccountSummary {
-  implicit val formats: OFormat[TaxAccountSummary] = Json.format[TaxAccountSummary]
+
+  implicit val reads: Reads[TaxAccountSummary] = (
+    (JsPath \ "totalEstimatedTax").readNullable[BigDecimal].map(_.getOrElse(BigDecimal(0))) and
+      (JsPath \ "taxFreeAmount").readNullable[BigDecimal].map(_.getOrElse(BigDecimal(0))) and
+      (JsPath \ "totalInYearAdjustmentIntoCY").read[BigDecimal] and
+      (JsPath \ "totalInYearAdjustment").read[BigDecimal] and
+      (JsPath \ "totalInYearAdjustmentIntoCYPlusOne").read[BigDecimal] and
+      (JsPath \ "totalEstimatedIncome").readNullable[BigDecimal].map(_.getOrElse(BigDecimal(0))) and
+      (JsPath \ "taxFreeAllowance").readNullable[BigDecimal].map(_.getOrElse(BigDecimal(0))) and
+      (JsPath \ "date").readNullable[LocalDate]
+  )(TaxAccountSummary.apply _)
+
+  implicit val writes: Writes[TaxAccountSummary] = Json.writes[TaxAccountSummary]
 }
