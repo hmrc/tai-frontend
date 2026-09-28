@@ -38,14 +38,7 @@
                     title = messages(titleKey, companyName),
                     authedUser = Some(user),
                     formForErrorSummary = Some(payeRefForm),
-                    backLinkContent = Some(Messages("tai.back-link.upper")),
-                    backLinkId = "back-link-custom-url",
-                    backLinkUrl =
-                        if (journey == "pension") {
-                            Some(controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url)
-                        } else {
-                            Some(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url)
-                        },
+                    showBackLink = true,
                 ) {
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-two-thirds">

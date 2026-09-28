@@ -29,9 +29,7 @@ class PayslipAmountViewSpec extends TaiViewSpec {
   val employer = IncomeSource(id = 1, name = "Employer")
 
   "Pay slip amount view" should {
-    behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.payPeriodPage().url
-    )
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.payslip.preHeading", employer.name),

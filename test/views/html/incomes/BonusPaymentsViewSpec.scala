@@ -41,7 +41,7 @@ class BonusPaymentsViewSpec extends TaiViewSpec {
   override def view: Html = bonusPayments(bonusPaymentsForm, employer, "backUrl")
 
   "Bonus payments view" should {
-    behave like pageWithBackLinkWithUrl("backUrl")
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCombinedHeaderNewTemplateNew(
       messages("tai.bonusPayments.preHeading", employer.name),

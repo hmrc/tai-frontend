@@ -54,7 +54,6 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
       "no text is present in view model" in {
         val viewModel  = IncomeCheckYourAnswersViewModel(
           preHeading,
-          "fake/backlink/url",
           lines,
           None,
           "/fake/submission/url",
@@ -94,7 +93,6 @@ class AddIncomeCheckYourAnswersViewSpec extends TaiViewSpec {
 
   val viewModel = IncomeCheckYourAnswersViewModel(
     preHeading,
-    "fake/backlink/url",
     lines,
     Some(messages("tai.checkYourAnswers.confirmText")),
     "/fake/submission/url",

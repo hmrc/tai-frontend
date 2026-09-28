@@ -25,8 +25,7 @@
 @mainTemplate(
     title = messages("tai.employment.warning.customGaTitle"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
+    showBackLink = true,
     formForErrorSummary = Some(duplicateSubmissionWarningForm)
 ){
 <div class="govuk-grid-row">

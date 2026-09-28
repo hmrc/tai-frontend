@@ -48,8 +48,7 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     title = Messages("tai.estimatedIncome.title"),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkId = "back-link-custom-url",
-    backLinkContent = Some(Messages("tai.back-link.upper")),
+    showBackLink = true,
     pagePrintable = true
     ){
 

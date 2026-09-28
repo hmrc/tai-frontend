@@ -43,9 +43,7 @@ class TaxablePayslipAmountViewSpec extends TaiViewSpec {
       messages("tai.taxablePayslip.title.month", Monthly)
     )
 
-    behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage().url
-    )
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(taxablePayslipViewModel.employer.id))
     behave like pageWithButtonFormNew("/check-income-tax/update-income/taxable-payslip-amount", messages("tai.submit"))
     behave like pageWithCancelLinkText("Cancel all changes")

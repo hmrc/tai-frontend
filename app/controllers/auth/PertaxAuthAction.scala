@@ -90,7 +90,6 @@ class PertaxAuthActionImpl @Inject() (
                   mainTemplate(
                     title = partial.title.getOrElse(""),
                     pageTitle = partial.title,
-                    backLinkContent = None,
                     showPtaAccountNav = false
                   )(partial.content)
                 )

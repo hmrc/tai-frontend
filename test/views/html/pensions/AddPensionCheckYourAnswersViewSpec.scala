@@ -77,7 +77,6 @@ class AddPensionCheckYourAnswersViewSpec extends TaiViewSpec {
 
   val viewModel: CheckYourAnswersViewModel = CheckYourAnswersViewModel(
     preHeading,
-    "fake/backlink/url",
     lines,
     "confirmation text",
     "/fake/submission/url",

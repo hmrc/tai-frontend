@@ -29,8 +29,7 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
+    showBackLink = true,
     formForErrorSummary = Some(viewModel.decisionForm)
 ){
 <div class = "govuk-grid-row">

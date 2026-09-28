@@ -70,8 +70,7 @@ class PayeRefFormViewSpec extends TaiViewSpec {
 
     "have the employment back link" in {
       val d = doc(view)
-      d.select("a[class=govuk-back-link]").attr("href") mustBe
-        controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url
+      d.select("a[class=govuk-back-link]").attr("href") mustBe "#"
     }
 
     "show a continue button" in {
@@ -111,8 +110,7 @@ class PayeRefFormViewSpec extends TaiViewSpec {
 
     "have the pension back link" in {
       val d = doc(viewFor(PayeRefForm.form(companyName, "pension"), "pension"))
-      d.select("a[class=govuk-back-link]").attr("href") mustBe
-        controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url
+      d.select("a[class=govuk-back-link]").attr("href") mustBe "#"
     }
   }
 }

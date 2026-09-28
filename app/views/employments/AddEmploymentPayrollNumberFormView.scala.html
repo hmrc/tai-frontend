@@ -30,9 +30,7 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addEmployment.employmentPayrollNumber.pagetitle"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
-    backLinkUrl = Some(payrollNumberViewModel.backUrl),
+    showBackLink = true,
     formForErrorSummary = Some(payrollNumberForm)
 ) {
     <div class = "govuk-grid-row">

@@ -7,4 +7,3 @@ if(printlink != null && printlink != 'undefined' ) {
         window.print();
     });
 };
-

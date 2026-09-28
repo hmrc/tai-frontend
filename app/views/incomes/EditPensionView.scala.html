@@ -37,7 +37,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
+    showBackLink = true,
     formForErrorSummary = Some(income)
 
 ){

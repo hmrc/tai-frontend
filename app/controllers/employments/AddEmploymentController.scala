@@ -380,7 +380,6 @@ class AddEmploymentController @Inject() (
             payeRef,
             telephoneQuestion,
             telephoneNumber,
-            controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
             controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
             controllers.employments.routes.AddEmploymentController.cancel().url
           )

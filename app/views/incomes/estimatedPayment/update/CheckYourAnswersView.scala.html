@@ -31,9 +31,7 @@
 @mainTemplate(
     title = messages("tai.checkYourAnswers.title"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
-    backLinkUrl = Some(viewModel.backUrl)
+    showBackLink = true,
 ){
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">

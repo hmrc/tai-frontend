@@ -35,9 +35,7 @@ trait MainTemplate {
     title: String,
     authedUser: Option[controllers.auth.AuthedUser] = None,
     pageTitle: Option[String] = None,
-    backLinkUrl: Option[String] = Some("#"),
-    backLinkContent: Option[String],
-    backLinkId: String = "back-link",
+    showBackLink: Boolean = false,
     disableSessionExpired: Boolean = false,
     pagePrintable: Boolean = false,
     pagePrintName: Option[String] = None,
@@ -57,9 +55,7 @@ class MainTemplateImpl @Inject() (
     title: String,
     authedUser: Option[controllers.auth.AuthedUser] = None,
     pageTitle: Option[String] = None,
-    backLinkUrl: Option[String] = Some("#"),
-    backLinkContent: Option[String],
-    backLinkId: String = "back-link",
+    showBackLink: Boolean = false,
     disableSessionExpired: Boolean = false,
     pagePrintable: Boolean = false,
     pagePrintName: Option[String] = None,
@@ -76,12 +72,8 @@ class MainTemplateImpl @Inject() (
     val fullPageTitle = s"$prefix$title - ${Messages("tai.currentYearSummary.heading")} - GOV.UK"
 
     val backLinkConfig: Option[BackLinkConfig] =
-      if (backLinkContent.isDefined) {
-        backLinkUrl match {
-          case Some("#") => Some(BackLinkConfig.JsBack)
-          case Some(url) => Some(BackLinkConfig.UrlBack(url))
-          case None      => None
-        }
+      if (showBackLink) {
+        Some(BackLinkConfig.JsBack)
       } else {
         None
       }

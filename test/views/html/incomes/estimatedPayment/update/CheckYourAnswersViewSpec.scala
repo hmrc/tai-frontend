@@ -58,7 +58,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       messages("tai.checkYourAnswers.heading")
     )
     behave like pageWithCancelLink(controllers.routes.IncomeController.cancel(employer.id))
-    behave like pageWithBackLinkWithUrl("backUrl")
+    behave like pageWithBackLink()
 
     "display journey confirmation lines" in {
 

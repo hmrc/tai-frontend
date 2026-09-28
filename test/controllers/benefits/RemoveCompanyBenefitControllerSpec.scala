@@ -662,7 +662,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val doc      = Jsoup.parse(contentAsString(result))
         val backLink = doc.select("a[class=govuk-back-link]")
 
-        backLink.attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+        backLink.attr("href") mustBe "#"
       }
     }
 
@@ -694,7 +694,7 @@ class RemoveCompanyBenefitControllerSpec extends BaseSpec with JsoupMatchers wit
         val backLink = doc.select("a[class=govuk-back-link]")
 
         backLink
-          .attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
+          .attr("href") mustBe "#"
       }
     }
   }
