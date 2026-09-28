@@ -28,13 +28,10 @@ class AddEmploymentErrorPageViewSpec extends TaiViewSpec {
       messages("tai.addEmployment.employmentErrorPage.title")
     )
 
-//    "have link" in {
-//      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
-//      doc must haveLinkWithUrlWithClass(
-//        "govuk-back-link",
-//        routes.TaxAccountSummaryController.onPageLoad().url
-//      )
-//    }
+    "have link" in {
+      doc must haveLinkWithUrlWithID("returnToYourIncomeDetails", routes.TaxAccountSummaryController.onPageLoad().url)
+      doc must haveBackLink
+    }
 
     "have paragraph" in {
       doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para1", "fake employer"))
