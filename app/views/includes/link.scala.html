@@ -28,9 +28,12 @@
 )(implicit m: Messages)
 
 
-<a @if(id.getOrElse("").nonEmpty){id="@id"} href="@url"
+@elementId = @{
+    id.filter(_.nonEmpty).orElse(if(isButton) Some("submitButton") else None)
+}
+
+<a @elementId.map { elId => id="@elId" } href="@url"
     @if(isButton){
-        id="submitButton"
         role="button"
         @if(isSecondary){
             class="govuk-button govuk-button--secondary @linkClasses.mkString(" ")"
