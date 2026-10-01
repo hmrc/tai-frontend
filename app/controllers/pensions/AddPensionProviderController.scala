@@ -67,7 +67,6 @@ class AddPensionProviderController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("add.missing.pension"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.pensions.routes.AddPensionProviderController.addPayeReference().url,
       controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber().url,
       controllers.pensions.routes.AddPensionProviderController.cancel().url
     )

@@ -80,7 +80,6 @@ class EndEmploymentController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("tai.endEmployment.preHeadingText"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.EndEmploymentController.endEmploymentPage().url,
       controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url,
       controllers.employments.routes.EndEmploymentController.cancel(employmentId).url
     )

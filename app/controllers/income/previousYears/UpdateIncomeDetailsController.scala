@@ -65,7 +65,6 @@ class UpdateIncomeDetailsController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url,
       controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
       controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
     )

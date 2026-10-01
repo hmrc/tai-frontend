@@ -81,5 +81,5 @@ class CanWeContactByPhoneSpec extends TaiViewSpec {
     )
 
   private val viewModel =
-    CanWeContactByPhoneViewModel("pre heading", "main heading", "backUrl", "continueUrl", "cancelUrl")
+    CanWeContactByPhoneViewModel("pre heading", "main heading", "continueUrl", "cancelUrl")
 }

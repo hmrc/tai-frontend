@@ -75,7 +75,6 @@ class AddEmploymentController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("add.missing.employment"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.AddEmploymentController.addPayeReference().url,
       controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
       controllers.employments.routes.AddEmploymentController.cancel().url
     )

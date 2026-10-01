@@ -69,7 +69,6 @@ class UpdateEmploymentController @Inject() (
     CanWeContactByPhoneViewModel(
       messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       messages("tai.canWeContactByPhone.title"),
-      controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url,
       controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber().url,
       controllers.employments.routes.UpdateEmploymentController.cancel(id).url
     )
