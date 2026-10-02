@@ -26,9 +26,14 @@ object PayeRefForm {
   def form(companyName: String, journey: String)(implicit messages: Messages): Form[String] =
     Form(
       single(
-        "payeReference" -> text.verifying(payeRefCheck(companyName, journey))
+        "payeReference" ->
+          text
+            .transform[String](removeSpaces, identity)
+            .verifying(payeRefCheck(companyName, journey))
       )
     )
+
+  private def removeSpaces(value: String): String = value.replace(" ", "").replace("\u00A0", "")
 
   def payeRefCheck(companyName: String, journey: String)(implicit messages: Messages): Constraint[String] =
     Constraint("constraints.payeRefCheck") { value =>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package controllers.pensions
 
 import builders.RequestBuilder
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers.{any, eq as meq}
+import org.mockito.ArgumentMatchers.{any, argThat, eq as meq}
 import org.mockito.Mockito.{reset, times, verify, when}
+import pages.AddPayeRefPage
 import pages.addPensionProvider.*
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -1020,6 +1021,28 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       redirectLocation(result).get mustBe
         controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
       verify(mockRepository, times(1)).set(any())
+    }
+
+    "remove spaces before caching PAYE reference" in {
+      val sut = createSUT(
+        Some(
+          userAnswers.copy(
+            data = userAnswers.data ++ Json.obj(AddPensionProviderNamePage.toString -> "Acme Pensions")
+          )
+        )
+      )
+
+      when(mockRepository.set(any())).thenReturn(Future.successful(true))
+
+      val result = sut.submitPayeReference()(
+        RequestBuilder
+          .buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody("payeReference" -> " 123 / AB456 ")
+      )
+
+      status(result) mustBe SEE_OTHER
+
+      verify(mockRepository, times(1)).set(argThat[UserAnswers](_.get(AddPayeRefPage).contains("123/AB456")))
     }
 
     "show BAD_REQUEST on empty input" in {
