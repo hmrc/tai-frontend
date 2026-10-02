@@ -125,10 +125,7 @@ class IncomeUpdateIrregularHoursController @Inject() (
                 name,
                 currentAmountOpt,
                 newIrregularPay.toInt,
-                IrregularPay,
-                controllers.income.estimatedPay.update.routes.IncomeUpdateIrregularHoursController
-                  .editIncomeIrregularHours(employmentId)
-                  .url
+                IrregularPay
               )
               Ok(confirmAmountEntered(vm))
             }

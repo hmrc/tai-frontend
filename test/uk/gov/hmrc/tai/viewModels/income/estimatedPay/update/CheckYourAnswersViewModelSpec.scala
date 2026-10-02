@@ -206,8 +206,7 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
       taxablePay,
       hasBonusOrOvertime,
       totalBonusOrOvertime,
-      employer = IncomeSource(1, "employer name"),
-      "backUrl"
+      employer = IncomeSource(1, "employer name")
     )
 
   val totalPay             = "10000"

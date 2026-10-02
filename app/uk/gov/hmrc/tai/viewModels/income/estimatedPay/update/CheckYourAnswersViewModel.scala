@@ -30,8 +30,7 @@ case class CheckYourAnswersViewModel(
   taxablePay: Option[String],
   hasBonusOrOvertime: String,
   totalBonusOrOvertime: Option[String],
-  employer: IncomeSource,
-  backUrl: String
+  employer: IncomeSource
 ) extends ViewModelHelper
     with DynamicPayPeriodTitle {
 

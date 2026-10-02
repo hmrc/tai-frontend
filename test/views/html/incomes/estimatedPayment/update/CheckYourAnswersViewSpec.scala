@@ -46,8 +46,7 @@ class CheckYourAnswersViewSpec extends TaiViewSpec {
       taxablePay,
       hasBonusOrOvertime,
       totalBonusOrOvertime,
-      employer,
-      "backUrl"
+      employer
     )
 
   "checkYourAnswers" should {

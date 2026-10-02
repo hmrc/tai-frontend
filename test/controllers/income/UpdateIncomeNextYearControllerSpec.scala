@@ -472,8 +472,7 @@ class UpdateIncomeNextYearControllerSpec extends BaseSpec with ControllerViewTes
             employerName,
             Some(currentAmount),
             newAmount,
-            NextYearPay,
-            "#"
+            NextYearPay
           )
           val expectedView = updateIncomeCYPlus1ConfirmView(vm)(
             request,
