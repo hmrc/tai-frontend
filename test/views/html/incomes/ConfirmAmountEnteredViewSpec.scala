@@ -34,8 +34,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
       employerName,
       Some(currentAmount),
       estimatedAmount,
-      IrregularPay,
-      "backUrl"
+      IrregularPay
     )
   override lazy val view: Html          = confirmAmountEntered(vm)
 
@@ -94,8 +93,7 @@ class ConfirmAmountEnteredViewSpec extends TaiViewSpec {
         employerName,
         Some(currentAmount),
         estimatedAmount,
-        NextYearPay,
-        "backUrl"
+        NextYearPay
       )
       val cyPlus1PayView: Html = confirmAmountEntered(vm)
 

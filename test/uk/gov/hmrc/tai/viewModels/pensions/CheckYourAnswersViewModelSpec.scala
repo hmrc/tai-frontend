@@ -118,7 +118,6 @@ class CheckYourAnswersViewModelSpec extends BaseSpec {
         Some("123456789")
       )
 
-      sut.backLinkUrl mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
       sut.submissionUrl mustBe controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url
       sut.cancelUrl mustBe controllers.pensions.routes.AddPensionProviderController.cancel().url
     }

@@ -25,7 +25,6 @@ import java.time.LocalDate
 
 case class CheckYourAnswersViewModel(
   preHeading: String,
-  backLinkUrl: String,
   journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
   postConfirmationText: String,
   submissionUrl: String,
@@ -89,7 +88,6 @@ object CheckYourAnswersViewModel {
 
     CheckYourAnswersViewModel(
       Messages("add.missing.pension"),
-      controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url,
       journeyConfirmationLines,
       postConfirmationText,
       controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url,

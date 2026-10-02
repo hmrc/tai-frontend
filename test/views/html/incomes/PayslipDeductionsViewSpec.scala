@@ -27,9 +27,7 @@ class PayslipDeductionsViewSpec extends TaiViewSpec {
   val employer = IncomeSource(id = 1, name = "Employer")
 
   "Pay slip deductions view" should {
-    behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
-    )
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(employer.id).url))
     behave like pageWithCancelLinkText("Cancel all changes")
     behave like pageWithCombinedHeaderNewTemplateNew(

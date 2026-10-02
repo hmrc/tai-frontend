@@ -28,9 +28,7 @@
     title = Messages("tai.income.previousYears.details.title", viewModel.formattedTaxYear),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    backLinkId = "back-link-custom-url",
-    backLinkUrl = Some(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear).url),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
+    showBackLink = true,
     formForErrorSummary = Some(updateIncomeDetailsForm)
 ) {
 
@@ -67,4 +65,3 @@
 </div>
 
 }
-

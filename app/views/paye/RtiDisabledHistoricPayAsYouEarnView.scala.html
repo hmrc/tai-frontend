@@ -39,8 +39,7 @@ messages: Messages)
 @mainTemplate(
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     pageTitle = Some(Messages("tai.service.navTitle")),
-    backLinkContent = Some(Messages("your.paye.income.tax.overview")),
-    backLinkId = "back-link-custom-url"
+    showBackLink = true
 ){
 
 <div class="govuk-grid-row">

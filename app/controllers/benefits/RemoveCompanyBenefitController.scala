@@ -212,7 +212,7 @@ class RemoveCompanyBenefitController @Inject() (
   def telephoneNumber(): Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
     val userAnswers               = request.userAnswers
-    val telephoneNumberViewModel  = extractViewModelFromUA(userAnswers)
+    val telephoneNumberViewModel  = extractViewModelFromUA()
 
     val form = YesNoTextEntryForm
       .form()
@@ -238,7 +238,7 @@ class RemoveCompanyBenefitController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => {
-          val telephoneNumberViewModel = extractViewModelFromUA(userAnswers)
+          val telephoneNumberViewModel = extractViewModelFromUA()
 
           Future.successful(BadRequest(canWeContactByPhone(Some(user), telephoneNumberViewModel, formWithErrors)))
         },
@@ -359,21 +359,12 @@ class RemoveCompanyBenefitController @Inject() (
   }
 
   private def extractViewModelFromUA(
-    userAnswers: UserAnswers
-  )(implicit messages: Messages): CanWeContactByPhoneViewModel = {
-    val backUrl = if (userAnswers.get(EndCompanyBenefitsValuePage).isDefined) {
-      controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
-    } else {
-      controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
-    }
-
+  )(implicit messages: Messages): CanWeContactByPhoneViewModel =
     CanWeContactByPhoneViewModel(
       messages("tai.benefits.ended.journey.preHeader"),
       messages("tai.canWeContactByPhone.title"),
-      backUrl,
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url,
       controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url
     )
-  }
 
 }

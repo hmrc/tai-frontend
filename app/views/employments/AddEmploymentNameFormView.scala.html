@@ -24,9 +24,8 @@
 
 @main(
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
+    showBackLink = true,
     title = Messages("tai.addEmployment.addNameForm.title"),
-    backLinkId = "back-link-custom-url",
     formForErrorSummary = Some(nameForm),
     authedUser = Some(user)) {
         <div class="govuk-grid-row">

@@ -25,7 +25,6 @@ import java.time.LocalDate
 
 case class IncomeCheckYourAnswersViewModel(
   preHeading: String,
-  backLinkUrl: String,
   journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine],
   postConfirmationText: Option[String],
   submissionUrl: String,
@@ -43,7 +42,6 @@ object IncomeCheckYourAnswersViewModel {
     payeRef: String,
     contactableByPhone: String,
     phoneNumber: Option[String],
-    backLinkUrl: String,
     submissionUrl: String,
     cancelUrl: String
   )(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
@@ -94,7 +92,6 @@ object IncomeCheckYourAnswersViewModel {
 
     IncomeCheckYourAnswersViewModel(
       preHeading,
-      backLinkUrl,
       journeyConfirmationLines,
       Some(postConfirmationText),
       submissionUrl,
@@ -107,7 +104,6 @@ object IncomeCheckYourAnswersViewModel {
     incomeSourceEnd: String,
     contactableByPhone: String,
     phoneNumber: Option[String],
-    backLinkUrl: String,
     submissionUrl: String,
     cancelUrl: String
   )(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
@@ -143,7 +139,6 @@ object IncomeCheckYourAnswersViewModel {
 
     IncomeCheckYourAnswersViewModel(
       preHeading,
-      backLinkUrl,
       journeyConfirmationLines,
       Some(postConfirmationText),
       submissionUrl,

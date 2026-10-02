@@ -26,9 +26,7 @@ class PayPeriodViewSpec extends TaiViewSpec {
   val id = 1
 
   "Pay period view" should {
-    behave like pageWithBackLinkWithUrl(
-      controllers.income.estimatedPay.update.routes.IncomeUpdateWorkingHoursController.workingHoursPage().url
-    )
+    behave like pageWithBackLink()
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeController.cancel(id).url))
     behave like pageWithCancelLinkText("Cancel all changes")
     behave like pageWithCombinedHeaderNewTemplateNew(

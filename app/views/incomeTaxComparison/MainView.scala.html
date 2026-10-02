@@ -47,8 +47,7 @@
 @main(title = headingText,
     pageTitle = Some(Messages("tai.service.navTitle")),
     authedUser = Some(request.taiUser),
-    backLinkId = "back-link-custom-url",
-    backLinkContent = Some(Messages("your.paye.income.tax.overview")),
+    showBackLink = true,
     pagePrintable = true,
     pagePrintName = Some("future-pay-as-you-earn-summary")) {
 

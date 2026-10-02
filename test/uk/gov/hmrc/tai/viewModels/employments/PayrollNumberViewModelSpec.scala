@@ -34,8 +34,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
         val result   = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
-          true,
-          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+          true
         )
 
       }
@@ -45,8 +44,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
         val result   = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
-          false,
-          controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+          false
         )
       }
 
@@ -55,8 +53,7 @@ class PayrollNumberViewModelSpec extends BaseSpec {
         val result   = PayrollNumberViewModel(cacheMap)
         result mustBe PayrollNumberViewModel(
           "XJ",
-          false,
-          controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
+          false
         )
       }
     }

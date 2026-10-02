@@ -45,9 +45,8 @@ request: AuthenticatedRequest[_], messages: Messages, user: controllers.auth.Aut
     title = Messages("tai.estimatedIncome.title"),
     authedUser = Some(user),
     pageTitle = Some(Messages("tai.estimatedIncome.title")),
-    backLinkId = "back-link-custom-url",
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    pagePrintable = true,
+    showBackLink = true,
+    pagePrintable = true
 ){
 
     <div class="govuk-grid-row">

@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels.employments
 
-import pages.addEmployment.{AddEmploymentNamePage, AddEmploymentReceivedFirstPayPage, AddEmploymentStartDateWithinSixWeeksPage}
+import pages.addEmployment.{AddEmploymentNamePage, AddEmploymentStartDateWithinSixWeeksPage}
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.journeyCache.AddEmploymentConstants
 
-case class PayrollNumberViewModel(employmentName: String, firstPayChoice: Boolean, backUrl: String)
+case class PayrollNumberViewModel(
+  employmentName: String,
+  firstPayChoice: Boolean
+)
 
 object PayrollNumberViewModel {
 
@@ -31,15 +34,14 @@ object PayrollNumberViewModel {
       case Some(FormValuesConstants.YesValue) => true
       case _                                  => false
     }
-    val backUrl        = cache.get(AddEmploymentConstants.ReceivedFirstPayKey) match {
-      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
-      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
-    }
-    PayrollNumberViewModel(employerName, firstPayChoice, backUrl)
+    PayrollNumberViewModel(employerName, firstPayChoice)
   }
 }
 
-case class NewCachePayrollNumberViewModel(employmentName: String, firstPayChoice: Boolean, backUrl: String)
+case class NewCachePayrollNumberViewModel(
+  employmentName: String,
+  firstPayChoice: Boolean
+)
 
 object NewCachePayrollNumberViewModel {
 
@@ -49,10 +51,6 @@ object NewCachePayrollNumberViewModel {
       case Some(FormValuesConstants.YesValue) => true
       case _                                  => false
     }
-    val backUrl        = userAnswers.get(AddEmploymentReceivedFirstPayPage) match {
-      case None => controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
-      case _    => controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
-    }
-    PayrollNumberViewModel(employerName, firstPayChoice, backUrl)
+    PayrollNumberViewModel(employerName, firstPayChoice)
   }
 }
