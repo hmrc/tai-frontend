@@ -74,6 +74,15 @@ header + .hmrc-user-research-banner {
   vertical-align: top;
 }
 
+.text-break-word {
+  // IE 11 and Edge 16–17 only support the non-standard `word-wrap` property
+  word-wrap: break-word;
+
+  // All other browsers support `overflow-wrap`
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
 // css to ensure minus stays with amount in one line
 .table__cell--top-align-nowrap {
   vertical-align: top;
