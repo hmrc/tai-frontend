@@ -29,8 +29,7 @@ case class ConfirmAmountEnteredViewModel(
   mainText: Option[String] = None,
   onConfirm: String,
   onCancel: String,
-  estimatedIncome: Int,
-  backUrl: String
+  estimatedIncome: Int
 )
 
 object ConfirmAmountEnteredViewModel {
@@ -40,8 +39,7 @@ object ConfirmAmountEnteredViewModel {
     empName: String,
     currentAmount: Option[Int],
     estIncome: Int,
-    payType: PayType,
-    backUrl: String
+    payType: PayType
   )(implicit
     messages: Messages
   ): ConfirmAmountEnteredViewModel = {
@@ -55,8 +53,7 @@ object ConfirmAmountEnteredViewModel {
           .submitIncomeIrregularHours(employmentId)
           .url,
         onCancel = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url,
-        estimatedIncome = estIncome,
-        backUrl = backUrl
+        estimatedIncome = estIncome
       )
 
     val nextYearEstimatedPay =
@@ -65,8 +62,7 @@ object ConfirmAmountEnteredViewModel {
         employerName = empName,
         onConfirm = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url,
         onCancel = controllers.routes.IncomeTaxComparisonController.onPageLoad().url,
-        estimatedIncome = estIncome,
-        backUrl = backUrl
+        estimatedIncome = estIncome
       )
 
     payType match {
@@ -85,7 +81,6 @@ object ConfirmAmountEnteredViewModel {
       mainText = Some(messages("tai.incomes.confirm.save.message")),
       onConfirm = controllers.routes.IncomeController.updateEstimatedIncome(empId).url,
       onCancel = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-      estimatedIncome = estIncome,
-      backUrl = backUrl
+      estimatedIncome = estIncome
     )
 }

@@ -27,9 +27,7 @@
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.addPensionProvider.firstPay.pagetitle"),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
-    backLinkUrl = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url),
+    showBackLink = true,
     formForErrorSummary = Some(firstPayForm)
 
 ) {

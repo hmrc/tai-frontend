@@ -31,9 +31,7 @@
     title = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    backLinkUrl = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url),
-    backLinkId = "back-link-custom-url",
-    backLinkContent = Some(Messages("tai.back-link.upper")),
+    showBackLink = true,
     formForErrorSummary = Some(companyBenefitTotalValueForm)
 ) {
     <div class = "govuk-grid-row">

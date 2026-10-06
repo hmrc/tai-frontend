@@ -148,14 +148,6 @@ class IncomeUpdateCalculatorController @Inject() (
             case Some(emp) =>
               val employer = IncomeSource(id = empId, name = emp.name)
 
-              val backUrl =
-                if (bonusPaymentAmountOpt.isEmpty)
-                  controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
-                else
-                  controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController
-                    .bonusOvertimeAmountPage()
-                    .url
-
               val viewModel = CheckYourAnswersViewModel(
                 payPeriodOpt.get.toString,
                 payPeriodInDaysOpt,
@@ -164,8 +156,7 @@ class IncomeUpdateCalculatorController @Inject() (
                 taxablePayOpt,
                 hasBonusPaymentsOpt.get.toString,
                 bonusPaymentAmountOpt,
-                employer,
-                backUrl
+                employer
               )
 
               Ok(checkYourAnswers(viewModel))

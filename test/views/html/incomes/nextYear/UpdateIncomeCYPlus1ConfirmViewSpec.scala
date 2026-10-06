@@ -34,8 +34,7 @@ class UpdateIncomeCYPlus1ConfirmViewSpec extends TaiViewSpec {
     employerName,
     Some(currentAmount),
     estimatedAmount,
-    IrregularPay,
-    "#"
+    IrregularPay
   )
   private val template                  = inject[UpdateIncomeCYPlus1ConfirmView]
 

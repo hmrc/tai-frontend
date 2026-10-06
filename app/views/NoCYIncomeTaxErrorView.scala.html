@@ -26,8 +26,7 @@ user: controllers.auth.AuthedUser)
 @mainTemplate(
 title = messages("tai.noCYIncomeError.title"),
 authedUser = Some(user),
-backLinkId = "back-link-custom-url",
-backLinkContent = Some(messages("tai.returnToChooseTaxYear"))
+showBackLink = true
 
 ) {
 

@@ -27,8 +27,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
     pageTitle = Some(Messages("tai.currentYearSummary.heading")),
     title = Messages("tai.howToUpdate.title"),
     authedUser = Some(user),
-    backLinkId = "back-link-custom-url",
-    backLinkContent = Some(Messages("tai.back-link.upper")),
+    showBackLink = true,
     formForErrorSummary = Some(howToUpdateForm)
 ){
     <div class = "govuk-grid-row">

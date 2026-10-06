@@ -32,7 +32,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         payeRef = "123/AB456",
         contactableByPhone = "No",
         phoneNumber = None,
-        backLinkUrl = "/fake/backlink/url",
         submissionUrl = "/fake/continue/url",
         cancelUrl = "/fake/cancel/url"
       )
@@ -74,7 +73,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         payeRef = "123/AB456",
         contactableByPhone = "Yes",
         phoneNumber = Some("123456789"),
-        backLinkUrl = "/fake/backlink/url",
         submissionUrl = "/fake/continue/url",
         cancelUrl = "/fake/cancel/url"
       )
@@ -120,7 +118,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         incomeSourceEnd = "2017-06-13",
         contactableByPhone = "No",
         phoneNumber = None,
-        backLinkUrl = "/fake/backlink/url",
         submissionUrl = "/fake/continue/url",
         cancelUrl = "/fake/cancel/url"
       )
@@ -145,7 +142,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         incomeSourceEnd = "2017-06-13",
         contactableByPhone = "No",
         phoneNumber = Some("123456789"),
-        backLinkUrl = "/fake/backlink/url",
         submissionUrl = "/fake/continue/url",
         cancelUrl = "/fake/cancel/url"
       )
@@ -170,7 +166,6 @@ class IncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         incomeSourceEnd = "2017-06-13",
         contactableByPhone = "Yes",
         phoneNumber = Some("123456789"),
-        backLinkUrl = "/fake/backlink/url",
         submissionUrl = "/fake/continue/url",
         cancelUrl = "/fake/cancel/url"
       )

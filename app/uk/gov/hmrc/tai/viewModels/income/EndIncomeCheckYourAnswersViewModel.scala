@@ -28,8 +28,7 @@ case class EndIncomeCheckYourAnswersViewModel(
   employmentId: Int,
   employmentEndDate: String,
   contactableByPhone: String,
-  phoneNumber: Option[String],
-  backLinkUrl: String
+  phoneNumber: Option[String]
 ) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {

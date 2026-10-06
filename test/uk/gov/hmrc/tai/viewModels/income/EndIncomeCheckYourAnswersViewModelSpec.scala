@@ -32,8 +32,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         empId,
         "2017-06-13",
         "No",
-        None,
-        "/fake/backlink/url"
+        None
       )
       val res = sut.journeyConfirmationLines
 
@@ -57,8 +56,7 @@ class EndIncomeCheckYourAnswersViewModelSpec extends BaseSpec {
         empId,
         "2017-06-13",
         "Yes",
-        Some("123456789"),
-        "/fake/backlink/url"
+        Some("123456789")
       )
       val res = sut.journeyConfirmationLines
 

@@ -190,8 +190,7 @@ class UpdateIncomeNextYearController @Inject() (
                   empName = empName,
                   currentAmount = currentValue,
                   estIncome = newAmount,
-                  payType = NextYearPay,
-                  backUrl = "#"
+                  payType = NextYearPay
                 )
                 Ok(updateIncomeCYPlus1Confirm(vm))
               }

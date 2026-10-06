@@ -49,8 +49,7 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
     "have gone back to firstPayChoice page" in {
       val payrollNumberViewModel = PayrollNumberViewModel(
         employerName,
-        true,
-        controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+        true
       )
       def view: Html             = add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
       def doc: Document          = Jsoup.parse(view.toString())
@@ -96,7 +95,6 @@ class AddEmploymentPayrollNumberFormViewSpec extends TaiViewSpec {
 
   private lazy val payrollNumberViewModel = PayrollNumberViewModel(
     employerName,
-    firstPayChoice = false,
-    controllers.employments.routes.AddEmploymentController.addEmploymentStartDate().url
+    firstPayChoice = false
   )
 }

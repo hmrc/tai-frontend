@@ -30,9 +30,7 @@
     title = Messages("tai.updatePension.whatDoYouWantToTellUs.pagetitle"),
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = Some(user),
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkId = "back-link-custom-url",
-    backLinkUrl = Some(controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url),
+    showBackLink = true,
     formForErrorSummary = Some(whatDoYouWantToTellUsForm)
 ) {
 

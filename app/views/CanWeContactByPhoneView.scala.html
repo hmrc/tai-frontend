@@ -37,9 +37,7 @@
     title = viewModel.mainHeading,
     pageTitle = Some(messages("tai.service.navTitle")),
     authedUser = incomingAuthedUser,
-    backLinkContent = Some(Messages("tai.back-link.upper")),
-    backLinkUrl = Some(viewModel.backUrl),
-    backLinkId = "back-link-custom-url",
+    showBackLink = true,
     formForErrorSummary = Some(yesNoForm),
 ) {
 <div class = "govuk-grid-row">
@@ -112,7 +110,6 @@
     </div>
 </div>
 }
-
 
 
 
