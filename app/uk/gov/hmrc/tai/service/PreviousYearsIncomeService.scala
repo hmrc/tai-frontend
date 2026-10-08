@@ -31,10 +31,10 @@ class PreviousYearsIncomeService @Inject() (previousYearsIncomeConnector: Previo
     executionContext: ExecutionContext
   ): Future[String] =
     previousYearsIncomeConnector.incorrectIncome(nino, id, incorrectIncome) map {
-      case Some(envId) => envId
-      case _           =>
+      case Some(submissionId) => submissionId
+      case _                  =>
         throw new RuntimeException(
-          s"No envelope id was generated when sending previous years income details for ${nino.nino}"
+          s"No submission id was generated when sending previous years income details for ${nino.nino}"
         )
     }
 

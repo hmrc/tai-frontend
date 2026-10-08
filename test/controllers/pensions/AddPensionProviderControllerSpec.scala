@@ -926,7 +926,7 @@ class AddPensionProviderControllerSpec extends NewCachingBaseSpec {
       )
 
       when(pensionProviderService.addPensionProvider(any(), meq(expectedModel))(any(), any()))
-        .thenReturn(Future.successful("envelope-123"))
+        .thenReturn(Future.successful("submission-123"))
       when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
       when(mockRepository.set(any())).thenReturn(Future.successful(true))
 

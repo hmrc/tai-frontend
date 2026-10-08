@@ -259,7 +259,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
     }
 
     "EmploymentsConnector endEmployment" must {
-      "return an envelope" when {
+      "return a submission id" when {
         "we send a PUT request to backend" in {
           val json = Json.obj("data" -> JsString("123-456-789"))
           when(httpHandler.putToApi(any(), any(), any())(any(), any(), any()))
@@ -289,7 +289,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
     }
 
     "EmploymentsConnector addEmployment" must {
-      "return an envelope id on a successful invocation" in {
+      "return a submission id on a successful invocation" in {
         val addEmployment = AddEmployment(
           employerName = "testEmployment",
           payrollNumber = "12345",
@@ -312,7 +312,7 @@ class EmploymentsConnectorSpec extends BaseSpec with WireMockHelper {
     }
 
     "EmploymentsConnector incorrectEmployment" must {
-      "return an envelope id on a successful invocation" in {
+      "return a submission id on a successful invocation" in {
         val model =
           IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
         val json  = Json.obj("data" -> JsString("123-456-789"))
