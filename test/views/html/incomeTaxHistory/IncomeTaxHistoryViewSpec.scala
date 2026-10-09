@@ -195,6 +195,10 @@ class IncomeTaxHistoryViewSpec extends TaiViewSpec {
       }
     }
 
+    "allow employer names to break across lines" in {
+      doc.getElementsByClass("text-break-word").asScala.map(_.text()).toList must contain("employerName")
+    }
+
     "display Not available when startDate is None" in {
       val doc              = Jsoup.parse(viewWithMissingStartDate.toString())
       println(doc.getElementsByClass("govuk-summary-list__row").asScala.toList)
