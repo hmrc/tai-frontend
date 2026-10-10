@@ -32,7 +32,7 @@ class PreviousYearsIncomeConnectorSpec extends BaseSpec {
 
   "PreviousYearsIncomeConnector" must {
 
-    "return an envelope id on a successful invocation" in {
+    "return a submission id on a successful invocation" in {
       val model =
         IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json  = Json.obj("data" -> JsString("123-456-789"))
