@@ -124,6 +124,33 @@ class IncomeUpdatePayPeriodControllerSpec extends BaseSpec {
           controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.payslipAmountPage().url
         )
       }
+
+      "a CYA change is submitted" in {
+        val mockUserAnswers = UserAnswers(sessionId, randomNino().nino)
+          .setOrException(UpdateIncomeIdPage, employer.id)
+          .setOrException(UpdateIncomeNamePage, employer.name)
+          .setOrException(UpdateIncomePayPeriodPage, Monthly)
+
+        val SUT = createSUT
+        setup(mockUserAnswers)
+
+        when(mockJourneyCacheRepository.set(any[UserAnswers])) thenReturn Future.successful(true)
+        when(mockJourneyCacheRepository.get(any(), any()))
+          .thenReturn(Future.successful(Some(mockUserAnswers)))
+
+        val result = SUT.handlePayPeriod(
+          RequestBuilder
+            .buildFakeRequestWithAuthAndUri("POST", "/?edit=true")
+            .withFormUrlEncodedBody("payPeriod" -> "monthly")
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController
+            .checkYourAnswersPage(employer.id)
+            .url
+        )
+      }
     }
 
     "redirect user back to how to payPeriod page" when {

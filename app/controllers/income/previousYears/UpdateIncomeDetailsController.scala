@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.PreviousYearsIncomeService
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.CanWeContactByPhoneView
@@ -135,7 +136,11 @@ class UpdateIncomeDetailsController @Inject() (
           updatedAnswers match {
             case Success(answers)   =>
               journeyCacheRepository.set(answers).map { _ =>
-                Redirect(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber())
+                CheckYourAnswersEditMode.redirectAfterEdit(
+                  request,
+                  controllers.income.previousYears.routes.UpdateIncomeDetailsController.checkYourAnswers(),
+                  controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()
+                )
               }
             case Failure(exception) =>
               Future.failed(exception)

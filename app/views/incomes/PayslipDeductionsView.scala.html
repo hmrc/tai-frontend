@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
@@ -40,7 +41,7 @@ messages: Messages, user: controllers.auth.AuthedUser)
             }
 
             <h2 class="govuk-caption-l hmrc-caption-l carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.payslipDeductions.preHeading", employer.name)</h2>
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions()){
+            @form(action=CheckYourAnswersEditMode.preserve(controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.handlePayslipDeductions(), request)){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(

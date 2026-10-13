@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.forms.income.incomeCalculator.{BonusOvertimeAmountForm, B
 import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import views.html.incomes._
 
 import javax.inject.Inject
@@ -77,11 +78,19 @@ class IncomeUpdateBonusController @Inject() (
               Map(UpdateIncomeBonusPaymentsPage.toString -> bonusPayments)
             }
 
-            journeyCacheRepository.set(
-              request.userAnswers.copy(data = request.userAnswers.data ++ Json.toJson(bonusPaymentsAnswer).as[JsObject])
-            ) map { _ =>
+            val updatedData = request.userAnswers.data ++ Json.toJson(bonusPaymentsAnswer).as[JsObject]
+            val answers     = if (formData.yesNoChoice.contains(FormValuesConstants.NoValue)) {
+              request.userAnswers.copy(data = updatedData - UpdateIncomeBonusOvertimeAmountPage.toString)
+            } else {
+              request.userAnswers.copy(data = updatedData)
+            }
+
+            journeyCacheRepository.set(answers) map { _ =>
               if (formData.yesNoChoice.contains(FormValuesConstants.YesValue)) {
-                Redirect(routes.IncomeUpdateBonusController.bonusOvertimeAmountPage())
+                CheckYourAnswersEditMode.redirect(
+                  routes.IncomeUpdateBonusController.bonusOvertimeAmountPage(),
+                  request
+                )
               } else {
                 Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage(empId))
               }

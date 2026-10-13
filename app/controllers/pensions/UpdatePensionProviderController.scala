@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service.{PensionProviderService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
@@ -127,7 +128,11 @@ class UpdatePensionProviderController @Inject() (
                 journeyCacheRepository
                   .set(updatedAnswers)
                   .map { _ =>
-                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs())
+                    CheckYourAnswersEditMode.redirectAfterEdit(
+                      request,
+                      controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers(),
+                      controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs()
+                    )
                   }
               case _                                  => Future.successful(Redirect(applicationConfig.incomeFromEmploymentPensionLinkUrl))
             }
@@ -174,7 +179,11 @@ class UpdatePensionProviderController @Inject() (
         pensionDetails => {
           val updatedAnswers = request.userAnswers.setOrException(UpdatePensionProviderDetailsPage, pensionDetails)
           journeyCacheRepository.set(updatedAnswers).map { _ =>
-            Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber())
+            CheckYourAnswersEditMode.redirectAfterEdit(
+              request,
+              controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers(),
+              controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()
+            )
           }
         }
       )

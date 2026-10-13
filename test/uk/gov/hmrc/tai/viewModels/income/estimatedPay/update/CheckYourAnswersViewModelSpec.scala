@@ -47,7 +47,7 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
     "return relevant journey lines" when {
       "no bonus or overtime is provided" in {
 
-        val viewModel = createViewModel(taxablePay = Some(taxablePay))
+        val viewModel = createViewModel(taxablePay = Some(taxablePay), bonusAnswer = "No")
 
         viewModel.journeyConfirmationLines.size mustBe 5
         viewModel.journeyConfirmationLines mustEqual
@@ -56,22 +56,38 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
             totalPayAnswer,
             hasDeductionAnswer,
             taxablePayAnswer,
-            hasBonusOrOvertimeAnswer
+            hasBonusOrOvertimeAnswer.copy(answer = "No")
           )
       }
 
       "there are no payslip deductions" in {
-        val viewModel = createViewModel(Some(totalBonusOrOvertime))
+        val viewModel = createViewModel(Some(totalBonusOrOvertime), deductionsAnswer = "No")
 
         viewModel.journeyConfirmationLines.size mustBe 5
         viewModel.journeyConfirmationLines mustEqual
           Seq(
             monthlyPaymentFrequencyAnswer,
             totalPayAnswer,
-            hasDeductionAnswer,
+            hasDeductionAnswer.copy(answer = "No"),
             hasBonusOrOvertimeAnswer,
             totalYearlyBonusOrOvertimeAnswer
           )
+      }
+
+      "conditional answers are omitted when their controlling answer is no" in {
+        val viewModel = createViewModel(
+          totalBonusOrOvertime = Some(totalBonusOrOvertime),
+          taxablePay = Some(taxablePay),
+          deductionsAnswer = "No",
+          bonusAnswer = "No"
+        )
+
+        viewModel.journeyConfirmationLines.map(_.question) mustEqual Seq(
+          monthlyPaymentFrequencyAnswer.question,
+          totalPayAnswer.question,
+          hasDeductionAnswer.question,
+          hasBonusOrOvertimeAnswer.question
+        )
       }
 
     }
@@ -196,15 +212,17 @@ class CheckYourAnswersViewModelSpec extends BaseSpec with ViewModelHelper with T
     totalBonusOrOvertime: Option[String] = None,
     taxablePay: Option[String] = None,
     payPeriodInDays: Option[String] = None,
-    paymentFrequency: String = Monthly
+    paymentFrequency: String = Monthly,
+    deductionsAnswer: String = hasDeductions,
+    bonusAnswer: String = hasBonusOrOvertime
   ): CheckYourAnswersViewModel =
     CheckYourAnswersViewModel(
       paymentFrequency,
       payPeriodInDays,
       totalPay,
-      hasDeductions,
+      deductionsAnswer,
       taxablePay,
-      hasBonusOrOvertime,
+      bonusAnswer,
       totalBonusOrOvertime,
       employer = IncomeSource(1, "employer name")
     )

@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.util.constants.PayPeriodConstants
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 
@@ -38,7 +39,7 @@
             }
 
             <h2 class="govuk-caption-l hmrc-caption-l carry-over"><span class="govuk-visually-hidden">@Messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.payPeriod.preHeading", employerName)</h2>
-            @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod(), Symbol("data-dynamic-form") -> "true"){
+            @form(action=CheckYourAnswersEditMode.preserve(controllers.income.estimatedPay.update.routes.IncomeUpdatePayPeriodController.handlePayPeriod(), request), Symbol("data-dynamic-form") -> "true"){
                 @govukRadios(Radios(
                     fieldset =  Some(
                         Fieldset(

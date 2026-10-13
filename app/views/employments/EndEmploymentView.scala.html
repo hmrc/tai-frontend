@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.RichDateInput
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 @import java.time.LocalDate
 
 @this(mainTemplate: MainTemplate, form: FormWithCSRF,  govukDateInput : GovukDateInput, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
@@ -47,7 +48,7 @@
                 }
 
                 <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@messages("tai.endEmployment.preHeadingText")</h2>
-                @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
+                @form(action = CheckYourAnswersEditMode.preserve(controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId), request)) {
 
                 @govukDateInput(DateInput(
                     id = "tellUsAboutEmploymentForm",

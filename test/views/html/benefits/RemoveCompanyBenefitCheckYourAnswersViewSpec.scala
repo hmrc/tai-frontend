@@ -52,7 +52,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLineNew(1, messages("tai.checkYourAnswers.whatYouToldUs"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(1, messages("tai.noLongerGetBenefit"))
-      doc must haveCheckYourAnswersSummaryLineChangeLink(1, "")
+      doc must not(haveElementWithId("confirmation-line-1-change-link"))
 
       doc must haveCheckYourAnswersSummaryLineNew(2, messages("tai.checkYourAnswers.dateBenefitEnded"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(
@@ -61,7 +61,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       )
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         2,
-        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+        controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url + "?edit=true"
       )
 
       val benefitValue =
@@ -70,21 +70,21 @@ class RemoveCompanyBenefitCheckYourAnswersViewSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswerNew(3, benefitValue)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         3,
-        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
+        controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url + "?edit=true"
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(4, messages("tai.checkYourAnswers.contactByPhone"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(4, viewModel.contactByPhone)
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         4,
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url + "?edit=true"
       )
 
       doc must haveCheckYourAnswersSummaryLineNew(5, messages("tai.phoneNumber"))
       doc must haveCheckYourAnswersSummaryLineAnswerNew(5, viewModel.phoneNumber.getOrElse(""))
       doc must haveCheckYourAnswersSummaryLineChangeLink(
         5,
-        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url + "?edit=true"
       )
 
     }
