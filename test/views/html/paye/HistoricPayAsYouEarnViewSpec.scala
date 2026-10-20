@@ -213,7 +213,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
-        doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
+        doc must haveHeadingH2WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
       }
     }
 
@@ -345,7 +345,7 @@ class HistoricPayAsYouEarnViewSpec extends TaiViewSpec {
           appConfig.taxYouPaidStatus,
           messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
-        doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
+        doc must haveHeadingH2WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
       }
     }
 
