@@ -917,7 +917,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           )
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any()))
-          .thenReturn(Future.successful("envelope-123"))
+          .thenReturn(Future.successful("submission-123"))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
         when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
@@ -947,7 +947,7 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "123/AB456", "No", None)
 
         when(employmentService.addEmployment(any(), meq(expectedModel))(any()))
-          .thenReturn(Future.successful("envelope-123"))
+          .thenReturn(Future.successful("submission-123"))
         when(mockRepository.set(any())).thenReturn(Future.successful(true))
         when(mockRepository.clear(any(), any())).thenReturn(Future.successful(true))
 
