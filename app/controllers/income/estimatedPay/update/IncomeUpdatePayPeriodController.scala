@@ -57,6 +57,8 @@ class IncomeUpdatePayPeriodController @Inject() (
   def handlePayPeriod: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
+    val previousPayPeriod         = request.userAnswers.get(UpdateIncomePayPeriodPage)
+    val previousDays              = request.userAnswers.get(UpdateIncomeOtherInDaysPage)
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
 
     PayPeriodForm
@@ -86,8 +88,11 @@ class IncomeUpdatePayPeriodController @Inject() (
           updatedUserAnswers match {
             case Success(updatedAnswers) =>
               journeyCacheRepository.set(updatedAnswers).map { _ =>
-                val nextPage = routes.IncomeUpdatePayslipAmountController.payslipAmountPage()
-                if (CheckYourAnswersEditMode.isEditing(request)) {
+                val nextPage      = routes.IncomeUpdatePayslipAmountController.payslipAmountPage()
+                val periodChanged = previousPayPeriod != formData.payPeriod || previousDays != formData.otherInDays
+                if (CheckYourAnswersEditMode.isEditing(request) && periodChanged) {
+                  CheckYourAnswersEditMode.redirect(nextPage, request)
+                } else if (CheckYourAnswersEditMode.isEditing(request)) {
                   request.userAnswers.get(UpdateIncomeIdPage) match {
                     case Some(id) =>
                       CheckYourAnswersEditMode.redirectAfterEdit(

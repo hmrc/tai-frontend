@@ -30,6 +30,7 @@ import views.html.incomes.{PayslipAmountView, PayslipDeductionsView, TaxablePays
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class IncomeUpdatePayslipAmountController @Inject() (
   authenticate: AuthJourney,
@@ -89,11 +90,23 @@ class IncomeUpdatePayslipAmountController @Inject() (
               case PayslipForm(Some(value)) =>
                 val updatedUserAnswers = userAnswers.setOrException(UpdateIncomeTotalSalaryPage, value)
                 journeyCacheRepository.set(updatedUserAnswers).map { _ =>
-                  CheckYourAnswersEditMode.redirectAfterEdit(
-                    request,
-                    routes.IncomeUpdateCalculatorController.checkYourAnswersPage(incomeSource.id),
-                    routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage()
-                  )
+                  val grossBelowTaxable = (for {
+                    gross   <- parseAmount(value)
+                    taxable <- userAnswers.get(UpdateIncomeTaxablePayPage).flatMap(parseAmount)
+                  } yield gross < taxable).getOrElse(false)
+
+                  if (CheckYourAnswersEditMode.isEditing(request) && grossBelowTaxable) {
+                    CheckYourAnswersEditMode.redirect(
+                      routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage(),
+                      request
+                    )
+                  } else {
+                    CheckYourAnswersEditMode.redirectAfterEdit(
+                      request,
+                      routes.IncomeUpdateCalculatorController.checkYourAnswersPage(incomeSource.id),
+                      routes.IncomeUpdatePayslipAmountController.payslipDeductionsPage()
+                    )
+                  }
                 }
               case _                        =>
                 Future.successful(
@@ -231,5 +244,8 @@ class IncomeUpdatePayslipAmountController @Inject() (
           }
       )
   }
+
+  private def parseAmount(value: String): Option[BigDecimal] =
+    Try(BigDecimal(FormHelper.stripNumber(value))).toOption
 
 }

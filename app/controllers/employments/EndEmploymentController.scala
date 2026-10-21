@@ -131,7 +131,10 @@ class EndEmploymentController @Inject() (
       if (updateEndEmploymentComplete) {
         Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
       } else {
-        Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+        CheckYourAnswersEditMode.redirect(
+          controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision(),
+          request
+        )
       }
     }
   }
@@ -169,9 +172,11 @@ class EndEmploymentController @Inject() (
                         journeyCacheRepository
                           .set(request.userAnswers.setOrException(EmploymentDecisionPage, FormValuesConstants.YesValue))
                         Future.successful(
-                          Redirect(
+                          CheckYourAnswersEditMode.redirectAfterEdit(
+                            request,
                             controllers.employments.routes.UpdateEmploymentController
-                              .updateEmploymentDetails(empId)
+                              .updateEmploymentCheckYourAnswers(),
+                            controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(empId)
                           )
                         )
                       case _                                  =>
