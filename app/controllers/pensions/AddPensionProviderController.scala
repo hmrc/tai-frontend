@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.{AuditService, PensionProviderService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
@@ -96,7 +97,11 @@ class AddPensionProviderController @Inject() (
           for {
             _ <- journeyCacheRepository
                    .set(request.userAnswers.setOrException(AddPensionProviderNamePage, pensionProviderName))
-          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay())
+          } yield CheckYourAnswersEditMode.redirectAfterEdit(
+            request,
+            controllers.pensions.routes.AddPensionProviderController.checkYourAnswers(),
+            controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()
+          )
       )
   }
 
@@ -197,7 +202,11 @@ class AddPensionProviderController @Inject() (
             for {
               _ <- journeyCacheRepository
                      .set(request.userAnswers.setOrException(AddPensionProviderStartDatePage, date.toString))
-            } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionNumber())
+            } yield CheckYourAnswersEditMode.redirectAfterEdit(
+              request,
+              controllers.pensions.routes.AddPensionProviderController.checkYourAnswers(),
+              controllers.pensions.routes.AddPensionProviderController.addPensionNumber()
+            )
         )
   }
 
@@ -246,7 +255,11 @@ class AddPensionProviderController @Inject() (
                        form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response"))
                      )
                  )
-          } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addPayeReference())
+          } yield CheckYourAnswersEditMode.redirectAfterEdit(
+            request,
+            controllers.pensions.routes.AddPensionProviderController.checkYourAnswers(),
+            controllers.pensions.routes.AddPensionProviderController.addPayeReference()
+          )
       )
   }
 
@@ -278,7 +291,11 @@ class AddPensionProviderController @Inject() (
               val updatedAnswers = request.userAnswers.setOrException(AddPayeRefPage, value)
               for {
                 _ <- journeyCacheRepository.set(updatedAnswers)
-              } yield Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber())
+              } yield CheckYourAnswersEditMode.redirectAfterEdit(
+                request,
+                controllers.pensions.routes.AddPensionProviderController.checkYourAnswers(),
+                controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber()
+              )
             }
           )
       case None              => Future.successful(error5xxInBadRequest())

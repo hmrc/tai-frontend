@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{CharacterCount, ErrorSummary, FormWithCSRF, GovukCharacterCount, GovukErrorSummary, Hint, Label, Text}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 
 
 
@@ -42,7 +43,7 @@
 
         <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.updatePension.preHeading")</h2>
 
-        @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
+        @form(action = CheckYourAnswersEditMode.preserve(controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), request), args=(Symbol("class"), "subsection")) {
             @govukCharacterCount(CharacterCount(
                 id = "pensionDetails",
                 name = "pensionDetails",

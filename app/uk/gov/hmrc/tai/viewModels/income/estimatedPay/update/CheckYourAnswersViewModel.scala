@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
 import uk.gov.hmrc.tai.util.constants.PayPeriodConstants._
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.{MoneyPounds, TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
@@ -77,12 +78,19 @@ case class CheckYourAnswersViewModel(
       Other       -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.days"
     )
 
-    val taxablePayConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages(dynamicTitle(Some(paymentFrequency), payPeriodInDays, taxablePayMessages)),
-      taxablePay,
-      controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController.taxablePayslipAmountPage().url,
-      isMonetaryValue
-    )
+    val taxablePayConfirmationLine =
+      if (hasDeductions == FormValuesConstants.YesValue) {
+        createCheckYourAnswerConfirmationLine(
+          messages(dynamicTitle(Some(paymentFrequency), payPeriodInDays, taxablePayMessages)),
+          taxablePay,
+          controllers.income.estimatedPay.update.routes.IncomeUpdatePayslipAmountController
+            .taxablePayslipAmountPage()
+            .url,
+          isMonetaryValue
+        )
+      } else {
+        None
+      }
 
     val hasBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages(
@@ -93,15 +101,20 @@ case class CheckYourAnswersViewModel(
       controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusPaymentsPage().url
     )
 
-    val totalBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages(
-        "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
-        TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
-      ),
-      totalBonusOrOvertime,
-      controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url,
-      isMonetaryValue
-    )
+    val totalBonusOrOvertimeConfirmationLine =
+      if (hasBonusOrOvertime == FormValuesConstants.YesValue) {
+        createCheckYourAnswerConfirmationLine(
+          messages(
+            "tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime",
+            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
+          ),
+          totalBonusOrOvertime,
+          controllers.income.estimatedPay.update.routes.IncomeUpdateBonusController.bonusOvertimeAmountPage().url,
+          isMonetaryValue
+        )
+      } else {
+        None
+      }
 
     Seq(
       paymentFrequencyConfirmationLine,

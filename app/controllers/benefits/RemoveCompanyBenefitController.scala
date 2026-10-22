@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{ThreeWeeks, TrackingService}
 import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.TaxDateWordMonthFormat
 import uk.gov.hmrc.tai.util.constants.journeyCache._
@@ -96,7 +97,7 @@ class RemoveCompanyBenefitController @Inject() (
     userAnswers: UserAnswers,
     user: AuthedUser,
     taxYear: TaxYear
-  ): Future[Result] = {
+  )(implicit request: Request[_]): Future[Result] = {
     val dateString = date.toString
     if (date isBefore taxYear.start) {
       for {
@@ -108,7 +109,11 @@ class RemoveCompanyBenefitController @Inject() (
             .setOrException(EndCompanyBenefitsStopDatePage, dateString)
           journeyCacheRepository.set(updatedUserAnswers)
         }
-      } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
+      } yield CheckYourAnswersEditMode.redirectAfterEdit(
+        request,
+        controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers(),
+        controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber()
+      )
     } else {
       journeyCacheRepository
         .set {
@@ -116,7 +121,10 @@ class RemoveCompanyBenefitController @Inject() (
           updatedUserAnswers
         }
         .map { _ =>
-          Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
+          CheckYourAnswersEditMode.redirect(
+            controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit(),
+            request
+          )
         }
     }
   }
@@ -204,7 +212,13 @@ class RemoveCompanyBenefitController @Inject() (
           val updatedUserAnswers = userAnswers.setOrException(EndCompanyBenefitsValuePage, rounded.toString)
           journeyCacheRepository
             .set(updatedUserAnswers)
-            .map(_ => Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber()))
+            .map(_ =>
+              CheckYourAnswersEditMode.redirectAfterEdit(
+                request,
+                controllers.benefits.routes.RemoveCompanyBenefitController.checkYourAnswers(),
+                controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber()
+              )
+            )
         }
       )
   }

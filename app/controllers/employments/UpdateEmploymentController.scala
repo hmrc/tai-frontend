@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.util.{EmpIdCheck, Referral}
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -131,7 +132,13 @@ class UpdateEmploymentController @Inject() (
           employmentDetails =>
             journeyCacheRepository
               .set(request.userAnswers.setOrException(UpdateEmploymentDetailsPage, employmentDetails))
-              .map(_ => Redirect(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber()))
+              .map(_ =>
+                CheckYourAnswersEditMode.redirectAfterEdit(
+                  request,
+                  controllers.employments.routes.UpdateEmploymentController.updateEmploymentCheckYourAnswers(),
+                  controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber()
+                )
+              )
         )
   }
 

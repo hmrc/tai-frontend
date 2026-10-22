@@ -30,12 +30,14 @@
                 @line.answer
             </dd>
             <dd class="govuk-summary-list__actions">
-                @includes.link(
-                    id = Some("confirmation-line-" + idx.toString + "-change-link"),
-                    url = line.changeUrl + "?edit=true",
-                    copy=Messages("tai.checkYourAnswers.change.label"),
-                    altCopy=Some(Messages("tai.checkYourAnswers.change.label") + " " + line.question.toLowerCase)
-                )
+                @if(line.changeUrl.nonEmpty) {
+                    @includes.link(
+                        id = Some("confirmation-line-" + idx.toString + "-change-link"),
+                        url = line.changeUrl + "?edit=true",
+                        copy=Messages("tai.checkYourAnswers.change.label"),
+                        altCopy=Some(Messages("tai.checkYourAnswers.change.label") + " " + line.question.toLowerCase)
+                    )
+                }
             </dd>
         </div>
     }

@@ -67,9 +67,12 @@ object RequestBuilder {
       .withHeaders(headers: _*)
 
   def buildFakeRequestWithAuth(method: String) =
+    buildFakeRequestWithAuthAndUri(method, "/")
+
+  def buildFakeRequestWithAuthAndUri(method: String, uri: String) =
     FakeRequest(
       method = method,
-      uri = "/",
+      uri = uri,
       headers = Headers(),
       body = AnyContentAsEmpty,
       attrs = TypedMap(
