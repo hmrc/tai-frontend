@@ -4,3 +4,4 @@ test-repositories:
   - pertax-performance-tests
   - platform-performance-tests
   - tai-acceptance-test-suite
+serviceNowMapping: SNSVC0005882
