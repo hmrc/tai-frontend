@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.model.UserAnswers
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.NewCachePayrollNumberViewModel
@@ -102,7 +103,11 @@ class AddEmploymentController @Inject() (
           for {
             _ <-
               journeyCacheRepository.set(request.userAnswers.setOrException(AddEmploymentNamePage, employmentName))
-          } yield Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate())
+          } yield CheckYourAnswersEditMode.redirectAfterEdit(
+            request,
+            controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers(),
+            controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()
+          )
       )
   }
 
@@ -146,9 +151,16 @@ class AddEmploymentController @Inject() (
                 _ <- journeyCacheRepository.set(wholeAnswers)
               } yield
                 if (date.isAfter(startDateBoundary)) {
-                  Redirect(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
+                  CheckYourAnswersEditMode.redirect(
+                    controllers.employments.routes.AddEmploymentController.receivedFirstPay(),
+                    request
+                  )
                 } else {
-                  Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
+                  CheckYourAnswersEditMode.redirectAfterEdit(
+                    request,
+                    controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers(),
+                    controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber()
+                  )
                 }
             }
           )
@@ -188,7 +200,11 @@ class AddEmploymentController @Inject() (
                     )
               } yield firstPayYesNo match {
                 case Some(FormValuesConstants.YesValue) =>
-                  Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
+                  CheckYourAnswersEditMode.redirectAfterEdit(
+                    request,
+                    controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers(),
+                    controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber()
+                  )
                 case _                                  => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
               }
           )
@@ -252,7 +268,11 @@ class AddEmploymentController @Inject() (
                              .getOrElse(Messages("tai.addEmployment.employmentPayrollNumber.notKnown"))
                          )
                      )
-            } yield Redirect(controllers.employments.routes.AddEmploymentController.addPayeReference())
+            } yield CheckYourAnswersEditMode.redirectAfterEdit(
+              request,
+              controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers(),
+              controllers.employments.routes.AddEmploymentController.addPayeReference()
+            )
         )
   }
 
@@ -284,7 +304,11 @@ class AddEmploymentController @Inject() (
               val updatedAnswers = request.userAnswers.setOrException(AddPayeRefPage, value)
               for {
                 _ <- journeyCacheRepository.set(updatedAnswers)
-              } yield Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber())
+              } yield CheckYourAnswersEditMode.redirectAfterEdit(
+                request,
+                controllers.employments.routes.AddEmploymentController.addEmploymentCheckYourAnswers(),
+                controllers.employments.routes.AddEmploymentController.addTelephoneNumber()
+              )
             }
           )
       case None              => Future.successful(error5xxInBadRequest())

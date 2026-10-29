@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.util.{TaxYearRangeUtil => Dates}
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 @import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 
 
@@ -59,7 +60,7 @@
             ))
 
 
-            @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue(), Symbol("class") -> "govuk-!-margin-top-3") {
+            @form(action = CheckYourAnswersEditMode.preserve(controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue(), request), Symbol("class") -> "govuk-!-margin-top-3") {
                 @govukInput(Input(
                     id = "totalValue",
                     name = "totalValue",

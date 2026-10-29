@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.model.{TaxYear, UserAnswers}
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, EndEmployment}
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, RtiService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants}
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import uk.gov.hmrc.tai.util.journeyCache.EmptyCacheRedirect
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -130,7 +131,10 @@ class EndEmploymentController @Inject() (
       if (updateEndEmploymentComplete) {
         Redirect(controllers.employments.routes.EndEmploymentController.duplicateSubmissionWarning())
       } else {
-        Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision())
+        CheckYourAnswersEditMode.redirect(
+          controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision(),
+          request
+        )
       }
     }
   }
@@ -168,9 +172,11 @@ class EndEmploymentController @Inject() (
                         journeyCacheRepository
                           .set(request.userAnswers.setOrException(EmploymentDecisionPage, FormValuesConstants.YesValue))
                         Future.successful(
-                          Redirect(
+                          CheckYourAnswersEditMode.redirectAfterEdit(
+                            request,
                             controllers.employments.routes.UpdateEmploymentController
-                              .updateEmploymentDetails(empId)
+                              .updateEmploymentCheckYourAnswers(),
+                            controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(empId)
                           )
                         )
                       case _                                  =>
@@ -373,7 +379,11 @@ class EndEmploymentController @Inject() (
                   for {
                     _ <-
                       journeyCacheRepository.set(request.userAnswers.setOrException(EndEmploymentEndDatePage, date))
-                  } yield Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
+                  } yield CheckYourAnswersEditMode.redirectAfterEdit(
+                    request,
+                    controllers.employments.routes.EndEmploymentController.endEmploymentCheckYourAnswers(),
+                    controllers.employments.routes.EndEmploymentController.addTelephoneNumber()
+                  )
               )
           )
         )

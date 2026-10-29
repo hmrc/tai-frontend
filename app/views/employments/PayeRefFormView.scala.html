@@ -16,6 +16,7 @@
 
 @import includes.cancelLink
 @import uk.gov.hmrc.govukfrontend.views.html.components.*
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
 
 @this(
@@ -56,11 +57,14 @@
 
                             @formWithCSRF(
                                 action =
-                                    if (journey == "pension") {
-                                        controllers.pensions.routes.AddPensionProviderController.submitPayeReference()
-                                    } else {
-                                        controllers.employments.routes.AddEmploymentController.submitPayeReference()
-                                    }
+                                    CheckYourAnswersEditMode.preserve(
+                                        if (journey == "pension") {
+                                            controllers.pensions.routes.AddPensionProviderController.submitPayeReference()
+                                        } else {
+                                            controllers.employments.routes.AddEmploymentController.submitPayeReference()
+                                        },
+                                        request
+                                    )
                             ) {
 
                                 @govukInput(Input(

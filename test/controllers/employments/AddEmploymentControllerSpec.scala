@@ -242,6 +242,29 @@ class AddEmploymentControllerSpec extends NewCachingBaseSpec {
           .receivedFirstPay()
           .url
       }
+
+      "a CYA date change makes the six-week follow-up relevant" in {
+        val sut  = createSUT()
+        val date = LocalDate.now.minusDays(4)
+
+        when(mockRepository.set(any())).thenReturn(Future.successful(true))
+
+        val result =
+          sut.submitEmploymentStartDate()(
+            RequestBuilder
+              .buildFakeRequestWithAuthAndUri("POST", "/?edit=true")
+              .withFormUrlEncodedBody(
+                EmploymentAddDateForm.EmploymentFormDay   -> date.getDayOfMonth.toString,
+                EmploymentAddDateForm.EmploymentFormMonth -> date.getMonthValue.toString,
+                EmploymentAddDateForm.EmploymentFormYear  -> date.getYear.toString
+              )
+          )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(
+          controllers.employments.routes.AddEmploymentController.receivedFirstPay().url + "?edit=true"
+        )
+      }
     }
 
     "return bad request" when {

@@ -18,12 +18,13 @@ package controllers.income.estimatedPay.update
 
 import controllers.TaiBaseController
 import controllers.auth.{AuthJourney, AuthedUser}
-import pages.income.{UpdateIncomeOtherInDaysPage, UpdateIncomePayPeriodPage}
+import pages.income.{UpdateIncomeIdPage, UpdateIncomeOtherInDaysPage, UpdateIncomePayPeriodPage}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repository.JourneyCacheRepository
 import uk.gov.hmrc.tai.forms.income.incomeCalculator.PayPeriodForm
 import uk.gov.hmrc.tai.model.domain.income.IncomeSource
+import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 import views.html.incomes.PayPeriodView
 
 import javax.inject.Inject
@@ -56,6 +57,8 @@ class IncomeUpdatePayPeriodController @Inject() (
   def handlePayPeriod: Action[AnyContent] = authenticate.authWithDataRetrieval.async { implicit request =>
     implicit val user: AuthedUser = request.taiUser
 
+    val previousPayPeriod         = request.userAnswers.get(UpdateIncomePayPeriodPage)
+    val previousDays              = request.userAnswers.get(UpdateIncomeOtherInDaysPage)
     val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
 
     PayPeriodForm
@@ -77,13 +80,31 @@ class IncomeUpdatePayPeriodController @Inject() (
                 .set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
                 .flatMap(_.set(UpdateIncomeOtherInDaysPage, days))
             case _          =>
-              request.userAnswers.set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
+              request.userAnswers
+                .set(UpdateIncomePayPeriodPage, formData.payPeriod.getOrElse(""))
+                .map(answers => answers.copy(data = answers.data - UpdateIncomeOtherInDaysPage.toString))
           }
 
           updatedUserAnswers match {
             case Success(updatedAnswers) =>
               journeyCacheRepository.set(updatedAnswers).map { _ =>
-                Redirect(routes.IncomeUpdatePayslipAmountController.payslipAmountPage())
+                val nextPage      = routes.IncomeUpdatePayslipAmountController.payslipAmountPage()
+                val periodChanged = previousPayPeriod != formData.payPeriod || previousDays != formData.otherInDays
+                if (CheckYourAnswersEditMode.isEditing(request) && periodChanged) {
+                  CheckYourAnswersEditMode.redirect(nextPage, request)
+                } else if (CheckYourAnswersEditMode.isEditing(request)) {
+                  request.userAnswers.get(UpdateIncomeIdPage) match {
+                    case Some(id) =>
+                      CheckYourAnswersEditMode.redirectAfterEdit(
+                        request,
+                        routes.IncomeUpdateCalculatorController.checkYourAnswersPage(id),
+                        nextPage
+                      )
+                    case None     => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+                  }
+                } else {
+                  Redirect(nextPage)
+                }
               }
             case Failure(_)              =>
               Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))

@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+@import uk.gov.hmrc.tai.util.CheckYourAnswersEditMode
 
 @this(main: MainTemplate, form: FormWithCSRF, govukRadios: GovukRadios, govukButton: GovukButton, govukErrorSummary: GovukErrorSummary)
 
@@ -40,7 +41,7 @@
 
             <h2 class="govuk-caption-l hmrc-caption-l"><span class="govuk-visually-hidden">@messages("tai.ptaHeader.accessible.preHeading") </span>@Messages("tai.updatePension.preHeading")</h2>
 
-            @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension()) {
+            @form(action = CheckYourAnswersEditMode.preserve(controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension(), request)) {
                 @govukRadios(Radios(
                     fieldset = Some(
                         Fieldset(
