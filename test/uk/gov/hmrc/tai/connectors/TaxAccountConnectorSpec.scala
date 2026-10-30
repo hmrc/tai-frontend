@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -388,6 +388,26 @@ class TaxAccountConnectorSpec extends BaseSpec with WireMockHelper with ScalaFut
 
         val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value.futureValue
         result mustBe Right(TaxAccountSummary(111, 222, 1111.11, 2222.23, 1111.12, 100, 200))
+      }
+
+      "optional fields are null" in {
+        val taxAccountSummaryJson = Json.obj(
+          "data"  -> Json.obj(
+            "totalEstimatedTax"                  -> JsNull,
+            "taxFreeAmount"                      -> JsNull,
+            "totalInYearAdjustmentIntoCY"        -> 1111.11,
+            "totalInYearAdjustment"              -> 2222.23,
+            "totalInYearAdjustmentIntoCYPlusOne" -> 1111.12,
+            "totalEstimatedIncome"               -> JsNull,
+            "taxFreeAllowance"                   -> JsNull
+          ),
+          "links" -> Json.arr()
+        )
+
+        server.stubFor(get(taxAccountSummaryUrl).willReturn(aResponse.withBody(taxAccountSummaryJson.toString())))
+
+        val result = taxAccountConnector.taxAccountSummary(nino, currentTaxYear).value.futureValue
+        result mustBe Right(TaxAccountSummary(0, 0, 1111.11, 2222.23, 1111.12, 0, 0))
       }
     }
 
