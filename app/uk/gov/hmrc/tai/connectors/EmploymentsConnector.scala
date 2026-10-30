@@ -17,9 +17,9 @@
 package uk.gov.hmrc.tai.connectors
 
 import cats.data.EitherT
-import cats.implicits._
+import cats.implicits.*
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
@@ -85,8 +85,8 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler, applicationConfi
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] =
     httpHandler.putToApi[EndEmployment](endEmploymentServiceUrl(nino, id), endEmploymentData).flatMap { response =>
       (response.json \ "data").validate[String].asEither match {
-        case Right(envId) => Future.successful(envId)
-        case Left(_)      => Future.failed(new RuntimeException("Invalid json"))
+        case Right(submissionId) => Future.successful(submissionId)
+        case Left(_)             => Future.failed(new RuntimeException("Invalid json"))
       }
     }
 

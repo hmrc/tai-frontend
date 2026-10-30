@@ -51,20 +51,20 @@ class BenefitsServiceSpec extends BaseSpec {
   }
 
   "Ended company benefit" must {
-    "return an envelope id" in {
+    "return a submission id" in {
       val sut                 = createSut
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
       when(benefitsConnector.endedCompanyBenefit(meq(nino), meq(1), meq(endedCompanyBenefit))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
-      val envId = Await.result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
+      val submissionId = Await.result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
 
-      envId mustBe "123-456-789"
+      submissionId mustBe "123-456-789"
     }
 
     "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
+      "no submission id was returned from the connector layer" in {
         val sut                 = createSut
         val endedCompanyBenefit =
           EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
@@ -73,7 +73,7 @@ class BenefitsServiceSpec extends BaseSpec {
 
         val rte = the[RuntimeException] thrownBy Await
           .result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
+        rte.getMessage mustBe s"No submission id was generated when attempting to end company benefit for ${nino.nino}"
       }
     }
   }

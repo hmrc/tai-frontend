@@ -39,32 +39,32 @@ class PensionProviderServiceSpec extends BaseSpec {
       )
 
   "add pension provider" must {
-    "return an envelope id" in {
+    "return a submission id" in {
       val sut   = createSUT
       val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "123/AB456", "Yes", Some("123456789"))
       when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
-      val envId = Await.result(sut.addPensionProvider(nino, model), 5 seconds)
+      val submissionId = Await.result(sut.addPensionProvider(nino, model), 5 seconds)
 
-      envId mustBe "123-456-789"
+      submissionId mustBe "123-456-789"
     }
 
     "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
+      "no submission id was returned from the connector layer" in {
         val sut   = createSUT
         val model = AddPensionProvider("name", LocalDate.of(2017, 6, 9), "12345", "123/AB456", "Yes", Some("123456789"))
         when(pensionProviderConnector.addPensionProvider(meq(nino), meq(model))(any()))
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addPensionProvider(nino, model), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when adding the new pension provider for ${nino.nino}"
+        rte.getMessage mustBe s"No submission id was generated when adding the new pension provider for ${nino.nino}"
       }
     }
   }
 
   "incorrect pension provider" must {
-    "return an envelope id" in {
+    "return a submission id" in {
       val sut   = createSUT
       val model = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
@@ -74,13 +74,13 @@ class PensionProviderServiceSpec extends BaseSpec {
       when(pensionProviderConnector.incorrectPensionProvider(meq(nino), meq(1), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
-      val envId = Await.result(sut.incorrectPensionProvider(nino, 1, model), 5 seconds)
+      val submissionId = Await.result(sut.incorrectPensionProvider(nino, 1, model), 5 seconds)
 
-      envId mustBe "123-456-789"
+      submissionId mustBe "123-456-789"
     }
 
     "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
+      "no submission id was returned from the connector layer" in {
         val sut   = createSUT
         val model = IncorrectPensionProvider(
           whatYouToldUs = "TEST",
@@ -91,7 +91,7 @@ class PensionProviderServiceSpec extends BaseSpec {
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1, model), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when submitting incorrect pension for ${nino.nino}"
+        rte.getMessage mustBe s"No submission id was generated when submitting incorrect pension for ${nino.nino}"
       }
     }
   }
