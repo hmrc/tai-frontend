@@ -42,7 +42,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlag
-import uk.gov.hmrc.tai.model.admin.DesignatoryDetailsCheck
+import uk.gov.hmrc.tai.model.admin.FeatureFlagNameTai.DesignatoryDetailsCheck
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import utils.BaseSpec
