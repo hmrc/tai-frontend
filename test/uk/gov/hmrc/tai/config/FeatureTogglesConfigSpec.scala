@@ -27,8 +27,8 @@ class FeatureTogglesConfigSpec extends BaseSpec {
   "feature toggle configuration" should {
     "define all application toggles with remote and local configuration values" in {
       val toggles = Seq(
-        CyPlusOneToggle      -> "Enable/disable CY+1 (next tax year) features, including income comparison and estimated pay updates.",
-        IncomeTaxHistoryToggle -> "Enable/disable access to the income tax history section showing previous tax years",
+        CyPlusOneToggle         -> "Enable/disable CY+1 (next tax year) features, including income comparison and estimated pay updates.",
+        IncomeTaxHistoryToggle  -> "Enable/disable access to the income tax history section showing previous tax years",
         DesignatoryDetailsCheck -> "Enable/disable fetching of personal designatory details (e.g., name, address) from Citizen Details service."
       )
 
