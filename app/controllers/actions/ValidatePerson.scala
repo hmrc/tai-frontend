@@ -23,7 +23,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongoFeatureToggles.services.FeatureFlagService
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import uk.gov.hmrc.tai.model.admin.DesignatoryDetailsCheck
+import uk.gov.hmrc.tai.model.admin.FeatureFlagNameTai.DesignatoryDetailsCheck
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.service.PersonService
 
