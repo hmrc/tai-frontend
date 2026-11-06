@@ -229,7 +229,8 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
     LoanInterestAmount,
     LossRelief,
     MaintenancePayments,
-    GiftsSharesCharity
+    GiftsSharesCharity,
+    PensionTaxAllowance
   )
   def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel =
     TaxFreeAmountSummaryRowViewModel(TaxSummaryLabel(label), value, link)

@@ -238,6 +238,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
     val brdReduction          = codingComponents.find(_.componentType == BRDifferenceTaxReduction).map(_.amount)
     val brdCharge             = codingComponents.find(_.componentType == BRDifferenceTaxCharge).map(_.amount)
+    val pensionTaxAllowance   = codingComponents.find(_.componentType == PensionTaxAllowance).map(_.amount)
 
     val giftAidPaymentsReliefRow = createReductionTaxRow(
       giftAidPaymentsRelief,
@@ -274,6 +275,11 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       ),
       Messages("personal.pension.payments")
     )
+    val pensionTaxAllowanceRow           = createReductionTaxRow(
+      pensionTaxAllowance,
+      Messages("pension.tax.allowance.description"),
+      Messages("pension.tax.allowance.title")
+    )
 
     Seq(
       nonCodedIncomeRow,
@@ -285,7 +291,8 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
       concessionReliefRow,
       doubleTaxationReliefRow,
       giftAidPaymentsReliefRow,
-      personalPensionPaymentsReliefRow
+      personalPensionPaymentsReliefRow,
+      pensionTaxAllowanceRow
     ).flatten
   }
 

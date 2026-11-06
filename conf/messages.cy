@@ -80,6 +80,9 @@ gift.aid.savings=Cynilion Rhodd Cymorth
 gift.aid.tax.relief=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi ac yn arbed £{1} o Dreth Incwm
 gift.aid.tax.relief.brd.charge=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi, ac yn arbed £{1} o Dreth Incwm. Mae hyn yn cynnwys didyniad ar y gwahaniaeth yn y gyfradd sylfaenol o £{2}.
 gift.aid.tax.relief.brd.reduction=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi, ac yn arbed £{1} o Dreth Incwm. Mae hyn yn cynnwys ychwanegiad ar y gwahaniaeth yn y gyfradd sylfaenol o £{2}.
+pension.tax.allowance.title=Pension Tax Allowance
+pension.tax.allowance.description=Pension tax allowance description
+
 
 label.HMRC= Cyllid a Thollau EF
 label.closed_sundays_and_bank_holidays=Ar gau ddydd Sul a gwyliau’r banc.
@@ -1266,6 +1269,7 @@ tai.taxFreeAmount.table.taxComponent.OtherItems=Eitemau eraill
 tai.taxFreeAmount.table.taxComponent.OutstandingDebt=Dyled heb ei thalu
 tai.taxFreeAmount.table.taxComponent.PartTimeEarnings=Enillion rhan amser
 tai.taxFreeAmount.table.taxComponent.PaymentsOnEmployeesBehalf=Taliadau ar ran y cyflogai
+tai.taxFreeAmount.table.taxComponent.PensionTaxAllowance=Pension Tax Allowance
 tai.taxFreeAmount.table.taxComponent.PersonalAllowanceAgedPAA=Lwfans Personol - Oedran (PAA)
 tai.taxFreeAmount.table.taxComponent.PersonalAllowanceElderlyPAE=Lwfans Personol - yr Henoed (PAE)
 tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA=Lwfans Personol (PA)
@@ -1395,6 +1399,7 @@ tai.taxFreeAmount.tableV2.taxComponent.plural.OtherItems=eitemau eraill
 tai.taxFreeAmount.tableV2.taxComponent.singular.OutstandingDebt=dyled heb ei thalu
 tai.taxFreeAmount.tableV2.taxComponent.plural.PartTimeEarnings=enillion rhan amser
 tai.taxFreeAmount.tableV2.taxComponent.plural.PaymentsOnEmployeesBehalf=taliadau ar ran y cyflogai
+tai.taxFreeAmount.tableV2.taxComponent.plural.PensionTaxAllowance=Pension Tax Allowance
 tai.taxFreeAmount.tableV2.taxComponent.singular.PersonalAllowanceAgedPAA=Lwfans Personol - Oedran
 tai.taxFreeAmount.tableV2.taxComponent.singular.PersonalAllowanceElderlyPAE=Lwfans Personol - Henoed
 tai.taxFreeAmount.tableV2.taxComponent.singular.PersonalAllowancePA=Lwfans Personol
