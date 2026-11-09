@@ -56,7 +56,6 @@ class DescribedYourTaxFreeAmountService @Inject() (
       companyCarService.companyCars(nino),
       taxAccountService.totalTax(nino, TaxYear())
     ).mapN { (employmentNames, taxFreeAmountComparison, companyCarBenefit, totalTax) =>
-      println("bbbbb" + taxFreeAmountComparison.iabdPairs)
       val describedPairs =
         describeIabdPairs(taxFreeAmountComparison.iabdPairs, companyCarBenefit, employmentNames, totalTax)
       YourTaxFreeAmountViewModel(
@@ -75,8 +74,6 @@ class DescribedYourTaxFreeAmountService @Inject() (
     employmentIds: Map[Int, String],
     totalTax: TotalTax
   )(implicit messages: Messages) = {
-
-    println("aaaaa " + allowancesAndDeductions)
 
     val allowancesDescription =
       for (allowance <- allowancesAndDeductions.allowances)
