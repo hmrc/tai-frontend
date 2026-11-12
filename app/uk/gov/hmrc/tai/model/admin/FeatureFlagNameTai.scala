@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.config
+package uk.gov.hmrc.tai.model.admin
 
-import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagNamesLibrary
-import uk.gov.hmrc.tai.model.admin.{CyPlusOneToggle, DesignatoryDetailsCheck, IncomeTaxHistoryToggle}
+import uk.gov.hmrc.mongoFeatureToggles.model.FeatureFlagName
 
-class ApplicationStartUp {
-  FeatureFlagNamesLibrary.addFlags(
-    List(
-      CyPlusOneToggle,
-      IncomeTaxHistoryToggle,
-      DesignatoryDetailsCheck
-    )
-  )
+enum FeatureFlagNameTai(val name: String) extends FeatureFlagName {
+  case CyPlusOneToggle extends FeatureFlagNameTai("cy-plus-one-toggle")
+  case IncomeTaxHistoryToggle extends FeatureFlagNameTai("income-tax-history-toggle")
+  case DesignatoryDetailsCheck extends FeatureFlagNameTai("designatory-details-check")
 }
