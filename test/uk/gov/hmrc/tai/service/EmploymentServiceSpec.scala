@@ -161,7 +161,7 @@ class EmploymentServiceSpec extends BaseSpec {
   }
 
   "end employment" must {
-    "return envelope id" in {
+    "return submission id" in {
       val sut = createSUT
 
       when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
@@ -175,7 +175,7 @@ class EmploymentServiceSpec extends BaseSpec {
   }
 
   "add employment" must {
-    "return an envelope id" in {
+    "return a submission id" in {
       val sut = createSUT
 
       val model = AddEmployment(
@@ -189,12 +189,12 @@ class EmploymentServiceSpec extends BaseSpec {
       when(employmentsConnector.addEmployment(meq(nino), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
-      val envId = Await.result(sut.addEmployment(nino, model), 5.seconds)
+      val submissionId = Await.result(sut.addEmployment(nino, model), 5.seconds)
 
-      envId mustBe "123-456-789"
+      submissionId mustBe "123-456-789"
     }
     "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
+      "no submission id was returned from the connector layer" in {
         val sut = createSUT
 
         val model = AddEmployment(
@@ -209,13 +209,13 @@ class EmploymentServiceSpec extends BaseSpec {
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addEmployment(nino, model), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
+        rte.getMessage mustBe s"No submission id was generated when adding the new employment for ${nino.nino}"
       }
     }
   }
 
   "incorrect employment" must {
-    "return an envelope id" in {
+    "return a submission id" in {
       val sut = createSUT
 
       val model =
@@ -223,13 +223,13 @@ class EmploymentServiceSpec extends BaseSpec {
       when(employmentsConnector.incorrectEmployment(meq(nino), meq(1), meq(model))(any()))
         .thenReturn(Future.successful(Some("123-456-789")))
 
-      val envId = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
+      val submissionId = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
 
-      envId mustBe "123-456-789"
+      submissionId mustBe "123-456-789"
     }
 
     "generate a runtime exception" when {
-      "no envelope id was returned from the connector layer" in {
+      "no submission id was returned from the connector layer" in {
         val sut = createSUT
 
         val model =
@@ -238,7 +238,7 @@ class EmploymentServiceSpec extends BaseSpec {
           .thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
-        rte.getMessage mustBe s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
+        rte.getMessage mustBe s"No submission id was generated when sending incorrect employment details for ${nino.nino}"
       }
     }
   }

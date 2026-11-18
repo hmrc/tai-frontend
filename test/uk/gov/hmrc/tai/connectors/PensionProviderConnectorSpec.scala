@@ -32,7 +32,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
   val httpHandler: HttpHandler = mock[HttpHandler]
 
   "PensionProviderConnector addPensionProvider" must {
-    "return an envelope id on a successful invocation" in {
+    "return a submission id on a successful invocation" in {
       val addPensionProvider =
         AddPensionProvider("testPension", LocalDate.of(2017, 6, 6), "12345", "123/AB456", "Yes", Some("123456789"))
       val json               = Json.obj("data" -> JsString("123-456-789"))
@@ -53,7 +53,7 @@ class PensionProviderConnectorSpec extends BaseSpec {
   }
 
   "PensionProviderConnector incorrectPensionProvider" must {
-    "return an envelope id on a successful invocation" in {
+    "return a submission id on a successful invocation" in {
       val incorrectPensionProvider = IncorrectPensionProvider(
         whatYouToldUs = "TEST",
         telephoneContactAllowed = "Yes",

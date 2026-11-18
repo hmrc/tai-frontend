@@ -45,19 +45,19 @@ class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector)(i
     hc: HeaderCarrier
   ): Future[String] =
     employmentsConnector.addEmployment(nino, employment) map {
-      case Some(envId) => envId
-      case _           =>
-        throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
+      case Some(submissionId) => submissionId
+      case _                  =>
+        throw new RuntimeException(s"No submission id was generated when adding the new employment for ${nino.nino}")
     }
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit
     hc: HeaderCarrier
   ): Future[String] =
     employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
-      case Some(envId) => envId
-      case _           =>
+      case Some(submissionId) => submissionId
+      case _                  =>
         throw new RuntimeException(
-          s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
+          s"No submission id was generated when sending incorrect employment details for ${nino.nino}"
         )
     }
 
