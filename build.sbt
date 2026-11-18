@@ -7,7 +7,7 @@ import uk.gov.hmrc.DefaultBuildSettings
 val appName = "tai-frontend"
 
 ThisBuild / majorVersion := 3
-ThisBuild / scalaVersion := "3.3.6"
+ThisBuild / scalaVersion := "3.3.9"
 ThisBuild / scalafmtOnCompile := true
 
 lazy val plugins: Seq[Plugins]         = Seq(play.sbt.PlayScala, SbtWeb)
