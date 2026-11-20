@@ -568,7 +568,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
         50
       ),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
-      AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.childBenefit.title")), 300),
+      AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.hicbc.title")), 300),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessWidowsAndOrphans.title")), 100),
       AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")), 200)
@@ -586,7 +586,7 @@ class DetailedIncomeTaxEstimateViewSpec extends TaiViewSpec {
     )
     doc(additionalDetailView) must haveThWithText(messages("tax.adjustments"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.OutstandingDebt.title"))
-    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.childBenefit.title"))
+    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.hicbc.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessGiftAidTax.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessWidowsAndOrphans.title"))
     doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.pensionPaymentsAdjustment.title"))
