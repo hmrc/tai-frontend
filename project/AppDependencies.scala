@@ -3,7 +3,7 @@ import sbt.*
 
 private object AppDependencies {
   private val playVersion               = "play-30"
-  private val scaWrapperVersion         = "6.4.0"
+  private val scaWrapperVersion         = "6.6.0"
   private val mongoFeatureToggleVersion = "3.1.0"
 
   val compile: Seq[ModuleID] = Seq(
