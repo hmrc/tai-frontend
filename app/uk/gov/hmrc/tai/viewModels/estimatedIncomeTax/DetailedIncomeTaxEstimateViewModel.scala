@@ -151,7 +151,7 @@ object DetailedIncomeTaxEstimateViewModel extends IncomeTaxEstimateHelper {
     )
     val childBenefitRow          = createAdditionalTaxRow(
       EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit),
-      TaxSummaryLabel(Messages("tai.taxCalc.childBenefit.title"))
+      TaxSummaryLabel(Messages("tai.taxCalc.hicbc.title"))
     )
     val excessGiftAidRow         = createAdditionalTaxRow(
       EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax),

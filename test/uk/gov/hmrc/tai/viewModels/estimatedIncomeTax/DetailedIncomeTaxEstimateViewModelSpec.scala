@@ -304,7 +304,7 @@ class DetailedIncomeTaxEstimateViewModelSpec
               50
             ),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
-            AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.childBenefit.title")), 300),
+            AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.hicbc.title")), 300),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.excessWidowsAndOrphans.title")), 100),
             AdditionalTaxDetailRow(TaxSummaryLabel(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")), 200)
