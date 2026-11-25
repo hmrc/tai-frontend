@@ -437,7 +437,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         setup(userAnswers)
 
         when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful("envelope_id_1"))
+          .thenReturn(Future.successful("submission_id_1"))
         when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -461,7 +461,7 @@ class UpdatePensionProviderControllerSpec extends BaseSpec {
         setup(userAnswers)
 
         when(pensionProviderService.incorrectPensionProvider(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful("envelope_id_1"))
+          .thenReturn(Future.successful("submission_id_1"))
         when(mockJourneyCacheRepository.clear(any(), any())).thenReturn(Future.successful(true))
         when(mockJourneyCacheRepository.set(any())).thenReturn(Future.successful(true))
 

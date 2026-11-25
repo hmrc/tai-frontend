@@ -118,7 +118,7 @@ class BenefitsConnectorSpec extends BaseSpec {
 
   "removeCompanyBenefit" must {
 
-    "return an envelope id on a successful invocation" in {
+    "return a submission id on a successful invocation" in {
       val employmentId        = 1
       val endedCompanyBenefit =
         EndedCompanyBenefit("Accommodation", "Before 6th April", Some("1000000"), "Yes", Some("0123456789"))
